@@ -1,0 +1,20 @@
+#!/bin/bash
+
+scriptList=$(git diff --cached --name-only --diff-filter=ACM | grep ".js$")
+
+if [[ "$scriptList" = "" ]]; then
+  exit 0
+fi
+
+exitCode=0
+
+for script in $scriptList
+do
+  ./node_modules/.bin/eslint $script
+
+  if [[ "$?" != 0 ]]; then
+    exitCode=1
+  fi
+done
+
+exit $exitCode
