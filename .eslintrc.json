@@ -120,6 +120,10 @@
         "after": true
       }
     ],
+    "max-len": [
+      "warn",
+      100
+    ],
     "max-depth": [
       "warn",
       4
