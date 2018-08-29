@@ -1,17 +1,18 @@
+import ScopeProvider from '../scope/scopeProvider';
 import ResolveDependencyStrategy from './resolveDependencyStrategy';
 
 class IOC {
   constructor() {
     if (!this.instance) {
       this.instance = this;
-      this.storage = {};
     }
 
     return this.instance;
   }
 
   resolve(key, ...args) {
-    return this.storage[key].resolve(args);
+    let scope = ScopeProvider.getCurrentScope();
+    return scope.resolve(key, args);
   }
 
   register(key, resolveDependencyStrategy) {
@@ -21,11 +22,13 @@ class IOC {
       );
     }
 
-    this.storage[key] = resolveDependencyStrategy;
+    let scope = ScopeProvider.getCurrentScope();
+    scope.register(key, resolveDependencyStrategy);
   }
 
   remove(key) {
-    this.storage[key] = undefined;
+    let scope = ScopeProvider.getCurrentScope();
+    scope.remove(key);
   }
 }
 
