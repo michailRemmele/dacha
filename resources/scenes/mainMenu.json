@@ -1,0 +1,16 @@
+{
+  "name": "main-menu-scene",
+  "actionList": [
+  ],
+  "gameObjectList": [
+    {
+      "name": "menu-item",
+      "args": [
+        "Start game",
+        "changeScene",
+        "game-scene"
+      ],
+      "coordinates": []
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "intro-scene",
+  "actionList": [
+    {
+      "name": "changeScene",
+      "args": [
+        "main-menu-scene"
+      ],
+      "key": "F"
+    }
+  ],
+  "gameObjectList": [
+    {
+      "name": "intro-logo",
+      "args": [],
+      "coordinates": []
+    },
+    {
+      "name": "text",
+      "args": [
+        "Press any key"
+      ],
+      "coordinates": []
+    }
+  ]
+}
