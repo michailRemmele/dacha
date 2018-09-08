@@ -6,6 +6,7 @@ class ScopeProvider {
       this.instance = this;
       this.scopes = {};
       this.currentScopeName = undefined;
+      this.scopeChangeSubscribers = [];
     }
 
     return this.instance;
@@ -21,10 +22,14 @@ class ScopeProvider {
 
   setCurrentScope(name) {
     if (!this.scopes[name]) {
-      throw new Error('Not found scope with same name');
+      throw new Error(`Error while setting new scope. Not found scope with same name: ${name}`);
     }
 
     this.currentScopeName = name;
+
+    this.scopeChangeSubscribers.forEach((callback) => {
+      callback(this.scopes[this.currentScopeName]);
+    });
   }
 
   getCurrentScope() {
@@ -33,6 +38,14 @@ class ScopeProvider {
     }
 
     return this.scopes[this.currentScopeName];
+  }
+
+  subscribeOnScopeChange(callback) {
+    if (!(callback instanceof Function)) {
+      throw new Error('On subscribe callback should be a function');
+    }
+
+    this.scopeChangeSubscribers.push(callback);
   }
 }
 
