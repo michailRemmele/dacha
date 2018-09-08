@@ -1,5 +1,4 @@
-import ScopeProvider from '../scope/scopeProvider';
-import ResolveDependencyStrategy from './resolveDependencyStrategy';
+import ScopeProvider from 'core/scope/scopeProvider';
 
 class IOC {
   constructor() {
@@ -16,12 +15,6 @@ class IOC {
   }
 
   register(key, resolveDependencyStrategy) {
-    if (!(resolveDependencyStrategy instanceof ResolveDependencyStrategy)) {
-      throw new Error(
-        'Resolve dependency strategy should be inherits from ResolveDependencyStrategy'
-      );
-    }
-
     let scope = ScopeProvider.getCurrentScope();
     scope.register(key, resolveDependencyStrategy);
   }

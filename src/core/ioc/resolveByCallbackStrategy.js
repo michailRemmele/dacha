@@ -7,7 +7,7 @@ class ResolveByCallbackStrategy extends ResolveDependencyStrategy {
   }
 
   resolve(args) {
-    return this.callback();
+    return this.callback(args);
   }
 }
 
