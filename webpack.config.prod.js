@@ -12,41 +12,53 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+  mode: 'none',
+
   entry: {
-    app: paths.indexJs
+    app: paths.indexJs,
   },
 
   output: {
     path: paths.build,
     filename: '[name].[hash].js',
-    library: '[name]'
+    library: '[name]',
   },
 
   watch: false,
 
   devtool: false,
 
+  resolve: {
+    alias: {
+      resources: paths.resources,
+    },
+    modules: [
+      'src',
+      'node_modules',
+    ],
+  },
+
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV),
     }),
-    new CleanWebpackPlugin([paths.build]),
+    new CleanWebpackPlugin([ paths.build ]),
     new HtmlWebpackPlugin({
       inject: true,
-      template: paths.indexHtml
+      template: paths.indexHtml,
     }),
     new ExtractTextPlugin({
-      filename: '[name].[hash].css'
+      filename: '[name].[hash].css',
     }),
     new UglifyJsPlugin(),
     new CopyWebpackPlugin([
       {
         from: paths.public,
         to: paths.build,
-        ignore: [ paths.indexHtml ]
-      }
-    ])
+        ignore: [ paths.indexHtml ],
+      },
+    ]),
   ],
 
   module: {
@@ -56,9 +68,9 @@ module.exports = {
         exclude: /(node_modules)/,
         use: [
           {
-            loader: 'babel-loader'
-          }
-        ]
+            loader: 'babel-loader',
+          },
+        ],
       },
       {
         test: /\.scss$/,
@@ -67,25 +79,25 @@ module.exports = {
             {
               loader: 'css-loader',
               options: {
-                minimize: true
-              }
+                minimize: true,
+              },
             },
             {
               loader: 'postcss-loader',
               options: {
                 plugins: [
                   autoprefixer({
-                    browsers:['ie >= 8', 'last 4 version']
-                  })
-                ]
-              }
+                    browsers: [ 'ie >= 8', 'last 4 version' ],
+                  }),
+                ],
+              },
             },
             {
-              loader: 'sass-loader'
-            }
+              loader: 'sass-loader',
+            },
           ],
-          fallback: 'style-loader'
-        })
+          fallback: 'style-loader',
+        }),
       },
       {
         test: /\.json$/,
@@ -93,10 +105,10 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: 'api/[name].[ext]'
-            }
-          }
-        ]
+              name: 'api/[name].[ext]',
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jp(e?)g|svg)$/,
@@ -104,11 +116,11 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: 'images/[hash]-[name].[ext]'
-            }
-          }
-        ]
-      }
-    ]
-  }
+              name: 'images/[hash]-[name].[ext]',
+            },
+          },
+        ],
+      },
+    ],
+  },
 };
