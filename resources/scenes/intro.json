@@ -2,7 +2,7 @@
   "name": "intro-scene",
   "actionList": [
     {
-      "name": "changeScene",
+      "name": "ChangeSceneAction",
       "args": [
         "main-menu-scene"
       ],
