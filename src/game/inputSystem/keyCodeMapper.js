@@ -1,4 +1,4 @@
-import keyCodeValues from 'resources/keyCodeValues';
+import keyCodeValues from 'resources/configurations/keyCodeValues';
 
 class KeyCodeMapper {
   getKeyCode(char) {

@@ -1,0 +1,40 @@
+{
+  "name": "button",
+  "type": "gui",
+  "components": [
+    {
+      "name": "clickable",
+      "props": {
+        "action": {
+          "name": "ChangeSceneAction",
+          "args": [
+            "main-menu-scene"
+          ]
+        }
+      }
+    },
+    {
+      "name": "renderable",
+      "props": {
+        "spriteSheet": {
+          "fileName": "button.png",
+          "slice": {
+            "width": 0,
+            "height": 0,
+            "padding": 0
+          },
+          "frames": {
+            "idle": [ 0 ]
+          }
+        },
+        "text": {
+          "content": "",
+          "font": "Helvetica",
+          "fontSize": 30,
+          "color": "#fff",
+          "coordinates": [ 0, 0 ]
+        }
+      }
+    }
+  ]
+}

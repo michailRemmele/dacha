@@ -11,11 +11,11 @@ import KeyResolver from './game/inputSystem/keyResolver';
 
 import SceneProvider from './game/scene/sceneProvider';
 
-import mainConfig from 'resources/mainConfig';
+import mainConfig from 'resources/configurations/mainConfig';
 
-import introSceneConfig from 'resources/scenes/intro';
-import mainMenuSceneConfig from 'resources/scenes/mainMenu';
-import gameScene from 'resources/scenes/gameScene';
+import introSceneConfig from 'resources/configurations/scenes/intro';
+import mainMenuSceneConfig from 'resources/configurations/scenes/mainMenu';
+import gameScene from 'resources/configurations/scenes/gameScene';
 
 const sceneConfigList = [
   introSceneConfig,
