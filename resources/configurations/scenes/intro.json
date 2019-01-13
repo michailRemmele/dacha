@@ -10,17 +10,5 @@
     }
   ],
   "gameObjectList": [
-    {
-      "name": "intro-logo",
-      "args": [],
-      "coordinates": []
-    },
-    {
-      "name": "text",
-      "args": [
-        "Press any key"
-      ],
-      "coordinates": []
-    }
   ]
 }

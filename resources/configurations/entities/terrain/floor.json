@@ -1,0 +1,17 @@
+{
+  "name": "floor",
+  "type": "terrain",
+  "components": [
+    {
+      "name": "renderable",
+      "config": {
+        "type": "static",
+        "fileName": "terraing/platform.png",
+        "size": {
+          "width": 32,
+          "height": 32
+        }
+      }
+    }
+  ]
+}

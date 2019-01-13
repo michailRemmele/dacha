@@ -1,0 +1,36 @@
+{
+  "name": "chicken",
+  "type": "unit",
+  "components": [
+    {
+      "name": "renderable",
+      "config": {
+        "type": "sprite",
+        "fileName": "units/chicken.png",
+        "size": {
+          "width": 45,
+          "height": 50
+        },
+        "slice": {
+          "width": 45,
+          "height": 50,
+          "padding": 0
+        },
+        "animation": {
+          "idle": {
+            "duration": 150,
+            "frames": [ 0, 1, 2, 3, 4, 5 ]
+          },
+          "run": {
+            "duration": 125,
+            "frames": [ 6, 7, 8, 9 ]
+          },
+          "attack": {
+            "duration": 100,
+            "frames": [ 10, 11, 12, 13, 14 ]
+          }
+        }
+      }
+    }
+  ]
+}
