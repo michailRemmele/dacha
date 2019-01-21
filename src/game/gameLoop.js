@@ -1,6 +1,7 @@
 const MS_PER_UPDATE = 1000 / 60;
 
 import InputProcessor from './inputSystem/inputProcessor';
+import RenderProcessor from './renderSystem/renderProcessor';
 
 class GameLoop {
   constructor() {
@@ -9,6 +10,7 @@ class GameLoop {
     this.gameLoopId = null;
 
     this.inputProcessor = new InputProcessor();
+    this.renderProcessor = new RenderProcessor();
   }
 
   _update() {
@@ -16,7 +18,7 @@ class GameLoop {
   }
 
   _render() {
-    // Render game screen
+    this.renderProcessor.process();
   }
 
   run() {
