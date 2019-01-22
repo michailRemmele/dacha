@@ -7,8 +7,8 @@ class ShaderCreator {
     this.FRAGMENT_SHADER = FRAGMENT_SHADER;
     this.VERTEX_SHADER = VERTEX_SHADER;
     this.creators = {
-      [FRAGMENT_SHADER]: this._createFragmentShader,
-      [VERTEX_SHADER]: this._createVertexShader,
+      [FRAGMENT_SHADER]: this._createFragmentShader.bind(this),
+      [VERTEX_SHADER]: this._createVertexShader.bind(this),
     };
   }
 
