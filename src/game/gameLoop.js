@@ -1,7 +1,7 @@
 const MS_PER_UPDATE = 1000 / 60;
 
-import InputProcessor from './inputSystem/inputProcessor';
-import RenderProcessor from './renderSystem/renderProcessor';
+import InputProcessor from './processors/inputProcessor/inputProcessor';
+import RenderProcessor from './processors/renderProcessor/renderProcessor';
 
 class GameLoop {
   constructor() {
@@ -22,8 +22,6 @@ class GameLoop {
   }
 
   run() {
-    this.inputProcessor.run();
-
     let that = this;
     this.gameLoopId = requestAnimationFrame(function tick(current) {
       let elapsed = current - that.previous;

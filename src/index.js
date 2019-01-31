@@ -7,7 +7,7 @@ import * as global from './consts/global';
 import ActionResolver from './game/actionResolver';
 import GameLoop from './game/gameLoop';
 
-import KeyResolver from './game/inputSystem/keyResolver';
+import KeyResolver from './game/processors/inputProcessor/keyResolver';
 
 import SceneProvider from './game/scene/sceneProvider';
 

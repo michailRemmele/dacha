@@ -1,6 +1,7 @@
 import ShaderCreator from './shaderCreator';
+import webglUtils from 'vendor/webgl-utils';
 
-class RenderProcessor {
+class WebGlRenderProcessor {
   constructor() {
     const window = document.getElementById('root');
     this.graphicContext = this.initGraphicContext(window);
@@ -64,23 +65,26 @@ class RenderProcessor {
         }
 
         this.graphicContext.useProgram(shaderProgram);
+        const attrPositionLoc = this.graphicContext.getAttribLocation(shaderProgram, 'a_position');
+        const attrTexCoordLoc = this.graphicContext.getAttribLocation(shaderProgram, 'a_texCoord');
 
-        const vertexPositionAttribute =
-          this.graphicContext.getAttribLocation(shaderProgram, 'aVertexPosition');
-        this.graphicContext.enableVertexAttribArray(vertexPositionAttribute);
+        this.graphicContext.enableVertexAttribArray(attrPositionLoc);
 
-        return vertexPositionAttribute;
+        return attrPositionLoc;
       });
   }
 
-  initBuffers(vertexPositionAttribute) {
+  initBuffers(attrPositionLoc) {
     const positionBuffer = this.graphicContext.createBuffer();
     this.graphicContext.bindBuffer(this.graphicContext.ARRAY_BUFFER, positionBuffer);
 
     const positions = [
-      -1, -1,
-      0, 1,
-      1, -1,
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
     ];
     this.graphicContext.bufferData(
       this.graphicContext.ARRAY_BUFFER,
@@ -93,19 +97,9 @@ class RenderProcessor {
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    this.graphicContext.vertexAttribPointer(
-      vertexPositionAttribute, size, type, normalize, stride, offset
-    );
+    this.graphicContext.vertexAttribPointer(attrPositionLoc, size, type, normalize, stride, offset);
 
     return Promise.resolve();
-  }
-
-  run() {
-
-  }
-
-  stop() {
-
   }
 
   process() {
@@ -114,9 +108,9 @@ class RenderProcessor {
     }
     const primitiveType = this.graphicContext.TRIANGLES;
     const offset = 0;
-    const count = 3;
+    const count = 6;
     this.graphicContext.drawArrays(primitiveType, offset, count);
   }
 }
 
-export default RenderProcessor;
+export default WebGlRenderProcessor;

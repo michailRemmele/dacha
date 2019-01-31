@@ -7,9 +7,7 @@ import InputListener from './inputListener';
 class InputProcessor {
   constructor() {
     this.inputListener = new InputListener(window);
-  }
 
-  run() {
     const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
     const currentScene = sceneProvider.getCurrentScene();
     const keyResolver = IOC.resolve(global.KEY_RESOLVER_KEY_NAME);
@@ -19,10 +17,6 @@ class InputProcessor {
     sceneProvider.subscribeOnSceneChange((nextScene) => {
       this.inputListener.reloadListen(keyResolver.getKeys(nextScene.getName()));
     });
-  }
-
-  stop() {
-    this.inputListener.stopListen();
   }
 
   process() {
