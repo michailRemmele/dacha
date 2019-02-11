@@ -13,9 +13,7 @@ class WebGlRenderProcessor {
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
-    this.gl.clear(
-      this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT
-    );
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this.graphicInit = false;
     this.program = this.initShaders();
@@ -73,6 +71,8 @@ class WebGlRenderProcessor {
   }
 
   initGraphics() {
+    this.gl.useProgram(this.program);
+
     const getRectangle = (x, y, width, height) => {
       const x1 = x;
       const x2 = x + width;
@@ -109,7 +109,6 @@ class WebGlRenderProcessor {
       },
     };
     const bufferInfo = webglUtils.createBufferInfoFromArrays(this.gl, attribs);
-    webglUtils.setBuffersAndAttributes(this.gl, attribSetters, bufferInfo);
 
     const texture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
@@ -122,21 +121,35 @@ class WebGlRenderProcessor {
       this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.image
     );
 
-    this.gl.useProgram(this.program);
-
-    const uniforms = {
-      u_resolution: [ this.gl.canvas.width, this.gl.canvas.height ],
+    this.programInfo = {
+      attribs: {
+        setters: attribSetters,
+        bufferInfo: bufferInfo,
+      },
+      uniforms: {
+        setters: uniformSetters,
+      },
     };
-
-    webglUtils.setUniforms(uniformSetters, uniforms);
   }
 
   process() {
     if (!this.graphicInit) {
       return;
     }
+
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+
+    const attribsInfo = this.programInfo.attribs;
+    webglUtils.setBuffersAndAttributes(this.gl, attribsInfo.setters, attribsInfo.bufferInfo);
+
+    const uniforms = {
+      u_resolution: [ this.gl.canvas.width, this.gl.canvas.height ],
+      u_scale: [ 5, 5 ],
+    };
+
+    const uniformsInfo = this.programInfo.uniforms;
+    webglUtils.setUniforms(uniformsInfo.setters, uniforms);
 
     const primitiveType = this.gl.TRIANGLES;
     const offset = 0;
