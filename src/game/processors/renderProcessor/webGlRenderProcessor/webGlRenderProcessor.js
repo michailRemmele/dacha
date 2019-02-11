@@ -3,10 +3,12 @@ import webglUtils from 'vendor/webgl-utils';
 
 import terrainPlatform from 'resources/graphics/terrain/platform.png';
 
+const RENDER_COMPONENTS_NUMBER = 2;
+
 class WebGlRenderProcessor {
   constructor() {
-    const canvas = document.getElementById('root');
-    this.gl = this.initGraphicContext(canvas);
+    this.canvas = document.getElementById('root');
+    this.gl = this.initGraphicContext(this.canvas);
 
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
@@ -14,9 +16,6 @@ class WebGlRenderProcessor {
     this.gl.clear(
       this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT
     );
-
-    webglUtils.resizeCanvasToDisplaySize(canvas, window.devicePixelRatio);
-    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
     this.graphicInit = false;
     this.program = this.initShaders();
@@ -74,19 +73,28 @@ class WebGlRenderProcessor {
   }
 
   initGraphics() {
+    const getRectangle = (x, y, width, height) => {
+      const x1 = x;
+      const x2 = x + width;
+      const y1 = y;
+      const y2 = y + height;
+      return [
+        x1, y1,
+        x2, y1,
+        x1, y2,
+        x1, y2,
+        x2, y1,
+        x2, y2,
+      ];
+    };
+
+    const uniformSetters = webglUtils.createUniformSetters(this.gl, this.program);
     const attribSetters = webglUtils.createAttributeSetters(this.gl, this.program);
 
     const attribs = {
       position: {
-        data: [
-          0.0,  0.0,
-          1.0,  0.0,
-          0.0,  1.0,
-          0.0,  1.0,
-          1.0,  0.0,
-          1.0,  1.0,
-        ],
-        numComponents: 2,
+        data: getRectangle(0, 0, 32, 32),
+        numComponents: RENDER_COMPONENTS_NUMBER,
       },
       texCoord: {
         data: [
@@ -97,13 +105,10 @@ class WebGlRenderProcessor {
           1.0,  0.0,
           1.0,  1.0,
         ],
-        numComponents: 2,
+        numComponents: RENDER_COMPONENTS_NUMBER,
       },
     };
     const bufferInfo = webglUtils.createBufferInfoFromArrays(this.gl, attribs);
-
-    this.gl.useProgram(this.program);
-
     webglUtils.setBuffersAndAttributes(this.gl, attribSetters, bufferInfo);
 
     const texture = this.gl.createTexture();
@@ -116,12 +121,23 @@ class WebGlRenderProcessor {
     this.gl.texImage2D(
       this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.image
     );
+
+    this.gl.useProgram(this.program);
+
+    const uniforms = {
+      u_resolution: [ this.gl.canvas.width, this.gl.canvas.height ],
+    };
+
+    webglUtils.setUniforms(uniformSetters, uniforms);
   }
 
   process() {
     if (!this.graphicInit) {
       return;
     }
+    webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
+    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+
     const primitiveType = this.gl.TRIANGLES;
     const offset = 0;
     const count = 6;
