@@ -9,5 +9,6 @@ module.exports = {
   indexJs: path.join(__dirname, 'src/index.js'),
   src: path.join(__dirname, 'src'),
   resources: path.join(__dirname, 'resources'),
+  graphicResources: path.join(__dirname, 'resources/graphics'),
   nodeModules: path.join(__dirname, 'node_modules'),
 };

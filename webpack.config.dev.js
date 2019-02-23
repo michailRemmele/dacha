@@ -5,6 +5,7 @@ process.env.NODE_ENV = 'development';
 const webpack = require('webpack');
 const paths = require('./paths');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const SpriteSmithWebpackPlugin = require('./etc/webpack/plugins/spritesmith-webpack-plugin');
 
 module.exports = {
   mode: 'none',
@@ -50,6 +51,16 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.indexHtml,
+    }),
+    new SpriteSmithWebpackPlugin({
+      input: {
+        path: paths.graphicResources,
+        pattern: '**/*.png',
+      },
+      output: {
+        path: paths.build,
+        filename: 'images/atlasMap.png',
+      },
     }),
   ],
 
