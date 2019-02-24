@@ -67,7 +67,8 @@ module.exports = {
       },
       output: {
         path: paths.build,
-        filename: 'images/atlasMap.png',
+        spriteFilename: 'resources/atlasMap.png',
+        sourceMapFilename: 'resources/atlasMap.json',
       },
     }),
   ],

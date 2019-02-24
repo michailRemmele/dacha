@@ -4,25 +4,7 @@
  */
 const glob = require('glob');
 const path = require('path');
-const { lstatSync, readdirSync } = require('fs');
 const spritesmith = require('spritesmith');
-
-function isDir(source) {
-  return lstatSync(source).isDirectory();
-}
-
-function expandDir(dir) {
-  const fullDirName = path.resolve(dir);
-  return readdirSync(fullDirName).reduce((accumulator, item) => {
-    const fullPath = path.join(dir, item);
-
-    if (isDir(fullPath)) {
-      accumulator = accumulator.concat(expandDir(fullPath));
-    }
-
-    return accumulator;
-  }, [ fullDirName ]);
-}
 
 class SpriteSmithWebpackPlugin {
   constructor(options) {
@@ -30,28 +12,44 @@ class SpriteSmithWebpackPlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.afterCompile.tap('SpriteSmithWebpackPlugin', (compilation) => {
-      const { input } = this.options;
-
-      console.log(compilation.contextDependencies);
-      expandDir(input.path).forEach((dir) => {
-        compilation.contextDependencies.add(dir);
-      });
-    });
-
     compiler.hooks.emit.tapAsync('SpriteSmithWebpackPlugin', (compilation, callback) => {
       const { input, output } = this.options;
 
       const globPattern = `${input.path}/${input.pattern}`;
       spritesmith.run({ src: glob.sync(globPattern) }, (err, result) => {
-        compilation.assets[output.filename] = {
-          source: function() {
-            return result.image;
+        const assets = [
+          {
+            name: output.spriteFilename,
+            source: () => {
+              return result.image;
+            },
           },
-          size: function() {
-            return result.image.length;
+          {
+            name: output.sourceMapFilename,
+            source: () => {
+              const source = Object.keys(result.coordinates).reduce((source, itemKey) => {
+                const parentDir = path.dirname(itemKey).split(path.sep).pop();
+                const filenameWithoutExt = path.basename(itemKey, path.extname(itemKey));
+                const newKey = `${parentDir}${path.sep}${filenameWithoutExt}`;
+                source[newKey] = result.coordinates[itemKey];
+                return source;
+              }, {});
+              return JSON.stringify(source);
+            },
           },
-        };
+        ];
+
+        assets.forEach((asset) => {
+          const assetSource = asset.source();
+          compilation.assets[asset.name] = {
+            source: function() {
+              return assetSource;
+            },
+            size: function() {
+              return assetSource.length;
+            },
+          };
+        });
 
         callback();
       });

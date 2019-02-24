@@ -6,6 +6,7 @@ const webpack = require('webpack');
 const paths = require('./paths');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SpriteSmithWebpackPlugin = require('./etc/webpack/plugins/spritesmith-webpack-plugin');
+const DirWatchWebpackPlugin = require('./etc/webpack/plugins/dir-watch-webpack-plugin');
 
 module.exports = {
   mode: 'none',
@@ -59,8 +60,12 @@ module.exports = {
       },
       output: {
         path: paths.build,
-        filename: 'images/atlasMap.png',
+        spriteFilename: 'resources/atlasMap.png',
+        sourceMapFilename: 'resources/atlasMap.json',
       },
+    }),
+    new DirWatchWebpackPlugin({
+      path: paths.graphicResources,
     }),
   ],
 
