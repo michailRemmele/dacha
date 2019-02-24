@@ -1,7 +1,7 @@
 const MS_PER_UPDATE = 1000 / 60;
 
-import InputProcessor from './processors/inputProcessor/inputProcessor';
-import RenderProcessor from './processors/renderProcessor/renderProcessor';
+import { SECTIONS } from 'consts/global';
+import IOC from 'core/ioc/ioc';
 
 class GameLoop {
   constructor() {
@@ -9,16 +9,15 @@ class GameLoop {
     this.lag = 0;
     this.gameLoopId = null;
 
-    this.inputProcessor = new InputProcessor();
-    this.renderProcessor = new RenderProcessor();
+    this.eventProcessSection = IOC.resolve(SECTIONS.EVENT_PROCESS_SECTION_NAME);
+    this.gameStateUpdateSection = IOC.resolve(SECTIONS.GAME_STATE_UPDATE_SECTION_NAME);
+    this.renderingSection = IOC.resolve(SECTIONS.RENDERING_SECTION_NAME);
   }
 
-  _update() {
-    // Update game state
-  }
-
-  _render() {
-    this.renderProcessor.process();
+  _processSection(section, params) {
+    section.forEach((processor) => {
+      processor.process(params);
+    });
   }
 
   run() {
@@ -28,14 +27,14 @@ class GameLoop {
       that.previous = current;
       that.lag += elapsed;
 
-      that.inputProcessor.process();
+      that._processSection(that.eventProcessSection);
 
       while (that.lag >= MS_PER_UPDATE) {
-        that._update();
+        that._processSection(that.gameStateUpdateSection);
         that.lag -= MS_PER_UPDATE;
       }
 
-      that._render(that.lag / MS_PER_UPDATE);
+      that._processSection(that.renderingSection, that.lag / MS_PER_UPDATE);
       that.gameLoopId = requestAnimationFrame(tick);
     });
   }

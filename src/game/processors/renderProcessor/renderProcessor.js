@@ -1,8 +1,8 @@
 import WebGlRenderProcessor from './webGlRenderProcessor/webGlRenderProcessor';
 
 class RenderProcessor {
-  constructor() {
-    this.renderProcessor = new WebGlRenderProcessor();
+  constructor(resources) {
+    this.renderProcessor = new WebGlRenderProcessor(resources);
   }
 
   process() {

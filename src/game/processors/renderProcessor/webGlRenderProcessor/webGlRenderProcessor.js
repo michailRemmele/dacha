@@ -1,12 +1,13 @@
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import webglUtils from 'vendor/webgl-utils';
 
-import terrainPlatform from 'resources/graphics/terrain/platform.png';
-
 const RENDER_COMPONENTS_NUMBER = 2;
 
 class WebGlRenderProcessor {
-  constructor() {
+  constructor(resources) {
+    this.textureAtlas = resources.textureAtlas;
+    this.textureAtlasMap = resources.textureAtlasMap;
+
     this.canvas = document.getElementById('root');
     this.gl = this.initGraphicContext(this.canvas);
 
@@ -15,14 +16,8 @@ class WebGlRenderProcessor {
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    this.graphicInit = false;
     this.program = this.initShaders();
-    this.initTextures()
-      .then((image) => {
-        this.image = image;
-        this.initGraphics();
-        this.graphicInit = true;
-      });
+    this.initGraphics();
   }
 
   initGraphicContext(canvas) {
@@ -58,16 +53,6 @@ class WebGlRenderProcessor {
     }
 
     return shaderProgram;
-  }
-
-  initTextures() {
-    return new Promise((resolve) => {
-      const image = new Image();
-      image.src = terrainPlatform;
-      image.onload = () => {
-        resolve(image);
-      };
-    });
   }
 
   initGraphics() {
@@ -118,7 +103,7 @@ class WebGlRenderProcessor {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
 
     this.gl.texImage2D(
-      this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.image
+      this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.textureAtlas
     );
 
     this.programInfo = {
@@ -133,10 +118,6 @@ class WebGlRenderProcessor {
   }
 
   process() {
-    if (!this.graphicInit) {
-      return;
-    }
-
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 

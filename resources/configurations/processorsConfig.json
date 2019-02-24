@@ -1,0 +1,27 @@
+{
+  "sections": {
+    "eventProcessSection": {
+      "processors": [
+        {
+          "name": "inputProcessor"
+        }
+      ]
+    },
+    "gameStateUpdateSection": {
+      "processors": [
+
+      ]
+    },
+    "renderingSection": {
+      "processors": [
+        {
+          "name": "renderProcessor",
+          "resources": {
+            "textureAtlas": "resources/textureAtlas.png",
+            "textureAtlasMap": "resources/textureAtlasMap.json"
+          }
+        }
+      ]
+    }
+  }
+}

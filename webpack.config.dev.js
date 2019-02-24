@@ -60,8 +60,8 @@ module.exports = {
       },
       output: {
         path: paths.build,
-        spriteFilename: 'resources/atlasMap.png',
-        sourceMapFilename: 'resources/atlasMap.json',
+        spriteFilename: 'resources/textureAtlas.png',
+        sourceMapFilename: 'resources/textureAtlasMap.json',
       },
     }),
     new DirWatchWebpackPlugin({

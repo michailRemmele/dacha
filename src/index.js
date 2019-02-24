@@ -11,11 +11,14 @@ import KeyResolver from './game/processors/inputProcessor/keyResolver';
 
 import SceneProvider from './game/scene/sceneProvider';
 
+import ProcessorLoader from './game/processorLoader/processorLoader';
+
 import mainConfig from 'resources/configurations/mainConfig';
 
 import introSceneConfig from 'resources/configurations/scenes/intro';
 import mainMenuSceneConfig from 'resources/configurations/scenes/mainMenu';
 import gameScene from 'resources/configurations/scenes/gameScene';
+import processorsConfig from 'resources/configurations/processorsConfig';
 
 const sceneConfigList = [
   introSceneConfig,
@@ -40,5 +43,26 @@ sceneProvider.setCurrentScene(mainConfig.startScene);
 
 IOC.register(global.SCENE_PROVIDER_KEY_NAME, new ResolveSingletonStrategy(sceneProvider));
 
-const gameLoop = new GameLoop();
-gameLoop.run();
+const processorLoader = new ProcessorLoader();
+const loadableSections = Object.keys(global.SECTIONS).reduce((loadable, key) => {
+  const sectionName = global.SECTIONS[key];
+  const section = processorsConfig.sections[sectionName];
+
+  const loadableProcessors = section.processors.map((processor) => {
+    return processorLoader.load(processor.name, processor.resources);
+  });
+
+  loadable.push(Promise.all(loadableProcessors)
+    .then((processors) => {
+      IOC.register(sectionName, new ResolveSingletonStrategy(processors));
+    })
+  );
+
+  return loadable;
+}, []);
+
+Promise.all(loadableSections)
+  .then(() => {
+    const gameLoop = new GameLoop();
+    gameLoop.run();
+  });
