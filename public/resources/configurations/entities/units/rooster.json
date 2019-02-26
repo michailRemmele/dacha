@@ -1,12 +1,12 @@
 {
-  "name": "chicken",
+  "name": "rooster",
   "type": "unit",
   "components": [
     {
       "name": "renderable",
       "config": {
         "type": "sprite",
-        "fileName": "units/chicken.png",
+        "src": "units/rooster",
         "size": {
           "width": 45,
           "height": 50

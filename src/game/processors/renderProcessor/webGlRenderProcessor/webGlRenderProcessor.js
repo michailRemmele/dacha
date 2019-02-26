@@ -2,6 +2,7 @@ import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import webglUtils from 'vendor/webgl-utils';
 
 const RENDER_COMPONENTS_NUMBER = 2;
+const RENDER_SCALE = 5;
 
 class WebGlRenderProcessor {
   constructor(resources) {
@@ -9,22 +10,19 @@ class WebGlRenderProcessor {
     this.textureAtlasMap = resources.textureAtlasMap;
 
     this.canvas = document.getElementById('root');
-    this.gl = this.initGraphicContext(this.canvas);
 
-    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    this.gl.enable(this.gl.DEPTH_TEST);
-    this.gl.depthFunc(this.gl.LEQUAL);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-    this.program = this.initShaders();
-    this.initGraphics();
+    this.gl = this._initGraphicContext();
+    this._initScreen();
+    this.program = this._initShaders();
+    this._initGraphics();
   }
 
-  initGraphicContext(canvas) {
+  _initGraphicContext() {
     let graphicContext = null;
 
     try {
-      graphicContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      graphicContext =
+        this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
     } catch (e) {
       console.log('Unable to get graphic context.');
     }
@@ -36,7 +34,14 @@ class WebGlRenderProcessor {
     return graphicContext;
   }
 
-  initShaders() {
+  _initScreen() {
+    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.depthFunc(this.gl.LEQUAL);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+
+  _initShaders() {
     const shaderBuilder = new ShaderBuilder(this.gl);
 
     const vertexShader = shaderBuilder.create(shaderBuilder.VERTEX_SHADER);
@@ -55,7 +60,7 @@ class WebGlRenderProcessor {
     return shaderProgram;
   }
 
-  initGraphics() {
+  _initGraphics() {
     this.gl.useProgram(this.program);
 
     const getRectangle = (x, y, width, height) => {
@@ -126,7 +131,7 @@ class WebGlRenderProcessor {
 
     const uniforms = {
       u_resolution: [ this.gl.canvas.width, this.gl.canvas.height ],
-      u_scale: [ 5, 5 ],
+      u_scale: [ RENDER_SCALE, RENDER_SCALE ],
     };
 
     const uniformsInfo = this.programInfo.uniforms;

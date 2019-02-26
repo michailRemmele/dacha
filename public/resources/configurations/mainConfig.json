@@ -1,0 +1,22 @@
+{
+  "scenes": [
+    {
+      "src": "scenes/intro.json"
+    },
+    {
+      "src": "scenes/mainMenu.json"
+    },
+    {
+      "src": "scenes/gameScene.json"
+    }
+  ],
+  "entities": [
+    {
+      "src": "entities/terrain/floor.json"
+    },
+    {
+      "src": "entities/units/rooster.json"
+    }
+  ],
+  "startScene": "game-scene"
+}

@@ -57,7 +57,7 @@ module.exports = {
       {
         from: paths.public,
         to: paths.build,
-        ignore: [ paths.indexHtml ],
+        ignore: [ paths.indexHtml, paths.graphicResources ],
       },
     ]),
     new SpriteSmithWebpackPlugin({

@@ -1,10 +1,11 @@
 import processors from 'game/processors';
 
-import ResourceLoader from './resourceLoader/resourceLoader';
+import { RESOURCES_LOADER_KEY_NAME } from 'consts/global';
+import IOC from 'core/ioc/ioc';
 
 class ProcessorLoader {
   constructor() {
-    this.resourceLoader = new ResourceLoader();
+    this.resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
   }
 
 

@@ -65,7 +65,7 @@ module.exports = {
       },
     }),
     new DirWatchWebpackPlugin({
-      path: paths.graphicResources,
+      path: paths.resources,
     }),
   ],
 
