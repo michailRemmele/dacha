@@ -1,3 +1,6 @@
+import IOC from 'core/ioc/ioc';
+import { WINDOW_KEY_NAME } from 'consts/global';
+
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import webglUtils from 'vendor/webgl-utils';
 
@@ -9,7 +12,7 @@ class WebGlRenderProcessor {
     this.textureAtlas = resources.textureAtlas;
     this.textureAtlasMap = resources.textureAtlasMap;
 
-    this.canvas = document.getElementById('root');
+    this.canvas = IOC.resolve(WINDOW_KEY_NAME);
 
     this.gl = this._initGraphicContext();
     this._initScreen();

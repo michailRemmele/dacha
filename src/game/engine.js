@@ -16,7 +16,9 @@ import SceneProvider from 'game/scene/sceneProvider';
 import ProcessorLoader from 'game/processorLoader/processorLoader';
 
 class Engine {
-  constructor() {
+  constructor(options) {
+    this.options = options;
+
     ScopeProvider.createScope(global.GENERAL_SCOPE_NAME);
     ScopeProvider.setCurrentScope(global.GENERAL_SCOPE_NAME);
 
@@ -31,31 +33,52 @@ class Engine {
 
     const keyResolver = new KeyResolver();
     IOC.register(global.KEY_RESOLVER_KEY_NAME, new ResolveSingletonStrategy(keyResolver));
+
+    IOC.register(global.WINDOW_KEY_NAME, new ResolveSingletonStrategy(this.options.window));
+
+    this.processorSections = {
+      eventProcessSection: {
+        processors: [
+          {
+            name: 'inputProcessor',
+          },
+        ],
+      },
+      gameStateUpdateSection: {
+        processors: [],
+      },
+      renderingSection: {
+        processors: [
+          {
+            name: 'renderProcessor',
+            resources: {
+              textureAtlas: this.options.textureAtlas.texture,
+              textureAtlasMap: this.options.textureAtlas.descriptor,
+            },
+          },
+        ],
+      },
+    };
   }
 
   async start() {
     const resourceLoader = IOC.resolve(global.RESOURCES_LOADER_KEY_NAME);
     const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
 
-    const mainConfigPath = `${global.CONFIG_PATH}/${global.MAIN_CONFIG_SRC}`;
-    const processorsConfigPath = `${global.CONFIG_PATH}/${global.PROCESSORS_CONFIG_SRC}`;
-
-    const mainConfig = await resourceLoader.load(mainConfigPath);
+    const mainConfig = await resourceLoader.load(this.options.mainConfig);
 
     await Promise.all(mainConfig.scenes.map((scene) => {
-      return resourceLoader.load(`${global.CONFIG_PATH}/${scene.src}`)
+      return resourceLoader.load(scene.src)
         .then((sceneConfig) => {
           sceneProvider.createScene(sceneConfig);
         });
     }));
     sceneProvider.setCurrentScene(mainConfig.startScene);
 
-    const processorsConfig = await resourceLoader.load(processorsConfigPath);
-
     const processorLoader = new ProcessorLoader();
     const loadableSections = Object.keys(global.SECTIONS).reduce((loadable, key) => {
       const sectionName = global.SECTIONS[key];
-      const section = processorsConfig.sections[sectionName];
+      const section = this.processorSections[sectionName];
 
       const loadableProcessors = section.processors.map((processor) => {
         return processorLoader.load(processor.name, processor.resources);

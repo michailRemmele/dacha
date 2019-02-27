@@ -1,21 +1,21 @@
 {
   "scenes": [
     {
-      "src": "scenes/intro.json"
+      "src": "resources/configurations/scenes/intro.json"
     },
     {
-      "src": "scenes/mainMenu.json"
+      "src": "resources/configurations/scenes/mainMenu.json"
     },
     {
-      "src": "scenes/gameScene.json"
+      "src": "resources/configurations/scenes/gameScene.json"
     }
   ],
   "entities": [
     {
-      "src": "entities/terrain/floor.json"
+      "src": "resources/configurations/entities/terrain/floor.json"
     },
     {
-      "src": "entities/units/rooster.json"
+      "src": "resources/configurations/entities/units/rooster.json"
     }
   ],
   "startScene": "game-scene"
