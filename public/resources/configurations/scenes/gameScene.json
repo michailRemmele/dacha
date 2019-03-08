@@ -2,15 +2,49 @@
   "name": "game-scene",
   "actionList": [
   ],
-  "gameObjectList": [
-    {
-      "name": "floor",
-      "coordinates": {
-        "x": 100,
-        "y": 100
+  "map": {
+    "terrain": [
+      {
+        "name": "floor",
+        "coordinates": [0,0]
+      },
+      {
+        "name": "floor",
+        "coordinates": [10,0]
+      },
+      {
+        "name": "floor",
+        "coordinates": [20,0]
+      },
+      {
+        "name": "floor",
+        "coordinates": [0,10]
+      },
+      {
+        "name": "floor",
+        "coordinates": [10,10]
+      },
+      {
+        "name": "floor",
+        "coordinates": [20,10]
+      },
+      {
+        "name": "floor",
+        "coordinates": [0,20]
+      },
+      {
+        "name": "floor",
+        "coordinates": [10,20]
+      },
+      {
+        "name": "floor",
+        "coordinates": [20,20]
       }
+    ],
+    "units": {
+
     }
-  ],
+  },
   "background": {
     "color": "#000"
   }

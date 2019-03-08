@@ -10,12 +10,12 @@
       "src": "resources/configurations/scenes/gameScene.json"
     }
   ],
-  "entities": [
+  "prefabs": [
     {
-      "src": "resources/configurations/entities/terrain/floor.json"
+      "src": "resources/configurations/prefabs/terrain/floor.json"
     },
     {
-      "src": "resources/configurations/entities/units/rooster.json"
+      "src": "resources/configurations/prefabs/units/rooster.json"
     }
   ],
   "startScene": "game-scene"

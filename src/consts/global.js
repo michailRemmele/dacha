@@ -3,6 +3,7 @@ export const SCENE_PROVIDER_KEY_NAME = 'sceneProvider';
 export const ACTION_RESOLVER_KEY_NAME = 'actionResolver';
 export const KEY_RESOLVER_KEY_NAME = 'keyResolver';
 export const RESOURCES_LOADER_KEY_NAME = 'resourcesLoader';
+export const GAME_OBJECT_CREATOR_KEY_NAME = 'gameObjectCreator';
 export const WINDOW_KEY_NAME = 'window';
 
 export const SECTIONS = {
