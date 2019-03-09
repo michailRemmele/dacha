@@ -80,6 +80,13 @@ class Engine {
 
     const mainConfig = await resourceLoader.load(this.options.mainConfig);
 
+    await Promise.all(mainConfig.prefabs.map((prefab) => {
+      return resourceLoader.load(prefab.src)
+        .then((prefabConfig) => {
+          gameObjectCreator.register(prefabConfig);
+        });
+    }));
+
     await Promise.all(mainConfig.scenes.map((scene) => {
       return resourceLoader.load(scene.src)
         .then((sceneConfig) => {
@@ -87,13 +94,6 @@ class Engine {
         });
     }));
     sceneProvider.setCurrentScene(mainConfig.startScene);
-
-    await Promise.all(mainConfig.prefabs.map((prefab) => {
-      return resourceLoader.load(prefab.src)
-        .then((prefabConfig) => {
-          gameObjectCreator.register(prefabConfig);
-        });
-    }));
 
     const processorLoader = new ProcessorLoader();
     const loadableSections = Object.keys(global.SECTIONS).reduce((loadable, key) => {

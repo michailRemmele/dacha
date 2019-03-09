@@ -7,10 +7,8 @@
       "config": {
         "type": "sprite",
         "src": "units/rooster",
-        "size": {
-          "width": 45,
-          "height": 50
-        },
+        "width": 45,
+        "height": 50,
         "slice": {
           "width": 45,
           "height": 50,

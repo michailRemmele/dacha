@@ -1,27 +1,27 @@
 class GameObject {
   constructor(id) {
-    this.id = id;
-    this.components = {};
+    this._id = id;
+    this._components = {};
   }
 
   getId() {
-    return this.id;
+    return this._id;
   }
 
-  setComponent(component) {
-    this.components[component.name] = component;
+  setComponent(name, component) {
+    this._components[name] = component;
   }
 
   getComponent(name) {
-    if (!this.components[name]) {
+    if (!this._components[name]) {
       throw new Error(`Can't find component with the following name: ${name}`);
     }
 
-    return this.components[name];
+    return this._components[name];
   }
 
   removeComponent(name) {
-    this.components[name] = undefined;
+    this._components[name] = undefined;
   }
 }
 

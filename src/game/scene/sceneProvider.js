@@ -12,14 +12,36 @@ class SceneProvider {
   }
 
   createScene(config) {
-    this.sceneContainer[config.name] = new Scene(config);
+    const {
+      ACTION_RESOLVER_KEY_NAME,
+      KEY_RESOLVER_KEY_NAME,
+      GAME_OBJECT_CREATOR_KEY_NAME,
+    } = global;
 
-    const actionResolver = IOC.resolve(global.ACTION_RESOLVER_KEY_NAME);
-    const keyResolver = IOC.resolve(global.KEY_RESOLVER_KEY_NAME);
+    const gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
+    const actionResolver = IOC.resolve(ACTION_RESOLVER_KEY_NAME);
+    const keyResolver = IOC.resolve(KEY_RESOLVER_KEY_NAME);
+
+    const scene = new Scene({
+      name: config.name,
+      width: config.map.width,
+      height: config.map.height,
+    });
+
+    config.gameObjects.forEach((gameObject) => {
+      scene.addGameObject(gameObjectCreator.create(gameObject.name, gameObject.id));
+    });
+
+    config.map.content.forEach((gameObject) => {
+      scene.placeGameObject(gameObject.coordinates[0], gameObject.coordinates[1], gameObject.id);
+    });
+
     config.actionList.forEach((actionInfo) => {
       actionResolver.register(actionInfo.name);
       keyResolver.register(config.name, actionInfo);
     });
+
+    this.sceneContainer[config.name] = scene;
   }
 
   removeScene(name) {

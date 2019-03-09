@@ -2,6 +2,12 @@
   "name": "main-menu-scene",
   "actionList": [
   ],
-  "gameObjectList": [
-  ]
+  "gameObjects": [
+  ],
+  "map": {
+    "width": 100,
+    "height": 100,
+    "content": [
+    ]
+  }
 }

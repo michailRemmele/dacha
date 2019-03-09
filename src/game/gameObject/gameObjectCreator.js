@@ -1,3 +1,5 @@
+import uuid from 'uuid/v4';
+
 import Prefab from 'game/prefab/prefab';
 
 class GameObjectCreator {
@@ -9,12 +11,14 @@ class GameObjectCreator {
     this._storage[options.name] = new Prefab(options);
   }
 
-  create(name) {
+  create(name, id) {
     if (!this._storage[name]) {
       throw new Error(`Can't create game object with same name: ${name}`);
     }
 
-    return this._storage[name].createGameObject();
+    id = id ? id : uuid();
+
+    return this._storage[name].createGameObject(id);
   }
 }
 

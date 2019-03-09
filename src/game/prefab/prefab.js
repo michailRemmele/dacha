@@ -1,5 +1,3 @@
-import uuid from 'uuid/v4';
-
 import GameObject from 'game/gameObject/gameObject';
 import components from 'game/components';
 
@@ -20,14 +18,12 @@ class Prefab {
     return this.components[name];
   }
 
-  createGameObject() {
-    const gameObject = new GameObject(uuid());
+  createGameObject(id) {
+    const gameObject = new GameObject(id);
 
-    const clonedComponents = Object.keys(this.components).map((name) => {
-      return this.components[name].clone();
-    });
-    clonedComponents.forEach((component) => {
-      gameObject.setComponent(component);
+    Object.keys(this.components).forEach((name) => {
+      const component = this.components[name].clone();
+      gameObject.setComponent(name, component);
     });
 
     return gameObject;

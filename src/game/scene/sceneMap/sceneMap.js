@@ -1,6 +1,6 @@
 import SortedMap from 'core/sortedMap/sortedMap';
 
-class WorldMap {
+class SceneMap {
   constructor(sizeX, sizeY) {
     this.sizeX = sizeX;
     this.sizeY = sizeY;
@@ -11,18 +11,18 @@ class WorldMap {
     }
   }
 
-  set(x, y, item) {
+  insertValue(x, y, value) {
     if (x >= this.sizeX || y >= this.sizeY) {
       throw new Error('Invalid coordinates');
     }
 
     const mapRow = this.map.get(y);
-    const items = mapRow.get(x) || [];
-    items.push(item);
-    mapRow.set(x, items);
+    const cell = mapRow.get(x) || [];
+    cell.push(value);
+    mapRow.set(x, cell);
   }
 
-  get(x, y) {
+  getCell(x, y) {
     if (x >= this.sizeX || y >= this.sizeY) {
       throw new Error('Invalid coordinates');
     }
@@ -30,7 +30,17 @@ class WorldMap {
     return this.map.get(y).get(x);
   }
 
-  clear(x, y) {
+  removeValue(x, y, value) {
+    if (x >= this.sizeX || y >= this.sizeY) {
+      throw new Error('Invalid coordinates');
+    }
+
+    const mapRow = this.map.get(y);
+    const cell = mapRow.get(x) || [];
+    mapRow.set(x, cell.filter((cellValue) => cellValue !== value));
+  }
+
+  clearCell(x, y) {
     if (x >= this.sizeX || y >= this.sizeY) {
       throw new Error('Invalid coordinates');
     }
@@ -38,11 +48,15 @@ class WorldMap {
     this.map.get(y).remove(x);
   }
 
-  forEach(callbackFn) {
-    this.map.forEach((mapRow) => {
-      mapRow.forEach(callbackFn);
+  forEachValue(callbackFn) {
+    this.map.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        cell.forEach((value) => {
+          callbackFn(value, x, y);
+        });
+      });
     });
   }
 }
 
-export default WorldMap;
+export default SceneMap;

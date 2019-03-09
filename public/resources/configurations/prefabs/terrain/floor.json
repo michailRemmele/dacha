@@ -7,10 +7,8 @@
       "config": {
         "type": "static",
         "src": "terrain/platform",
-        "size": {
-          "width": 32,
-          "height": 32
-        }
+        "width": 32,
+        "height": 32
       }
     }
   ]

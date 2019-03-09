@@ -2,48 +2,85 @@
   "name": "game-scene",
   "actionList": [
   ],
+  "gameObjects": [
+    {
+      "id": "0",
+      "name": "floor"
+    },
+    {
+      "id": "1",
+      "name": "floor"
+    },
+    {
+      "id": "2",
+      "name": "floor"
+    },
+    {
+      "id": "3",
+      "name": "floor"
+    },
+    {
+      "id": "4",
+      "name": "floor"
+    },
+    {
+      "id": "5",
+      "name": "floor"
+    },
+    {
+      "id": "6",
+      "name": "floor"
+    },
+    {
+      "id": "7",
+      "name": "floor"
+    },
+    {
+      "id": "8",
+      "name": "floor"
+    }
+  ],
   "map": {
-    "terrain": [
+    "width": 100,
+    "height": 100,
+    "content": [
       {
-        "name": "floor",
+        "id": "0",
         "coordinates": [0,0]
       },
       {
-        "name": "floor",
-        "coordinates": [10,0]
+        "id": "1",
+        "coordinates": [32,0]
       },
       {
-        "name": "floor",
-        "coordinates": [20,0]
+        "id": "2",
+        "coordinates": [64,0]
       },
       {
-        "name": "floor",
-        "coordinates": [0,10]
+        "id": "3",
+        "coordinates": [0,32]
       },
       {
-        "name": "floor",
-        "coordinates": [10,10]
+        "id": "4",
+        "coordinates": [32,32]
       },
       {
-        "name": "floor",
-        "coordinates": [20,10]
+        "id": "5",
+        "coordinates": [64,32]
       },
       {
-        "name": "floor",
-        "coordinates": [0,20]
+        "id": "6",
+        "coordinates": [0,64]
       },
       {
-        "name": "floor",
-        "coordinates": [10,20]
+        "id": "7",
+        "coordinates": [32,64]
       },
       {
-        "name": "floor",
-        "coordinates": [20,20]
+        "id": "8",
+        "coordinates": [64,64]
       }
-    ],
-    "units": {
-
-    }
+    ]
   },
   "background": {
     "color": "#000"

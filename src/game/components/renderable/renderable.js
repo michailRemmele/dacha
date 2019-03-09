@@ -1,8 +1,8 @@
 class Renderable {
   constructor(config) {
     this._src = config.src;
-    this._width = config.size.width;
-    this._height = config.size.height;
+    this._width = config.width;
+    this._height = config.height;
   }
 
   set src(src) {
