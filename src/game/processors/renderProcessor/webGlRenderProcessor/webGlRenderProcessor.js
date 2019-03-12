@@ -1,4 +1,5 @@
 import IOC from 'core/ioc/ioc';
+import Rectangle from 'core/geometry/shapes/rectangle';
 import * as global from 'consts/global';
 
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
@@ -24,7 +25,8 @@ class WebGlRenderProcessor {
     this.gl = this._initGraphicContext();
     this._initScreen();
     this.program = this._initShaders();
-    this._initGraphics();
+    this._initProgramInfo();
+    this._initTextures();
   }
 
   _initGraphicContext() {
@@ -34,11 +36,11 @@ class WebGlRenderProcessor {
       graphicContext =
         this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
     } catch (e) {
-      console.log('Unable to get graphic context.');
+      throw new Error('Unable to get graphic context.');
     }
 
     if (!graphicContext) {
-      console.log('Unable to initialize WebGL. Your browser may not support it.');
+      throw new Error('Unable to initialize WebGL. Your browser may not support it.');
     }
 
     return graphicContext;
@@ -64,18 +66,26 @@ class WebGlRenderProcessor {
     this.gl.linkProgram(shaderProgram);
 
     if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
-      console.log('Unable to initialize the shader program.');
+      throw new Error('Unable to initialize the shader program.');
     }
 
     return shaderProgram;
   }
 
-  _initGraphics() {
+  _initProgramInfo() {
     this.gl.useProgram(this.program);
 
-    const uniformSetters = webglUtils.createUniformSetters(this.gl, this.program);
-    const attribSetters = webglUtils.createAttributeSetters(this.gl, this.program);
+    this.programInfo = {
+      attribs: {
+        setters: webglUtils.createAttributeSetters(this.gl, this.program),
+      },
+      uniforms: {
+        setters: webglUtils.createUniformSetters(this.gl, this.program),
+      },
+    };
+  }
 
+  _initTextures() {
     const texture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
@@ -86,30 +96,6 @@ class WebGlRenderProcessor {
     this.gl.texImage2D(
       this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.textureAtlas
     );
-
-    this.programInfo = {
-      attribs: {
-        setters: attribSetters,
-      },
-      uniforms: {
-        setters: uniformSetters,
-      },
-    };
-  }
-
-  _getRectangle(x, y, width, height) {
-    const x1 = x;
-    const x2 = x + width;
-    const y1 = y;
-    const y2 = y + height;
-    return [
-      x1, y1,
-      x2, y1,
-      x1, y2,
-      x1, y2,
-      x2, y1,
-      x2, y2,
-    ];
   }
 
   process() {
@@ -119,33 +105,30 @@ class WebGlRenderProcessor {
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
-    const attribsInfo = this.programInfo.attribs;
-    const uniformsInfo = this.programInfo.uniforms;
-
     currentScene.forEachPlacedGameObject((gameObject, x, y) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_KEY_NAME);
       const texture = this.textureAtlasMap[renderable.src];
 
       const attribs = {
         position: {
-          data: this._getRectangle(x, y, renderable.width, renderable.height),
+          data: new Rectangle(x, y, renderable.width, renderable.height).toArray(),
           numComponents: RENDER_COMPONENTS_NUMBER,
         },
         texCoord: {
-          data: this._getRectangle(texture.x, texture.y, texture.width, texture.height),
+          data: new Rectangle(texture.x, texture.y, texture.width, texture.height).toArray(),
           numComponents: RENDER_COMPONENTS_NUMBER,
         },
       };
       const bufferInfo = webglUtils.createBufferInfoFromArrays(this.gl, attribs);
 
-      webglUtils.setBuffersAndAttributes(this.gl, attribsInfo.setters, bufferInfo);
+      webglUtils.setBuffersAndAttributes(this.gl, this.programInfo.attribs.setters, bufferInfo);
 
       const uniforms = {
         u_resolution: [ this.gl.canvas.width, this.gl.canvas.height ],
         u_scale: [ RENDER_SCALE, RENDER_SCALE ],
         u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
       };
-      webglUtils.setUniforms(uniformsInfo.setters, uniforms);
+      webglUtils.setUniforms(this.programInfo.uniforms.setters, uniforms);
 
       this.gl.drawArrays(this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
     });
