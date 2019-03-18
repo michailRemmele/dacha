@@ -1,11 +1,15 @@
-import Engine from './game/engine';
+import Engine from './engine/engine';
+
+import contribProcessorsPlugins from 'contrib/processorsPlugins';
+import contribComponents from 'contrib/components';
 
 const options = {
   mainConfig: 'resources/configurations/mainConfig.json',
-  window: document.getElementById('root'),
-  textureAtlas: {
-    texture: 'resources/textureAtlas.png',
-    descriptor: 'resources/textureAtlasMap.json',
+  processorsPlugins: {
+    ...contribProcessorsPlugins,
+  },
+  components: {
+    ...contribComponents,
   },
 };
 

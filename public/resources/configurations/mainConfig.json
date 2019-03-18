@@ -18,5 +18,5 @@
       "src": "resources/configurations/prefabs/units/rooster.json"
     }
   ],
-  "startScene": "game-scene"
+  "startScene": "intro-scene"
 }

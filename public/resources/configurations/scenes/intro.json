@@ -1,14 +1,5 @@
 {
   "name": "intro-scene",
-  "actionList": [
-    {
-      "name": "ChangeSceneAction",
-      "args": [
-        "game-scene"
-      ],
-      "key": "F"
-    }
-  ],
   "gameObjects": [
   ],
   "map": {
@@ -16,5 +7,22 @@
     "height": 100,
     "content": [
     ]
-  }
+  },
+  "processors": [
+    {
+      "name": "inputProcessor",
+      "section": "eventProcessSection",
+      "options": {
+        "actionList": [
+          {
+            "src": "resources/scripts/changeSceneAction.js",
+            "args": [
+              "game-scene"
+            ],
+            "key": "F"
+          }
+        ]
+      }
+    }
+  ]
 }

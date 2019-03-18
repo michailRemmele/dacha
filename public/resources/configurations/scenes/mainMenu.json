@@ -1,7 +1,5 @@
 {
   "name": "main-menu-scene",
-  "actionList": [
-  ],
   "gameObjects": [
   ],
   "map": {
@@ -9,5 +7,15 @@
     "height": 100,
     "content": [
     ]
-  }
+  },
+  "processors": [
+    {
+      "name": "inputProcessor",
+      "section": "eventProcessSection",
+      "options": {
+        "actionList": [
+        ]
+      }
+    }
+  ]
 }

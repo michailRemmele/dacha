@@ -1,7 +1,5 @@
 {
   "name": "game-scene",
-  "actionList": [
-  ],
   "gameObjects": [
     {
       "id": "0",
@@ -84,5 +82,24 @@
   },
   "background": {
     "color": "#000"
-  }
+  },
+  "processors": [
+    {
+      "name": "inputProcessor",
+      "section": "eventProcessSection",
+      "options": {
+        "actionList": [
+        ]
+      }
+    },
+    {
+      "name": "renderProcessor",
+      "section": "renderingSection",
+      "options": {
+        "windowNodeId": "root",
+        "textureAtlas": "resources/textureAtlas.png",
+        "textureAtlasDescriptor": "resources/textureAtlasMap.json"
+      }
+    }
+  ]
 }
