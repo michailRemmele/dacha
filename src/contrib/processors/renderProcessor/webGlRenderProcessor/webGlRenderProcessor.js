@@ -1,3 +1,4 @@
+import Processor from 'engine/processor/processor';
 import IOC from 'engine/ioc/ioc';
 import Rectangle from './geometry/shapes/rectangle';
 import * as global from 'engine/consts/global';
@@ -11,8 +12,9 @@ const RENDER_SCALE = 5;
 const DRAW_OFFSET = 0;
 const DRAW_COUNT = 6;
 
-class WebGlRenderProcessor {
+class WebGlRenderProcessor extends Processor {
   constructor(window, textureAtlas, textureAtlasDescriptor) {
+    super();
     this.textureAtlas = textureAtlas;
     this.textureAtlasSize = {
       width: this.textureAtlas.width,
@@ -22,11 +24,40 @@ class WebGlRenderProcessor {
 
     this.canvas = window;
 
+    this.shaders = [];
+  }
+
+  processorDidMount() {
     this.gl = this._initGraphicContext();
     this._initScreen();
     this.program = this._initShaders();
     this._initProgramInfo();
-    this._initTextures();
+    this.textures = this._initTextures();
+
+    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
+    const currentScene = sceneProvider.getCurrentScene();
+    this.name = currentScene.getName();
+  }
+
+  processorWillUnmount() {
+    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
+    const currentScene = sceneProvider.getCurrentScene();
+
+    this.shaders.forEach((shader) => {
+      this.gl.detachShader(this.program, shader);
+      this.gl.deleteShader(shader);
+    });
+    this.gl.deleteProgram(this.program);
+    this.gl.deleteTexture(this.textures);
+
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+    this.shaders = [];
+    this.program = null;
+    this.textures = null;
+    this.gl = null;
+
+    console.log('UNMOUNT');
   }
 
   _initGraphicContext() {
@@ -69,6 +100,8 @@ class WebGlRenderProcessor {
       throw new Error('Unable to initialize the shader program.');
     }
 
+    this.shaders.push(vertexShader, fragmentShader);
+
     return shaderProgram;
   }
 
@@ -96,11 +129,15 @@ class WebGlRenderProcessor {
     this.gl.texImage2D(
       this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.textureAtlas
     );
+
+    return texture;
   }
 
   process() {
     const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
     const currentScene = sceneProvider.getCurrentScene();
+
+    console.log(this.name);
 
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);

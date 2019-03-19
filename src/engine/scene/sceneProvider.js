@@ -40,7 +40,8 @@ class SceneProvider {
     await Promise.all(config.processors.map((processorInfo) => {
       return this._processorsPlugins[processorInfo.name].load(processorInfo.options)
         .then((processor) => {
-          scene.mountProcessor(processor, processorInfo.section);
+          console.log(processor);
+          scene.addProcessor(processor, processorInfo.section);
         });
     }));
 
@@ -56,7 +57,13 @@ class SceneProvider {
       throw new Error(`Error while setting new scene. Not found scene with same name: ${name}`);
     }
 
+    if (this._sceneContainer[this._currentSceneName]) {
+      this._sceneContainer[this._currentSceneName].unmount();
+    }
+
     this._currentSceneName = name;
+
+    this._sceneContainer[this._currentSceneName].mount();
 
     this._sceneChangeSubscribers.forEach((callback) => {
       callback(this._sceneContainer[this._currentSceneName]);

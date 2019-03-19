@@ -1,11 +1,19 @@
 {
   "name": "intro-scene",
   "gameObjects": [
+    {
+      "id": "0",
+      "name": "rooster"
+    }
   ],
   "map": {
     "width": 100,
     "height": 100,
     "content": [
+      {
+        "id": "0",
+        "coordinates": [0,0]
+      }
     ]
   },
   "processors": [
@@ -22,6 +30,15 @@
             "key": "F"
           }
         ]
+      }
+    },
+    {
+      "name": "renderProcessor",
+      "section": "renderingSection",
+      "options": {
+        "windowNodeId": "root",
+        "textureAtlas": "resources/textureAtlas.png",
+        "textureAtlasDescriptor": "resources/textureAtlasMap.json"
       }
     }
   ]

@@ -18,7 +18,23 @@ class Scene {
     };
   }
 
-  mountProcessor(proccessor, section) {
+  mount() {
+    Object.keys(this._processorsSections).forEach((section) => {
+      this._processorsSections[section].forEach((processor) => {
+        processor.processorDidMount();
+      });
+    });
+  }
+
+  unmount() {
+    Object.keys(this._processorsSections).forEach((section) => {
+      this._processorsSections[section].forEach((processor) => {
+        processor.processorWillUnmount();
+      });
+    });
+  }
+
+  addProcessor(proccessor, section) {
     this._processorsSections[section].push(proccessor);
   }
 

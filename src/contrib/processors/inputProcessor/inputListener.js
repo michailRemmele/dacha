@@ -16,11 +16,6 @@ class InputListener {
     this.window.onkeydown = null;
   }
 
-  reloadListen(keys) {
-    this.stopListen();
-    this.startListen(keys);
-  }
-
   getQueue() {
     return this.queue;
   }
