@@ -1,7 +1,8 @@
-const MS_PER_UPDATE = 1000 / 60;
+import IOC from './ioc/ioc';
+import MessageBus from './messageBus/messageBus';
 
 import { SCENE_PROVIDER_KEY_NAME, SECTIONS } from 'engine/consts/global';
-import IOC from './ioc/ioc';
+const MS_PER_UPDATE = 1000 / 60;
 
 class GameLoop {
   constructor() {
@@ -10,11 +11,17 @@ class GameLoop {
     this.gameLoopId = null;
 
     this.sceneProvider = IOC.resolve(SCENE_PROVIDER_KEY_NAME);
+    this.messageBus = new MessageBus();
   }
 
-  _processSection(section, params) {
+  _processSection(section, options) {
+    options = {
+      ...(options ? options : {}),
+      messageBus: this.messageBus,
+    };
+
     section.forEach((processor) => {
-      processor.process(params);
+      processor.process(options);
     });
   }
 
@@ -22,13 +29,13 @@ class GameLoop {
     let that = this;
     this.gameLoopId = requestAnimationFrame(function tick(current) {
       const currentScene = that.sceneProvider.getCurrentScene();
-      const eventProcessSection = currentScene.getProcessorsSection(
+      const eventProcessSection = currentScene.getProcessorSection(
         SECTIONS.EVENT_PROCESS_SECTION_NAME
       );
-      const gameStateUpdateSection = currentScene.getProcessorsSection(
+      const gameStateUpdateSection = currentScene.getProcessorSection(
         SECTIONS.EVENT_PROCESS_SECTION_NAME
       );
-      const renderingSection = currentScene.getProcessorsSection(
+      const renderingSection = currentScene.getProcessorSection(
         SECTIONS.RENDERING_SECTION_NAME
       );
 
@@ -43,7 +50,9 @@ class GameLoop {
         that.lag -= MS_PER_UPDATE;
       }
 
-      that._processSection(renderingSection, that.lag / MS_PER_UPDATE);
+      that._processSection(renderingSection, { step: that.lag / MS_PER_UPDATE });
+
+      that.messageBus.clear();
       that.gameLoopId = requestAnimationFrame(tick);
     });
   }

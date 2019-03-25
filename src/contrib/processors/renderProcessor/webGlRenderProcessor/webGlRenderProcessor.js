@@ -33,16 +33,9 @@ class WebGlRenderProcessor extends Processor {
     this.program = this._initShaders();
     this._initProgramInfo();
     this.textures = this._initTextures();
-
-    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
-    const currentScene = sceneProvider.getCurrentScene();
-    this.name = currentScene.getName();
   }
 
   processorWillUnmount() {
-    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
-    const currentScene = sceneProvider.getCurrentScene();
-
     this.shaders.forEach((shader) => {
       this.gl.detachShader(this.program, shader);
       this.gl.deleteShader(shader);
@@ -56,8 +49,6 @@ class WebGlRenderProcessor extends Processor {
     this.program = null;
     this.textures = null;
     this.gl = null;
-
-    console.log('UNMOUNT');
   }
 
   _initGraphicContext() {
@@ -136,8 +127,6 @@ class WebGlRenderProcessor extends Processor {
   process() {
     const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
     const currentScene = sceneProvider.getCurrentScene();
-
-    console.log(this.name);
 
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);

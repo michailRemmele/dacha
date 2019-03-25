@@ -13,8 +13,8 @@
       "name": "inputProcessor",
       "section": "eventProcessSection",
       "options": {
-        "actionList": [
-        ]
+        "keyBindings": {
+        }
       }
     }
   ]

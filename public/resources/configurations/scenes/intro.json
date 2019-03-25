@@ -21,15 +21,9 @@
       "name": "inputProcessor",
       "section": "eventProcessSection",
       "options": {
-        "actionList": [
-          {
-            "src": "resources/scripts/changeSceneAction.js",
-            "args": [
-              "game-scene"
-            ],
-            "key": "F"
-          }
-        ]
+        "keyBindings": {
+          "F": "START_GAME"
+        }
       }
     },
     {

@@ -1,47 +1,38 @@
 import Processor from 'engine/processor/processor';
-import IOC from 'engine/ioc/ioc';
-import * as global from 'engine/consts/global';
 
 import InputListener from './inputListener';
 import ActionResolver from './actionResolver';
-import KeyResolver from './keyResolver';
 
 class InputProcessor extends Processor {
-  constructor(actions) {
+  constructor(keyBindings) {
     super();
-    this.inputListener = new InputListener(window);
-    this.actionResolver = new ActionResolver();
-    this.keyResolver = new KeyResolver(this.actionResolver);
 
-    actions.forEach((actionInfo) => {
-      const Action = actionInfo.action;
-      const action = new Action();
-      this.actionResolver.register(action);
-      this.keyResolver.register({
-        name: action.getName(),
-        args: [
-          ...actionInfo.args,
-          IOC,
-          global,
-        ],
-        key: actionInfo.key,
-      });
-    });
+    this._keyBindings = keyBindings;
+    this._inputListener = new InputListener(window);
+    this._actionResolver = new ActionResolver(this._keyBindings);
   }
 
   processorDidMount() {
-    this.inputListener.startListen(this.keyResolver.getKeys());
+    this._inputListener.startListen(this._actionResolver.getKeys());
   }
 
   processorWillUnmount() {
-    this.inputListener.stopListen();
+    this._inputListener.stopListen();
   }
 
-  process() {
-    this.inputListener.getQueue().forEach((key) => {
-      this.keyResolver.resolve(key);
+  process(options) {
+    const messageBus = options.messageBus;
+
+    this._inputListener.getQueue().forEach((key) => {
+      const action = this._actionResolver.resolve(key);
+
+      if (action) {
+        messageBus.send({
+          type: action,
+        });
+      }
     });
-    this.inputListener.clearQueue();
+    this._inputListener.clearQueue();
   }
 }
 

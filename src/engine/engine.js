@@ -2,14 +2,12 @@ import ScopeProvider from './scope/scopeProvider';
 import IOC from './ioc/ioc';
 import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
 
+import SceneProvider from './scene/sceneProvider';
 import ResourceLoader from './resourceLoader/resourceLoader';
-
-import * as global from 'engine/consts/global';
-
 import GameObjectCreator from './gameObject/gameObjectCreator';
 import GameLoop from './gameLoop';
 
-import SceneProvider from './scene/sceneProvider';
+import * as global from 'engine/consts/global';
 
 class Engine {
   constructor(options) {

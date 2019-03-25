@@ -40,7 +40,6 @@ class SceneProvider {
     await Promise.all(config.processors.map((processorInfo) => {
       return this._processorsPlugins[processorInfo.name].load(processorInfo.options)
         .then((processor) => {
-          console.log(processor);
           scene.addProcessor(processor, processorInfo.section);
         });
     }));

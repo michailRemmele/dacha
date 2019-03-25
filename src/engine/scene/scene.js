@@ -11,7 +11,7 @@ class Scene {
     this._sceneMap = new SceneMap(width, height);
     this._gameObjectsCoordinates = {};
 
-    this._processorsSections = {
+    this._processorSections = {
       [SECTIONS.EVENT_PROCESS_SECTION_NAME]: [],
       [SECTIONS.GAME_STATE_UPDATE_SECTION_NAME]: [],
       [SECTIONS.RENDERING_SECTION_NAME]: [],
@@ -19,27 +19,27 @@ class Scene {
   }
 
   mount() {
-    Object.keys(this._processorsSections).forEach((section) => {
-      this._processorsSections[section].forEach((processor) => {
+    Object.keys(this._processorSections).forEach((section) => {
+      this._processorSections[section].forEach((processor) => {
         processor.processorDidMount();
       });
     });
   }
 
   unmount() {
-    Object.keys(this._processorsSections).forEach((section) => {
-      this._processorsSections[section].forEach((processor) => {
+    Object.keys(this._processorSections).forEach((section) => {
+      this._processorSections[section].forEach((processor) => {
         processor.processorWillUnmount();
       });
     });
   }
 
   addProcessor(proccessor, section) {
-    this._processorsSections[section].push(proccessor);
+    this._processorSections[section].push(proccessor);
   }
 
-  getProcessorsSection(section) {
-    return this._processorsSections[section];
+  getProcessorSection(section) {
+    return this._processorSections[section];
   }
 
   addGameObject(gameObject) {

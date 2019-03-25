@@ -1,20 +1,38 @@
+import KeyCodeMapper from './keyCodeMapper';
+
 class ActionResolver {
-  constructor() {
-    this.actionMap = {};
+  constructor(keyBindings) {
+    this.keyMap = {};
+    this.keyCodeMapper = new KeyCodeMapper();
+
+    this.keyMap = Object.keys(keyBindings).reduce((storage, key) => {
+      const keyCode = this.keyCodeMapper.getKeyCode(key);
+
+      if (!keyCode) {
+        throw new Error(`Registration of input action failed for key: ${key}`);
+      }
+
+      storage[keyCode] = {
+        key: keyCode,
+        action: keyBindings[key],
+      };
+
+      return storage;
+    }, {});
   }
 
-  register(action) {
-    if (!this.actionMap[name]) {
-      this.actionMap[action.getName()] = action;
+  resolve(key) {
+    if (!this.keyMap[key]) {
+      return;
     }
+
+    return this.keyMap[key].action;
   }
 
-  resolve(name, args) {
-    if (!this.actionMap[name]) {
-      throw new Error(`Error while resolving action. Not found action with same name: ${name}`);
-    }
-
-    this.actionMap[name].execute(args);
+  getKeys() {
+    return Object.values(this.keyMap).map((keyMapItem) => {
+      return keyMapItem.key;
+    });
   }
 }
 
