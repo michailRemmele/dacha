@@ -9,23 +9,19 @@
         "src": "units/rooster",
         "width": 45,
         "height": 50,
-        "slice": {
-          "width": 45,
-          "height": 50,
-          "padding": 0
-        },
-        "animation": {
+        "slice": 15,
+        "frameTags": {
           "idle": {
-            "duration": 150,
-            "frames": [ 0, 1, 2, 3, 4, 5 ]
+            "from": 0,
+            "to": 5
           },
           "run": {
-            "duration": 125,
-            "frames": [ 6, 7, 8, 9 ]
+            "from": 6,
+            "to": 9
           },
           "attack": {
-            "duration": 100,
-            "frames": [ 10, 11, 12, 13, 14 ]
+            "from": 10,
+            "to": 14
           }
         }
       }
