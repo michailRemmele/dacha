@@ -1,44 +1,17 @@
-import ScopeProvider from './core/scope/scopeProvider';
-import IOC from './core/ioc/ioc';
-import ResolveSingletonStrategy from './core/ioc/resolveSingletonStrategy';
+import Engine from './engine/engine';
 
-import * as global from './consts/global';
+import contribProcessorsPlugins from 'contrib/processorsPlugins';
+import contribComponents from 'contrib/components';
 
-import ActionResolver from './game/actionResolver';
-import GameLoop from './game/gameLoop';
+const options = {
+  mainConfig: 'resources/configurations/mainConfig.json',
+  processorsPlugins: {
+    ...contribProcessorsPlugins,
+  },
+  components: {
+    ...contribComponents,
+  },
+};
 
-import KeyResolver from './game/inputSystem/keyResolver';
-
-import SceneProvider from './game/scene/sceneProvider';
-
-import mainConfig from 'resources/mainConfig';
-
-import introSceneConfig from 'resources/scenes/intro';
-import mainMenuSceneConfig from 'resources/scenes/mainMenu';
-import gameScene from 'resources/scenes/gameScene';
-
-const sceneConfigList = [
-  introSceneConfig,
-  mainMenuSceneConfig,
-  gameScene,
-];
-
-const sceneProvider = new SceneProvider();
-ScopeProvider.createScope(global.GENERAL_SCOPE_NAME);
-ScopeProvider.setCurrentScope(global.GENERAL_SCOPE_NAME);
-
-const actionResolver = new ActionResolver();
-IOC.register(global.ACTION_RESOLVER_KEY_NAME, new ResolveSingletonStrategy(actionResolver));
-
-const keyResolver = new KeyResolver();
-IOC.register(global.KEY_RESOLVER_KEY_NAME, new ResolveSingletonStrategy(keyResolver));
-
-sceneConfigList.forEach((sceneConfig) => {
-  sceneProvider.createScene(sceneConfig);
-});
-sceneProvider.setCurrentScene(mainConfig.startScene);
-
-IOC.register(global.SCENE_PROVIDER_KEY_NAME, new ResolveSingletonStrategy(sceneProvider));
-
-const gameLoop = new GameLoop();
-gameLoop.run();
+const engine = new Engine(options);
+engine.start();

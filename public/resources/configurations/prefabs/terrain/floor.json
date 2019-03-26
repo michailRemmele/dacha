@@ -1,0 +1,15 @@
+{
+  "name": "floor",
+  "type": "terrain",
+  "components": [
+    {
+      "name": "renderable",
+      "config": {
+        "type": "static",
+        "src": "terrain/platform",
+        "width": 32,
+        "height": 32
+      }
+    }
+  ]
+}

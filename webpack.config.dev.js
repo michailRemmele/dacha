@@ -5,6 +5,8 @@ process.env.NODE_ENV = 'development';
 const webpack = require('webpack');
 const paths = require('./paths');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const SpriteSmithWebpackPlugin = require('./etc/webpack/plugins/spritesmith-webpack-plugin');
+const DirWatchWebpackPlugin = require('./etc/webpack/plugins/dir-watch-webpack-plugin');
 
 module.exports = {
   mode: 'none',
@@ -50,6 +52,20 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.indexHtml,
+    }),
+    new SpriteSmithWebpackPlugin({
+      input: {
+        path: paths.graphicResources,
+        pattern: '**/*.png',
+      },
+      output: {
+        path: paths.build,
+        spriteFilename: 'resources/textureAtlas.png',
+        sourceMapFilename: 'resources/textureAtlasMap.json',
+      },
+    }),
+    new DirWatchWebpackPlugin({
+      path: paths.resources,
     }),
   ],
 

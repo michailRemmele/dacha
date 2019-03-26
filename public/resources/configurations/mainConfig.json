@@ -1,0 +1,22 @@
+{
+  "scenes": [
+    {
+      "src": "resources/configurations/scenes/intro.json"
+    },
+    {
+      "src": "resources/configurations/scenes/mainMenu.json"
+    },
+    {
+      "src": "resources/configurations/scenes/gameScene.json"
+    }
+  ],
+  "prefabs": [
+    {
+      "src": "resources/configurations/prefabs/terrain/floor.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/units/rooster.json"
+    }
+  ],
+  "startScene": "intro-scene"
+}

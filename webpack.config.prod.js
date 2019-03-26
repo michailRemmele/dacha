@@ -6,10 +6,11 @@ const webpack = require('webpack');
 const paths = require('./paths');
 const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const SpriteSmithWebpackPlugin = require('./etc/webpack/plugins/spritesmith-webpack-plugin');
 
 module.exports = {
   mode: 'none',
@@ -48,7 +49,7 @@ module.exports = {
       inject: true,
       template: paths.indexHtml,
     }),
-    new ExtractTextPlugin({
+    new MiniCssExtractPlugin({
       filename: '[name].[hash].css',
     }),
     new UglifyJsPlugin(),
@@ -56,9 +57,20 @@ module.exports = {
       {
         from: paths.public,
         to: paths.build,
-        ignore: [ paths.indexHtml ],
+        ignore: [ paths.indexHtml, paths.graphicResources ],
       },
     ]),
+    new SpriteSmithWebpackPlugin({
+      input: {
+        path: paths.graphicResources,
+        pattern: '**/*.png',
+      },
+      output: {
+        path: paths.build,
+        spriteFilename: 'resources/textureAtlas.png',
+        sourceMapFilename: 'resources/textureAtlasMap.json',
+      },
+    }),
   ],
 
   module: {
@@ -74,39 +86,28 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: true,
-              },
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: [
-                  autoprefixer({
-                    browsers: [ 'ie >= 8', 'last 4 version' ],
-                  }),
-                ],
-              },
-            },
-            {
-              loader: 'sass-loader',
-            },
-          ],
-          fallback: 'style-loader',
-        }),
-      },
-      {
-        test: /\.json$/,
         use: [
           {
-            loader: 'file-loader',
+            loader: MiniCssExtractPlugin.loader,
+          },
+          {
+            loader: 'css-loader',
             options: {
-              name: 'api/[name].[ext]',
+              minimize: true,
             },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [
+                autoprefixer({
+                  browsers: [ 'ie >= 8', 'last 4 version' ],
+                }),
+              ],
+            },
+          },
+          {
+            loader: 'sass-loader',
           },
         ],
       },

@@ -8,6 +8,7 @@ module.exports = {
   indexHtml: path.join(__dirname, 'public/index.html'),
   indexJs: path.join(__dirname, 'src/index.js'),
   src: path.join(__dirname, 'src'),
-  resources: path.join(__dirname, 'resources'),
+  resources: path.join(__dirname, 'public/resources'),
+  graphicResources: path.join(__dirname, 'public/resources/graphics'),
   nodeModules: path.join(__dirname, 'node_modules'),
 };
