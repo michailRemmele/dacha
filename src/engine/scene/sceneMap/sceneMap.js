@@ -1,58 +1,77 @@
 import SortedMap from './sortedMap';
 
 class SceneMap {
-  constructor(sizeX, sizeY) {
-    this.sizeX = sizeX;
-    this.sizeY = sizeY;
+  constructor(sizeX, sizeY, sortingLayers) {
+    this._sizeX = sizeX;
+    this._sizeY = sizeY;
+    this._sortingLayers = sortingLayers;
 
-    this.map = new SortedMap();
-    for (let i = 0; i < this.sizeY; i++) {
-      this.map.set(i, new SortedMap());
-    }
+    this._map = this._sortingLayers.map(() => {
+      const sortedMap = new SortedMap();
+      for (let i = 0; i < this._sizeY; i++) {
+        sortedMap.set(i, new SortedMap());
+      }
+
+      return sortedMap;
+    });
   }
 
-  insertValue(x, y, value) {
-    if (x >= this.sizeX || y >= this.sizeY) {
+  _getSortLayerOrder(sortingLayer) {
+    return this._sortingLayers.indexOf(sortingLayer);
+  }
+
+  insertValue(x, y, sortingLayer, value) {
+    if (x >= this._sizeX || y >= this._sizeY) {
       throw new Error('Invalid coordinates');
     }
 
-    const mapRow = this.map.get(y);
+    const sortingLayerOrder = this._getSortLayerOrder(sortingLayer);
+
+    const mapRow = this._map[sortingLayerOrder].get(y);
     const cell = mapRow.get(x) || [];
     cell.push(value);
     mapRow.set(x, cell);
   }
 
-  getCell(x, y) {
-    if (x >= this.sizeX || y >= this.sizeY) {
+  getCell(x, y, sortingLayer) {
+    if (x >= this._sizeX || y >= this._sizeY) {
       throw new Error('Invalid coordinates');
     }
 
-    return this.map.get(y).get(x);
+    const sortingLayerOrder = this._getSortLayerOrder(sortingLayer);
+
+    return this._map[sortingLayerOrder].get(y).get(x);
   }
 
-  removeValue(x, y, value) {
-    if (x >= this.sizeX || y >= this.sizeY) {
+  removeValue(x, y, sortingLayer, value) {
+    if (x >= this._sizeX || y >= this._sizeY) {
       throw new Error('Invalid coordinates');
     }
 
-    const mapRow = this.map.get(y);
+    const sortingLayerOrder = this._getSortLayerOrder(sortingLayer);
+
+    const mapRow = this._map[sortingLayerOrder].get(y);
     const cell = mapRow.get(x) || [];
     mapRow.set(x, cell.filter((cellValue) => cellValue !== value));
   }
 
   clearCell(x, y) {
-    if (x >= this.sizeX || y >= this.sizeY) {
+    if (x >= this._sizeX || y >= this._sizeY) {
       throw new Error('Invalid coordinates');
     }
 
-    this.map.get(y).remove(x);
+    this._map.forEach((mapLayer) => {
+      mapLayer.get(y).remove(x);
+    });
   }
 
   forEachValue(callbackFn) {
-    this.map.forEach((row, y) => {
-      row.forEach((cell, x) => {
-        cell.forEach((value) => {
-          callbackFn(value, x, y);
+    this._map.forEach((mapLayer) => {
+      mapLayer.forEach((row, y) => {
+        row.forEach((cell, x) => {
+          cell.forEach((value) => {
+            callbackFn(value, x, y);
+          });
         });
       });
     });

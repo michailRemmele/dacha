@@ -1,11 +1,16 @@
 class GameObject {
-  constructor(id) {
+  constructor(id, sortingLayer) {
     this._id = id;
+    this._sortingLayer = sortingLayer;
     this._components = {};
   }
 
   getId() {
     return this._id;
+  }
+
+  getSortingLayer() {
+    return this._sortingLayer;
   }
 
   setComponent(name, component) {

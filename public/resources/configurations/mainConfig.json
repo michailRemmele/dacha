@@ -1,4 +1,13 @@
 {
+  "projectSettings": {
+    "sortingLayers": [
+      "default",
+      "background",
+      "terrain",
+      "decorations",
+      "units"
+    ]
+  },
   "scenes": [
     {
       "src": "resources/configurations/scenes/intro.json"

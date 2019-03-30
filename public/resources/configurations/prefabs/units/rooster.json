@@ -1,6 +1,6 @@
 {
   "name": "rooster",
-  "type": "unit",
+  "sortingLayer": "units",
   "components": [
     {
       "name": "animatable",
