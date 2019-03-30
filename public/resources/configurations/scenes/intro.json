@@ -27,6 +27,12 @@
       }
     },
     {
+      "name": "animateProcessor",
+      "section": "renderingSection",
+      "options": {
+      }
+    },
+    {
       "name": "renderProcessor",
       "section": "renderingSection",
       "options": {

@@ -46,11 +46,11 @@ class GameLoop {
       that._processSection(eventProcessSection);
 
       while (that.lag >= MS_PER_UPDATE) {
-        that._processSection(gameStateUpdateSection);
+        that._processSection(gameStateUpdateSection, { deltaTime: elapsed });
         that.lag -= MS_PER_UPDATE;
       }
 
-      that._processSection(renderingSection, { step: that.lag / MS_PER_UPDATE });
+      that._processSection(renderingSection, { deltaTime: elapsed });
 
       that.messageBus.clear();
       that.gameLoopId = requestAnimationFrame(tick);

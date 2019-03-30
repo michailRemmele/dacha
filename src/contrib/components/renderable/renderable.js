@@ -5,7 +5,6 @@ class Renderable {
     this._height = config.height;
     this._type = config.type;
     this._slice = config.slice;
-    this._frameTags = config.frameTags;
     this._currentFrame = config.type === 'sprite' ? 0 : undefined;
   }
 
@@ -49,14 +48,6 @@ class Renderable {
     return this._slice;
   }
 
-  set frameTags(frameTags) {
-    this._frameTags = frameTags;
-  }
-
-  get frameTags() {
-    return this._frameTags;
-  }
-
   set currentFrame(currentFrame) {
     this._currentFrame = currentFrame;
   }
@@ -72,12 +63,6 @@ class Renderable {
       height: this.height,
       type: this.type,
       slice: this.slice,
-      frameTags: this.frameTags ? Object.keys(this.frameTags).reduce((storage, key) => {
-        storage[key] = {
-          ...this.frameTags[key],
-        };
-        return storage;
-      }, {}) : undefined,
     });
   }
 }

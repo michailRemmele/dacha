@@ -15,6 +15,10 @@ class RenderProcessor extends Processor {
     this.renderProcessor.processorWillUnmount();
   }
 
+  getComponentList() {
+    return this.renderProcessor.getComponentList();
+  }
+
   process() {
     this.renderProcessor.process();
   }
