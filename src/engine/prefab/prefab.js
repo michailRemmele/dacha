@@ -1,7 +1,8 @@
 import GameObject from 'engine/gameObject/gameObject';
 
 class Prefab {
-  constructor() {
+  constructor(sortingLayer) {
+    this._sortingLayer = sortingLayer;
     this._components = {};
   }
 
@@ -18,7 +19,7 @@ class Prefab {
   }
 
   createGameObject(id) {
-    const gameObject = new GameObject(id);
+    const gameObject = new GameObject(id, this._sortingLayer);
 
     Object.keys(this._components).forEach((name) => {
       const component = this._components[name].clone();

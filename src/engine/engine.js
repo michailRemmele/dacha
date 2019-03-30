@@ -39,6 +39,7 @@ class Engine {
       SCENE_PROVIDER_KEY_NAME,
       RESOURCES_LOADER_KEY_NAME,
       GAME_OBJECT_CREATOR_KEY_NAME,
+      PROJECT_SETTINGS_KEY_NAME,
     } = global;
 
     const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
@@ -46,6 +47,11 @@ class Engine {
     const gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
 
     const mainConfig = await resourceLoader.load(this.options.mainConfig);
+
+    IOC.register(
+      PROJECT_SETTINGS_KEY_NAME,
+      new ResolveSingletonStrategy(mainConfig.projectSettings)
+    );
 
     await Promise.all(mainConfig.prefabs.map((prefab) => {
       return resourceLoader.load(prefab.src)

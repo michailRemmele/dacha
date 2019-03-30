@@ -4,11 +4,11 @@ import SceneMap from './sceneMap/sceneMap';
 
 class Scene {
   constructor(options) {
-    const { name, width, height } = options;
+    const { name, width, height, sortingLayers } = options;
 
     this._name = name;
     this._gameObjects = {};
-    this._sceneMap = new SceneMap(width, height);
+    this._sceneMap = new SceneMap(width, height, sortingLayers);
     this._gameObjectsCoordinates = {};
 
     this._processorSections = {
@@ -53,12 +53,15 @@ class Scene {
   }
 
   placeGameObject(x, y, id) {
+    const gameObject = this._gameObjects[id];
+    const sortingLayer = gameObject.getSortingLayer();
+
     if (this._gameObjectsCoordinates[id]) {
       const coordinates = this._gameObjectsCoordinates[id];
-      this._sceneMap.removeValue(coordinates[0], coordinates[1], id);
+      this._sceneMap.removeValue(coordinates[0], coordinates[1], sortingLayer, id);
     }
 
-    this._sceneMap.insertValue(x, y, id);
+    this._sceneMap.insertValue(x, y, sortingLayer, id);
 
     this._gameObjectsCoordinates[id] = [ x, y ];
   }

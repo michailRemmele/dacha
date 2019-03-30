@@ -1,6 +1,6 @@
 {
   "name": "floor",
-  "type": "terrain",
+  "sortingLayer": "terrain",
   "components": [
     {
       "name": "renderable",

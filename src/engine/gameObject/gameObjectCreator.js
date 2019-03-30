@@ -9,7 +9,7 @@ class GameObjectCreator {
   }
 
   register(options) {
-    const prefab = new Prefab();
+    const prefab = new Prefab(options.sortingLayer);
 
     options.components.forEach((componentOptions) => {
       const Component = this._components[componentOptions.name];
