@@ -13,9 +13,12 @@ class GameObject {
   }
 
   getComponent(name) {
-    if (!this._components[name]) {
+    /**
+     * TODO: return it back when the iteration through game objects will be fixed
+     */
+    /* if (!this._components[name]) {
       throw new Error(`Can't find component with the following name: ${name}`);
-    }
+    } */
 
     return this._components[name];
   }

@@ -3,14 +3,16 @@ import IOC from 'engine/ioc/ioc';
 import Rectangle from './geometry/shapes/rectangle';
 import * as global from 'engine/consts/global';
 
+import textureHandlers from './textureHandlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import webglUtils from './vendor/webglUtils';
 
-const RENDERABLE_COMPONENT_KEY_NAME = 'renderable';
 const RENDER_COMPONENTS_NUMBER = 2;
 const RENDER_SCALE = 5;
 const DRAW_OFFSET = 0;
 const DRAW_COUNT = 6;
+
+const RENDERABLE_COMPONENT_NAME = 'renderable';
 
 class WebGlRenderProcessor extends Processor {
   constructor(window, textureAtlas, textureAtlasDescriptor) {
@@ -21,6 +23,11 @@ class WebGlRenderProcessor extends Processor {
       height: this.textureAtlas.height,
     };
     this.textureAtlasDescriptor = textureAtlasDescriptor;
+    this.textureHandlers = Object.keys(textureHandlers).reduce((storage, key) => {
+      const TextureHandler = textureHandlers[key];
+      storage[key] = new TextureHandler();
+      return storage;
+    }, {});
 
     this.canvas = window;
 
@@ -71,6 +78,8 @@ class WebGlRenderProcessor extends Processor {
   _initScreen() {
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
@@ -124,6 +133,18 @@ class WebGlRenderProcessor extends Processor {
     return texture;
   }
 
+  getComponentList() {
+    return [
+      RENDERABLE_COMPONENT_NAME,
+    ];
+  }
+
+  _validateGameObject(gameObject) {
+    return this.getComponentList().every((component) => {
+      return !!gameObject.getComponent(component);
+    });
+  }
+
   process() {
     const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
     const currentScene = sceneProvider.getCurrentScene();
@@ -132,8 +153,13 @@ class WebGlRenderProcessor extends Processor {
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
     currentScene.forEachPlacedGameObject((gameObject, x, y) => {
-      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_KEY_NAME);
+      if (!this._validateGameObject(gameObject))  {
+        return;
+      }
+
+      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
+      const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
       const attribs = {
         position: {
@@ -141,7 +167,12 @@ class WebGlRenderProcessor extends Processor {
           numComponents: RENDER_COMPONENTS_NUMBER,
         },
         texCoord: {
-          data: new Rectangle(texture.x, texture.y, texture.width, texture.height).toArray(),
+          data: new Rectangle(
+            textureInfo.x,
+            textureInfo.y,
+            textureInfo.width,
+            textureInfo.height
+          ).toArray(),
           numComponents: RENDER_COMPONENTS_NUMBER,
         },
       };

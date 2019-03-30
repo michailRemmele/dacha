@@ -3,31 +3,85 @@
   "type": "unit",
   "components": [
     {
+      "name": "animatable",
+      "config": {
+        "defaultState": "idle",
+        "states": [
+          {
+            "name": "idle",
+            "speed": 0.75,
+            "strip": {
+              "from": 0,
+              "to": 5
+            },
+            "looped": true,
+            "transitions": [
+              {
+                "state": "run",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_START"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "run",
+            "speed": 1,
+            "strip": {
+              "from": 6,
+              "to": 9
+            },
+            "looped": true,
+            "transitions": [
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "ATTACK_START"
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "idle",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_STOP"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "attack",
+            "speed": 1,
+            "strip": {
+              "from": 10,
+              "to": 14
+            },
+            "transitions": []
+          }
+        ]
+      }
+    },
+    {
       "name": "renderable",
       "config": {
         "type": "sprite",
         "src": "units/rooster",
         "width": 45,
         "height": 50,
-        "slice": {
-          "width": 45,
-          "height": 50,
-          "padding": 0
-        },
-        "animation": {
-          "idle": {
-            "duration": 150,
-            "frames": [ 0, 1, 2, 3, 4, 5 ]
-          },
-          "run": {
-            "duration": 125,
-            "frames": [ 6, 7, 8, 9 ]
-          },
-          "attack": {
-            "duration": 100,
-            "frames": [ 10, 11, 12, 13, 14 ]
-          }
-        }
+        "slice": 15
       }
     }
   ]
