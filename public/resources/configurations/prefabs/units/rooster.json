@@ -3,6 +3,17 @@
   "sortingLayer": "units",
   "components": [
     {
+      "name": "controllable",
+      "config": {
+        "actions": {
+          "MOVEMENT_UP": "PRESS_MOVEMENT_UP",
+          "MOVEMENT_LEFT": "PRESS_MOVEMENT_LEFT",
+          "MOVEMENT_RIGHT": "PRESS_MOVEMENT_RIGHT",
+          "MOVEMENT_BOTTOM": "PRESS_MOVEMENT_DOWN"
+        }
+      }
+    },
+    {
       "name": "animatable",
       "config": {
         "defaultState": "idle",
@@ -16,6 +27,17 @@
             },
             "looped": true,
             "transitions": [
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "ATTACK_START"
+                    }
+                  }
+                ]
+              },
               {
                 "state": "run",
                 "conditions": [
@@ -38,17 +60,6 @@
             },
             "looped": true,
             "transitions": [
-              {
-                "state": "attack",
-                "conditions": [
-                  {
-                    "type": "message",
-                    "props": {
-                      "message": "ATTACK_START"
-                    }
-                  }
-                ]
-              },
               {
                 "state": "idle",
                 "conditions": [
