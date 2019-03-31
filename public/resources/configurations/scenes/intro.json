@@ -94,15 +94,23 @@
       "section": "eventProcessSection",
       "options": {
         "keyBindings": {
-          "F": "START_GAME"
+          "F": "PRESS_START_GAME",
+          "W": "PRESS_MOVEMENT_UP",
+          "A": "PRESS_MOVEMENT_LEFT",
+          "S": "PRESS_MOVEMENT_DOWN",
+          "D": "PRESS_MOVEMENT_RIGHT"
         }
       }
     },
     {
+      "name": "controlProcessor",
+      "section": "gameStateUpdateSection",
+      "options": {}
+    },
+    {
       "name": "animateProcessor",
       "section": "renderingSection",
-      "options": {
-      }
+      "options": {}
     },
     {
       "name": "renderProcessor",

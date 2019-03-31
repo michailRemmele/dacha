@@ -33,7 +33,7 @@ class GameLoop {
         SECTIONS.EVENT_PROCESS_SECTION_NAME
       );
       const gameStateUpdateSection = currentScene.getProcessorSection(
-        SECTIONS.EVENT_PROCESS_SECTION_NAME
+        SECTIONS.GAME_STATE_UPDATE_SECTION_NAME
       );
       const renderingSection = currentScene.getProcessorSection(
         SECTIONS.RENDERING_SECTION_NAME
