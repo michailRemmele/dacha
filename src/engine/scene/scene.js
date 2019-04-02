@@ -58,10 +58,10 @@ class Scene {
 
     if (this._gameObjectsCoordinates[id]) {
       const coordinates = this._gameObjectsCoordinates[id];
-      this._sceneMap.removeValue(coordinates[0], coordinates[1], sortingLayer, id);
+      this._sceneMap.removeValue(Math.trunc(coordinates[0]), Math.trunc(coordinates[1]), sortingLayer, id);
     }
 
-    this._sceneMap.insertValue(x, y, sortingLayer, id);
+    this._sceneMap.insertValue(Math.trunc(x), Math.trunc(y), sortingLayer, id);
 
     this._gameObjectsCoordinates[id] = [ x, y ];
   }
@@ -70,6 +70,10 @@ class Scene {
     this._sceneMap.forEachValue((id, x, y) => {
       callbackFn(this._gameObjects[id], x, y);
     });
+  }
+
+  getGameObjectCoordinates(id) {
+    return this._gameObjectsCoordinates[id];
   }
 
   getName() {

@@ -43,8 +43,8 @@
     }
   ],
   "map": {
-    "width": 100,
-    "height": 100,
+    "width": 1000,
+    "height": 1000,
     "content": [
       {
         "id": "0",
@@ -94,16 +94,26 @@
       "section": "eventProcessSection",
       "options": {
         "keyBindings": {
-          "F": "PRESS_START_GAME",
-          "W": "PRESS_MOVEMENT_UP",
-          "A": "PRESS_MOVEMENT_LEFT",
-          "S": "PRESS_MOVEMENT_DOWN",
-          "D": "PRESS_MOVEMENT_RIGHT"
+          "F": "START_GAME",
+          "W": "MOVEMENT_UP",
+          "A": "MOVEMENT_LEFT",
+          "S": "MOVEMENT_DOWN",
+          "D": "MOVEMENT_RIGHT"
         }
       }
     },
     {
       "name": "controlProcessor",
+      "section": "gameStateUpdateSection",
+      "options": {}
+    },
+    {
+      "name": "movementProcessor",
+      "section": "gameStateUpdateSection",
+      "options": {}
+    },
+    {
+      "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
       "options": {}
     },
