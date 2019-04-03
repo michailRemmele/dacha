@@ -30,7 +30,7 @@ class AnimateProcessor extends Processor {
     const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
     const currentScene = sceneProvider.getCurrentScene();
 
-    currentScene.forEachPlacedGameObject((gameObject, x, y) => {
+    currentScene.forEachPlacedGameObject((gameObject) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }

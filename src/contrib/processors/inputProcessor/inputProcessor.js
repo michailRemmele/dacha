@@ -3,6 +3,10 @@ import Processor from 'engine/processor/processor';
 import InputListener from './inputListener';
 import ActionResolver from './actionResolver';
 
+const PRESS_EVENT_TYPE = 'PRESS';
+const RELEASE_EVENT_TYPE = 'RELEASE';
+const PREFIX_SEPARATOR = '_';
+
 class InputProcessor extends Processor {
   constructor(keyBindings) {
     super();
@@ -10,6 +14,19 @@ class InputProcessor extends Processor {
     this._keyBindings = keyBindings;
     this._inputListener = new InputListener(window);
     this._actionResolver = new ActionResolver(this._keyBindings);
+
+    this._events = [
+      {
+        type: PRESS_EVENT_TYPE,
+        getKeys: () => this._inputListener.getPressedKeys(),
+        onProcessComplete: () => {},
+      },
+      {
+        type: RELEASE_EVENT_TYPE,
+        getKeys: () => this._inputListener.getReleasedKeys(),
+        onProcessComplete: () => this._inputListener.clearReleasedKeys(),
+      },
+    ];
   }
 
   processorDidMount() {
@@ -23,16 +40,19 @@ class InputProcessor extends Processor {
   process(options) {
     const messageBus = options.messageBus;
 
-    this._inputListener.getQueue().forEach((key) => {
-      const action = this._actionResolver.resolve(key);
+    this._events.forEach((event) => {
+      event.getKeys().forEach((key) => {
+        const action = this._actionResolver.resolve(key);
 
-      if (action) {
-        messageBus.send({
-          type: action,
-        });
-      }
+        if (action) {
+          messageBus.send({
+            type: `${event.type}${PREFIX_SEPARATOR}${action}`,
+          });
+        }
+      });
+
+      event.onProcessComplete();
     });
-    this._inputListener.clearQueue();
   }
 }
 

@@ -2,6 +2,7 @@ import Processor from 'engine/processor/processor';
 import IOC from 'engine/ioc/ioc';
 
 import * as global from 'engine/consts/global';
+const MOVEMENT_MESSAGE_TYPE = 'MOVEMENT';
 
 const CONTROLLABLE_COMPONENT_NAME = 'controllable';
 
@@ -24,21 +25,27 @@ class ControlProcessor extends Processor {
     const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
     const currentScene = sceneProvider.getCurrentScene();
 
-    currentScene.forEachPlacedGameObject((gameObject, x, y) => {
+    currentScene.forEachPlacedGameObject((gameObject) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }
 
       const controllable = gameObject.getComponent(CONTROLLABLE_COMPONENT_NAME);
 
-      Object.keys(controllable.actions).forEach((actionName) => {
-        if (messageBus.get(controllable.actions[actionName])) {
-          messageBus.send({
-            type: actionName,
-            gameObject: gameObject,
-          });
+      const actions = Object.keys(controllable.actions).reduce((storage, inputEvent) => {
+        if (messageBus.get(inputEvent)) {
+          storage.push(controllable.actions[inputEvent]);
         }
-      });
+        return storage;
+      }, []);
+
+      if (actions.length) {
+        messageBus.send({
+          type: MOVEMENT_MESSAGE_TYPE,
+          gameObject: gameObject,
+          actions: actions,
+        });
+      }
     });
   }
 }
