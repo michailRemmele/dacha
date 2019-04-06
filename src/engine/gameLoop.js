@@ -48,6 +48,10 @@ class GameLoop {
       while (that.lag >= MS_PER_UPDATE) {
         that._processSection(gameStateUpdateSection, { deltaTime: MS_PER_UPDATE });
         that.lag -= MS_PER_UPDATE;
+
+        if (that.lag >= MS_PER_UPDATE) {
+          that.messageBus.clear();
+        }
       }
 
       that._processSection(renderingSection, { deltaTime: elapsed });
