@@ -8,13 +8,20 @@ class InputProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
 
-    const window = document.getElementById(options.windowNodeId);
-    const resources = [ options.textureAtlas, options.textureAtlasDescriptor ];
+    const { windowNodeId, textureAtlas, textureAtlasDescriptor, backgroundColor } = options;
+
+    const window = document.getElementById(windowNodeId);
+    const resources = [ textureAtlas, textureAtlasDescriptor ];
     const loadedResources = await Promise.all(resources.map((resource) => {
       return resourceLoader.load(resource);
     }));
 
-    return new RenderProcessor(window, loadedResources[0], loadedResources[1]);
+    return new RenderProcessor({
+      window: window,
+      textureAtlas: loadedResources[0],
+      textureAtlasDescriptor: loadedResources[1],
+      backgroundColor: backgroundColor,
+    });
   }
 }
 

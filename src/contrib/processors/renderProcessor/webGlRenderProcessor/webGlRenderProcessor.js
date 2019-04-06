@@ -3,10 +3,12 @@ import IOC from 'engine/ioc/ioc';
 import Rectangle from './geometry/shapes/rectangle';
 import * as global from 'engine/consts/global';
 
+import Color from './color/color';
 import textureHandlers from './textureHandlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import webglUtils from './vendor/webglUtils';
 
+const MAX_COLOR_NUMBER = 255;
 const RENDER_COMPONENTS_NUMBER = 2;
 const RENDER_SCALE = 5;
 const DRAW_OFFSET = 0;
@@ -15,8 +17,11 @@ const DRAW_COUNT = 6;
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 
 class WebGlRenderProcessor extends Processor {
-  constructor(window, textureAtlas, textureAtlasDescriptor) {
+  constructor(options) {
     super();
+
+    const { window, textureAtlas, textureAtlasDescriptor, backgroundColor } = options;
+
     this.textureAtlas = textureAtlas;
     this.textureAtlasSize = {
       width: this.textureAtlas.width,
@@ -28,6 +33,8 @@ class WebGlRenderProcessor extends Processor {
       storage[key] = new TextureHandler();
       return storage;
     }, {});
+
+    this._backgroundColor = new Color(backgroundColor);
 
     this.canvas = window;
 
@@ -76,7 +83,12 @@ class WebGlRenderProcessor extends Processor {
   }
 
   _initScreen() {
-    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    this.gl.clearColor(
+      this._backgroundColor.red() / MAX_COLOR_NUMBER,
+      this._backgroundColor.green() / MAX_COLOR_NUMBER,
+      this._backgroundColor.blue() / MAX_COLOR_NUMBER,
+      1.0
+    );
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
@@ -151,6 +163,8 @@ class WebGlRenderProcessor extends Processor {
 
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     currentScene.forEachPlacedGameObject((gameObject, x, y) => {
       if (!this._validateGameObject(gameObject))  {

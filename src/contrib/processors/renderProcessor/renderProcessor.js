@@ -2,9 +2,9 @@ import Processor from 'engine/processor/processor';
 import WebGlRenderProcessor from './webGlRenderProcessor/webGlRenderProcessor';
 
 class RenderProcessor extends Processor {
-  constructor(window, textureAtlas, textureAtlasDescriptor) {
+  constructor(options) {
     super();
-    this.renderProcessor = new WebGlRenderProcessor(window, textureAtlas, textureAtlasDescriptor);
+    this.renderProcessor = new WebGlRenderProcessor(options);
   }
 
   processorDidMount() {

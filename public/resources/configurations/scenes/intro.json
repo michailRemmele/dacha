@@ -128,7 +128,8 @@
       "options": {
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",
-        "textureAtlasDescriptor": "resources/textureAtlasMap.json"
+        "textureAtlasDescriptor": "resources/textureAtlasMap.json",
+        "backgroundColor": "#000"
       }
     }
   ]
