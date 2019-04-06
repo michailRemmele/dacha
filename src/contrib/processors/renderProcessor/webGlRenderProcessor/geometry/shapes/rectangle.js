@@ -1,16 +1,14 @@
 class Rectangle {
-  constructor(x, y, width, height) {
-    this._x = x;
-    this._y = y;
+  constructor(width, height) {
     this._width = width;
     this._height = height;
   }
 
   toArray() {
-    const x1 = this._x;
-    const y1 = this._y;
-    const x2 = this._x + this._width;
-    const y2 = this._y + this._height;
+    const x1 = 0;
+    const y1 = 0;
+    const x2 = x1 + this._width;
+    const y2 = y1 + this._height;
 
     return [
       x1, y1,

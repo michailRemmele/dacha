@@ -177,16 +177,11 @@ class WebGlRenderProcessor extends Processor {
 
       const attribs = {
         position: {
-          data: new Rectangle(x, y, renderable.width, renderable.height).toArray(),
+          data: new Rectangle(renderable.width, renderable.height).toArray(),
           numComponents: RENDER_COMPONENTS_NUMBER,
         },
         texCoord: {
-          data: new Rectangle(
-            textureInfo.x,
-            textureInfo.y,
-            textureInfo.width,
-            textureInfo.height
-          ).toArray(),
+          data: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
           numComponents: RENDER_COMPONENTS_NUMBER,
         },
       };
@@ -198,6 +193,8 @@ class WebGlRenderProcessor extends Processor {
         u_resolution: [ this.gl.canvas.width, this.gl.canvas.height ],
         u_scale: [ RENDER_SCALE, RENDER_SCALE ],
         u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
+        u_translation: [ x, y ],
+        u_texCoordTranslation: [ textureInfo.x, textureInfo.y ],
       };
       webglUtils.setUniforms(this.programInfo.uniforms.setters, uniforms);
 
