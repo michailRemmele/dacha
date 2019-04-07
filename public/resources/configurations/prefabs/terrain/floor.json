@@ -8,7 +8,11 @@
         "type": "static",
         "src": "terrain/platform",
         "width": 32,
-        "height": 32
+        "height": 32,
+        "rotation": 0,
+        "origin": [ 0, 0 ],
+        "flipX": false,
+        "flipY": false
       }
     }
   ]

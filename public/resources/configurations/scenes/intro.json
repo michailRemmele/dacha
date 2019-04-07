@@ -48,43 +48,43 @@
     "content": [
       {
         "id": "0",
-        "coordinates": [0,0]
+        "coordinates": [16,16]
       },
       {
         "id": "1",
-        "coordinates": [32,0]
+        "coordinates": [48,16]
       },
       {
         "id": "2",
-        "coordinates": [64,0]
+        "coordinates": [80,16]
       },
       {
         "id": "3",
-        "coordinates": [0,32]
+        "coordinates": [16,48]
       },
       {
         "id": "4",
-        "coordinates": [32,32]
+        "coordinates": [48,48]
       },
       {
         "id": "5",
-        "coordinates": [64,32]
+        "coordinates": [80,48]
       },
       {
         "id": "6",
-        "coordinates": [0,64]
+        "coordinates": [16,80]
       },
       {
         "id": "7",
-        "coordinates": [32,64]
+        "coordinates": [48,80]
       },
       {
         "id": "8",
-        "coordinates": [64,64]
+        "coordinates": [80,80]
       },
       {
         "id": "9",
-        "coordinates": [0,0]
+        "coordinates": [23,25]
       }
     ]
   },
