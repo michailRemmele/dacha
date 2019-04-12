@@ -6,6 +6,10 @@ class Renderable {
     this._type = config.type;
     this._slice = config.slice;
     this._currentFrame = config.type === 'sprite' ? 0 : undefined;
+    this._rotation = config.rotation;
+    this._origin = config.origin;
+    this._flipX = config.flipX;
+    this._flipY = config.flipY;
   }
 
   set src(src) {
@@ -56,6 +60,38 @@ class Renderable {
     return this._currentFrame;
   }
 
+  set rotation(rotation) {
+    this._rotation = rotation;
+  }
+
+  get rotation() {
+    return this._rotation;
+  }
+
+  set origin(origin) {
+    this._origin = origin;
+  }
+
+  get origin() {
+    return [ this._origin[0] - (this.width / 2), this._origin[1] - (this.height / 2) ];
+  }
+
+  set flipX(flipX) {
+    this._flipX = flipX;
+  }
+
+  get flipX() {
+    return this._flipX;
+  }
+
+  set flipY(flipY) {
+    this._flipY = flipY;
+  }
+
+  get flipY() {
+    return this._flipY;
+  }
+
   clone() {
     return new Renderable({
       src: this.src,
@@ -63,6 +99,10 @@ class Renderable {
       height: this.height,
       type: this.type,
       slice: this.slice,
+      rotation: this.rotation,
+      origin: this._origin,
+      flipX: this.flipX,
+      flipY: this.flipY,
     });
   }
 }
