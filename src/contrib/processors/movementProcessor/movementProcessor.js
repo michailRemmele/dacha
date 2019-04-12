@@ -76,6 +76,7 @@ class MovementProcessor extends Processor {
         if (vector.equals(DIRECTIONS[name].vector)) {
           messageBus.send({
             type: DIRECTIONS[name].message,
+            gameObject: message.gameObject,
           });
           return true;
         }
