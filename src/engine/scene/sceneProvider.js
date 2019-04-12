@@ -33,7 +33,13 @@ class SceneProvider {
     });
 
     config.gameObjects.forEach((gameObject) => {
-      scene.addGameObject(gameObjectCreator.create(gameObject.name, gameObject.id));
+      scene.addGameObject(
+        gameObjectCreator.create(
+          gameObject.name,
+          gameObject.id,
+          gameObject.components
+        )
+      );
     });
 
     config.map.content.forEach((gameObject) => {
