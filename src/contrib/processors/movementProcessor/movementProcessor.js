@@ -3,7 +3,10 @@ import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
 
 const MOVEMENT_MESSAGE_TYPE = 'MOVEMENT';
-const START_MOVEMENT_MESSAGE_TYPE = 'MOVEMENT_START';
+const MOVEMENT_UP_MESSAGE_TYPE = 'MOVEMENT_UP';
+const MOVEMENT_RIGHT_MESSAGE_TYPE = 'MOVEMENT_RIGHT';
+const MOVEMENT_DOWN_MESSAGE_TYPE = 'MOVEMENT_DOWN';
+const MOVEMENT_LEFT_MESSAGE_TYPE = 'MOVEMENT_LEFT';
 const STOP_MOVEMENT_MESSAGE_TYPE = 'MOVEMENT_STOP';
 const FORCE_NAME = 'MOVEMENT_FORCE';
 
@@ -20,35 +23,35 @@ const MOVEMENT_VECTORS = {
 const DIRECTIONS = {
   UP: {
     vector: new Vector2(0, -1),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_UP_MESSAGE_TYPE,
   },
   UP_RIGHT: {
     vector: new Vector2(1, -1),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_RIGHT_MESSAGE_TYPE,
   },
   RIGHT: {
     vector: new Vector2(1, 0),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_RIGHT_MESSAGE_TYPE,
   },
   DOWN_RIGHT: {
     vector: new Vector2(1, 1),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_RIGHT_MESSAGE_TYPE,
   },
   DOWN: {
     vector: new Vector2(0, 1),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_DOWN_MESSAGE_TYPE,
   },
   DOWN_LEFT: {
     vector: new Vector2(-1, 1),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_LEFT_MESSAGE_TYPE,
   },
   LEFT: {
     vector: new Vector2(-1, 0),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_LEFT_MESSAGE_TYPE,
   },
   UP_LEFT: {
     vector: new Vector2(-1, -1),
-    message: START_MOVEMENT_MESSAGE_TYPE,
+    message: MOVEMENT_LEFT_MESSAGE_TYPE,
   },
   STOP: {
     vector: new Vector2(0, 0),

@@ -23,6 +23,13 @@ class AnimateProcessor extends Processor {
     });
   }
 
+  _setFrame(renderable, frame) {
+    renderable.currentFrame = frame.index;
+    renderable.rotation = frame.rotation !== undefined ? frame.rotation : renderable.rotation;
+    renderable.flipX = frame.flipX !== undefined ? frame.flipX : renderable.flipX;
+    renderable.flipY = frame.flipY !== undefined ? frame.flipY : renderable.flipY;
+  }
+
   process(options) {
     const deltaTime = options.deltaTime;
     const messageBus = options.messageBus;
@@ -56,9 +63,8 @@ class AnimateProcessor extends Processor {
         animatable.duration = 0;
       }
 
-      const strip = animatable.currentState.strip;
-      const startFrame = strip.from;
-      const framesCount = strip.to - strip.from + 1;
+      const frames = animatable.currentState.frames;
+      const framesCount = frames.length;
       const speed = animatable.currentState.speed;
       const actualFrameRate = FRAME_RATE / speed;
       const baseDuration = framesCount * actualFrameRate;
@@ -70,14 +76,14 @@ class AnimateProcessor extends Processor {
           animatable.currentState
             = animatable.currentState.previousState || animatable.defaultState;
           animatable.duration = 0;
-          renderable.currentFrame = animatable.currentState.strip.from;
+          this._setFrame(renderable, animatable.currentState.frames[0]);
           return;
         } else {
           animatable.duration %= baseDuration;
         }
       }
 
-      renderable.currentFrame = startFrame + Math.trunc(animatable.duration / actualFrameRate);
+      this._setFrame(renderable, frames[Math.trunc(animatable.duration / actualFrameRate)]);
     });
   }
 }

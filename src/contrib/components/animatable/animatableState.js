@@ -1,11 +1,13 @@
-import AnimatableStrip from './animatableStrip';
+import AnimatableFrame from './animatableFrame';
 import AnimatableTransition from './animatableTransition';
 
 class AnimatableState {
   constructor(config) {
     this._name = config.name;
     this._speed = config.speed;
-    this._strip = new AnimatableStrip(config.strip);
+    this._frames = config.frames.map((frame) => {
+      return new AnimatableFrame(frame);
+    });
     this._looped = config.looped;
     this._transitions = config.transitions.map((transition) => {
       return new AnimatableTransition(transition);
@@ -29,12 +31,12 @@ class AnimatableState {
     return this._speed;
   }
 
-  set strip(strip) {
-    this._strip = strip;
+  set frames(frames) {
+    this._frames = frames;
   }
 
-  get strip() {
-    return this._strip;
+  get frames() {
+    return this._frames;
   }
 
   set looped(looped) {
@@ -65,7 +67,9 @@ class AnimatableState {
     return new AnimatableState({
       name: this.name,
       speed: this.speed,
-      strip: this.strip.clone(),
+      frames: this.frames.map((frame) => {
+        return frame.clone();
+      }),
       looped: this.looped,
       transitions: this.transitions.map((transition) => {
         return transition.clone();
