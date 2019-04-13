@@ -16,10 +16,38 @@
           {
             "name": "idle",
             "speed": 0.75,
-            "strip": {
-              "from": 0,
-              "to": 5
-            },
+            "frames": [
+              {
+                "index": 0,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 1,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 2,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 3,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 4,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 5,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
             "looped": true,
             "transitions": [
               {
@@ -34,12 +62,35 @@
                 ]
               },
               {
-                "state": "run",
+                "state": "runRight",
                 "conditions": [
                   {
                     "type": "message",
                     "props": {
-                      "message": "MOVEMENT_START"
+                      "message": "MOVEMENT_UP"
+                    }
+                  },
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_RIGHT"
+                    }
+                  },
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_DOWN"
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runLeft",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_LEFT"
                     }
                   }
                 ]
@@ -47,12 +98,34 @@
             ]
           },
           {
-            "name": "run",
+            "name": "runRight",
             "speed": 1,
-            "strip": {
-              "from": 6,
-              "to": 9
-            },
+            "frames": [
+              {
+                "index": 6,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 7,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 8,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 9,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
             "looped": true,
             "transitions": [
               {
@@ -65,16 +138,117 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "runLeft",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_LEFT"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "runLeft",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 6,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 7,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 8,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 9,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "idle",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_STOP"
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runRight",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_UP"
+                    }
+                  },
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_RIGHT"
+                    }
+                  },
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "MOVEMENT_DOWN"
+                    }
+                  }
+                ]
               }
             ]
           },
           {
             "name": "attack",
             "speed": 1,
-            "strip": {
-              "from": 10,
-              "to": 14
-            },
+            "frames": [
+              {
+                "index": 10,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 11,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 12,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 13,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 14,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
             "transitions": []
           }
         ]
