@@ -6,8 +6,6 @@ const MS_PER_UPDATE = 1000 / 60;
 
 class GameLoop {
   constructor() {
-    this.previous = performance.now();
-    this.lag = 0;
     this.gameLoopId = null;
 
     this.sceneProvider = IOC.resolve(SCENE_PROVIDER_KEY_NAME);
@@ -26,6 +24,9 @@ class GameLoop {
   }
 
   run() {
+    this.previous = performance.now();
+    this.lag = 0;
+
     let that = this;
     this.gameLoopId = requestAnimationFrame(function tick(current) {
       const currentScene = that.sceneProvider.getCurrentScene();
@@ -50,9 +51,11 @@ class GameLoop {
         that.lag -= MS_PER_UPDATE;
 
         if (that.lag >= MS_PER_UPDATE) {
-          that.messageBus.clear();
+          that.messageBus.stash();
         }
       }
+
+      that.messageBus.restore();
 
       that._processSection(renderingSection, { deltaTime: elapsed });
 
