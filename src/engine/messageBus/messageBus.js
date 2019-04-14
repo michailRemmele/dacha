@@ -1,6 +1,7 @@
 class MessageBus {
   constructor() {
     this._messages = {};
+    this._stashedMessages = [];
   }
 
   send(message) {
@@ -16,6 +17,27 @@ class MessageBus {
 
   get(messageType) {
     return this._messages[messageType];
+  }
+
+  stash() {
+    this._stashedMessages.push(this._messages);
+    this._messages = {};
+  }
+
+  restore() {
+    if (this._stashedMessages.length === 0) {
+      return;
+    }
+
+    this._stashedMessages.push(this._messages);
+    this._messages = this._stashedMessages.reduce((storage, messages) => {
+      Object.keys(messages).forEach((key) => {
+        storage[key] = storage[key] || [];
+        storage[key] = storage[key].concat(messages[key]);
+      });
+      return storage;
+    }, {});
+    this._stashedMessages = [];
   }
 
   clear() {

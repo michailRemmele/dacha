@@ -70,6 +70,9 @@ class Engine {
 
     const gameLoop = new GameLoop();
     gameLoop.run();
+
+    window.onblur = () => gameLoop.stop();
+    window.onfocus = () => gameLoop.run();
   }
 }
 
