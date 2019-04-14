@@ -61,12 +61,20 @@
     {
       "id": "8",
       "name": "floor"
+    },
+    {
+      "id": "11",
+      "name": "space"
     }
   ],
   "map": {
     "width": 1000,
     "height": 1000,
     "content": [
+      {
+        "id": "11",
+        "coordinates": [258,143]
+      },
       {
         "id": "0",
         "coordinates": [16,16]
