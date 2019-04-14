@@ -24,11 +24,13 @@ class GameLoop {
   }
 
   run() {
-    this.previous = performance.now();
+    this.previous = undefined;
     this.lag = 0;
 
-    let that = this;
+    const that = this;
     this.gameLoopId = requestAnimationFrame(function tick(current) {
+      that.previous = that.previous || current;
+
       const currentScene = that.sceneProvider.getCurrentScene();
       const eventProcessSection = currentScene.getProcessorSection(
         SECTIONS.EVENT_PROCESS_SECTION_NAME
@@ -40,7 +42,7 @@ class GameLoop {
         SECTIONS.RENDERING_SECTION_NAME
       );
 
-      let elapsed = current - that.previous;
+      const elapsed = current - that.previous;
       that.previous = current;
       that.lag += elapsed;
 
