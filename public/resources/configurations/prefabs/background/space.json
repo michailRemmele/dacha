@@ -7,8 +7,8 @@
       "config": {
         "type": "static",
         "src": "background/space",
-        "width": 516,
-        "height": 286,
+        "width": 774,
+        "height": 429,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
