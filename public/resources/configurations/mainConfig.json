@@ -25,6 +25,9 @@
     },
     {
       "src": "resources/configurations/prefabs/units/rooster.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/background/space.json"
     }
   ],
   "startScene": "intro-scene"

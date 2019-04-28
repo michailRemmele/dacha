@@ -224,6 +224,8 @@ class RenderProcessor extends Processor {
         }),
         u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
         u_texCoordTranslation: [ textureInfo.x, textureInfo.y ],
+        u_quadSize: [ renderable.width, renderable.height ],
+        u_textureSize: [ textureInfo.width, textureInfo.height ],
       };
       webglUtils.setUniforms(this.programInfo.uniforms.setters, uniforms);
 
