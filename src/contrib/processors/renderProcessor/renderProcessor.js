@@ -1,8 +1,6 @@
 import Processor from 'engine/processor/processor';
-import IOC from 'engine/ioc/ioc';
-import Rectangle from './geometry/shapes/rectangle';
-import * as global from 'engine/consts/global';
 
+import Rectangle from './geometry/shapes/rectangle';
 import Color from './color/color';
 import textureHandlers from './textureHandlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
@@ -21,7 +19,7 @@ class RenderProcessor extends Processor {
   constructor(options) {
     super();
 
-    const { window, textureAtlas, textureAtlasDescriptor, backgroundColor } = options;
+    const { window, textureAtlas, textureAtlasDescriptor, backgroundColor, scene } = options;
 
     this.textureAtlas = textureAtlas;
     this.textureAtlasSize = {
@@ -42,6 +40,8 @@ class RenderProcessor extends Processor {
     this.canvas = window;
 
     this.shaders = [];
+
+    this._scene = scene;
   }
 
   processorDidMount() {
@@ -183,9 +183,6 @@ class RenderProcessor extends Processor {
   }
 
   process() {
-    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
-    const currentScene = sceneProvider.getCurrentScene();
-
     const canvas = this.gl.canvas;
 
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
@@ -193,7 +190,7 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    currentScene.forEachPlacedGameObject((gameObject, x, y) => {
+    this._scene.forEachPlacedGameObject((gameObject, x, y) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }

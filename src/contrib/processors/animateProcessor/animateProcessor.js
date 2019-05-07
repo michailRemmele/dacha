@@ -1,15 +1,19 @@
 import Processor from 'engine/processor/processor';
-import IOC from 'engine/ioc/ioc';
 
 import conditionControllers from './conditionControllers';
 
-import * as global from 'engine/consts/global';
 const FRAME_RATE = 100;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const ANIMATABLE_COMPONENT_NAME = 'animatable';
 
 class AnimateProcessor extends Processor {
+  constructor(options) {
+    super();
+
+    this._scene = options.scene;
+  }
+
   getComponentList() {
     return [
       RENDERABLE_COMPONENT_NAME,
@@ -34,10 +38,7 @@ class AnimateProcessor extends Processor {
     const deltaTime = options.deltaTime;
     const messageBus = options.messageBus;
 
-    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
-    const currentScene = sceneProvider.getCurrentScene();
-
-    currentScene.forEachPlacedGameObject((gameObject) => {
+    this._scene.forEachPlacedGameObject((gameObject) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }

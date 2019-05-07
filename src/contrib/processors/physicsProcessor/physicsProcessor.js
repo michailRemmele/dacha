@@ -1,13 +1,16 @@
 import Vector2 from 'utils/vector/vector2';
 
-import IOC from 'engine/ioc/ioc';
 import Processor from 'engine/processor/processor';
-
-import * as global from 'engine/consts/global';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 
 class PhysicsProcessor extends Processor {
+  constructor(options) {
+    super();
+
+    this._scene = options.scene;
+  }
+
   _validateGameObject(gameObject) {
     return this.getComponentList().every((component) => {
       return !!gameObject.getComponent(component);
@@ -23,12 +26,9 @@ class PhysicsProcessor extends Processor {
   process(options) {
     const deltaTimeInSeconds = options.deltaTime / 1000;
 
-    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
-    const currentScene = sceneProvider.getCurrentScene();
-
     const gameObjectsCoordinates = {};
 
-    currentScene.forEachPlacedGameObject((gameObject) => {
+    this._scene.forEachPlacedGameObject((gameObject) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }
@@ -43,7 +43,7 @@ class PhysicsProcessor extends Processor {
       }, new Vector2(0, 0));
 
       if (forceVector.x || forceVector.y) {
-        const coordinates = currentScene.getGameObjectCoordinates(gameObjectId);
+        const coordinates = this._scene.getGameObjectCoordinates(gameObjectId);
 
         const movementVector = forceVector.clone();
         movementVector.multiplyNumber(deltaTimeInSeconds);
@@ -57,7 +57,7 @@ class PhysicsProcessor extends Processor {
 
     Object.keys(gameObjectsCoordinates).forEach((gameObjectId) => {
       const coordinates = gameObjectsCoordinates[gameObjectId];
-      currentScene.placeGameObject(coordinates[0], coordinates[1], gameObjectId);
+      this._scene.placeGameObject(coordinates[0], coordinates[1], gameObjectId);
     });
   }
 }
