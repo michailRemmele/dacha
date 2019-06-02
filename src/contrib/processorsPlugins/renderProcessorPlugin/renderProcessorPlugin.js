@@ -8,7 +8,7 @@ class InputProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
 
-    const { windowNodeId, textureAtlas, textureAtlasDescriptor, backgroundColor } = options;
+    const { windowNodeId, textureAtlas, textureAtlasDescriptor, backgroundColor, scene } = options;
 
     const window = document.getElementById(windowNodeId);
     const resources = [ textureAtlas, textureAtlasDescriptor ];
@@ -21,6 +21,8 @@ class InputProcessorPlugin extends ProcessorPlugin {
       textureAtlas: loadedResources[0],
       textureAtlasDescriptor: loadedResources[1],
       backgroundColor: backgroundColor,
+      scene: scene,
+      gameObjectObserver: options.gameObjectObserver,
     });
   }
 }

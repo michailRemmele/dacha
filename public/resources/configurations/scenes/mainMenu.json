@@ -2,16 +2,11 @@
   "name": "main-menu-scene",
   "gameObjects": [
   ],
-  "map": {
-    "width": 100,
-    "height": 100,
-    "content": [
-    ]
-  },
   "processors": [
     {
       "name": "inputProcessor",
       "section": "eventProcessSection",
+      "components": [],
       "options": {
         "keyBindings": {
         }

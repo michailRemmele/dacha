@@ -1,8 +1,8 @@
 import * as global from 'engine/consts/global';
 
 import IOC from 'engine/ioc/ioc';
-
 import Scene from './scene';
+import GameObjectObserver from 'engine/gameObject/gameObjectObserver';
 
 class SceneProvider {
   constructor(processorsPlugins) {
@@ -27,8 +27,6 @@ class SceneProvider {
 
     const scene = new Scene({
       name: config.name,
-      width: config.map.width,
-      height: config.map.height,
       sortingLayers: projectSettings.sortingLayers,
     });
 
@@ -42,12 +40,14 @@ class SceneProvider {
       );
     });
 
-    config.map.content.forEach((gameObject) => {
-      scene.placeGameObject(gameObject.coordinates[0], gameObject.coordinates[1], gameObject.id);
-    });
-
     await Promise.all(config.processors.map((processorInfo) => {
-      return this._processorsPlugins[processorInfo.name].load(processorInfo.options)
+      const gameObjectObserver = new GameObjectObserver(scene, processorInfo.components);
+
+      return this._processorsPlugins[processorInfo.name].load({
+        ...processorInfo.options,
+        scene: scene,
+        gameObjectObserver: gameObjectObserver,
+      })
         .then((processor) => {
           scene.addProcessor(processor, processorInfo.section);
         });

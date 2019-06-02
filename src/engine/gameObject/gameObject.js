@@ -1,8 +1,16 @@
+const COMPONENT_ADDED = 'COMPONENT_ADDED';
+const COMPONENT_REMOVED = 'COMPONENT_REMOVED';
+
 class GameObject {
   constructor(id, sortingLayer) {
     this._id = id;
     this._sortingLayer = sortingLayer;
     this._components = {};
+
+    this._subscribers = [];
+
+    this.COMPONENT_ADDED = COMPONENT_ADDED;
+    this.COMPONENT_REMOVED = COMPONENT_REMOVED;
   }
 
   getId() {
@@ -13,23 +21,44 @@ class GameObject {
     return this._sortingLayer;
   }
 
-  setComponent(name, component) {
-    this._components[name] = component;
+  setSortingLayer(sortingLayer) {
+    this._sortingLayer = sortingLayer;
   }
 
   getComponent(name) {
-    /**
-     * TODO: return it back when the iteration through game objects will be fixed
-     */
-    /* if (!this._components[name]) {
-      throw new Error(`Can't find component with the following name: ${name}`);
-    } */
-
     return this._components[name];
+  }
+
+  setComponent(name, component) {
+    this._components[name] = component;
+
+    this._subscribers.forEach((callback) => {
+      callback({
+        type: COMPONENT_ADDED,
+        componentName: name,
+        gameObject: this,
+      });
+    });
   }
 
   removeComponent(name) {
     this._components[name] = undefined;
+
+    this._subscribers.forEach((callback) => {
+      callback({
+        type: COMPONENT_REMOVED,
+        componentName: name,
+        gameObject: this,
+      });
+    });
+  }
+
+  subscribe(callback) {
+    if (!(callback instanceof Function)) {
+      throw new Error('On subscribe callback should be a function');
+    }
+
+    this._subscribers.push(callback);
   }
 }
 

@@ -1,39 +1,21 @@
 import Vector2 from 'utils/vector/vector2';
 
-import IOC from 'engine/ioc/ioc';
 import Processor from 'engine/processor/processor';
 
-import * as global from 'engine/consts/global';
-
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
+const TRANSFORM_COMPONENT_NAME = 'transform';
 
 class PhysicsProcessor extends Processor {
-  _validateGameObject(gameObject) {
-    return this.getComponentList().every((component) => {
-      return !!gameObject.getComponent(component);
-    });
-  }
+  constructor(options) {
+    super();
 
-  getComponentList() {
-    return [
-      RIGID_BODY_COMPONENT_NAME,
-    ];
+    this._gameObjectObserver = options.gameObjectObserver;
   }
 
   process(options) {
     const deltaTimeInSeconds = options.deltaTime / 1000;
 
-    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
-    const currentScene = sceneProvider.getCurrentScene();
-
-    const gameObjectsCoordinates = {};
-
-    currentScene.forEachPlacedGameObject((gameObject) => {
-      if (!this._validateGameObject(gameObject))  {
-        return;
-      }
-
-      const gameObjectId = gameObject.getId();
+    this._gameObjectObserver.forEach((gameObject) => {
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
       const forceVectors = rigidBody.forceVectors;
 
@@ -43,21 +25,14 @@ class PhysicsProcessor extends Processor {
       }, new Vector2(0, 0));
 
       if (forceVector.x || forceVector.y) {
-        const coordinates = currentScene.getGameObjectCoordinates(gameObjectId);
+        const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
 
         const movementVector = forceVector.clone();
         movementVector.multiplyNumber(deltaTimeInSeconds);
 
-        const x = coordinates[0] + movementVector.x;
-        const y = coordinates[1] + movementVector.y;
-
-        gameObjectsCoordinates[gameObjectId] = [ x, y ];
+        transform.offsetX = transform.offsetX + movementVector.x;
+        transform.offsetY = transform.offsetY + movementVector.y;
       }
-    });
-
-    Object.keys(gameObjectsCoordinates).forEach((gameObjectId) => {
-      const coordinates = gameObjectsCoordinates[gameObjectId];
-      currentScene.placeGameObject(coordinates[0], coordinates[1], gameObjectId);
     });
   }
 }
