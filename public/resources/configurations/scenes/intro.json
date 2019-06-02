@@ -125,6 +125,7 @@
     {
       "name": "inputProcessor",
       "section": "eventProcessSection",
+      "components": [],
       "options": {
         "keyBindings": {
           "F": "START_GAME",
@@ -138,26 +139,40 @@
     {
       "name": "controlProcessor",
       "section": "gameStateUpdateSection",
+      "components": [
+        "controllable"
+      ],
       "options": {}
     },
     {
       "name": "movementProcessor",
       "section": "gameStateUpdateSection",
+      "components": [],
       "options": {}
     },
     {
       "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
+      "components": [
+        "rigidBody"
+      ],
       "options": {}
     },
     {
       "name": "animateProcessor",
       "section": "renderingSection",
+      "components": [
+        "animatable",
+        "renderable"
+      ],
       "options": {}
     },
     {
       "name": "renderProcessor",
       "section": "renderingSection",
+      "components": [
+        "renderable"
+      ],
       "options": {
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",

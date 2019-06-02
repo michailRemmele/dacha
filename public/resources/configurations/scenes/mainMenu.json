@@ -12,6 +12,7 @@
     {
       "name": "inputProcessor",
       "section": "eventProcessSection",
+      "components": [],
       "options": {
         "keyBindings": {
         }

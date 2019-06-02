@@ -87,6 +87,7 @@
     {
       "name": "inputProcessor",
       "section": "eventProcessSection",
+      "components": [],
       "options": {
         "keyBindings": {
         }
@@ -95,6 +96,7 @@
     {
       "name": "renderProcessor",
       "section": "renderingSection",
+      "components": [],
       "options": {
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",
