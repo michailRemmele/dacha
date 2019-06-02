@@ -21,6 +21,10 @@ class GameObject {
     return this._sortingLayer;
   }
 
+  setSortingLayer(sortingLayer) {
+    this._sortingLayer = sortingLayer;
+  }
+
   getComponent(name) {
     return this._components[name];
   }

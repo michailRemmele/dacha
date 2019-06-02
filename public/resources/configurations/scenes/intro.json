@@ -6,6 +6,13 @@
       "name": "rooster",
       "components": [
         {
+          "name": "transform",
+          "config": {
+            "offsetX": 23,
+            "offsetY": 25
+          }
+        },
+        {
           "name": "controllable",
           "config": {
             "actions": {
@@ -24,103 +31,148 @@
     },
     {
       "id": "10",
-      "name": "rooster"
+      "name": "rooster",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 70,
+            "offsetY": 70
+          }
+        }
+      ]
     },
     {
       "id": "0",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": 16
+          }
+        }
+      ]
     },
     {
       "id": "1",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 16
+          }
+        }
+      ]
     },
     {
       "id": "2",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 16
+          }
+        }
+      ]
     },
     {
       "id": "3",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": 48
+          }
+        }
+      ]
     },
     {
       "id": "4",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 48
+          }
+        }
+      ]
     },
     {
       "id": "5",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 48
+          }
+        }
+      ]
     },
     {
       "id": "6",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": 80
+          }
+        }
+      ]
     },
     {
       "id": "7",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 80
+          }
+        }
+      ]
     },
     {
       "id": "8",
-      "name": "floor"
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 80
+          }
+        }
+      ]
     },
     {
       "id": "11",
-      "name": "space"
+      "name": "space",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 387,
+            "offsetY": 215
+          }
+        }
+      ]
     }
   ],
-  "map": {
-    "width": 1000,
-    "height": 1000,
-    "content": [
-      {
-        "id": "11",
-        "coordinates": [387,215]
-      },
-      {
-        "id": "0",
-        "coordinates": [16,16]
-      },
-      {
-        "id": "1",
-        "coordinates": [48,16]
-      },
-      {
-        "id": "2",
-        "coordinates": [80,16]
-      },
-      {
-        "id": "3",
-        "coordinates": [16,48]
-      },
-      {
-        "id": "4",
-        "coordinates": [48,48]
-      },
-      {
-        "id": "5",
-        "coordinates": [80,48]
-      },
-      {
-        "id": "6",
-        "coordinates": [16,80]
-      },
-      {
-        "id": "7",
-        "coordinates": [48,80]
-      },
-      {
-        "id": "8",
-        "coordinates": [80,80]
-      },
-      {
-        "id": "9",
-        "coordinates": [23,25]
-      },
-      {
-        "id": "10",
-        "coordinates": [70,70]
-      }
-    ]
-  },
   "processors": [
     {
       "name": "inputProcessor",
@@ -154,7 +206,8 @@
       "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
       "components": [
-        "rigidBody"
+        "rigidBody",
+        "transform"
       ],
       "options": {}
     },
@@ -171,7 +224,8 @@
       "name": "renderProcessor",
       "section": "renderingSection",
       "components": [
-        "renderable"
+        "renderable",
+        "transform"
       ],
       "options": {
         "windowNodeId": "root",

@@ -11,26 +11,10 @@ class ControlProcessor extends Processor {
     this._gameObjectObserver = options.gameObjectObserver;
   }
 
-  getComponentList() {
-    return [
-      CONTROLLABLE_COMPONENT_NAME,
-    ];
-  }
-
-  _validateGameObject(gameObject) {
-    return this.getComponentList().every((component) => {
-      return !!gameObject.getComponent(component);
-    });
-  }
-
   process(options) {
     const messageBus = options.messageBus;
 
     this._gameObjectObserver.forEach((gameObject) => {
-      if (!this._validateGameObject(gameObject))  {
-        return;
-      }
-
       const controllable = gameObject.getComponent(CONTROLLABLE_COMPONENT_NAME);
 
       const actions = Object.keys(controllable.actions).reduce((storage, inputEvent) => {

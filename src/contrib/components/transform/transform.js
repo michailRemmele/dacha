@@ -1,16 +1,7 @@
 class Transform {
   constructor(config) {
-    this._rotation = config.rotation;
-    this._offsetX = config._offsetX;
-    this._offsetY = config._offsetY;
-  }
-
-  set rotation(rotation) {
-    this._rotation = rotation;
-  }
-
-  get rotation() {
-    return this._rotation;
+    this._offsetX = config.offsetX;
+    this._offsetY = config.offsetY;
   }
 
   set offsetX(offsetX) {
@@ -31,7 +22,6 @@ class Transform {
 
   clone() {
     return new Transform({
-      rotation: this.rotation,
       offsetX: this.offsetX,
       offsetY: this.offsetY,
     });

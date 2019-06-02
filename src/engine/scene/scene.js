@@ -1,18 +1,15 @@
 import { SECTIONS } from 'engine/consts/global';
 
-import SceneMap from './sceneMap/sceneMap';
-
 const GAME_OBJECT_ADDED = 'GAME_OBJECT_ADDED';
 const GAME_OBJECT_REMOVED = 'GAME_OBJECT_REMOVED';
 
 class Scene {
   constructor(options) {
-    const { name, width, height, sortingLayers } = options;
+    const { name, sortingLayers } = options;
 
     this._name = name;
+    this._sortingLayers = sortingLayers;
     this._gameObjects = {};
-    this._sceneMap = new SceneMap(width, height, sortingLayers);
-    this._gameObjectsCoordinates = {};
 
     this._processorSections = {
       [SECTIONS.EVENT_PROCESS_SECTION_NAME]: [],
@@ -78,32 +75,12 @@ class Scene {
     });
   }
 
-  placeGameObject(x, y, id) {
-    const gameObject = this._gameObjects[id];
-    const sortingLayer = gameObject.getSortingLayer();
-
-    if (this._gameObjectsCoordinates[id]) {
-      const coordinates = this._gameObjectsCoordinates[id];
-      this._sceneMap.removeValue(Math.trunc(coordinates[0]), Math.trunc(coordinates[1]), sortingLayer, id);
-    }
-
-    this._sceneMap.insertValue(Math.trunc(x), Math.trunc(y), sortingLayer, id);
-
-    this._gameObjectsCoordinates[id] = [ x, y ];
-  }
-
-  forEachPlacedGameObject(callbackFn) {
-    this._sceneMap.forEachValue((id, x, y) => {
-      callbackFn(this._gameObjects[id], x, y);
-    });
-  }
-
-  getGameObjectCoordinates(id) {
-    return this._gameObjectsCoordinates[id];
-  }
-
   getName() {
     return this._name;
+  }
+
+  getSortingLayers() {
+    return this._sortingLayers;
   }
 
   getGameObjects() {

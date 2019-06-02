@@ -14,19 +14,6 @@ class AnimateProcessor extends Processor {
     this._gameObjectObserver = options.gameObjectObserver;
   }
 
-  getComponentList() {
-    return [
-      RENDERABLE_COMPONENT_NAME,
-      ANIMATABLE_COMPONENT_NAME,
-    ];
-  }
-
-  _validateGameObject(gameObject) {
-    return this.getComponentList().every((component) => {
-      return !!gameObject.getComponent(component);
-    });
-  }
-
   _setFrame(renderable, frame) {
     renderable.currentFrame = frame.index;
     renderable.rotation = frame.rotation !== undefined ? frame.rotation : renderable.rotation;
@@ -39,10 +26,6 @@ class AnimateProcessor extends Processor {
     const messageBus = options.messageBus;
 
     this._gameObjectObserver.forEach((gameObject) => {
-      if (!this._validateGameObject(gameObject))  {
-        return;
-      }
-
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME);
 

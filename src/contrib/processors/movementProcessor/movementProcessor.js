@@ -60,10 +60,6 @@ const DIRECTIONS = {
 };
 
 class MovementProcessor extends Processor {
-  getComponentList() {
-    return [];
-  }
-
   process(options) {
     const messageBus = options.messageBus;
 

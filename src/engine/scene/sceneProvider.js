@@ -27,8 +27,6 @@ class SceneProvider {
 
     const scene = new Scene({
       name: config.name,
-      width: config.map.width,
-      height: config.map.height,
       sortingLayers: projectSettings.sortingLayers,
     });
 
@@ -40,10 +38,6 @@ class SceneProvider {
           gameObject.components
         )
       );
-    });
-
-    config.map.content.forEach((gameObject) => {
-      scene.placeGameObject(gameObject.coordinates[0], gameObject.coordinates[1], gameObject.id);
     });
 
     await Promise.all(config.processors.map((processorInfo) => {

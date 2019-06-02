@@ -14,6 +14,7 @@ const DRAW_OFFSET = 0;
 const DRAW_COUNT = 6;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
+const TRANSFORM_COMPONENT_NAME = 'transform';
 
 class RenderProcessor extends Processor {
   constructor(options) {
@@ -46,6 +47,7 @@ class RenderProcessor extends Processor {
     this.shaders = [];
 
     this._scene = scene;
+    this._gameObjectObserver = gameObjectObserver;
   }
 
   processorDidMount() {
@@ -174,16 +176,46 @@ class RenderProcessor extends Processor {
     return matrix;
   }
 
-  getComponentList() {
-    return [
-      RENDERABLE_COMPONENT_NAME,
-    ];
-  }
+  _getCompareFunction() {
+    const sortingLayerOrder = this._scene.getSortingLayers().reduce((storage, layer, index) => {
+      storage[layer] = index;
 
-  _validateGameObject(gameObject) {
-    return this.getComponentList().every((component) => {
-      return !!gameObject.getComponent(component);
-    });
+      return storage;
+    }, {});
+
+    return (a, b) => {
+      const aSortingLayerOrder = sortingLayerOrder[a.getSortingLayer()];
+      const bSortingLayerOrder = sortingLayerOrder[b.getSortingLayer()];
+
+      if (aSortingLayerOrder > bSortingLayerOrder) {
+        return 1;
+      }
+
+      if (aSortingLayerOrder < bSortingLayerOrder) {
+        return -1;
+      }
+
+      const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME);
+      const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME);
+
+      if (aTransform.offsetY > bTransform.offsetY) {
+        return 1;
+      }
+
+      if (aTransform.offsetY < bTransform.offsetY) {
+        return -1;
+      }
+
+      if (aTransform.offsetX > bTransform.offsetX) {
+        return 1;
+      }
+
+      if (aTransform.offsetX < bTransform.offsetX) {
+        return -1;
+      }
+
+      return 0;
+    };
   }
 
   process() {
@@ -194,12 +226,10 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    this._scene.forEachPlacedGameObject((gameObject, x, y) => {
-      if (!this._validateGameObject(gameObject))  {
-        return;
-      }
-
+    this._gameObjectObserver.sort(this._getCompareFunction());
+    this._gameObjectObserver.forEach((gameObject) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
       const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
@@ -220,8 +250,8 @@ class RenderProcessor extends Processor {
       const uniforms = {
         u_matrix: this._getTransformationMatrix({
           renderable: renderable,
-          x: x,
-          y: y,
+          x: transform.offsetX,
+          y: transform.offsetY,
         }),
         u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
         u_texCoordTranslation: [ textureInfo.x, textureInfo.y ],
