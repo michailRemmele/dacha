@@ -11,7 +11,7 @@ class AnimateProcessor extends Processor {
   constructor(options) {
     super();
 
-    this._scene = options.scene;
+    this._gameObjectObserver = options.gameObjectObserver;
   }
 
   getComponentList() {
@@ -38,7 +38,7 @@ class AnimateProcessor extends Processor {
     const deltaTime = options.deltaTime;
     const messageBus = options.messageBus;
 
-    this._scene.forEachPlacedGameObject((gameObject) => {
+    this._gameObjectObserver.forEach((gameObject) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }

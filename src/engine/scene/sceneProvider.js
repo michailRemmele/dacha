@@ -1,8 +1,8 @@
 import * as global from 'engine/consts/global';
 
 import IOC from 'engine/ioc/ioc';
-
 import Scene from './scene';
+import GameObjectObserver from 'engine/gameObject/gameObjectObserver';
 
 class SceneProvider {
   constructor(processorsPlugins) {
@@ -47,9 +47,12 @@ class SceneProvider {
     });
 
     await Promise.all(config.processors.map((processorInfo) => {
+      const gameObjectObserver = new GameObjectObserver(scene, processorInfo.components);
+
       return this._processorsPlugins[processorInfo.name].load({
         ...processorInfo.options,
         scene: scene,
+        gameObjectObserver: gameObjectObserver,
       })
         .then((processor) => {
           scene.addProcessor(processor, processorInfo.section);

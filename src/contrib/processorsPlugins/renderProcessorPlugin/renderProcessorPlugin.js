@@ -22,6 +22,7 @@ class InputProcessorPlugin extends ProcessorPlugin {
       textureAtlasDescriptor: loadedResources[1],
       backgroundColor: backgroundColor,
       scene: scene,
+      gameObjectObserver: options.gameObjectObserver,
     });
   }
 }

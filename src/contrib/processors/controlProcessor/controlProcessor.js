@@ -1,12 +1,16 @@
 import Processor from 'engine/processor/processor';
-import IOC from 'engine/ioc/ioc';
 
-import * as global from 'engine/consts/global';
 const MOVEMENT_MESSAGE_TYPE = 'MOVEMENT';
 
 const CONTROLLABLE_COMPONENT_NAME = 'controllable';
 
 class ControlProcessor extends Processor {
+  constructor(options) {
+    super();
+
+    this._gameObjectObserver = options.gameObjectObserver;
+  }
+
   getComponentList() {
     return [
       CONTROLLABLE_COMPONENT_NAME,
@@ -22,10 +26,7 @@ class ControlProcessor extends Processor {
   process(options) {
     const messageBus = options.messageBus;
 
-    const sceneProvider = IOC.resolve(global.SCENE_PROVIDER_KEY_NAME);
-    const currentScene = sceneProvider.getCurrentScene();
-
-    currentScene.forEachPlacedGameObject((gameObject) => {
+    this._gameObjectObserver.forEach((gameObject) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }

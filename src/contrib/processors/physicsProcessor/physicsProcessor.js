@@ -9,6 +9,7 @@ class PhysicsProcessor extends Processor {
     super();
 
     this._scene = options.scene;
+    this._gameObjectObserver = options.gameObjectObserver;
   }
 
   _validateGameObject(gameObject) {
@@ -28,7 +29,7 @@ class PhysicsProcessor extends Processor {
 
     const gameObjectsCoordinates = {};
 
-    this._scene.forEachPlacedGameObject((gameObject) => {
+    this._gameObjectObserver.forEach((gameObject) => {
       if (!this._validateGameObject(gameObject))  {
         return;
       }

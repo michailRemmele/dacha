@@ -6,6 +6,7 @@ class AnimateProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     return new AnimateProcessor({
       scene: options.scene,
+      gameObjectObserver: options.gameObjectObserver,
     });
   }
 }

@@ -6,6 +6,7 @@ class PhysicsProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     return new PhysicsProcessor({
       scene: options.scene,
+      gameObjectObserver: options.gameObjectObserver,
     });
   }
 }

@@ -19,7 +19,11 @@ class RenderProcessor extends Processor {
   constructor(options) {
     super();
 
-    const { window, textureAtlas, textureAtlasDescriptor, backgroundColor, scene } = options;
+    const {
+      window, textureAtlas,
+      textureAtlasDescriptor,
+      backgroundColor, scene, gameObjectObserver,
+    } = options;
 
     this.textureAtlas = textureAtlas;
     this.textureAtlasSize = {
