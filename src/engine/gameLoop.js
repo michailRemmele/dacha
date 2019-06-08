@@ -23,6 +23,29 @@ class GameLoop {
     });
   }
 
+  _gameStateUpdate() {
+    if (this.lag < MS_PER_UPDATE) {
+      this.messageBus.stash();
+      return;
+    }
+
+    const currentScene = this.sceneProvider.getCurrentScene();
+    const gameStateUpdateSection = currentScene.getProcessorSection(
+      SECTIONS.GAME_STATE_UPDATE_SECTION_NAME
+    );
+
+    while (this.lag >= MS_PER_UPDATE) {
+      this._processSection(gameStateUpdateSection, { deltaTime: MS_PER_UPDATE });
+      this.lag -= MS_PER_UPDATE;
+
+      if (this.lag >= MS_PER_UPDATE) {
+        this.messageBus.stash();
+      }
+    }
+
+    this.messageBus.restore();
+  }
+
   run() {
     this.previous = undefined;
     this.lag = 0;
@@ -35,9 +58,6 @@ class GameLoop {
       const eventProcessSection = currentScene.getProcessorSection(
         SECTIONS.EVENT_PROCESS_SECTION_NAME
       );
-      const gameStateUpdateSection = currentScene.getProcessorSection(
-        SECTIONS.GAME_STATE_UPDATE_SECTION_NAME
-      );
       const renderingSection = currentScene.getProcessorSection(
         SECTIONS.RENDERING_SECTION_NAME
       );
@@ -46,19 +66,10 @@ class GameLoop {
       that.previous = current;
       that.lag += elapsed;
 
-      that._processSection(eventProcessSection);
-
-      while (that.lag >= MS_PER_UPDATE) {
-        that._processSection(gameStateUpdateSection, { deltaTime: MS_PER_UPDATE });
-        that.lag -= MS_PER_UPDATE;
-
-        if (that.lag >= MS_PER_UPDATE) {
-          that.messageBus.stash();
-        }
-      }
-
       that.messageBus.restore();
 
+      that._processSection(eventProcessSection);
+      that._gameStateUpdate();
       that._processSection(renderingSection, { deltaTime: elapsed });
 
       that.messageBus.clear();
