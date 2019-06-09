@@ -1,15 +1,6 @@
 class RigidBody {
-  constructor(config) {
-    this._speed = config.speed;
+  constructor() {
     this._forceVectors = {};
-  }
-
-  set speed(speed) {
-    this._speed = speed;
-  }
-
-  get speed() {
-    return this._speed;
   }
 
   set forceVectors(forceVectors) {
@@ -21,9 +12,7 @@ class RigidBody {
   }
 
   clone() {
-    return new RigidBody({
-      speed: this.speed,
-    });
+    return new RigidBody();
   }
 }
 

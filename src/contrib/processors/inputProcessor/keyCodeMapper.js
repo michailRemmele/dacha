@@ -1,8 +1,8 @@
 import keyCodeValues from './keyCodeValues';
 
 class KeyCodeMapper {
-  getKeyCode(char) {
-    return keyCodeValues[char] ? keyCodeValues[char] : 0;
+  getChar(keyCode) {
+    return keyCodeValues[keyCode];
   }
 }
 

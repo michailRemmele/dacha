@@ -1,8 +1,12 @@
 import Processor from 'engine/processor/processor';
 
-const MOVEMENT_MESSAGE_TYPE = 'MOVEMENT';
+const CONTROL_COMPONENT_NAME = 'control';
 
-const CONTROLLABLE_COMPONENT_NAME = 'controllable';
+const INPUT_MESSAGE = 'INPUT_EVENT_QUERY';
+
+const RELEASE_EVENT_TYPE = 'RELEASED';
+
+const PREFIX_SEPARATOR = '_';
 
 class ControlProcessor extends Processor {
   constructor(options) {
@@ -15,22 +19,36 @@ class ControlProcessor extends Processor {
     const messageBus = options.messageBus;
 
     this._gameObjectObserver.forEach((gameObject) => {
-      const controllable = gameObject.getComponent(CONTROLLABLE_COMPONENT_NAME);
+      const control = gameObject.getComponent(CONTROL_COMPONENT_NAME);
 
-      const actions = Object.keys(controllable.actions).reduce((storage, inputEvent) => {
-        if (messageBus.get(inputEvent)) {
-          storage.push(controllable.actions[inputEvent]);
-        }
-        return storage;
-      }, []);
+      const messages = messageBus.get(INPUT_MESSAGE) || [];
+      messages.forEach((message) => {
+        message.query.forEach((inputEvent) => {
+          const splitEvent = inputEvent.split(PREFIX_SEPARATOR);
+          const key = splitEvent[0];
+          const eventType = splitEvent[1];
 
-      if (actions.length) {
-        messageBus.send({
-          type: MOVEMENT_MESSAGE_TYPE,
-          gameObject: gameObject,
-          actions: actions,
+          if (key in control.keyStates) {
+            control.keyStates[key] = eventType;
+          }
         });
-      }
+      });
+
+      Object.keys(control.keyStates).forEach((key) => {
+        const inputEventType = control.keyStates[key];
+        const eventBinding = control.inputEventBindings[
+          `${key}${PREFIX_SEPARATOR}${inputEventType}`
+        ];
+        if (inputEventType && eventBinding) {
+          messageBus.send({
+            type: eventBinding,
+            gameObject: gameObject,
+          });
+        }
+        if (inputEventType === RELEASE_EVENT_TYPE) {
+          control.keyStates[key] = null;
+        }
+      });
     });
   }
 }

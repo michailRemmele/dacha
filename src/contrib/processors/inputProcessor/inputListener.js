@@ -5,18 +5,14 @@ class InputListener {
     this._releasedKeys = new Set();
   }
 
-  startListen(keys) {
+  startListen() {
     this._window.onkeydown = (event) => {
-      if (keys.indexOf(event.keyCode) !== -1) {
-        this._pressedKeys.add(event.keyCode);
-      }
+      this._pressedKeys.add(event.keyCode);
     };
 
     this._window.onkeyup = (event) => {
-      if (keys.indexOf(event.keyCode) !== -1) {
-        this._pressedKeys.delete(event.keyCode);
-        this._releasedKeys.add(event.keyCode);
-      }
+      this._pressedKeys.delete(event.keyCode);
+      this._releasedKeys.add(event.keyCode);
     };
   }
 

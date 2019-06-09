@@ -1,25 +1,27 @@
 import Processor from 'engine/processor/processor';
 
 import InputListener from './inputListener';
-import ActionResolver from './actionResolver';
+import KeyCodeMapper from './keyCodeMapper';
 
-const PRESS_EVENT_TYPE = 'PRESS';
-const RELEASE_EVENT_TYPE = 'RELEASE';
+const INPUT_MESSAGE = 'INPUT_EVENT_QUERY';
+
+const PRESS_EVENT_TYPE = 'PRESSED';
+const RELEASE_EVENT_TYPE = 'RELEASED';
+
 const PREFIX_SEPARATOR = '_';
 
 class InputProcessor extends Processor {
-  constructor(keyBindings) {
+  constructor() {
     super();
 
-    this._keyBindings = keyBindings;
     this._inputListener = new InputListener(window);
-    this._actionResolver = new ActionResolver(this._keyBindings);
+    this._keyCodeMapper = new KeyCodeMapper();
 
     this._events = [
       {
         type: PRESS_EVENT_TYPE,
         getKeys: () => this._inputListener.getPressedKeys(),
-        onProcessComplete: () => {},
+        onProcessComplete: () => this._inputListener.clearPressedKeys(),
       },
       {
         type: RELEASE_EVENT_TYPE,
@@ -30,7 +32,7 @@ class InputProcessor extends Processor {
   }
 
   processorDidMount() {
-    this._inputListener.startListen(this._actionResolver.getKeys());
+    this._inputListener.startListen();
   }
 
   processorWillUnmount() {
@@ -40,18 +42,19 @@ class InputProcessor extends Processor {
   process(options) {
     const messageBus = options.messageBus;
 
-    this._events.forEach((event) => {
-      event.getKeys().forEach((key) => {
-        const action = this._actionResolver.resolve(key);
+    const eventQuery = [];
 
-        if (action) {
-          messageBus.send({
-            type: `${event.type}${PREFIX_SEPARATOR}${action}`,
-          });
-        }
+    this._events.forEach((event) => {
+      event.getKeys().forEach((keyCode) => {
+        eventQuery.push(`${this._keyCodeMapper.getChar(keyCode)}${PREFIX_SEPARATOR}${event.type}`);
       });
 
       event.onProcessComplete();
+    });
+
+    messageBus.send({
+      type: INPUT_MESSAGE,
+      query: eventQuery,
     });
   }
 }

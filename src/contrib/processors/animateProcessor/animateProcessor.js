@@ -12,6 +12,11 @@ class AnimateProcessor extends Processor {
     super();
 
     this._gameObjectObserver = options.gameObjectObserver;
+    this._conditionControllers = Object.keys(conditionControllers).reduce((storage, key) => {
+      const ConditionController = conditionControllers[key];
+      storage[key] = new ConditionController();
+      return storage;
+    }, {});
   }
 
   _setFrame(renderable, frame) {
@@ -31,12 +36,12 @@ class AnimateProcessor extends Processor {
 
       const nextTransition = animatable.currentState.transitions.find((transition) => {
         return transition.conditions.some((condition) => {
-          const ConditionController = conditionControllers[condition.type];
-          const conditionController = new ConditionController({
+          const conditionController = this._conditionControllers[condition.type];
+          return conditionController.check({
             ...condition.props,
             gameObject: gameObject,
+            messageBus: messageBus,
           });
-          return conditionController.check(messageBus);
         });
       });
 
