@@ -4,6 +4,10 @@
   "components": [
     {
       "name": "rigidBody",
+      "config": {}
+    },
+    {
+      "name": "movement",
       "config": {
         "speed": 100
       }
@@ -65,21 +69,17 @@
                 "state": "runRight",
                 "conditions": [
                   {
-                    "type": "message",
+                    "type": "comparator",
                     "props": {
-                      "message": "MOVEMENT_UP"
-                    }
-                  },
-                  {
-                    "type": "message",
-                    "props": {
-                      "message": "MOVEMENT_RIGHT"
-                    }
-                  },
-                  {
-                    "type": "message",
-                    "props": {
-                      "message": "MOVEMENT_DOWN"
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "greater",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
                     }
                   }
                 ]
@@ -88,9 +88,36 @@
                 "state": "runLeft",
                 "conditions": [
                   {
-                    "type": "message",
+                    "type": "comparator",
                     "props": {
-                      "message": "MOVEMENT_LEFT"
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "less",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runVertical",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.y"
+                      },
+                      "operation": "notEquals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
                     }
                   }
                 ]
@@ -132,20 +159,17 @@
                 "state": "idle",
                 "conditions": [
                   {
-                    "type": "message",
+                    "type": "comparator",
                     "props": {
-                      "message": "MOVEMENT_STOP"
-                    }
-                  }
-                ]
-              },
-              {
-                "state": "runLeft",
-                "conditions": [
-                  {
-                    "type": "message",
-                    "props": {
-                      "message": "MOVEMENT_LEFT"
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
                     }
                   }
                 ]
@@ -187,32 +211,103 @@
                 "state": "idle",
                 "conditions": [
                   {
-                    "type": "message",
+                    "type": "comparator",
                     "props": {
-                      "message": "MOVEMENT_STOP"
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "runVertical",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 6,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 7,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 8,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 9,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "runRight",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "greater",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
                     }
                   }
                 ]
               },
               {
-                "state": "runRight",
+                "state": "runLeft",
                 "conditions": [
                   {
-                    "type": "message",
+                    "type": "comparator",
                     "props": {
-                      "message": "MOVEMENT_UP"
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "less",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
                     }
-                  },
+                  }
+                ]
+              },
+              {
+                "state": "idle",
+                "conditions": [
                   {
-                    "type": "message",
+                    "type": "comparator",
                     "props": {
-                      "message": "MOVEMENT_RIGHT"
-                    }
-                  },
-                  {
-                    "type": "message",
-                    "props": {
-                      "message": "MOVEMENT_DOWN"
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.y"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
                     }
                   }
                 ]

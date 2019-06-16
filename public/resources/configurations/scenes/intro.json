@@ -13,17 +13,13 @@
           }
         },
         {
-          "name": "controllable",
+          "name": "control",
           "config": {
-            "actions": {
-              "PRESS_MOVEMENT_UP": "MOVEMENT_UP",
-              "PRESS_MOVEMENT_LEFT": "MOVEMENT_LEFT",
-              "PRESS_MOVEMENT_RIGHT": "MOVEMENT_RIGHT",
-              "PRESS_MOVEMENT_DOWN": "MOVEMENT_DOWN",
-              "RELEASE_MOVEMENT_UP": "MOVEMENT_STOP",
-              "RELEASE_MOVEMENT_LEFT": "MOVEMENT_STOP",
-              "RELEASE_MOVEMENT_RIGHT": "MOVEMENT_STOP",
-              "RELEASE_MOVEMENT_DOWN": "MOVEMENT_STOP"
+            "inputEventBindings": {
+              "W_PRESSED": "MOVEMENT_UP",
+              "A_PRESSED": "MOVEMENT_LEFT",
+              "S_PRESSED": "MOVEMENT_DOWN",
+              "D_PRESSED": "MOVEMENT_RIGHT"
             }
           }
         }
@@ -178,28 +174,23 @@
       "name": "inputProcessor",
       "section": "eventProcessSection",
       "components": [],
-      "options": {
-        "keyBindings": {
-          "F": "START_GAME",
-          "W": "MOVEMENT_UP",
-          "A": "MOVEMENT_LEFT",
-          "S": "MOVEMENT_DOWN",
-          "D": "MOVEMENT_RIGHT"
-        }
-      }
+      "options": {}
     },
     {
       "name": "controlProcessor",
       "section": "gameStateUpdateSection",
       "components": [
-        "controllable"
+        "control"
       ],
       "options": {}
     },
     {
       "name": "movementProcessor",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "components": [
+        "movement",
+        "rigidBody"
+      ],
       "options": {}
     },
     {

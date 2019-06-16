@@ -2,88 +2,64 @@ import Vector2 from 'utils/vector/vector2';
 
 import Processor from 'engine/processor/processor';
 
-const MOVEMENT_MESSAGE_TYPE = 'MOVEMENT';
-const MOVEMENT_UP_MESSAGE_TYPE = 'MOVEMENT_UP';
-const MOVEMENT_RIGHT_MESSAGE_TYPE = 'MOVEMENT_RIGHT';
-const MOVEMENT_DOWN_MESSAGE_TYPE = 'MOVEMENT_DOWN';
-const MOVEMENT_LEFT_MESSAGE_TYPE = 'MOVEMENT_LEFT';
-const STOP_MOVEMENT_MESSAGE_TYPE = 'MOVEMENT_STOP';
-const FORCE_NAME = 'MOVEMENT_FORCE';
+const UP_MSG_TYPE = 'MOVEMENT_UP';
+const LEFT_MSG_TYPE = 'MOVEMENT_LEFT';
+const DOWN_MSG_TYPE = 'MOVEMENT_DOWN';
+const RIGHT_MSG_TYPE = 'MOVEMENT_RIGHT';
+
+const MOVEMENT_FORCE = 'movementForce';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
+const MOVEMENT_COMPONENT_NAME = 'movement';
 
 const MOVEMENT_VECTORS = {
-  MOVEMENT_UP: new Vector2(0, -1),
-  MOVEMENT_LEFT: new Vector2(-1, 0),
-  MOVEMENT_RIGHT: new Vector2(1, 0),
-  MOVEMENT_DOWN: new Vector2(0, 1),
-  MOVEMENT_STOP: new Vector2(0, 0),
-};
-
-const DIRECTIONS = {
-  UP: {
-    vector: new Vector2(0, -1),
-    message: MOVEMENT_UP_MESSAGE_TYPE,
-  },
-  UP_RIGHT: {
-    vector: new Vector2(1, -1),
-    message: MOVEMENT_RIGHT_MESSAGE_TYPE,
-  },
-  RIGHT: {
-    vector: new Vector2(1, 0),
-    message: MOVEMENT_RIGHT_MESSAGE_TYPE,
-  },
-  DOWN_RIGHT: {
-    vector: new Vector2(1, 1),
-    message: MOVEMENT_RIGHT_MESSAGE_TYPE,
-  },
-  DOWN: {
-    vector: new Vector2(0, 1),
-    message: MOVEMENT_DOWN_MESSAGE_TYPE,
-  },
-  DOWN_LEFT: {
-    vector: new Vector2(-1, 1),
-    message: MOVEMENT_LEFT_MESSAGE_TYPE,
-  },
-  LEFT: {
-    vector: new Vector2(-1, 0),
-    message: MOVEMENT_LEFT_MESSAGE_TYPE,
-  },
-  UP_LEFT: {
-    vector: new Vector2(-1, -1),
-    message: MOVEMENT_LEFT_MESSAGE_TYPE,
-  },
-  STOP: {
-    vector: new Vector2(0, 0),
-    message: STOP_MOVEMENT_MESSAGE_TYPE,
-  },
+  [UP_MSG_TYPE]: new Vector2(0, -1),
+  [LEFT_MSG_TYPE]: new Vector2(-1, 0),
+  [RIGHT_MSG_TYPE]: new Vector2(1, 0),
+  [DOWN_MSG_TYPE]: new Vector2(0, 1),
 };
 
 class MovementProcessor extends Processor {
+  constructor(options) {
+    super();
+
+    this._movementMessageTypes = [ UP_MSG_TYPE, LEFT_MSG_TYPE, DOWN_MSG_TYPE, RIGHT_MSG_TYPE ];
+    this._gameObjectObserver = options.gameObjectObserver;
+  }
+
   process(options) {
     const messageBus = options.messageBus;
 
-    const messages = messageBus.get(MOVEMENT_MESSAGE_TYPE) || [];
-    messages.forEach((message) => {
-      const rigidBody = message.gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const movableGameObjects = this._movementMessageTypes.reduce((storage, messageType) => {
+      const messages = messageBus.get(messageType) || [];
+      messages.forEach((message) => {
+        const gameObjectId = message.gameObject.getId();
+        storage[gameObjectId] = storage[gameObjectId] || [];
+        storage[gameObjectId].push(message.type);
+      });
+
+      return storage;
+    }, {});
+
+    this._gameObjectObserver.forEach((gameObject) => {
+      const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+      const movement = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
+
+      const movementDirections = movableGameObjects[gameObject.getId()];
+
+      if (!movementDirections) {
+        rigidBody.forceVectors[MOVEMENT_FORCE] = new Vector2(0, 0);
+        return;
+      }
+
       const vector = new Vector2(0, 0);
-      message.actions.forEach((action) => {
-        vector.add(MOVEMENT_VECTORS[action]);
+
+      movementDirections.forEach((direction) => {
+        vector.add(MOVEMENT_VECTORS[direction]);
       });
 
-      Object.keys(DIRECTIONS).some((name) => {
-        if (vector.equals(DIRECTIONS[name].vector)) {
-          messageBus.send({
-            type: DIRECTIONS[name].message,
-            gameObject: message.gameObject,
-          });
-          return true;
-        }
-      });
-
-      vector.multiplyNumber(rigidBody.speed);
-
-      rigidBody.forceVectors[FORCE_NAME] = vector;
+      vector.multiplyNumber(movement.speed);
+      rigidBody.forceVectors[MOVEMENT_FORCE] = vector;
     });
   }
 }
