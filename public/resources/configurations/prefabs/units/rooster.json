@@ -173,6 +173,25 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "runLeft",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "less",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -218,6 +237,25 @@
                         "value": "rigidBody.forceVectors.movementForce.x"
                       },
                       "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runRight",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "rigidBody.forceVectors.movementForce.x"
+                      },
+                      "operation": "greater",
                       "arg2": {
                         "type": "number",
                         "value": 0
