@@ -89,6 +89,10 @@ class GameObjectObserver {
     this._acceptedGameObjects.forEach(callback);
   }
 
+  map(callback) {
+    return this._acceptedGameObjects.map(callback);
+  }
+
   sort(compareFunction) {
     this._acceptedGameObjects = this._acceptedGameObjects.sort(compareFunction);
   }
