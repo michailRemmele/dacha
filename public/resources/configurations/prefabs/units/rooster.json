@@ -7,6 +7,18 @@
       "config": {}
     },
     {
+      "name": "colliderContainer",
+      "config": {
+        "type": "boxCollider",
+        "collider": {
+          "sizeX": 45,
+          "sizeY": 50,
+          "centerX": 0,
+          "centerY": 0
+        }
+      }
+    },
+    {
       "name": "movement",
       "config": {
         "speed": 100

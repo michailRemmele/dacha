@@ -194,6 +194,16 @@
       "options": {}
     },
     {
+      "name": "collisionProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "rigidBody",
+        "colliderContainer",
+        "transform"
+      ],
+      "options": {}
+    },
+    {
       "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
       "components": [
