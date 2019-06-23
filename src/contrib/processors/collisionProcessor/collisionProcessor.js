@@ -189,7 +189,8 @@ class CollisionProcessor extends Processor {
       this._lastProcessedGameObjects[gameObjectId] = transform.clone();
     });
 
-    this._sweepAndPrune(this._getSortingAxis());
+    const collidedPairs = this._sweepAndPrune(this._getSortingAxis());
+    // console.log(collidedPairs);
   }
 }
 
