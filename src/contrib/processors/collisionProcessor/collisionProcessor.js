@@ -2,6 +2,7 @@ import Processor from 'engine/processor/processor';
 
 import coordintatesCalculators from './coordinatesCalculators';
 import aabbBuilders from './aabbBuilders';
+import DispersionCalculator from './dispersionCalculator/dispersionCalculator';
 
 const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -10,8 +11,6 @@ const AXIS = {
   X: 'x',
   Y: 'y',
 };
-
-const SORTING_AXIS = AXIS.X;
 
 class CollisionProcessor extends Processor {
   constructor(options) {
@@ -29,12 +28,16 @@ class CollisionProcessor extends Processor {
       return storage;
     }, {});
 
-    this._sortingAxis = SORTING_AXIS;
-    this._additionalAxes = Object.values(AXIS).filter((axis) => {
-      return this._sortingAxis !== axis;
-    });
-
-    this._axisSortedList = [];
+    this._axis = {
+      [AXIS.X]: {
+        sortedList: [],
+        dispersionCalculator: new DispersionCalculator(),
+      },
+      [AXIS.Y]: {
+        sortedList: [],
+        dispersionCalculator: new DispersionCalculator(),
+      },
+    };
     this._lastProcessedGameObjects = {};
   }
 
@@ -59,7 +62,7 @@ class CollisionProcessor extends Processor {
     };
 
     [ aabb.min[axis], aabb.max[axis] ].forEach((value) => {
-      this._axisSortedList.push({
+      this._axis[axis].sortedList.push({
         [axis]: value,
         entry: entry,
       });
@@ -69,11 +72,12 @@ class CollisionProcessor extends Processor {
   _updateAxisSortedList(gameObject, aabb, axis) {
     const gameObjectId = gameObject.getId();
     const coordinates = [ aabb.min[axis], aabb.max[axis] ];
+    const sortedList = this._axis[axis].sortedList;
 
-    for (let i = 0; i < this._axisSortedList.length; i++) {
-      if (gameObjectId === this._axisSortedList[i].entry.gameObject.getId())  {
-        this._axisSortedList[i][axis] = coordinates.shift();
-        this._axisSortedList[i].entry.aabb = aabb;
+    for (let i = 0; i < sortedList.length; i++) {
+      if (gameObjectId === sortedList[i].entry.gameObject.getId())  {
+        sortedList[i][axis] = coordinates.shift();
+        sortedList[i].entry.aabb = aabb;
         if (!coordinates.length) {
           break;
         }
@@ -81,18 +85,30 @@ class CollisionProcessor extends Processor {
     }
   }
 
-  _sweepAndPrune(axis) {
-    this._axisSortedList.sort((arg1, arg2) => {
-      if (arg1[axis] > arg2[axis]) {
+  _getSortingAxis() {
+    const xAxisDispersion = this._axis[AXIS.X].dispersionCalculator.getDispersion();
+    const yAxisDispersion = this._axis[AXIS.Y].dispersionCalculator.getDispersion();
+
+    return xAxisDispersion >= yAxisDispersion ? AXIS.X : AXIS.Y;
+  }
+
+  _sweepAndPrune(mainAxis) {
+    const sortedList = this._axis[mainAxis].sortedList;
+    const additionalAxes = Object.values(AXIS).filter((axis) => {
+      return mainAxis !== axis;
+    });
+
+    sortedList.sort((arg1, arg2) => {
+      if (arg1[mainAxis] > arg2[mainAxis]) {
         return 1;
       }
-      if (arg1[axis] < arg2[axis]) {
+      if (arg1[mainAxis] < arg2[mainAxis]) {
         return -1;
       }
       return 0;
     });
 
-    let collisions = this._axisSortedList.reduce((storage, item) => {
+    let collisions = sortedList.reduce((storage, item) => {
       const entry = item.entry;
 
       if (!storage.activeEntries.has(entry)) {
@@ -107,7 +123,7 @@ class CollisionProcessor extends Processor {
       return storage;
     }, { collisions: [], activeEntries: new Set() }).collisions;
 
-    this._additionalAxes.forEach((additionalAxis) => {
+    additionalAxes.forEach((additionalAxis) => {
       collisions = collisions.filter((pair) => {
         const aabb1 = pair[0].aabb;
         const aabb2 = pair[1].aabb;
@@ -140,16 +156,21 @@ class CollisionProcessor extends Processor {
         coordinates
       );
 
-      if (!this._lastProcessedGameObjects[gameObjectId]) {
-        this._addToAxisSortedList(gameObject, aabb, this._sortingAxis);
-      } else {
-        this._updateAxisSortedList(gameObject, aabb, this._sortingAxis);
-      }
+      Object.values(AXIS).forEach((axis) => {
+        const average = (aabb.min[axis] + aabb.max[axis]) * 0.5;
+        this._axis[axis].dispersionCalculator.addToSample(gameObjectId, average);
 
-      this._sweepAndPrune(this._sortingAxis);
+        if (!this._lastProcessedGameObjects[gameObjectId]) {
+          this._addToAxisSortedList(gameObject, aabb, axis);
+        } else {
+          this._updateAxisSortedList(gameObject, aabb, axis);
+        }
+      });
 
       this._lastProcessedGameObjects[gameObjectId] = transform.clone();
     });
+
+    this._sweepAndPrune(this._getSortingAxis());
   }
 }
 
