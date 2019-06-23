@@ -85,6 +85,14 @@ class CollisionProcessor extends Processor {
     }
   }
 
+  _removeFromSortedList(gameObject, axis) {
+    const gameObjectId = gameObject.getId();
+
+    this._axis[axis].sortedList = this._axis[axis].sortedList.filter((item) => {
+      return gameObjectId !== item.entry.gameObject.getId();
+    });
+  }
+
   _getSortingAxis() {
     const xAxisDispersion = this._axis[AXIS.X].dispersionCalculator.getDispersion();
     const yAxisDispersion = this._axis[AXIS.Y].dispersionCalculator.getDispersion();
@@ -137,6 +145,17 @@ class CollisionProcessor extends Processor {
   }
 
   process(options) {
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+
+      Object.values(AXIS).forEach((axis) => {
+        this._axis[axis].dispersionCalculator.removeFromSample(gameObjectId);
+        this._removeFromSortedList(gameObject, axis);
+      });
+
+      this._lastProcessedGameObjects[gameObjectId] = null;
+    });
+
     this._gameObjectObserver.forEach((gameObject) => {
       if (!this._checkOnReorientation(gameObject)) {
         return;
