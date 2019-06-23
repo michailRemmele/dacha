@@ -1,32 +1,23 @@
 class AABB {
-  constructor(point, rx, ry) {
-    this._point = point;
-    this._rx = rx;
-    this._ry = ry;
+  constructor(min, max) {
+    this._min = min;
+    this._max = max;
   }
 
-  set point(point) {
-    this._point = point;
+  set min(min) {
+    this._min = min;
   }
 
-  get point() {
-    return this._point;
+  get min() {
+    return this._min;
   }
 
-  set rx(rx) {
-    this._rx = rx;
+  set max(max) {
+    this._max = max;
   }
 
-  get rx() {
-    return this._rx;
-  }
-
-  set ry(ry) {
-    this._ry = ry;
-  }
-
-  get ry() {
-    return this._ry;
+  get max() {
+    return this._max;
   }
 }
 
