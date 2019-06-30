@@ -1,25 +1,16 @@
-class BoxCollider {
+class CircleCollider {
   constructor(config) {
-    this._sizeX = config.sizeX;
-    this._sizeY = config.sizeY;
+    this._radius = config.radius;
     this._centerX = config.centerX;
     this._centerY = config.centerY;
   }
 
-  set sizeX(sizeX) {
-    this._sizeX = sizeX;
+  set radius(radius) {
+    this._radius = radius;
   }
 
-  get sizeX() {
-    return this._sizeX;
-  }
-
-  set sizeY(sizeY) {
-    this._sizeY = sizeY;
-  }
-
-  get sizeY() {
-    return this._sizeY;
+  get radius() {
+    return this._radius;
   }
 
   set centerX(centerX) {
@@ -39,13 +30,12 @@ class BoxCollider {
   }
 
   clone() {
-    return new BoxCollider({
-      sizeX: this.sizeX,
-      sizeY: this.sizeY,
+    return new CircleCollider({
+      radius: this.radius,
       centerX: this.centerX,
       centerY: this.centerY,
     });
   }
 }
 
-export default BoxCollider;
+export default CircleCollider;

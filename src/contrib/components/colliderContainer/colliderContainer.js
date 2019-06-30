@@ -1,9 +1,11 @@
 import BoxCollider from './boxCollider';
+import CircleCollider from './circleCollider';
 
 class ColliderContainer {
   constructor(config) {
     this._colliders = {
       boxCollider: BoxCollider,
+      circleCollider: CircleCollider,
     };
 
     this._type = config.type;

@@ -167,6 +167,19 @@
           }
         }
       ]
+    },
+    {
+      "id": "12",
+      "name": "bonusBox",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX":48,
+            "offsetY": 48
+          }
+        }
+      ]
     }
   ],
   "processors": [
