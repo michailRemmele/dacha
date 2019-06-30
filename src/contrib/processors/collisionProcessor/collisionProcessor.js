@@ -13,6 +13,8 @@ const AXIS = {
   Y: 'y',
 };
 
+const COLLISION_MESSAGE = 'COLLISION';
+
 class CollisionProcessor extends Processor {
   constructor(options) {
     super();
@@ -148,7 +150,28 @@ class CollisionProcessor extends Processor {
     return collisions;
   }
 
+  _checkOnIntersection(pair) {
+    const getIntersectionEntry = (arg) => {
+      const colliderContainer = arg.gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+
+      return {
+        colliderType: colliderContainer.type,
+        collider: colliderContainer.collider,
+        coordinates: arg.coordinates,
+      };
+    };
+
+    const arg1 = getIntersectionEntry(pair[0]);
+    const arg2 = getIntersectionEntry(pair[1]);
+
+    const intersectionType = `${arg1.colliderType}_${arg2.colliderType}`;
+
+    return this._intersectionCheckers[intersectionType].check(arg1, arg2);
+  }
+
   process(options) {
+    const messageBus = options.messageBus;
+
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
 
@@ -199,26 +222,21 @@ class CollisionProcessor extends Processor {
       this._lastProcessedGameObjects[gameObjectId] = transform.clone();
     });
 
-    const collidedPairs = this._sweepAndPrune(this._getSortingAxis()).filter((pair) => {
-      const getIntersectionEntry = (arg) => {
-        const colliderContainer = arg.gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+    this._sweepAndPrune(this._getSortingAxis()).forEach((pair) => {
+      if (this._checkOnIntersection(pair)) {
+        messageBus.send({
+          type: COLLISION_MESSAGE,
+          gameObject: pair[0].gameObject,
+          otherGameObject: pair[1].gameObject,
+        });
 
-        return {
-          colliderType: colliderContainer.type,
-          collider: colliderContainer.collider,
-          coordinates: arg.coordinates,
-        };
-      };
-
-      const arg1 = getIntersectionEntry(pair[0]);
-      const arg2 = getIntersectionEntry(pair[1]);
-
-      const intersectionType = `${arg1.colliderType}_${arg2.colliderType}`;
-
-      return this._intersectionCheckers[intersectionType].check(arg1, arg2);
+        messageBus.send({
+          type: COLLISION_MESSAGE,
+          gameObject: pair[1].gameObject,
+          otherGameObject: pair[0].gameObject,
+        });
+      }
     });
-
-    // console.log(collidedPairs);
   }
 }
 
