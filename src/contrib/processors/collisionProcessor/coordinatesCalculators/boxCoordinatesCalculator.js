@@ -3,31 +3,41 @@ import CoordinatesCalculator from './coordinatesCalculator';
 class BoxCoordinatesCalculator extends CoordinatesCalculator {
   calc(collider, transform) {
     const { offsetX, offsetY } = transform;
-    const { centerX, centerY, sizeX, sizeY } = collider;
+    let { centerX, centerY } = collider;
+    const { sizeX, sizeY } = collider;
 
-    const x1 = -(sizeX / 2) + centerX + offsetX;
-    const x2 = (sizeX / 2) + centerX + offsetX;
-    const y1 = -(sizeY / 2) + centerY + offsetY;
-    const y2 = (sizeY / 2) + centerY + offsetY;
+    centerX += offsetX;
+    centerY += offsetY;
 
-    return [
-      {
-        x: x1,
-        y: y1,
+    const x1 = -(sizeX / 2) + centerX;
+    const x2 = (sizeX / 2) + centerX;
+    const y1 = -(sizeY / 2) + centerY;
+    const y2 = (sizeY / 2) + centerY;
+
+    return {
+      center: {
+        x: centerX,
+        y: centerY,
       },
-      {
-        x: x1,
-        y: y2,
-      },
-      {
-        x: x2,
-        y: y2,
-      },
-      {
-        x: x2,
-        y: y1,
-      },
-    ];
+      points: [
+        {
+          x: x1,
+          y: y1,
+        },
+        {
+          x: x1,
+          y: y2,
+        },
+        {
+          x: x2,
+          y: y2,
+        },
+        {
+          x: x2,
+          y: y1,
+        },
+      ],
+    };
   }
 }
 

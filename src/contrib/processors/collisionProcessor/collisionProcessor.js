@@ -2,6 +2,7 @@ import Processor from 'engine/processor/processor';
 
 import coordintatesCalculators from './coordinatesCalculators';
 import aabbBuilders from './aabbBuilders';
+import intersectionCheckers from './intersectionCheckers';
 import DispersionCalculator from './dispersionCalculator/dispersionCalculator';
 
 const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
@@ -25,6 +26,11 @@ class CollisionProcessor extends Processor {
     this._aabbBuilders = Object.keys(aabbBuilders).reduce((storage, key) => {
       const AABBBuilder = aabbBuilders[key];
       storage[key] = new AABBBuilder();
+      return storage;
+    }, {});
+    this._intersectionCheckers = Object.keys(intersectionCheckers).reduce((storage, key) => {
+      const IntersectionChecker = intersectionCheckers[key];
+      storage[key] = new IntersectionChecker();
       return storage;
     }, {});
 
@@ -55,13 +61,8 @@ class CollisionProcessor extends Processor {
       || transform.offsetY !== previousTransform.offsetY;
   }
 
-  _addToAxisSortedList(gameObject, aabb, axis) {
-    const entry = {
-      gameObject: gameObject,
-      aabb: aabb,
-    };
-
-    [ aabb.min[axis], aabb.max[axis] ].forEach((value) => {
+  _addToAxisSortedList(entry, axis) {
+    [ entry.aabb.min[axis], entry.aabb.max[axis] ].forEach((value) => {
       this._axis[axis].sortedList.push({
         [axis]: value,
         entry: entry,
@@ -69,16 +70,19 @@ class CollisionProcessor extends Processor {
     });
   }
 
-  _updateAxisSortedList(gameObject, aabb, axis) {
+  _updateAxisSortedList(entry, axis) {
+    const { gameObject, aabb, coordinates } = entry;
+
     const gameObjectId = gameObject.getId();
-    const coordinates = [ aabb.min[axis], aabb.max[axis] ];
+    const sortedListCoordinates = [ aabb.min[axis], aabb.max[axis] ];
     const sortedList = this._axis[axis].sortedList;
 
     for (let i = 0; i < sortedList.length; i++) {
       if (gameObjectId === sortedList[i].entry.gameObject.getId())  {
-        sortedList[i][axis] = coordinates.shift();
+        sortedList[i][axis] = sortedListCoordinates.shift();
         sortedList[i].entry.aabb = aabb;
-        if (!coordinates.length) {
+        sortedList[i].entry.coordinates = coordinates;
+        if (!sortedListCoordinates.length) {
           break;
         }
       }
@@ -179,17 +183,41 @@ class CollisionProcessor extends Processor {
         const average = (aabb.min[axis] + aabb.max[axis]) * 0.5;
         this._axis[axis].dispersionCalculator.addToSample(gameObjectId, average);
 
+        const entry = {
+          gameObject: gameObject,
+          aabb: aabb,
+          coordinates: coordinates,
+        };
+
         if (!this._lastProcessedGameObjects[gameObjectId]) {
-          this._addToAxisSortedList(gameObject, aabb, axis);
+          this._addToAxisSortedList(entry, axis);
         } else {
-          this._updateAxisSortedList(gameObject, aabb, axis);
+          this._updateAxisSortedList(entry, axis);
         }
       });
 
       this._lastProcessedGameObjects[gameObjectId] = transform.clone();
     });
 
-    const collidedPairs = this._sweepAndPrune(this._getSortingAxis());
+    const collidedPairs = this._sweepAndPrune(this._getSortingAxis()).filter((pair) => {
+      const getIntersectionEntry = (arg) => {
+        const colliderContainer = arg.gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+
+        return {
+          colliderType: colliderContainer.type,
+          collider: colliderContainer.collider,
+          coordinates: arg.coordinates,
+        };
+      };
+
+      const arg1 = getIntersectionEntry(pair[0]);
+      const arg2 = getIntersectionEntry(pair[1]);
+
+      const intersectionType = `${arg1.colliderType}_${arg2.colliderType}`;
+
+      return this._intersectionCheckers[intersectionType].check(arg1, arg2);
+    });
+
     // console.log(collidedPairs);
   }
 }

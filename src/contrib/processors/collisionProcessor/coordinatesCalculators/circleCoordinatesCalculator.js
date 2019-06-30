@@ -5,12 +5,13 @@ class CircleCoordinatesCalculator extends CoordinatesCalculator {
     const { offsetX, offsetY } = transform;
     const { centerX, centerY } = collider;
 
-    return [
-      {
+    return {
+      center: {
         x: centerX + offsetX,
         y: centerY + offsetY,
       },
-    ];
+      points: [],
+    };
   }
 }
 

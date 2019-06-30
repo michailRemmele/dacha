@@ -3,7 +3,7 @@ import AABB from './aabb';
 
 class BoxAABBBuilder extends AABBBuilder {
   getAABB(collider, transform, coordinates) {
-    const minMax = coordinates.reduce((storage, coordinate) => {
+    const minMax = coordinates.points.reduce((storage, coordinate) => {
       const minX = storage.min.x;
       const minY = storage.min.y;
       const maxX = storage.max.x;

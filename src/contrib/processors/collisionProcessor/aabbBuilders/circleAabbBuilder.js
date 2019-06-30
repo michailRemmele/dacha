@@ -4,7 +4,7 @@ import AABB from './aabb';
 class CircleAabbBuilder extends AABBBuilder {
   getAABB(collider, transform, coordinates) {
     const { radius } = collider;
-    const { x: centerX, y: centerY } = coordinates[0];
+    const { x: centerX, y: centerY } = coordinates.center;
 
     const minX = centerX - radius;
     const maxX = centerX + radius;
