@@ -31,6 +31,9 @@ class GameObjectObserver {
         this._remove(gameObject);
       }
     });
+
+    this._addedToAccepted = [];
+    this._removedFromAccepted = [];
   }
 
   _add(gameObjects, gameObject) {
@@ -53,6 +56,8 @@ class GameObjectObserver {
     this._observedGameObjects = remove(this._observedGameObjects, gameObject);
     this._acceptedGameObjects = remove(this._acceptedGameObjects, gameObject);
     this._acceptedGameObjectsMap[gameObjectId] = undefined;
+
+    this._removedFromAccepted.push(gameObject);
   }
 
   _test(gameObject) {
@@ -70,6 +75,8 @@ class GameObjectObserver {
 
     this._acceptedGameObjects.push(gameObject);
     this._acceptedGameObjectsMap[gameObjectId] = gameObject;
+
+    this._addedToAccepted.push(gameObject);
   }
 
   _decline(gameObject) {
@@ -83,10 +90,34 @@ class GameObjectObserver {
       return gameObjectId !== acceptedGameObject.getId();
     });
     this._acceptedGameObjectsMap[gameObjectId] = undefined;
+
+    this._removedFromAccepted.push(gameObject);
+  }
+
+  size() {
+    return this._acceptedGameObjects.length;
+  }
+
+  getLastRemoved() {
+    const lastRemoved = this._removedFromAccepted;
+    this._removedFromAccepted = [];
+
+    return lastRemoved;
+  }
+
+  getLastAdded() {
+    const lastAdded = this._addedToAccepted;
+    this._addedToAccepted = [];
+
+    return lastAdded;
   }
 
   forEach(callback) {
     this._acceptedGameObjects.forEach(callback);
+  }
+
+  map(callback) {
+    return this._acceptedGameObjects.map(callback);
   }
 
   sort(compareFunction) {
