@@ -198,7 +198,6 @@ class CollisionProcessor extends Processor {
       );
       const aabb = this._aabbBuilders[colliderContainer.type].getAABB(
         colliderContainer.collider,
-        transform,
         coordinates
       );
 
