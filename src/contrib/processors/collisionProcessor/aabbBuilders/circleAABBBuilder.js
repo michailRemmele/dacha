@@ -1,7 +1,7 @@
 import AABBBuilder from './aabbBuilder';
 import AABB from './aabb';
 
-class CircleAabbBuilder extends AABBBuilder {
+class CircleAABBBuilder extends AABBBuilder {
   getAABB(collider, coordinates) {
     const { radius } = collider;
     const { x: centerX, y: centerY } = coordinates.center;
@@ -15,4 +15,4 @@ class CircleAabbBuilder extends AABBBuilder {
   }
 }
 
-export default CircleAabbBuilder;
+export default CircleAABBBuilder;

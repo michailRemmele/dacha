@@ -1,7 +1,7 @@
-import BoxAabbBuilder from './boxAabbBuilder';
-import CircleAabbBuilder from './circleAabbBuilder';
+import BoxAABBBuilder from './boxAABBBuilder';
+import CircleAABBBuilder from './circleAABBBuilder';
 
 export default {
-  boxCollider: BoxAabbBuilder,
-  circleCollider: CircleAabbBuilder,
+  boxCollider: BoxAABBBuilder,
+  circleCollider: CircleAABBBuilder,
 };
