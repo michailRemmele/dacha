@@ -13,10 +13,14 @@ class SpriteSmithWebpackPlugin {
 
   apply(compiler) {
     compiler.hooks.emit.tapAsync('SpriteSmithWebpackPlugin', (compilation, callback) => {
-      const { input, output } = this.options;
+      const { input, output, padding } = this.options;
 
       const globPattern = `${input.path}/${input.pattern}`;
-      spritesmith.run({ src: glob.sync(globPattern) }, (err, result) => {
+      const params = {
+        src: glob.sync(globPattern),
+        padding: padding || 0,
+      };
+      spritesmith.run(params, (err, result) => {
         const assets = [
           {
             name: output.spriteFilename,
