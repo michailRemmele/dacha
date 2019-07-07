@@ -2,14 +2,27 @@
   "name": "intro-scene",
   "gameObjects": [
     {
-      "id": "9",
+      "id": "0",
+      "name": "space",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "1",
       "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 23,
-            "offsetY": 25
+            "offsetX": -144,
+            "offsetY": -156
           }
         },
         {
@@ -26,144 +39,118 @@
       ]
     },
     {
-      "id": "10",
+      "id": "2",
       "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 70,
-            "offsetY": 70
-          }
-        }
-      ]
-    },
-    {
-      "id": "0",
-      "name": "floor",
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 16,
-            "offsetY": 16
-          }
-        }
-      ]
-    },
-    {
-      "id": "1",
-      "name": "floor",
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 48,
-            "offsetY": 16
-          }
-        }
-      ]
-    },
-    {
-      "id": "2",
-      "name": "floor",
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 80,
-            "offsetY": 16
+            "offsetX": -144,
+            "offsetY": -60
           }
         }
       ]
     },
     {
       "id": "3",
-      "name": "floor",
+      "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 16,
-            "offsetY": 48
+            "offsetX": -144,
+            "offsetY": 36
           }
         }
       ]
     },
     {
       "id": "4",
-      "name": "floor",
+      "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 48,
-            "offsetY": 48
+            "offsetX": -144,
+            "offsetY": 132
           }
         }
       ]
     },
     {
       "id": "5",
-      "name": "floor",
+      "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 80,
-            "offsetY": 48
+            "offsetX": 144,
+            "offsetY": -156
           }
         }
       ]
     },
     {
       "id": "6",
-      "name": "floor",
+      "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 16,
-            "offsetY": 80
+            "offsetX": 144,
+            "offsetY": -60
           }
         }
       ]
     },
     {
       "id": "7",
-      "name": "floor",
+      "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 48,
-            "offsetY": 80
+            "offsetX": 144,
+            "offsetY": 36
           }
         }
       ]
     },
     {
       "id": "8",
-      "name": "floor",
+      "name": "rooster",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 80,
-            "offsetY": 80
+            "offsetX": 144,
+            "offsetY": 132
+          }
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "bonusBox",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 48
           }
         }
       ]
     },
     {
       "id": "11",
-      "name": "space",
+      "name": "bonusBox",
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 387,
-            "offsetY": 215
+            "offsetX": -48,
+            "offsetY": 48
           }
         }
       ]
@@ -175,8 +162,1373 @@
         {
           "name": "transform",
           "config": {
-            "offsetX":48,
+            "offsetX": 48,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "name": "bonusBox",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "name": "bonusBox",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "name": "bonusBox",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "name": "bonusBox",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "name": "bonusBox",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "100",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "101",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "102",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "103",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "104",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "105",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
             "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "106",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "107",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "108",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "109",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "110",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "111",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "112",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "113",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "114",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "115",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "116",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "117",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "118",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "119",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "120",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "121",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "122",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "123",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "124",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "125",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "126",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "127",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "128",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "129",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "130",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "131",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "132",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "133",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "134",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "135",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "136",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "137",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "138",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "139",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "140",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "141",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "142",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "143",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "144",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "145",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 16,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "146",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 48,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "147",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 80,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "148",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 112,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "149",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 144,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "150",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "151",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "152",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "153",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "154",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": -144
+          }
+        }
+      ]
+    },
+    {
+      "id": "155",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "156",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "157",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "158",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "159",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": -112
+          }
+        }
+      ]
+    },
+    {
+      "id": "160",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "161",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "162",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "163",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "164",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": -80
+          }
+        }
+      ]
+    },
+    {
+      "id": "165",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "166",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "167",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "168",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "169",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": -48
+          }
+        }
+      ]
+    },
+    {
+      "id": "170",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "171",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "172",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "173",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "174",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": -16
+          }
+        }
+      ]
+    },
+    {
+      "id": "175",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "176",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "177",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "178",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "179",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "180",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "181",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "182",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "183",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "184",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "185",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "186",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "187",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "188",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "189",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": 80
+          }
+        }
+      ]
+    },
+    {
+      "id": "190",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "191",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "192",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "193",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "194",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": 112
+          }
+        }
+      ]
+    },
+    {
+      "id": "195",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -16,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "196",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -48,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "197",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -80,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "198",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -112,
+            "offsetY": 144
+          }
+        }
+      ]
+    },
+    {
+      "id": "199",
+      "name": "floor",
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -144,
+            "offsetY": 144
           }
         }
       ]
