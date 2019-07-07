@@ -11,12 +11,12 @@ class MatrixTransformer {
     const projectedWidth = 2 / width;
     const projectedHeight = 2 / height;
 
-    matrix[0] = (matrix[0] * projectedWidth) - matrix[2];
-    matrix[1] = matrix[2] - (matrix[1] * projectedHeight);
-    matrix[3] = (matrix[3] * projectedWidth) - matrix[5];
-    matrix[4] = matrix[5] - (matrix[4] * projectedHeight);
-    matrix[6] = (matrix[6] * projectedWidth) - matrix[8];
-    matrix[7] = matrix[8] - (matrix[7] * projectedHeight);
+    matrix[0] = matrix[0] * projectedWidth;
+    matrix[1] = -matrix[1] * projectedHeight;
+    matrix[3] = matrix[3] * projectedWidth;
+    matrix[4] = -matrix[4] * projectedHeight;
+    matrix[6] = matrix[6] * projectedWidth;
+    matrix[7] = -matrix[7] * projectedHeight;
   }
 
   translate(matrix, tx, ty) {

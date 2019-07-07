@@ -159,11 +159,7 @@ class RenderProcessor extends Processor {
     const matrixTransformer = this._matrixTransformer;
     const { renderable, x, y } = props;
 
-    const matrix = [
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1,
-    ];
+    const matrix = matrixTransformer.getIdentityMatrix();
 
     matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
     renderable.flipX && matrixTransformer.flipX(matrix);

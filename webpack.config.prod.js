@@ -70,6 +70,7 @@ module.exports = {
         spriteFilename: 'resources/textureAtlas.png',
         sourceMapFilename: 'resources/textureAtlasMap.json',
       },
+      padding: 2,
     }),
   ],
 
