@@ -15,7 +15,7 @@ const AXIS = {
 
 const COLLISION_MESSAGE = 'COLLISION';
 
-class CollisionProcessor extends Processor {
+class CollisionDetectionProcessor extends Processor {
   constructor(options) {
     super();
 
@@ -239,4 +239,4 @@ class CollisionProcessor extends Processor {
   }
 }
 
-export default CollisionProcessor;
+export default CollisionDetectionProcessor;
