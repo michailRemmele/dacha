@@ -207,13 +207,19 @@
       "options": {}
     },
     {
-      "name": "collisionProcessor",
+      "name": "collisionDetectionProcessor",
       "section": "gameStateUpdateSection",
       "components": [
         "rigidBody",
         "colliderContainer",
         "transform"
       ],
+      "options": {}
+    },
+    {
+      "name": "collisionBroadcastProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [],
       "options": {}
     },
     {
