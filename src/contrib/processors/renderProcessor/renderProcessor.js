@@ -44,10 +44,12 @@ class RenderProcessor extends Processor {
 
     this.canvas = window;
 
-    this.shaders = [];
+    this._shaders = [];
 
     this._scene = scene;
     this._gameObjectObserver = gameObjectObserver;
+
+    this._gameObjectCashMap = {};
   }
 
   processorDidMount() {
@@ -59,7 +61,7 @@ class RenderProcessor extends Processor {
   }
 
   processorWillUnmount() {
-    this.shaders.forEach((shader) => {
+    this._shaders.forEach((shader) => {
       this.gl.detachShader(this.program, shader);
       this.gl.deleteShader(shader);
     });
@@ -68,7 +70,7 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    this.shaders = [];
+    this._shaders = [];
     this.program = null;
     this.textures = null;
     this.gl = null;
@@ -121,7 +123,7 @@ class RenderProcessor extends Processor {
       throw new Error('Unable to initialize the shader program.');
     }
 
-    this.shaders.push(vertexShader, fragmentShader);
+    this._shaders.push(vertexShader, fragmentShader);
 
     return shaderProgram;
   }
@@ -214,6 +216,20 @@ class RenderProcessor extends Processor {
     };
   }
 
+  _checkOnGeometryChange(gameObject) {
+    const gameObjectId = gameObject.getId();
+
+    if (!this._gameObjectCashMap[gameObjectId]) {
+      return true;
+    }
+
+    const previousRenderable = this._gameObjectCashMap[gameObjectId].renderable;
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+
+    return renderable.width !== previousRenderable.width
+      || renderable.height !== previousRenderable.height;
+  }
+
   process() {
     const canvas = this.gl.canvas;
 
@@ -224,24 +240,37 @@ class RenderProcessor extends Processor {
 
     this._gameObjectObserver.sort(this._getCompareFunction());
     this._gameObjectObserver.forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
       const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-      const attribs = {
-        position: {
-          data: new Rectangle(renderable.width, renderable.height).toArray(),
-          numComponents: RENDER_COMPONENTS_NUMBER,
-        },
-        texCoord: {
-          data: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
-          numComponents: RENDER_COMPONENTS_NUMBER,
-        },
-      };
-      const bufferInfo = webglUtils.createBufferInfoFromArrays(this.gl, attribs);
+      if (this._checkOnGeometryChange(gameObject)) {
+        const attribs = {
+          position: {
+            data: new Rectangle(renderable.width, renderable.height).toArray(),
+            numComponents: RENDER_COMPONENTS_NUMBER,
+          },
+          texCoord: {
+            data: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
+            numComponents: RENDER_COMPONENTS_NUMBER,
+          },
+        };
+        const bufferInfo = webglUtils.createBufferInfoFromArrays(this.gl, attribs);
 
-      webglUtils.setBuffersAndAttributes(this.gl, this.programInfo.attribs.setters, bufferInfo);
+        this._gameObjectCashMap[gameObjectId] = {
+          renderable: renderable.clone(),
+          bufferInfo: bufferInfo,
+        };
+      }
+
+      webglUtils.setBuffersAndAttributes(
+        this.gl,
+        this.programInfo.attribs.setters,
+        this._gameObjectCashMap[gameObjectId].bufferInfo
+      );
 
       const uniforms = {
         u_matrix: this._getTransformationMatrix({
