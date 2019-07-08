@@ -3,6 +3,22 @@
   "sortingLayer": "terrain",
   "components": [
     {
+      "name": "rigidBody",
+      "config": {}
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "boxCollider",
+        "collider": {
+          "sizeX": 32,
+          "sizeY": 32,
+          "centerX": 0,
+          "centerY": 0
+        }
+      }
+    },
+    {
       "name": "renderable",
       "config": {
         "type": "static",
