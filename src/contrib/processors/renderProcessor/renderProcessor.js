@@ -230,7 +230,27 @@ class RenderProcessor extends Processor {
       || renderable.height !== previousRenderable.height;
   }
 
+  _createBufferInfo(renderable, textureInfo) {
+    const attribs = {
+      position: {
+        data: new Rectangle(renderable.width, renderable.height).toArray(),
+        numComponents: RENDER_COMPONENTS_NUMBER,
+      },
+      texCoord: {
+        data: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
+        numComponents: RENDER_COMPONENTS_NUMBER,
+      },
+    };
+
+    return webglUtils.createBufferInfoFromArrays(this.gl, attribs);
+  }
+
   process() {
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+      this._gameObjectCashMap[gameObjectId] = null;
+    });
+
     const canvas = this.gl.canvas;
 
     webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
@@ -248,21 +268,9 @@ class RenderProcessor extends Processor {
       const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
       if (this._checkOnGeometryChange(gameObject)) {
-        const attribs = {
-          position: {
-            data: new Rectangle(renderable.width, renderable.height).toArray(),
-            numComponents: RENDER_COMPONENTS_NUMBER,
-          },
-          texCoord: {
-            data: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
-            numComponents: RENDER_COMPONENTS_NUMBER,
-          },
-        };
-        const bufferInfo = webglUtils.createBufferInfoFromArrays(this.gl, attribs);
-
         this._gameObjectCashMap[gameObjectId] = {
           renderable: renderable.clone(),
-          bufferInfo: bufferInfo,
+          bufferInfo: this._createBufferInfo(renderable, textureInfo),
         };
       }
 
