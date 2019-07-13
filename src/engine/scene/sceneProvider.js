@@ -17,17 +17,12 @@ class SceneProvider {
   }
 
   async createScene(config) {
-    const {
-      GAME_OBJECT_CREATOR_KEY_NAME,
-      PROJECT_SETTINGS_KEY_NAME,
-    } = global;
+    const { GAME_OBJECT_CREATOR_KEY_NAME } = global;
 
     const gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
-    const projectSettings = IOC.resolve(PROJECT_SETTINGS_KEY_NAME);
 
     const scene = new Scene({
       name: config.name,
-      sortingLayers: projectSettings.sortingLayers,
     });
 
     config.gameObjects.forEach((gameObject) => {

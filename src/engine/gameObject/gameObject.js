@@ -2,9 +2,8 @@ const COMPONENT_ADDED = 'COMPONENT_ADDED';
 const COMPONENT_REMOVED = 'COMPONENT_REMOVED';
 
 class GameObject {
-  constructor(id, sortingLayer) {
+  constructor(id) {
     this._id = id;
-    this._sortingLayer = sortingLayer;
     this._components = {};
 
     this._subscribers = [];
@@ -15,14 +14,6 @@ class GameObject {
 
   getId() {
     return this._id;
-  }
-
-  getSortingLayer() {
-    return this._sortingLayer;
-  }
-
-  setSortingLayer(sortingLayer) {
-    this._sortingLayer = sortingLayer;
   }
 
   getComponent(name) {
