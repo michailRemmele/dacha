@@ -22,8 +22,8 @@ class RenderProcessor extends Processor {
 
     const {
       window, textureAtlas,
-      textureAtlasDescriptor,
-      backgroundColor, scene, gameObjectObserver,
+      textureAtlasDescriptor, backgroundColor,
+      gameObjectObserver, sortingLayers,
     } = options;
 
     this.textureAtlas = textureAtlas;
@@ -46,7 +46,10 @@ class RenderProcessor extends Processor {
 
     this._shaders = [];
 
-    this._scene = scene;
+    this._sortingLayer = sortingLayers.reduce((storage, layer, index) => {
+      storage[layer] = index;
+      return storage;
+    }, {});
     this._gameObjectObserver = gameObjectObserver;
 
     this._gameObjectCashMap = {};
@@ -175,15 +178,11 @@ class RenderProcessor extends Processor {
   }
 
   _getCompareFunction() {
-    const sortingLayerOrder = this._scene.getSortingLayers().reduce((storage, layer, index) => {
-      storage[layer] = index;
-
-      return storage;
-    }, {});
-
     return (a, b) => {
-      const aSortingLayerOrder = sortingLayerOrder[a.getSortingLayer()];
-      const bSortingLayerOrder = sortingLayerOrder[b.getSortingLayer()];
+      const aRenderable = a.getComponent(RENDERABLE_COMPONENT_NAME);
+      const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME);
+      const aSortingLayerOrder = this._sortingLayer[aRenderable.sortingLayer];
+      const bSortingLayerOrder = this._sortingLayer[bRenderable.sortingLayer];
 
       if (aSortingLayerOrder > bSortingLayerOrder) {
         return 1;

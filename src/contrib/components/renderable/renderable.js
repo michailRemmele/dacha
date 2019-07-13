@@ -10,6 +10,7 @@ class Renderable {
     this._origin = config.origin;
     this._flipX = config.flipX;
     this._flipY = config.flipY;
+    this._sortingLayer = config.sortingLayer;
   }
 
   set src(src) {
@@ -92,6 +93,14 @@ class Renderable {
     return this._flipY;
   }
 
+  set sortingLayer(sortingLayer) {
+    this._sortingLayer = sortingLayer;
+  }
+
+  get sortingLayer() {
+    return this._sortingLayer;
+  }
+
   clone() {
     return new Renderable({
       src: this.src,
@@ -103,6 +112,7 @@ class Renderable {
       origin: this._origin,
       flipX: this.flipX,
       flipY: this.flipY,
+      sortingLayer: this.sortingLayer,
     });
   }
 }

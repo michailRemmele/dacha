@@ -1603,7 +1603,14 @@
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",
         "textureAtlasDescriptor": "resources/textureAtlasMap.json",
-        "backgroundColor": "#000"
+        "backgroundColor": "#000",
+        "sortingLayers": [
+          "default",
+          "background",
+          "terrain",
+          "decorations",
+          "units"
+        ]
       }
     }
   ]

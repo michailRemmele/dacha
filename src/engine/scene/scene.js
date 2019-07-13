@@ -5,10 +5,9 @@ const GAME_OBJECT_REMOVED = 'GAME_OBJECT_REMOVED';
 
 class Scene {
   constructor(options) {
-    const { name, sortingLayers } = options;
+    const { name } = options;
 
     this._name = name;
-    this._sortingLayers = sortingLayers;
     this._gameObjects = {};
 
     this._processorSections = {
@@ -77,10 +76,6 @@ class Scene {
 
   getName() {
     return this._name;
-  }
-
-  getSortingLayers() {
-    return this._sortingLayers;
   }
 
   getGameObjects() {
