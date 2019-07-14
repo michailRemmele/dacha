@@ -1,5 +1,9 @@
-class Renderable {
+import Component from 'engine/component/component';
+
+class Renderable extends Component {
   constructor(config) {
+    super();
+
     this._src = config.src;
     this._width = config.width;
     this._height = config.height;

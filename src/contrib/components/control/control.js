@@ -1,7 +1,11 @@
+import Component from 'engine/component/component';
+
 const PREFIX_SEPARATOR = '_';
 
-class Control {
+class Control extends Component {
   constructor(config) {
+    super();
+
     this._inputEventBindings = config.inputEventBindings;
     this._keyStates = Object.keys(this._inputEventBindings).reduce((keyStates, inputEvent) => {
       keyStates[inputEvent.split(PREFIX_SEPARATOR)[0]] = null;

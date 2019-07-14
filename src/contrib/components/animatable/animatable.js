@@ -1,7 +1,10 @@
+import Component from 'engine/component/component';
 import AnimatableState from './animatableState';
 
-class Animatable {
+class Animatable extends Component {
   constructor(config) {
+    super();
+
     this._states = config.states.map((state) => {
       return new AnimatableState(state);
     });

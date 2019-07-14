@@ -1,5 +1,9 @@
-class RigidBody {
+import Component from 'engine/component/component';
+
+class RigidBody extends Component {
   constructor() {
+    super();
+
     this._forceVectors = {};
   }
 

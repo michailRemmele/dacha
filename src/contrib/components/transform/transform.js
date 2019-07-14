@@ -1,5 +1,9 @@
-class Transform {
+import Component from 'engine/component/component';
+
+class Transform extends Component {
   constructor(config) {
+    super();
+
     this._offsetX = config.offsetX;
     this._offsetY = config.offsetY;
   }

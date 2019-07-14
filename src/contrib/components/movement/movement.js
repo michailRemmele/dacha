@@ -1,5 +1,9 @@
-class Movement {
+import Component from 'engine/component/component';
+
+class Movement extends Component {
   constructor(config) {
+    super();
+
     this._speed = config.speed;
   }
 
