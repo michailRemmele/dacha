@@ -1728,7 +1728,7 @@
       "section": "gameStateUpdateSection",
       "components": [
         "movement",
-        "rigidBody"
+        "transform"
       ],
       "options": {}
     },
@@ -1755,7 +1755,9 @@
         "rigidBody",
         "transform"
       ],
-      "options": {}
+      "options": {
+        "gravitationalAcceleration": 9.80666
+      }
     },
     {
       "name": "animateProcessor",

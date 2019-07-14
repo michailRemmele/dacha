@@ -1,10 +1,12 @@
 import Component from 'engine/component/component';
 
 class RigidBody extends Component {
-  constructor() {
+  constructor(config) {
     super();
 
     this._forceVectors = {};
+    this._mass = config.mass;
+    this._useGravity = config.useGravity;
   }
 
   set forceVectors(forceVectors) {
@@ -15,8 +17,27 @@ class RigidBody extends Component {
     return this._forceVectors;
   }
 
+  set mass(mass) {
+    this._mass = mass;
+  }
+
+  get mass() {
+    return this._mass;
+  }
+
+  set useGravity(useGravity) {
+    this._useGravity = useGravity;
+  }
+
+  get useGravity() {
+    return this._useGravity;
+  }
+
   clone() {
-    return new RigidBody();
+    return new RigidBody({
+      mass: this.mass,
+      useGravity: this.useGravity,
+    });
   }
 }
 

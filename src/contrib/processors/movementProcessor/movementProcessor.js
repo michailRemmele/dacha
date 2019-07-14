@@ -2,32 +2,32 @@ import Vector2 from 'utils/vector/vector2';
 
 import Processor from 'engine/processor/processor';
 
-const UP_MSG_TYPE = 'MOVEMENT_UP';
-const LEFT_MSG_TYPE = 'MOVEMENT_LEFT';
-const DOWN_MSG_TYPE = 'MOVEMENT_DOWN';
-const RIGHT_MSG_TYPE = 'MOVEMENT_RIGHT';
+const UP_MSG = 'MOVEMENT_UP';
+const LEFT_MSG = 'MOVEMENT_LEFT';
+const DOWN_MSG = 'MOVEMENT_DOWN';
+const RIGHT_MSG = 'MOVEMENT_RIGHT';
+const POSITION_CHANGED_MSG = 'MOVEMENT_POSITION_CHANGED';
 
-const MOVEMENT_FORCE = 'movementForce';
-
-const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
+const TRANSFORM_COMPONENT_NAME = 'transform';
 const MOVEMENT_COMPONENT_NAME = 'movement';
 
 const MOVEMENT_VECTORS = {
-  [UP_MSG_TYPE]: new Vector2(0, -1),
-  [LEFT_MSG_TYPE]: new Vector2(-1, 0),
-  [RIGHT_MSG_TYPE]: new Vector2(1, 0),
-  [DOWN_MSG_TYPE]: new Vector2(0, 1),
+  [UP_MSG]: new Vector2(0, -1),
+  [LEFT_MSG]: new Vector2(-1, 0),
+  [RIGHT_MSG]: new Vector2(1, 0),
+  [DOWN_MSG]: new Vector2(0, 1),
 };
 
 class MovementProcessor extends Processor {
   constructor(options) {
     super();
 
-    this._movementMessageTypes = [ UP_MSG_TYPE, LEFT_MSG_TYPE, DOWN_MSG_TYPE, RIGHT_MSG_TYPE ];
+    this._movementMessageTypes = [ UP_MSG, LEFT_MSG, DOWN_MSG, RIGHT_MSG ];
     this._gameObjectObserver = options.gameObjectObserver;
   }
 
   process(options) {
+    const deltaTimeInSeconds = options.deltaTime / 1000;
     const messageBus = options.messageBus;
 
     const movableGameObjects = this._movementMessageTypes.reduce((storage, messageType) => {
@@ -42,24 +42,28 @@ class MovementProcessor extends Processor {
     }, {});
 
     this._gameObjectObserver.forEach((gameObject) => {
-      const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-      const movement = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+      const { speed, vector } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
 
       const movementDirections = movableGameObjects[gameObject.getId()];
+      vector.multiplyNumber(0);
 
       if (!movementDirections) {
-        rigidBody.forceVectors[MOVEMENT_FORCE] = new Vector2(0, 0);
         return;
       }
-
-      const vector = new Vector2(0, 0);
 
       movementDirections.forEach((direction) => {
         vector.add(MOVEMENT_VECTORS[direction]);
       });
 
-      vector.multiplyNumber(movement.speed);
-      rigidBody.forceVectors[MOVEMENT_FORCE] = vector;
+      vector.multiplyNumber(speed * deltaTimeInSeconds);
+
+      transform.offsetX = transform.offsetX + vector.x;
+      transform.offsetY = transform.offsetY + vector.y;
+      messageBus.send({
+        type: POSITION_CHANGED_MSG,
+        gameObject: gameObject,
+      });
     });
   }
 }

@@ -11,7 +11,10 @@
     },
     {
       "name": "rigidBody",
-      "config": {}
+      "config": {
+        "mass": 1,
+        "useGravity": false
+      }
     },
     {
       "name": "colliderContainer",
