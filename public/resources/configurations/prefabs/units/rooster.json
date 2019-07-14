@@ -2,27 +2,23 @@
   "name": "rooster",
   "children": [
     {
-      "name": "roosterBody",
+      "name": "roosterHitBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 0,
-            "offsetY": 17
+            "offsetY": 0
           }
-        },
-        {
-          "name": "rigidBody",
-          "config": {}
         },
         {
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
             "collider": {
-              "sizeX": 21,
-              "sizeY": 7,
+              "sizeX": 33,
+              "sizeY": 40,
               "centerX": 0,
               "centerY": 0
             }
@@ -41,17 +37,20 @@
     },
     {
       "name": "rigidBody",
-      "config": {}
+      "config": {
+        "mass": 1,
+        "useGravity": true
+      }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
         "collider": {
-          "sizeX": 33,
-          "sizeY": 40,
+          "sizeX": 21,
+          "sizeY": 7,
           "centerX": 0,
-          "centerY": 0
+          "centerY": 17
         }
       }
     },
@@ -122,7 +121,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "greater",
                       "arg2": {
@@ -141,7 +140,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "less",
                       "arg2": {
@@ -160,7 +159,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.y"
+                        "value": "movement.vector.y"
                       },
                       "operation": "notEquals",
                       "arg2": {
@@ -212,7 +211,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "equals",
                       "arg2": {
@@ -231,7 +230,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "less",
                       "arg2": {
@@ -283,7 +282,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "equals",
                       "arg2": {
@@ -302,7 +301,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "greater",
                       "arg2": {
@@ -350,7 +349,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "greater",
                       "arg2": {
@@ -369,7 +368,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.x"
+                        "value": "movement.vector.x"
                       },
                       "operation": "less",
                       "arg2": {
@@ -388,7 +387,7 @@
                     "props": {
                       "arg1": {
                         "type": "componentValue",
-                        "value": "rigidBody.forceVectors.movementForce.y"
+                        "value": "movement.vector.y"
                       },
                       "operation": "equals",
                       "arg2": {
