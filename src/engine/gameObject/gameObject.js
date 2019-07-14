@@ -5,11 +5,29 @@ class GameObject {
   constructor(id) {
     this._id = id;
     this._components = {};
+    this._parent = null;
+    this._children = [];
 
     this._subscribers = [];
 
     this.COMPONENT_ADDED = COMPONENT_ADDED;
     this.COMPONENT_REMOVED = COMPONENT_REMOVED;
+  }
+
+  setParent(parent) {
+    this._parent = parent;
+  }
+
+  getParent() {
+    return this._parent;
+  }
+
+  appendChild(child) {
+    this._children.push(child);
+  }
+
+  getChildren() {
+    return this._children;
   }
 
   getId() {

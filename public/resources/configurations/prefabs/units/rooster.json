@@ -1,6 +1,44 @@
 {
   "name": "rooster",
+  "children": [
+    {
+      "name": "roosterBody",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 5,
+            "offsetY": 15
+          }
+        },
+        {
+          "name": "rigidBody",
+          "config": {}
+        },
+        {
+          "name": "colliderContainer",
+          "config": {
+            "type": "boxCollider",
+            "collider": {
+              "sizeX": 13,
+              "sizeY": 7,
+              "centerX": 0,
+              "centerY": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
   "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0
+      }
+    },
     {
       "name": "rigidBody",
       "config": {}
