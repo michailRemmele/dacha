@@ -1,8 +1,33 @@
-import GameObject from 'engine/gameObject/gameObject';
-
 class Prefab {
   constructor() {
+    this._name = null;
     this._components = {};
+    this._parent = null;
+    this._children = [];
+  }
+
+  setName(name) {
+    this._name = name;
+  }
+
+  getName() {
+    return this._name;
+  }
+
+  setParent(parent) {
+    this._parent = parent;
+  }
+
+  getParent() {
+    return this._parent;
+  }
+
+  appendChild(child) {
+    this._children.push(child);
+  }
+
+  getChildren() {
+    return this._children;
   }
 
   setComponent(name, component) {
@@ -17,15 +42,26 @@ class Prefab {
     return this._components[name];
   }
 
-  createGameObject(id) {
-    const gameObject = new GameObject(id);
+  getAvailableComponents() {
+    return Object.keys(this._components);
+  }
 
-    Object.keys(this._components).forEach((name) => {
-      const component = this._components[name].clone();
-      gameObject.setComponent(name, component);
+  clone() {
+    const prefab = new Prefab();
+
+    prefab.setName(this._name);
+
+    this._children.forEach((child) => {
+      const childPrefab = child.clone();
+      childPrefab.setParent(prefab);
+      prefab.appendChild(childPrefab);
     });
 
-    return gameObject;
+    Object.keys(this._components).forEach((name) => {
+      prefab.setComponent(name, this._components[name].clone());
+    });
+
+    return prefab;
   }
 }
 

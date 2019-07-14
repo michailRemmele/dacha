@@ -25,14 +25,10 @@ class SceneProvider {
       name: config.name,
     });
 
-    config.gameObjects.forEach((gameObject) => {
-      scene.addGameObject(
-        gameObjectCreator.create(
-          gameObject.name,
-          gameObject.id,
-          gameObject.components
-        )
-      );
+    config.gameObjects.forEach((gameObjectOptions) => {
+      gameObjectCreator.create(gameObjectOptions).forEach((gameObject) => {
+        scene.addGameObject(gameObject);
+      });
     });
 
     await Promise.all(config.processors.map((processorInfo) => {

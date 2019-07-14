@@ -1,6 +1,14 @@
 {
   "name": "bonusBox",
+  "children": [],
   "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0
+      }
+    },
     {
       "name": "rigidBody",
       "config": {}
