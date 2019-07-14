@@ -8,8 +8,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 5,
-            "offsetY": 15
+            "offsetX": 0,
+            "offsetY": 17
           }
         },
         {
@@ -21,7 +21,7 @@
           "config": {
             "type": "boxCollider",
             "collider": {
-              "sizeX": 13,
+              "sizeX": 21,
               "sizeY": 7,
               "centerX": 0,
               "centerY": 0
