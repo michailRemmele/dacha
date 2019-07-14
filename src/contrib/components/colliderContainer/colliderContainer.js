@@ -1,8 +1,11 @@
+import Component from 'engine/component/component';
 import BoxCollider from './boxCollider';
 import CircleCollider from './circleCollider';
 
-class ColliderContainer {
+class ColliderContainer extends Component {
   constructor(config) {
+    super();
+
     this._colliders = {
       boxCollider: BoxCollider,
       circleCollider: CircleCollider,

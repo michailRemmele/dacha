@@ -41,6 +41,16 @@ class GameObject {
   setComponent(name, component) {
     this._components[name] = component;
 
+    if (this._parent && this._parent.getComponent(name)) {
+      component.parent = this._parent.getComponent(name);
+    }
+
+    this._children.forEach((child) => {
+      if (child.getComponent(name)) {
+        child.getComponent(name).parent = component;
+      }
+    });
+
     this._subscribers.forEach((callback) => {
       callback({
         type: COMPONENT_ADDED,
@@ -52,6 +62,12 @@ class GameObject {
 
   removeComponent(name) {
     this._components[name] = undefined;
+
+    this._children.forEach((child) => {
+      if (child.getComponent(name)) {
+        child.getComponent(name).parent = undefined;
+      }
+    });
 
     this._subscribers.forEach((callback) => {
       callback({
