@@ -1759,6 +1759,16 @@
       }
     },
     {
+      "name": "fallProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "rigidBody",
+        "colliderContainer",
+        "renderable"
+      ],
+      "options": {}
+    },
+    {
       "name": "animateProcessor",
       "section": "renderingSection",
       "components": [
@@ -1782,6 +1792,7 @@
         "sortingLayers": [
           "default",
           "background",
+          "space",
           "terrain",
           "decorations",
           "units"
