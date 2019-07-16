@@ -97,18 +97,20 @@ class PhysicsProcessor extends Processor {
       this._gameObjectsVelocity[gameObjectId] = null;
     });
 
-    const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
-    enterMessages.forEach((message) => {
-      const { gameObject, otherGameObject } = message;
-      this._resolveCollision(gameObject, otherGameObject);
-    });
-
     const leaveMessages = messageBus.get(COLLISION_LEAVE_MSG) || [];
     leaveMessages.forEach((message) => {
       const rigidBody = message.gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
       if (rigidBody) {
         rigidBody.forceVectors[REACTION_FORCE] = null;
       }
+    });
+
+    const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
+    enterMessages.forEach((message) => {
+      const { gameObject, otherGameObject } = message;
+
+      this._addReactionForce(gameObject);
+      this._resolveCollision(gameObject, otherGameObject);
     });
 
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
