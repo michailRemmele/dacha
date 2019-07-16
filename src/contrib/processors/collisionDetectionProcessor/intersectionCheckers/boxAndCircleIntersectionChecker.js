@@ -12,7 +12,7 @@ class BoxAndCircleIntersectionChecker extends IntersectionChecker {
       circle = arg1;
     }
 
-    const { circleRadius } = circle.collider.radius;
+    const { radius: circleRadius } = circle.collider;
     const { x: circleCenterX, y: circleCenterY } = circle.coordinates.center;
     const { x: rectangleCenterX, y: rectangleCenterY } = box.coordinates.center;
 
