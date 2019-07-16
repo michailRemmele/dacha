@@ -2,6 +2,7 @@ import Vector2 from 'utils/vector/vector2';
 
 import Processor from 'engine/processor/processor';
 
+const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
 const COLLISION_LEAVE_MSG = 'COLLISION_LEAVE';
 
@@ -28,12 +29,18 @@ class PhysicsProcessor extends Processor {
 
     this._gameObjectObserver = options.gameObjectObserver;
 
+    this._gameObjectsLastTransform = {};
     this._gameObjectsVelocity = {};
   }
 
   processorDidMount() {
     this._gameObjectObserver.forEach((gameObject) => {
-      this._addGravityForce(gameObject.getComponent(RIGID_BODY_COMPONENT_NAME));
+      const gameObjectId = gameObject.getId();
+      const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+
+      this._addGravityForce(rigidBody);
+      this._gameObjectsLastTransform[gameObjectId] = transform.clone();
     });
   }
 
@@ -47,7 +54,13 @@ class PhysicsProcessor extends Processor {
     }
   }
 
-  _addReactionForce(rigidBody) {
+  _addReactionForce(gameObject) {
+    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+
+    if (!rigidBody) {
+      return;
+    }
+
     const { forceVectors, useGravity } = rigidBody;
 
     if (useGravity && !forceVectors[REACTION_FORCE]) {
@@ -55,6 +68,19 @@ class PhysicsProcessor extends Processor {
         ? forceVectors[GRAVITY_FORCE].clone()
         : new Vector2(0, 0);
       forceVectors[REACTION_FORCE].multiplyNumber(-1);
+    }
+  }
+
+  _resolveCollision(gameObject1, gameObject2) {
+    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
+
+    if (rigidBody1 && rigidBody2) {
+      const previousTransform = this._gameObjectsLastTransform[gameObject1.getId()];
+      const transform = gameObject1.getComponent(TRANSFORM_COMPONENT_NAME);
+
+      transform.offsetX = previousTransform.offsetX;
+      transform.offsetY = previousTransform.offsetY;
     }
   }
 
@@ -71,20 +97,32 @@ class PhysicsProcessor extends Processor {
       this._gameObjectsVelocity[gameObjectId] = null;
     });
 
+    const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
+    enterMessages.forEach((message) => {
+      const { gameObject, otherGameObject } = message;
+      this._resolveCollision(gameObject, otherGameObject);
+    });
+
     const leaveMessages = messageBus.get(COLLISION_LEAVE_MSG) || [];
     leaveMessages.forEach((message) => {
-      const { forceVectors } = message.gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-      forceVectors[REACTION_FORCE] = null;
+      const rigidBody = message.gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+      if (rigidBody) {
+        rigidBody.forceVectors[REACTION_FORCE] = null;
+      }
     });
 
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
     stayMessages.forEach((message) => {
-      this._addReactionForce(message.gameObject.getComponent(RIGID_BODY_COMPONENT_NAME));
+      const { gameObject, otherGameObject } = message;
+
+      this._addReactionForce(gameObject);
+      this._resolveCollision(gameObject, otherGameObject);
     });
 
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const { forceVectors, mass } = rigidBody;
 
       const forceVector = Object.keys(forceVectors).reduce((resultantForceVector, forceName) => {
@@ -99,19 +137,19 @@ class PhysicsProcessor extends Processor {
         || new Vector2(0, 0);
 
       if (forceVector.x || forceVector.y) {
-        const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-
         const velocityVector = forceVector.clone();
         velocityVector.multiplyNumber(deltaTimeInSeconds / mass);
         velocityVector.add(this._gameObjectsVelocity[gameObjectId]);
 
-        this._gameObjectsVelocity[gameObjectId] = velocityVector;
-
         transform.offsetX = transform.offsetX + velocityVector.x;
         transform.offsetY = transform.offsetY + velocityVector.y;
+
+        this._gameObjectsVelocity[gameObjectId] = velocityVector;
       } else {
         this._gameObjectsVelocity[gameObjectId].multiplyNumber(0);
       }
+
+      this._gameObjectsLastTransform[gameObjectId] = transform.clone();
     });
   }
 }
