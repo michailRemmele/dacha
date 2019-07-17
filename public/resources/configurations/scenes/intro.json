@@ -31,7 +31,7 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -156
+            "offsetY": -174
           }
         },
         {
@@ -63,7 +63,7 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -60
+            "offsetY": -78
           }
         }
       ]
@@ -84,7 +84,7 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 36
+            "offsetY": 18
           }
         }
       ]
@@ -106,7 +106,7 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 132
+            "offsetY": 114
           }
         }
       ]
@@ -127,7 +127,7 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -156
+            "offsetY": -174
           }
         }
       ]
@@ -148,7 +148,7 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -60
+            "offsetY": -78
           }
         }
       ]
@@ -169,7 +169,7 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 36
+            "offsetY": 18
           }
         }
       ]
@@ -190,7 +190,7 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 132
+            "offsetY": 114
           }
         }
       ]
@@ -204,7 +204,7 @@
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 48
+            "offsetY": 30
           }
         }
       ]
@@ -218,7 +218,7 @@
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 48
+            "offsetY": 30
           }
         }
       ]
@@ -232,7 +232,7 @@
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 144
+            "offsetY": 126
           }
         }
       ]
@@ -246,7 +246,7 @@
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 144
+            "offsetY": 126
           }
         }
       ]
@@ -260,7 +260,7 @@
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -48
+            "offsetY": -66
           }
         }
       ]
@@ -274,7 +274,7 @@
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -48
+            "offsetY": -66
           }
         }
       ]
@@ -288,7 +288,7 @@
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -144
+            "offsetY": -162
           }
         }
       ]
@@ -302,7 +302,7 @@
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -144
+            "offsetY": -162
           }
         }
       ]
