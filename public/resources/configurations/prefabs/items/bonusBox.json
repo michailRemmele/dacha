@@ -21,9 +21,9 @@
       "config": {
         "type": "circleCollider",
         "collider": {
-          "radius": 9,
+          "radius": 11,
           "centerX": 0,
-          "centerY": 0
+          "centerY": 1
         }
       }
     },
