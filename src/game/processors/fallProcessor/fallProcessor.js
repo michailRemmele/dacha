@@ -4,7 +4,6 @@ const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 
-const GRAVITY_FORCE = 'gravityForce';
 const REACTION_FORCE = 'reactionForce';
 
 const SPACE_SORTING_LAYER = 'space';
@@ -22,7 +21,7 @@ class FallProcessor extends Processor {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const { forceVectors } = rigidBody;
 
-      if (rigidBody.useGravity && forceVectors[GRAVITY_FORCE] && !forceVectors[REACTION_FORCE]) {
+      if (rigidBody.useGravity && !forceVectors[REACTION_FORCE]) {
         gameObject.removeComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
         renderable.sortingLayer = SPACE_SORTING_LAYER;
       }
