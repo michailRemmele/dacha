@@ -60,7 +60,7 @@ class AnimateProcessor extends Processor {
 
       animatable.duration += deltaTime;
 
-      if (animatable.duration > baseDuration) {
+      if (animatable.duration >= baseDuration) {
         if (!animatable.currentState.looped) {
           animatable.currentState
             = animatable.currentState.previousState || animatable.defaultState;
