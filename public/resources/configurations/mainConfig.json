@@ -19,6 +19,9 @@
       "src": "resources/configurations/prefabs/units/rooster.json"
     },
     {
+      "src": "resources/configurations/prefabs/units/roosterEnemy.json"
+    },
+    {
       "src": "resources/configurations/prefabs/items/bonusBox.json"
     },
     {

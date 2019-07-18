@@ -49,7 +49,7 @@
     },
     {
       "id": "2",
-      "name": "rooster",
+      "name": "roosterEnemy",
       "children": [
         {
           "id": "2.1",
@@ -70,7 +70,7 @@
     },
     {
       "id": "3",
-      "name": "rooster",
+      "name": "roosterEnemy",
       "children": [
         {
           "id": "3.1",
@@ -91,7 +91,7 @@
     },
     {
       "id": "4",
-      "name": "rooster",
+      "name": "roosterEnemy",
       "children": [
         {
           "id": "4.1",
@@ -113,7 +113,7 @@
     },
     {
       "id": "5",
-      "name": "rooster",
+      "name": "roosterEnemy",
       "children": [
         {
           "id": "5.1",
@@ -134,7 +134,7 @@
     },
     {
       "id": "6",
-      "name": "rooster",
+      "name": "roosterEnemy",
       "children": [
         {
           "id": "6.1",
@@ -155,7 +155,7 @@
     },
     {
       "id": "7",
-      "name": "rooster",
+      "name": "roosterEnemy",
       "children": [
         {
           "id": "7.1",
@@ -176,7 +176,7 @@
     },
     {
       "id": "8",
-      "name": "rooster",
+      "name": "roosterEnemy",
       "children": [
         {
           "id": "8.1",
