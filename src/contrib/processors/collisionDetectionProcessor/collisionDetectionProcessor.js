@@ -14,6 +14,7 @@ const AXIS = {
 };
 
 const COLLISION_MESSAGE = 'COLLISION';
+const TRIGGER_MESSAGE = 'TRIGGER';
 
 class CollisionDetectionProcessor extends Processor {
   constructor(options) {
@@ -169,6 +170,41 @@ class CollisionDetectionProcessor extends Processor {
     return this._intersectionCheckers[intersectionType].check(arg1, arg2);
   }
 
+  _sendCollisionMessage(messageBus, gameObject, otherGameObject) {
+    const colliderContainer = gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+    const otherColliderContainer = otherGameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+
+    if (colliderContainer.isTrigger) {
+      messageBus.send({
+        type: TRIGGER_MESSAGE,
+        id: gameObject.getId(),
+        gameObject: gameObject,
+        otherGameObject: otherGameObject,
+      });
+    } else if (otherColliderContainer.isTrigger) {
+      messageBus.send({
+        type: TRIGGER_MESSAGE,
+        id: otherGameObject.getId(),
+        gameObject: otherGameObject,
+        otherGameObject: gameObject,
+      });
+    } else {
+      messageBus.send({
+        type: COLLISION_MESSAGE,
+        id: gameObject.getId(),
+        gameObject: gameObject,
+        otherGameObject: otherGameObject,
+      });
+
+      messageBus.send({
+        type: COLLISION_MESSAGE,
+        id: otherGameObject.getId(),
+        gameObject: otherGameObject,
+        otherGameObject: gameObject,
+      });
+    }
+  }
+
   process(options) {
     const messageBus = options.messageBus;
 
@@ -223,19 +259,7 @@ class CollisionDetectionProcessor extends Processor {
 
     this._sweepAndPrune(this._getSortingAxis()).forEach((pair) => {
       if (this._checkOnIntersection(pair)) {
-        messageBus.send({
-          type: COLLISION_MESSAGE,
-          id: pair[0].gameObject.getId(),
-          gameObject: pair[0].gameObject,
-          otherGameObject: pair[1].gameObject,
-        });
-
-        messageBus.send({
-          type: COLLISION_MESSAGE,
-          id: pair[1].gameObject.getId(),
-          gameObject: pair[1].gameObject,
-          otherGameObject: pair[0].gameObject,
-        });
+        this._sendCollisionMessage(messageBus, pair[0].gameObject, pair[1].gameObject);
       }
     });
   }

@@ -20,6 +20,7 @@
       "name": "colliderContainer",
       "config": {
         "type": "circleCollider",
+        "isTrigger": false,
         "collider": {
           "radius": 11,
           "centerX": 0,
