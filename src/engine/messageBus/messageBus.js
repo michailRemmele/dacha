@@ -9,14 +9,24 @@ class MessageBus {
       throw new Error('Can\'t send the message without specified type');
     }
 
-    this._messages[message.type] = [
-      ...(this._messages[message.type] ? this._messages[message.type] : []),
-      message,
-    ];
+    const { type, id } = message;
+
+    this._messages[type] = this._messages[type] || { array: [], map: {}};
+
+    if (id) {
+      this._messages[type].map[id] = this._messages[type].map[id] || [];
+      this._messages[type].map[id].push(message);
+    }
+
+    this._messages[type].array.push(message);
   }
 
   get(messageType) {
-    return this._messages[messageType];
+    return this._messages[messageType] ? this._messages[messageType].array : undefined;
+  }
+
+  getById(messageType, id) {
+    return this._messages[messageType] ? this._messages[messageType].map[id] : undefined;
   }
 
   stash() {
@@ -32,8 +42,17 @@ class MessageBus {
     this._stashedMessages.push(this._messages);
     this._messages = this._stashedMessages.reduce((storage, messages) => {
       Object.keys(messages).forEach((key) => {
-        storage[key] = storage[key] || [];
-        storage[key] = storage[key].concat(messages[key]);
+        storage[key] = storage[key] || { array: [], map: {}};
+        storage[key].array = storage[key].array.concat(messages[key].array);
+        storage[key].map = Object.keys(messages[key].map).reduce((map, messageId) => {
+          if (!map[messageId]) {
+            map[messageId] = messages[key].map[messageId];
+          } else {
+            map[messageId] = map[messageId].concat(messages[key].map[messageId]);
+          }
+
+          return map;
+        }, storage[key].map);
       });
       return storage;
     }, {});
