@@ -225,12 +225,14 @@ class CollisionDetectionProcessor extends Processor {
       if (this._checkOnIntersection(pair)) {
         messageBus.send({
           type: COLLISION_MESSAGE,
+          id: pair[0].gameObject.getId(),
           gameObject: pair[0].gameObject,
           otherGameObject: pair[1].gameObject,
         });
 
         messageBus.send({
           type: COLLISION_MESSAGE,
+          id: pair[1].gameObject.getId(),
           gameObject: pair[1].gameObject,
           otherGameObject: pair[0].gameObject,
         });

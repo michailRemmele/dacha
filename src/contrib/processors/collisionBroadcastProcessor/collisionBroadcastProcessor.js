@@ -35,6 +35,7 @@ class CollisionBroadcastProcessor extends Processor {
     this._activeCollisions = this._activeCollisions.filter((collision) => {
       messageBus.send({
         type: `${COLLISION_MESSAGE}_${collision.getState()}`,
+        id: collision.gameObject.getId(),
         gameObject: collision.gameObject,
         otherGameObject: collision.otherGameObject,
       });
