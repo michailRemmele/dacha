@@ -1,4 +1,4 @@
-import uuid from 'uuid/v4';
+import uuid from 'uuid-random';
 
 import GameObject from 'engine/gameObject/gameObject';
 import Prefab from 'engine/prefab/prefab';
