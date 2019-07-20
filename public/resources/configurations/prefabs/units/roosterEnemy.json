@@ -16,6 +16,7 @@
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
+            "isTrigger": false,
             "collider": {
               "sizeX": 33,
               "sizeY": 40,
@@ -46,6 +47,7 @@
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
+        "isTrigger": false,
         "collider": {
           "sizeX": 21,
           "sizeY": 7,

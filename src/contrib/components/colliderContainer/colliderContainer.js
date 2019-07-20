@@ -12,6 +12,7 @@ class ColliderContainer extends Component {
     };
 
     this._type = config.type;
+    this._isTrigger = config.isTrigger;
 
     if (!this._colliders[this.type]) {
       throw new Error(`Not found collider with same type: ${this.type}`);
@@ -28,6 +29,14 @@ class ColliderContainer extends Component {
     return this._type;
   }
 
+  set isTrigger(isTrigger) {
+    this._isTrigger = isTrigger;
+  }
+
+  get isTrigger() {
+    return this._isTrigger;
+  }
+
   set collider(collider) {
     this._collider = collider;
   }
@@ -39,6 +48,7 @@ class ColliderContainer extends Component {
   clone() {
     return new ColliderContainer({
       type: this.type,
+      isTrigger: this.isTrigger,
       collider: this.collider.clone(),
     });
   }
