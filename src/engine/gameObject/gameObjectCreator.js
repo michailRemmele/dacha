@@ -1,31 +1,14 @@
 import uuid from 'uuid-random';
 
+import IOC from 'engine/ioc/ioc';
 import GameObject from 'engine/gameObject/gameObject';
-import Prefab from 'engine/prefab/prefab';
+
+import { PREFAB_COLLECTION_KEY_NAME } from 'engine/consts/global';
 
 class GameObjectCreator {
   constructor(components) {
     this._components = components;
-    this._storage = {};
-  }
-
-  _buildPrefab(options) {
-    const prefab = new Prefab();
-
-    prefab.setName(options.name);
-
-    options.children.forEach((child) => {
-      const childPrefab = this._buildPrefab(child);
-      childPrefab.setParent(prefab);
-      prefab.appendChild(childPrefab);
-    });
-
-    options.components.forEach((componentOptions) => {
-      const Component = this._components[componentOptions.name];
-      prefab.setComponent(componentOptions.name, new Component(componentOptions.config));
-    });
-
-    return prefab;
+    this._prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME);
   }
 
   _buildGameObject(options, prefab) {
@@ -78,18 +61,10 @@ class GameObjectCreator {
     return gameObjects;
   }
 
-  register(options) {
-    this._storage[options.name] = this._buildPrefab(options);
-  }
-
   create(options) {
     const { name } = options;
 
-    if (!this._storage[name]) {
-      throw new Error(`Can't create game object with same name: ${name}`);
-    }
-
-    const gameObject = this._buildGameObject(options, this._storage[name].clone());
+    const gameObject = this._buildGameObject(options, this._prefabCollection.get(name));
 
     return this._expandGameObject(gameObject);
   }
