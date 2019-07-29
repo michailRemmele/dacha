@@ -1,0 +1,67 @@
+class MessageBus {
+  constructor() {
+    this._messages = {};
+    this._stashedMessages = [];
+  }
+
+  send(message) {
+    if (!message.type) {
+      throw new Error('Can\'t send the message without specified type');
+    }
+
+    const { type, id } = message;
+
+    this._messages[type] = this._messages[type] || { array: [], map: {}};
+
+    if (id) {
+      this._messages[type].map[id] = this._messages[type].map[id] || [];
+      this._messages[type].map[id].push(message);
+    }
+
+    this._messages[type].array.push(message);
+  }
+
+  get(messageType) {
+    return this._messages[messageType] ? this._messages[messageType].array : undefined;
+  }
+
+  getById(messageType, id) {
+    return this._messages[messageType] ? this._messages[messageType].map[id] : undefined;
+  }
+
+  stash() {
+    this._stashedMessages.push(this._messages);
+    this._messages = {};
+  }
+
+  restore() {
+    if (this._stashedMessages.length === 0) {
+      return;
+    }
+
+    this._stashedMessages.push(this._messages);
+    this._messages = this._stashedMessages.reduce((storage, messages) => {
+      Object.keys(messages).forEach((key) => {
+        storage[key] = storage[key] || { array: [], map: {}};
+        storage[key].array = storage[key].array.concat(messages[key].array);
+        storage[key].map = Object.keys(messages[key].map).reduce((map, messageId) => {
+          if (!map[messageId]) {
+            map[messageId] = messages[key].map[messageId];
+          } else {
+            map[messageId] = map[messageId].concat(messages[key].map[messageId]);
+          }
+
+          return map;
+        }, storage[key].map);
+      });
+      return storage;
+    }, {});
+    this._stashedMessages = [];
+  }
+
+  clear() {
+    this._messages = {};
+  }
+}
+
+export default MessageBus;

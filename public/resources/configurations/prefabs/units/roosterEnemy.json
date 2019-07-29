@@ -1,0 +1,456 @@
+{
+  "name": "roosterEnemy",
+  "children": [
+    {
+      "name": "roosterHitBox",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0
+          }
+        },
+        {
+          "name": "colliderContainer",
+          "config": {
+            "type": "boxCollider",
+            "isTrigger": false,
+            "collider": {
+              "sizeX": 33,
+              "sizeY": 40,
+              "centerX": 0,
+              "centerY": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0
+      }
+    },
+    {
+      "name": "rigidBody",
+      "config": {
+        "mass": 1,
+        "useGravity": true
+      }
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "boxCollider",
+        "isTrigger": false,
+        "collider": {
+          "sizeX": 21,
+          "sizeY": 7,
+          "centerX": 0,
+          "centerY": 17
+        }
+      }
+    },
+    {
+      "name": "movement",
+      "config": {
+        "speed": 100
+      }
+    },
+    {
+      "name": "animatable",
+      "config": {
+        "defaultState": "idle",
+        "states": [
+          {
+            "name": "idle",
+            "speed": 0.75,
+            "frames": [
+              {
+                "index": 0,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 1,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 2,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 3,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 4,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 5,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "ATTACK_START"
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runRight",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "greater",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runLeft",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "less",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runVertical",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.y"
+                      },
+                      "operation": "notEquals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "runRight",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 6,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 7,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 8,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 9,
+                "flipX": false,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "idle",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runLeft",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "less",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "runLeft",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 6,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 7,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 8,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 9,
+                "flipX": true,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "idle",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runRight",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "greater",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "runVertical",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 6,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 7,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 8,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 9,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "runRight",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "greater",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "runLeft",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.x"
+                      },
+                      "operation": "less",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "idle",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "movement.vector.y"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "attack",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 10,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 11,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 12,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 13,
+                "flipY": false,
+                "rotation": 0
+              },
+              {
+                "index": 14,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "transitions": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "renderable",
+      "config": {
+        "type": "sprite",
+        "src": "units/rooster_enemy",
+        "width": 45,
+        "height": 50,
+        "slice": 15,
+        "rotation": 0,
+        "origin": [ 0, 0 ],
+        "flipX": false,
+        "flipY": false,
+        "sortingLayer": "units"
+      }
+    }
+  ]
+}

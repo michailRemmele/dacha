@@ -1,0 +1,34 @@
+{
+  "name": "game-scene",
+  "gameObjects": [
+  ],
+  "processors": [
+    {
+      "name": "inputProcessor",
+      "section": "eventProcessSection",
+      "components": [],
+      "options": {
+        "keyBindings": {
+        }
+      }
+    },
+    {
+      "name": "renderProcessor",
+      "section": "renderingSection",
+      "components": [],
+      "options": {
+        "windowNodeId": "root",
+        "textureAtlas": "resources/textureAtlas.png",
+        "textureAtlasDescriptor": "resources/textureAtlasMap.json",
+        "backgroundColor": "#fff",
+        "sortingLayers": [
+          "default",
+          "background",
+          "terrain",
+          "decorations",
+          "units"
+        ]
+      }
+    }
+  ]
+}

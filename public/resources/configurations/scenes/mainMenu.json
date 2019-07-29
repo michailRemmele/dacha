@@ -1,0 +1,16 @@
+{
+  "name": "main-menu-scene",
+  "gameObjects": [
+  ],
+  "processors": [
+    {
+      "name": "inputProcessor",
+      "section": "eventProcessSection",
+      "components": [],
+      "options": {
+        "keyBindings": {
+        }
+      }
+    }
+  ]
+}

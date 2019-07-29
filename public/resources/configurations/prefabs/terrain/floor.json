@@ -1,0 +1,40 @@
+{
+  "name": "floor",
+  "children": [],
+  "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0
+      }
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "boxCollider",
+        "isTrigger": false,
+        "collider": {
+          "sizeX": 31,
+          "sizeY": 31,
+          "centerX": 0,
+          "centerY": -18
+        }
+      }
+    },
+    {
+      "name": "renderable",
+      "config": {
+        "type": "static",
+        "src": "terrain/floor",
+        "width": 32,
+        "height": 64,
+        "rotation": 0,
+        "origin": [ 0, 0 ],
+        "flipX": false,
+        "flipY": false,
+        "sortingLayer": "terrain"
+      }
+    }
+  ]
+}
