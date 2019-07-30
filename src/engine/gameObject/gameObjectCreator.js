@@ -11,7 +11,14 @@ class GameObjectCreator {
     this._prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME);
   }
 
-  _buildGameObject(options, prefab) {
+  _buildFromPrefab(options, prefab) {
+    const { name, prefabName } = options;
+
+    if (!prefab) {
+      throw new Error(`Can't create game object ${name} from prefab. `
+        + `The prefab ${prefabName} is null.`);
+    }
+
     let { id } = options;
     const { components, children } = options;
 
@@ -19,18 +26,17 @@ class GameObjectCreator {
 
     const gameObject = new GameObject(id);
 
-    const childrenMap = children.reduce((storage, child) => {
-      storage[child.name] = child;
+    const prefabChildrenMap = prefab.getChildren().reduce((storage, prefabChild) => {
+      storage[prefabChild.getName()] = prefabChild;
 
       return storage;
     }, {});
 
-    prefab.getChildren().forEach((child) => {
-      if (!childrenMap[child.getName()]) {
-        return;
-      }
+    children.forEach((child) => {
+      const { prefabName, fromPrefab } = child;
 
-      const gameObjectChild = this._buildGameObject(childrenMap[child.getName()], child);
+      const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
+      const gameObjectChild = this._build(child, prefabChild);
       gameObjectChild.setParent(gameObject);
       gameObject.appendChild(gameObjectChild);
     });
@@ -39,14 +45,46 @@ class GameObjectCreator {
       gameObject.setComponent(componentName, prefab.getComponent(componentName));
     });
 
-    if (components) {
-      components.forEach((componentOptions) => {
-        const Component = this._components[componentOptions.name];
-        gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
-      });
-    }
+    components.forEach((componentOptions) => {
+      const Component = this._components[componentOptions.name];
+      gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
+    });
 
     return gameObject;
+  }
+
+  _buildFromScratch(options) {
+    let { id } = options;
+    const { components, children } = options;
+
+    id = id ? id : uuid();
+
+    const gameObject = new GameObject(id);
+
+    children.forEach((child) => {
+      const gameObjectChild = this._build(child);
+      gameObjectChild.setParent(gameObject);
+      gameObject.appendChild(gameObjectChild);
+    });
+
+    components.forEach((componentOptions) => {
+      const Component = this._components[componentOptions.name];
+      gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
+    });
+
+    return gameObject;
+  }
+
+  _build(options, prefab) {
+    const { prefabName, fromPrefab } = options;
+
+    if (fromPrefab) {
+      prefab = prefab || this._prefabCollection.get(prefabName);
+
+      return this._buildFromPrefab(options, prefab);
+    }
+
+    return this._buildFromScratch(options);
   }
 
   _expandGameObject(gameObject, gameObjects) {
@@ -62,11 +100,7 @@ class GameObjectCreator {
   }
 
   create(options) {
-    const { name } = options;
-
-    const gameObject = this._buildGameObject(options, this._prefabCollection.get(name));
-
-    return this._expandGameObject(gameObject);
+    return this._expandGameObject(this._build(options));
   }
 }
 

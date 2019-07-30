@@ -3,7 +3,9 @@
   "gameObjects": [
     {
       "id": "0",
-      "name": "space",
+      "name": "spaceBackground",
+      "fromPrefab": true,
+      "prefabName": "space",
       "children": [],
       "components": [
         {
@@ -18,10 +20,14 @@
     {
       "id": "1",
       "name": "rooster",
+      "fromPrefab": true,
+      "prefabName": "rooster",
       "children": [
         {
           "id": "1.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -50,10 +56,14 @@
     {
       "id": "2",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "2.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -71,10 +81,14 @@
     {
       "id": "3",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "3.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -92,11 +106,14 @@
     {
       "id": "4",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "4.1",
-
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -114,10 +131,14 @@
     {
       "id": "5",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "5.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -135,10 +156,14 @@
     {
       "id": "6",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "6.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -156,10 +181,14 @@
     {
       "id": "7",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "7.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -177,10 +206,14 @@
     {
       "id": "8",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "8.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -198,6 +231,8 @@
     {
       "id": "10",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -212,6 +247,8 @@
     {
       "id": "11",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -226,6 +263,8 @@
     {
       "id": "12",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -240,6 +279,8 @@
     {
       "id": "13",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -254,6 +295,8 @@
     {
       "id": "14",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -268,6 +311,8 @@
     {
       "id": "15",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -282,6 +327,8 @@
     {
       "id": "16",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -296,6 +343,8 @@
     {
       "id": "17",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
@@ -310,6 +359,8 @@
     {
       "id": "100",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -324,6 +375,8 @@
     {
       "id": "101",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -338,6 +391,8 @@
     {
       "id": "102",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -352,6 +407,8 @@
     {
       "id": "103",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -366,6 +423,8 @@
     {
       "id": "104",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -380,6 +439,8 @@
     {
       "id": "105",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -394,6 +455,8 @@
     {
       "id": "106",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -408,6 +471,8 @@
     {
       "id": "107",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -422,6 +487,8 @@
     {
       "id": "108",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -436,6 +503,8 @@
     {
       "id": "109",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -450,6 +519,8 @@
     {
       "id": "110",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -464,6 +535,8 @@
     {
       "id": "111",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -478,6 +551,8 @@
     {
       "id": "112",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -492,6 +567,8 @@
     {
       "id": "113",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -506,6 +583,8 @@
     {
       "id": "114",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -520,6 +599,8 @@
     {
       "id": "115",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -534,6 +615,8 @@
     {
       "id": "116",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -548,6 +631,8 @@
     {
       "id": "117",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -562,6 +647,8 @@
     {
       "id": "118",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -576,6 +663,8 @@
     {
       "id": "119",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -590,6 +679,8 @@
     {
       "id": "120",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -604,6 +695,8 @@
     {
       "id": "121",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -618,6 +711,8 @@
     {
       "id": "122",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -632,6 +727,8 @@
     {
       "id": "123",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -646,6 +743,8 @@
     {
       "id": "124",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -660,6 +759,8 @@
     {
       "id": "125",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -674,6 +775,8 @@
     {
       "id": "126",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -688,6 +791,8 @@
     {
       "id": "127",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -702,6 +807,8 @@
     {
       "id": "128",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -716,6 +823,8 @@
     {
       "id": "129",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -730,6 +839,8 @@
     {
       "id": "130",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -744,6 +855,8 @@
     {
       "id": "131",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -758,6 +871,8 @@
     {
       "id": "132",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -772,6 +887,8 @@
     {
       "id": "133",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -786,6 +903,8 @@
     {
       "id": "134",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -800,6 +919,8 @@
     {
       "id": "135",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -814,6 +935,8 @@
     {
       "id": "136",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -828,6 +951,8 @@
     {
       "id": "137",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -842,6 +967,8 @@
     {
       "id": "138",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -856,6 +983,8 @@
     {
       "id": "139",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -870,6 +999,8 @@
     {
       "id": "140",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -884,6 +1015,8 @@
     {
       "id": "141",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -898,6 +1031,8 @@
     {
       "id": "142",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -912,6 +1047,8 @@
     {
       "id": "143",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -926,6 +1063,8 @@
     {
       "id": "144",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -940,6 +1079,8 @@
     {
       "id": "145",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -954,6 +1095,8 @@
     {
       "id": "146",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -968,6 +1111,8 @@
     {
       "id": "147",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -982,6 +1127,8 @@
     {
       "id": "148",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -996,6 +1143,8 @@
     {
       "id": "149",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1010,6 +1159,8 @@
     {
       "id": "150",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1024,6 +1175,8 @@
     {
       "id": "151",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1038,6 +1191,8 @@
     {
       "id": "152",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1052,6 +1207,8 @@
     {
       "id": "153",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1066,6 +1223,8 @@
     {
       "id": "154",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1080,6 +1239,8 @@
     {
       "id": "155",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1094,6 +1255,8 @@
     {
       "id": "156",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1108,6 +1271,8 @@
     {
       "id": "157",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1122,6 +1287,8 @@
     {
       "id": "158",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1136,6 +1303,8 @@
     {
       "id": "159",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1150,6 +1319,8 @@
     {
       "id": "160",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1164,6 +1335,8 @@
     {
       "id": "161",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1178,6 +1351,8 @@
     {
       "id": "162",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1192,6 +1367,8 @@
     {
       "id": "163",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1206,6 +1383,8 @@
     {
       "id": "164",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1220,6 +1399,8 @@
     {
       "id": "165",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1234,6 +1415,8 @@
     {
       "id": "166",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1248,6 +1431,8 @@
     {
       "id": "167",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1262,6 +1447,8 @@
     {
       "id": "168",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1276,6 +1463,8 @@
     {
       "id": "169",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1290,6 +1479,8 @@
     {
       "id": "170",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1304,6 +1495,8 @@
     {
       "id": "171",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1318,6 +1511,8 @@
     {
       "id": "172",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1332,6 +1527,8 @@
     {
       "id": "173",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1346,6 +1543,8 @@
     {
       "id": "174",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1360,6 +1559,8 @@
     {
       "id": "175",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1374,6 +1575,8 @@
     {
       "id": "176",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1388,6 +1591,8 @@
     {
       "id": "177",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1402,6 +1607,8 @@
     {
       "id": "178",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1416,6 +1623,8 @@
     {
       "id": "179",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1430,6 +1639,8 @@
     {
       "id": "180",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1444,6 +1655,8 @@
     {
       "id": "181",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1458,6 +1671,8 @@
     {
       "id": "182",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1472,6 +1687,8 @@
     {
       "id": "183",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1486,6 +1703,8 @@
     {
       "id": "184",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1500,6 +1719,8 @@
     {
       "id": "185",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1514,6 +1735,8 @@
     {
       "id": "186",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1528,6 +1751,8 @@
     {
       "id": "187",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1542,6 +1767,8 @@
     {
       "id": "188",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1556,6 +1783,8 @@
     {
       "id": "189",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1570,6 +1799,8 @@
     {
       "id": "190",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1584,6 +1815,8 @@
     {
       "id": "191",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1598,6 +1831,8 @@
     {
       "id": "192",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1612,6 +1847,8 @@
     {
       "id": "193",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1626,6 +1863,8 @@
     {
       "id": "194",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1640,6 +1879,8 @@
     {
       "id": "195",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1654,6 +1895,8 @@
     {
       "id": "196",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1668,6 +1911,8 @@
     {
       "id": "197",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1682,6 +1927,8 @@
     {
       "id": "198",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
@@ -1696,6 +1943,8 @@
     {
       "id": "199",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
