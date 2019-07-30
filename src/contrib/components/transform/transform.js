@@ -9,7 +9,7 @@ class Transform extends Component {
   }
 
   set offsetX(offsetX) {
-    this._offsetX = offsetX;
+    this._offsetX = offsetX - (this._parent ? this._parent.offsetX : 0);
   }
 
   get offsetX() {
@@ -17,7 +17,7 @@ class Transform extends Component {
   }
 
   set offsetY(offsetY) {
-    this._offsetY = offsetY;
+    this._offsetY = offsetY - (this._parent ? this._parent.offsetY : 0);
   }
 
   get offsetY() {
