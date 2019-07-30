@@ -16,7 +16,7 @@
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
-            "isTrigger": false,
+            "isTrigger": true,
             "collider": {
               "sizeX": 33,
               "sizeY": 40,

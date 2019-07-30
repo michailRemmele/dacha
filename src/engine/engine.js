@@ -5,6 +5,7 @@ import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
 import SceneProvider from './scene/sceneProvider';
 import ResourceLoader from './resourceLoader/resourceLoader';
 import GameObjectCreator from './gameObject/gameObjectCreator';
+import PrefabCollection from './prefab/prefabCollection';
 import GameLoop from './gameLoop';
 
 import * as global from 'engine/consts/global';
@@ -16,6 +17,7 @@ class Engine {
       SCENE_PROVIDER_KEY_NAME,
       RESOURCES_LOADER_KEY_NAME,
       GAME_OBJECT_CREATOR_KEY_NAME,
+      PREFAB_COLLECTION_KEY_NAME,
     } = global;
 
     this.options = options;
@@ -29,6 +31,10 @@ class Engine {
     );
     IOC.register(RESOURCES_LOADER_KEY_NAME, new ResolveSingletonStrategy(new ResourceLoader()));
     IOC.register(
+      PREFAB_COLLECTION_KEY_NAME,
+      new ResolveSingletonStrategy(new PrefabCollection(this.options.components))
+    );
+    IOC.register(
       GAME_OBJECT_CREATOR_KEY_NAME,
       new ResolveSingletonStrategy(new GameObjectCreator(this.options.components))
     );
@@ -38,13 +44,13 @@ class Engine {
     const {
       SCENE_PROVIDER_KEY_NAME,
       RESOURCES_LOADER_KEY_NAME,
-      GAME_OBJECT_CREATOR_KEY_NAME,
+      PREFAB_COLLECTION_KEY_NAME,
       PROJECT_SETTINGS_KEY_NAME,
     } = global;
 
     const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
     const sceneProvider = IOC.resolve(SCENE_PROVIDER_KEY_NAME);
-    const gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
+    const prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME);
 
     const mainConfig = await resourceLoader.load(this.options.mainConfig);
 
@@ -56,7 +62,7 @@ class Engine {
     await Promise.all(mainConfig.prefabs.map((prefab) => {
       return resourceLoader.load(prefab.src)
         .then((prefabConfig) => {
-          gameObjectCreator.register(prefabConfig);
+          prefabCollection.register(prefabConfig);
         });
     }));
 
