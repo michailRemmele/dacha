@@ -22,12 +22,18 @@ class FallProcessor extends Processor {
     const messageBus = options.messageBus;
 
     this._fallingGameObjects = this._fallingGameObjects.filter((gameObject) => {
-      if (messageBus.getById(TRIGGER_ENTER_MSG, gameObject.getId())) {
-        const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-        renderable.sortingLayer = SPACE_SORTING_LAYER;
-        return false;
-      }
-      return true;
+      const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, gameObject.getId()) || [];
+      return collisionMessages.every((message) => {
+        const { otherGameObject } = message;
+        const colliderContainer = otherGameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+
+        if (!colliderContainer.isTrigger) {
+          const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+          renderable.sortingLayer = SPACE_SORTING_LAYER;
+          return false;
+        }
+        return true;
+      });
     });
 
     this._gameObjectObserver.forEach((gameObject) => {
