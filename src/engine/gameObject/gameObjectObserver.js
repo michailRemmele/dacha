@@ -112,6 +112,10 @@ class GameObjectObserver {
     return lastAdded;
   }
 
+  getById(id) {
+    return this._acceptedGameObjectsMap[id];
+  }
+
   forEach(callback) {
     this._acceptedGameObjects.forEach(callback);
   }
