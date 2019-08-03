@@ -15,6 +15,7 @@ const DRAW_COUNT = 6;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
+const CURRENT_CAMERA_NAME = 'currentCamera';
 
 class RenderProcessor extends Processor {
   constructor(options) {
@@ -24,6 +25,7 @@ class RenderProcessor extends Processor {
       window, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
       gameObjectObserver, sortingLayers,
+      store,
     } = options;
 
     this.textureAtlas = textureAtlas;
@@ -50,6 +52,7 @@ class RenderProcessor extends Processor {
       storage[layer] = index;
       return storage;
     }, {});
+    this._store = store;
     this._gameObjectObserver = gameObjectObserver;
 
     this._gameObjectCashMap = {};
@@ -164,13 +167,16 @@ class RenderProcessor extends Processor {
     const matrixTransformer = this._matrixTransformer;
     const { renderable, x, y } = props;
 
+    const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
+    const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
+
     const matrix = matrixTransformer.getIdentityMatrix();
 
     matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
     renderable.flipX && matrixTransformer.flipX(matrix);
     renderable.flipY && matrixTransformer.flipY(matrix);
     matrixTransformer.rotate(matrix, renderable.rotation);
-    matrixTransformer.translate(matrix, x, y);
+    matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
     matrixTransformer.scale(matrix, RENDER_SCALE, RENDER_SCALE);
     matrixTransformer.project(matrix, canvas.clientWidth, canvas.clientHeight);
 

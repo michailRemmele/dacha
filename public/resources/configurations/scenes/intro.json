@@ -30,6 +30,26 @@
           "prefabName": "roosterHitBox",
           "children": [],
           "components": []
+        },
+        {
+          "id": "1.2",
+          "name": "mainCamera",
+          "fromPrefab": false,
+          "prefabName": "",
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0
+              }
+            },
+            {
+              "name": "camera",
+              "config": {}
+            }
+          ]
         }
       ],
       "components": [
@@ -2016,6 +2036,17 @@
         "renderable"
       ],
       "options": {}
+    },
+    {
+      "name": "cameraProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "camera",
+        "transform"
+      ],
+      "options": {
+        "initialCamera": "1.2"
+      }
     },
     {
       "name": "animateProcessor",
