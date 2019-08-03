@@ -36,7 +36,7 @@ class SceneProvider {
 
       return this._processorsPlugins[processorInfo.name].load({
         ...processorInfo.options,
-        scene: scene,
+        store: scene.getStore(),
         gameObjectObserver: gameObjectObserver,
       })
         .then((processor) => {

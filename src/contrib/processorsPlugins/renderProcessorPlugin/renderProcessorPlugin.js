@@ -13,8 +13,8 @@ class InputProcessorPlugin extends ProcessorPlugin {
       textureAtlas,
       textureAtlasDescriptor,
       backgroundColor,
-      scene,
       sortingLayers,
+      gameObjectObserver,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -28,9 +28,8 @@ class InputProcessorPlugin extends ProcessorPlugin {
       textureAtlas: loadedResources[0],
       textureAtlasDescriptor: loadedResources[1],
       backgroundColor: backgroundColor,
-      scene: scene,
       sortingLayers: sortingLayers,
-      gameObjectObserver: options.gameObjectObserver,
+      gameObjectObserver: gameObjectObserver,
     });
   }
 }
