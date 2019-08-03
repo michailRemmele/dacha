@@ -14,8 +14,8 @@
       "config": {
         "type": "static",
         "src": "background/space",
-        "width": 1548,
-        "height": 858,
+        "width": 1648,
+        "height": 1158,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,

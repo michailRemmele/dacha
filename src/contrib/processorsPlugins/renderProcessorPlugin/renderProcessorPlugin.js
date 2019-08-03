@@ -15,6 +15,7 @@ class InputProcessorPlugin extends ProcessorPlugin {
       backgroundColor,
       sortingLayers,
       gameObjectObserver,
+      store,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -30,6 +31,7 @@ class InputProcessorPlugin extends ProcessorPlugin {
       backgroundColor: backgroundColor,
       sortingLayers: sortingLayers,
       gameObjectObserver: gameObjectObserver,
+      store,
     });
   }
 }

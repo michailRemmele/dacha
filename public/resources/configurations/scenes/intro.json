@@ -2,26 +2,6 @@
   "name": "intro-scene",
   "gameObjects": [
     {
-      "id": "20",
-      "name": "mainCamera",
-      "fromPrefab": false,
-      "prefabName": "",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 0,
-            "offsetY": 0
-          }
-        },
-        {
-          "name": "camera",
-          "config": {}
-        }
-      ]
-    },
-    {
       "id": "0",
       "name": "spaceBackground",
       "fromPrefab": true,
@@ -50,6 +30,26 @@
           "prefabName": "roosterHitBox",
           "children": [],
           "components": []
+        },
+        {
+          "id": "1.2",
+          "name": "mainCamera",
+          "fromPrefab": false,
+          "prefabName": "",
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0
+              }
+            },
+            {
+              "name": "camera",
+              "config": {}
+            }
+          ]
         }
       ],
       "components": [
@@ -2045,7 +2045,7 @@
         "transform"
       ],
       "options": {
-        "initialCamera": "20"
+        "initialCamera": "1.2"
       }
     },
     {
