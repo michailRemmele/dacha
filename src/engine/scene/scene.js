@@ -1,5 +1,7 @@
 import { SECTIONS } from 'engine/consts/global';
 
+import Store from './store';
+
 const GAME_OBJECT_ADDED = 'GAME_OBJECT_ADDED';
 const GAME_OBJECT_REMOVED = 'GAME_OBJECT_REMOVED';
 
@@ -9,6 +11,7 @@ class Scene {
 
     this._name = name;
     this._gameObjects = {};
+    this._store = new Store();
 
     this._processorSections = {
       [SECTIONS.EVENT_PROCESS_SECTION_NAME]: [],
@@ -44,6 +47,10 @@ class Scene {
 
   getProcessorSection(section) {
     return this._processorSections[section];
+  }
+
+  getStore() {
+    return this._store;
   }
 
   addGameObject(gameObject) {
