@@ -1,5 +1,5 @@
 import Camera from './camera/camera';
-import Control from './control/control';
+import KeyboardControl from './keyboardControl/keyboardControl';
 import ColliderContainer from './colliderContainer/colliderContainer';
 import RigidBody from './rigidBody/rigidBody';
 import Animatable from './animatable/animatable';
@@ -10,7 +10,7 @@ import MouseControl from './mouseControl/mouseControl';
 
 export default {
   camera: Camera,
-  control: Control,
+  keyboardControl: KeyboardControl,
   colliderContainer: ColliderContainer,
   rigidBody: RigidBody,
   animatable: Animatable,

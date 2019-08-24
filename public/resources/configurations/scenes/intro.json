@@ -61,7 +61,7 @@
           }
         },
         {
-          "name": "control",
+          "name": "keyboardControl",
           "config": {
             "inputEventBindings": {
               "W_PRESSED": "MOVEMENT_UP",
@@ -1999,10 +1999,10 @@
       "options": {}
     },
     {
-      "name": "controlProcessor",
+      "name": "keyboardControlProcessor",
       "section": "gameStateUpdateSection",
       "components": [
-        "control"
+        "keyboardControl"
       ],
       "options": {}
     },
