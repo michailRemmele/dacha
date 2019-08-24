@@ -70,6 +70,14 @@
               "D_PRESSED": "MOVEMENT_RIGHT"
             }
           }
+        },
+        {
+          "name": "mouseControl",
+          "config": {
+            "inputEventBindings": {
+              "MOUSE_LEFT_BUTTON_PRESS": "ATTACK_START"
+            }
+          }
         }
       ]
     },
@@ -1995,6 +2003,14 @@
       "section": "gameStateUpdateSection",
       "components": [
         "control"
+      ],
+      "options": {}
+    },
+    {
+      "name": "mouseControlProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "mouseControl"
       ],
       "options": {}
     },
