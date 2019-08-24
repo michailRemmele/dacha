@@ -61,13 +61,21 @@
           }
         },
         {
-          "name": "control",
+          "name": "keyboardControl",
           "config": {
             "inputEventBindings": {
               "W_PRESSED": "MOVEMENT_UP",
               "A_PRESSED": "MOVEMENT_LEFT",
               "S_PRESSED": "MOVEMENT_DOWN",
               "D_PRESSED": "MOVEMENT_RIGHT"
+            }
+          }
+        },
+        {
+          "name": "mouseControl",
+          "config": {
+            "inputEventBindings": {
+              "MOUSE_LEFT_BUTTON_PRESS": "ATTACK_START"
             }
           }
         }
@@ -1979,16 +1987,30 @@
   ],
   "processors": [
     {
-      "name": "inputProcessor",
+      "name": "keyboardInputProcessor",
       "section": "eventProcessSection",
       "components": [],
       "options": {}
     },
     {
-      "name": "controlProcessor",
+      "name": "mouseInputProcessor",
+      "section": "eventProcessSection",
+      "components": [],
+      "options": {}
+    },
+    {
+      "name": "keyboardControlProcessor",
       "section": "gameStateUpdateSection",
       "components": [
-        "control"
+        "keyboardControl"
+      ],
+      "options": {}
+    },
+    {
+      "name": "mouseControlProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "mouseControl"
       ],
       "options": {}
     },

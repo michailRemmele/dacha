@@ -2,7 +2,7 @@ import Component from 'engine/component/component';
 
 const PREFIX_SEPARATOR = '_';
 
-class Control extends Component {
+class KeyboardControl extends Component {
   constructor(config) {
     super();
 
@@ -30,7 +30,7 @@ class Control extends Component {
   }
 
   clone() {
-    return new Control({
+    return new KeyboardControl({
       inputEventBindings: {
         ...this.inputEventBindings,
       },
@@ -38,4 +38,4 @@ class Control extends Component {
   }
 }
 
-export default Control;
+export default KeyboardControl;

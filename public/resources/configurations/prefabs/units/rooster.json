@@ -242,6 +242,17 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "ATTACK_START"
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -310,6 +321,17 @@
                         "type": "number",
                         "value": 0
                       }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "ATTACK_START"
                     }
                   }
                 ]
@@ -399,12 +421,23 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "ATTACK_START"
+                    }
+                  }
+                ]
               }
             ]
           },
           {
             "name": "attack",
-            "speed": 1,
+            "speed": 1.5,
             "frames": [
               {
                 "index": 10,

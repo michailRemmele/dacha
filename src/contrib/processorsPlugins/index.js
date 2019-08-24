@@ -1,6 +1,10 @@
-import InputProcessorPlugin from './inputProcessorPlugin/inputProcessorPlugin';
+import KeyboardInputProcessorPlugin
+  from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
 import CameraProcessorPlugin from './cameraProcessorPlugin/cameraProcessorPlugin';
-import ControlProcessorPlugin from './controlProcessorPlugin/controlProcessorPlugin';
+import KeyboardControlProcessorPlugin
+  from './keyboardControlProcessorPlugin/keyboardControlProcessorPlugin';
+import MouseControlProcessorPlugin from './mouseControlProcessorPlugin/mouseControlProcessorPlugin';
+import MouseInputProcessorPlugin from './mouseInputProcessorPlugin/mouseInputProcessorPlugin';
 import MovementProcessorPlugin from './movementProcessorPlugin/movementProcessorPlugin';
 import CollisionBroadcastProcessorPlugin
   from './collisionBroadcastProcessorPlugin/collisionBroadcastProcessorPlugin';
@@ -11,9 +15,11 @@ import AnimateProcessorPlugin from './animateProcessorPlugin/animateProcessorPlu
 import RenderProcessorPlugin from './renderProcessorPlugin/renderProcessorPlugin';
 
 export default {
-  inputProcessor: InputProcessorPlugin,
+  keyboardInputProcessor: KeyboardInputProcessorPlugin,
   cameraProcessor: CameraProcessorPlugin,
-  controlProcessor: ControlProcessorPlugin,
+  keyboardControlProcessor: KeyboardControlProcessorPlugin,
+  mouseControlProcessor: MouseControlProcessorPlugin,
+  mouseInputProcessor: MouseInputProcessorPlugin,
   movementProcessor: MovementProcessorPlugin,
   collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,
   collisionDetectionProcessor: CollisionDetectionProcessorPlugin,

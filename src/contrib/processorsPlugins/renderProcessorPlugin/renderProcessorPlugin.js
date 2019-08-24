@@ -4,7 +4,7 @@ import { RESOURCES_LOADER_KEY_NAME } from 'engine/consts/global';
 
 import RenderProcessor from 'contrib/processors/renderProcessor/renderProcessor';
 
-class InputProcessorPlugin extends ProcessorPlugin {
+class RenderProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
 
@@ -36,4 +36,4 @@ class InputProcessorPlugin extends ProcessorPlugin {
   }
 }
 
-export default InputProcessorPlugin;
+export default RenderProcessorPlugin;
