@@ -1,4 +1,5 @@
-import InputProcessorPlugin from './inputProcessorPlugin/inputProcessorPlugin';
+import KeyboardInputProcessorPlugin
+  from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
 import CameraProcessorPlugin from './cameraProcessorPlugin/cameraProcessorPlugin';
 import ControlProcessorPlugin from './controlProcessorPlugin/controlProcessorPlugin';
 import MouseInputProcessorPlugin from './mouseInputProcessorPlugin/mouseInputProcessorPlugin';
@@ -12,7 +13,7 @@ import AnimateProcessorPlugin from './animateProcessorPlugin/animateProcessorPlu
 import RenderProcessorPlugin from './renderProcessorPlugin/renderProcessorPlugin';
 
 export default {
-  inputProcessor: InputProcessorPlugin,
+  keyboardInputProcessor: KeyboardInputProcessorPlugin,
   cameraProcessor: CameraProcessorPlugin,
   controlProcessor: ControlProcessorPlugin,
   mouseInputProcessor: MouseInputProcessorPlugin,
