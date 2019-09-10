@@ -36,7 +36,7 @@ class GameObjectObserver {
     this._removedFromAccepted = [];
   }
 
-  _add(gameObjects, gameObject) {
+  _add(gameObject) {
     this._observedGameObjects.push(gameObject);
 
     if (this._test(gameObject)) {
@@ -44,7 +44,7 @@ class GameObjectObserver {
     }
   }
 
-  _remove(gameObjects, gameObject) {
+  _remove(gameObject) {
     const remove = (gameObjects) => {
       return gameObjects.filter((gameObject) => {
         return gameObjectId !== gameObject.getId();
