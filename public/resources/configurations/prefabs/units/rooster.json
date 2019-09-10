@@ -112,7 +112,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -251,7 +251,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -333,7 +333,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -430,7 +430,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]

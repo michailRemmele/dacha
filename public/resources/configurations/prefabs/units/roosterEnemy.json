@@ -112,7 +112,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -244,6 +244,17 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "SHOT"
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -312,6 +323,17 @@
                         "type": "number",
                         "value": 0
                       }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -401,12 +423,23 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "SHOT"
+                    }
+                  }
+                ]
               }
             ]
           },
           {
             "name": "attack",
-            "speed": 1,
+            "speed": 1.5,
             "frames": [
               {
                 "index": 10,

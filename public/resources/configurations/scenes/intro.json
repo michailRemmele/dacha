@@ -101,7 +101,7 @@
           "config": {
             "inputEventBindings": {
               "MOUSE_LEFT_BUTTON_PRESS": {
-                "messageType": "ATTACK_START",
+                "messageType": "SHOT",
                 "attrs": {}
               }
             }
@@ -2205,6 +2205,13 @@
         "rigidBody",
         "colliderContainer",
         "renderable"
+      ],
+      "options": {}
+    },
+    {
+      "name": "shootingProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
       ],
       "options": {}
     },
