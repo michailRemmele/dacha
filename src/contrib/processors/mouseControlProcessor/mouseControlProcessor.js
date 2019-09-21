@@ -19,10 +19,16 @@ class MouseControlProcessor extends Processor {
       message.query.forEach((inputEvent) => {
         this._gameObjectObserver.forEach((gameObject) => {
           const control = gameObject.getComponent(CONTROL_COMPONENT_NAME);
+          const eventBinding = control.inputEventBindings[inputEvent.type];
 
-          if (control.inputEventBindings[inputEvent.type]) {
+          if (eventBinding) {
+            if (!eventBinding.messageType) {
+              throw new Error(`The message type not specified for input event: ${inputEvent.type}`);
+            }
+
             messageBus.send({
-              type: control.inputEventBindings[inputEvent.type],
+              type: eventBinding.messageType,
+              ...eventBinding.attrs,
               gameObject: gameObject,
               screenX: inputEvent.x,
               screenY: inputEvent.y,
