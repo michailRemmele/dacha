@@ -39,9 +39,15 @@ class KeyboardControlProcessor extends Processor {
         const eventBinding = control.inputEventBindings[
           `${key}${PREFIX_SEPARATOR}${inputEventType}`
         ];
+
         if (inputEventType && eventBinding) {
+          if (!eventBinding.messageType) {
+            throw new Error(`The message type not specified for input event: ${inputEventType}`);
+          }
+
           messageBus.send({
-            type: eventBinding,
+            type: eventBinding.messageType,
+            ...eventBinding.attrs,
             gameObject: gameObject,
           });
         }

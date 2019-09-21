@@ -64,10 +64,22 @@
           "name": "keyboardControl",
           "config": {
             "inputEventBindings": {
-              "W_PRESSED": "MOVEMENT_UP",
-              "A_PRESSED": "MOVEMENT_LEFT",
-              "S_PRESSED": "MOVEMENT_DOWN",
-              "D_PRESSED": "MOVEMENT_RIGHT"
+              "W_PRESSED": {
+                "messageType": "MOVEMENT_UP",
+                "attrs": {}
+              },
+              "A_PRESSED": {
+                "messageType": "MOVEMENT_LEFT",
+                "attrs": {}
+              },
+              "S_PRESSED": {
+                "messageType": "MOVEMENT_DOWN",
+                "attrs": {}
+              },
+              "D_PRESSED": {
+                "messageType": "MOVEMENT_RIGHT",
+                "attrs": {}
+              }
             }
           }
         },
