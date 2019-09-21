@@ -65,20 +65,28 @@
           "config": {
             "inputEventBindings": {
               "W_PRESSED": {
-                "messageType": "MOVEMENT_UP",
-                "attrs": {}
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 270
+                }
               },
               "A_PRESSED": {
-                "messageType": "MOVEMENT_LEFT",
-                "attrs": {}
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 180
+                }
               },
               "S_PRESSED": {
-                "messageType": "MOVEMENT_DOWN",
-                "attrs": {}
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 90
+                }
               },
               "D_PRESSED": {
-                "messageType": "MOVEMENT_RIGHT",
-                "attrs": {}
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 0
+                }
               }
             }
           }

@@ -2,61 +2,48 @@ import Vector2 from 'utils/vector/vector2';
 
 import Processor from 'engine/processor/processor';
 
-const UP_MSG = 'MOVEMENT_UP';
-const LEFT_MSG = 'MOVEMENT_LEFT';
-const DOWN_MSG = 'MOVEMENT_DOWN';
-const RIGHT_MSG = 'MOVEMENT_RIGHT';
+const MOVEMENT_MSG = 'MOVEMENT';
 const POSITION_CHANGED_MSG = 'MOVEMENT_POSITION_CHANGED';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const MOVEMENT_COMPONENT_NAME = 'movement';
 
-const MOVEMENT_VECTORS = {
-  [UP_MSG]: new Vector2(0, -1),
-  [LEFT_MSG]: new Vector2(-1, 0),
-  [RIGHT_MSG]: new Vector2(1, 0),
-  [DOWN_MSG]: new Vector2(0, 1),
-};
-
 class MovementProcessor extends Processor {
-  constructor(options) {
-    super();
+  _degToRad(deg) {
+    return deg * Math.PI / 180;
+  }
 
-    this._movementMessageTypes = [ UP_MSG, LEFT_MSG, DOWN_MSG, RIGHT_MSG ];
-    this._gameObjectObserver = options.gameObjectObserver;
+  _getVectorByAngle(angle) {
+    const radAngle = this._degToRad(angle);
+    return new Vector2(Math.cos(radAngle), Math.sin(radAngle));
   }
 
   process(options) {
     const deltaTimeInSeconds = options.deltaTime / 1000;
     const messageBus = options.messageBus;
 
-    const movableGameObjects = this._movementMessageTypes.reduce((storage, messageType) => {
-      const messages = messageBus.get(messageType) || [];
-      messages.forEach((message) => {
-        const gameObjectId = message.gameObject.getId();
-        storage[gameObjectId] = storage[gameObjectId] || [];
-        storage[gameObjectId].push(message.type);
-      });
+    const messages = messageBus.get(MOVEMENT_MSG) || [];
+    const gameObjectsMovements = messages.reduce((storage, message) => {
+      const { gameObject, directionAngle } = message;
+      const gameObjectId = gameObject.getId();
 
-      return storage;
-    }, {});
-
-    this._gameObjectObserver.forEach((gameObject) => {
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const { speed, vector } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
-
-      const movementDirections = movableGameObjects[gameObject.getId()];
-      vector.multiplyNumber(0);
-
-      if (!movementDirections) {
-        return;
+      if (!storage.directionMap[gameObjectId]) {
+        storage.gameObjects.push(gameObject);
       }
 
-      movementDirections.forEach((direction) => {
-        vector.add(MOVEMENT_VECTORS[direction]);
-      });
+      storage.directionMap[gameObjectId] = storage.directionMap[gameObjectId] || new Vector2(0, 0);
+      storage.directionMap[gameObjectId].add(this._getVectorByAngle(directionAngle));
 
-      vector.multiplyNumber(speed * deltaTimeInSeconds);
+      return storage;
+    }, { directionMap: {}, gameObjects: []});
+
+    gameObjectsMovements.gameObjects.forEach((gameObject) => {
+      const vector = gameObjectsMovements.directionMap[gameObject.getId()];
+
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+      const { speed } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
+
+      vector.multiplyNumber(speed * deltaTimeInSeconds * (1 / vector.magnitude));
 
       transform.offsetX = transform.offsetX + vector.x;
       transform.offsetY = transform.offsetY + vector.y;
