@@ -87,7 +87,10 @@
           "name": "mouseControl",
           "config": {
             "inputEventBindings": {
-              "MOUSE_LEFT_BUTTON_PRESS": "ATTACK_START"
+              "MOUSE_LEFT_BUTTON_PRESS": {
+                "messageType": "ATTACK_START",
+                "attrs": {}
+              }
             }
           }
         }
