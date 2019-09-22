@@ -12,6 +12,10 @@ class Vector2 {
     return this._y;
   }
 
+  get magnitude() {
+    return Math.sqrt(Math.pow(this._x, 2) + Math.pow(this._y, 2));
+  }
+
   add(vector) {
     this._x += vector.x;
     this._y += vector.y;
