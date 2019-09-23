@@ -45,18 +45,21 @@ class MovementProcessor extends Processor {
       return storage;
     }, {});
 
-    Object.keys(movementVectors).forEach((gameObjectId) => {
-      const gameObject = this._gameObjectObserver.getById(gameObjectId);
-      const vector = movementVectors[gameObjectId];
+    this._gameObjectObserver.forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
 
-      if (vector.x === 0 && vector.y === 0) {
+      const { vector, speed } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
+      vector.multiplyNumber(0);
+
+      const movementVector = movementVectors[gameObjectId];
+      if (!movementVector || (movementVector.x === 0 && movementVector.y === 0)) {
         return;
       }
 
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const { speed } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
 
-      vector.multiplyNumber(speed * deltaTimeInSeconds * (1 / vector.magnitude));
+      movementVector.multiplyNumber(speed * deltaTimeInSeconds * (1 / movementVector.magnitude));
+      vector.add(movementVector);
 
       transform.offsetX = transform.offsetX + vector.x;
       transform.offsetY = transform.offsetY + vector.y;
