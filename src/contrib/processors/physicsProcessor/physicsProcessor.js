@@ -5,6 +5,7 @@ import Processor from 'engine/processor/processor';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
 const COLLISION_LEAVE_MSG = 'COLLISION_LEAVE';
+const ADD_FORCE_MSG = 'ADD_FORCE';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -31,6 +32,7 @@ class PhysicsProcessor extends Processor {
 
     this._gameObjectsLastTransform = {};
     this._gameObjectsVelocity = {};
+    this._temproraryForcesMap = {};
   }
 
   processorDidMount() {
@@ -41,6 +43,21 @@ class PhysicsProcessor extends Processor {
 
       this._addGravityForce(rigidBody);
       this._gameObjectsLastTransform[gameObjectId] = transform.clone();
+    });
+  }
+
+  _processExternalForces(addForceMessages, gameObjectId, forceVectors) {
+    addForceMessages.forEach((message) => {
+      const { name, value, duration } = message;
+      this._temproraryForcesMap[gameObjectId] = this._temproraryForcesMap[gameObjectId] || {};
+
+      if (duration) {
+        this._temproraryForcesMap[gameObjectId][name] = duration;
+      } else if (this._temproraryForcesMap[gameObjectId][name]) {
+        this._temproraryForcesMap[gameObjectId][name] = null;
+      }
+
+      forceVectors[name] = value;
     });
   }
 
@@ -85,7 +102,8 @@ class PhysicsProcessor extends Processor {
   }
 
   process(options) {
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+    const deltaTimeInMsec = options.deltaTime;
+    const deltaTimeInSeconds = deltaTimeInMsec / 1000;
     const messageBus = options.messageBus;
 
     this._gameObjectObserver.getLastAdded().forEach((gameObject) => {
@@ -127,10 +145,30 @@ class PhysicsProcessor extends Processor {
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const { forceVectors, mass } = rigidBody;
 
-      const forceVector = Object.keys(forceVectors).reduce((resultantForceVector, forceName) => {
-        if (forceVectors[forceName]) {
-          resultantForceVector.add(forceVectors[forceName]);
+      const addForceMessages = messageBus.getById(ADD_FORCE_MSG) || [];
+      this._processExternalForces(addForceMessages, gameObjectId, forceVectors);
+
+      const temporaryForces = this._temproraryForcesMap[gameObjectId] || {};
+
+      const activeForces = Object.keys(forceVectors);
+      activeForces.forEach((forceName) => {
+        const forceDuration = temporaryForces[forceName];
+        if (forceDuration <= 0) {
+          forceVectors[forceName] = null;
+          temporaryForces[forceName] = null;
         }
+      });
+
+      const forceVector = activeForces.reduce((resultantForceVector, forceName) => {
+        if (!forceVectors[forceName]) {
+          return resultantForceVector;
+        }
+
+        if (temporaryForces[forceName]) {
+          temporaryForces[forceName] -= deltaTimeInMsec;
+        }
+
+        resultantForceVector.add(forceVectors[forceName]);
 
         return resultantForceVector;
       }, new Vector2(0, 0));
