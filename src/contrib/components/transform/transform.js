@@ -6,6 +6,7 @@ class Transform extends Component {
 
     this._offsetX = config.offsetX;
     this._offsetY = config.offsetY;
+    this._rotation = config.rotation;
   }
 
   set offsetX(offsetX) {
@@ -24,10 +25,19 @@ class Transform extends Component {
     return this._offsetY + (this._parent ? this._parent.offsetY : 0);
   }
 
+  set rotation(rotation) {
+    this._rotation = rotation - (this._parent ? this._parent.rotation : 0);
+  }
+
+  get rotation() {
+    return this._rotation + (this._parent ? this._parent.rotation : 0);
+  }
+
   clone() {
     return new Transform({
       offsetX: this.offsetX,
       offsetY: this.offsetY,
+      rotation: this.rotation,
     });
   }
 }

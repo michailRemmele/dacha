@@ -6,7 +6,8 @@
       "name": "transform",
       "config": {
         "offsetX": 0,
-        "offsetY": 0
+        "offsetY": 0,
+        "rotation": 0
       }
     },
     {

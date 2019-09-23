@@ -165,7 +165,7 @@ class RenderProcessor extends Processor {
   _getTransformationMatrix(props) {
     const canvas = this.gl.canvas;
     const matrixTransformer = this._matrixTransformer;
-    const { renderable, x, y } = props;
+    const { renderable, x, y, rotation } = props;
 
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
     const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
@@ -175,7 +175,7 @@ class RenderProcessor extends Processor {
     matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
     renderable.flipX && matrixTransformer.flipX(matrix);
     renderable.flipY && matrixTransformer.flipY(matrix);
-    matrixTransformer.rotate(matrix, renderable.rotation);
+    matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
     matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
     matrixTransformer.scale(matrix, RENDER_SCALE, RENDER_SCALE);
     matrixTransformer.project(matrix, canvas.clientWidth, canvas.clientHeight);
@@ -297,6 +297,7 @@ class RenderProcessor extends Processor {
           renderable: renderable,
           x: transform.offsetX,
           y: transform.offsetY,
+          rotation: transform.rotation,
         }),
         u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
         u_texCoordTranslation: [ textureInfo.x, textureInfo.y ],
