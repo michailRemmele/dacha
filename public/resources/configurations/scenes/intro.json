@@ -2188,6 +2188,13 @@
       "options": {}
     },
     {
+      "name": "shootingProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+      ],
+      "options": {}
+    },
+    {
       "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
       "components": [
@@ -2205,13 +2212,6 @@
         "rigidBody",
         "colliderContainer",
         "renderable"
-      ],
-      "options": {}
-    },
-    {
-      "name": "shootingProcessor",
-      "section": "gameStateUpdateSection",
-      "components": [
       ],
       "options": {}
     },

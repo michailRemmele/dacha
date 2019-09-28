@@ -11,6 +11,13 @@
       }
     },
     {
+      "name": "rigidBody",
+      "config": {
+        "mass": 1,
+        "useGravity": false
+      }
+    },
+    {
       "name": "animatable",
       "config": {
         "defaultState": "idle",

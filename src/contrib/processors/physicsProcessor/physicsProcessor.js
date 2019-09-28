@@ -145,7 +145,8 @@ class PhysicsProcessor extends Processor {
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const { forceVectors, mass } = rigidBody;
 
-      const addForceMessages = messageBus.getById(ADD_FORCE_MSG) || [];
+      const addForceMessages = messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
+
       this._processExternalForces(addForceMessages, gameObjectId, forceVectors);
 
       const temporaryForces = this._temproraryForcesMap[gameObjectId] || {};
@@ -176,18 +177,16 @@ class PhysicsProcessor extends Processor {
       this._gameObjectsVelocity[gameObjectId] = this._gameObjectsVelocity[gameObjectId]
         || new Vector2(0, 0);
 
+      const velocityVector = this._gameObjectsVelocity[gameObjectId];
+
       if (forceVector.x || forceVector.y) {
-        const velocityVector = forceVector.clone();
-        velocityVector.multiplyNumber(deltaTimeInSeconds / mass);
-        velocityVector.add(this._gameObjectsVelocity[gameObjectId]);
-
-        transform.offsetX = transform.offsetX + velocityVector.x;
-        transform.offsetY = transform.offsetY + velocityVector.y;
-
-        this._gameObjectsVelocity[gameObjectId] = velocityVector;
-      } else {
-        this._gameObjectsVelocity[gameObjectId].multiplyNumber(0);
+        const velocityIncrease = forceVector.clone();
+        velocityIncrease.multiplyNumber(deltaTimeInSeconds / mass);
+        velocityVector.add(velocityIncrease);
       }
+
+      transform.offsetX = transform.offsetX + velocityVector.x;
+      transform.offsetY = transform.offsetY + velocityVector.y;
 
       this._gameObjectsLastTransform[gameObjectId] = transform.clone();
     });
