@@ -41,8 +41,8 @@ class MouseInputProcessor extends Processor {
     const inputQuery = firedEvents.map((event) => {
       return {
         type: EVENT_TYPE[event.type](event),
-        x: event.screenX,
-        y: event.screenY,
+        x: event.offsetX,
+        y: event.offsetY,
       };
     });
     this._inputListener.clearFiredEvents();
