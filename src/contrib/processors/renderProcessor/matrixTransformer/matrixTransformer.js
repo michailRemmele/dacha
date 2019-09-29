@@ -48,7 +48,7 @@ class MatrixTransformer {
   rotate(matrix, angle) {
     angle = angle * Math.PI / 180;
     const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
+    const sin = -Math.sin(angle);
 
     const matrix0 = matrix[0];
     const matrix3 = matrix[3];
