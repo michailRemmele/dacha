@@ -49,7 +49,9 @@
             },
             {
               "name": "camera",
-              "config": {}
+              "config": {
+                "zoom": 2
+              }
             }
           ]
         }
@@ -2136,6 +2138,12 @@
     {
       "name": "mouseInputProcessor",
       "section": "eventProcessSection",
+      "components": [],
+      "options": {}
+    },
+    {
+      "name": "mouseInputCoordinatesProjector",
+      "section": "gameStateUpdateSection",
       "components": [],
       "options": {}
     },

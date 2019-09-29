@@ -4,8 +4,17 @@ class Camera extends Component {
   constructor(config) {
     super();
 
+    this._zoom = config.zoom;
     this._windowSizeX = 0;
     this._windowSizeY = 0;
+  }
+
+  set zoom(zoom) {
+    this._zoom = zoom;
+  }
+
+  get zoom() {
+    return this._zoom;
   }
 
   set windowSizeX(windowSizeX) {
@@ -25,7 +34,9 @@ class Camera extends Component {
   }
 
   clone() {
-    return new Camera({});
+    return new Camera({
+      zoom: this.zoom,
+    });
   }
 }
 
