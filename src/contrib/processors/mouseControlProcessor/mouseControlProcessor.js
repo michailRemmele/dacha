@@ -30,8 +30,10 @@ class MouseControlProcessor extends Processor {
               type: eventBinding.messageType,
               ...eventBinding.attrs,
               gameObject: gameObject,
-              screenX: inputEvent.x,
-              screenY: inputEvent.y,
+              x: inputEvent.x,
+              y: inputEvent.y,
+              screenX: inputEvent.screenX,
+              screenY: inputEvent.screenY,
             });
           }
         });

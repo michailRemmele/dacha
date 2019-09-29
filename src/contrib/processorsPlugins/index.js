@@ -5,6 +5,8 @@ import KeyboardControlProcessorPlugin
   from './keyboardControlProcessorPlugin/keyboardControlProcessorPlugin';
 import MouseControlProcessorPlugin from './mouseControlProcessorPlugin/mouseControlProcessorPlugin';
 import MouseInputProcessorPlugin from './mouseInputProcessorPlugin/mouseInputProcessorPlugin';
+import MouseInputCoordinatesProjectorPlugin
+  from './mouseInputCoordinatesProjector/mouseInputCoordinatesProjector';
 import MovementProcessorPlugin from './movementProcessorPlugin/movementProcessorPlugin';
 import CollisionBroadcastProcessorPlugin
   from './collisionBroadcastProcessorPlugin/collisionBroadcastProcessorPlugin';
@@ -20,6 +22,7 @@ export default {
   keyboardControlProcessor: KeyboardControlProcessorPlugin,
   mouseControlProcessor: MouseControlProcessorPlugin,
   mouseInputProcessor: MouseInputProcessorPlugin,
+  mouseInputCoordinatesProjector: MouseInputCoordinatesProjectorPlugin,
   movementProcessor: MovementProcessorPlugin,
   collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,
   collisionDetectionProcessor: CollisionDetectionProcessorPlugin,

@@ -9,12 +9,12 @@ import webglUtils from './vendor/webglUtils';
 
 const MAX_COLOR_NUMBER = 255;
 const RENDER_COMPONENTS_NUMBER = 2;
-const RENDER_SCALE = 2;
 const DRAW_OFFSET = 0;
 const DRAW_COUNT = 6;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
+const CAMERA_COMPONENT_NAME = 'camera';
 const CURRENT_CAMERA_NAME = 'currentCamera';
 
 class RenderProcessor extends Processor {
@@ -168,6 +168,7 @@ class RenderProcessor extends Processor {
     const { renderable, x, y, rotation } = props;
 
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
+    const { zoom: cameraZoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
     const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
 
     const matrix = matrixTransformer.getIdentityMatrix();
@@ -177,7 +178,7 @@ class RenderProcessor extends Processor {
     renderable.flipY && matrixTransformer.flipY(matrix);
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
     matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
-    matrixTransformer.scale(matrix, RENDER_SCALE, RENDER_SCALE);
+    matrixTransformer.scale(matrix, cameraZoom, cameraZoom);
     matrixTransformer.project(matrix, canvas.clientWidth, canvas.clientHeight);
 
     return matrix;

@@ -49,7 +49,9 @@
             },
             {
               "name": "camera",
-              "config": {}
+              "config": {
+                "zoom": 2
+              }
             }
           ]
         }
@@ -2140,6 +2142,12 @@
       "options": {}
     },
     {
+      "name": "mouseInputCoordinatesProjector",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {}
+    },
+    {
       "name": "keyboardControlProcessor",
       "section": "gameStateUpdateSection",
       "components": [
@@ -2208,6 +2216,7 @@
         "transform"
       ],
       "options": {
+        "windowNodeId": "root",
         "initialCamera": "1.2"
       }
     },
