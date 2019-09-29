@@ -2208,6 +2208,7 @@
         "transform"
       ],
       "options": {
+        "windowNodeId": "root",
         "initialCamera": "1.2"
       }
     },

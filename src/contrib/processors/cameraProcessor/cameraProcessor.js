@@ -3,20 +3,40 @@ import Processor from 'engine/processor/processor';
 const CURRENT_CAMERA_NAME = 'currentCamera';
 const SET_CAMERA_MESSAGE = 'SET_CAMERA';
 
+const CAMERA_COMPONENT_NAME = 'camera';
+
 class CameraProcessor extends Processor {
   constructor(options) {
     super();
 
-    this._gameObjectObserver = options.gameObjectObserver;
-    this._store = options.store;
+    const { store, gameObjectObserver, window, initialCamera } = options;
 
-    const currentCamera = this._gameObjectObserver.getById(options.initialCamera);
+    this._gameObjectObserver = gameObjectObserver;
+    this._store = store;
+    this._window = window;
+
+    const currentCamera = this._gameObjectObserver.getById(initialCamera);
 
     if (!currentCamera) {
-      throw new Error(`Could not set camera with id ${options.initialCamera} for the scene`);
+      throw new Error(`Could not set camera with id ${initialCamera} for the scene`);
     }
 
-    this._store.set(CURRENT_CAMERA_NAME, currentCamera);
+    this._setCamera(currentCamera);
+  }
+
+  _updateCameraWindowSize(camera) {
+    const cameraComponent = camera.getComponent(CAMERA_COMPONENT_NAME);
+    const { windowSizeX, windowSizeY } = cameraComponent;
+
+    if (this._window.width !== windowSizeX || this._window.height !== windowSizeY) {
+      cameraComponent.windowSizeX = this._window.width;
+      cameraComponent.windowSizeY = this._window.height;
+    }
+  }
+
+  _setCamera(camera) {
+    this._updateCameraWindowSize(camera);
+    this._store.set(CURRENT_CAMERA_NAME, camera);
   }
 
   process(options) {
@@ -25,14 +45,16 @@ class CameraProcessor extends Processor {
     const messages = messageBus.get(SET_CAMERA_MESSAGE);
     if (messages) {
       const { gameObjectId } = messages[messages.length - 1];
-      const currentCamera = this._gameObjectObserver.getById(gameObjectId);
+      const newCamera = this._gameObjectObserver.getById(gameObjectId);
 
-      if (!currentCamera) {
+      if (!newCamera) {
         throw new Error(`Could not set camera with id ${gameObjectId} for the scene`);
       }
 
-      this._store.set(CURRENT_CAMERA_NAME, currentCamera);
+      this._setCamera(newCamera);
     }
+
+    this._updateCameraWindowSize(this._store.get(CURRENT_CAMERA_NAME));
   }
 }
 
