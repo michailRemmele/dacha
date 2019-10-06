@@ -39,6 +39,13 @@
       }
     },
     {
+      "name": "weapon",
+      "config": {
+        "bullet": "blasterBullet",
+        "speed": 400
+      }
+    },
+    {
       "name": "rigidBody",
       "config": {
         "mass": 1,

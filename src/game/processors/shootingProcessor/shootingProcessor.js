@@ -6,12 +6,16 @@ const ADD_FORCE_MSG = 'ADD_FORCE';
 const SHOT_POWER = 'shotPower';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
+const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
+const WEAPON_COMPONENT_NAME = 'weapon';
+
+const ACCELERATION_DURATION = 10;
+const ACCELERATION_DURATION_IN_SEC = ACCELERATION_DURATION / 1000;
 
 class ShootingProcessor extends Processor {
   constructor(options) {
     super();
 
-    this._gameObjectObserver = options.gameObjectObserver;
     this._gameObjectSpawner = options.gameObjectSpawner;
   }
 
@@ -43,9 +47,11 @@ class ShootingProcessor extends Processor {
       const { gameObject, x, y } = message;
 
       const { offsetX, offsetY } = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+      const weapon = gameObject.getComponent(WEAPON_COMPONENT_NAME);
 
-      const bullet = this._gameObjectSpawner.spawn('blasterBullet');
+      const bullet = this._gameObjectSpawner.spawn(weapon.bullet);
       const bulletTransform = bullet.getComponent(TRANSFORM_COMPONENT_NAME);
+      const bulletRigidBody = bullet.getComponent(RIGID_BODY_COMPONENT_NAME);
 
       bulletTransform.offsetX = offsetX;
       bulletTransform.offsetY = offsetY;
@@ -55,13 +61,15 @@ class ShootingProcessor extends Processor {
       bulletTransform.rotation = this._radToDeg(angle);
 
       const directionVector = this._getVectorByAngle(angle);
-      directionVector.multiplyNumber(200);
+
+      const forceValue = weapon.speed * bulletRigidBody.mass / ACCELERATION_DURATION_IN_SEC;
+      directionVector.multiplyNumber(forceValue);
 
       messageBus.send({
         type: ADD_FORCE_MSG,
         name: SHOT_POWER,
         value: directionVector,
-        duration: 10,
+        duration: ACCELERATION_DURATION,
         gameObject: bullet,
         id: bullet.getId(),
       });

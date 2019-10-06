@@ -3,6 +3,7 @@ import Engine from './engine/engine';
 import contribProcessorsPlugins from 'contrib/processorsPlugins';
 import gameProcessorsPlugins from 'game/processorsPlugins';
 import contribComponents from 'contrib/components';
+import gameComponents from 'game/components';
 
 const options = {
   mainConfig: 'resources/configurations/mainConfig.json',
@@ -12,6 +13,7 @@ const options = {
   },
   components: {
     ...contribComponents,
+    ...gameComponents,
   },
 };
 
