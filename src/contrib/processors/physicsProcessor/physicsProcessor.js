@@ -46,7 +46,7 @@ class PhysicsProcessor extends Processor {
     });
   }
 
-  _processExternalForces(addForceMessages, gameObjectId, forceVectors) {
+  _processIncomingForces(addForceMessages, gameObjectId, forceVectors) {
     addForceMessages.forEach((message) => {
       const { name, value, duration } = message;
       this._temproraryForcesMap[gameObjectId] = this._temproraryForcesMap[gameObjectId] || {};
@@ -58,6 +58,28 @@ class PhysicsProcessor extends Processor {
       }
 
       forceVectors[name] = value;
+    });
+  }
+
+  _filterTemporaryForces(forceVectors, temporaryForces, deltaTime) {
+    Object.keys(forceVectors).forEach((forceName) => {
+      const forceDuration = temporaryForces[forceName];
+
+      if (forceDuration === null || forceDuration === undefined) {
+        return;
+      }
+
+      if (forceDuration <= 0) {
+        forceVectors[forceName] = null;
+        temporaryForces[forceName] = null;
+        return;
+      }
+
+      if (forceDuration < deltaTime) {
+        forceVectors[forceName].multiplyNumber(forceDuration / deltaTime);
+      }
+
+      temporaryForces[forceName] -= deltaTime;
     });
   }
 
@@ -147,26 +169,15 @@ class PhysicsProcessor extends Processor {
 
       const addForceMessages = messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
 
-      this._processExternalForces(addForceMessages, gameObjectId, forceVectors);
+      this._processIncomingForces(addForceMessages, gameObjectId, forceVectors);
 
       const temporaryForces = this._temproraryForcesMap[gameObjectId] || {};
 
-      const activeForces = Object.keys(forceVectors);
-      activeForces.forEach((forceName) => {
-        const forceDuration = temporaryForces[forceName];
-        if (forceDuration <= 0) {
-          forceVectors[forceName] = null;
-          temporaryForces[forceName] = null;
-        }
-      });
+      this._filterTemporaryForces(forceVectors, temporaryForces, deltaTimeInMsec);
 
-      const forceVector = activeForces.reduce((resultantForceVector, forceName) => {
+      const forceVector = Object.keys(forceVectors).reduce((resultantForceVector, forceName) => {
         if (!forceVectors[forceName]) {
           return resultantForceVector;
-        }
-
-        if (temporaryForces[forceName]) {
-          temporaryForces[forceName] -= deltaTimeInMsec;
         }
 
         resultantForceVector.add(forceVectors[forceName]);
@@ -185,8 +196,8 @@ class PhysicsProcessor extends Processor {
         velocityVector.add(velocityIncrease);
       }
 
-      transform.offsetX = transform.offsetX + velocityVector.x;
-      transform.offsetY = transform.offsetY + velocityVector.y;
+      transform.offsetX = transform.offsetX + (velocityVector.x * deltaTimeInSeconds);
+      transform.offsetY = transform.offsetY + (velocityVector.y * deltaTimeInSeconds);
 
       this._gameObjectsLastTransform[gameObjectId] = transform.clone();
     });
