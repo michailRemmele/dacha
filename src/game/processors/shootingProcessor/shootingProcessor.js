@@ -52,20 +52,28 @@ class ShootingProcessor extends Processor {
 
       const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bullet.getId()) || [];
       return collisionMessages.every((message) => {
-        const { otherGameObject } = message;
-        const targetId = otherGameObject.getId();
-        const targetHealth = otherGameObject.getComponent(HEALTH_COMPONENT_NAME);
+        const { otherGameObject: targetHitBox } = message;
 
-        if (targetHealth && shooter.getId() !== targetId) {
-          const bulletHealth = bullet.getComponent(HEALTH_COMPONENT_NAME);
-          bulletHealth.points = 0;
+        const target = targetHitBox.getParent();
+        const targetHealth = targetHitBox.getComponent(HEALTH_COMPONENT_NAME);
 
-          bullet.removeComponent(RIGID_BODY_COMPONENT_NAME);
-          bullet.removeComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
-
-          return false;
+        if (!target || !targetHealth) {
+          return true;
         }
-        return true;
+
+        const targetId = target.getId();
+
+        if (shooter.getId() === targetId) {
+          return true;
+        }
+
+        const bulletHealth = bullet.getComponent(HEALTH_COMPONENT_NAME);
+        bulletHealth.points = 0;
+
+        bullet.removeComponent(RIGID_BODY_COMPONENT_NAME);
+        bullet.removeComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+
+        return false;
       });
     });
 
