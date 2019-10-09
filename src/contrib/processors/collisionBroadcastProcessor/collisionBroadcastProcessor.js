@@ -8,8 +8,10 @@ const COLLISION_MESSAGE = 'COLLISION';
 const TRIGGER_MESSAGE = 'TRIGGER';
 
 class CollisionBroadcastProcessor extends Processor {
-  constructor() {
+  constructor(options) {
     super();
+
+    this._gameObjectObserver = options.gameObjectObserver;
 
     this._collisionMap = {};
     this._activeCollisions = [];
@@ -17,6 +19,17 @@ class CollisionBroadcastProcessor extends Processor {
 
   process(options) {
     const messageBus = options.messageBus;
+
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+
+      this._activeCollisions = this._activeCollisions.filter((collision) => {
+        return gameObjectId !== collision.gameObject.getId()
+          && gameObjectId !== collision.otherGameObject.getId();
+      });
+
+      this._collisionMap[gameObjectId] = null;
+    });
 
     const collisionMessages = messageBus.get(COLLISION_MESSAGE) || [];
     const triggerMessages = messageBus.get(TRIGGER_MESSAGE) || [];
