@@ -3,15 +3,7 @@ class GameObjectObserver {
     this._components = components;
     this._observedGameObjects = scene.getGameObjects();
     this._acceptedGameObjects = this._observedGameObjects.filter((gameObject) => {
-      gameObject.subscribe((event) => {
-        const gameObject = event.gameObject;
-
-        if (this._test(gameObject)) {
-          this._accept(gameObject);
-        } else {
-          this._decline(gameObject);
-        }
-      });
+      gameObject.subscribe(this._subscribeGameObject.bind(this));
 
       return this._test(gameObject);
     });
@@ -26,6 +18,7 @@ class GameObjectObserver {
       const gameObject = event.gameObject;
 
       if (scene.GAME_OBJECT_ADDED === event.type) {
+        gameObject.subscribe(this._subscribeGameObject.bind(this));
         this._add(gameObject);
       } else {
         this._remove(gameObject);
@@ -34,6 +27,16 @@ class GameObjectObserver {
 
     this._addedToAccepted = [];
     this._removedFromAccepted = [];
+  }
+
+  _subscribeGameObject(event) {
+    const gameObject = event.gameObject;
+
+    if (this._test(gameObject)) {
+      this._accept(gameObject);
+    } else {
+      this._decline(gameObject);
+    }
   }
 
   _add(gameObject) {

@@ -85,6 +85,10 @@ class GameObject {
 
     this._subscribers.push(callback);
   }
+
+  clearSubscriptions() {
+    this._subscribers = [];
+  }
 }
 
 export default GameObject;

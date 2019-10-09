@@ -85,6 +85,7 @@ class Scene {
   }
 
   removeGameObject(gameObject) {
+    gameObject.clearSubscriptions();
     this._gameObjects[gameObject.getId()] = undefined;
 
     this._gameObjectsChangeSubscribers.forEach((callback) => {
