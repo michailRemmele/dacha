@@ -62,8 +62,9 @@ class AnimateProcessor extends Processor {
 
       if (animatable.duration >= baseDuration) {
         if (!animatable.currentState.looped) {
-          animatable.currentState
-            = animatable.currentState.previousState || animatable.defaultState;
+          animatable.currentState = animatable.currentState.fallbackState
+            ? animatable.currentState.fallbackState
+            : animatable.currentState.previousState || animatable.defaultState;
           animatable.duration = 0;
           this._setFrame(renderable, animatable.currentState.frames[0]);
           return;
