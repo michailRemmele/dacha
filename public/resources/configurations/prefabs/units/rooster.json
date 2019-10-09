@@ -39,6 +39,12 @@
       }
     },
     {
+      "name": "health",
+      "config": {
+        "points": 100
+      }
+    },
+    {
       "name": "weapon",
       "config": {
         "bullet": "blasterBullet",

@@ -1,13 +1,16 @@
 import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
 
+const TRIGGER_ENTER_MSG = 'TRIGGER_ENTER';
 const SHOT_MSG = 'SHOT';
 const ADD_FORCE_MSG = 'ADD_FORCE';
 const SHOT_POWER = 'shotPower';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
+const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const WEAPON_COMPONENT_NAME = 'weapon';
+const HEALTH_COMPONENT_NAME = 'health';
 
 const ACCELERATION_DURATION = 10;
 const ACCELERATION_DURATION_IN_SEC = ACCELERATION_DURATION / 1000;
@@ -17,6 +20,8 @@ class ShootingProcessor extends Processor {
     super();
 
     this._gameObjectSpawner = options.gameObjectSpawner;
+
+    this._firedBullets = [];
   }
 
   _radToDeg(rad) {
@@ -41,6 +46,28 @@ class ShootingProcessor extends Processor {
 
   process(options) {
     const messageBus = options.messageBus;
+
+    this._firedBullets = this._firedBullets.filter((entry) => {
+      const { shooter, bullet } = entry;
+
+      const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bullet.getId()) || [];
+      return collisionMessages.every((message) => {
+        const { otherGameObject } = message;
+        const targetId = otherGameObject.getId();
+        const targetHealth = otherGameObject.getComponent(HEALTH_COMPONENT_NAME);
+
+        if (targetHealth && shooter.getId() !== targetId) {
+          const bulletHealth = bullet.getComponent(HEALTH_COMPONENT_NAME);
+          bulletHealth.points = 0;
+
+          bullet.removeComponent(RIGID_BODY_COMPONENT_NAME);
+          bullet.removeComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+
+          return false;
+        }
+        return true;
+      });
+    });
 
     const messages = messageBus.get(SHOT_MSG) || [];
     messages.forEach((message) => {
@@ -72,6 +99,11 @@ class ShootingProcessor extends Processor {
         duration: ACCELERATION_DURATION,
         gameObject: bullet,
         id: bullet.getId(),
+      });
+
+      this._firedBullets.push({
+        shooter: gameObject,
+        bullet: bullet,
       });
     });
   }

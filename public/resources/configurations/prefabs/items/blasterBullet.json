@@ -11,10 +11,28 @@
       }
     },
     {
+      "name": "health",
+      "config": {
+        "points": 1
+      }
+    },
+    {
       "name": "rigidBody",
       "config": {
         "mass": 1,
         "useGravity": false
+      }
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "circleCollider",
+        "isTrigger": true,
+        "collider": {
+          "radius": 10,
+          "centerX": 0,
+          "centerY": 0
+        }
       }
     },
     {
@@ -33,7 +51,27 @@
               }
             ],
             "looped": true,
-            "transitions": []
+            "transitions": [
+              {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "health.points"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           },
           {
             "name": "death",
@@ -68,7 +106,16 @@
                 "index": 6,
                 "flipY": false,
                 "rotation": 0
-              },
+              }
+            ],
+            "looped": false,
+            "fallbackState": "void",
+            "transitions": []
+          },
+          {
+            "name": "void",
+            "speed": 1,
+            "frames": [
               {
                 "index": 7,
                 "flipY": false,
