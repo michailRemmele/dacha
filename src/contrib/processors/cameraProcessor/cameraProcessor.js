@@ -27,10 +27,12 @@ class CameraProcessor extends Processor {
   _updateCameraWindowSize(camera) {
     const cameraComponent = camera.getComponent(CAMERA_COMPONENT_NAME);
     const { windowSizeX, windowSizeY } = cameraComponent;
+    const currentWindowSizeX = this._window.width / window.devicePixelRatio;
+    const currentWindowSizeY = this._window.height / window.devicePixelRatio;
 
-    if (this._window.width !== windowSizeX || this._window.height !== windowSizeY) {
-      cameraComponent.windowSizeX = this._window.width;
-      cameraComponent.windowSizeY = this._window.height;
+    if (currentWindowSizeX !== windowSizeX || currentWindowSizeY !== windowSizeY) {
+      cameraComponent.windowSizeX = currentWindowSizeX;
+      cameraComponent.windowSizeY = currentWindowSizeY;
     }
   }
 
