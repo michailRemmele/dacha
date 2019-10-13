@@ -26,6 +26,7 @@ class SceneProvider {
         ...processorInfo.options,
         store: scene.getStore(),
         gameObjectSpawner: scene.getGameObjectSpawner(),
+        gameObjectDestroyer: scene.getGameObjectDestroyer(),
         gameObjectObserver: gameObjectObserver,
         scene: scene,
       })
