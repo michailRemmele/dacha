@@ -5,6 +5,7 @@ const TRIGGER_ENTER_MSG = 'TRIGGER_ENTER';
 const SHOT_MSG = 'SHOT';
 const ADD_FORCE_MSG = 'ADD_FORCE';
 const SHOT_POWER = 'shotPower';
+const PUSH_POWER = 'pushPower';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
@@ -44,11 +45,22 @@ class ShootingProcessor extends Processor {
     return Math.atan2(y1 - y2, x1 - x2);
   }
 
+  _pushTarget(target, directionVector, messageBus) {
+    messageBus.send({
+      type: ADD_FORCE_MSG,
+      name: PUSH_POWER,
+      value: directionVector,
+      duration: ACCELERATION_DURATION,
+      gameObject: target,
+      id: target.getId(),
+    });
+  }
+
   process(options) {
     const messageBus = options.messageBus;
 
     this._firedBullets = this._firedBullets.filter((entry) => {
-      const { shooter, bullet } = entry;
+      const { shooter, bullet, directionVector } = entry;
 
       const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bullet.getId()) || [];
       return collisionMessages.every((message) => {
@@ -69,6 +81,8 @@ class ShootingProcessor extends Processor {
 
         const bulletHealth = bullet.getComponent(HEALTH_COMPONENT_NAME);
         bulletHealth.points = 0;
+
+        this._pushTarget(target, directionVector, messageBus);
 
         bullet.removeComponent(RIGID_BODY_COMPONENT_NAME);
         bullet.removeComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
@@ -112,6 +126,7 @@ class ShootingProcessor extends Processor {
       this._firedBullets.push({
         shooter: gameObject,
         bullet: bullet,
+        directionVector: directionVector.clone(),
       });
     });
   }

@@ -47,7 +47,7 @@
     {
       "name": "rigidBody",
       "config": {
-        "mass": 1,
+        "mass": 3,
         "useGravity": true
       }
     },
