@@ -1,4 +1,4 @@
-<img src='https://raw.githubusercontent.com/michailRemmele/cyber-cocks/feature/readme-demo-info/logo/logo.png' height='120' alt='Cyber Cocks logo' />
+<img src='https://raw.githubusercontent.com/michailRemmele/cyber-cocks/dev/logo/logo.png' height='120' alt='Cyber Cocks logo' />
 
 ## Intro
 Cyber Cocks is a browser game about battle between robotic roosters in the space on small arena which gets even smaller over the time.
