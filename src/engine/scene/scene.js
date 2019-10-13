@@ -3,6 +3,7 @@ import { SECTIONS, GAME_OBJECT_CREATOR_KEY_NAME } from 'engine/consts/global';
 import IOC from 'engine/ioc/ioc';
 import Store from './store';
 import GameObjectSpawner from 'engine/gameObject/gameObjectSpawner';
+import GameObjectDestroyer from 'engine/gameObject/gameObjectDestroyer';
 
 const GAME_OBJECT_ADDED = 'GAME_OBJECT_ADDED';
 const GAME_OBJECT_REMOVED = 'GAME_OBJECT_REMOVED';
@@ -16,6 +17,7 @@ class Scene {
     this._store = new Store();
     this._gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
     this._gameObjectSpawner = new GameObjectSpawner(this, this._gameObjectCreator);
+    this._gameObjectDestroyer = new GameObjectDestroyer(this);
 
     this._processorSections = {
       [SECTIONS.EVENT_PROCESS_SECTION_NAME]: [],
@@ -65,6 +67,10 @@ class Scene {
 
   getGameObjectSpawner() {
     return this._gameObjectSpawner;
+  }
+
+  getGameObjectDestroyer() {
+    return this._gameObjectDestroyer;
   }
 
   addGameObject(gameObject) {
