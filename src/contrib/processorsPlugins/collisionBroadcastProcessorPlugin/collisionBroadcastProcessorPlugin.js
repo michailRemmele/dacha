@@ -4,8 +4,10 @@ import CollisionBroadcastProcessor
   from 'contrib/processors/collisionBroadcastProcessor/collisionBroadcastProcessor';
 
 class CollisionBroadcastProcessorPlugin extends ProcessorPlugin {
-  async load() {
-    return new CollisionBroadcastProcessor();
+  async load(options) {
+    return new CollisionBroadcastProcessor({
+      gameObjectObserver: options.gameObjectObserver,
+    });
   }
 }
 

@@ -101,7 +101,7 @@
           "config": {
             "inputEventBindings": {
               "MOUSE_LEFT_BUTTON_PRESS": {
-                "messageType": "ATTACK_START",
+                "messageType": "SHOT",
                 "attrs": {}
               }
             }
@@ -2184,7 +2184,16 @@
     {
       "name": "collisionBroadcastProcessor",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "components": [
+        "colliderContainer"
+      ],
+      "options": {}
+    },
+    {
+      "name": "shootingProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+      ],
       "options": {}
     },
     {
@@ -2195,7 +2204,7 @@
         "transform"
       ],
       "options": {
-        "gravitationalAcceleration": 9.80666
+        "gravitationalAcceleration": 450
       }
     },
     {

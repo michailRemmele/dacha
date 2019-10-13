@@ -12,17 +12,20 @@ class GameObjectCreator {
   }
 
   _buildFromPrefab(options, prefab) {
-    const { name, prefabName } = options;
+    const {
+      prefabName,
+      components = [],
+      children = [],
+    } = options;
+    let { id, name } = options;
+
+    id = id ? id : uuid();
+    name = name ? name : id;
 
     if (!prefab) {
       throw new Error(`Can't create game object ${name} from prefab. `
         + `The prefab ${prefabName} is null.`);
     }
-
-    let { id } = options;
-    const { components, children } = options;
-
-    id = id ? id : uuid();
 
     const gameObject = new GameObject(id);
 
@@ -54,8 +57,11 @@ class GameObjectCreator {
   }
 
   _buildFromScratch(options) {
+    const {
+      components = [],
+      children = [],
+    } = options;
     let { id } = options;
-    const { components, children } = options;
 
     id = id ? id : uuid();
 

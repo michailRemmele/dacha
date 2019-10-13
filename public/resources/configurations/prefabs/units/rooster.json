@@ -14,6 +14,12 @@
           }
         },
         {
+          "name": "health",
+          "config": {
+            "points": 100
+          }
+        },
+        {
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
@@ -39,9 +45,16 @@
       }
     },
     {
+      "name": "weapon",
+      "config": {
+        "bullet": "blasterBullet",
+        "speed": 400
+      }
+    },
+    {
       "name": "rigidBody",
       "config": {
-        "mass": 1,
+        "mass": 3,
         "useGravity": true
       }
     },
@@ -112,7 +125,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -251,7 +264,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -333,7 +346,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -430,7 +443,7 @@
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]

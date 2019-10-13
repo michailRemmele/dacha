@@ -1,6 +1,3 @@
-import * as global from 'engine/consts/global';
-
-import IOC from 'engine/ioc/ioc';
 import Scene from './scene';
 import GameObjectObserver from 'engine/gameObject/gameObjectObserver';
 
@@ -17,18 +14,9 @@ class SceneProvider {
   }
 
   async createScene(config) {
-    const { GAME_OBJECT_CREATOR_KEY_NAME } = global;
-
-    const gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
-
     const scene = new Scene({
       name: config.name,
-    });
-
-    config.gameObjects.forEach((gameObjectOptions) => {
-      gameObjectCreator.create(gameObjectOptions).forEach((gameObject) => {
-        scene.addGameObject(gameObject);
-      });
+      gameObjects: config.gameObjects,
     });
 
     await Promise.all(config.processors.map((processorInfo) => {
@@ -37,7 +25,9 @@ class SceneProvider {
       return this._processorsPlugins[processorInfo.name].load({
         ...processorInfo.options,
         store: scene.getStore(),
+        gameObjectSpawner: scene.getGameObjectSpawner(),
         gameObjectObserver: gameObjectObserver,
+        scene: scene,
       })
         .then((processor) => {
           scene.addProcessor(processor, processorInfo.section);
