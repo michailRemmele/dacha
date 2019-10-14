@@ -2218,6 +2218,12 @@
       "options": {}
     },
     {
+      "name": "reaper",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {}
+    },
+    {
       "name": "cameraProcessor",
       "section": "gameStateUpdateSection",
       "components": [
