@@ -168,8 +168,10 @@ class RenderProcessor extends Processor {
     const { renderable, x, y, rotation } = props;
 
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
-    const { zoom: cameraZoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
     const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
+
+    const scale = zoom / window.devicePixelRatio;
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
@@ -178,7 +180,7 @@ class RenderProcessor extends Processor {
     renderable.flipY && matrixTransformer.flipY(matrix);
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
     matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
-    matrixTransformer.scale(matrix, cameraZoom, cameraZoom);
+    matrixTransformer.scale(matrix, scale, scale);
     matrixTransformer.project(matrix, canvas.clientWidth, canvas.clientHeight);
 
     return matrix;
