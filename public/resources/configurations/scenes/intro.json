@@ -2218,6 +2218,12 @@
       "options": {}
     },
     {
+      "name": "damageProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {}
+    },
+    {
       "name": "reaper",
       "section": "gameStateUpdateSection",
       "components": [],
