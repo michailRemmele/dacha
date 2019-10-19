@@ -2227,7 +2227,14 @@
       "name": "reaper",
       "section": "gameStateUpdateSection",
       "components": [],
-      "options": {}
+      "options": {
+        "allowedComponents": [
+          "transform",
+          "animatable",
+          "renderable"
+        ],
+        "lifetime": 5000
+      }
     },
     {
       "name": "cameraProcessor",

@@ -56,17 +56,9 @@
                 "state": "death",
                 "conditions": [
                   {
-                    "type": "comparator",
+                    "type": "message",
                     "props": {
-                      "arg1": {
-                        "type": "componentValue",
-                        "value": "health.points"
-                      },
-                      "operation": "equals",
-                      "arg2": {
-                        "type": "number",
-                        "value": 0
-                      }
+                      "message": "KILL"
                     }
                   }
                 ]
