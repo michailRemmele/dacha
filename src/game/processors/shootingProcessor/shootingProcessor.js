@@ -10,7 +10,6 @@ const PUSH_POWER = 'pushPower';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
-const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const WEAPON_COMPONENT_NAME = 'weapon';
 const HEALTH_COMPONENT_NAME = 'health';
 
@@ -91,9 +90,6 @@ class ShootingProcessor extends Processor {
         });
 
         this._pushTarget(target, directionVector, messageBus);
-
-        bullet.removeComponent(RIGID_BODY_COMPONENT_NAME);
-        bullet.removeComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
 
         return false;
       });
