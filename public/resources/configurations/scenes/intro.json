@@ -2218,6 +2218,25 @@
       "options": {}
     },
     {
+      "name": "damageProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {}
+    },
+    {
+      "name": "reaper",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {
+        "allowedComponents": [
+          "transform",
+          "animatable",
+          "renderable"
+        ],
+        "lifetime": 5000
+      }
+    },
+    {
       "name": "cameraProcessor",
       "section": "gameStateUpdateSection",
       "components": [

@@ -1,6 +1,7 @@
 import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
 
+const DAMAGE_MSG = 'DAMAGE';
 const TRIGGER_ENTER_MSG = 'TRIGGER_ENTER';
 const SHOT_MSG = 'SHOT';
 const ADD_FORCE_MSG = 'ADD_FORCE';
@@ -9,7 +10,6 @@ const PUSH_POWER = 'pushPower';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
-const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const WEAPON_COMPONENT_NAME = 'weapon';
 const HEALTH_COMPONENT_NAME = 'health';
 
@@ -61,8 +61,9 @@ class ShootingProcessor extends Processor {
 
     this._firedBullets = this._firedBullets.filter((entry) => {
       const { shooter, bullet, directionVector } = entry;
+      const bulletId = bullet.getId();
 
-      const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bullet.getId()) || [];
+      const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bulletId) || [];
       return collisionMessages.every((message) => {
         const { otherGameObject: targetHitBox } = message;
 
@@ -80,12 +81,15 @@ class ShootingProcessor extends Processor {
         }
 
         const bulletHealth = bullet.getComponent(HEALTH_COMPONENT_NAME);
-        bulletHealth.points = 0;
+
+        messageBus.send({
+          type: DAMAGE_MSG,
+          id: bulletId,
+          gameObject: bullet,
+          value: bulletHealth.points,
+        });
 
         this._pushTarget(target, directionVector, messageBus);
-
-        bullet.removeComponent(RIGID_BODY_COMPONENT_NAME);
-        bullet.removeComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
 
         return false;
       });

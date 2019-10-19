@@ -34,6 +34,10 @@ class GameObject {
     return this._id;
   }
 
+  getComponentNamesList() {
+    return Object.keys(this._components);
+  }
+
   getComponent(name) {
     return this._components[name];
   }
