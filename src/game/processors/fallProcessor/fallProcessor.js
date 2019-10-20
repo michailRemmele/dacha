@@ -14,6 +14,7 @@ class FallProcessor extends Processor {
     super();
 
     this._gameObjectObserver = options.gameObjectObserver;
+    this._fallingGameObjectsMap = {};
     this._fallingGameObjects = [];
   }
 
@@ -36,11 +37,18 @@ class FallProcessor extends Processor {
     });
 
     this._gameObjectObserver.forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
       const { forceVectors } = rigidBody;
 
-      if (rigidBody.useGravity && !forceVectors[REACTION_FORCE]) {
+      if (
+        rigidBody.useGravity
+        && !forceVectors[REACTION_FORCE]
+        && !this._fallingGameObjectsMap[gameObjectId]
+      ) {
         rigidBody.ghost = true;
+
+        this._fallingGameObjectsMap[gameObjectId] = true;
         this._fallingGameObjects.push(gameObject);
       }
     });
