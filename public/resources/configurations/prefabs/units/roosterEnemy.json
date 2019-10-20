@@ -117,6 +117,17 @@
             "looped": true,
             "transitions": [
               {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
+              {
                 "state": "attack",
                 "conditions": [
                   {
@@ -218,6 +229,17 @@
             "looped": true,
             "transitions": [
               {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
+              {
                 "state": "idle",
                 "conditions": [
                   {
@@ -300,6 +322,17 @@
             "looped": true,
             "transitions": [
               {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
+              {
                 "state": "idle",
                 "conditions": [
                   {
@@ -377,6 +410,17 @@
             ],
             "looped": true,
             "transitions": [
+              {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
               {
                 "state": "runRight",
                 "conditions": [
@@ -477,6 +521,45 @@
                 "rotation": 0
               }
             ],
+            "transitions": [
+              {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "death",
+            "speed": 0.5,
+            "frames": [
+              {
+                "index": 15,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": false,
+            "fallbackState": "void",
+            "transitions": []
+          },
+          {
+            "name": "void",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 16,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
             "transitions": []
           }
         ]
@@ -489,7 +572,7 @@
         "src": "units/rooster_enemy",
         "width": 45,
         "height": 50,
-        "slice": 15,
+        "slice": 17,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
