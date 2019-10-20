@@ -2238,7 +2238,8 @@
         "allowedComponents": [
           "transform",
           "animatable",
-          "renderable"
+          "renderable",
+          "camera"
         ],
         "lifetime": 5000
       }
