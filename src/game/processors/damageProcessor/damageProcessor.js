@@ -14,6 +14,11 @@ class DamageProcessor extends Processor {
       const { gameObject, value } = message;
 
       const health = gameObject.getComponent(HEALTH_COMPONENT_NAME);
+
+      if (!health) {
+        return;
+      }
+
       health.points -= Math.round(value);
 
       if (health.points <= 0) {
