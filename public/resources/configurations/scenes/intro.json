@@ -2218,6 +2218,13 @@
       "options": {}
     },
     {
+      "name": "effectsProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+      ],
+      "options": {}
+    },
+    {
       "name": "damageProcessor",
       "section": "gameStateUpdateSection",
       "components": [],
