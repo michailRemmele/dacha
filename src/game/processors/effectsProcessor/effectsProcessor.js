@@ -36,7 +36,7 @@ class EffectsProcessor extends Processor {
         name,
         effectType,
         effect: effectName,
-        applicationOptions,
+        applicatorOptions,
         effectOptions,
         gameObject,
       } = message;
@@ -44,7 +44,7 @@ class EffectsProcessor extends Processor {
       const gameObjectId = gameObject.getId();
 
       const effect = new effects[effectName](gameObject, messageBus, effectOptions);
-      const effectApplicator = new effectApplicators[effectType](effect, applicationOptions);
+      const effectApplicator = new effectApplicators[effectType](effect, applicatorOptions);
 
       this._activeEffectsMap[gameObjectId] = this._activeEffectsMap[gameObjectId] || {};
 
