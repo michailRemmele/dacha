@@ -7,8 +7,10 @@ const ADD_EFFECT_MSG = 'ADD_EFFECT';
 const REMOVE_EFFECT_MSG = 'REMOVE_EFFECT';
 
 class EffectsProcessor extends Processor {
-  constructor() {
+  constructor(options) {
     super();
+
+    this._gameObjectObserver = options.gameObjectObserver;
 
     this._activeEffectsMap = {};
     this._activeEffects = [];
@@ -65,10 +67,22 @@ class EffectsProcessor extends Processor {
     });
   }
 
+  _processRemovedGameObjects() {
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+
+      const activeEffectNames = Object.keys(this._activeEffectsMap[gameObjectId] || {});
+      activeEffectNames.forEach((name) => {
+        this._removeEffect(name, gameObjectId);
+      });
+    });
+  }
+
   process(options) {
     const messageBus = options.messageBus;
     const deltaTime = options.deltaTime;
 
+    this._processRemovedGameObjects();
     this._processNewEffects(messageBus);
     this._processEffectsCancellation(messageBus);
 
