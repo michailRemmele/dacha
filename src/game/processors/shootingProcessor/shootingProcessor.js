@@ -65,18 +65,12 @@ class ShootingProcessor extends Processor {
 
       const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bulletId) || [];
       return collisionMessages.every((message) => {
-        const { otherGameObject: targetHitBox } = message;
+        const { otherGameObject: target } = message;
 
-        const target = targetHitBox.getParent();
-        const targetHealth = targetHitBox.getComponent(HEALTH_COMPONENT_NAME);
-
-        if (!target || !targetHealth) {
-          return true;
-        }
-
+        const targetHealth = target.getComponent(HEALTH_COMPONENT_NAME);
         const targetId = target.getId();
 
-        if (shooter.getId() === targetId) {
+        if (!targetHealth || shooter.getId() === targetId) {
           return true;
         }
 

@@ -14,12 +14,6 @@
           }
         },
         {
-          "name": "health",
-          "config": {
-            "points": 100
-          }
-        },
-        {
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
@@ -42,6 +36,12 @@
         "offsetX": 0,
         "offsetY": 0,
         "rotation": 0
+      }
+    },
+    {
+      "name": "health",
+      "config": {
+        "points": 100
       }
     },
     {
