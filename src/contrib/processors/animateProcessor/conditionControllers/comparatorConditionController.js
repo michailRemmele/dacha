@@ -15,13 +15,11 @@ class ComparatorConditionController extends ConditionController {
         const valuePath = value.split('.');
         const componentName = valuePath.shift();
         let soughtValue = gameObject.getComponent(componentName);
-        for (let i = 0; i < valuePath.length; i++) {
-          soughtValue = soughtValue[valuePath[i]];
 
-          if (soughtValue === undefined) {
-            return undefined;
-          }
+        for (let i = 0; i < valuePath.length && soughtValue !== undefined; i++) {
+          soughtValue = soughtValue[valuePath[i]];
         }
+
         return soughtValue;
       },
     };
