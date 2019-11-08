@@ -55,7 +55,8 @@
       "name": "rigidBody",
       "config": {
         "mass": 3,
-        "useGravity": true
+        "useGravity": true,
+        "isPermeable": false
       }
     },
     {

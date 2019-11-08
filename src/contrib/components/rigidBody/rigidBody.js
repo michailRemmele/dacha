@@ -7,6 +7,7 @@ class RigidBody extends Component {
     this._forceVectors = {};
     this._mass = config.mass;
     this._useGravity = config.useGravity;
+    this._isPermeable = config.isPermeable;
   }
 
   set forceVectors(forceVectors) {
@@ -33,10 +34,19 @@ class RigidBody extends Component {
     return this._useGravity;
   }
 
+  set isPermeable(isPermeable) {
+    this._isPermeable = isPermeable;
+  }
+
+  get isPermeable() {
+    return this._isPermeable;
+  }
+
   clone() {
     return new RigidBody({
       mass: this.mass,
       useGravity: this.useGravity,
+      isPermeable: this.isPermeable,
     });
   }
 }

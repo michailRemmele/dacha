@@ -11,6 +11,14 @@
       }
     },
     {
+      "name": "rigidBody",
+      "config": {
+        "mass": 1,
+        "useGravity": false,
+        "isPermeable": true
+      }
+    },
+    {
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
