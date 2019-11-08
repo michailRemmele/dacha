@@ -20,14 +20,15 @@
       "name": "rigidBody",
       "config": {
         "mass": 1,
-        "useGravity": false
+        "useGravity": false,
+        "isPermeable": true,
+        "ghost": false
       }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "circleCollider",
-        "isTrigger": true,
         "collider": {
           "radius": 10,
           "centerX": 0,

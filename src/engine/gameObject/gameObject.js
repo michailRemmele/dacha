@@ -22,6 +22,20 @@ class GameObject {
     return this._parent;
   }
 
+  getAncestor() {
+    const findAncestor = (gameObject) => {
+      const parent = gameObject.getParent();
+
+      if (parent) {
+        return findAncestor(parent);
+      }
+
+      return gameObject;
+    };
+
+    return findAncestor(this);
+  }
+
   appendChild(child) {
     this._children.push(child);
   }

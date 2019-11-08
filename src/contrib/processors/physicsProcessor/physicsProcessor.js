@@ -95,11 +95,6 @@ class PhysicsProcessor extends Processor {
 
   _addReactionForce(gameObject) {
     const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-
-    if (!rigidBody) {
-      return;
-    }
-
     const { forceVectors, useGravity } = rigidBody;
 
     if (useGravity && !forceVectors[REACTION_FORCE]) {
@@ -110,24 +105,28 @@ class PhysicsProcessor extends Processor {
     }
   }
 
-  _resolveCollision(gameObject1, gameObject2) {
+  _validateCollision(gameObject1, gameObject2) {
     const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
-    if (rigidBody1 && rigidBody2) {
-      const previousTransform = this._gameObjectsLastTransform[gameObject1.getId()];
-      const transform = gameObject1.getComponent(TRANSFORM_COMPONENT_NAME);
-
-      transform.offsetX = previousTransform.offsetX;
-      transform.offsetY = previousTransform.offsetY;
-    }
+    return rigidBody1 && !rigidBody1.ghost && rigidBody2 && !rigidBody2.ghost;
   }
 
-  process(options) {
-    const deltaTimeInMsec = options.deltaTime;
-    const deltaTimeInSeconds = deltaTimeInMsec / 1000;
-    const messageBus = options.messageBus;
+  _resolveCollision(gameObject1, gameObject2) {
+    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
+    if (rigidBody2.isPermeable) {
+      return;
+    }
+
+    const previousTransform = this._gameObjectsLastTransform[gameObject1.getId()];
+    const transform = gameObject1.getComponent(TRANSFORM_COMPONENT_NAME);
+
+    transform.offsetX = previousTransform.offsetX;
+    transform.offsetY = previousTransform.offsetY;
+  }
+
+  _processRemovedGameObjects() {
     this._gameObjectObserver.getLastAdded().forEach((gameObject) => {
       this._addGravityForce(gameObject.getComponent(RIGID_BODY_COMPONENT_NAME));
     });
@@ -136,30 +135,44 @@ class PhysicsProcessor extends Processor {
       const gameObjectId = gameObject.getId();
       this._gameObjectsVelocity[gameObjectId] = null;
     });
+  }
 
+  _processCollisions(messageBus) {
     const leaveMessages = messageBus.get(COLLISION_LEAVE_MSG) || [];
     leaveMessages.forEach((message) => {
-      const rigidBody = message.gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-      if (rigidBody) {
-        rigidBody.forceVectors[REACTION_FORCE] = null;
+      const { gameObject, otherGameObject } = message;
+
+      if (!this._validateCollision(gameObject, otherGameObject)) {
+        return;
       }
+
+      const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+      rigidBody.forceVectors[REACTION_FORCE] = null;
     });
 
     const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
-    enterMessages.forEach((message) => {
-      const { gameObject, otherGameObject } = message;
-
-      this._addReactionForce(gameObject);
-      this._resolveCollision(gameObject, otherGameObject);
-    });
-
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
-    stayMessages.forEach((message) => {
-      const { gameObject, otherGameObject } = message;
+    [ enterMessages, stayMessages ].forEach((messages) => {
+      messages.forEach((message) => {
+        const { gameObject, otherGameObject } = message;
 
-      this._addReactionForce(gameObject);
-      this._resolveCollision(gameObject, otherGameObject);
+        if (!this._validateCollision(gameObject, otherGameObject)) {
+          return;
+        }
+
+        this._addReactionForce(gameObject);
+        this._resolveCollision(gameObject, otherGameObject);
+      });
     });
+  }
+
+  process(options) {
+    const deltaTimeInMsec = options.deltaTime;
+    const deltaTimeInSeconds = deltaTimeInMsec / 1000;
+    const messageBus = options.messageBus;
+
+    this._processRemovedGameObjects();
+    this._processCollisions(messageBus);
 
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();

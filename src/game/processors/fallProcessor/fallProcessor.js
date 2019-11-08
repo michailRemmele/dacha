@@ -1,9 +1,8 @@
 import Processor from 'engine/processor/processor';
 
-const TRIGGER_ENTER_MSG = 'TRIGGER_ENTER';
+const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
-const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 
 const REACTION_FORCE = 'reactionForce';
@@ -22,12 +21,12 @@ class FallProcessor extends Processor {
     const messageBus = options.messageBus;
 
     this._fallingGameObjects = this._fallingGameObjects.filter((gameObject) => {
-      const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, gameObject.getId()) || [];
+      const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, gameObject.getId()) || [];
       return collisionMessages.every((message) => {
         const { otherGameObject } = message;
-        const colliderContainer = otherGameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+        const rigidBody = otherGameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
 
-        if (!colliderContainer.isTrigger) {
+        if (rigidBody) {
           const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
           renderable.sortingLayer = SPACE_SORTING_LAYER;
           return false;
@@ -38,14 +37,11 @@ class FallProcessor extends Processor {
 
     this._gameObjectObserver.forEach((gameObject) => {
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-
       const { forceVectors } = rigidBody;
 
       if (rigidBody.useGravity && !forceVectors[REACTION_FORCE]) {
+        rigidBody.ghost = true;
         this._fallingGameObjects.push(gameObject);
-
-        const colliderContainer = gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
-        colliderContainer.isTrigger = true;
       }
     });
   }

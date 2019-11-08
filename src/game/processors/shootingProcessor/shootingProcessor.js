@@ -2,7 +2,7 @@ import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
 
 const DAMAGE_MSG = 'DAMAGE';
-const TRIGGER_ENTER_MSG = 'TRIGGER_ENTER';
+const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const SHOT_MSG = 'SHOT';
 const ADD_FORCE_MSG = 'ADD_FORCE';
 const SHOT_POWER = 'shotPower';
@@ -12,6 +12,7 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const WEAPON_COMPONENT_NAME = 'weapon';
 const HEALTH_COMPONENT_NAME = 'health';
+const HITBOX_COMPONENT_NAME = 'hitBox';
 
 const ACCELERATION_DURATION = 10;
 const ACCELERATION_DURATION_IN_SEC = ACCELERATION_DURATION / 1000;
@@ -63,20 +64,14 @@ class ShootingProcessor extends Processor {
       const { shooter, bullet, directionVector } = entry;
       const bulletId = bullet.getId();
 
-      const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bulletId) || [];
+      const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, bulletId) || [];
       return collisionMessages.every((message) => {
-        const { otherGameObject: targetHitBox } = message;
+        const { otherGameObject } = message;
 
-        const target = targetHitBox.getParent();
-        const targetHealth = targetHitBox.getComponent(HEALTH_COMPONENT_NAME);
+        const hitBox = otherGameObject.getComponent(HITBOX_COMPONENT_NAME);
+        const target = otherGameObject.getParent();
 
-        if (!target || !targetHealth) {
-          return true;
-        }
-
-        const targetId = target.getId();
-
-        if (shooter.getId() === targetId) {
+        if (!hitBox || !target || shooter.getId() === target.getId()) {
           return true;
         }
 

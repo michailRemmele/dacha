@@ -6,6 +6,10 @@
       "children": [],
       "components": [
         {
+          "name": "hitBox",
+          "config": {}
+        },
+        {
           "name": "transform",
           "config": {
             "offsetX": 0,
@@ -14,16 +18,9 @@
           }
         },
         {
-          "name": "health",
-          "config": {
-            "points": 100
-          }
-        },
-        {
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
-            "isTrigger": true,
             "collider": {
               "sizeX": 33,
               "sizeY": 40,
@@ -45,17 +42,24 @@
       }
     },
     {
+      "name": "health",
+      "config": {
+        "points": 100
+      }
+    },
+    {
       "name": "rigidBody",
       "config": {
         "mass": 3,
-        "useGravity": true
+        "useGravity": true,
+        "isPermeable": false,
+        "ghost": false
       }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
-        "isTrigger": false,
         "collider": {
           "sizeX": 21,
           "sizeY": 7,

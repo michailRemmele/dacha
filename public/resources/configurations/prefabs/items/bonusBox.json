@@ -14,14 +14,15 @@
       "name": "rigidBody",
       "config": {
         "mass": 1,
-        "useGravity": false
+        "useGravity": false,
+        "isPermeable": false,
+        "ghost": false
       }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "circleCollider",
-        "isTrigger": false,
         "collider": {
           "radius": 11,
           "centerX": 0,
