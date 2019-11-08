@@ -17,7 +17,6 @@
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
-            "isTrigger": true,
             "collider": {
               "sizeX": 33,
               "sizeY": 40,
@@ -49,14 +48,14 @@
       "config": {
         "mass": 3,
         "useGravity": true,
-        "isPermeable": false
+        "isPermeable": false,
+        "ghost": false
       }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
-        "isTrigger": false,
         "collider": {
           "sizeX": 21,
           "sizeY": 7,

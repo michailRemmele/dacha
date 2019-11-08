@@ -109,7 +109,7 @@ class PhysicsProcessor extends Processor {
     const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
-    return rigidBody1 && rigidBody2;
+    return rigidBody1 && !rigidBody1.ghost && rigidBody2 && !rigidBody2.ghost;
   }
 
   _resolveCollision(gameObject1, gameObject2) {

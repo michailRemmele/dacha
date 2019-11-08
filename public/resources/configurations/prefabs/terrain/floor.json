@@ -15,14 +15,14 @@
       "config": {
         "mass": 1,
         "useGravity": false,
-        "isPermeable": true
+        "isPermeable": true,
+        "ghost": false
       }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
-        "isTrigger": false,
         "collider": {
           "sizeX": 31,
           "sizeY": 31,

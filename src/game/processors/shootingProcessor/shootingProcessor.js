@@ -2,7 +2,7 @@ import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
 
 const DAMAGE_MSG = 'DAMAGE';
-const TRIGGER_ENTER_MSG = 'TRIGGER_ENTER';
+const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const SHOT_MSG = 'SHOT';
 const ADD_FORCE_MSG = 'ADD_FORCE';
 const SHOT_POWER = 'shotPower';
@@ -63,7 +63,7 @@ class ShootingProcessor extends Processor {
       const { shooter, bullet, directionVector } = entry;
       const bulletId = bullet.getId();
 
-      const collisionMessages = messageBus.getById(TRIGGER_ENTER_MSG, bulletId) || [];
+      const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, bulletId) || [];
       return collisionMessages.every((message) => {
         const { otherGameObject: target } = message;
 
