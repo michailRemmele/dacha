@@ -25,7 +25,7 @@ class EffectsProcessor extends Processor {
     this._activeEffectsMap[gameObjectId][name] = null;
 
     this._activeEffects = this._activeEffects.filter((entry) => {
-      return entry.name !== name && entry.gameObjectId !== gameObjectId;
+      return entry.name !== name || entry.gameObjectId !== gameObjectId;
     });
   }
 
