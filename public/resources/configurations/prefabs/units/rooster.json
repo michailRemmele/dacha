@@ -6,6 +6,10 @@
       "children": [],
       "components": [
         {
+          "name": "hitBox",
+          "config": {}
+        },
+        {
           "name": "transform",
           "config": {
             "offsetX": 0,

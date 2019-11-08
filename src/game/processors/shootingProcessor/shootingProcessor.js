@@ -12,6 +12,7 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const WEAPON_COMPONENT_NAME = 'weapon';
 const HEALTH_COMPONENT_NAME = 'health';
+const HITBOX_COMPONENT_NAME = 'hitBox';
 
 const ACCELERATION_DURATION = 10;
 const ACCELERATION_DURATION_IN_SEC = ACCELERATION_DURATION / 1000;
@@ -65,12 +66,12 @@ class ShootingProcessor extends Processor {
 
       const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, bulletId) || [];
       return collisionMessages.every((message) => {
-        const { otherGameObject: target } = message;
+        const { otherGameObject } = message;
 
-        const targetHealth = target.getComponent(HEALTH_COMPONENT_NAME);
-        const targetId = target.getId();
+        const hitBox = otherGameObject.getComponent(HITBOX_COMPONENT_NAME);
+        const target = otherGameObject.getParent();
 
-        if (!targetHealth || shooter.getId() === targetId) {
+        if (!hitBox || !target || shooter.getId() === target.getId()) {
           return true;
         }
 

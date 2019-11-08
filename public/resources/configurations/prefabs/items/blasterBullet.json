@@ -21,7 +21,7 @@
       "config": {
         "mass": 1,
         "useGravity": false,
-        "isPermeable": false,
+        "isPermeable": true,
         "ghost": false
       }
     },
