@@ -2257,6 +2257,14 @@
       }
     },
     {
+      "name": "gameOverProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "movement"
+      ],
+      "options": {}
+    },
+    {
       "name": "animateProcessor",
       "section": "renderingSection",
       "components": [
