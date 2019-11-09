@@ -20,6 +20,16 @@ class Reaper extends Processor {
     this._timeCounter = 0;
   }
 
+  _filterGameObjectComponents(gameObject) {
+    gameObject.getComponentNamesList().forEach((componentName) => {
+      if (!this._allowedComponents[componentName]) {
+        gameObject.removeComponent(componentName);
+      }
+    });
+
+    gameObject.getChildren().forEach((child) => this._filterGameObjectComponents(child));
+  }
+
   process(options) {
     const { messageBus, deltaTime } = options;
 
@@ -27,11 +37,7 @@ class Reaper extends Processor {
     damageMessages.forEach((message) => {
       const { gameObject } = message;
 
-      gameObject.getComponentNamesList().forEach((componentName) => {
-        if (!this._allowedComponents[componentName]) {
-          gameObject.removeComponent(componentName);
-        }
-      });
+      this._filterGameObjectComponents(gameObject);
 
       this._graveyard.push({
         gameObject: gameObject,
