@@ -5,6 +5,8 @@ const DAMAGE_MSG = 'DAMAGE';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const SHOT_MSG = 'SHOT';
 const ADD_FORCE_MSG = 'ADD_FORCE';
+const ADD_EFFECT_MSG = 'ADD_EFFECT';
+
 const SHOT_POWER = 'shotPower';
 const PUSH_POWER = 'pushPower';
 
@@ -16,6 +18,15 @@ const HITBOX_COMPONENT_NAME = 'hitBox';
 
 const ACCELERATION_DURATION = 10;
 const ACCELERATION_DURATION_IN_SEC = ACCELERATION_DURATION / 1000;
+
+const LIFETIME_EFFECT = {
+  name: 'lifetime',
+  effect: 'damage',
+  effectType: 'delayed',
+  applicatorOptions: {
+    timer: 800,
+  },
+};
 
 class ShootingProcessor extends Processor {
   constructor(options) {
@@ -100,6 +111,7 @@ class ShootingProcessor extends Processor {
       const bullet = this._gameObjectSpawner.spawn(weapon.bullet);
       const bulletTransform = bullet.getComponent(TRANSFORM_COMPONENT_NAME);
       const bulletRigidBody = bullet.getComponent(RIGID_BODY_COMPONENT_NAME);
+      const bulletHealth = bullet.getComponent(HEALTH_COMPONENT_NAME);
 
       bulletTransform.offsetX = offsetX;
       bulletTransform.offsetY = offsetY;
@@ -120,6 +132,16 @@ class ShootingProcessor extends Processor {
         duration: ACCELERATION_DURATION,
         gameObject: bullet,
         id: bullet.getId(),
+      });
+
+      messageBus.send({
+        type: ADD_EFFECT_MSG,
+        id: bullet.getId(),
+        gameObject: bullet,
+        ...LIFETIME_EFFECT,
+        effectOptions: {
+          value: bulletHealth.points,
+        },
       });
 
       this._firedBullets.push({
