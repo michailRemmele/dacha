@@ -62,6 +62,11 @@ class MessageBus {
   clear() {
     this._messages = {};
   }
+
+  reset() {
+    this._messages = {};
+    this._stashedMessages = [];
+  }
 }
 
 export default MessageBus;

@@ -20,7 +20,8 @@ class SceneLoadProcessor extends Processor {
     }
   }
 
-  _moveToLoaded() {
+  _moveToLoaded(messageBus) {
+    messageBus.reset();
     this._sceneController.moveToLoaded();
     this._sceneLoading = false;
   }
@@ -31,7 +32,7 @@ class SceneLoadProcessor extends Processor {
     if (!this._sceneLoading) {
       this._loadScene(messageBus);
     } else if (this._sceneController.isLoaded()) {
-      this._moveToLoaded();
+      this._moveToLoaded(messageBus);
     }
   }
 }
