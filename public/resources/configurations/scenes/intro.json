@@ -2262,6 +2262,14 @@
       "components": [
         "movement"
       ],
+      "options": {
+        "restartScene": "intro"
+      }
+    },
+    {
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [],
       "options": {}
     },
     {

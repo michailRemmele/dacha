@@ -2,16 +2,18 @@ import Processor from 'engine/processor/processor';
 
 const CONTROL_COMPONENT_NAME = 'keyboardControl';
 const KILL_MSG = 'KILL';
-const GAME_OVER_MSG = 'GAME_OVER';
+const LOAD_SCENE_MSG = 'LOAD_SCENE';
 
 class GameOverProcessor extends Processor {
   constructor(options) {
     super();
 
     this._gameObjectObserver = options.gameObjectObserver;
+    this._restartScene = options.restartScene;
 
     this._playerGameObjects = new Set();
     this._enemiesGameObjects = new Set();
+    this._isGameOver = false;
   }
 
   processorDidMount() {
@@ -39,9 +41,15 @@ class GameOverProcessor extends Processor {
       });
     });
 
-    if (this._playerGameObjects.size === 0 || this._enemiesGameObjects.size === 0) {
+    if (
+      !this._isGameOver
+      && (this._playerGameObjects.size === 0 || this._enemiesGameObjects.size === 0)
+    ) {
+      this._isGameOver = true;
+
       messageBus.send({
-        type: GAME_OVER_MSG,
+        type: LOAD_SCENE_MSG,
+        name: this._restartScene,
       });
     }
   }

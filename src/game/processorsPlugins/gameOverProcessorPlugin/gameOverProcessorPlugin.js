@@ -4,8 +4,14 @@ import GameOverProcessor from 'game/processors/gameOverProcessor/gameOverProcess
 
 class GameOverProcessorPlugin extends ProcessorPlugin {
   async load(options) {
+    const {
+      gameObjectObserver,
+      restartScene,
+    } = options;
+
     return new GameOverProcessor({
-      gameObjectObserver: options.gameObjectObserver,
+      gameObjectObserver: gameObjectObserver,
+      restartScene: restartScene,
     });
   }
 }
