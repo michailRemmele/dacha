@@ -12,7 +12,10 @@ class GameLoop {
     this.messageBus = new MessageBus();
   }
 
-  _processSection(section, options) {
+  _processSection(sectionName, options) {
+    const currentScene = this.sceneProvider.getCurrentScene();
+    const section = currentScene.getProcessorSection(sectionName);
+
     options = {
       ...(options ? options : {}),
       messageBus: this.messageBus,
@@ -29,13 +32,8 @@ class GameLoop {
       return;
     }
 
-    const currentScene = this.sceneProvider.getCurrentScene();
-    const gameStateUpdateSection = currentScene.getProcessorSection(
-      SECTIONS.GAME_STATE_UPDATE_SECTION_NAME
-    );
-
     while (this.lag >= MS_PER_UPDATE) {
-      this._processSection(gameStateUpdateSection, { deltaTime: MS_PER_UPDATE });
+      this._processSection(SECTIONS.GAME_STATE_UPDATE_SECTION_NAME, { deltaTime: MS_PER_UPDATE });
       this.lag -= MS_PER_UPDATE;
 
       if (this.lag >= MS_PER_UPDATE) {
@@ -54,23 +52,15 @@ class GameLoop {
     this.gameLoopId = requestAnimationFrame(function tick(current) {
       that.previous = that.previous || current;
 
-      const currentScene = that.sceneProvider.getCurrentScene();
-      const eventProcessSection = currentScene.getProcessorSection(
-        SECTIONS.EVENT_PROCESS_SECTION_NAME
-      );
-      const renderingSection = currentScene.getProcessorSection(
-        SECTIONS.RENDERING_SECTION_NAME
-      );
-
       const elapsed = current - that.previous;
       that.previous = current;
       that.lag += elapsed;
 
       that.messageBus.restore();
 
-      that._processSection(eventProcessSection);
+      that._processSection(SECTIONS.EVENT_PROCESS_SECTION_NAME);
       that._gameStateUpdate();
-      that._processSection(renderingSection, { deltaTime: elapsed });
+      that._processSection(SECTIONS.RENDERING_SECTION_NAME, { deltaTime: elapsed });
 
       that.messageBus.clear();
       that.gameLoopId = requestAnimationFrame(tick);

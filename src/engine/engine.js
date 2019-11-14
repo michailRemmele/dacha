@@ -14,30 +14,12 @@ class Engine {
   constructor(options) {
     const {
       GENERAL_SCOPE_NAME,
-      SCENE_PROVIDER_KEY_NAME,
-      RESOURCES_LOADER_KEY_NAME,
-      GAME_OBJECT_CREATOR_KEY_NAME,
-      PREFAB_COLLECTION_KEY_NAME,
     } = global;
 
     this.options = options;
 
     ScopeProvider.createScope(GENERAL_SCOPE_NAME);
     ScopeProvider.setCurrentScope(GENERAL_SCOPE_NAME);
-
-    IOC.register(
-      SCENE_PROVIDER_KEY_NAME,
-      new ResolveSingletonStrategy(new SceneProvider(this.options.processorsPlugins))
-    );
-    IOC.register(RESOURCES_LOADER_KEY_NAME, new ResolveSingletonStrategy(new ResourceLoader()));
-    IOC.register(
-      PREFAB_COLLECTION_KEY_NAME,
-      new ResolveSingletonStrategy(new PrefabCollection(this.options.components))
-    );
-    IOC.register(
-      GAME_OBJECT_CREATOR_KEY_NAME,
-      new ResolveSingletonStrategy(new GameObjectCreator(this.options.components))
-    );
   }
 
   async start() {
@@ -46,18 +28,25 @@ class Engine {
       RESOURCES_LOADER_KEY_NAME,
       PREFAB_COLLECTION_KEY_NAME,
       PROJECT_SETTINGS_KEY_NAME,
+      GAME_OBJECT_CREATOR_KEY_NAME,
     } = global;
 
-    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
-    const sceneProvider = IOC.resolve(SCENE_PROVIDER_KEY_NAME);
-    const prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME);
+    const { mainConfig, processorsPlugins, components } = this.options;
+    const { projectSettings } = mainConfig;
 
-    const mainConfig = await resourceLoader.load(this.options.mainConfig);
+    IOC.register(PROJECT_SETTINGS_KEY_NAME, new ResolveSingletonStrategy(projectSettings));
 
-    IOC.register(
-      PROJECT_SETTINGS_KEY_NAME,
-      new ResolveSingletonStrategy(mainConfig.projectSettings)
-    );
+    const resourceLoader = new ResourceLoader();
+    IOC.register(RESOURCES_LOADER_KEY_NAME, new ResolveSingletonStrategy(resourceLoader));
+
+    const prefabCollection = new PrefabCollection(components);
+    IOC.register(PREFAB_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(prefabCollection));
+
+    const gameObjectCreator = new GameObjectCreator(components);
+    IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(gameObjectCreator));
+
+    const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins);
+    IOC.register(SCENE_PROVIDER_KEY_NAME, new ResolveSingletonStrategy(sceneProvider));
 
     await Promise.all(mainConfig.prefabs.map((prefab) => {
       return resourceLoader.load(prefab.src)
@@ -66,13 +55,8 @@ class Engine {
         });
     }));
 
-    await Promise.all(mainConfig.scenes.map((scene) => {
-      return resourceLoader.load(scene.src)
-        .then((sceneConfig) => {
-          return sceneProvider.createScene(sceneConfig);
-        });
-    }));
-    sceneProvider.setCurrentScene(mainConfig.startScene);
+    await sceneProvider.loadScene(mainConfig.startScene);
+    sceneProvider.moveToLoaded();
 
     const gameLoop = new GameLoop();
     gameLoop.run();
