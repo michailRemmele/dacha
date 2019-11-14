@@ -1,6 +1,11 @@
+import AnimateProcessorPlugin from './animateProcessorPlugin/animateProcessorPlugin';
+import CameraProcessorPlugin from './cameraProcessorPlugin/cameraProcessorPlugin';
+import CollisionBroadcastProcessorPlugin
+  from './collisionBroadcastProcessorPlugin/collisionBroadcastProcessorPlugin';
+import CollisionDetectionProcessorPlugin
+  from './collisionDetectionProcessorPlugin/collisionDetectionProcessorPlugin';
 import KeyboardInputProcessorPlugin
   from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
-import CameraProcessorPlugin from './cameraProcessorPlugin/cameraProcessorPlugin';
 import KeyboardControlProcessorPlugin
   from './keyboardControlProcessorPlugin/keyboardControlProcessorPlugin';
 import MouseControlProcessorPlugin from './mouseControlProcessorPlugin/mouseControlProcessorPlugin';
@@ -8,25 +13,22 @@ import MouseInputProcessorPlugin from './mouseInputProcessorPlugin/mouseInputPro
 import MouseInputCoordinatesProjectorPlugin
   from './mouseInputCoordinatesProjector/mouseInputCoordinatesProjector';
 import MovementProcessorPlugin from './movementProcessorPlugin/movementProcessorPlugin';
-import CollisionBroadcastProcessorPlugin
-  from './collisionBroadcastProcessorPlugin/collisionBroadcastProcessorPlugin';
-import CollisionDetectionProcessorPlugin
-  from './collisionDetectionProcessorPlugin/collisionDetectionProcessorPlugin';
 import PhysicsProcessorPlugin from './physicsProcessorPlugin/physicsProcessorPlugin';
-import AnimateProcessorPlugin from './animateProcessorPlugin/animateProcessorPlugin';
 import RenderProcessorPlugin from './renderProcessorPlugin/renderProcessorPlugin';
+import SceneLoadProcessorPlugin from './sceneLoadProcessorPlugin/sceneLoadProcessorPlugin';
 
 export default {
-  keyboardInputProcessor: KeyboardInputProcessorPlugin,
+  animateProcessor: AnimateProcessorPlugin,
   cameraProcessor: CameraProcessorPlugin,
+  collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,
+  collisionDetectionProcessor: CollisionDetectionProcessorPlugin,
+  keyboardInputProcessor: KeyboardInputProcessorPlugin,
   keyboardControlProcessor: KeyboardControlProcessorPlugin,
   mouseControlProcessor: MouseControlProcessorPlugin,
   mouseInputProcessor: MouseInputProcessorPlugin,
   mouseInputCoordinatesProjector: MouseInputCoordinatesProjectorPlugin,
   movementProcessor: MovementProcessorPlugin,
-  collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,
-  collisionDetectionProcessor: CollisionDetectionProcessorPlugin,
   physicsProcessor: PhysicsProcessorPlugin,
-  animateProcessor: AnimateProcessorPlugin,
   renderProcessor: RenderProcessorPlugin,
+  sceneLoadProcessor: SceneLoadProcessorPlugin,
 };

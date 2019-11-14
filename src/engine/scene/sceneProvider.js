@@ -1,25 +1,42 @@
+import IOC from 'engine/ioc/ioc';
 import Scene from './scene';
 import GameObjectObserver from 'engine/gameObject/gameObjectObserver';
+import SceneController from './sceneController';
+
+import { RESOURCES_LOADER_KEY_NAME } from 'engine/consts/global';
 
 class SceneProvider {
-  constructor(processorsPlugins) {
+  constructor(scenes, processorsPlugins) {
     this._sceneContainer = {};
     this._currentSceneName = undefined;
     this._sceneChangeSubscribers = [];
+    this._availableScenes = scenes;
     this._processorsPlugins = Object.keys(processorsPlugins).reduce((storage, name) => {
       const ProcessorPlugin = processorsPlugins[name];
       storage[name] = new ProcessorPlugin();
       return storage;
     }, {});
+    this._loadedScene = null;
+    this._sceneController = new SceneController(this);
   }
 
-  async createScene(config) {
+  async loadScene(name) {
+    if (!this._availableScenes[name]) {
+      throw new Error(`Error while loading the scene. Not found scene with same name: ${name}`);
+    }
+
+    this._loadedScene = undefined;
+
+    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
+
+    const sceneConfig = await resourceLoader.load(this._availableScenes[name]);
+
     const scene = new Scene({
-      name: config.name,
-      gameObjects: config.gameObjects,
+      name: sceneConfig.name,
+      gameObjects: sceneConfig.gameObjects,
     });
 
-    await Promise.all(config.processors.map((processorInfo) => {
+    await Promise.all(sceneConfig.processors.map((processorInfo) => {
       const gameObjectObserver = new GameObjectObserver(scene, processorInfo.components);
 
       return this._processorsPlugins[processorInfo.name].load({
@@ -28,17 +45,49 @@ class SceneProvider {
         gameObjectSpawner: scene.getGameObjectSpawner(),
         gameObjectDestroyer: scene.getGameObjectDestroyer(),
         gameObjectObserver: gameObjectObserver,
-        scene: scene,
+        sceneController: this._sceneController,
       })
         .then((processor) => {
           scene.addProcessor(processor, processorInfo.section);
         });
     }));
 
-    this._sceneContainer[config.name] = scene;
+    this._loadedScene = scene;
+  }
+
+  isLoaded() {
+    return !!this._loadedScene;
+  }
+
+  moveToLoaded() {
+    if (!this._loadedScene) {
+      return;
+    }
+
+    if (this._sceneContainer[this._currentSceneName]) {
+      this.leaveCurrentScene();
+    }
+
+    const name = this._loadedScene.getName();
+    this._sceneContainer[name] = this._loadedScene;
+    this._loadedScene = undefined;
+    this.setCurrentScene(name);
+  }
+
+  leaveCurrentScene() {
+    if (!this._sceneContainer[this._currentSceneName]) {
+      throw new Error('Error while leaving current scene. Current scene is null');
+    }
+
+    this._sceneContainer[this._currentSceneName].unmount();
+    this._currentSceneName = undefined;
   }
 
   removeScene(name) {
+    if (name === this._currentSceneName) {
+      this.leaveCurrentScene();
+    }
+
     this._sceneContainer[name] = undefined;
   }
 

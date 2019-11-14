@@ -1,5 +1,5 @@
 {
-  "name": "intro-scene",
+  "name": "intro",
   "gameObjects": [
     {
       "id": "0",
@@ -2255,6 +2255,22 @@
         "windowNodeId": "root",
         "initialCamera": "1.2"
       }
+    },
+    {
+      "name": "gameOverProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "movement"
+      ],
+      "options": {
+        "restartScene": "intro"
+      }
+    },
+    {
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {}
     },
     {
       "name": "animateProcessor",
