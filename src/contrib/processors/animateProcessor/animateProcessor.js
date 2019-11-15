@@ -35,7 +35,7 @@ class AnimateProcessor extends Processor {
       const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME);
 
       const nextTransition = animatable.currentState.transitions.find((transition) => {
-        return transition.conditions.some((condition) => {
+        return transition.conditions.every((condition) => {
           const conditionController = this._conditionControllers[condition.type];
           return conditionController.check({
             ...condition.props,
@@ -62,8 +62,9 @@ class AnimateProcessor extends Processor {
 
       if (animatable.duration >= baseDuration) {
         if (!animatable.currentState.looped) {
-          animatable.currentState
-            = animatable.currentState.previousState || animatable.defaultState;
+          animatable.currentState = animatable.currentState.fallbackState
+            ? animatable.currentState.fallbackState
+            : animatable.currentState.previousState || animatable.defaultState;
           animatable.duration = 0;
           this._setFrame(renderable, animatable.currentState.frames[0]);
           return;

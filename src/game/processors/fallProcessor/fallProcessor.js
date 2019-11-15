@@ -1,45 +1,91 @@
 import Processor from 'engine/processor/processor';
 
-const TRIGGER_ENTER_MSG = 'TRIGGER_ENTER';
+const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
+const ADD_EFFECT_MSG = 'ADD_EFFECT';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
-const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 
 const REACTION_FORCE = 'reactionForce';
 
 const SPACE_SORTING_LAYER = 'space';
 
+const FALL_EFFECT = {
+  name: 'fall',
+  effect: 'damage',
+  effectType: 'periodical',
+  applicatorOptions: {
+    frequency: 200,
+  },
+  effectOptions: {
+    value: 25,
+  },
+};
+
 class FallProcessor extends Processor {
   constructor(options) {
     super();
 
     this._gameObjectObserver = options.gameObjectObserver;
+    this._fallingGameObjectsMap = {};
     this._fallingGameObjects = [];
+  }
+
+  _processRemovedGameObjects() {
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+
+      if (this._fallingGameObjectsMap[gameObjectId]) {
+        this._fallingGameObjects = this._fallingGameObjects.filter((gameObject) => {
+          return gameObject.getId() !== gameObjectId;
+        });
+      }
+
+      this._fallingGameObjectsMap[gameObjectId] = null;
+    });
   }
 
   process(options) {
     const messageBus = options.messageBus;
 
+    this._processRemovedGameObjects();
+
     this._fallingGameObjects = this._fallingGameObjects.filter((gameObject) => {
-      if (messageBus.getById(TRIGGER_ENTER_MSG, gameObject.getId())) {
-        const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-        renderable.sortingLayer = SPACE_SORTING_LAYER;
-        return false;
-      }
-      return true;
+      const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, gameObject.getId()) || [];
+      return collisionMessages.every((message) => {
+        const { otherGameObject } = message;
+        const rigidBody = otherGameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+
+        if (rigidBody) {
+          const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+          renderable.sortingLayer = SPACE_SORTING_LAYER;
+          return false;
+        }
+        return true;
+      });
     });
 
     this._gameObjectObserver.forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-
       const { forceVectors } = rigidBody;
 
-      if (rigidBody.useGravity && !forceVectors[REACTION_FORCE]) {
-        this._fallingGameObjects.push(gameObject);
+      if (
+        rigidBody.useGravity
+        && !forceVectors[REACTION_FORCE]
+        && !this._fallingGameObjectsMap[gameObjectId]
+      ) {
+        rigidBody.ghost = true;
 
-        const colliderContainer = gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
-        colliderContainer.isTrigger = true;
+        messageBus.send({
+          type: ADD_EFFECT_MSG,
+          id: gameObject.getId(),
+          gameObject: gameObject,
+          ...FALL_EFFECT,
+        });
+
+        this._fallingGameObjectsMap[gameObjectId] = true;
+        this._fallingGameObjects.push(gameObject);
       }
     });
   }

@@ -15,13 +15,11 @@ class ComparatorConditionController extends ConditionController {
         const valuePath = value.split('.');
         const componentName = valuePath.shift();
         let soughtValue = gameObject.getComponent(componentName);
-        for (let i = 0; i < valuePath.length; i++) {
-          soughtValue = soughtValue[valuePath[i]];
 
-          if (soughtValue === undefined) {
-            return undefined;
-          }
+        for (let i = 0; i < valuePath.length && soughtValue !== undefined; i++) {
+          soughtValue = soughtValue[valuePath[i]];
         }
+
         return soughtValue;
       },
     };
@@ -43,7 +41,7 @@ class ComparatorConditionController extends ConditionController {
 
   _getValue(arg, gameObject) {
     if (!this._getters[arg.type]) {
-      throw new Error('Unknown value type');
+      throw new Error(`Unknown value type: ${arg.type}`);
     }
 
     return this._getters[arg.type](arg.value, gameObject);
@@ -53,7 +51,7 @@ class ComparatorConditionController extends ConditionController {
     const { gameObject, operation } = props;
 
     if (!this._operations[operation]) {
-      throw new Error('Unknown operation type');
+      throw new Error(`Unknown operation type: ${operation}`);
     }
 
     const arg1 = this._getValue(props.arg1, gameObject);

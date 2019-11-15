@@ -14,7 +14,6 @@ const AXIS = {
 };
 
 const COLLISION_MESSAGE = 'COLLISION';
-const TRIGGER_MESSAGE = 'TRIGGER';
 
 class CollisionDetectionProcessor extends Processor {
   constructor(options) {
@@ -171,38 +170,16 @@ class CollisionDetectionProcessor extends Processor {
   }
 
   _sendCollisionMessage(messageBus, gameObject, otherGameObject) {
-    const colliderContainer = gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
-    const otherColliderContainer = otherGameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
-
-    if (colliderContainer.isTrigger) {
-      messageBus.send({
-        type: TRIGGER_MESSAGE,
-        id: gameObject.getId(),
-        gameObject: gameObject,
-        otherGameObject: otherGameObject,
-      });
-    } else if (otherColliderContainer.isTrigger) {
-      messageBus.send({
-        type: TRIGGER_MESSAGE,
-        id: otherGameObject.getId(),
-        gameObject: otherGameObject,
-        otherGameObject: gameObject,
-      });
-    } else {
+    [
+      { gameObject: gameObject, otherGameObject: otherGameObject },
+      { gameObject: otherGameObject, otherGameObject: gameObject },
+    ].forEach((entry) => {
       messageBus.send({
         type: COLLISION_MESSAGE,
-        id: gameObject.getId(),
-        gameObject: gameObject,
-        otherGameObject: otherGameObject,
+        gameObject: entry.gameObject,
+        otherGameObject: entry.otherGameObject,
       });
-
-      messageBus.send({
-        type: COLLISION_MESSAGE,
-        id: otherGameObject.getId(),
-        gameObject: otherGameObject,
-        otherGameObject: gameObject,
-      });
-    }
+    });
   }
 
   process(options) {

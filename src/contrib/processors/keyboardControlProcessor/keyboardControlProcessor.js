@@ -1,6 +1,6 @@
 import Processor from 'engine/processor/processor';
 
-const CONTROL_COMPONENT_NAME = 'control';
+const CONTROL_COMPONENT_NAME = 'keyboardControl';
 
 const INPUT_MESSAGE = 'INPUT_EVENT_QUERY';
 
@@ -8,7 +8,7 @@ const RELEASE_EVENT_TYPE = 'RELEASED';
 
 const PREFIX_SEPARATOR = '_';
 
-class ControlProcessor extends Processor {
+class KeyboardControlProcessor extends Processor {
   constructor(options) {
     super();
 
@@ -39,9 +39,15 @@ class ControlProcessor extends Processor {
         const eventBinding = control.inputEventBindings[
           `${key}${PREFIX_SEPARATOR}${inputEventType}`
         ];
+
         if (inputEventType && eventBinding) {
+          if (!eventBinding.messageType) {
+            throw new Error(`The message type not specified for input event: ${inputEventType}`);
+          }
+
           messageBus.send({
-            type: eventBinding,
+            type: eventBinding.messageType,
+            ...eventBinding.attrs,
             gameObject: gameObject,
           });
         }
@@ -53,4 +59,4 @@ class ControlProcessor extends Processor {
   }
 }
 
-export default ControlProcessor;
+export default KeyboardControlProcessor;

@@ -9,12 +9,13 @@ import webglUtils from './vendor/webglUtils';
 
 const MAX_COLOR_NUMBER = 255;
 const RENDER_COMPONENTS_NUMBER = 2;
-const RENDER_SCALE = 2;
 const DRAW_OFFSET = 0;
 const DRAW_COUNT = 6;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
+const CAMERA_COMPONENT_NAME = 'camera';
+const CURRENT_CAMERA_NAME = 'currentCamera';
 
 class RenderProcessor extends Processor {
   constructor(options) {
@@ -24,6 +25,7 @@ class RenderProcessor extends Processor {
       window, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
       gameObjectObserver, sortingLayers,
+      store,
     } = options;
 
     this.textureAtlas = textureAtlas;
@@ -50,6 +52,7 @@ class RenderProcessor extends Processor {
       storage[layer] = index;
       return storage;
     }, {});
+    this._store = store;
     this._gameObjectObserver = gameObjectObserver;
 
     this._gameObjectCashMap = {};
@@ -162,16 +165,22 @@ class RenderProcessor extends Processor {
   _getTransformationMatrix(props) {
     const canvas = this.gl.canvas;
     const matrixTransformer = this._matrixTransformer;
-    const { renderable, x, y } = props;
+    const { renderable, x, y, rotation } = props;
+
+    const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
+    const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
+
+    const scale = zoom / window.devicePixelRatio;
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
     matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
     renderable.flipX && matrixTransformer.flipX(matrix);
     renderable.flipY && matrixTransformer.flipY(matrix);
-    matrixTransformer.rotate(matrix, renderable.rotation);
-    matrixTransformer.translate(matrix, x, y);
-    matrixTransformer.scale(matrix, RENDER_SCALE, RENDER_SCALE);
+    matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
+    matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
+    matrixTransformer.scale(matrix, scale, scale);
     matrixTransformer.project(matrix, canvas.clientWidth, canvas.clientHeight);
 
     return matrix;
@@ -291,6 +300,7 @@ class RenderProcessor extends Processor {
           renderable: renderable,
           x: transform.offsetX,
           y: transform.offsetY,
+          rotation: transform.rotation,
         }),
         u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
         u_texCoordTranslation: [ textureInfo.x, textureInfo.y ],

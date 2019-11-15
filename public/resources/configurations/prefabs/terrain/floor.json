@@ -6,14 +6,23 @@
       "name": "transform",
       "config": {
         "offsetX": 0,
-        "offsetY": 0
+        "offsetY": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "rigidBody",
+      "config": {
+        "mass": 1,
+        "useGravity": false,
+        "isPermeable": true,
+        "ghost": false
       }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
-        "isTrigger": false,
         "collider": {
           "sizeX": 31,
           "sizeY": 31,

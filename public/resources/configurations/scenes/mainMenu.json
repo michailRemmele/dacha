@@ -1,10 +1,10 @@
 {
-  "name": "main-menu-scene",
+  "name": "mainMenu",
   "gameObjects": [
   ],
   "processors": [
     {
-      "name": "inputProcessor",
+      "name": "keyboardInputProcessor",
       "section": "eventProcessSection",
       "components": [],
       "options": {

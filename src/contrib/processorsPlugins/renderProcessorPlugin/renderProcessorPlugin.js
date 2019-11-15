@@ -4,7 +4,7 @@ import { RESOURCES_LOADER_KEY_NAME } from 'engine/consts/global';
 
 import RenderProcessor from 'contrib/processors/renderProcessor/renderProcessor';
 
-class InputProcessorPlugin extends ProcessorPlugin {
+class RenderProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
 
@@ -13,8 +13,9 @@ class InputProcessorPlugin extends ProcessorPlugin {
       textureAtlas,
       textureAtlasDescriptor,
       backgroundColor,
-      scene,
       sortingLayers,
+      gameObjectObserver,
+      store,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -28,11 +29,11 @@ class InputProcessorPlugin extends ProcessorPlugin {
       textureAtlas: loadedResources[0],
       textureAtlasDescriptor: loadedResources[1],
       backgroundColor: backgroundColor,
-      scene: scene,
       sortingLayers: sortingLayers,
-      gameObjectObserver: options.gameObjectObserver,
+      gameObjectObserver: gameObjectObserver,
+      store,
     });
   }
 }
 
-export default InputProcessorPlugin;
+export default RenderProcessorPlugin;

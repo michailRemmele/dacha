@@ -1,14 +1,23 @@
-import { SECTIONS } from 'engine/consts/global';
+import { SECTIONS, GAME_OBJECT_CREATOR_KEY_NAME } from 'engine/consts/global';
+
+import IOC from 'engine/ioc/ioc';
+import Store from './store';
+import GameObjectSpawner from 'engine/gameObject/gameObjectSpawner';
+import GameObjectDestroyer from 'engine/gameObject/gameObjectDestroyer';
 
 const GAME_OBJECT_ADDED = 'GAME_OBJECT_ADDED';
 const GAME_OBJECT_REMOVED = 'GAME_OBJECT_REMOVED';
 
 class Scene {
   constructor(options) {
-    const { name } = options;
+    const { name, gameObjects } = options;
 
     this._name = name;
     this._gameObjects = {};
+    this._store = new Store();
+    this._gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
+    this._gameObjectSpawner = new GameObjectSpawner(this, this._gameObjectCreator);
+    this._gameObjectDestroyer = new GameObjectDestroyer(this);
 
     this._processorSections = {
       [SECTIONS.EVENT_PROCESS_SECTION_NAME]: [],
@@ -20,6 +29,12 @@ class Scene {
 
     this.GAME_OBJECT_ADDED = GAME_OBJECT_ADDED;
     this.GAME_OBJECT_REMOVED = GAME_OBJECT_REMOVED;
+
+    gameObjects.forEach((gameObjectOptions) => {
+      this._gameObjectCreator.create(gameObjectOptions).forEach((gameObject) => {
+        this.addGameObject(gameObject);
+      });
+    });
   }
 
   mount() {
@@ -46,6 +61,18 @@ class Scene {
     return this._processorSections[section];
   }
 
+  getStore() {
+    return this._store;
+  }
+
+  getGameObjectSpawner() {
+    return this._gameObjectSpawner;
+  }
+
+  getGameObjectDestroyer() {
+    return this._gameObjectDestroyer;
+  }
+
   addGameObject(gameObject) {
     const id = gameObject.getId();
 
@@ -58,18 +85,19 @@ class Scene {
     this._gameObjectsChangeSubscribers.forEach((callback) => {
       callback({
         type: GAME_OBJECT_ADDED,
-        gameObject: this,
+        gameObject: gameObject,
       });
     });
   }
 
   removeGameObject(gameObject) {
+    gameObject.clearSubscriptions();
     this._gameObjects[gameObject.getId()] = undefined;
 
     this._gameObjectsChangeSubscribers.forEach((callback) => {
       callback({
         type: GAME_OBJECT_REMOVED,
-        gameObject: this,
+        gameObject: gameObject,
       });
     });
   }

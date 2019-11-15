@@ -10,7 +10,7 @@ const RELEASE_EVENT_TYPE = 'RELEASED';
 
 const PREFIX_SEPARATOR = '_';
 
-class InputProcessor extends Processor {
+class KeyboardInputProcessor extends Processor {
   constructor() {
     super();
 
@@ -59,4 +59,4 @@ class InputProcessor extends Processor {
   }
 }
 
-export default InputProcessor;
+export default KeyboardInputProcessor;

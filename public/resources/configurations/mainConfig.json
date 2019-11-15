@@ -1,16 +1,10 @@
 {
   "projectSettings": {},
-  "scenes": [
-    {
-      "src": "resources/configurations/scenes/intro.json"
-    },
-    {
-      "src": "resources/configurations/scenes/mainMenu.json"
-    },
-    {
-      "src": "resources/configurations/scenes/gameScene.json"
-    }
-  ],
+  "scenes": {
+    "intro": "resources/configurations/scenes/intro.json",
+    "mainMenu": "resources/configurations/scenes/mainMenu.json",
+    "game": "resources/configurations/scenes/gameScene.json"
+  },
   "prefabs": [
     {
       "src": "resources/configurations/prefabs/terrain/floor.json"
@@ -25,8 +19,11 @@
       "src": "resources/configurations/prefabs/items/bonusBox.json"
     },
     {
+      "src": "resources/configurations/prefabs/items/blasterBullet.json"
+    },
+    {
       "src": "resources/configurations/prefabs/background/space.json"
     }
   ],
-  "startScene": "intro-scene"
+  "startScene": "intro"
 }

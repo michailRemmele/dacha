@@ -6,17 +6,21 @@
       "children": [],
       "components": [
         {
+          "name": "hitBox",
+          "config": {}
+        },
+        {
           "name": "transform",
           "config": {
             "offsetX": 0,
-            "offsetY": 0
+            "offsetY": 0,
+            "rotation": 0
           }
         },
         {
           "name": "colliderContainer",
           "config": {
             "type": "boxCollider",
-            "isTrigger": false,
             "collider": {
               "sizeX": 33,
               "sizeY": 40,
@@ -33,21 +37,36 @@
       "name": "transform",
       "config": {
         "offsetX": 0,
-        "offsetY": 0
+        "offsetY": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "health",
+      "config": {
+        "points": 100
+      }
+    },
+    {
+      "name": "weapon",
+      "config": {
+        "bullet": "blasterBullet",
+        "speed": 400
       }
     },
     {
       "name": "rigidBody",
       "config": {
-        "mass": 1,
-        "useGravity": true
+        "mass": 3,
+        "useGravity": true,
+        "isPermeable": false,
+        "ghost": false
       }
     },
     {
       "name": "colliderContainer",
       "config": {
         "type": "boxCollider",
-        "isTrigger": false,
         "collider": {
           "sizeX": 21,
           "sizeY": 7,
@@ -105,12 +124,23 @@
             "looped": true,
             "transitions": [
               {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
+              {
                 "state": "attack",
                 "conditions": [
                   {
                     "type": "message",
                     "props": {
-                      "message": "ATTACK_START"
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -206,6 +236,17 @@
             "looped": true,
             "transitions": [
               {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
+              {
                 "state": "idle",
                 "conditions": [
                   {
@@ -239,6 +280,17 @@
                         "type": "number",
                         "value": 0
                       }
+                    }
+                  }
+                ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "SHOT"
                     }
                   }
                 ]
@@ -277,6 +329,17 @@
             "looped": true,
             "transitions": [
               {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
+              {
                 "state": "idle",
                 "conditions": [
                   {
@@ -313,6 +376,17 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "SHOT"
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -343,6 +417,17 @@
             ],
             "looped": true,
             "transitions": [
+              {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              },
               {
                 "state": "runRight",
                 "conditions": [
@@ -399,12 +484,23 @@
                     }
                   }
                 ]
+              },
+              {
+                "state": "attack",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "SHOT"
+                    }
+                  }
+                ]
               }
             ]
           },
           {
             "name": "attack",
-            "speed": 1,
+            "speed": 1.5,
             "frames": [
               {
                 "index": 10,
@@ -432,6 +528,45 @@
                 "rotation": 0
               }
             ],
+            "transitions": [
+              {
+                "state": "death",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "death",
+            "speed": 0.5,
+            "frames": [
+              {
+                "index": 15,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": false,
+            "fallbackState": "void",
+            "transitions": []
+          },
+          {
+            "name": "void",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 16,
+                "flipY": false,
+                "rotation": 0
+              }
+            ],
+            "looped": true,
             "transitions": []
           }
         ]
@@ -444,7 +579,7 @@
         "src": "units/rooster",
         "width": 45,
         "height": 50,
-        "slice": 15,
+        "slice": 17,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,

@@ -22,6 +22,20 @@ class GameObject {
     return this._parent;
   }
 
+  getAncestor() {
+    const findAncestor = (gameObject) => {
+      const parent = gameObject.getParent();
+
+      if (parent) {
+        return findAncestor(parent);
+      }
+
+      return gameObject;
+    };
+
+    return findAncestor(this);
+  }
+
   appendChild(child) {
     this._children.push(child);
   }
@@ -32,6 +46,10 @@ class GameObject {
 
   getId() {
     return this._id;
+  }
+
+  getComponentNamesList() {
+    return Object.keys(this._components);
   }
 
   getComponent(name) {
@@ -84,6 +102,10 @@ class GameObject {
     }
 
     this._subscribers.push(callback);
+  }
+
+  clearSubscriptions() {
+    this._subscribers = [];
   }
 }
 

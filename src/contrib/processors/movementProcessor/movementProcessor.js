@@ -2,68 +2,67 @@ import Vector2 from 'utils/vector/vector2';
 
 import Processor from 'engine/processor/processor';
 
-const UP_MSG = 'MOVEMENT_UP';
-const LEFT_MSG = 'MOVEMENT_LEFT';
-const DOWN_MSG = 'MOVEMENT_DOWN';
-const RIGHT_MSG = 'MOVEMENT_RIGHT';
-const POSITION_CHANGED_MSG = 'MOVEMENT_POSITION_CHANGED';
+const MOVEMENT_MSG = 'MOVEMENT';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const MOVEMENT_COMPONENT_NAME = 'movement';
-
-const MOVEMENT_VECTORS = {
-  [UP_MSG]: new Vector2(0, -1),
-  [LEFT_MSG]: new Vector2(-1, 0),
-  [RIGHT_MSG]: new Vector2(1, 0),
-  [DOWN_MSG]: new Vector2(0, 1),
-};
 
 class MovementProcessor extends Processor {
   constructor(options) {
     super();
 
-    this._movementMessageTypes = [ UP_MSG, LEFT_MSG, DOWN_MSG, RIGHT_MSG ];
     this._gameObjectObserver = options.gameObjectObserver;
+  }
+
+  _degToRad(deg) {
+    return deg * Math.PI / 180;
+  }
+
+  _fixCalcError(value) {
+    return Math.abs(value) < Number.EPSILON ? 0 : value;
+  }
+
+  _getVectorByAngle(angle) {
+    const radAngle = this._degToRad(angle);
+    const x = this._fixCalcError(Math.cos(radAngle));
+    const y = this._fixCalcError(Math.sin(radAngle));
+
+    return new Vector2(x, y);
   }
 
   process(options) {
     const deltaTimeInSeconds = options.deltaTime / 1000;
     const messageBus = options.messageBus;
 
-    const movableGameObjects = this._movementMessageTypes.reduce((storage, messageType) => {
-      const messages = messageBus.get(messageType) || [];
-      messages.forEach((message) => {
-        const gameObjectId = message.gameObject.getId();
-        storage[gameObjectId] = storage[gameObjectId] || [];
-        storage[gameObjectId].push(message.type);
-      });
+    const messages = messageBus.get(MOVEMENT_MSG) || [];
+    const movementVectors = messages.reduce((storage, message) => {
+      const { gameObject, directionAngle } = message;
+      const gameObjectId = gameObject.getId();
+
+      storage[gameObjectId] = storage[gameObjectId] || new Vector2(0, 0);
+      storage[gameObjectId].add(this._getVectorByAngle(directionAngle));
 
       return storage;
     }, {});
 
     this._gameObjectObserver.forEach((gameObject) => {
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const { speed, vector } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
+      const gameObjectId = gameObject.getId();
 
-      const movementDirections = movableGameObjects[gameObject.getId()];
+      const { vector, speed } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
       vector.multiplyNumber(0);
 
-      if (!movementDirections) {
+      const movementVector = movementVectors[gameObjectId];
+      if (!movementVector || (movementVector.x === 0 && movementVector.y === 0)) {
         return;
       }
 
-      movementDirections.forEach((direction) => {
-        vector.add(MOVEMENT_VECTORS[direction]);
-      });
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
 
-      vector.multiplyNumber(speed * deltaTimeInSeconds);
+      movementVector.multiplyNumber(speed * deltaTimeInSeconds * (1 / movementVector.magnitude));
+      vector.add(movementVector);
 
       transform.offsetX = transform.offsetX + vector.x;
       transform.offsetY = transform.offsetY + vector.y;
-      messageBus.send({
-        type: POSITION_CHANGED_MSG,
-        gameObject: gameObject,
-      });
     });
   }
 }

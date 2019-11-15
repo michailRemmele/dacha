@@ -1,16 +1,19 @@
 {
-  "name": "intro-scene",
+  "name": "intro",
   "gameObjects": [
     {
       "id": "0",
-      "name": "space",
+      "name": "spaceBackground",
+      "fromPrefab": true,
+      "prefabName": "space",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 0,
-            "offsetY": 0
+            "offsetY": 0,
+            "rotation": 0
           }
         }
       ]
@@ -18,12 +21,39 @@
     {
       "id": "1",
       "name": "rooster",
+      "fromPrefab": true,
+      "prefabName": "rooster",
       "children": [
         {
           "id": "1.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
+        },
+        {
+          "id": "1.2",
+          "name": "mainCamera",
+          "fromPrefab": false,
+          "prefabName": "",
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "rotation": 0
+              }
+            },
+            {
+              "name": "camera",
+              "config": {
+                "zoom": 3.5
+              }
+            }
+          ]
         }
       ],
       "components": [
@@ -31,17 +61,49 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -174
+            "offsetY": -174,
+            "rotation": 0
           }
         },
         {
-          "name": "control",
+          "name": "keyboardControl",
           "config": {
             "inputEventBindings": {
-              "W_PRESSED": "MOVEMENT_UP",
-              "A_PRESSED": "MOVEMENT_LEFT",
-              "S_PRESSED": "MOVEMENT_DOWN",
-              "D_PRESSED": "MOVEMENT_RIGHT"
+              "W_PRESSED": {
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 270
+                }
+              },
+              "A_PRESSED": {
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 180
+                }
+              },
+              "S_PRESSED": {
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 90
+                }
+              },
+              "D_PRESSED": {
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "mouseControl",
+          "config": {
+            "inputEventBindings": {
+              "MOUSE_LEFT_BUTTON_PRESS": {
+                "messageType": "SHOT",
+                "attrs": {}
+              }
             }
           }
         }
@@ -50,10 +112,14 @@
     {
       "id": "2",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "2.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -63,7 +129,8 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -78
+            "offsetY": -78,
+            "rotation": 0
           }
         }
       ]
@@ -71,10 +138,14 @@
     {
       "id": "3",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "3.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -84,7 +155,8 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 18
+            "offsetY": 18,
+            "rotation": 0
           }
         }
       ]
@@ -92,11 +164,14 @@
     {
       "id": "4",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "4.1",
-
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -106,7 +181,8 @@
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 114
+            "offsetY": 114,
+            "rotation": 0
           }
         }
       ]
@@ -114,10 +190,14 @@
     {
       "id": "5",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "5.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -127,7 +207,8 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -174
+            "offsetY": -174,
+            "rotation": 0
           }
         }
       ]
@@ -135,10 +216,14 @@
     {
       "id": "6",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "6.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -148,7 +233,8 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -78
+            "offsetY": -78,
+            "rotation": 0
           }
         }
       ]
@@ -156,10 +242,14 @@
     {
       "id": "7",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "7.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -169,7 +259,8 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 18
+            "offsetY": 18,
+            "rotation": 0
           }
         }
       ]
@@ -177,10 +268,14 @@
     {
       "id": "8",
       "name": "roosterEnemy",
+      "fromPrefab": true,
+      "prefabName": "roosterEnemy",
       "children": [
         {
           "id": "8.1",
-          "name": "roosterBody",
+          "name": "roosterHitBox",
+          "fromPrefab": true,
+          "prefabName": "roosterHitBox",
           "children": [],
           "components": []
         }
@@ -190,7 +285,8 @@
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 114
+            "offsetY": 114,
+            "rotation": 0
           }
         }
       ]
@@ -198,13 +294,16 @@
     {
       "id": "10",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 30
+            "offsetY": 30,
+            "rotation": 0
           }
         }
       ]
@@ -212,13 +311,16 @@
     {
       "id": "11",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 30
+            "offsetY": 30,
+            "rotation": 0
           }
         }
       ]
@@ -226,13 +328,16 @@
     {
       "id": "12",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 126
+            "offsetY": 126,
+            "rotation": 0
           }
         }
       ]
@@ -240,13 +345,16 @@
     {
       "id": "13",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 126
+            "offsetY": 126,
+            "rotation": 0
           }
         }
       ]
@@ -254,13 +362,16 @@
     {
       "id": "14",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -66
+            "offsetY": -66,
+            "rotation": 0
           }
         }
       ]
@@ -268,13 +379,16 @@
     {
       "id": "15",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -66
+            "offsetY": -66,
+            "rotation": 0
           }
         }
       ]
@@ -282,13 +396,16 @@
     {
       "id": "16",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -162
+            "offsetY": -162,
+            "rotation": 0
           }
         }
       ]
@@ -296,13 +413,16 @@
     {
       "id": "17",
       "name": "bonusBox",
+      "fromPrefab": true,
+      "prefabName": "bonusBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -162
+            "offsetY": -162,
+            "rotation": 0
           }
         }
       ]
@@ -310,13 +430,16 @@
     {
       "id": "100",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -324,13 +447,16 @@
     {
       "id": "101",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -338,13 +464,16 @@
     {
       "id": "102",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -352,13 +481,16 @@
     {
       "id": "103",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -366,13 +498,16 @@
     {
       "id": "104",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -380,13 +515,16 @@
     {
       "id": "105",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -394,13 +532,16 @@
     {
       "id": "106",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -408,13 +549,16 @@
     {
       "id": "107",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -422,13 +566,16 @@
     {
       "id": "108",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -436,13 +583,16 @@
     {
       "id": "109",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -450,13 +600,16 @@
     {
       "id": "110",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -464,13 +617,16 @@
     {
       "id": "111",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -478,13 +634,16 @@
     {
       "id": "112",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -492,13 +651,16 @@
     {
       "id": "113",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -506,13 +668,16 @@
     {
       "id": "114",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -520,13 +685,16 @@
     {
       "id": "115",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -534,13 +702,16 @@
     {
       "id": "116",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -548,13 +719,16 @@
     {
       "id": "117",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -562,13 +736,16 @@
     {
       "id": "118",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -576,13 +753,16 @@
     {
       "id": "119",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -590,13 +770,16 @@
     {
       "id": "120",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -604,13 +787,16 @@
     {
       "id": "121",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -618,13 +804,16 @@
     {
       "id": "122",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -632,13 +821,16 @@
     {
       "id": "123",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -646,13 +838,16 @@
     {
       "id": "124",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -660,13 +855,16 @@
     {
       "id": "125",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -674,13 +872,16 @@
     {
       "id": "126",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -688,13 +889,16 @@
     {
       "id": "127",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -702,13 +906,16 @@
     {
       "id": "128",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -716,13 +923,16 @@
     {
       "id": "129",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -730,13 +940,16 @@
     {
       "id": "130",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -744,13 +957,16 @@
     {
       "id": "131",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -758,13 +974,16 @@
     {
       "id": "132",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -772,13 +991,16 @@
     {
       "id": "133",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -786,13 +1008,16 @@
     {
       "id": "134",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -800,13 +1025,16 @@
     {
       "id": "135",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -814,13 +1042,16 @@
     {
       "id": "136",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -828,13 +1059,16 @@
     {
       "id": "137",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -842,13 +1076,16 @@
     {
       "id": "138",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -856,13 +1093,16 @@
     {
       "id": "139",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -870,13 +1110,16 @@
     {
       "id": "140",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -884,13 +1127,16 @@
     {
       "id": "141",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -898,13 +1144,16 @@
     {
       "id": "142",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -912,13 +1161,16 @@
     {
       "id": "143",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -926,13 +1178,16 @@
     {
       "id": "144",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -940,13 +1195,16 @@
     {
       "id": "145",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 16,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -954,13 +1212,16 @@
     {
       "id": "146",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 48,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -968,13 +1229,16 @@
     {
       "id": "147",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 80,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -982,13 +1246,16 @@
     {
       "id": "148",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 112,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -996,13 +1263,16 @@
     {
       "id": "149",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": 144,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -1010,13 +1280,16 @@
     {
       "id": "150",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -1024,13 +1297,16 @@
     {
       "id": "151",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -1038,13 +1314,16 @@
     {
       "id": "152",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -1052,13 +1331,16 @@
     {
       "id": "153",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -1066,13 +1348,16 @@
     {
       "id": "154",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -144
+            "offsetY": -144,
+            "rotation": 0
           }
         }
       ]
@@ -1080,13 +1365,16 @@
     {
       "id": "155",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -1094,13 +1382,16 @@
     {
       "id": "156",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -1108,13 +1399,16 @@
     {
       "id": "157",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -1122,13 +1416,16 @@
     {
       "id": "158",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -1136,13 +1433,16 @@
     {
       "id": "159",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -112
+            "offsetY": -112,
+            "rotation": 0
           }
         }
       ]
@@ -1150,13 +1450,16 @@
     {
       "id": "160",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -1164,13 +1467,16 @@
     {
       "id": "161",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -1178,13 +1484,16 @@
     {
       "id": "162",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -1192,13 +1501,16 @@
     {
       "id": "163",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -1206,13 +1518,16 @@
     {
       "id": "164",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -80
+            "offsetY": -80,
+            "rotation": 0
           }
         }
       ]
@@ -1220,13 +1535,16 @@
     {
       "id": "165",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -1234,13 +1552,16 @@
     {
       "id": "166",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -1248,13 +1569,16 @@
     {
       "id": "167",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -1262,13 +1586,16 @@
     {
       "id": "168",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -1276,13 +1603,16 @@
     {
       "id": "169",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -48
+            "offsetY": -48,
+            "rotation": 0
           }
         }
       ]
@@ -1290,13 +1620,16 @@
     {
       "id": "170",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -1304,13 +1637,16 @@
     {
       "id": "171",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -1318,13 +1654,16 @@
     {
       "id": "172",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -1332,13 +1671,16 @@
     {
       "id": "173",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -1346,13 +1688,16 @@
     {
       "id": "174",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": -16
+            "offsetY": -16,
+            "rotation": 0
           }
         }
       ]
@@ -1360,13 +1705,16 @@
     {
       "id": "175",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -1374,13 +1722,16 @@
     {
       "id": "176",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -1388,13 +1739,16 @@
     {
       "id": "177",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -1402,13 +1756,16 @@
     {
       "id": "178",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -1416,13 +1773,16 @@
     {
       "id": "179",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 16
+            "offsetY": 16,
+            "rotation": 0
           }
         }
       ]
@@ -1430,13 +1790,16 @@
     {
       "id": "180",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -1444,13 +1807,16 @@
     {
       "id": "181",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -1458,13 +1824,16 @@
     {
       "id": "182",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -1472,13 +1841,16 @@
     {
       "id": "183",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -1486,13 +1858,16 @@
     {
       "id": "184",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 48
+            "offsetY": 48,
+            "rotation": 0
           }
         }
       ]
@@ -1500,13 +1875,16 @@
     {
       "id": "185",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -1514,13 +1892,16 @@
     {
       "id": "186",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -1528,13 +1909,16 @@
     {
       "id": "187",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -1542,13 +1926,16 @@
     {
       "id": "188",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -1556,13 +1943,16 @@
     {
       "id": "189",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 80
+            "offsetY": 80,
+            "rotation": 0
           }
         }
       ]
@@ -1570,13 +1960,16 @@
     {
       "id": "190",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -1584,13 +1977,16 @@
     {
       "id": "191",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -1598,13 +1994,16 @@
     {
       "id": "192",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -1612,13 +2011,16 @@
     {
       "id": "193",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -1626,13 +2028,16 @@
     {
       "id": "194",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 112
+            "offsetY": 112,
+            "rotation": 0
           }
         }
       ]
@@ -1640,13 +2045,16 @@
     {
       "id": "195",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -16,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -1654,13 +2062,16 @@
     {
       "id": "196",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -48,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -1668,13 +2079,16 @@
     {
       "id": "197",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -80,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -1682,13 +2096,16 @@
     {
       "id": "198",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -112,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -1696,13 +2113,16 @@
     {
       "id": "199",
       "name": "floor",
+      "fromPrefab": true,
+      "prefabName": "floor",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
             "offsetX": -144,
-            "offsetY": 144
+            "offsetY": 144,
+            "rotation": 0
           }
         }
       ]
@@ -1710,16 +2130,36 @@
   ],
   "processors": [
     {
-      "name": "inputProcessor",
+      "name": "keyboardInputProcessor",
       "section": "eventProcessSection",
       "components": [],
       "options": {}
     },
     {
-      "name": "controlProcessor",
+      "name": "mouseInputProcessor",
+      "section": "eventProcessSection",
+      "components": [],
+      "options": {}
+    },
+    {
+      "name": "mouseInputCoordinatesProjector",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {}
+    },
+    {
+      "name": "keyboardControlProcessor",
       "section": "gameStateUpdateSection",
       "components": [
-        "control"
+        "keyboardControl"
+      ],
+      "options": {}
+    },
+    {
+      "name": "mouseControlProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "mouseControl"
       ],
       "options": {}
     },
@@ -1744,7 +2184,16 @@
     {
       "name": "collisionBroadcastProcessor",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "components": [
+        "colliderContainer"
+      ],
+      "options": {}
+    },
+    {
+      "name": "shootingProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+      ],
       "options": {}
     },
     {
@@ -1755,7 +2204,7 @@
         "transform"
       ],
       "options": {
-        "gravitationalAcceleration": 9.80666
+        "gravitationalAcceleration": 450
       }
     },
     {
@@ -1766,6 +2215,61 @@
         "colliderContainer",
         "renderable"
       ],
+      "options": {}
+    },
+    {
+      "name": "effectsProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+      ],
+      "options": {}
+    },
+    {
+      "name": "damageProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {}
+    },
+    {
+      "name": "reaper",
+      "section": "gameStateUpdateSection",
+      "components": [],
+      "options": {
+        "allowedComponents": [
+          "transform",
+          "animatable",
+          "renderable",
+          "camera"
+        ],
+        "lifetime": 5000
+      }
+    },
+    {
+      "name": "cameraProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "camera",
+        "transform"
+      ],
+      "options": {
+        "windowNodeId": "root",
+        "initialCamera": "1.2"
+      }
+    },
+    {
+      "name": "gameOverProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [
+        "movement"
+      ],
+      "options": {
+        "restartScene": "intro"
+      }
+    },
+    {
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
+      "components": [],
       "options": {}
     },
     {

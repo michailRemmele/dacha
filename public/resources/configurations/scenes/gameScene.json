@@ -1,10 +1,10 @@
 {
-  "name": "game-scene",
+  "name": "game",
   "gameObjects": [
   ],
   "processors": [
     {
-      "name": "inputProcessor",
+      "name": "keyboardInputProcessor",
       "section": "eventProcessSection",
       "components": [],
       "options": {

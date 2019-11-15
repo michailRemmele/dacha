@@ -9,6 +9,7 @@ class AnimatableState {
       return new AnimatableFrame(frame);
     });
     this._looped = config.looped;
+    this._fallbackState = config.fallbackState;
     this._transitions = config.transitions.map((transition) => {
       return new AnimatableTransition(transition);
     });
@@ -47,6 +48,14 @@ class AnimatableState {
     return this._looped;
   }
 
+  set fallbackState(fallbackState) {
+    this._fallbackState = fallbackState;
+  }
+
+  get fallbackState() {
+    return this._fallbackState;
+  }
+
   set transitions(transitions) {
     this._transitions = transitions;
   }
@@ -71,6 +80,7 @@ class AnimatableState {
         return frame.clone();
       }),
       looped: this.looped,
+      fallbackState: this.fallbackState,
       transitions: this.transitions.map((transition) => {
         return transition.clone();
       }),

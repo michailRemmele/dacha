@@ -1,53 +1,45 @@
 import uuid from 'uuid-random';
 
+import IOC from 'engine/ioc/ioc';
 import GameObject from 'engine/gameObject/gameObject';
-import Prefab from 'engine/prefab/prefab';
+
+import { PREFAB_COLLECTION_KEY_NAME } from 'engine/consts/global';
 
 class GameObjectCreator {
   constructor(components) {
     this._components = components;
-    this._storage = {};
+    this._prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME);
   }
 
-  _buildPrefab(options) {
-    const prefab = new Prefab();
-
-    prefab.setName(options.name);
-
-    options.children.forEach((child) => {
-      const childPrefab = this._buildPrefab(child);
-      childPrefab.setParent(prefab);
-      prefab.appendChild(childPrefab);
-    });
-
-    options.components.forEach((componentOptions) => {
-      const Component = this._components[componentOptions.name];
-      prefab.setComponent(componentOptions.name, new Component(componentOptions.config));
-    });
-
-    return prefab;
-  }
-
-  _buildGameObject(options, prefab) {
-    let { id } = options;
-    const { components, children } = options;
+  _buildFromPrefab(options, prefab) {
+    const {
+      prefabName,
+      components = [],
+      children = [],
+    } = options;
+    let { id, name } = options;
 
     id = id ? id : uuid();
+    name = name ? name : id;
+
+    if (!prefab) {
+      throw new Error(`Can't create game object ${name} from prefab. `
+        + `The prefab ${prefabName} is null.`);
+    }
 
     const gameObject = new GameObject(id);
 
-    const childrenMap = children.reduce((storage, child) => {
-      storage[child.name] = child;
+    const prefabChildrenMap = prefab.getChildren().reduce((storage, prefabChild) => {
+      storage[prefabChild.getName()] = prefabChild;
 
       return storage;
     }, {});
 
-    prefab.getChildren().forEach((child) => {
-      if (!childrenMap[child.getName()]) {
-        return;
-      }
+    children.forEach((child) => {
+      const { prefabName, fromPrefab } = child;
 
-      const gameObjectChild = this._buildGameObject(childrenMap[child.getName()], child);
+      const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
+      const gameObjectChild = this._build(child, prefabChild);
       gameObjectChild.setParent(gameObject);
       gameObject.appendChild(gameObjectChild);
     });
@@ -56,14 +48,49 @@ class GameObjectCreator {
       gameObject.setComponent(componentName, prefab.getComponent(componentName));
     });
 
-    if (components) {
-      components.forEach((componentOptions) => {
-        const Component = this._components[componentOptions.name];
-        gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
-      });
-    }
+    components.forEach((componentOptions) => {
+      const Component = this._components[componentOptions.name];
+      gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
+    });
 
     return gameObject;
+  }
+
+  _buildFromScratch(options) {
+    const {
+      components = [],
+      children = [],
+    } = options;
+    let { id } = options;
+
+    id = id ? id : uuid();
+
+    const gameObject = new GameObject(id);
+
+    children.forEach((child) => {
+      const gameObjectChild = this._build(child);
+      gameObjectChild.setParent(gameObject);
+      gameObject.appendChild(gameObjectChild);
+    });
+
+    components.forEach((componentOptions) => {
+      const Component = this._components[componentOptions.name];
+      gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
+    });
+
+    return gameObject;
+  }
+
+  _build(options, prefab) {
+    const { prefabName, fromPrefab } = options;
+
+    if (fromPrefab) {
+      prefab = prefab || this._prefabCollection.get(prefabName);
+
+      return this._buildFromPrefab(options, prefab);
+    }
+
+    return this._buildFromScratch(options);
   }
 
   _expandGameObject(gameObject, gameObjects) {
@@ -78,20 +105,8 @@ class GameObjectCreator {
     return gameObjects;
   }
 
-  register(options) {
-    this._storage[options.name] = this._buildPrefab(options);
-  }
-
   create(options) {
-    const { name } = options;
-
-    if (!this._storage[name]) {
-      throw new Error(`Can't create game object with same name: ${name}`);
-    }
-
-    const gameObject = this._buildGameObject(options, this._storage[name].clone());
-
-    return this._expandGameObject(gameObject);
+    return this._expandGameObject(this._build(options));
   }
 }
 
