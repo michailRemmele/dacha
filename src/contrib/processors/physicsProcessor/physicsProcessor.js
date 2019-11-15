@@ -13,6 +13,8 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 const GRAVITY_FORCE = 'gravityForce';
 const REACTION_FORCE = 'reactionForce';
 
+const FRICTION_FORCE_COEFFICIENT = 0.5;
+
 const DIRECTION_VECTOR = {
   UP: new Vector2(0, -1),
   LEFT: new Vector2(-1, 0),
@@ -102,6 +104,34 @@ class PhysicsProcessor extends Processor {
         ? forceVectors[GRAVITY_FORCE].clone()
         : new Vector2(0, 0);
       forceVectors[REACTION_FORCE].multiplyNumber(-1);
+    }
+  }
+
+  _addFrictionForce(gameObject, deltaTime) {
+    const { forceVectors, mass } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const gameObjectId = gameObject.getId();
+    const velocity = this._gameObjectsVelocity[gameObjectId];
+
+    if (!forceVectors[REACTION_FORCE] || !velocity || (!velocity.x && !velocity.y)) {
+      return;
+    }
+
+    const velocitySignX = Math.sign(velocity.x);
+    const velocitySignY = Math.sign(velocity.y);
+
+    const reactionForceValue = forceVectors[REACTION_FORCE].magnitude;
+    const frictionForceValue = -1 * FRICTION_FORCE_COEFFICIENT * reactionForceValue;
+    const forceToVelocityMultiplier = deltaTime / mass;
+    const slowdownValue = frictionForceValue * forceToVelocityMultiplier;
+    const normalizationMultiplier = 1 / velocity.magnitude;
+
+    const slowdown = velocity.clone();
+    slowdown.multiplyNumber(slowdownValue * normalizationMultiplier);
+
+    velocity.add(slowdown);
+
+    if (Math.sign(velocity.x) !== velocitySignX && Math.sign(velocity.y) !== velocitySignY) {
+      velocity.multiplyNumber(0);
     }
   }
 
@@ -208,6 +238,8 @@ class PhysicsProcessor extends Processor {
         velocityIncrease.multiplyNumber(deltaTimeInSeconds / mass);
         velocityVector.add(velocityIncrease);
       }
+
+      this._addFrictionForce(gameObject, deltaTimeInSeconds);
 
       transform.offsetX = transform.offsetX + (velocityVector.x * deltaTimeInSeconds);
       transform.offsetY = transform.offsetY + (velocityVector.y * deltaTimeInSeconds);
