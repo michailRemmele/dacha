@@ -1,3 +1,4 @@
+import AIProcessorPlugin from './aiProcessorPlugin/aiProcessorPlugin';
 import DamageProcessorPlugin from './damageProcessorPlugin/damageProcessorPlugin';
 import EffectsProcessorPlugin from './effectsProcessorPlugin/effectsProcessorPlugin';
 import FallProcessorPlugin from './fallProcessorPlugin/fallProcessorPlugin';
@@ -6,6 +7,7 @@ import ShootingProcessorPlugin from './shootingProcessorPlugin/shootingProcessor
 import ReaperPlugin from './reaperPlugin/reaperPlugin';
 
 export default {
+  aiProcessor: AIProcessorPlugin,
   damageProcessor: DamageProcessorPlugin,
   effectsProcessor: EffectsProcessorPlugin,
   fallProcessor: FallProcessorPlugin,
