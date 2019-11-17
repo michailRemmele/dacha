@@ -2132,77 +2132,88 @@
     {
       "name": "keyboardInputProcessor",
       "section": "eventProcessSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "mouseInputProcessor",
       "section": "eventProcessSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "mouseInputCoordinatesProjector",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "keyboardControlProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "keyboardControl"
-      ],
+      "filter": {
+        "components": [
+          "keyboardControl"
+        ]
+      },
       "options": {}
     },
     {
       "name": "mouseControlProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "mouseControl"
-      ],
+      "filter": {
+        "components": [
+          "mouseControl"
+        ]
+      },
       "options": {}
     },
     {
       "name": "movementProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "movement",
-        "transform"
-      ],
+      "filter": {
+        "components": [
+          "movement",
+          "transform"
+        ]
+      },
       "options": {}
     },
     {
       "name": "collisionDetectionProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "colliderContainer",
-        "transform"
-      ],
+      "filter": {
+        "components": [
+          "colliderContainer",
+          "transform"
+        ]
+      },
       "options": {}
     },
     {
       "name": "collisionBroadcastProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "colliderContainer"
-      ],
+      "filter": {
+        "components": [
+          "colliderContainer"
+        ]
+      },
       "options": {}
     },
     {
       "name": "shootingProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-      ],
+      "filter": {},
       "options": {}
     },
     {
       "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "rigidBody",
-        "transform"
-      ],
+      "filter": {
+        "components": [
+          "rigidBody",
+          "transform"
+        ]
+      },
       "options": {
         "gravitationalAcceleration": 450
       }
@@ -2210,30 +2221,31 @@
     {
       "name": "fallProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "rigidBody",
-        "colliderContainer",
-        "renderable"
-      ],
+      "filter": {
+        "components": [
+          "rigidBody",
+          "colliderContainer",
+          "renderable"
+        ]
+      },
       "options": {}
     },
     {
       "name": "effectsProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-      ],
+      "filter": {},
       "options": {}
     },
     {
       "name": "damageProcessor",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "reaper",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
       "options": {
         "allowedComponents": [
           "transform",
@@ -2247,10 +2259,12 @@
     {
       "name": "cameraProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "camera",
-        "transform"
-      ],
+      "filter": {
+        "components": [
+          "camera",
+          "transform"
+        ]
+      },
       "options": {
         "windowNodeId": "root",
         "initialCamera": "1.2"
@@ -2259,9 +2273,9 @@
     {
       "name": "gameOverProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "movement"
-      ],
+      "filter": {
+        "type": "unit"
+      },
       "options": {
         "restartScene": "intro"
       }
@@ -2269,25 +2283,29 @@
     {
       "name": "sceneLoadProcessor",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "animateProcessor",
       "section": "renderingSection",
-      "components": [
-        "animatable",
-        "renderable"
-      ],
+      "filter": {
+        "components": [
+          "animatable",
+          "renderable"
+        ]
+      },
       "options": {}
     },
     {
       "name": "renderProcessor",
       "section": "renderingSection",
-      "components": [
-        "renderable",
-        "transform"
-      ],
+      "filter": {
+        "components": [
+          "renderable",
+          "transform"
+        ]
+      },
       "options": {
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",

@@ -1,6 +1,12 @@
 class GameObjectObserver {
-  constructor(scene, components) {
+  constructor(scene, filter) {
+    const {
+      type,
+      components = [],
+    } = filter;
+
     this._components = components;
+    this._type = type;
     this._observedGameObjects = scene.getGameObjects();
     this._acceptedGameObjects = this._observedGameObjects.filter((gameObject) => {
       gameObject.subscribe(this._subscribeGameObject.bind(this));
@@ -64,6 +70,12 @@ class GameObjectObserver {
   }
 
   _test(gameObject) {
+    const type = gameObject.getType();
+
+    if (this._type && this._type !== type) {
+      return false;
+    }
+
     return this._components.every((component) => {
       return gameObject.getComponent(component);
     });
