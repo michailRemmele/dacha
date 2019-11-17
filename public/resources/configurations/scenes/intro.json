@@ -2247,6 +2247,14 @@
       }
     },
     {
+      "name": "platformSizeMeter",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "type": "terrain"
+      },
+      "options": {}
+    },
+    {
       "name": "gameOverProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
