@@ -1,5 +1,6 @@
 {
   "name": "floor",
+  "type": "terrain",
   "children": [],
   "components": [
     {

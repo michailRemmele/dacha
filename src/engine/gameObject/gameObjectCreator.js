@@ -13,6 +13,7 @@ class GameObjectCreator {
 
   _buildFromPrefab(options, prefab) {
     const {
+      type,
       prefabName,
       components = [],
       children = [],
@@ -28,6 +29,8 @@ class GameObjectCreator {
     }
 
     const gameObject = new GameObject(id);
+
+    gameObject.setType(type || prefab.getType());
 
     const prefabChildrenMap = prefab.getChildren().reduce((storage, prefabChild) => {
       storage[prefabChild.getName()] = prefabChild;
@@ -58,6 +61,7 @@ class GameObjectCreator {
 
   _buildFromScratch(options) {
     const {
+      type,
       components = [],
       children = [],
     } = options;
@@ -66,6 +70,8 @@ class GameObjectCreator {
     id = id ? id : uuid();
 
     const gameObject = new GameObject(id);
+
+    gameObject.setType(type);
 
     children.forEach((child) => {
       const gameObjectChild = this._build(child);

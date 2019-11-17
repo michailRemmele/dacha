@@ -4,6 +4,7 @@ class Prefab {
     this._components = {};
     this._parent = null;
     this._children = [];
+    this._type = null;
   }
 
   setName(name) {
@@ -46,10 +47,19 @@ class Prefab {
     return Object.keys(this._components);
   }
 
+  setType(type) {
+    this._type = type;
+  }
+
+  getType() {
+    return this._type;
+  }
+
   clone() {
     const prefab = new Prefab();
 
     prefab.setName(this._name);
+    prefab.setType(this._type);
 
     this._children.forEach((child) => {
       const childPrefab = child.clone();

@@ -1,5 +1,6 @@
 {
   "name": "rooster",
+  "type": "unit",
   "children": [
     {
       "name": "roosterHitBox",
