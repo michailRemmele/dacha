@@ -37,10 +37,12 @@ class SceneProvider {
     });
 
     await Promise.all(sceneConfig.processors.map((processorInfo) => {
-      const gameObjectObserver = new GameObjectObserver(scene, processorInfo.components);
+      const { name, filter, options, section } = processorInfo;
 
-      return this._processorsPlugins[processorInfo.name].load({
-        ...processorInfo.options,
+      const gameObjectObserver = new GameObjectObserver(scene, filter);
+
+      return this._processorsPlugins[name].load({
+        ...options,
         store: scene.getStore(),
         gameObjectSpawner: scene.getGameObjectSpawner(),
         gameObjectDestroyer: scene.getGameObjectDestroyer(),
@@ -48,7 +50,7 @@ class SceneProvider {
         sceneController: this._sceneController,
       })
         .then((processor) => {
-          scene.addProcessor(processor, processorInfo.section);
+          scene.addProcessor(processor, section);
         });
     }));
 

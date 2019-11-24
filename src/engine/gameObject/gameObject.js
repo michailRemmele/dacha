@@ -7,6 +7,7 @@ class GameObject {
     this._components = {};
     this._parent = null;
     this._children = [];
+    this._type = null;
 
     this._subscribers = [];
 
@@ -94,6 +95,14 @@ class GameObject {
         gameObject: this,
       });
     });
+  }
+
+  getType() {
+    return this._type;
+  }
+
+  setType(type) {
+    this._type = type;
   }
 
   subscribe(callback) {
