@@ -29,6 +29,23 @@ class MessageBus {
     return this._messages[messageType] ? this._messages[messageType].map[id] : undefined;
   }
 
+  delete(messageType) {
+    this._messages[messageType] = undefined;
+  }
+
+  deleteById(messageType, id) {
+    const messagesToDelete = this.getById(messageType, id);
+
+    if (!messagesToDelete) {
+      return;
+    }
+
+    this._messages[messageType].array = this._messages[messageType].array.filter((message) => {
+      return !messagesToDelete.includes(message);
+    });
+    this._messages[messageType].map[id] = undefined;
+  }
+
   stash() {
     this._stashedMessages.push(this._messages);
     this._messages = {};

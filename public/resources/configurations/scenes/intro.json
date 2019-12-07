@@ -2202,7 +2202,11 @@
     {
       "name": "shootingProcessor",
       "section": "gameStateUpdateSection",
-      "filter": {},
+      "filter": {
+        "components": [
+          "weapon"
+        ]
+      },
       "options": {}
     },
     {
