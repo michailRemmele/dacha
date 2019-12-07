@@ -49,6 +49,7 @@ class KeyboardControlProcessor extends Processor {
             type: eventBinding.messageType,
             ...eventBinding.attrs,
             gameObject: gameObject,
+            id: gameObject.getId(),
           });
         }
         if (inputEventType === RELEASE_EVENT_TYPE) {

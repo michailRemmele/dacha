@@ -30,6 +30,7 @@ class MouseControlProcessor extends Processor {
               type: eventBinding.messageType,
               ...eventBinding.attrs,
               gameObject: gameObject,
+              id: gameObject.getId(),
               x: inputEvent.x,
               y: inputEvent.y,
               screenX: inputEvent.screenX,
