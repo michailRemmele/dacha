@@ -116,6 +116,7 @@ class ShootingProcessor extends Processor {
     const weapon = shooter.getComponent(WEAPON_COMPONENT_NAME);
 
     if (weapon.cooldownRemaining > 0) {
+      messageBus.deleteById(SHOT_MSG, shooter.getId());
       return;
     }
 
