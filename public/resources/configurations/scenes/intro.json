@@ -2255,6 +2255,17 @@
       "options": {}
     },
     {
+      "name": "enemiesDetector",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "type": "unit",
+        "components": [
+          "weapon"
+        ]
+      },
+      "options": {}
+    },
+    {
       "name": "gameOverProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
