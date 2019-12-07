@@ -2170,7 +2170,11 @@
     {
       "name": "aiProcessor",
       "section": "gameStateUpdateSection",
-      "filter": {},
+      "filter": {
+        "components": [
+          "ai"
+        ]
+      },
       "options": {}
     },
     {

@@ -43,6 +43,12 @@
       }
     },
     {
+      "name": "ai",
+      "config": {
+        "strategy": "easy"
+      }
+    },
+    {
       "name": "health",
       "config": {
         "points": 100
