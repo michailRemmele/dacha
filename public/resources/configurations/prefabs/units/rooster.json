@@ -54,7 +54,7 @@
         "bullet": "blasterBullet",
         "speed": 400,
         "range": 256,
-        "cooldown": 500
+        "cooldown": 2000
       }
     },
     {
