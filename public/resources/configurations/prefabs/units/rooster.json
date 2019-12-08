@@ -53,6 +53,7 @@
       "config": {
         "bullet": "blasterBullet",
         "speed": 400,
+        "range": 256,
         "cooldown": 500
       }
     },

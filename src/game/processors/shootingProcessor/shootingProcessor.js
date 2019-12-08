@@ -137,6 +137,8 @@ class ShootingProcessor extends Processor {
     const forceValue = weapon.speed * bulletRigidBody.mass / ACCELERATION_DURATION_IN_SEC;
     directionVector.multiplyNumber(forceValue);
 
+    const flightTime = (1000 * weapon.range / weapon.speed) + (ACCELERATION_DURATION / 2);
+
     messageBus.send({
       type: ADD_FORCE_MSG,
       name: SHOT_POWER,
@@ -151,6 +153,9 @@ class ShootingProcessor extends Processor {
       id: bullet.getId(),
       gameObject: bullet,
       ...LIFETIME_EFFECT,
+      applicatorOptions: {
+        timer: flightTime,
+      },
       effectOptions: {
         value: bulletHealth.points,
       },
