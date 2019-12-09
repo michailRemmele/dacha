@@ -6,6 +6,7 @@ class Weapon extends Component {
 
     this._bullet = config.bullet;
     this._speed = config.speed;
+    this._range = config.range;
     this._cooldown = config.cooldown;
     this._cooldownRemaining = 0;
   }
@@ -24,6 +25,14 @@ class Weapon extends Component {
 
   get speed() {
     return this._speed;
+  }
+
+  set range(range) {
+    this._range = range;
+  }
+
+  get range() {
+    return this._range;
   }
 
   set cooldown(cooldown) {
@@ -46,6 +55,7 @@ class Weapon extends Component {
     return new Weapon({
       bullet: this.bullet,
       speed: this.speed,
+      range: this.range,
       cooldown: this.cooldown,
     });
   }
