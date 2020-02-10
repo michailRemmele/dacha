@@ -2179,27 +2179,6 @@
       "options": {}
     },
     {
-      "name": "collisionDetectionProcessor",
-      "section": "gameStateUpdateSection",
-      "filter": {
-        "components": [
-          "colliderContainer",
-          "transform"
-        ]
-      },
-      "options": {}
-    },
-    {
-      "name": "collisionBroadcastProcessor",
-      "section": "gameStateUpdateSection",
-      "filter": {
-        "components": [
-          "colliderContainer"
-        ]
-      },
-      "options": {}
-    },
-    {
       "name": "shootingProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
@@ -2208,19 +2187,6 @@
         ]
       },
       "options": {}
-    },
-    {
-      "name": "physicsProcessor",
-      "section": "gameStateUpdateSection",
-      "filter": {
-        "components": [
-          "rigidBody",
-          "transform"
-        ]
-      },
-      "options": {
-        "gravitationalAcceleration": 450
-      }
     },
     {
       "name": "fallProcessor",
@@ -2288,6 +2254,61 @@
       "name": "sceneLoadProcessor",
       "section": "gameStateUpdateSection",
       "filter": {},
+      "options": {}
+    },
+    {
+      "name": "physicsProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody",
+          "transform"
+        ]
+      },
+      "options": {
+        "gravitationalAcceleration": 450
+      }
+    },
+    {
+      "name": "collisionDetectionProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "colliderContainer",
+          "transform"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "collisionBroadcastProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "colliderContainer"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "collisionSolver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "constraintSolver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody",
+          "transform"
+        ]
+      },
       "options": {}
     },
     {
