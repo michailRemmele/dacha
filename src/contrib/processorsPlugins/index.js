@@ -4,6 +4,7 @@ import CollisionBroadcastProcessorPlugin
   from './collisionBroadcastProcessorPlugin/collisionBroadcastProcessorPlugin';
 import CollisionDetectionProcessorPlugin
   from './collisionDetectionProcessorPlugin/collisionDetectionProcessorPlugin';
+import JammerPlugin from './jammerPlugin/jammerPlugin';
 import KeyboardInputProcessorPlugin
   from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
 import KeyboardControlProcessorPlugin
@@ -22,6 +23,7 @@ export default {
   cameraProcessor: CameraProcessorPlugin,
   collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,
   collisionDetectionProcessor: CollisionDetectionProcessorPlugin,
+  jammer: JammerPlugin,
   keyboardInputProcessor: KeyboardInputProcessorPlugin,
   keyboardControlProcessor: KeyboardControlProcessorPlugin,
   mouseControlProcessor: MouseControlProcessorPlugin,
