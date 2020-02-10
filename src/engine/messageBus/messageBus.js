@@ -65,6 +65,10 @@ class MessageBus {
     this._stashedMessages.push(this._messages);
     this._messages = this._stashedMessages.reduce((storage, messages) => {
       Object.keys(messages).forEach((key) => {
+        if (!messages[key]) {
+          return;
+        }
+
         storage[key] = storage[key] || { array: [], map: {}};
         storage[key].array = storage[key].array.concat(messages[key].array);
         storage[key].map = Object.keys(messages[key].map).reduce((map, messageId) => {
