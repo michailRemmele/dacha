@@ -31,9 +31,10 @@ class ConstraintSolver extends Processor {
   }
 
   _resolveCollision(gameObject1, gameObject2) {
+    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
-    if (rigidBody2.isPermeable) {
+    if (rigidBody1.isPermeable || rigidBody2.isPermeable) {
       return;
     }
 
