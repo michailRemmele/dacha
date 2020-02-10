@@ -2270,6 +2270,18 @@
       }
     },
     {
+      "name": "jammer",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {
+        "messages": [
+          "COLLISION_ENTER",
+          "COLLISION_STAY",
+          "COLLISION_LEAVE"
+        ]
+      }
+    },
+    {
       "name": "collisionDetectionProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
