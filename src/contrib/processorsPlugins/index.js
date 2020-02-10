@@ -4,6 +4,8 @@ import CollisionBroadcastProcessorPlugin
   from './collisionBroadcastProcessorPlugin/collisionBroadcastProcessorPlugin';
 import CollisionDetectionProcessorPlugin
   from './collisionDetectionProcessorPlugin/collisionDetectionProcessorPlugin';
+import CollisionSolverPlugin from './collisionSolverPlugin/collisionSolverPlugin';
+import ConstraintSolverPlugin from './constraintSolverPlugin/constraintSolverPlugin';
 import JammerPlugin from './jammerPlugin/jammerPlugin';
 import KeyboardInputProcessorPlugin
   from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
@@ -23,6 +25,8 @@ export default {
   cameraProcessor: CameraProcessorPlugin,
   collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,
   collisionDetectionProcessor: CollisionDetectionProcessorPlugin,
+  collisionSolver: CollisionSolverPlugin,
+  constraintSolver: ConstraintSolverPlugin,
   jammer: JammerPlugin,
   keyboardInputProcessor: KeyboardInputProcessorPlugin,
   keyboardControlProcessor: KeyboardControlProcessorPlugin,

@@ -6,6 +6,7 @@ const ADD_EFFECT_MSG = 'ADD_EFFECT';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 
+const GRAVITY_FORCE = 'gravityForce';
 const REACTION_FORCE = 'reactionForce';
 
 const SPACE_SORTING_LAYER = 'space';
@@ -71,7 +72,7 @@ class FallProcessor extends Processor {
       const { forceVectors } = rigidBody;
 
       if (
-        rigidBody.useGravity
+        forceVectors[GRAVITY_FORCE]
         && !forceVectors[REACTION_FORCE]
         && !this._fallingGameObjectsMap[gameObjectId]
       ) {

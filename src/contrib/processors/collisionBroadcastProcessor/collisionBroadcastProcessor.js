@@ -3,6 +3,7 @@ import Processor from 'engine/processor/processor';
 import Collision from './collision';
 
 const COLLISION_MESSAGE = 'COLLISION';
+const DELAY = 1;
 
 class CollisionBroadcastProcessor extends Processor {
   constructor(options) {
@@ -47,13 +48,15 @@ class CollisionBroadcastProcessor extends Processor {
 
     this._activeCollisions = this._activeCollisions.filter((collision) => {
       const { gameObject, otherGameObject } = collision;
-
-      messageBus.send({
+      const message = {
         type: `${COLLISION_MESSAGE}_${collision.getState()}`,
         id: gameObject.getId(),
         gameObject: gameObject,
         otherGameObject: otherGameObject,
-      });
+      };
+
+      messageBus.send(message);
+      messageBus.send(message, DELAY);
 
       collision.tick();
 
