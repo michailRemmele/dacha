@@ -11,8 +11,9 @@ class MessageBus {
     }
 
     if (delay) {
-      this._delayedMessages[delay] = this._delayedMessages[delay] || [];
-      this._delayedMessages[delay].push(message);
+      const index = delay - 1;
+      this._delayedMessages[index] = this._delayedMessages[index] || [];
+      this._delayedMessages[index].push(message);
     }
 
     const { type, id } = message;
