@@ -10,6 +10,7 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 const WEAPON_COMPONENT_NAME = 'weapon';
 
 const COOLDOWN = 1000;
+const WAYPOINT_ERROR = 1;
 
 class EasyAIStrategy extends AIStrategy{
   constructor(player, store) {
@@ -67,13 +68,19 @@ class EasyAIStrategy extends AIStrategy{
       return;
     }
 
-    const playerPosition = this._player.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { offsetX, offsetY } = this._player.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { x, y } = this._waypoint;
+
+    if (Math.abs(x - offsetX) < WAYPOINT_ERROR && Math.abs(y - offsetY) < WAYPOINT_ERROR) {
+      this._waypoint = null;
+      return;
+    }
 
     const movementAngle = this._radToDeg(this._getAngleBetweenTwoPoints(
       this._waypoint.x,
-      playerPosition.offsetX,
+      offsetX,
       this._waypoint.y,
-      playerPosition.offsetY
+      offsetY
     ));
 
     messageBus.send({
