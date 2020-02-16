@@ -9,6 +9,8 @@ const PLAYERS_ENEMIES_NAME = 'playersEnemies';
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const WEAPON_COMPONENT_NAME = 'weapon';
 
+const COOLDOWN = 1000;
+
 class EasyAIStrategy extends AIStrategy{
   constructor(player, store) {
     super();
@@ -17,6 +19,12 @@ class EasyAIStrategy extends AIStrategy{
     this._store = store;
 
     this._playerId = this._player.getId();
+    this._cooldown = this._random(0, COOLDOWN);
+    this._waypoint = null;
+  }
+
+  _random(min, max) {
+    return Math.floor(min + (Math.random() * (max + 1 - min)));
   }
 
   _attack(messageBus) {
@@ -27,7 +35,7 @@ class EasyAIStrategy extends AIStrategy{
       return;
     }
 
-    const enemy = playerEnemies[Math.floor(Math.random() * playerEnemies.length)];
+    const enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
     const { offsetX: enemyX, offsetY: enemyY } = enemy.getComponent(TRANSFORM_COMPONENT_NAME);
 
     messageBus.send({
@@ -48,22 +56,23 @@ class EasyAIStrategy extends AIStrategy{
     return angleInDegrees < 0 ? angleInDegrees + 360 : angleInDegrees;
   }
 
-  _move(messageBus) {
-    const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
-    const mainEnemy = playerEnemies.find((enemy) => {
-      return enemy.getId() === '1';
-    });
+  _updateWaypoint() {
+    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
 
-    if (!mainEnemy) {
+    this._waypoint = { x: this._random(minX, maxX), y: this._random(minY, maxY) };
+  }
+
+  _move(messageBus) {
+    if (!this._waypoint) {
       return;
     }
 
-    const mainEnemyPosition = mainEnemy.getComponent(TRANSFORM_COMPONENT_NAME);
     const playerPosition = this._player.getComponent(TRANSFORM_COMPONENT_NAME);
+
     const movementAngle = this._radToDeg(this._getAngleBetweenTwoPoints(
-      mainEnemyPosition.offsetX,
+      this._waypoint.x,
       playerPosition.offsetX,
-      mainEnemyPosition.offsetY,
+      this._waypoint.y,
       playerPosition.offsetY
     ));
 
@@ -76,10 +85,18 @@ class EasyAIStrategy extends AIStrategy{
   }
 
   update(messageBus, deltaTime) {
-    const platformSize = this._store.get(PLATFORM_SIZE_NAME);
+    this._cooldown -= deltaTime;
+
+    if (this._cooldown > 0) {
+      this._move(messageBus);
+      return;
+    }
 
     this._attack(messageBus);
+    this._updateWaypoint();
     this._move(messageBus);
+
+    this._cooldown += COOLDOWN;
   }
 }
 
