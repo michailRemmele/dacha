@@ -22,6 +22,7 @@ class EasyAIStrategy extends AIStrategy{
     this._playerId = this._player.getId();
     this._cooldown = this._random(0, COOLDOWN);
     this._waypoint = null;
+    this._enemy = null;
   }
 
   _random(min, max) {
@@ -29,15 +30,13 @@ class EasyAIStrategy extends AIStrategy{
   }
 
   _attack(messageBus) {
-    const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
     const weapon = this._player.getComponent(WEAPON_COMPONENT_NAME);
 
-    if (!playerEnemies.length || weapon.cooldownRemaining > 0) {
+    if (weapon.cooldownRemaining > 0 || !this._enemy) {
       return;
     }
 
-    const enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
-    const { offsetX: enemyX, offsetY: enemyY } = enemy.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { offsetX: enemyX, offsetY: enemyY } = this._enemy.getComponent(TRANSFORM_COMPONENT_NAME);
 
     messageBus.send({
       gameObject: this._player,
@@ -46,6 +45,17 @@ class EasyAIStrategy extends AIStrategy{
       x: enemyX,
       y: enemyY,
     });
+  }
+
+  _updateEnemy() {
+    const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
+
+    if (!playerEnemies.length) {
+      this._enemy = null;
+      return;
+    }
+
+    this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
   }
 
   _getAngleBetweenTwoPoints(x1, x2, y1, y2) {
@@ -94,16 +104,15 @@ class EasyAIStrategy extends AIStrategy{
   update(messageBus, deltaTime) {
     this._cooldown -= deltaTime;
 
-    if (this._cooldown > 0) {
-      this._move(messageBus);
-      return;
+    if (this._cooldown <= 0) {
+      this._updateEnemy();
+      this._updateWaypoint();
+
+      this._cooldown += COOLDOWN;
     }
 
     this._attack(messageBus);
-    this._updateWaypoint();
     this._move(messageBus);
-
-    this._cooldown += COOLDOWN;
   }
 }
 
