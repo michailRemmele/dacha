@@ -21,12 +21,57 @@ class EasyAIStrategy extends AIStrategy{
 
     this._playerId = this._player.getId();
     this._cooldown = this._random(0, COOLDOWN);
+    this._distances = [];
     this._waypoint = null;
     this._enemy = null;
   }
 
   _random(min, max) {
     return Math.floor(min + (Math.random() * (max + 1 - min)));
+  }
+
+  _radToDeg(rad) {
+    const angleInDegrees = rad * 180 / Math.PI;
+    return angleInDegrees < 0 ? angleInDegrees + 360 : angleInDegrees;
+  }
+
+  _getAngleBetweenTwoPoints(x1, x2, y1, y2) {
+    return Math.atan2(y1 - y2, x1 - x2);
+  }
+
+  _getDistanceBetweenTwoPoints(x1, x2, y1, y2) {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  }
+
+  _updateDistances() {
+    const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
+
+    this._distances = playerEnemies.map((enemy) => {
+      const { offsetX, offsetY } = this._player.getComponent(TRANSFORM_COMPONENT_NAME);
+      const { offsetX: enemyX, offsetY: enemyY } = enemy.getComponent(TRANSFORM_COMPONENT_NAME);
+
+      return {
+        distance: this._getDistanceBetweenTwoPoints(enemyX, offsetX, enemyY, offsetY),
+        enemy,
+      };
+    });
+  }
+
+  _updateEnemy() {
+    const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
+
+    if (!playerEnemies.length) {
+      this._enemy = null;
+      return;
+    }
+
+    this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
+  }
+
+  _updateWaypoint() {
+    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
+
+    this._waypoint = { x: this._random(minX, maxX), y: this._random(minY, maxY) };
   }
 
   _attack(messageBus) {
@@ -45,32 +90,6 @@ class EasyAIStrategy extends AIStrategy{
       x: enemyX,
       y: enemyY,
     });
-  }
-
-  _updateEnemy() {
-    const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
-
-    if (!playerEnemies.length) {
-      this._enemy = null;
-      return;
-    }
-
-    this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
-  }
-
-  _getAngleBetweenTwoPoints(x1, x2, y1, y2) {
-    return Math.atan2(y1 - y2, x1 - x2);
-  }
-
-  _radToDeg(rad) {
-    const angleInDegrees = rad * 180 / Math.PI;
-    return angleInDegrees < 0 ? angleInDegrees + 360 : angleInDegrees;
-  }
-
-  _updateWaypoint() {
-    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
-
-    this._waypoint = { x: this._random(minX, maxX), y: this._random(minY, maxY) };
   }
 
   _move(messageBus) {
@@ -105,6 +124,7 @@ class EasyAIStrategy extends AIStrategy{
     this._cooldown -= deltaTime;
 
     if (this._cooldown <= 0) {
+      this._updateDistances();
       this._updateEnemy();
       this._updateWaypoint();
 
