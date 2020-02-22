@@ -11,6 +11,8 @@ const WEAPON_COMPONENT_NAME = 'weapon';
 
 const COOLDOWN = 1000;
 const WAYPOINT_ERROR = 1;
+const MELEE_RADIUS = 50;
+const RETREAT_DISTANCE = 100;
 
 class EasyAIStrategy extends AIStrategy{
   constructor(player, store) {
@@ -35,12 +37,25 @@ class EasyAIStrategy extends AIStrategy{
     return angleInDegrees < 0 ? angleInDegrees + 360 : angleInDegrees;
   }
 
+  _degToRad(deg) {
+    return deg * Math.PI / 180;
+  }
+
   _getAngleBetweenTwoPoints(x1, x2, y1, y2) {
     return Math.atan2(y1 - y2, x1 - x2);
   }
 
   _getDistanceBetweenTwoPoints(x1, x2, y1, y2) {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  }
+
+  _getLinePoint(angle, x, y, length) {
+    const angleInRad = this._degToRad(angle);
+
+    return {
+      x: x - (length * Math.cos(angleInRad)),
+      y: y - (length * Math.sin(angleInRad)),
+    };
   }
 
   _updateDistances() {
@@ -68,10 +83,79 @@ class EasyAIStrategy extends AIStrategy{
     this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
   }
 
+  _findWayToRetreat() {
+    let moveDirection;
+
+    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
+    const { offsetX, offsetY } = this._player.getComponent(TRANSFORM_COMPONENT_NAME);
+    const meleeEnemies = this._distances.filter((item) => item.distance <= MELEE_RADIUS);
+
+    if (!meleeEnemies.length) {
+      return;
+    }
+
+    const directedEnemies = meleeEnemies.map((item) => {
+      const { enemy, distance } = item;
+      const { offsetX: enemyX, offsetY: enemyY } = enemy.getComponent(TRANSFORM_COMPONENT_NAME);
+
+      return {
+        enemy,
+        distance,
+        direction: this._radToDeg(
+          this._getAngleBetweenTwoPoints(offsetX, enemyX, offsetY, enemyY)
+        ),
+      };
+    });
+
+    if (directedEnemies.length === 1) {
+      moveDirection = (directedEnemies[0].direction + 180) % 360;
+    } else {
+      directedEnemies.sort((a, b) => {
+        const { direction: aDirection } = a;
+        const { direction: bDirection } = b;
+
+        if (aDirection < bDirection) {
+          return -1;
+        }
+        if (aDirection > bDirection) {
+          return 1;
+        }
+        return 0;
+      });
+
+      let gates;
+      for (let i = 0; i < directedEnemies.length; i++) {
+        const left = directedEnemies[i].direction;
+        const right = (i + 1 !== directedEnemies.length)
+          ? directedEnemies[i + 1].direction
+          : directedEnemies[0].direction + 360;
+        const width = right - left;
+
+        if (!gates || (width > gates.width)) {
+          gates = {
+            left,
+            right,
+            width,
+          };
+        }
+      }
+      const { left, width } = gates;
+      moveDirection = (left + (width / 2)) % 360;
+    }
+
+    const waypoint = this._getLinePoint(moveDirection, offsetX, offsetY, RETREAT_DISTANCE);
+
+    if (waypoint.x > minX && waypoint.x < maxX && waypoint.y > minY && waypoint.y < maxY) {
+      return waypoint;
+    }
+  }
+
   _updateWaypoint() {
     const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
 
-    this._waypoint = { x: this._random(minX, maxX), y: this._random(minY, maxY) };
+    const waypoint = this._findWayToRetreat();
+
+    this._waypoint = waypoint || { x: this._random(minX, maxX), y: this._random(minY, maxY) };
   }
 
   _attack(messageBus) {
