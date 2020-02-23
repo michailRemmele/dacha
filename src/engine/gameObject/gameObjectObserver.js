@@ -132,6 +132,10 @@ class GameObjectObserver {
     return this._acceptedGameObjectsMap[id];
   }
 
+  getByIndex(index) {
+    return this._acceptedGameObjects[index];
+  }
+
   forEach(callback) {
     this._acceptedGameObjects.forEach(callback);
   }
