@@ -14,6 +14,7 @@ const COOLDOWN = 1000;
 const WAYPOINT_ERROR = 1;
 const MELEE_RADIUS = 50;
 const RETREAT_DISTANCE = 100;
+const CLOSE_TO_FALL_DISTANCE = 50;
 
 class EasyAIStrategy extends AIStrategy{
   constructor(player, store) {
@@ -91,6 +92,30 @@ class EasyAIStrategy extends AIStrategy{
     this._meleeEnemies = this._distances.filter((item) => item.distance <= MELEE_RADIUS);
   }
 
+  _findCloseToFallEnemies() {
+    const { minX, maxX, minY, maxY } = this._getMovementBoundaries();
+    const { range: weaponRange } = this._player.getComponent(WEAPON_COMPONENT_NAME);
+
+    return this._distances.reduce((list, item) => {
+      const { distance, enemy } = item;
+      const transform = enemy.getComponent(TRANSFORM_COMPONENT_NAME);
+      const { collider } = enemy.getComponent(COLLIDER_COMPONENT_NAME);
+      const enemyX = transform.offsetX - collider.centerX;
+      const enemyY = transform.offsetY - collider.centerY;
+
+      const isCloseToFall = enemyX - minX <= CLOSE_TO_FALL_DISTANCE ||
+      maxX - enemyX <= CLOSE_TO_FALL_DISTANCE ||
+      enemyY - minY <= CLOSE_TO_FALL_DISTANCE ||
+      maxY - enemyY <= CLOSE_TO_FALL_DISTANCE;
+
+      if (isCloseToFall && distance <= weaponRange) {
+        list.push(enemy);
+      }
+
+      return list;
+    }, []);
+  }
+
   _updateTargetEnemy() {
     const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
 
@@ -101,6 +126,12 @@ class EasyAIStrategy extends AIStrategy{
 
     if (this._meleeEnemies.length) {
       this._enemy = this._meleeEnemies[this._random(0, this._meleeEnemies.length - 1)].enemy;
+    }
+
+    const closeToFallEnemies = this._findCloseToFallEnemies();
+
+    if (closeToFallEnemies.length) {
+      this._enemy = closeToFallEnemies[this._random(0, closeToFallEnemies.length - 1)];
     } else {
       this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
     }
