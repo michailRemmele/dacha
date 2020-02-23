@@ -25,6 +25,7 @@ class EasyAIStrategy extends AIStrategy{
     this._playerId = this._player.getId();
     this._cooldown = this._random(0, COOLDOWN);
     this._distances = [];
+    this._meleeEnemies = [];
     this._waypoint = null;
     this._enemy = null;
   }
@@ -86,7 +87,11 @@ class EasyAIStrategy extends AIStrategy{
     });
   }
 
-  _updateEnemy() {
+  _updateMeleeEnemies() {
+    this._meleeEnemies = this._distances.filter((item) => item.distance <= MELEE_RADIUS);
+  }
+
+  _updateTargetEnemy() {
     const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
 
     if (!playerEnemies.length) {
@@ -94,7 +99,11 @@ class EasyAIStrategy extends AIStrategy{
       return;
     }
 
-    this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
+    if (this._meleeEnemies.length) {
+      this._enemy = this._meleeEnemies[this._random(0, this._meleeEnemies.length - 1)].enemy;
+    } else {
+      this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
+    }
   }
 
   _findWayToRetreat() {
@@ -102,13 +111,12 @@ class EasyAIStrategy extends AIStrategy{
 
     const { minX, maxX, minY, maxY } = this._getMovementBoundaries();
     const { offsetX, offsetY } = this._player.getComponent(TRANSFORM_COMPONENT_NAME);
-    const meleeEnemies = this._distances.filter((item) => item.distance <= MELEE_RADIUS);
 
-    if (!meleeEnemies.length) {
+    if (!this._meleeEnemies.length) {
       return;
     }
 
-    const directedEnemies = meleeEnemies.map((item) => {
+    const directedEnemies = this._meleeEnemies.map((item) => {
       const { enemy, distance } = item;
       const { offsetX: enemyX, offsetY: enemyY } = enemy.getComponent(TRANSFORM_COMPONENT_NAME);
 
@@ -223,7 +231,8 @@ class EasyAIStrategy extends AIStrategy{
 
     if (this._cooldown <= 0) {
       this._updateDistances();
-      this._updateEnemy();
+      this._updateMeleeEnemies();
+      this._updateTargetEnemy();
       this._updateWaypoint();
 
       this._cooldown += COOLDOWN;
