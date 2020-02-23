@@ -8,6 +8,7 @@ const PLAYERS_ENEMIES_NAME = 'playersEnemies';
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 const WEAPON_COMPONENT_NAME = 'weapon';
+const COLLIDER_COMPONENT_NAME = 'colliderContainer';
 
 const COOLDOWN = 1000;
 const WAYPOINT_ERROR = 1;
@@ -58,6 +59,19 @@ class EasyAIStrategy extends AIStrategy{
     };
   }
 
+  _getMovementBoundaries() {
+    const { collider } = this._player.getComponent(COLLIDER_COMPONENT_NAME);
+    const { centerX, centerY } = collider;
+    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
+
+    return {
+      minX: minX - centerX,
+      maxX: maxX - centerX,
+      minY: minY - centerY,
+      maxY: maxY - centerY,
+    };
+  }
+
   _updateDistances() {
     const playerEnemies = this._store.get(PLAYERS_ENEMIES_NAME)[this._playerId];
 
@@ -86,7 +100,7 @@ class EasyAIStrategy extends AIStrategy{
   _findWayToRetreat() {
     let moveDirection;
 
-    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
+    const { minX, maxX, minY, maxY } = this._getMovementBoundaries();
     const { offsetX, offsetY } = this._player.getComponent(TRANSFORM_COMPONENT_NAME);
     const meleeEnemies = this._distances.filter((item) => item.distance <= MELEE_RADIUS);
 
@@ -151,7 +165,7 @@ class EasyAIStrategy extends AIStrategy{
   }
 
   _updateWaypoint() {
-    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
+    const { minX, maxX, minY, maxY } = this._getMovementBoundaries();
 
     const waypoint = this._findWayToRetreat();
 

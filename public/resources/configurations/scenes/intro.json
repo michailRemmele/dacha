@@ -2036,7 +2036,9 @@
       "section": "gameStateUpdateSection",
       "filter": {
         "components": [
-          "ai"
+          "ai",
+          "weapon",
+          "colliderContainer"
         ]
       },
       "options": {}
