@@ -12,6 +12,12 @@
       }
     },
     {
+      "name": "health",
+      "config": {
+        "points": 5
+      }
+    },
+    {
       "name": "rigidBody",
       "config": {
         "mass": 1,
@@ -33,12 +39,55 @@
       }
     },
     {
+      "name": "animatable",
+      "config": {
+        "defaultState": "idle",
+        "states": [
+          {
+            "name": "idle",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "void",
+                "conditions": [
+                  {
+                    "type": "message",
+                    "props": {
+                      "message": "KILL"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "void",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 1
+              }
+            ],
+            "looped": true,
+            "transitions": []
+          }
+        ]
+      }
+    },
+    {
       "name": "renderable",
       "config": {
-        "type": "static",
+        "type": "sprite",
         "src": "terrain/floor",
         "width": 32,
         "height": 64,
+        "slice": 2,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
