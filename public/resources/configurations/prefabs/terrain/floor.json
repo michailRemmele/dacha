@@ -41,14 +41,138 @@
     {
       "name": "animatable",
       "config": {
-        "defaultState": "idle",
+        "defaultState": "idle-100",
         "states": [
           {
-            "name": "idle",
+            "name": "idle-100",
             "speed": 1,
             "frames": [
               {
                 "index": 0
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "idle-80",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "health.points"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 4
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "idle-80",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 1
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "idle-60",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "health.points"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 3
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "idle-60",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 2
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "idle-40",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "health.points"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "idle-40",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 3
+              }
+            ],
+            "looped": true,
+            "transitions": [
+              {
+                "state": "idle-20",
+                "conditions": [
+                  {
+                    "type": "comparator",
+                    "props": {
+                      "arg1": {
+                        "type": "componentValue",
+                        "value": "health.points"
+                      },
+                      "operation": "equals",
+                      "arg2": {
+                        "type": "number",
+                        "value": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "idle-20",
+            "speed": 1,
+            "frames": [
+              {
+                "index": 4
               }
             ],
             "looped": true,
@@ -71,7 +195,7 @@
             "speed": 1,
             "frames": [
               {
-                "index": 1
+                "index": 5
               }
             ],
             "looped": true,
@@ -87,7 +211,7 @@
         "src": "terrain/floor",
         "width": 32,
         "height": 64,
-        "slice": 2,
+        "slice": 6,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
