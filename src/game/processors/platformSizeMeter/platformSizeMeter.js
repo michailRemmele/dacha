@@ -2,57 +2,32 @@ import Processor from 'engine/processor/processor';
 
 const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 const TRANSFORM_COMPONENT_NAME = 'transform';
-const PLATFORM_SIZE_NAME = 'platformSize';
+
+const PLATFORM_CHANGE_MSG = 'PLATFORM_CHANGE';
+
+const PLATFORM_STORE_KEY = 'platform';
+const PLATFORM_SIZE_STORE_KEY = 'platformSize';
 
 class PlatformSizeMeter extends Processor {
   constructor(options) {
     super();
 
-    this._gameObjectObserver = options.gameObjectObserver;
     this._store = options.store;
-
-    this._platformCount = 0;
-  }
-
-  _sortPlatforms() {
-    this._gameObjectObserver.sort((a, b) => {
-      const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME);
-      const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME);
-
-      if (aTransform.offsetY > bTransform.offsetY) {
-        return 1;
-      }
-
-      if (aTransform.offsetY < bTransform.offsetY) {
-        return -1;
-      }
-
-      if (aTransform.offsetX > bTransform.offsetX) {
-        return 1;
-      }
-
-      if (aTransform.offsetX < bTransform.offsetX) {
-        return -1;
-      }
-
-      return 0;
-    });
   }
 
   _calculatePlatformSize() {
-    this._platformCount = this._gameObjectObserver.size();
+    const platform = this._store.get(PLATFORM_STORE_KEY);
 
-    if (!this._platformCount) {
+    if (!platform || !platform.length) {
       return;
     }
 
-    this._sortPlatforms();
-
-    const first = this._gameObjectObserver.getByIndex(0);
+    const first = platform[0][0];
     const { collider: firstCollider } = first.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
     const firstTransform = first.getComponent(TRANSFORM_COMPONENT_NAME);
 
-    const last = this._gameObjectObserver.getByIndex(this._platformCount - 1);
+    const lastRow = platform[platform.length - 1];
+    const last = lastRow[lastRow.length - 1];
     const { collider: lastCollider } = last.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
     const lastTransform = last.getComponent(TRANSFORM_COMPONENT_NAME);
 
@@ -61,7 +36,7 @@ class PlatformSizeMeter extends Processor {
     const maxX = (lastCollider.sizeX / 2) + (lastCollider.centerX + lastTransform.offsetX);
     const maxY = (lastCollider.sizeY / 2) + (lastCollider.centerY + lastTransform.offsetY);
 
-    this._store.set(PLATFORM_SIZE_NAME, {
+    this._store.set(PLATFORM_SIZE_STORE_KEY, {
       minX: minX,
       maxX: maxX,
       minY: minY,
@@ -74,7 +49,10 @@ class PlatformSizeMeter extends Processor {
   }
 
   process(options) {
-    if (this._platformCount !== this._gameObjectObserver.size()) {
+    const { messageBus } = options;
+
+    const messages = messageBus.get(PLATFORM_CHANGE_MSG);
+    if (messages) {
       this._calculatePlatformSize();
     }
   }

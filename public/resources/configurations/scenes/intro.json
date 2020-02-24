@@ -2032,6 +2032,26 @@
       "options": {}
     },
     {
+      "name": "platformObserver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "type": "terrain"
+      },
+      "options": {}
+    },
+    {
+      "name": "platformSizeMeter",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {}
+    },
+    {
+      "name": "platformDestroyer",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {}
+    },
+    {
       "name": "aiProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
@@ -2115,14 +2135,6 @@
         "windowNodeId": "root",
         "initialCamera": "1.2"
       }
-    },
-    {
-      "name": "platformSizeMeter",
-      "section": "gameStateUpdateSection",
-      "filter": {
-        "type": "terrain"
-      },
-      "options": {}
     },
     {
       "name": "enemiesDetector",

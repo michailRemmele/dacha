@@ -5,12 +5,10 @@ import PlatformSizeMeter from 'game/processors/platformSizeMeter/platformSizeMet
 class PlatformSizeMeterPlugin extends ProcessorPlugin {
   async load(options) {
     const {
-      gameObjectObserver,
       store,
     } = options;
 
     return new PlatformSizeMeter({
-      gameObjectObserver: gameObjectObserver,
       store: store,
     });
   }
