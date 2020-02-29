@@ -58,6 +58,7 @@
       "name": "weapon",
       "config": {
         "bullet": "blasterBullet",
+        "damage": 10,
         "speed": 400,
         "range": 256,
         "cooldown": 2000

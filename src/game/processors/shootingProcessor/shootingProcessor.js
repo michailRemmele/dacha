@@ -71,7 +71,7 @@ class ShootingProcessor extends Processor {
 
   _processFiredBullets(messageBus) {
     this._firedBullets = this._firedBullets.filter((entry) => {
-      const { shooter, bullet, directionVector } = entry;
+      const { shooter, bullet, directionVector, damage } = entry;
       const bulletId = bullet.getId();
 
       const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, bulletId) || [];
@@ -98,6 +98,12 @@ class ShootingProcessor extends Processor {
           id: bulletId,
           gameObject: bullet,
           value: bulletHealth.points,
+        });
+        messageBus.send({
+          type: DAMAGE_MSG,
+          id: targetId,
+          gameObject: target,
+          value: damage,
         });
 
         this._pushTarget(target, directionVector, messageBus);
@@ -171,6 +177,7 @@ class ShootingProcessor extends Processor {
       shooter: shooter,
       bullet: bullet,
       directionVector: directionVector.clone(),
+      damage: weapon.damage,
     });
 
     weapon.cooldownRemaining = weapon.cooldown;
