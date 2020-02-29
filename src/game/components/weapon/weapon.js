@@ -5,6 +5,7 @@ class Weapon extends Component {
     super();
 
     this._bullet = config.bullet;
+    this._damage = config.damage;
     this._speed = config.speed;
     this._range = config.range;
     this._cooldown = config.cooldown;
@@ -17,6 +18,14 @@ class Weapon extends Component {
 
   get bullet() {
     return this._bullet;
+  }
+
+  set damage(damage) {
+    this._damage = damage;
+  }
+
+  get damage() {
+    return this._damage;
   }
 
   set speed(speed) {
@@ -54,6 +63,7 @@ class Weapon extends Component {
   clone() {
     return new Weapon({
       bullet: this.bullet,
+      damage: this.damage,
       speed: this.speed,
       range: this.range,
       cooldown: this.cooldown,
