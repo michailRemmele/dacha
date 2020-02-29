@@ -81,7 +81,13 @@ class ShootingProcessor extends Processor {
         const hitBox = otherGameObject.getComponent(HITBOX_COMPONENT_NAME);
         const target = otherGameObject.getParent();
 
-        if (!hitBox || !target || shooter.getId() === target.getId()) {
+        if (!hitBox || !target) {
+          return true;
+        }
+
+        const targetId = target.getId();
+
+        if (shooter.getId() === targetId || bulletId === targetId) {
           return true;
         }
 
