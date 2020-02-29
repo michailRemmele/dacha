@@ -17,6 +17,7 @@ class GameObjectCreator {
       prefabName,
       components = [],
       children = [],
+      isNew = false,
     } = options;
     let { id, name } = options;
 
@@ -32,20 +33,31 @@ class GameObjectCreator {
 
     gameObject.setType(type || prefab.getType());
 
-    const prefabChildrenMap = prefab.getChildren().reduce((storage, prefabChild) => {
-      storage[prefabChild.getName()] = prefabChild;
+    if (isNew) {
+      prefab.getChildren().forEach((prefabChild) => {
+        const { name } = prefabChild;
+        const options = { prefabName: name, fromPrefab: true, isNew };
 
-      return storage;
-    }, {});
+        const gameObjectChild = this._build(options, prefabChild);
+        gameObjectChild.setParent(gameObject);
+        gameObject.appendChild(gameObjectChild);
+      });
+    } else {
+      const prefabChildrenMap = prefab.getChildren().reduce((storage, prefabChild) => {
+        storage[prefabChild.getName()] = prefabChild;
 
-    children.forEach((child) => {
-      const { prefabName, fromPrefab } = child;
+        return storage;
+      }, {});
 
-      const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
-      const gameObjectChild = this._build(child, prefabChild);
-      gameObjectChild.setParent(gameObject);
-      gameObject.appendChild(gameObjectChild);
-    });
+      children.forEach((options) => {
+        const { prefabName, fromPrefab } = options;
+
+        const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
+        const gameObjectChild = this._build(options, prefabChild);
+        gameObjectChild.setParent(gameObject);
+        gameObject.appendChild(gameObjectChild);
+      });
+    }
 
     prefab.getAvailableComponents().forEach((componentName) => {
       gameObject.setComponent(componentName, prefab.getComponent(componentName));

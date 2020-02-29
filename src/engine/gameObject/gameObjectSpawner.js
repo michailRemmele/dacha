@@ -8,6 +8,7 @@ class GameObjectSpawner {
     const gameObjects = this._gameObjectCreator.create({
       prefabName: name,
       fromPrefab: true,
+      isNew: true,
     });
 
     gameObjects.forEach((gameObject) => {
