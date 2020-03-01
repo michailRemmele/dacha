@@ -6,6 +6,7 @@ class Weapon extends Component {
 
     this._bullet = config.bullet;
     this._damage = config.damage;
+    this._fetterDuration = config.fetterDuration;
     this._speed = config.speed;
     this._range = config.range;
     this._cooldown = config.cooldown;
@@ -26,6 +27,14 @@ class Weapon extends Component {
 
   get damage() {
     return this._damage;
+  }
+
+  set fetterDuration(fetterDuration) {
+    this._fetterDuration = fetterDuration;
+  }
+
+  get fetterDuration() {
+    return this._fetterDuration;
   }
 
   set speed(speed) {
@@ -64,6 +73,7 @@ class Weapon extends Component {
     return new Weapon({
       bullet: this.bullet,
       damage: this.damage,
+      fetterDuration: this.fetterDuration,
       speed: this.speed,
       range: this.range,
       cooldown: this.cooldown,

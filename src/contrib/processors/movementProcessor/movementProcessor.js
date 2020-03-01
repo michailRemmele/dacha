@@ -48,7 +48,7 @@ class MovementProcessor extends Processor {
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
 
-      const { vector, speed } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
+      const { vector, speed, penalty } = gameObject.getComponent(MOVEMENT_COMPONENT_NAME);
       vector.multiplyNumber(0);
 
       const movementVector = movementVectors[gameObjectId];
@@ -57,8 +57,11 @@ class MovementProcessor extends Processor {
       }
 
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+      const resultingSpeed = penalty < speed ? speed - penalty : 0;
 
-      movementVector.multiplyNumber(speed * deltaTimeInSeconds * (1 / movementVector.magnitude));
+      movementVector.multiplyNumber(
+        resultingSpeed * deltaTimeInSeconds * (1 / movementVector.magnitude)
+      );
       vector.add(movementVector);
 
       transform.offsetX = transform.offsetX + vector.x;
