@@ -28,6 +28,12 @@ const LIFETIME_EFFECT = {
   },
 };
 
+const FETTER_EFFECT = {
+  name: 'weaponFetter',
+  effect: 'fetter',
+  effectType: 'timeLimited',
+};
+
 class ShootingProcessor extends Processor {
   constructor(options) {
     super();
@@ -71,7 +77,7 @@ class ShootingProcessor extends Processor {
 
   _processFiredBullets(messageBus) {
     this._firedBullets = this._firedBullets.filter((entry) => {
-      const { shooter, bullet, directionVector, damage } = entry;
+      const { shooter, bullet, directionVector, damage, fetterDuration } = entry;
       const bulletId = bullet.getId();
 
       const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, bulletId) || [];
@@ -104,6 +110,15 @@ class ShootingProcessor extends Processor {
           id: targetId,
           gameObject: target,
           value: damage,
+        });
+        messageBus.send({
+          type: ADD_EFFECT_MSG,
+          id: targetId,
+          gameObject: target,
+          ...FETTER_EFFECT,
+          applicatorOptions: {
+            duration: fetterDuration,
+          },
         });
 
         this._pushTarget(target, directionVector, messageBus);
@@ -178,6 +193,7 @@ class ShootingProcessor extends Processor {
       bullet: bullet,
       directionVector: directionVector.clone(),
       damage: weapon.damage,
+      fetterDuration: weapon.fetterDuration,
     });
 
     weapon.cooldownRemaining = weapon.cooldown;
