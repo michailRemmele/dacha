@@ -22,6 +22,11 @@ const FALL_EFFECT = {
     value: 25,
   },
 };
+const FETTER_EFFECT = {
+  name: 'fallFetter',
+  effect: 'fetter',
+  effectType: 'continuous',
+};
 
 class FallProcessor extends Processor {
   constructor(options) {
@@ -81,8 +86,14 @@ class FallProcessor extends Processor {
         messageBus.send({
           type: ADD_EFFECT_MSG,
           id: gameObject.getId(),
-          gameObject: gameObject,
+          gameObject,
           ...FALL_EFFECT,
+        });
+        messageBus.send({
+          type: ADD_EFFECT_MSG,
+          id: gameObject.getId(),
+          gameObject,
+          ...FETTER_EFFECT,
         });
 
         this._fallingGameObjectsMap[gameObjectId] = true;
