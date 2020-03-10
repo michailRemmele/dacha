@@ -7,11 +7,13 @@ class PhysicsProcessorPlugin extends ProcessorPlugin {
     const {
       gravitationalAcceleration,
       gameObjectObserver,
+      store,
     } = options;
 
     return new PhysicsProcessor({
-      gravitationalAcceleration: gravitationalAcceleration,
-      gameObjectObserver: gameObjectObserver,
+      gravitationalAcceleration,
+      gameObjectObserver,
+      store,
     });
   }
 }

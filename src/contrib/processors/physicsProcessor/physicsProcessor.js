@@ -10,6 +10,8 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 const GRAVITY_FORCE = 'gravityForce';
 const REACTION_FORCE = 'reactionForce';
 
+const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';
+
 const FRICTION_FORCE_COEFFICIENT = 0.5;
 
 const DIRECTION_VECTOR = {
@@ -23,45 +25,23 @@ class PhysicsProcessor extends Processor {
   constructor(options) {
     super();
 
-    const { gravitationalAcceleration } = options;
+    const { gravitationalAcceleration, gameObjectObserver, store } = options;
 
     this._gravitationalAcceleration = gravitationalAcceleration;
-
-    this._gameObjectObserver = options.gameObjectObserver;
+    this._gameObjectObserver = gameObjectObserver;
+    this._store = store;
 
     this._gameObjectsVelocity = {};
     this._temproraryForcesMap = {};
   }
 
-  _processAddedGameObjects() {
-    this._gameObjectObserver.getLastAdded().forEach((gameObject) => {
-      this._addGravityForce(gameObject.getComponent(RIGID_BODY_COMPONENT_NAME));
-    });
+  processorDidMount() {
+    this._store.set(GRAVITATIONAL_ACCELERATION_STORE_KEY, this._gravitationalAcceleration);
   }
 
-  _processRemovedGameObjects() {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      this._gameObjectsVelocity[gameObjectId] = null;
-    });
-  }
+  _filterTemporaryForces(gameObjectId, forceVectors, deltaTime) {
+    const temporaryForces = this._temproraryForcesMap[gameObjectId] || {};
 
-  _processIncomingForces(addForceMessages, gameObjectId, forceVectors) {
-    addForceMessages.forEach((message) => {
-      const { name, value, duration } = message;
-      this._temproraryForcesMap[gameObjectId] = this._temproraryForcesMap[gameObjectId] || {};
-
-      if (duration) {
-        this._temproraryForcesMap[gameObjectId][name] = duration;
-      } else if (this._temproraryForcesMap[gameObjectId][name]) {
-        this._temproraryForcesMap[gameObjectId][name] = null;
-      }
-
-      forceVectors[name] = value;
-    });
-  }
-
-  _filterTemporaryForces(forceVectors, temporaryForces, deltaTime) {
     Object.keys(forceVectors).forEach((forceName) => {
       const forceDuration = temporaryForces[forceName];
 
@@ -83,8 +63,8 @@ class PhysicsProcessor extends Processor {
     });
   }
 
-  _addGravityForce(rigidBody) {
-    const { forceVectors, mass, useGravity } = rigidBody;
+  _addGravityForce(rigidBody, forceVectors) {
+    const { mass, useGravity } = rigidBody;
 
     if (useGravity && !forceVectors[GRAVITY_FORCE]) {
       forceVectors[GRAVITY_FORCE] = new Vector2(0, 0);
@@ -93,8 +73,8 @@ class PhysicsProcessor extends Processor {
     }
   }
 
-  _addFrictionForce(gameObject, deltaTime) {
-    const { forceVectors, mass } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+  _applyFrictionForce(gameObject, forceVectors, deltaTime) {
+    const { mass } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
     const gameObjectId = gameObject.getId();
     const velocity = this._gameObjectsVelocity[gameObjectId];
 
@@ -121,27 +101,48 @@ class PhysicsProcessor extends Processor {
     }
   }
 
+  _processIncomingForces(gameObjectId, forceVectors, messageBus) {
+    const addForceMessages = messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
+
+    addForceMessages.forEach((message) => {
+      const { name, value, duration } = message;
+      this._temproraryForcesMap[gameObjectId] = this._temproraryForcesMap[gameObjectId] || {};
+
+      if (duration) {
+        this._temproraryForcesMap[gameObjectId][name] = duration;
+      } else if (this._temproraryForcesMap[gameObjectId][name]) {
+        this._temproraryForcesMap[gameObjectId][name] = null;
+      }
+
+      forceVectors[name] = value;
+    });
+  }
+
+  _processRemovedGameObjects() {
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+      this._gameObjectsVelocity[gameObjectId] = null;
+    });
+  }
+
   process(options) {
     const deltaTimeInMsec = options.deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
     const messageBus = options.messageBus;
 
-    this._processAddedGameObjects();
     this._processRemovedGameObjects();
 
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const { forceVectors, mass } = rigidBody;
+      const { mass } = rigidBody;
 
-      const addForceMessages = messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
+      const forceVectors = {};
 
-      this._processIncomingForces(addForceMessages, gameObjectId, forceVectors);
-
-      const temporaryForces = this._temproraryForcesMap[gameObjectId] || {};
-
-      this._filterTemporaryForces(forceVectors, temporaryForces, deltaTimeInMsec);
+      this._addGravityForce(rigidBody, forceVectors);
+      this._processIncomingForces(gameObjectId, forceVectors, messageBus);
+      this._filterTemporaryForces(gameObjectId, forceVectors, deltaTimeInMsec);
 
       const forceVector = Object.keys(forceVectors).reduce((resultantForceVector, forceName) => {
         if (!forceVectors[forceName]) {
@@ -164,7 +165,7 @@ class PhysicsProcessor extends Processor {
         velocityVector.add(velocityIncrease);
       }
 
-      this._addFrictionForce(gameObject, deltaTimeInSeconds);
+      this._applyFrictionForce(gameObject, forceVectors, deltaTimeInSeconds);
 
       transform.offsetX = transform.offsetX + (velocityVector.x * deltaTimeInSeconds);
       transform.offsetY = transform.offsetY + (velocityVector.y * deltaTimeInSeconds);

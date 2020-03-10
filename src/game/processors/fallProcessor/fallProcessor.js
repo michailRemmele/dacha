@@ -1,13 +1,11 @@
 import Processor from 'engine/processor/processor';
 
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
+const COLLISION_STAY_MSG = 'COLLISION_STAY';
 const ADD_EFFECT_MSG = 'ADD_EFFECT';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const RENDERABLE_COMPONENT_NAME = 'renderable';
-
-const GRAVITY_FORCE = 'gravityForce';
-const REACTION_FORCE = 'reactionForce';
 
 const SPACE_SORTING_LAYER = 'space';
 
@@ -51,6 +49,20 @@ class FallProcessor extends Processor {
     });
   }
 
+  _isFalling(gameObject, messageBus) {
+    const enterMessages = messageBus.getById(COLLISION_ENTER_MSG, gameObject.getId()) || [];
+    const stayMessages = messageBus.getById(COLLISION_STAY_MSG, gameObject.getId()) || [];
+
+    return ![ enterMessages, stayMessages ].some((messages) => {
+      return messages.some((message) => {
+        const { otherGameObject } = message;
+        const rigidBody = otherGameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+
+        return rigidBody && !rigidBody.ghost;
+      });
+    });
+  }
+
   process(options) {
     const messageBus = options.messageBus;
 
@@ -74,13 +86,8 @@ class FallProcessor extends Processor {
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-      const { forceVectors } = rigidBody;
 
-      if (
-        forceVectors[GRAVITY_FORCE]
-        && !forceVectors[REACTION_FORCE]
-        && !this._fallingGameObjectsMap[gameObjectId]
-      ) {
+      if (!this._fallingGameObjectsMap[gameObjectId] && this._isFalling(gameObject, messageBus)) {
         rigidBody.ghost = true;
 
         messageBus.send({

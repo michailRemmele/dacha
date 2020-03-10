@@ -1,31 +1,49 @@
 import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
 
+const ADD_FORCE_MSG = 'ADD_FORCE';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
-const COLLISION_LEAVE_MSG = 'COLLISION_LEAVE';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 
 const REACTION_FORCE = 'reactionForce';
-const GRAVITY_FORCE = 'gravityForce';
+
+const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';
+
+const DELAY = 1;
+const REACTION_FORCE_VECTOR_X = 0;
+const REACTION_FORCE_VECTOR_Y = -1;
 
 class CollisionSolver extends Processor {
   constructor(options) {
     super();
 
-    this._gameObjectObserver = options.gameObjectObserver;
+    const { gameObjectObserver, store } = options;
+
+    this._store = store;
+    this._gameObjectObserver = gameObjectObserver;
   }
 
-  _addReactionForce(gameObject) {
-    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-    const { forceVectors, useGravity } = rigidBody;
+  processorDidMount() {
+    this._gravitationalAcceleration = this._store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY);
+  }
 
-    if (useGravity && !forceVectors[REACTION_FORCE]) {
-      forceVectors[REACTION_FORCE] = forceVectors[GRAVITY_FORCE]
-        ? forceVectors[GRAVITY_FORCE].clone()
-        : new Vector2(0, 0);
-      forceVectors[REACTION_FORCE].multiplyNumber(-1);
+  _addReactionForce(gameObject, messageBus) {
+    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const { useGravity, mass } = rigidBody;
+
+    if (useGravity) {
+      const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
+      reactionForce.multiplyNumber(mass * this._gravitationalAcceleration);
+
+      messageBus.send({
+        type: ADD_FORCE_MSG,
+        name: REACTION_FORCE,
+        value: reactionForce,
+        gameObject,
+        id: gameObject.getId(),
+      }, DELAY);
     }
   }
 
@@ -39,18 +57,6 @@ class CollisionSolver extends Processor {
   process(options) {
     const messageBus = options.messageBus;
 
-    const leaveMessages = messageBus.get(COLLISION_LEAVE_MSG) || [];
-    leaveMessages.forEach((message) => {
-      const { gameObject, otherGameObject } = message;
-
-      if (!this._validateCollision(gameObject, otherGameObject)) {
-        return;
-      }
-
-      const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-      rigidBody.forceVectors[REACTION_FORCE] = null;
-    });
-
     const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
     [ enterMessages, stayMessages ].forEach((messages) => {
@@ -61,7 +67,7 @@ class CollisionSolver extends Processor {
           return;
         }
 
-        this._addReactionForce(gameObject);
+        this._addReactionForce(gameObject, messageBus);
       });
     });
   }
