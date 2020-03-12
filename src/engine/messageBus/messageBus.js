@@ -87,14 +87,16 @@ class MessageBus {
     this._stashedMessages = [];
   }
 
-  clear() {
-    this._messages = {};
-
+  sendDelayed() {
     if (this._delayedMessages.length) {
       this._delayedMessages.shift().forEach((message) => {
         this.send(message);
       });
     }
+  }
+
+  clear() {
+    this._messages = {};
   }
 
   reset() {

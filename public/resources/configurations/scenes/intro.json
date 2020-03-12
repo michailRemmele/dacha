@@ -2089,9 +2089,11 @@
       "section": "gameStateUpdateSection",
       "filter": {
         "components": [
+          "transform",
           "rigidBody",
           "colliderContainer",
-          "renderable"
+          "renderable",
+          "weapon"
         ]
       },
       "options": {}
