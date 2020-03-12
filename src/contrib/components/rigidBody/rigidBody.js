@@ -4,19 +4,10 @@ class RigidBody extends Component {
   constructor(config) {
     super();
 
-    this._forceVectors = {};
     this._mass = config.mass;
     this._useGravity = config.useGravity;
     this._isPermeable = config.isPermeable;
     this._ghost = config.ghost;
-  }
-
-  set forceVectors(forceVectors) {
-    this._forceVectors = forceVectors;
-  }
-
-  get forceVectors() {
-    return this._forceVectors;
   }
 
   set mass(mass) {

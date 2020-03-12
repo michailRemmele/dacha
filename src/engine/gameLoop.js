@@ -38,6 +38,7 @@ class GameLoop {
 
       if (this.lag >= MS_PER_UPDATE) {
         this.messageBus.stash();
+        this.messageBus.sendDelayed();
       }
     }
 
@@ -57,6 +58,7 @@ class GameLoop {
       that.lag += elapsed;
 
       that.messageBus.restore();
+      that.messageBus.sendDelayed();
 
       that._processSection(SECTIONS.EVENT_PROCESS_SECTION_NAME);
       that._gameStateUpdate();

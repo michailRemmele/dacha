@@ -3,11 +3,12 @@ import Processor from 'engine/processor/processor';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const ADD_EFFECT_MSG = 'ADD_EFFECT';
 
+const PLATFORM_SIZE_NAME = 'platformSize';
+
+const TRANSFORM_COMPONENT_NAME = 'transform';
+const COLLIDER_COMPONENT_NAME = 'colliderContainer';
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const RENDERABLE_COMPONENT_NAME = 'renderable';
-
-const GRAVITY_FORCE = 'gravityForce';
-const REACTION_FORCE = 'reactionForce';
 
 const SPACE_SORTING_LAYER = 'space';
 
@@ -33,6 +34,7 @@ class FallProcessor extends Processor {
     super();
 
     this._gameObjectObserver = options.gameObjectObserver;
+    this._store = options.store;
     this._fallingGameObjectsMap = {};
     this._fallingGameObjects = [];
   }
@@ -49,6 +51,23 @@ class FallProcessor extends Processor {
 
       this._fallingGameObjectsMap[gameObjectId] = null;
     });
+  }
+
+  _isFalling(gameObject) {
+    const { minX, maxX, minY, maxY } = this._store.get(PLATFORM_SIZE_NAME);
+    const { offsetX, offsetY } = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { collider } = gameObject.getComponent(COLLIDER_COMPONENT_NAME);
+    const { centerX, centerY, sizeX, sizeY } = collider;
+
+    const colliderX = offsetX + centerX;
+    const colliderY = offsetY + centerY;
+
+    const x0 = colliderX - (sizeX / 2);
+    const x1 = colliderX + (sizeX / 2);
+    const y0 = colliderY - (sizeY / 2);
+    const y1 = colliderY + (sizeY / 2);
+
+    return x1 < minX || x0 > maxX || y1 < minY || y0 > maxY;
   }
 
   process(options) {
@@ -74,13 +93,8 @@ class FallProcessor extends Processor {
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-      const { forceVectors } = rigidBody;
 
-      if (
-        forceVectors[GRAVITY_FORCE]
-        && !forceVectors[REACTION_FORCE]
-        && !this._fallingGameObjectsMap[gameObjectId]
-      ) {
+      if (!this._fallingGameObjectsMap[gameObjectId] && this._isFalling(gameObject)) {
         rigidBody.ghost = true;
 
         messageBus.send({
