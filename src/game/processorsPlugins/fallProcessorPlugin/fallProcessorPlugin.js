@@ -6,6 +6,7 @@ class FallProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     return new FallProcessor({
       gameObjectObserver: options.gameObjectObserver,
+      store: options.store,
     });
   }
 }
