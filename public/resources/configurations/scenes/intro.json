@@ -2035,7 +2035,10 @@
       "name": "platformObserver",
       "section": "gameStateUpdateSection",
       "filter": {
-        "type": "terrain"
+        "type": "terrain",
+        "components": [
+          "rigidBody"
+        ]
       },
       "options": {}
     },
