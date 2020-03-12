@@ -3,7 +3,6 @@ import Processor from 'engine/processor/processor';
 import Collision from './collision';
 
 const COLLISION_MESSAGE = 'COLLISION';
-const DELAY = 1;
 
 class CollisionBroadcastProcessor extends Processor {
   constructor(options) {
@@ -25,7 +24,7 @@ class CollisionBroadcastProcessor extends Processor {
     };
 
     messageBus.send(message);
-    messageBus.send(message, DELAY);
+    messageBus.send(message, true);
   }
 
   _processRemovedGameObjects(messageBus) {

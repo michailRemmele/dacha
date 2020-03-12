@@ -11,7 +11,6 @@ const REACTION_FORCE = 'reactionForce';
 
 const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';
 
-const DELAY = 1;
 const REACTION_FORCE_VECTOR_X = 0;
 const REACTION_FORCE_VECTOR_Y = -1;
 
@@ -43,7 +42,7 @@ class CollisionSolver extends Processor {
         value: reactionForce,
         gameObject,
         id: gameObject.getId(),
-      }, DELAY);
+      }, true);
     }
   }
 

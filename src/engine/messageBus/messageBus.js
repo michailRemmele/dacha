@@ -5,15 +5,14 @@ class MessageBus {
     this._delayedMessages = [];
   }
 
-  send(message, delay = 0) {
+  send(message, delay = false) {
     if (!message.type) {
       throw new Error('Can\'t send the message without specified type');
     }
 
     if (delay) {
-      const index = delay - 1;
-      this._delayedMessages[index] = this._delayedMessages[index] || [];
-      this._delayedMessages[index].push(message);
+      this._delayedMessages.push(message);
+      return;
     }
 
     const { type, id } = message;
@@ -88,11 +87,14 @@ class MessageBus {
   }
 
   sendDelayed() {
-    if (this._delayedMessages.length) {
-      this._delayedMessages.shift().forEach((message) => {
-        this.send(message);
-      });
+    if (!this._delayedMessages.length) {
+      return;
     }
+
+    this._delayedMessages.forEach((message) => {
+      this.send(message);
+    });
+    this._delayedMessages = [];
   }
 
   clear() {
