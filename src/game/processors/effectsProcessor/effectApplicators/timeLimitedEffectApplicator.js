@@ -32,6 +32,10 @@ class TimeLimitedEffectApplicator extends EffectApplicator {
   }
 
   cancel() {
+    if (!this._isApplied) {
+      return;
+    }
+
     this._effect.onCancel();
   }
 
