@@ -52,9 +52,9 @@
       "name": "weapon",
       "config": {
         "bullet": "blasterBullet",
-        "damage": 10,
+        "damage": 5,
         "fetterDuration": 300,
-        "speed": 400,
+        "speed": 300,
         "range": 256,
         "cooldown": 2000
       }
