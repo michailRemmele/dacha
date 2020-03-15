@@ -33,7 +33,7 @@ jobs:
         env:
           USERNAME: ubuntu
           HOST: 3.135.174.145
-          SCRIPT: rm -rf /srv/www/cyber-cocks.com/*
+          SCRIPT: rm -rf /srv/www/roostersfight.mremmele.ru/*
           KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
 
       - name: Deploy build to Production server
@@ -44,5 +44,5 @@ jobs:
           KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
         with:
           source: 'build/*'
-          target: '/srv/www/cyber-cocks.com'
+          target: '/srv/www/roostersfight.mremmele.ru'
           strip_components: 1
