@@ -6,7 +6,7 @@
     {
       "name": "keyboardInputProcessor",
       "section": "eventProcessSection",
-      "components": [],
+      "filter": {},
       "options": {
         "keyBindings": {
         }

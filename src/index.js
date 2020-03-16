@@ -20,3 +20,5 @@ const options = {
 
 const engine = new Engine(options);
 engine.start();
+
+console.log('Hello! You can contact the author via email: mikhail.remmele@gmail.com');

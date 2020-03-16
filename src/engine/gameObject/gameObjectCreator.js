@@ -13,9 +13,11 @@ class GameObjectCreator {
 
   _buildFromPrefab(options, prefab) {
     const {
+      type,
       prefabName,
       components = [],
       children = [],
+      isNew = false,
     } = options;
     let { id, name } = options;
 
@@ -29,20 +31,33 @@ class GameObjectCreator {
 
     const gameObject = new GameObject(id);
 
-    const prefabChildrenMap = prefab.getChildren().reduce((storage, prefabChild) => {
-      storage[prefabChild.getName()] = prefabChild;
+    gameObject.setType(type || prefab.getType());
 
-      return storage;
-    }, {});
+    if (isNew) {
+      prefab.getChildren().forEach((prefabChild) => {
+        const { name } = prefabChild;
+        const options = { prefabName: name, fromPrefab: true, isNew };
 
-    children.forEach((child) => {
-      const { prefabName, fromPrefab } = child;
+        const gameObjectChild = this._build(options, prefabChild);
+        gameObjectChild.setParent(gameObject);
+        gameObject.appendChild(gameObjectChild);
+      });
+    } else {
+      const prefabChildrenMap = prefab.getChildren().reduce((storage, prefabChild) => {
+        storage[prefabChild.getName()] = prefabChild;
 
-      const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
-      const gameObjectChild = this._build(child, prefabChild);
-      gameObjectChild.setParent(gameObject);
-      gameObject.appendChild(gameObjectChild);
-    });
+        return storage;
+      }, {});
+
+      children.forEach((options) => {
+        const { prefabName, fromPrefab } = options;
+
+        const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
+        const gameObjectChild = this._build(options, prefabChild);
+        gameObjectChild.setParent(gameObject);
+        gameObject.appendChild(gameObjectChild);
+      });
+    }
 
     prefab.getAvailableComponents().forEach((componentName) => {
       gameObject.setComponent(componentName, prefab.getComponent(componentName));
@@ -58,6 +73,7 @@ class GameObjectCreator {
 
   _buildFromScratch(options) {
     const {
+      type,
       components = [],
       children = [],
     } = options;
@@ -66,6 +82,8 @@ class GameObjectCreator {
     id = id ? id : uuid();
 
     const gameObject = new GameObject(id);
+
+    gameObject.setType(type);
 
     children.forEach((child) => {
       const gameObjectChild = this._build(child);

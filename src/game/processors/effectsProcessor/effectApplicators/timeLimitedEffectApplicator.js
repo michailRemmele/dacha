@@ -1,6 +1,6 @@
 import EffectApplicator from './effectApplicator';
 
-class ContinuousEffectApplicator extends EffectApplicator {
+class TimeLimitedEffectApplicator extends EffectApplicator {
   constructor(effect, options) {
     super();
 
@@ -19,7 +19,6 @@ class ContinuousEffectApplicator extends EffectApplicator {
     this._duration -= deltaTime;
 
     if (this._duration <= 0) {
-      this._effect.onCancel();
       this._isFinished = true;
       return;
     }
@@ -33,6 +32,10 @@ class ContinuousEffectApplicator extends EffectApplicator {
   }
 
   cancel() {
+    if (!this._isApplied) {
+      return;
+    }
+
     this._effect.onCancel();
   }
 
@@ -41,4 +44,4 @@ class ContinuousEffectApplicator extends EffectApplicator {
   }
 }
 
-export default ContinuousEffectApplicator;
+export default TimeLimitedEffectApplicator;

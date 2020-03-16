@@ -19,6 +19,10 @@ class ContinuousEffectApplicator extends EffectApplicator {
   }
 
   cancel() {
+    if (!this._isApplied) {
+      return;
+    }
+
     this._effect.onCancel();
   }
 

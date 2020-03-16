@@ -7,17 +7,25 @@ class PrefabCollection {
   }
 
   _buildPrefab(options) {
+    const {
+      name,
+      type,
+      components = [],
+      children = [],
+    } = options;
+
     const prefab = new Prefab();
 
-    prefab.setName(options.name);
+    prefab.setName(name);
+    prefab.setType(type);
 
-    options.children.forEach((child) => {
+    children.forEach((child) => {
       const childPrefab = this._buildPrefab(child);
       childPrefab.setParent(prefab);
       prefab.appendChild(childPrefab);
     });
 
-    options.components.forEach((componentOptions) => {
+    components.forEach((componentOptions) => {
       const Component = this._components[componentOptions.name];
       prefab.setComponent(componentOptions.name, new Component(componentOptions.config));
     });

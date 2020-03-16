@@ -16,8 +16,8 @@ class GameOverProcessor extends Processor {
     this._isGameOver = false;
   }
 
-  processorDidMount() {
-    this._gameObjectObserver.forEach((gameObject) => {
+  _processAddedGameObjects() {
+    this._gameObjectObserver.getLastAdded().forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
       const control = gameObject.getComponent(CONTROL_COMPONENT_NAME);
 
@@ -31,6 +31,8 @@ class GameOverProcessor extends Processor {
 
   process(options) {
     const messageBus = options.messageBus;
+
+    this._processAddedGameObjects();
 
     const messages = messageBus.get(KILL_MSG) || [];
     messages.forEach((message) => {

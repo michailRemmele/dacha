@@ -1,5 +1,6 @@
 {
   "name": "roosterEnemy",
+  "type": "unit",
   "children": [
     {
       "name": "roosterHitBox",
@@ -42,9 +43,26 @@
       }
     },
     {
+      "name": "ai",
+      "config": {
+        "strategy": "easy"
+      }
+    },
+    {
       "name": "health",
       "config": {
         "points": 100
+      }
+    },
+    {
+      "name": "weapon",
+      "config": {
+        "bullet": "blasterBullet",
+        "damage": 5,
+        "fetterDuration": 300,
+        "speed": 300,
+        "range": 256,
+        "cooldown": 2000
       }
     },
     {

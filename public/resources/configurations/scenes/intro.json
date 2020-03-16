@@ -292,142 +292,6 @@
       ]
     },
     {
-      "id": "10",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 48,
-            "offsetY": 30,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "11",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": -48,
-            "offsetY": 30,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "12",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 48,
-            "offsetY": 126,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "13",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": -48,
-            "offsetY": 126,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "14",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 48,
-            "offsetY": -66,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "15",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": -48,
-            "offsetY": -66,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "16",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 48,
-            "offsetY": -162,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "17",
-      "name": "bonusBox",
-      "fromPrefab": true,
-      "prefabName": "bonusBox",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": -48,
-            "offsetY": -162,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
       "id": "100",
       "name": "floor",
       "fromPrefab": true,
@@ -2132,108 +1996,127 @@
     {
       "name": "keyboardInputProcessor",
       "section": "eventProcessSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "mouseInputProcessor",
       "section": "eventProcessSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "mouseInputCoordinatesProjector",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "keyboardControlProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "keyboardControl"
-      ],
+      "filter": {
+        "components": [
+          "keyboardControl"
+        ]
+      },
       "options": {}
     },
     {
       "name": "mouseControlProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "mouseControl"
-      ],
+      "filter": {
+        "components": [
+          "mouseControl"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "platformObserver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "type": "terrain",
+        "components": [
+          "rigidBody"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "platformSizeMeter",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {}
+    },
+    {
+      "name": "platformDestroyer",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {}
+    },
+    {
+      "name": "aiProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "ai",
+          "weapon",
+          "colliderContainer"
+        ]
+      },
       "options": {}
     },
     {
       "name": "movementProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "movement",
-        "transform"
-      ],
-      "options": {}
-    },
-    {
-      "name": "collisionDetectionProcessor",
-      "section": "gameStateUpdateSection",
-      "components": [
-        "colliderContainer",
-        "transform"
-      ],
-      "options": {}
-    },
-    {
-      "name": "collisionBroadcastProcessor",
-      "section": "gameStateUpdateSection",
-      "components": [
-        "colliderContainer"
-      ],
+      "filter": {
+        "components": [
+          "movement",
+          "transform"
+        ]
+      },
       "options": {}
     },
     {
       "name": "shootingProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-      ],
+      "filter": {
+        "components": [
+          "weapon"
+        ]
+      },
       "options": {}
-    },
-    {
-      "name": "physicsProcessor",
-      "section": "gameStateUpdateSection",
-      "components": [
-        "rigidBody",
-        "transform"
-      ],
-      "options": {
-        "gravitationalAcceleration": 450
-      }
     },
     {
       "name": "fallProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "rigidBody",
-        "colliderContainer",
-        "renderable"
-      ],
+      "filter": {
+        "components": [
+          "transform",
+          "rigidBody",
+          "colliderContainer",
+          "renderable",
+          "weapon"
+        ]
+      },
       "options": {}
     },
     {
       "name": "effectsProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-      ],
+      "filter": {},
       "options": {}
     },
     {
       "name": "damageProcessor",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
       "options": {}
     },
     {
       "name": "reaper",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
       "options": {
         "allowedComponents": [
           "transform",
@@ -2247,21 +2130,34 @@
     {
       "name": "cameraProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "camera",
-        "transform"
-      ],
+      "filter": {
+        "components": [
+          "camera",
+          "transform"
+        ]
+      },
       "options": {
         "windowNodeId": "root",
         "initialCamera": "1.2"
       }
     },
     {
+      "name": "enemiesDetector",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "type": "unit",
+        "components": [
+          "weapon"
+        ]
+      },
+      "options": {}
+    },
+    {
       "name": "gameOverProcessor",
       "section": "gameStateUpdateSection",
-      "components": [
-        "movement"
-      ],
+      "filter": {
+        "type": "unit"
+      },
       "options": {
         "restartScene": "intro"
       }
@@ -2269,25 +2165,96 @@
     {
       "name": "sceneLoadProcessor",
       "section": "gameStateUpdateSection",
-      "components": [],
+      "filter": {},
+      "options": {}
+    },
+    {
+      "name": "physicsProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody",
+          "transform"
+        ]
+      },
+      "options": {
+        "gravitationalAcceleration": 450
+      }
+    },
+    {
+      "name": "jammer",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {
+        "messages": [
+          "COLLISION_ENTER",
+          "COLLISION_STAY",
+          "COLLISION_LEAVE"
+        ]
+      }
+    },
+    {
+      "name": "collisionDetectionProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "colliderContainer",
+          "transform"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "collisionBroadcastProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "colliderContainer"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "collisionSolver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "constraintSolver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody",
+          "transform"
+        ]
+      },
       "options": {}
     },
     {
       "name": "animateProcessor",
       "section": "renderingSection",
-      "components": [
-        "animatable",
-        "renderable"
-      ],
+      "filter": {
+        "components": [
+          "animatable",
+          "renderable"
+        ]
+      },
       "options": {}
     },
     {
       "name": "renderProcessor",
       "section": "renderingSection",
-      "components": [
-        "renderable",
-        "transform"
-      ],
+      "filter": {
+        "components": [
+          "renderable",
+          "transform"
+        ]
+      },
       "options": {
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",

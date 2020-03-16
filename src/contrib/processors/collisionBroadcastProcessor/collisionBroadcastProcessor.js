@@ -14,19 +14,46 @@ class CollisionBroadcastProcessor extends Processor {
     this._activeCollisions = [];
   }
 
-  process(options) {
-    const messageBus = options.messageBus;
+  _publishMessage(collision, messageBus) {
+    const { gameObject, otherGameObject } = collision;
+    const message = {
+      type: `${COLLISION_MESSAGE}_${collision.getState()}`,
+      id: gameObject.getId(),
+      gameObject: gameObject,
+      otherGameObject: otherGameObject,
+    };
 
+    messageBus.send(message);
+    messageBus.send(message, true);
+  }
+
+  _processRemovedGameObjects(messageBus) {
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
+      const id = gameObject.getId();
 
       this._activeCollisions = this._activeCollisions.filter((collision) => {
-        return gameObjectId !== collision.gameObject.getId()
-          && gameObjectId !== collision.otherGameObject.getId();
+        if (collision.gameObject.getId() !== id && collision.otherGameObject.getId() !== id) {
+          return true;
+        }
+
+        if (collision.otherGameObject.getId() === id) {
+          this._collisionMap[collision.gameObject.getId()][id] = null;
+        }
+
+        collision.tick();
+        this._publishMessage(collision, messageBus);
+
+        return false;
       });
 
-      this._collisionMap[gameObjectId] = null;
+      this._collisionMap[id] = null;
     });
+  }
+
+  process(options) {
+    const { messageBus } = options;
+
+    this._processRemovedGameObjects(messageBus);
 
     const collisionMessages = messageBus.get(COLLISION_MESSAGE) || [];
     collisionMessages.forEach((message) => {
@@ -48,12 +75,7 @@ class CollisionBroadcastProcessor extends Processor {
     this._activeCollisions = this._activeCollisions.filter((collision) => {
       const { gameObject, otherGameObject } = collision;
 
-      messageBus.send({
-        type: `${COLLISION_MESSAGE}_${collision.getState()}`,
-        id: gameObject.getId(),
-        gameObject: gameObject,
-        otherGameObject: otherGameObject,
-      });
+      this._publishMessage(collision, messageBus);
 
       collision.tick();
 

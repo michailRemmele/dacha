@@ -1,6 +1,36 @@
 {
   "name": "blasterBullet",
-  "children": [],
+  "children": [
+    {
+      "name": "blasterBulletHitBox",
+      "children": [],
+      "components": [
+        {
+          "name": "hitBox",
+          "config": {}
+        },
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        },
+        {
+          "name": "colliderContainer",
+          "config": {
+            "type": "circleCollider",
+            "collider": {
+              "radius": 10,
+              "centerX": 0,
+              "centerY": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
   "components": [
     {
       "name": "transform",
@@ -19,7 +49,7 @@
     {
       "name": "rigidBody",
       "config": {
-        "mass": 1,
+        "mass": 1.75,
         "useGravity": false,
         "isPermeable": true,
         "ghost": false
