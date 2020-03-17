@@ -14,6 +14,7 @@ class RenderProcessorPlugin extends ProcessorPlugin {
       textureAtlasDescriptor,
       backgroundColor,
       sortingLayers,
+      scaleSensitivity,
       gameObjectObserver,
       store,
     } = options;
@@ -25,12 +26,13 @@ class RenderProcessorPlugin extends ProcessorPlugin {
     }));
 
     return new RenderProcessor({
-      window: window,
+      window,
       textureAtlas: loadedResources[0],
       textureAtlasDescriptor: loadedResources[1],
-      backgroundColor: backgroundColor,
-      sortingLayers: sortingLayers,
-      gameObjectObserver: gameObjectObserver,
+      backgroundColor,
+      sortingLayers,
+      scaleSensitivity,
+      gameObjectObserver,
       store,
     });
   }
