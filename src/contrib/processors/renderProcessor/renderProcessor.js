@@ -11,6 +11,7 @@ const MAX_COLOR_NUMBER = 255;
 const RENDER_COMPONENTS_NUMBER = 2;
 const DRAW_OFFSET = 0;
 const DRAW_COUNT = 6;
+const STD_SCREEN_SIZE = 1080;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -25,7 +26,7 @@ class RenderProcessor extends Processor {
       window, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
       gameObjectObserver, sortingLayers,
-      store,
+      store, scaleSensitivity,
     } = options;
 
     this.textureAtlas = textureAtlas;
@@ -56,6 +57,9 @@ class RenderProcessor extends Processor {
     this._gameObjectObserver = gameObjectObserver;
 
     this._gameObjectCashMap = {};
+
+    this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
+    this._screenScale = 1;
   }
 
   processorDidMount() {
@@ -171,7 +175,7 @@ class RenderProcessor extends Processor {
     const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
 
-    const scale = zoom / window.devicePixelRatio;
+    const scale =  zoom * this._screenScale;
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
@@ -260,6 +264,21 @@ class RenderProcessor extends Processor {
     return webglUtils.createBufferInfoFromArrays(this.gl, attribs);
   }
 
+  _resizeCanvas() {
+    const canvas = this.gl.canvas;
+    const devicePixelRatio = window.devicePixelRatio || 1;
+
+    canvas.width = canvas.clientWidth * devicePixelRatio;
+    canvas.height = canvas.clientHeight * devicePixelRatio;
+
+    const screenSize = Math.sqrt(
+      Math.pow(canvas.clientWidth, 2) + Math.pow(canvas.clientHeight, 2)
+    );
+    const avaragingValue = 1 - this._scaleSensitivity;
+    const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
+    this._screenScale = normalizedSize / STD_SCREEN_SIZE;
+  }
+
   process() {
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
@@ -268,7 +287,7 @@ class RenderProcessor extends Processor {
 
     const canvas = this.gl.canvas;
 
-    webglUtils.resizeCanvasToDisplaySize(this.canvas, window.devicePixelRatio);
+    this._resizeCanvas();
     this.gl.viewport(0, 0, canvas.width, canvas.height);
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
