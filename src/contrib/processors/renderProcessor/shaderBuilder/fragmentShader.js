@@ -1,5 +1,5 @@
 const fragmentShader = `
-precision mediump float;
+precision highp float;
 
 uniform sampler2D u_image;
 
