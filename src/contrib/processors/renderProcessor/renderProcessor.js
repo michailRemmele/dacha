@@ -46,6 +46,8 @@ class RenderProcessor extends Processor {
     this._backgroundColor = new Color(backgroundColor);
 
     this.canvas = window;
+    this._windowWidth;
+    this._windowHeight;
 
     this._shaders = [];
 
@@ -169,7 +171,6 @@ class RenderProcessor extends Processor {
   }
 
   _getTransformationMatrix(props) {
-    const canvas = this.gl.canvas;
     const matrixTransformer = this._matrixTransformer;
     const { renderable, x, y, rotation } = props;
 
@@ -187,7 +188,7 @@ class RenderProcessor extends Processor {
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
     matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
     matrixTransformer.scale(matrix, scale, scale);
-    matrixTransformer.project(matrix, canvas.clientWidth, canvas.clientHeight);
+    matrixTransformer.project(matrix, this._windowWidth, this._windowHeight);
 
     return matrix;
   }
@@ -266,12 +267,14 @@ class RenderProcessor extends Processor {
     return webglUtils.createBufferInfoFromArrays(this.gl, attribs);
   }
 
-  _resizeCanvas() {
-    const canvas = this.gl.canvas;
+  _resizeCanvas(canvas) {
     const devicePixelRatio = window.devicePixelRatio || 1;
 
-    const canvasWidth = canvas.clientWidth * devicePixelRatio;
-    const canvasHeight = canvas.clientHeight * devicePixelRatio;
+    this._windowWidth = canvas.clientWidth;
+    this._windowHeight = canvas.clientHeight;
+
+    const canvasWidth = this._windowWidth * devicePixelRatio;
+    const canvasHeight = this._windowHeight * devicePixelRatio;
 
     if (canvasWidth === this._canvasWidth && canvasHeight === this._canvasHeight) {
       return;
@@ -299,7 +302,7 @@ class RenderProcessor extends Processor {
 
     const canvas = this.gl.canvas;
 
-    this._resizeCanvas();
+    this._resizeCanvas(canvas);
     this.gl.viewport(0, 0, canvas.width, canvas.height);
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
