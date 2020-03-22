@@ -58,6 +58,8 @@ class RenderProcessor extends Processor {
 
     this._gameObjectCashMap = {};
 
+    this._canvasWidth;
+    this._canvasHeight;
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
   }
@@ -268,15 +270,25 @@ class RenderProcessor extends Processor {
     const canvas = this.gl.canvas;
     const devicePixelRatio = window.devicePixelRatio || 1;
 
-    canvas.width = canvas.clientWidth * devicePixelRatio;
-    canvas.height = canvas.clientHeight * devicePixelRatio;
+    const canvasWidth = canvas.clientWidth * devicePixelRatio;
+    const canvasHeight = canvas.clientHeight * devicePixelRatio;
+
+    if (canvasWidth === this._canvasWidth && canvasHeight === this._canvasHeight) {
+      return;
+    }
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
     const screenSize = Math.sqrt(
       Math.pow(canvas.clientWidth, 2) + Math.pow(canvas.clientHeight, 2)
     );
     const avaragingValue = 1 - this._scaleSensitivity;
     const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
+
     this._screenScale = normalizedSize / STD_SCREEN_SIZE;
+    this._canvasWidth = canvasWidth;
+    this._canvasHeight = canvasHeight;
   }
 
   process() {
