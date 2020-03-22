@@ -37,11 +37,7 @@ class AnimateProcessor extends Processor {
       const nextTransition = animatable.currentState.transitions.find((transition) => {
         return transition.conditions.every((condition) => {
           const conditionController = this._conditionControllers[condition.type];
-          return conditionController.check({
-            ...condition.props,
-            gameObject: gameObject,
-            messageBus: messageBus,
-          });
+          return conditionController.check(condition.props, gameObject, messageBus);
         });
       });
 
