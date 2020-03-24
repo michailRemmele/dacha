@@ -5,7 +5,6 @@ import Color from './color/color';
 import textureHandlers from './textureHandlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import MatrixTransformer from './matrixTransformer/matrixTransformer';
-import webglUtils from './vendor/webglUtils';
 
 const MAX_COLOR_NUMBER = 255;
 const RENDER_COMPONENTS_NUMBER = 2;
@@ -145,13 +144,14 @@ class RenderProcessor extends Processor {
   _initProgramInfo() {
     this.gl.useProgram(this.program);
 
-    this.programInfo = {
-      attribs: {
-        setters: webglUtils.createAttributeSetters(this.gl, this.program),
-      },
-      uniforms: {
-        setters: webglUtils.createUniformSetters(this.gl, this.program),
-      },
+    this._variables = {
+      aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
+      aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
+      uMatrix: this.gl.getUniformLocation(this.program, 'u_matrix'),
+      uTextureAtlasSize: this.gl.getUniformLocation(this.program, 'u_textureAtlasSize'),
+      uTexCoordTranslation: this.gl.getUniformLocation(this.program, 'u_texCoordTranslation'),
+      uQuadSize: this.gl.getUniformLocation(this.program, 'u_quadSize'),
+      uTextureSize: this.gl.getUniformLocation(this.program, 'u_textureSize'),
     };
   }
 
@@ -253,19 +253,28 @@ class RenderProcessor extends Processor {
   }
 
   _createBufferInfo(renderable, textureInfo) {
-    const attribs = {
-      position: {
-        data: new Rectangle(renderable.width, renderable.height).toArray(),
-        numComponents: RENDER_COMPONENTS_NUMBER,
-      },
-      texCoord: {
-        data: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
-        numComponents: RENDER_COMPONENTS_NUMBER,
-      },
-    };
+    const position = new Rectangle(renderable.width, renderable.height).toArray();
+    const texCoord = new Rectangle(textureInfo.width, textureInfo.height).toArray();
+    const totalLength = position.length + texCoord.length;
 
-    return webglUtils.createBufferInfoFromArrays(this.gl, attribs);
+    const vertices = new Float32Array(position.length + texCoord.length);
+
+    for (let i = 0, j = 0; i < position.length, j < totalLength; i += 2, j += 4) {
+      vertices[j] = position[i];
+      vertices[j + 1] = position[i + 1];
+      vertices[j + 2] = texCoord[i];
+      vertices[j + 3] = texCoord[i + 1];
+    }
+
+    const buffer = this.gl.createBuffer();
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
+
+    return buffer;
   }
+
+  // _createVertexInfo(renderable, textureInfo) {}
 
   _resizeCanvas(canvas) {
     const devicePixelRatio = window.devicePixelRatio || 1;
@@ -307,6 +316,11 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+    this.gl.uniform2fv(
+      this._variables.uTextureAtlasSize,
+      [ this.textureAtlasSize.width, this.textureAtlasSize.height ]
+    );
+
     this._gameObjectObserver.sort(this._getCompareFunction());
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
@@ -323,25 +337,41 @@ class RenderProcessor extends Processor {
         };
       }
 
-      webglUtils.setBuffersAndAttributes(
-        this.gl,
-        this.programInfo.attribs.setters,
-        this._gameObjectCashMap[gameObjectId].bufferInfo
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._gameObjectCashMap[gameObjectId].bufferInfo);
+
+      this.gl.vertexAttribPointer(
+        this._variables.aPosition,
+        RENDER_COMPONENTS_NUMBER,
+        this.gl.FLOAT,
+        false,
+        Float32Array.BYTES_PER_ELEMENT * 4,
+        0
+      );
+      this.gl.vertexAttribPointer(
+        this._variables.aTexCoord,
+        RENDER_COMPONENTS_NUMBER,
+        this.gl.FLOAT,
+        false,
+        Float32Array.BYTES_PER_ELEMENT * 4,
+        Float32Array.BYTES_PER_ELEMENT * RENDER_COMPONENTS_NUMBER
       );
 
-      const uniforms = {
-        u_matrix: this._getTransformationMatrix({
+      this.gl.enableVertexAttribArray(this._variables.aPosition);
+      this.gl.enableVertexAttribArray(this._variables.aTexCoord);
+
+      this.gl.uniformMatrix3fv(
+        this._variables.uMatrix,
+        false,
+        this._getTransformationMatrix({
           renderable: renderable,
           x: transform.offsetX,
           y: transform.offsetY,
           rotation: transform.rotation,
-        }),
-        u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
-        u_texCoordTranslation: [ textureInfo.x, textureInfo.y ],
-        u_quadSize: [ renderable.width, renderable.height ],
-        u_textureSize: [ textureInfo.width, textureInfo.height ],
-      };
-      webglUtils.setUniforms(this.programInfo.uniforms.setters, uniforms);
+        })
+      );
+      this.gl.uniform2fv(this._variables.uTexCoordTranslation, [ textureInfo.x, textureInfo.y ]);
+      this.gl.uniform2fv(this._variables.uQuadSize, [ renderable.width, renderable.height ]);
+      this.gl.uniform2fv(this._variables.uTextureSize, [ textureInfo.width, textureInfo.height ]);
 
       this.gl.drawArrays(this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
     });
