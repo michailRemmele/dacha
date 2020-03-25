@@ -44,7 +44,7 @@ class RenderProcessor extends Processor {
 
     this._backgroundColor = new Color(backgroundColor);
 
-    this.canvas = window;
+    this._window = window;
     this._windowWidth;
     this._windowHeight;
 
@@ -94,7 +94,7 @@ class RenderProcessor extends Processor {
 
     try {
       graphicContext =
-        this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+        this._window.getContext('webgl') || this._window.getContext('experimental-webgl');
     } catch (e) {
       throw new Error('Unable to get graphic context.');
     }
@@ -279,8 +279,8 @@ class RenderProcessor extends Processor {
   _resizeCanvas(canvas) {
     const devicePixelRatio = window.devicePixelRatio || 1;
 
-    this._windowWidth = canvas.clientWidth;
-    this._windowHeight = canvas.clientHeight;
+    this._windowWidth = this._window.clientWidth;
+    this._windowHeight = this._window.clientHeight;
 
     const canvasWidth = this._windowWidth * devicePixelRatio;
     const canvasHeight = this._windowHeight * devicePixelRatio;
