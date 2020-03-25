@@ -147,6 +147,7 @@ class RenderProcessor extends Processor {
     this._variables = {
       aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
+      aIndex: this.gl.getAttribLocation(this.program, 'a_index'),
       uMatrix: this.gl.getUniformLocation(this.program, 'u_matrix'),
       uTextureAtlasSize: this.gl.getUniformLocation(this.program, 'u_textureAtlasSize'),
       uTexCoordTranslation: this.gl.getUniformLocation(this.program, 'u_texCoordTranslation'),
@@ -252,18 +253,19 @@ class RenderProcessor extends Processor {
       || renderable.height !== previousRenderable.height;
   }
 
-  _createBufferInfo(renderable, textureInfo) {
+  _createBufferInfo(renderable, textureInfo, index) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
     const texCoord = new Rectangle(textureInfo.width, textureInfo.height).toArray();
-    const totalLength = position.length + texCoord.length;
+    const totalLength = (position.length / 2) + position.length + texCoord.length;
 
-    const vertices = new Float32Array(position.length + texCoord.length);
+    const vertices = new Float32Array(totalLength);
 
-    for (let i = 0, j = 0; i < position.length, j < totalLength; i += 2, j += 4) {
+    for (let i = 0, j = 0; i < position.length, j < totalLength; i += 2, j += 5) {
       vertices[j] = position[i];
       vertices[j + 1] = position[i + 1];
       vertices[j + 2] = texCoord[i];
       vertices[j + 3] = texCoord[i + 1];
+      vertices[j + 4] = index;
     }
 
     const buffer = this.gl.createBuffer();
@@ -322,7 +324,7 @@ class RenderProcessor extends Processor {
     );
 
     this._gameObjectObserver.sort(this._getCompareFunction());
-    this._gameObjectObserver.forEach((gameObject) => {
+    this._gameObjectObserver.forEach((gameObject, index) => {
       const gameObjectId = gameObject.getId();
 
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
@@ -333,7 +335,7 @@ class RenderProcessor extends Processor {
       if (this._checkOnGeometryChange(gameObject)) {
         this._gameObjectCashMap[gameObjectId] = {
           renderable: renderable.clone(),
-          bufferInfo: this._createBufferInfo(renderable, textureInfo),
+          bufferInfo: this._createBufferInfo(renderable, textureInfo, index),
         };
       }
 
@@ -344,7 +346,7 @@ class RenderProcessor extends Processor {
         RENDER_COMPONENTS_NUMBER,
         this.gl.FLOAT,
         false,
-        Float32Array.BYTES_PER_ELEMENT * 4,
+        Float32Array.BYTES_PER_ELEMENT * 5,
         0
       );
       this.gl.vertexAttribPointer(
@@ -352,12 +354,21 @@ class RenderProcessor extends Processor {
         RENDER_COMPONENTS_NUMBER,
         this.gl.FLOAT,
         false,
-        Float32Array.BYTES_PER_ELEMENT * 4,
+        Float32Array.BYTES_PER_ELEMENT * 5,
         Float32Array.BYTES_PER_ELEMENT * RENDER_COMPONENTS_NUMBER
+      );
+      this.gl.vertexAttribPointer(
+        this._variables.aIndex,
+        1,
+        this.gl.FLOAT,
+        false,
+        Float32Array.BYTES_PER_ELEMENT * 5,
+        Float32Array.BYTES_PER_ELEMENT * RENDER_COMPONENTS_NUMBER * 2
       );
 
       this.gl.enableVertexAttribArray(this._variables.aPosition);
       this.gl.enableVertexAttribArray(this._variables.aTexCoord);
+      this.gl.enableVertexAttribArray(this._variables.aIndex);
 
       this.gl.uniformMatrix3fv(
         this._variables.uMatrix,
