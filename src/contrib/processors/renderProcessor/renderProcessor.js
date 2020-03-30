@@ -57,12 +57,12 @@ class RenderProcessor extends Processor {
     this._store = store;
     this._gameObjectObserver = gameObjectObserver;
 
-    this._gameObjectCashMap = {};
-
     this._canvasWidth;
     this._canvasHeight;
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
+
+    this._buffer = null;
   }
 
   processorDidMount() {
@@ -71,6 +71,7 @@ class RenderProcessor extends Processor {
     this.program = this._initShaders();
     this._initProgramInfo();
     this.textures = this._initTextures();
+    this._setUpGlobalUniforms();
   }
 
   processorWillUnmount() {
@@ -83,6 +84,7 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+    this._buffer = null;
     this._shaders = [];
     this.program = null;
     this.textures = null;
@@ -147,13 +149,13 @@ class RenderProcessor extends Processor {
     this._variables = {
       aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
-      aIndex: this.gl.getAttribLocation(this.program, 'a_index'),
       uMatrix: this.gl.getUniformLocation(this.program, 'u_matrix'),
-      uTextureAtlasSize: this.gl.getUniformLocation(this.program, 'u_textureAtlasSize'),
-      uTexCoordTranslation: this.gl.getUniformLocation(this.program, 'u_texCoordTranslation'),
-      uQuadSize: this.gl.getUniformLocation(this.program, 'u_quadSize'),
-      uTextureSize: this.gl.getUniformLocation(this.program, 'u_textureSize'),
+      // uTextureAtlasSize: this.gl.getUniformLocation(this.program, 'u_textureAtlasSize'),
+      // uTexCoordTranslation: this.gl.getUniformLocation(this.program, 'u_texCoordTranslation'),
+      // uTextureSize: this.gl.getUniformLocation(this.program, 'u_textureSize'),
     };
+
+    this._buffer = this.gl.createBuffer();
   }
 
   _initTextures() {
@@ -253,30 +255,23 @@ class RenderProcessor extends Processor {
       || renderable.height !== previousRenderable.height;
   }
 
-  _createBufferInfo(renderable, textureInfo, index) {
+  _setUpBufferInfo(renderable, textureInfo) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
     const texCoord = new Rectangle(textureInfo.width, textureInfo.height).toArray();
-    const totalLength = (position.length / 2) + position.length + texCoord.length;
+    const totalLength = position.length + texCoord.length;
 
     const vertices = new Float32Array(totalLength);
 
-    for (let i = 0, j = 0; i < position.length, j < totalLength; i += 2, j += 5) {
+    for (let i = 0, j = 0; i < position.length, j < totalLength; i += 2, j += 4) {
       vertices[j] = position[i];
       vertices[j + 1] = position[i + 1];
-      vertices[j + 2] = texCoord[i];
-      vertices[j + 3] = texCoord[i + 1];
-      vertices[j + 4] = index;
+      vertices[j + 2] = (texCoord[i] + textureInfo.x) / this.textureAtlasSize.width;
+      vertices[j + 3] = (texCoord[i + 1] + textureInfo.y) / this.textureAtlasSize.height;
     }
 
-    const buffer = this.gl.createBuffer();
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
-
-    return buffer;
   }
-
-  // _createVertexInfo(renderable, textureInfo) {}
 
   _resizeCanvas(canvas) {
     const devicePixelRatio = window.devicePixelRatio || 1;
@@ -305,12 +300,14 @@ class RenderProcessor extends Processor {
     this._canvasHeight = canvasHeight;
   }
 
-  process() {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      this._gameObjectCashMap[gameObjectId] = null;
-    });
+  _setUpGlobalUniforms() {
+    // this.gl.uniform2fv(
+    //   this._variables.uTextureAtlasSize,
+    //   [ this.textureAtlasSize.width, this.textureAtlasSize.height ]
+    // );
+  }
 
+  process() {
     const canvas = this.gl.canvas;
 
     this._resizeCanvas(canvas);
@@ -318,35 +315,21 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    this.gl.uniform2fv(
-      this._variables.uTextureAtlasSize,
-      [ this.textureAtlasSize.width, this.textureAtlasSize.height ]
-    );
-
     this._gameObjectObserver.sort(this._getCompareFunction());
-    this._gameObjectObserver.forEach((gameObject, index) => {
-      const gameObjectId = gameObject.getId();
-
+    this._gameObjectObserver.forEach((gameObject) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
       const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-      if (this._checkOnGeometryChange(gameObject)) {
-        this._gameObjectCashMap[gameObjectId] = {
-          renderable: renderable.clone(),
-          bufferInfo: this._createBufferInfo(renderable, textureInfo, index),
-        };
-      }
-
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._gameObjectCashMap[gameObjectId].bufferInfo);
+      this._setUpBufferInfo(renderable, textureInfo);
 
       this.gl.vertexAttribPointer(
         this._variables.aPosition,
         RENDER_COMPONENTS_NUMBER,
         this.gl.FLOAT,
         false,
-        Float32Array.BYTES_PER_ELEMENT * 5,
+        Float32Array.BYTES_PER_ELEMENT * 4,
         0
       );
       this.gl.vertexAttribPointer(
@@ -354,21 +337,12 @@ class RenderProcessor extends Processor {
         RENDER_COMPONENTS_NUMBER,
         this.gl.FLOAT,
         false,
-        Float32Array.BYTES_PER_ELEMENT * 5,
+        Float32Array.BYTES_PER_ELEMENT * 4,
         Float32Array.BYTES_PER_ELEMENT * RENDER_COMPONENTS_NUMBER
-      );
-      this.gl.vertexAttribPointer(
-        this._variables.aIndex,
-        1,
-        this.gl.FLOAT,
-        false,
-        Float32Array.BYTES_PER_ELEMENT * 5,
-        Float32Array.BYTES_PER_ELEMENT * RENDER_COMPONENTS_NUMBER * 2
       );
 
       this.gl.enableVertexAttribArray(this._variables.aPosition);
       this.gl.enableVertexAttribArray(this._variables.aTexCoord);
-      this.gl.enableVertexAttribArray(this._variables.aIndex);
 
       this.gl.uniformMatrix3fv(
         this._variables.uMatrix,
@@ -380,9 +354,8 @@ class RenderProcessor extends Processor {
           rotation: transform.rotation,
         })
       );
-      this.gl.uniform2fv(this._variables.uTexCoordTranslation, [ textureInfo.x, textureInfo.y ]);
-      this.gl.uniform2fv(this._variables.uQuadSize, [ renderable.width, renderable.height ]);
-      this.gl.uniform2fv(this._variables.uTextureSize, [ textureInfo.width, textureInfo.height ]);
+      // this.gl.uniform2fv(this._variables.uTexCoordTranslation, [ textureInfo.x, textureInfo.y ]);
+      // this.gl.uniform2fv(this._variables.uTextureSize, [ textureInfo.width, textureInfo.height ]);
 
       this.gl.drawArrays(this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
     });
