@@ -66,6 +66,8 @@ class RenderProcessor extends Processor {
 
     this._buffer = null;
     this._matrixBuffer = null;
+
+    this._lastInstance = null;
   }
 
   processorDidMount() {
@@ -270,6 +272,23 @@ class RenderProcessor extends Processor {
       || renderable.height !== previousRenderable.height;
   }
 
+  _isAnotherInstance(gameObject) {
+    if (!this._lastInstance) {
+      this._lastInstance = gameObject;
+      return false;
+    }
+
+    const lastRenderable = this._lastInstance.getComponent(RENDERABLE_COMPONENT_NAME);
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+
+    this._lastInstance = gameObject;
+
+    return lastRenderable.src !== renderable.src
+      || lastRenderable.type !== renderable.type
+      || lastRenderable.width !== renderable.width
+      || lastRenderable.height !== renderable.height;
+  }
+
   _createVertexInfo(renderable, textureInfo) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
     const texCoord = new Rectangle(textureInfo.width, textureInfo.height).toArray();
@@ -321,36 +340,7 @@ class RenderProcessor extends Processor {
     // );
   }
 
-  process() {
-    const canvas = this.gl.canvas;
-
-    this._resizeCanvas(canvas);
-    this.gl.viewport(0, 0, canvas.width, canvas.height);
-
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-    this._gameObjectObserver.sort(this._getCompareFunction());
-
-    const vertexData = [];
-    const matrixData = [];
-
-    this._gameObjectObserver.forEach((gameObject) => {
-      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const texture = this.textureAtlasDescriptor[renderable.src];
-      const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
-
-      Array.prototype.push.apply(vertexData, this._createVertexInfo(
-        renderable, textureInfo
-      ));
-      Array.prototype.push.apply(matrixData, this._getTransformationMatrix({
-        renderable: renderable,
-        x: transform.offsetX,
-        y: transform.offsetY,
-        rotation: transform.rotation,
-      }));
-    });
-
+  _setUpBuffers(vertexData, matrixData) {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexData), this.gl.STATIC_DRAW);
 
@@ -391,13 +381,65 @@ class RenderProcessor extends Processor {
       );
       this._ext.vertexAttribDivisorANGLE(loc, 1);
     }
+  }
+
+  _drawInstanced(vertexData, matrixData, count) {
+    this._setUpBuffers(vertexData, matrixData);
 
     this._ext.drawArraysInstancedANGLE(
       this.gl.TRIANGLES,
       DRAW_OFFSET,
       DRAW_COUNT,
-      this._gameObjectObserver.size()
+      count
     );
+  }
+
+  process() {
+    const canvas = this.gl.canvas;
+
+    this._resizeCanvas(canvas);
+    this.gl.viewport(0, 0, canvas.width, canvas.height);
+
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+    this._gameObjectObserver.sort(this._getCompareFunction());
+
+    let vertexData = null;
+    let matrixData = [];
+    let count = 0;
+    const size = this._gameObjectObserver.size();
+
+    this._lastInstance = null;
+
+    this._gameObjectObserver.forEach((gameObject, index) => {
+      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+      const texture = this.textureAtlasDescriptor[renderable.src];
+      const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
+
+      if (index === 0) {
+        vertexData = this._createVertexInfo(renderable, textureInfo);
+      }
+
+      if (this._isAnotherInstance(gameObject)) {
+        this._drawInstanced(vertexData, matrixData, count);
+        vertexData = this._createVertexInfo(renderable, textureInfo);
+        matrixData = [];
+        count = 0;
+      }
+
+      Array.prototype.push.apply(matrixData, this._getTransformationMatrix({
+        renderable: renderable,
+        x: transform.offsetX,
+        y: transform.offsetY,
+        rotation: transform.rotation,
+      }));
+      count += 1;
+
+      if (index === size - 1) {
+        this._drawInstanced(vertexData, matrixData, count);
+      }
+    });
   }
 }
 
