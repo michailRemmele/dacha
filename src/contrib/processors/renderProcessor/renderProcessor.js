@@ -342,7 +342,7 @@ class RenderProcessor extends Processor {
 
   _setUpBuffers(vertexData, matrixData) {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexData), this.gl.STATIC_DRAW);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertexData, this.gl.STATIC_DRAW);
 
     this.gl.enableVertexAttribArray(this._variables.aPosition);
     this.gl.enableVertexAttribArray(this._variables.aTexCoord);
