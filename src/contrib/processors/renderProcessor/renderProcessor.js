@@ -270,7 +270,7 @@ class RenderProcessor extends Processor {
       || renderable.height !== previousRenderable.height;
   }
 
-  _setUpBufferInfo(renderable, textureInfo) {
+  _createVertexInfo(renderable, textureInfo) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
     const texCoord = new Rectangle(textureInfo.width, textureInfo.height).toArray();
     const totalLength = position.length + texCoord.length;
@@ -284,8 +284,7 @@ class RenderProcessor extends Processor {
       vertices[j + 3] = (texCoord[i + 1] + textureInfo.y) / this.textureAtlasSize.height;
     }
 
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
+    return vertices;
   }
 
   _resizeCanvas(canvas) {
@@ -331,61 +330,74 @@ class RenderProcessor extends Processor {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._gameObjectObserver.sort(this._getCompareFunction());
+
+    const vertexData = [];
+    const matrixData = [];
+
     this._gameObjectObserver.forEach((gameObject) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
       const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-      this._setUpBufferInfo(renderable, textureInfo);
-
-      this.gl.enableVertexAttribArray(this._variables.aPosition);
-      this.gl.enableVertexAttribArray(this._variables.aTexCoord);
-
-      this.gl.vertexAttribPointer(
-        this._variables.aPosition,
-        RENDER_COMPONENTS_NUMBER,
-        this.gl.FLOAT,
-        false,
-        Float32Array.BYTES_PER_ELEMENT * 4,
-        0
-      );
-      this.gl.vertexAttribPointer(
-        this._variables.aTexCoord,
-        RENDER_COMPONENTS_NUMBER,
-        this.gl.FLOAT,
-        false,
-        Float32Array.BYTES_PER_ELEMENT * 4,
-        Float32Array.BYTES_PER_ELEMENT * RENDER_COMPONENTS_NUMBER
-      );
-
-      const transformMatrix = this._getTransformationMatrix({
+      Array.prototype.push.apply(vertexData, this._createVertexInfo(
+        renderable, textureInfo
+      ));
+      Array.prototype.push.apply(matrixData, this._getTransformationMatrix({
         renderable: renderable,
         x: transform.offsetX,
         y: transform.offsetY,
         rotation: transform.rotation,
-      });
-
-      const matrixData = new Float32Array(transformMatrix);
-
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._matrixBuffer);
-      this.gl.bufferData(this.gl.ARRAY_BUFFER, matrixData, this.gl.STATIC_DRAW);
-
-      for (let i = 0; i < 3; i++) {
-        const loc = this._variables.aMatrix + i;
-
-        this.gl.enableVertexAttribArray(loc);
-        this.gl.vertexAttribPointer(loc, 3, this.gl.FLOAT, false, 0, i * Float32Array.BYTES_PER_ELEMENT * 3);
-        this._ext.vertexAttribDivisorANGLE(loc, 1);
-      }
-
-      this._ext.drawArraysInstancedANGLE(
-        this.gl.TRIANGLES,
-        DRAW_OFFSET,
-        DRAW_COUNT,
-        1,
-      );
+      }));
     });
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexData), this.gl.STATIC_DRAW);
+
+    this.gl.enableVertexAttribArray(this._variables.aPosition);
+    this.gl.enableVertexAttribArray(this._variables.aTexCoord);
+
+    this.gl.vertexAttribPointer(
+      this._variables.aPosition,
+      RENDER_COMPONENTS_NUMBER,
+      this.gl.FLOAT,
+      false,
+      Float32Array.BYTES_PER_ELEMENT * 4,
+      0
+    );
+    this.gl.vertexAttribPointer(
+      this._variables.aTexCoord,
+      RENDER_COMPONENTS_NUMBER,
+      this.gl.FLOAT,
+      false,
+      Float32Array.BYTES_PER_ELEMENT * 4,
+      Float32Array.BYTES_PER_ELEMENT * RENDER_COMPONENTS_NUMBER
+    );
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._matrixBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(matrixData), this.gl.STATIC_DRAW);
+
+    for (let i = 0; i < 3; i++) {
+      const loc = this._variables.aMatrix + i;
+
+      this.gl.enableVertexAttribArray(loc);
+      this.gl.vertexAttribPointer(
+        loc,
+        3,
+        this.gl.FLOAT,
+        false,
+        Float32Array.BYTES_PER_ELEMENT * 9,
+        i * Float32Array.BYTES_PER_ELEMENT * 3
+      );
+      this._ext.vertexAttribDivisorANGLE(loc, 1);
+    }
+
+    this._ext.drawArraysInstancedANGLE(
+      this.gl.TRIANGLES,
+      DRAW_OFFSET,
+      DRAW_COUNT,
+      this._gameObjectObserver.size()
+    );
   }
 }
 
