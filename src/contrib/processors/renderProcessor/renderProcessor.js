@@ -66,6 +66,7 @@ class RenderProcessor extends Processor {
 
     this._buffer = null;
     this._matrixBuffer = null;
+    this._texMatrixBuffer = null;
 
     this._lastInstance = null;
   }
@@ -92,6 +93,7 @@ class RenderProcessor extends Processor {
 
     this._buffer = null;
     this._matrixBuffer = null;
+    this._texMatrixBuffer = null;
     this._shaders = [];
     this.program = null;
     this.textures = null;
@@ -165,6 +167,7 @@ class RenderProcessor extends Processor {
       aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
       aMatrix: this.gl.getAttribLocation(this.program, 'a_matrix'),
+      aTexMatrix: this.gl.getAttribLocation(this.program, 'a_texMatrix'),
       uMatrix: this.gl.getUniformLocation(this.program, 'u_matrix'),
       // uTextureAtlasSize: this.gl.getUniformLocation(this.program, 'u_textureAtlasSize'),
       // uTexCoordTranslation: this.gl.getUniformLocation(this.program, 'u_texCoordTranslation'),
@@ -173,6 +176,7 @@ class RenderProcessor extends Processor {
 
     this._buffer = this.gl.createBuffer();
     this._matrixBuffer = this.gl.createBuffer();
+    this._texMatrixBuffer = this.gl.createBuffer();
   }
 
   _initTextures() {
@@ -209,6 +213,19 @@ class RenderProcessor extends Processor {
     matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
     matrixTransformer.scale(matrix, scale, scale);
     matrixTransformer.project(matrix, this._windowWidth, this._windowHeight);
+
+    return matrix;
+  }
+
+  _getTextureMatrix(renderable, textureInfo) {
+    const matrixTransformer = this._matrixTransformer;
+    const scaleX = 1 / this.textureAtlasSize.width;
+    const scaleY = 1 / this.textureAtlasSize.height;
+
+    const matrix = matrixTransformer.getIdentityMatrix();
+
+    matrixTransformer.translate(matrix, textureInfo.x, textureInfo.y);
+    matrixTransformer.scale(matrix, scaleX, scaleY);
 
     return matrix;
   }
@@ -299,8 +316,8 @@ class RenderProcessor extends Processor {
     for (let i = 0, j = 0; i < position.length, j < totalLength; i += 2, j += 4) {
       vertices[j] = position[i];
       vertices[j + 1] = position[i + 1];
-      vertices[j + 2] = (texCoord[i] + textureInfo.x) / this.textureAtlasSize.width;
-      vertices[j + 3] = (texCoord[i + 1] + textureInfo.y) / this.textureAtlasSize.height;
+      vertices[j + 2] = texCoord[i];
+      vertices[j + 3] = texCoord[i + 1];
     }
 
     return vertices;
@@ -340,7 +357,7 @@ class RenderProcessor extends Processor {
     // );
   }
 
-  _setUpBuffers(vertexData, matrixData) {
+  _setUpBuffers(vertexData, matrixData, texMatrixData) {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, vertexData, this.gl.STATIC_DRAW);
 
@@ -381,10 +398,28 @@ class RenderProcessor extends Processor {
       );
       this._ext.vertexAttribDivisorANGLE(loc, 1);
     }
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._texMatrixBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(texMatrixData), this.gl.STATIC_DRAW);
+
+    for (let i = 0; i < 3; i++) {
+      const loc = this._variables.aTexMatrix + i;
+
+      this.gl.enableVertexAttribArray(loc);
+      this.gl.vertexAttribPointer(
+        loc,
+        3,
+        this.gl.FLOAT,
+        false,
+        Float32Array.BYTES_PER_ELEMENT * 9,
+        i * Float32Array.BYTES_PER_ELEMENT * 3
+      );
+      this._ext.vertexAttribDivisorANGLE(loc, 1);
+    }
   }
 
-  _drawInstanced(vertexData, matrixData, count) {
-    this._setUpBuffers(vertexData, matrixData);
+  _drawInstanced(vertexData, matrixData, texMatrixData, count) {
+    this._setUpBuffers(vertexData, matrixData, texMatrixData);
 
     this._ext.drawArraysInstancedANGLE(
       this.gl.TRIANGLES,
@@ -406,6 +441,7 @@ class RenderProcessor extends Processor {
 
     let vertexData = null;
     let matrixData = [];
+    let texMatrixData = [];
     let count = 0;
     const size = this._gameObjectObserver.size();
 
@@ -422,9 +458,10 @@ class RenderProcessor extends Processor {
       }
 
       if (this._isAnotherInstance(gameObject)) {
-        this._drawInstanced(vertexData, matrixData, count);
+        this._drawInstanced(vertexData, matrixData, texMatrixData, count);
         vertexData = this._createVertexInfo(renderable, textureInfo);
         matrixData = [];
+        texMatrixData = [];
         count = 0;
       }
 
@@ -434,10 +471,13 @@ class RenderProcessor extends Processor {
         y: transform.offsetY,
         rotation: transform.rotation,
       }));
+      Array.prototype.push.apply(texMatrixData, this._getTextureMatrix(
+        renderable, textureInfo
+      ));
       count += 1;
 
       if (index === size - 1) {
-        this._drawInstanced(vertexData, matrixData, count);
+        this._drawInstanced(vertexData, matrixData, texMatrixData, count);
       }
     });
   }
