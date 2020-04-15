@@ -172,10 +172,6 @@ class RenderProcessor extends Processor {
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
       aMatrix: this.gl.getAttribLocation(this.program, 'a_matrix'),
       aTexMatrix: this.gl.getAttribLocation(this.program, 'a_texMatrix'),
-      uMatrix: this.gl.getUniformLocation(this.program, 'u_matrix'),
-      // uTextureAtlasSize: this.gl.getUniformLocation(this.program, 'u_textureAtlasSize'),
-      // uTexCoordTranslation: this.gl.getUniformLocation(this.program, 'u_texCoordTranslation'),
-      // uTextureSize: this.gl.getUniformLocation(this.program, 'u_textureSize'),
     };
 
     this._buffer = this.gl.createBuffer();
@@ -220,15 +216,17 @@ class RenderProcessor extends Processor {
     return matrix;
   }
 
-  _getTextureMatrix(renderable, textureInfo) {
+  _getTextureMatrix(textureInfo) {
+    const { width, height, x, y } = textureInfo;
     const matrixTransformer = this._matrixTransformer;
-    const scaleX = 1 / this.textureAtlasSize.width;
-    const scaleY = 1 / this.textureAtlasSize.height;
+    const projectX = 1 / this.textureAtlasSize.width;
+    const projectY = 1 / this.textureAtlasSize.height;
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
-    matrixTransformer.translate(matrix, textureInfo.x, textureInfo.y);
-    matrixTransformer.scale(matrix, scaleX, scaleY);
+    matrixTransformer.scale(matrix, width, height);
+    matrixTransformer.translate(matrix, x, y);
+    matrixTransformer.scale(matrix, projectX, projectY);
 
     return matrix;
   }
@@ -311,7 +309,10 @@ class RenderProcessor extends Processor {
 
   _createVertexInfo(renderable, textureInfo) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
-    const texCoord = new Rectangle(textureInfo.width, textureInfo.height).toArray();
+    const texCoord = new Rectangle(
+      renderable.width / textureInfo.width,
+      renderable.height / textureInfo.height
+    ).toArray();
     const totalLength = position.length + texCoord.length;
 
     const vertices = new Float32Array(totalLength);
@@ -381,11 +382,20 @@ class RenderProcessor extends Processor {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._matrixBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(matrixData), this.gl.STATIC_DRAW);
 
-    const mat3Attributes = [ this._variables.aMatrix, this._variables.aTexMatrix ];
+    const instancedAttrs = {
+      mat3: [ this._variables.aMatrix, this._variables.aTexMatrix ],
+    };
+    const sizeMap = {
+      mat3: BYTES_PER_MATRIX,
+      vec2: BYTES_PER_VECTOR_2,
+    };
+    const stride = Object.keys(instancedAttrs).reduce((totalSize, key) => (
+      totalSize + (sizeMap[key] * instancedAttrs[key].length)
+    ), 0);
 
-    for (let i = 0; i < mat3Attributes.length; i++) {
+    for (let i = 0; i < instancedAttrs.mat3.length; i++) {
       for (let j = 0; j < MATRIX_ROW_SIZE; j++) {
-        const loc = mat3Attributes[i] + j;
+        const loc = instancedAttrs.mat3[i] + j;
 
         this.gl.enableVertexAttribArray(loc);
         this.gl.vertexAttribPointer(
@@ -393,7 +403,7 @@ class RenderProcessor extends Processor {
           MATRIX_ROW_SIZE,
           this.gl.FLOAT,
           false,
-          BYTES_PER_MATRIX * mat3Attributes.length,
+          stride,
           (i * BYTES_PER_MATRIX) + (j * BYTES_PER_MATRIX_ROW)
         );
         this._ext.vertexAttribDivisorANGLE(loc, 1);
@@ -453,7 +463,7 @@ class RenderProcessor extends Processor {
         rotation: transform.rotation,
       }));
       Array.prototype.push.apply(matrixData, this._getTextureMatrix(
-        renderable, textureInfo
+        textureInfo
       ));
       count += 1;
 
