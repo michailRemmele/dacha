@@ -74,6 +74,8 @@ class RenderProcessor extends Processor {
     this._matrixBuffer = null;
 
     this._lastInstance = null;
+
+    this._textureMatrixCache = {};
   }
 
   processorDidMount() {
@@ -83,7 +85,6 @@ class RenderProcessor extends Processor {
     this.program = this._initShaders();
     this._initProgramInfo();
     this.textures = this._initTextures();
-    this._setUpGlobalUniforms();
   }
 
   processorWillUnmount() {
@@ -172,6 +173,9 @@ class RenderProcessor extends Processor {
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
       aMatrix: this.gl.getAttribLocation(this.program, 'a_matrix'),
       aTexMatrix: this.gl.getAttribLocation(this.program, 'a_texMatrix'),
+      uCameraMatrix: this.gl.getUniformLocation(this.program, 'u_cameraMatrix'),
+      uZoomMatrix: this.gl.getUniformLocation(this.program, 'u_zoomMatrix'),
+      uProjectMatrix: this.gl.getUniformLocation(this.program, 'u_projectMatrix'),
     };
 
     this._buffer = this.gl.createBuffer();
@@ -197,27 +201,33 @@ class RenderProcessor extends Processor {
     const matrixTransformer = this._matrixTransformer;
     const { renderable, x, y, rotation } = props;
 
-    const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
-    const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
-    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
-
-    const scale =  zoom * this._screenScale;
-
     const matrix = matrixTransformer.getIdentityMatrix();
 
     matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
     renderable.flipX && matrixTransformer.flipX(matrix);
     renderable.flipY && matrixTransformer.flipY(matrix);
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
-    matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
-    matrixTransformer.scale(matrix, scale, scale);
-    matrixTransformer.project(matrix, this._windowWidth, this._windowHeight);
+    matrixTransformer.translate(matrix, x, y);
 
     return matrix;
   }
 
-  _getTextureMatrix(textureInfo) {
+  _isTextureChanged(textureInfo, newTextureInfo) {
+    return textureInfo.width !== newTextureInfo.width ||
+      textureInfo.height !== newTextureInfo.height ||
+      textureInfo.x !== newTextureInfo.x ||
+      textureInfo.y !== newTextureInfo.y;
+  }
+
+  _getTextureMatrix(props) {
+    const { textureInfo, gameObjectId } = props;
     const { width, height, x, y } = textureInfo;
+    const cache = this._textureMatrixCache[gameObjectId];
+
+    if (cache && !this._isTextureChanged(cache.textureInfo, textureInfo)) {
+      return cache.matrix;
+    }
+
     const matrixTransformer = this._matrixTransformer;
     const projectX = 1 / this.textureAtlasSize.width;
     const projectY = 1 / this.textureAtlasSize.height;
@@ -227,6 +237,11 @@ class RenderProcessor extends Processor {
     matrixTransformer.scale(matrix, width, height);
     matrixTransformer.translate(matrix, x, y);
     matrixTransformer.scale(matrix, projectX, projectY);
+
+    this._textureMatrixCache[gameObjectId] = {
+      matrix,
+      textureInfo,
+    };
 
     return matrix;
   }
@@ -274,20 +289,6 @@ class RenderProcessor extends Processor {
 
       return 0;
     };
-  }
-
-  _checkOnGeometryChange(gameObject) {
-    const gameObjectId = gameObject.getId();
-
-    if (!this._gameObjectCashMap[gameObjectId]) {
-      return true;
-    }
-
-    const previousRenderable = this._gameObjectCashMap[gameObjectId].renderable;
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-
-    return renderable.width !== previousRenderable.width
-      || renderable.height !== previousRenderable.height;
   }
 
   _isAnotherInstance(gameObject) {
@@ -355,10 +356,37 @@ class RenderProcessor extends Processor {
   }
 
   _setUpGlobalUniforms() {
-    // this.gl.uniform2fv(
-    //   this._variables.uTextureAtlasSize,
-    //   [ this.textureAtlasSize.width, this.textureAtlasSize.height ]
-    // );
+    const matrixTransformer = this._matrixTransformer;
+
+    const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
+    const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
+
+    const scale =  zoom * this._screenScale;
+
+    const cameraMatrix = matrixTransformer.getIdentityMatrix();
+    matrixTransformer.translate(cameraMatrix, -cameraTransform.offsetX, -cameraTransform.offsetY);
+    this.gl.uniformMatrix3fv(
+      this._variables.uCameraMatrix,
+      false,
+      cameraMatrix
+    );
+
+    const zoomMatrix = matrixTransformer.getIdentityMatrix();
+    matrixTransformer.scale(zoomMatrix, scale, scale);
+    this.gl.uniformMatrix3fv(
+      this._variables.uZoomMatrix,
+      false,
+      zoomMatrix
+    );
+
+    const projectMatrix = matrixTransformer.getIdentityMatrix();
+    matrixTransformer.project(projectMatrix, this._windowWidth, this._windowHeight);
+    this.gl.uniformMatrix3fv(
+      this._variables.uProjectMatrix,
+      false,
+      projectMatrix
+    );
   }
 
   _setUpBuffers(vertexData, matrixData) {
@@ -422,6 +450,13 @@ class RenderProcessor extends Processor {
     );
   }
 
+  _processRemovedGameObjects() {
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+      this._textureMatrixCache[gameObjectId] = null;
+    });
+  }
+
   process() {
     const canvas = this.gl.canvas;
 
@@ -438,6 +473,10 @@ class RenderProcessor extends Processor {
     const size = this._gameObjectObserver.size();
 
     this._lastInstance = null;
+
+    this._setUpGlobalUniforms();
+
+    this._processRemovedGameObjects();
 
     this._gameObjectObserver.forEach((gameObject, index) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
@@ -462,9 +501,10 @@ class RenderProcessor extends Processor {
         y: transform.offsetY,
         rotation: transform.rotation,
       }));
-      Array.prototype.push.apply(matrixData, this._getTextureMatrix(
-        textureInfo
-      ));
+      Array.prototype.push.apply(matrixData, this._getTextureMatrix({
+        textureInfo,
+        gameObjectId: gameObject.getId(),
+      }));
       count += 1;
 
       if (index === size - 1) {
