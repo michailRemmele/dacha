@@ -69,6 +69,7 @@ class RenderProcessor extends Processor {
     this._screenScale = 1;
 
     this._ext = null;
+    this._vaoExt = null;
 
     this._buffer = null;
     this._matrixBuffer = null;
@@ -76,6 +77,7 @@ class RenderProcessor extends Processor {
     this._lastInstance = null;
 
     this._textureMatrixCache = {};
+    this._vaoCache = {};
   }
 
   processorDidMount() {
@@ -124,9 +126,14 @@ class RenderProcessor extends Processor {
 
   _initExtensions() {
     this._ext = this.gl.getExtension('ANGLE_instanced_arrays');
+    this._vaoExt = this.gl.getExtension('OES_vertex_array_object');
 
     if (!this._ext) {
       return alert('Unable to initialize extensions. Need ANGLE_instanced_arrays');
+    }
+
+    if (!this._vaoExt) {
+      return alert('Unable to initialize OES_vertex_array_object extension');
     }
   }
 
@@ -171,8 +178,8 @@ class RenderProcessor extends Processor {
     this._variables = {
       aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
-      aMatrix: this.gl.getAttribLocation(this.program, 'a_matrix'),
-      aTexMatrix: this.gl.getAttribLocation(this.program, 'a_texMatrix'),
+      uModelViewMatrix: this.gl.getUniformLocation(this.program, 'u_modelViewMatrix'),
+      uTexMatrix: this.gl.getUniformLocation(this.program, 'u_texMatrix'),
       uCameraMatrix: this.gl.getUniformLocation(this.program, 'u_cameraMatrix'),
       uZoomMatrix: this.gl.getUniformLocation(this.program, 'u_zoomMatrix'),
       uProjectMatrix: this.gl.getUniformLocation(this.program, 'u_projectMatrix'),
@@ -197,7 +204,7 @@ class RenderProcessor extends Processor {
     return texture;
   }
 
-  _getTransformationMatrix(props) {
+  _getModelViewMatrix(props) {
     const matrixTransformer = this._matrixTransformer;
     const { renderable, x, y, rotation } = props;
 
@@ -291,22 +298,36 @@ class RenderProcessor extends Processor {
     };
   }
 
-  _isAnotherInstance(gameObject) {
-    if (!this._lastInstance) {
-      this._lastInstance = gameObject;
-      return false;
+  _shouldVAOUpdate(gameObject) {
+    const gameObjectId = gameObject.getId();
+
+    if (!this._vaoCache[gameObjectId]) {
+      return true;
     }
 
-    const lastRenderable = this._lastInstance.getComponent(RENDERABLE_COMPONENT_NAME);
+    const previousRenderable = this._vaoCache[gameObjectId].renderable;
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
 
-    this._lastInstance = gameObject;
-
-    return lastRenderable.src !== renderable.src
-      || lastRenderable.type !== renderable.type
-      || lastRenderable.width !== renderable.width
-      || lastRenderable.height !== renderable.height;
+    return renderable.width !== previousRenderable.width
+      || renderable.height !== previousRenderable.height;
   }
+
+  // _isAnotherInstance(gameObject) {
+  //   if (!this._lastInstance) {
+  //     this._lastInstance = gameObject;
+  //     return false;
+  //   }
+
+  //   const lastRenderable = this._lastInstance.getComponent(RENDERABLE_COMPONENT_NAME);
+  //   const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+
+  //   this._lastInstance = gameObject;
+
+  //   return lastRenderable.src !== renderable.src
+  //     || lastRenderable.type !== renderable.type
+  //     || lastRenderable.width !== renderable.width
+  //     || lastRenderable.height !== renderable.height;
+  // }
 
   _createVertexInfo(renderable, textureInfo) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
@@ -389,8 +410,63 @@ class RenderProcessor extends Processor {
     );
   }
 
-  _setUpBuffers(vertexData, matrixData) {
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
+  // _setUpBuffers(vertexData, matrixData) {
+  //   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
+  //   this.gl.bufferData(this.gl.ARRAY_BUFFER, vertexData, this.gl.STATIC_DRAW);
+
+  //   const vec2Attributes = [ this._variables.aPosition, this._variables.aTexCoord ];
+
+  //   for (let i = 0; i < vec2Attributes.length; i++) {
+  //     this.gl.enableVertexAttribArray(vec2Attributes[i]);
+  //     this.gl.vertexAttribPointer(
+  //       vec2Attributes[i],
+  //       VECTOR_2_SIZE,
+  //       this.gl.FLOAT,
+  //       false,
+  //       BYTES_PER_VECTOR_2 * vec2Attributes.length,
+  //       i * BYTES_PER_VECTOR_2
+  //     );
+  //   }
+
+  //   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._matrixBuffer);
+  //   this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(matrixData), this.gl.STATIC_DRAW);
+
+  //   const instancedAttrs = {
+  //     mat3: [ this._variables.aMatrix, this._variables.aTexMatrix ],
+  //   };
+  //   const sizeMap = {
+  //     mat3: BYTES_PER_MATRIX,
+  //     vec2: BYTES_PER_VECTOR_2,
+  //   };
+  //   const stride = Object.keys(instancedAttrs).reduce((totalSize, key) => (
+  //     totalSize + (sizeMap[key] * instancedAttrs[key].length)
+  //   ), 0);
+
+  //   for (let i = 0; i < instancedAttrs.mat3.length; i++) {
+  //     for (let j = 0; j < MATRIX_ROW_SIZE; j++) {
+  //       const loc = instancedAttrs.mat3[i] + j;
+
+  //       this.gl.enableVertexAttribArray(loc);
+  //       this.gl.vertexAttribPointer(
+  //         loc,
+  //         MATRIX_ROW_SIZE,
+  //         this.gl.FLOAT,
+  //         false,
+  //         stride,
+  //         (i * BYTES_PER_MATRIX) + (j * BYTES_PER_MATRIX_ROW)
+  //       );
+  //       this._ext.vertexAttribDivisorANGLE(loc, 1);
+  //     }
+  //   }
+  // }
+
+  _createVAO(renderable, textureInfo) {
+    const vertexData = this._createVertexInfo(renderable, textureInfo);
+
+    const vao = this._vaoExt.createVertexArrayOES();
+    this._vaoExt.bindVertexArrayOES(vao);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.gl.createBuffer());
     this.gl.bufferData(this.gl.ARRAY_BUFFER, vertexData, this.gl.STATIC_DRAW);
 
     const vec2Attributes = [ this._variables.aPosition, this._variables.aTexCoord ];
@@ -407,48 +483,21 @@ class RenderProcessor extends Processor {
       );
     }
 
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._matrixBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(matrixData), this.gl.STATIC_DRAW);
+    this._vaoExt.bindVertexArrayOES(null);
 
-    const instancedAttrs = {
-      mat3: [ this._variables.aMatrix, this._variables.aTexMatrix ],
-    };
-    const sizeMap = {
-      mat3: BYTES_PER_MATRIX,
-      vec2: BYTES_PER_VECTOR_2,
-    };
-    const stride = Object.keys(instancedAttrs).reduce((totalSize, key) => (
-      totalSize + (sizeMap[key] * instancedAttrs[key].length)
-    ), 0);
-
-    for (let i = 0; i < instancedAttrs.mat3.length; i++) {
-      for (let j = 0; j < MATRIX_ROW_SIZE; j++) {
-        const loc = instancedAttrs.mat3[i] + j;
-
-        this.gl.enableVertexAttribArray(loc);
-        this.gl.vertexAttribPointer(
-          loc,
-          MATRIX_ROW_SIZE,
-          this.gl.FLOAT,
-          false,
-          stride,
-          (i * BYTES_PER_MATRIX) + (j * BYTES_PER_MATRIX_ROW)
-        );
-        this._ext.vertexAttribDivisorANGLE(loc, 1);
-      }
-    }
+    return vao;
   }
 
-  _drawInstanced(vertexData, matrixData, count) {
-    this._setUpBuffers(vertexData, matrixData);
+  // _drawInstanced(vertexData, matrixData, count) {
+  //   this._setUpBuffers(vertexData, matrixData);
 
-    this._ext.drawArraysInstancedANGLE(
-      this.gl.TRIANGLES,
-      DRAW_OFFSET,
-      DRAW_COUNT,
-      count
-    );
-  }
+  //   this._ext.drawArraysInstancedANGLE(
+  //     this.gl.TRIANGLES,
+  //     DRAW_OFFSET,
+  //     DRAW_COUNT,
+  //     count
+  //   );
+  // }
 
   _processRemovedGameObjects() {
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
@@ -467,49 +516,51 @@ class RenderProcessor extends Processor {
 
     this._gameObjectObserver.sort(this._getCompareFunction());
 
-    let vertexData = null;
-    let matrixData = [];
-    let count = 0;
-    const size = this._gameObjectObserver.size();
-
     this._lastInstance = null;
 
     this._setUpGlobalUniforms();
 
     this._processRemovedGameObjects();
 
-    this._gameObjectObserver.forEach((gameObject, index) => {
+    this._gameObjectObserver.forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
       const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-      if (index === 0) {
-        vertexData = this._createVertexInfo(renderable, textureInfo);
+      if (this._shouldVAOUpdate(gameObject)) {
+        this._vaoCache[gameObjectId] = {
+          renderable: renderable.clone(),
+          vao: this._createVAO(renderable, textureInfo),
+        };
       }
 
-      if (this._isAnotherInstance(gameObject)) {
-        this._drawInstanced(vertexData, matrixData, count);
-        vertexData = this._createVertexInfo(renderable, textureInfo);
-        matrixData = [];
-        count = 0;
-      }
+      this._vaoExt.bindVertexArrayOES(this._vaoCache[gameObjectId].vao);
 
-      Array.prototype.push.apply(matrixData, this._getTransformationMatrix({
+      const modelViewMatrix = this._getModelViewMatrix({
         renderable: renderable,
         x: transform.offsetX,
         y: transform.offsetY,
         rotation: transform.rotation,
-      }));
-      Array.prototype.push.apply(matrixData, this._getTextureMatrix({
+      });
+      const textureMatrix = this._getTextureMatrix({
         textureInfo,
         gameObjectId: gameObject.getId(),
-      }));
-      count += 1;
+      });
 
-      if (index === size - 1) {
-        this._drawInstanced(vertexData, matrixData, count);
-      }
+      this.gl.uniformMatrix3fv(
+        this._variables.uModelViewMatrix,
+        false,
+        modelViewMatrix
+      );
+      this.gl.uniformMatrix3fv(
+        this._variables.uTexMatrix,
+        false,
+        textureMatrix
+      );
+
+      this.gl.drawArrays(this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
     });
   }
 }
