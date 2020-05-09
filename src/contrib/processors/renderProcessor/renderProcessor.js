@@ -15,8 +15,11 @@ const VECTOR_2_SIZE = 2;
 const BYTES_PER_VECTOR_2 = Float32Array.BYTES_PER_ELEMENT * VECTOR_2_SIZE;
 const MATRIX_ROW_SIZE = 3;
 const MATRIX_COLUMN_SIZE = 3;
+const MATRIX_SIZE = MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
 const BYTES_PER_MATRIX = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
 const BYTES_PER_MATRIX_ROW = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE;
+
+const VERTEX_DATA_STRIDE = ((VECTOR_2_SIZE * 2) + (MATRIX_SIZE * 2)) * DRAW_COUNT;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -68,16 +71,12 @@ class RenderProcessor extends Processor {
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
 
-    this._ext = null;
     this._vaoExt = null;
 
     this._buffer = null;
-    this._matrixBuffer = null;
-
-    this._lastInstance = null;
+    this._vao = null;
 
     this._textureMatrixCache = {};
-    this._vaoCache = {};
   }
 
   processorDidMount() {
@@ -100,7 +99,6 @@ class RenderProcessor extends Processor {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._buffer = null;
-    this._matrixBuffer = null;
     this._shaders = [];
     this.program = null;
     this.textures = null;
@@ -125,12 +123,7 @@ class RenderProcessor extends Processor {
   }
 
   _initExtensions() {
-    this._ext = this.gl.getExtension('ANGLE_instanced_arrays');
     this._vaoExt = this.gl.getExtension('OES_vertex_array_object');
-
-    if (!this._ext) {
-      return alert('Unable to initialize extensions. Need ANGLE_instanced_arrays');
-    }
 
     if (!this._vaoExt) {
       return alert('Unable to initialize OES_vertex_array_object extension');
@@ -178,15 +171,85 @@ class RenderProcessor extends Processor {
     this._variables = {
       aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
-      uModelViewMatrix: this.gl.getUniformLocation(this.program, 'u_modelViewMatrix'),
-      uTexMatrix: this.gl.getUniformLocation(this.program, 'u_texMatrix'),
+      aModelViewMatrix: this.gl.getAttribLocation(this.program, 'a_modelViewMatrix'),
+      aTexMatrix: this.gl.getAttribLocation(this.program, 'a_texMatrix'),
       uCameraMatrix: this.gl.getUniformLocation(this.program, 'u_cameraMatrix'),
       uZoomMatrix: this.gl.getUniformLocation(this.program, 'u_zoomMatrix'),
       uProjectMatrix: this.gl.getUniformLocation(this.program, 'u_projectMatrix'),
     };
 
     this._buffer = this.gl.createBuffer();
-    this._matrixBuffer = this.gl.createBuffer();
+    this._vao = this._createVAO();
+  }
+
+  _createVAO() {
+    const vao = this._vaoExt.createVertexArrayOES();
+    this._vaoExt.bindVertexArrayOES(vao);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
+
+    const attrs = [
+      {
+        loc: this._variables.aPosition,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aTexCoord,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aModelViewMatrix,
+        type: 'mat3',
+      },
+      {
+        loc: this._variables.aTexMatrix,
+        type: 'mat3',
+      },
+    ];
+    const sizeMap = {
+      mat3: BYTES_PER_MATRIX,
+      vec2: BYTES_PER_VECTOR_2,
+    };
+    const stride = attrs.reduce((totalSize, attr) => (
+      totalSize + sizeMap[attr.type]
+    ), 0);
+
+    let offset = 0;
+    for (let i = 0; i < attrs.length; i++) {
+      if (attrs[i].type === 'vec2') {
+        this.gl.enableVertexAttribArray(attrs[i].loc);
+        this.gl.vertexAttribPointer(
+          attrs[i].loc,
+          VECTOR_2_SIZE,
+          this.gl.FLOAT,
+          false,
+          stride,
+          offset
+        );
+
+        offset += BYTES_PER_VECTOR_2;
+      } else if (attrs[i].type === 'mat3') {
+        for (let j = 0; j < MATRIX_ROW_SIZE; j++) {
+          const loc = attrs[i].loc + j;
+
+          this.gl.enableVertexAttribArray(loc);
+          this.gl.vertexAttribPointer(
+            loc,
+            MATRIX_ROW_SIZE,
+            this.gl.FLOAT,
+            false,
+            stride,
+            offset + (j * BYTES_PER_MATRIX_ROW)
+          );
+        }
+
+        offset += BYTES_PER_MATRIX;
+      }
+    }
+
+    this._vaoExt.bindVertexArrayOES(null);
+
+    return vao;
   }
 
   _initTextures() {
@@ -204,9 +267,8 @@ class RenderProcessor extends Processor {
     return texture;
   }
 
-  _getModelViewMatrix(props) {
+  _getModelViewMatrix(renderable, x, y, rotation) {
     const matrixTransformer = this._matrixTransformer;
-    const { renderable, x, y, rotation } = props;
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
@@ -226,8 +288,7 @@ class RenderProcessor extends Processor {
       textureInfo.y !== newTextureInfo.y;
   }
 
-  _getTextureMatrix(props) {
-    const { textureInfo, gameObjectId } = props;
+  _getTextureMatrix(textureInfo, gameObjectId) {
     const { width, height, x, y } = textureInfo;
     const cache = this._textureMatrixCache[gameObjectId];
 
@@ -312,41 +373,35 @@ class RenderProcessor extends Processor {
       || renderable.height !== previousRenderable.height;
   }
 
-  // _isAnotherInstance(gameObject) {
-  //   if (!this._lastInstance) {
-  //     this._lastInstance = gameObject;
-  //     return false;
-  //   }
-
-  //   const lastRenderable = this._lastInstance.getComponent(RENDERABLE_COMPONENT_NAME);
-  //   const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-
-  //   this._lastInstance = gameObject;
-
-  //   return lastRenderable.src !== renderable.src
-  //     || lastRenderable.type !== renderable.type
-  //     || lastRenderable.width !== renderable.width
-  //     || lastRenderable.height !== renderable.height;
-  // }
-
-  _createVertexInfo(renderable, textureInfo) {
+  _setVertexInfo(renderable, textureInfo, modelViewMatrix, textureMatrix, vertexData, index) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
     const texCoord = new Rectangle(
       renderable.width / textureInfo.width,
       renderable.height / textureInfo.height
     ).toArray();
-    const totalLength = position.length + texCoord.length;
 
-    const vertices = new Float32Array(totalLength);
+    let offset = index * VERTEX_DATA_STRIDE;
 
-    for (let i = 0, j = 0; i < position.length, j < totalLength; i += 2, j += 4) {
-      vertices[j] = position[i];
-      vertices[j + 1] = position[i + 1];
-      vertices[j + 2] = texCoord[i];
-      vertices[j + 3] = texCoord[i + 1];
+    for (let i = 0; i < position.length; i += 2) {
+      vertexData[offset] = position[i];
+      vertexData[offset + 1] = position[i + 1];
+      vertexData[offset + 2] = texCoord[i];
+      vertexData[offset + 3] = texCoord[i + 1];
+
+      offset += VECTOR_2_SIZE * 2;
+
+      for (let k = 0; k < MATRIX_SIZE; k++) {
+        vertexData[offset + k] = modelViewMatrix[k];
+      }
+
+      offset += MATRIX_SIZE;
+
+      for (let k = 0; k < MATRIX_SIZE; k++) {
+        vertexData[offset + k] = textureMatrix[k];
+      }
+
+      offset += MATRIX_SIZE;
     }
-
-    return vertices;
   }
 
   _resizeCanvas(canvas) {
@@ -374,6 +429,8 @@ class RenderProcessor extends Processor {
     this._screenScale = normalizedSize / STD_SCREEN_SIZE;
     this._canvasWidth = canvasWidth;
     this._canvasHeight = canvasHeight;
+
+    this.gl.viewport(0, 0, this._canvasWidth, this._canvasHeight);
   }
 
   _setUpGlobalUniforms() {
@@ -410,94 +467,10 @@ class RenderProcessor extends Processor {
     );
   }
 
-  // _setUpBuffers(vertexData, matrixData) {
-  //   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
-  //   this.gl.bufferData(this.gl.ARRAY_BUFFER, vertexData, this.gl.STATIC_DRAW);
-
-  //   const vec2Attributes = [ this._variables.aPosition, this._variables.aTexCoord ];
-
-  //   for (let i = 0; i < vec2Attributes.length; i++) {
-  //     this.gl.enableVertexAttribArray(vec2Attributes[i]);
-  //     this.gl.vertexAttribPointer(
-  //       vec2Attributes[i],
-  //       VECTOR_2_SIZE,
-  //       this.gl.FLOAT,
-  //       false,
-  //       BYTES_PER_VECTOR_2 * vec2Attributes.length,
-  //       i * BYTES_PER_VECTOR_2
-  //     );
-  //   }
-
-  //   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._matrixBuffer);
-  //   this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(matrixData), this.gl.STATIC_DRAW);
-
-  //   const instancedAttrs = {
-  //     mat3: [ this._variables.aMatrix, this._variables.aTexMatrix ],
-  //   };
-  //   const sizeMap = {
-  //     mat3: BYTES_PER_MATRIX,
-  //     vec2: BYTES_PER_VECTOR_2,
-  //   };
-  //   const stride = Object.keys(instancedAttrs).reduce((totalSize, key) => (
-  //     totalSize + (sizeMap[key] * instancedAttrs[key].length)
-  //   ), 0);
-
-  //   for (let i = 0; i < instancedAttrs.mat3.length; i++) {
-  //     for (let j = 0; j < MATRIX_ROW_SIZE; j++) {
-  //       const loc = instancedAttrs.mat3[i] + j;
-
-  //       this.gl.enableVertexAttribArray(loc);
-  //       this.gl.vertexAttribPointer(
-  //         loc,
-  //         MATRIX_ROW_SIZE,
-  //         this.gl.FLOAT,
-  //         false,
-  //         stride,
-  //         (i * BYTES_PER_MATRIX) + (j * BYTES_PER_MATRIX_ROW)
-  //       );
-  //       this._ext.vertexAttribDivisorANGLE(loc, 1);
-  //     }
-  //   }
-  // }
-
-  _createVAO(renderable, textureInfo) {
-    const vertexData = this._createVertexInfo(renderable, textureInfo);
-
-    const vao = this._vaoExt.createVertexArrayOES();
-    this._vaoExt.bindVertexArrayOES(vao);
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.gl.createBuffer());
+  _setUpBuffers(vertexData) {
+    this._vaoExt.bindVertexArrayOES(this._vao);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, vertexData, this.gl.STATIC_DRAW);
-
-    const vec2Attributes = [ this._variables.aPosition, this._variables.aTexCoord ];
-
-    for (let i = 0; i < vec2Attributes.length; i++) {
-      this.gl.enableVertexAttribArray(vec2Attributes[i]);
-      this.gl.vertexAttribPointer(
-        vec2Attributes[i],
-        VECTOR_2_SIZE,
-        this.gl.FLOAT,
-        false,
-        BYTES_PER_VECTOR_2 * vec2Attributes.length,
-        i * BYTES_PER_VECTOR_2
-      );
-    }
-
-    this._vaoExt.bindVertexArrayOES(null);
-
-    return vao;
   }
-
-  // _drawInstanced(vertexData, matrixData, count) {
-  //   this._setUpBuffers(vertexData, matrixData);
-
-  //   this._ext.drawArraysInstancedANGLE(
-  //     this.gl.TRIANGLES,
-  //     DRAW_OFFSET,
-  //     DRAW_COUNT,
-  //     count
-  //   );
-  // }
 
   _processRemovedGameObjects() {
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
@@ -510,58 +483,44 @@ class RenderProcessor extends Processor {
     const canvas = this.gl.canvas;
 
     this._resizeCanvas(canvas);
-    this.gl.viewport(0, 0, canvas.width, canvas.height);
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._gameObjectObserver.sort(this._getCompareFunction());
 
-    this._lastInstance = null;
-
     this._setUpGlobalUniforms();
 
     this._processRemovedGameObjects();
 
-    this._gameObjectObserver.forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
+    const size = this._gameObjectObserver.size();
+    const vertexData = new Float32Array(size * VERTEX_DATA_STRIDE);
+
+    this._gameObjectObserver.forEach((gameObject, index) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
       const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-      if (this._shouldVAOUpdate(gameObject)) {
-        this._vaoCache[gameObjectId] = {
-          renderable: renderable.clone(),
-          vao: this._createVAO(renderable, textureInfo),
-        };
-      }
-
-      this._vaoExt.bindVertexArrayOES(this._vaoCache[gameObjectId].vao);
-
-      const modelViewMatrix = this._getModelViewMatrix({
-        renderable: renderable,
-        x: transform.offsetX,
-        y: transform.offsetY,
-        rotation: transform.rotation,
-      });
-      const textureMatrix = this._getTextureMatrix({
+      const modelViewMatrix = this._getModelViewMatrix(
+        renderable,
+        transform.offsetX,
+        transform.offsetY,
+        transform.rotation
+      );
+      const textureMatrix = this._getTextureMatrix(
         textureInfo,
-        gameObjectId: gameObject.getId(),
-      });
-
-      this.gl.uniformMatrix3fv(
-        this._variables.uModelViewMatrix,
-        false,
-        modelViewMatrix
-      );
-      this.gl.uniformMatrix3fv(
-        this._variables.uTexMatrix,
-        false,
-        textureMatrix
+        gameObject.getId()
       );
 
-      this.gl.drawArrays(this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
+      this._setVertexInfo(
+        renderable, textureInfo, modelViewMatrix, textureMatrix, vertexData, index
+      );
     });
+
+    this._setUpBuffers(vertexData);
+    this.gl.drawArrays(
+      this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * size
+    );
   }
 }
 
