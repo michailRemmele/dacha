@@ -53,9 +53,12 @@ class RenderProcessor extends Processor {
 
     this._backgroundColor = new Color(backgroundColor);
 
-    this._window = window;
-    this._windowWidth;
-    this._windowHeight;
+    this._view = window;
+    this._viewWidth;
+    this._viewHeight;
+
+    this._windowDidResize = true;
+    this._onWindowResize = this._onWindowResize.bind(this);
 
     this._shaders = [];
 
@@ -66,8 +69,6 @@ class RenderProcessor extends Processor {
     this._store = store;
     this._gameObjectObserver = gameObjectObserver;
 
-    this._canvasWidth;
-    this._canvasHeight;
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
 
@@ -84,6 +85,7 @@ class RenderProcessor extends Processor {
   }
 
   processorDidMount() {
+    window.addEventListener('resize', this._onWindowResize);
     this.gl = this._initGraphicContext();
     this._initExtensions();
     this._initScreen();
@@ -93,6 +95,7 @@ class RenderProcessor extends Processor {
   }
 
   processorWillUnmount() {
+    window.removeEventListener('resize', this._onWindowResize);
     this._shaders.forEach((shader) => {
       this.gl.detachShader(this.program, shader);
       this.gl.deleteShader(shader);
@@ -109,12 +112,16 @@ class RenderProcessor extends Processor {
     this.gl = null;
   }
 
+  _onWindowResize() {
+    this._windowDidResize = true;
+  }
+
   _initGraphicContext() {
     let graphicContext = null;
 
     try {
       graphicContext =
-        this._window.getContext('webgl') || this._window.getContext('experimental-webgl');
+        this._view.getContext('webgl') || this._view.getContext('experimental-webgl');
     } catch (e) {
       throw new Error('Unable to get graphic context.');
     }
@@ -361,20 +368,6 @@ class RenderProcessor extends Processor {
     };
   }
 
-  _shouldVAOUpdate(gameObject) {
-    const gameObjectId = gameObject.getId();
-
-    if (!this._vaoCache[gameObjectId]) {
-      return true;
-    }
-
-    const previousRenderable = this._vaoCache[gameObjectId].renderable;
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-
-    return renderable.width !== previousRenderable.width
-      || renderable.height !== previousRenderable.height;
-  }
-
   _setVertexInfo(renderable, textureInfo, modelViewMatrix, textureMatrix, index) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
     const texCoord = new Rectangle(
@@ -407,17 +400,16 @@ class RenderProcessor extends Processor {
   }
 
   _resizeCanvas(canvas) {
-    const devicePixelRatio = window.devicePixelRatio || 1;
-
-    this._windowWidth = this._window.clientWidth;
-    this._windowHeight = this._window.clientHeight;
-
-    const canvasWidth = this._windowWidth * devicePixelRatio;
-    const canvasHeight = this._windowHeight * devicePixelRatio;
-
-    if (canvasWidth === this._canvasWidth && canvasHeight === this._canvasHeight) {
+    if (!this._windowDidResize) {
       return;
     }
+
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    this._viewWidth = this._view.clientWidth;
+    this._viewHeight = this._view.clientHeight;
+
+    const canvasWidth = this._viewWidth * devicePixelRatio;
+    const canvasHeight = this._viewHeight * devicePixelRatio;
 
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
@@ -429,10 +421,10 @@ class RenderProcessor extends Processor {
     const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
 
     this._screenScale = normalizedSize / STD_SCREEN_SIZE;
-    this._canvasWidth = canvasWidth;
-    this._canvasHeight = canvasHeight;
 
-    this.gl.viewport(0, 0, this._canvasWidth, this._canvasHeight);
+    this.gl.viewport(0, 0, canvasWidth, canvasHeight);
+
+    this._windowDidResize = false;
   }
 
   _updateViewMatrix() {
@@ -446,8 +438,8 @@ class RenderProcessor extends Processor {
     if (
       prevStats.x === transform.offsetX &&
       prevStats.y === transform.offsetY &&
-      prevStats.width === this._windowWidth &&
-      prevStats.height === this._windowHeight &&
+      prevStats.width === this._viewWidth &&
+      prevStats.height === this._viewHeight &&
       prevStats.scale === scale
     ) {
       return;
@@ -457,7 +449,7 @@ class RenderProcessor extends Processor {
     const viewMatrix = matrixTransformer.getIdentityMatrix();
     matrixTransformer.translate(viewMatrix, -transform.offsetX, -transform.offsetY);
     matrixTransformer.scale(viewMatrix, scale, scale);
-    matrixTransformer.project(viewMatrix, this._windowWidth, this._windowHeight);
+    matrixTransformer.project(viewMatrix, this._viewWidth, this._viewHeight);
 
     this.gl.uniformMatrix3fv(
       this._variables.uViewMatrix,
@@ -465,8 +457,8 @@ class RenderProcessor extends Processor {
       viewMatrix
     );
 
-    this._viewMatrixStats.width = this._windowWidth;
-    this._viewMatrixStats.height = this._windowHeight;
+    this._viewMatrixStats.width = this._viewWidth;
+    this._viewMatrixStats.height = this._viewHeight;
     this._viewMatrixStats.x = transform.offsetX;
     this._viewMatrixStats.y = transform.offsetY;
     this._viewMatrixStats.scale = scale;
