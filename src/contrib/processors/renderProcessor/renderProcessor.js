@@ -78,6 +78,9 @@ class RenderProcessor extends Processor {
 
     this._textureMatrixCache = {};
     this._viewMatrixStats = {};
+
+    this._vertexData = null;
+    this._gameObjectsCount = 0;
   }
 
   processorDidMount() {
@@ -372,7 +375,7 @@ class RenderProcessor extends Processor {
       || renderable.height !== previousRenderable.height;
   }
 
-  _setVertexInfo(renderable, textureInfo, modelViewMatrix, textureMatrix, vertexData, index) {
+  _setVertexInfo(renderable, textureInfo, modelViewMatrix, textureMatrix, index) {
     const position = new Rectangle(renderable.width, renderable.height).toArray();
     const texCoord = new Rectangle(
       renderable.width / textureInfo.width,
@@ -382,21 +385,21 @@ class RenderProcessor extends Processor {
     let offset = index * VERTEX_DATA_STRIDE;
 
     for (let i = 0; i < position.length; i += 2) {
-      vertexData[offset] = position[i];
-      vertexData[offset + 1] = position[i + 1];
-      vertexData[offset + 2] = texCoord[i];
-      vertexData[offset + 3] = texCoord[i + 1];
+      this._vertexData[offset] = position[i];
+      this._vertexData[offset + 1] = position[i + 1];
+      this._vertexData[offset + 2] = texCoord[i];
+      this._vertexData[offset + 3] = texCoord[i + 1];
 
       offset += VECTOR_2_SIZE * 2;
 
       for (let k = 0; k < MATRIX_SIZE; k++) {
-        vertexData[offset + k] = modelViewMatrix[k];
+        this._vertexData[offset + k] = modelViewMatrix[k];
       }
 
       offset += MATRIX_SIZE;
 
       for (let k = 0; k < MATRIX_SIZE; k++) {
-        vertexData[offset + k] = textureMatrix[k];
+        this._vertexData[offset + k] = textureMatrix[k];
       }
 
       offset += MATRIX_SIZE;
@@ -469,9 +472,17 @@ class RenderProcessor extends Processor {
     this._viewMatrixStats.scale = scale;
   }
 
-  _setUpBuffers(vertexData) {
+  _allocateVertexData() {
+    const gameObjectsCount = this._gameObjectObserver.size();
+    if (this._gameObjectsCount !== gameObjectsCount) {
+      this._gameObjectsCount = gameObjectsCount;
+      this._vertexData = new Float32Array(this._gameObjectsCount * VERTEX_DATA_STRIDE);
+    }
+  }
+
+  _setUpBuffers() {
     this._vaoExt.bindVertexArrayOES(this._vao);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertexData, this.gl.STATIC_DRAW);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, this._vertexData, this.gl.STATIC_DRAW);
   }
 
   _processRemovedGameObjects() {
@@ -494,8 +505,7 @@ class RenderProcessor extends Processor {
 
     this._processRemovedGameObjects();
 
-    const size = this._gameObjectObserver.size();
-    const vertexData = new Float32Array(size * VERTEX_DATA_STRIDE);
+    this._allocateVertexData();
 
     this._gameObjectObserver.forEach((gameObject, index) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
@@ -515,13 +525,13 @@ class RenderProcessor extends Processor {
       );
 
       this._setVertexInfo(
-        renderable, textureInfo, modelViewMatrix, textureMatrix, vertexData, index
+        renderable, textureInfo, modelViewMatrix, textureMatrix, index
       );
     });
 
-    this._setUpBuffers(vertexData);
+    this._setUpBuffers();
     this.gl.drawArrays(
-      this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * size
+      this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * this._gameObjectObserver.size()
     );
   }
 }
