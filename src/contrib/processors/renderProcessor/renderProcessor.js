@@ -77,6 +77,7 @@ class RenderProcessor extends Processor {
     this._vao = null;
 
     this._textureMatrixCache = {};
+    this._viewMatrixStats = {};
   }
 
   processorDidMount() {
@@ -173,9 +174,7 @@ class RenderProcessor extends Processor {
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
       aModelViewMatrix: this.gl.getAttribLocation(this.program, 'a_modelViewMatrix'),
       aTexMatrix: this.gl.getAttribLocation(this.program, 'a_texMatrix'),
-      uCameraMatrix: this.gl.getUniformLocation(this.program, 'u_cameraMatrix'),
-      uZoomMatrix: this.gl.getUniformLocation(this.program, 'u_zoomMatrix'),
-      uProjectMatrix: this.gl.getUniformLocation(this.program, 'u_projectMatrix'),
+      uViewMatrix: this.gl.getUniformLocation(this.program, 'u_viewMatrix'),
     };
 
     this._buffer = this.gl.createBuffer();
@@ -433,38 +432,41 @@ class RenderProcessor extends Processor {
     this.gl.viewport(0, 0, this._canvasWidth, this._canvasHeight);
   }
 
-  _setUpGlobalUniforms() {
-    const matrixTransformer = this._matrixTransformer;
-
+  _updateViewMatrix() {
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
-    const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
+    const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
-
     const scale =  zoom * this._screenScale;
 
-    const cameraMatrix = matrixTransformer.getIdentityMatrix();
-    matrixTransformer.translate(cameraMatrix, -cameraTransform.offsetX, -cameraTransform.offsetY);
+    const prevStats = this._viewMatrixStats;
+
+    if (
+      prevStats.x === transform.offsetX &&
+      prevStats.y === transform.offsetY &&
+      prevStats.width === this._windowWidth &&
+      prevStats.height === this._windowHeight &&
+      prevStats.scale === scale
+    ) {
+      return;
+    }
+
+    const matrixTransformer = this._matrixTransformer;
+    const viewMatrix = matrixTransformer.getIdentityMatrix();
+    matrixTransformer.translate(viewMatrix, -transform.offsetX, -transform.offsetY);
+    matrixTransformer.scale(viewMatrix, scale, scale);
+    matrixTransformer.project(viewMatrix, this._windowWidth, this._windowHeight);
+
     this.gl.uniformMatrix3fv(
-      this._variables.uCameraMatrix,
+      this._variables.uViewMatrix,
       false,
-      cameraMatrix
+      viewMatrix
     );
 
-    const zoomMatrix = matrixTransformer.getIdentityMatrix();
-    matrixTransformer.scale(zoomMatrix, scale, scale);
-    this.gl.uniformMatrix3fv(
-      this._variables.uZoomMatrix,
-      false,
-      zoomMatrix
-    );
-
-    const projectMatrix = matrixTransformer.getIdentityMatrix();
-    matrixTransformer.project(projectMatrix, this._windowWidth, this._windowHeight);
-    this.gl.uniformMatrix3fv(
-      this._variables.uProjectMatrix,
-      false,
-      projectMatrix
-    );
+    this._viewMatrixStats.width = this._windowWidth;
+    this._viewMatrixStats.height = this._windowHeight;
+    this._viewMatrixStats.x = transform.offsetX;
+    this._viewMatrixStats.y = transform.offsetY;
+    this._viewMatrixStats.scale = scale;
   }
 
   _setUpBuffers(vertexData) {
@@ -484,11 +486,11 @@ class RenderProcessor extends Processor {
 
     this._resizeCanvas(canvas);
 
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    // this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._gameObjectObserver.sort(this._getCompareFunction());
 
-    this._setUpGlobalUniforms();
+    this._updateViewMatrix();
 
     this._processRemovedGameObjects();
 
