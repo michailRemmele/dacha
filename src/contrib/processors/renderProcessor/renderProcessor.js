@@ -19,7 +19,8 @@ const MATRIX_SIZE = MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
 const BYTES_PER_MATRIX = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
 const BYTES_PER_MATRIX_ROW = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE;
 
-const VERTEX_DATA_STRIDE = ((VECTOR_2_SIZE * 2) + (MATRIX_SIZE * 2)) * DRAW_COUNT;
+const VERTEX_STRIDE = (VECTOR_2_SIZE * 2) + (MATRIX_SIZE * 2);
+const VERTEX_DATA_STRIDE = VERTEX_STRIDE * DRAW_COUNT;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -77,6 +78,7 @@ class RenderProcessor extends Processor {
     this._buffer = null;
     this._vao = null;
 
+    this._geometry = {};
     this._textureMatrixCache = {};
     this._viewMatrixStats = {};
 
@@ -368,34 +370,41 @@ class RenderProcessor extends Processor {
     };
   }
 
-  _setVertexInfo(renderable, textureInfo, modelViewMatrix, textureMatrix, index) {
-    const position = new Rectangle(renderable.width, renderable.height).toArray();
-    const texCoord = new Rectangle(
-      renderable.width / textureInfo.width,
-      renderable.height / textureInfo.height
-    ).toArray();
+  _setUpMatrix(matrix, offset) {
+    this._vertexData[offset] = matrix[0];
+    this._vertexData[offset + 1] = matrix[1];
+    this._vertexData[offset + 2] = matrix[2];
+    this._vertexData[offset + 3] = matrix[3];
+    this._vertexData[offset + 4] = matrix[4];
+    this._vertexData[offset + 5] = matrix[5];
+    this._vertexData[offset + 6] = matrix[6];
+    this._vertexData[offset + 7] = matrix[7];
+    this._vertexData[offset + 8] = matrix[8];
+  }
 
+  _setUpVertexData(gameObjectId, renderable, textureInfo, modelViewMatrix, textureMatrix, index) {
+    if (!this._geometry[gameObjectId]) {
+      this._geometry[gameObjectId] = {
+        position: new Rectangle(renderable.width, renderable.height).toArray(),
+        texCoord: new Rectangle(
+          renderable.width / textureInfo.width,
+          renderable.height / textureInfo.height
+        ).toArray(),
+      };
+    }
+
+    const position = this._geometry[gameObjectId].position;
+    const texCoord = this._geometry[gameObjectId].texCoord;
     let offset = index * VERTEX_DATA_STRIDE;
 
-    for (let i = 0; i < position.length; i += 2) {
-      this._vertexData[offset] = position[i];
-      this._vertexData[offset + 1] = position[i + 1];
-      this._vertexData[offset + 2] = texCoord[i];
-      this._vertexData[offset + 3] = texCoord[i + 1];
+    for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
+      this._vertexData[j] = position[i];
+      this._vertexData[j + 1] = position[i + 1];
+      this._vertexData[j + 2] = texCoord[i];
+      this._vertexData[j + 3] = texCoord[i + 1];
 
-      offset += VECTOR_2_SIZE * 2;
-
-      for (let k = 0; k < MATRIX_SIZE; k++) {
-        this._vertexData[offset + k] = modelViewMatrix[k];
-      }
-
-      offset += MATRIX_SIZE;
-
-      for (let k = 0; k < MATRIX_SIZE; k++) {
-        this._vertexData[offset + k] = textureMatrix[k];
-      }
-
-      offset += MATRIX_SIZE;
+      this._setUpMatrix(modelViewMatrix, j + (VECTOR_2_SIZE * 2));
+      this._setUpMatrix(textureMatrix, j + (VECTOR_2_SIZE * 2) + MATRIX_SIZE);
     }
   }
 
@@ -481,6 +490,7 @@ class RenderProcessor extends Processor {
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
       this._textureMatrixCache[gameObjectId] = null;
+      this._geometry[gameObjectId] = null;
     });
   }
 
@@ -489,7 +499,7 @@ class RenderProcessor extends Processor {
 
     this._resizeCanvas(canvas);
 
-    // this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._gameObjectObserver.sort(this._getCompareFunction());
 
@@ -500,6 +510,7 @@ class RenderProcessor extends Processor {
     this._allocateVertexData();
 
     this._gameObjectObserver.forEach((gameObject, index) => {
+      const gameObjectId = gameObject.getId();
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const texture = this.textureAtlasDescriptor[renderable.src];
@@ -513,11 +524,11 @@ class RenderProcessor extends Processor {
       );
       const textureMatrix = this._getTextureMatrix(
         textureInfo,
-        gameObject.getId()
+        gameObjectId
       );
 
-      this._setVertexInfo(
-        renderable, textureInfo, modelViewMatrix, textureMatrix, index
+      this._setUpVertexData(
+        gameObjectId, renderable, textureInfo, modelViewMatrix, textureMatrix, index
       );
     });
 
