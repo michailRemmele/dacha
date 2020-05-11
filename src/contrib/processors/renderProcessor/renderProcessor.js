@@ -381,7 +381,24 @@ class RenderProcessor extends Processor {
     this._vertexData[offset + 8] = matrix[8];
   }
 
-  _setUpVertexData(gameObjectId, renderable, textureInfo, modelViewMatrix, textureMatrix, index) {
+  _setUpVertexData(gameObject, index) {
+    const gameObjectId = gameObject.getId();
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+    const texture = this.textureAtlasDescriptor[renderable.src];
+    const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
+
+    const modelViewMatrix = this._getModelViewMatrix(
+      renderable,
+      transform.offsetX,
+      transform.offsetY,
+      transform.rotation
+    );
+    const textureMatrix = this._getTextureMatrix(
+      textureInfo,
+      gameObjectId
+    );
+
     if (!this._geometry[gameObjectId]) {
       this._geometry[gameObjectId] = {
         position: new Rectangle(renderable.width, renderable.height).toArray(),
@@ -394,7 +411,7 @@ class RenderProcessor extends Processor {
 
     const position = this._geometry[gameObjectId].position;
     const texCoord = this._geometry[gameObjectId].texCoord;
-    let offset = index * VERTEX_DATA_STRIDE;
+    const offset = index * VERTEX_DATA_STRIDE;
 
     for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
       this._vertexData[j] = position[i];
@@ -500,35 +517,14 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    this._gameObjectObserver.sort(this._getCompareFunction());
-
-    this._updateViewMatrix();
-
     this._processRemovedGameObjects();
 
+    this._updateViewMatrix();
     this._allocateVertexData();
+    this._gameObjectObserver.sort(this._getCompareFunction());
 
     this._gameObjectObserver.forEach((gameObject, index) => {
-      const gameObjectId = gameObject.getId();
-      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const texture = this.textureAtlasDescriptor[renderable.src];
-      const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
-
-      const modelViewMatrix = this._getModelViewMatrix(
-        renderable,
-        transform.offsetX,
-        transform.offsetY,
-        transform.rotation
-      );
-      const textureMatrix = this._getTextureMatrix(
-        textureInfo,
-        gameObjectId
-      );
-
-      this._setUpVertexData(
-        gameObjectId, renderable, textureInfo, modelViewMatrix, textureMatrix, index
-      );
+      this._setUpVertexData(gameObject, index);
     });
 
     this._setUpBuffers();
