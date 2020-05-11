@@ -2,7 +2,7 @@ import IOC from './ioc/ioc';
 import MessageBus from './messageBus/messageBus';
 
 import { SCENE_PROVIDER_KEY_NAME, SECTIONS } from 'engine/consts/global';
-const MS_PER_UPDATE = 1000 / 60;
+const MS_PER_UPDATE = 1000 / 120;
 
 class GameLoop {
   constructor() {
@@ -47,7 +47,7 @@ class GameLoop {
 
   run() {
     this.previous = undefined;
-    this.lag = 0;
+    this.lag = MS_PER_UPDATE;
 
     const that = this;
     this.gameLoopId = requestAnimationFrame(function tick(current) {
