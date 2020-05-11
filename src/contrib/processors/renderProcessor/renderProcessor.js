@@ -331,8 +331,6 @@ class RenderProcessor extends Processor {
       const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME);
       const aSortingLayerOrder = this._sortingLayer[aRenderable.sortingLayer];
       const bSortingLayerOrder = this._sortingLayer[bRenderable.sortingLayer];
-      const { height: aHeight, width: aWidth } = aRenderable;
-      const { height: bHeight, width: bWidth } = bRenderable;
 
       if (aSortingLayerOrder > bSortingLayerOrder) {
         return 1;
@@ -345,10 +343,8 @@ class RenderProcessor extends Processor {
       const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME);
       const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME);
 
-      const aOffsetY = aTransform.offsetY + (aHeight / 2);
-      const aOffsetX = aTransform.offsetX + (aWidth / 2);
-      const bOffsetY = bTransform.offsetY + (bHeight / 2);
-      const bOffsetX = bTransform.offsetX + (bWidth / 2);
+      const aOffsetY = aTransform.offsetY + (aRenderable.height / 2);
+      const bOffsetY = bTransform.offsetY + (bRenderable.height / 2);
 
       if (aOffsetY > bOffsetY) {
         return 1;
@@ -357,6 +353,9 @@ class RenderProcessor extends Processor {
       if (aOffsetY < bOffsetY) {
         return -1;
       }
+
+      const aOffsetX = aTransform.offsetX + (aRenderable.width / 2);
+      const bOffsetX = bTransform.offsetX + (bRenderable.width / 2);
 
       if (aOffsetX > bOffsetX) {
         return 1;
