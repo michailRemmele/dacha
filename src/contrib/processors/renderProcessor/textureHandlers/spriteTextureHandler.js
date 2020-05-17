@@ -2,11 +2,12 @@ import TextureHandler from './textureHandler';
 
 class SpriteTextureHandler extends TextureHandler {
   handle(textureDescriptor, renderableComponent) {
-    const width = textureDescriptor.width / renderableComponent.slice;
-    const height = textureDescriptor.height;
+    const width = renderableComponent.width;
+    const height = renderableComponent.height;
+    const step = width + renderableComponent.spacing;
 
     return {
-      x: textureDescriptor.x + (width * renderableComponent.currentFrame),
+      x: textureDescriptor.x + (step * renderableComponent.currentFrame),
       y: textureDescriptor.y,
       width: width,
       height: height,

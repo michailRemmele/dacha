@@ -9,6 +9,7 @@ class Renderable extends Component {
     this._height = config.height;
     this._type = config.type;
     this._slice = config.slice;
+    this._spacing = config.spacing || 0;
     this._currentFrame = config.type === 'sprite' ? 0 : undefined;
     this._rotation = config.rotation;
     this._origin = config.origin;
@@ -55,6 +56,14 @@ class Renderable extends Component {
 
   get slice() {
     return this._slice;
+  }
+
+  set spacing(spacing) {
+    this._spacing = spacing;
+  }
+
+  get spacing() {
+    return this._spacing;
   }
 
   set currentFrame(currentFrame) {
@@ -112,6 +121,7 @@ class Renderable extends Component {
       height: this.height,
       type: this.type,
       slice: this.slice,
+      spacing: this.spacing,
       rotation: this.rotation,
       origin: this._origin,
       flipX: this.flipX,

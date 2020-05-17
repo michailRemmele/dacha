@@ -591,6 +591,7 @@
         "width": 45,
         "height": 50,
         "slice": 17,
+        "spacing": 5,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
