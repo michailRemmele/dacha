@@ -19,7 +19,7 @@ const MATRIX_SIZE = MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
 const BYTES_PER_MATRIX = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
 const BYTES_PER_MATRIX_ROW = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE;
 
-const VERTEX_STRIDE = (VECTOR_2_SIZE * 2) + (MATRIX_SIZE * 2);
+const VERTEX_STRIDE = (VECTOR_2_SIZE * 5) + (MATRIX_SIZE);
 const VERTEX_DATA_STRIDE = VERTEX_STRIDE * DRAW_COUNT;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
@@ -185,12 +185,17 @@ class RenderProcessor extends Processor {
       aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
       aModelViewMatrix: this.gl.getAttribLocation(this.program, 'a_modelViewMatrix'),
-      aTexMatrix: this.gl.getAttribLocation(this.program, 'a_texMatrix'),
+      aTexSize: this.gl.getAttribLocation(this.program, 'a_texSize'),
+      aTexTranslate: this.gl.getAttribLocation(this.program, 'a_texTranslate'),
+      aGameObjectSize: this.gl.getAttribLocation(this.program, 'a_gameObjectSize'),
       uViewMatrix: this.gl.getUniformLocation(this.program, 'u_viewMatrix'),
+      uTexAtlasSize: this.gl.getUniformLocation(this.program, 'u_texAtlasSize'),
     };
 
     this._buffer = this.gl.createBuffer();
     this._vao = this._createVAO();
+
+    this._setUpGlobalUniforms();
   }
 
   _createVAO() {
@@ -213,8 +218,16 @@ class RenderProcessor extends Processor {
         type: 'mat3',
       },
       {
-        loc: this._variables.aTexMatrix,
-        type: 'mat3',
+        loc: this._variables.aTexSize,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aTexTranslate,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aGameObjectSize,
+        type: 'vec2',
       },
     ];
     const sizeMap = {
@@ -263,6 +276,13 @@ class RenderProcessor extends Processor {
     return vao;
   }
 
+  _setUpGlobalUniforms() {
+    this.gl.uniform2fv(
+      this._variables.uTexAtlasSize,
+      [ this.textureAtlasSize.width, this.textureAtlasSize.height ]
+    );
+  }
+
   _initTextures() {
     const texture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
@@ -288,39 +308,6 @@ class RenderProcessor extends Processor {
     renderable.flipY && matrixTransformer.flipY(matrix);
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
     matrixTransformer.translate(matrix, x, y);
-
-    return matrix;
-  }
-
-  _isTextureChanged(textureInfo, newTextureInfo) {
-    return textureInfo.width !== newTextureInfo.width ||
-      textureInfo.height !== newTextureInfo.height ||
-      textureInfo.x !== newTextureInfo.x ||
-      textureInfo.y !== newTextureInfo.y;
-  }
-
-  _getTextureMatrix(textureInfo, gameObjectId) {
-    const { width, height, x, y } = textureInfo;
-    const cache = this._textureMatrixCache[gameObjectId];
-
-    if (cache && !this._isTextureChanged(cache.textureInfo, textureInfo)) {
-      return cache.matrix;
-    }
-
-    const matrixTransformer = this._matrixTransformer;
-    const projectX = 1 / this.textureAtlasSize.width;
-    const projectY = 1 / this.textureAtlasSize.height;
-
-    const matrix = matrixTransformer.getIdentityMatrix();
-
-    matrixTransformer.scale(matrix, width, height);
-    matrixTransformer.translate(matrix, x, y);
-    matrixTransformer.scale(matrix, projectX, projectY);
-
-    this._textureMatrixCache[gameObjectId] = {
-      matrix,
-      textureInfo,
-    };
 
     return matrix;
   }
@@ -369,6 +356,15 @@ class RenderProcessor extends Processor {
     };
   }
 
+  _setUpTextureInfo(textureInfo, renderable, offset) {
+    this._vertexData[offset] = textureInfo.width;
+    this._vertexData[offset + 1] = textureInfo.height;
+    this._vertexData[offset + 2] = textureInfo.x;
+    this._vertexData[offset + 3] = textureInfo.y;
+    this._vertexData[offset + 4] = renderable.width;
+    this._vertexData[offset + 5] = renderable.height;
+  }
+
   _setUpMatrix(matrix, offset) {
     this._vertexData[offset] = matrix[0];
     this._vertexData[offset + 1] = matrix[1];
@@ -394,18 +390,11 @@ class RenderProcessor extends Processor {
       transform.offsetY,
       transform.rotation
     );
-    const textureMatrix = this._getTextureMatrix(
-      textureInfo,
-      gameObjectId
-    );
 
     if (!this._geometry[gameObjectId]) {
       this._geometry[gameObjectId] = {
         position: new Rectangle(renderable.width, renderable.height).toArray(),
-        texCoord: new Rectangle(
-          renderable.width / textureInfo.width,
-          renderable.height / textureInfo.height
-        ).toArray(),
+        texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
       };
     }
 
@@ -420,7 +409,7 @@ class RenderProcessor extends Processor {
       this._vertexData[j + 3] = texCoord[i + 1];
 
       this._setUpMatrix(modelViewMatrix, j + (VECTOR_2_SIZE * 2));
-      this._setUpMatrix(textureMatrix, j + (VECTOR_2_SIZE * 2) + MATRIX_SIZE);
+      this._setUpTextureInfo(textureInfo, renderable, j + (VECTOR_2_SIZE * 2) + MATRIX_SIZE);
     }
   }
 
