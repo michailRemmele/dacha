@@ -16,11 +16,13 @@ const BYTES_PER_VECTOR_2 = Float32Array.BYTES_PER_ELEMENT * VECTOR_2_SIZE;
 const MATRIX_ROW_SIZE = 3;
 const MATRIX_COLUMN_SIZE = 3;
 const MATRIX_SIZE = MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
-const BYTES_PER_MATRIX = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
+const BYTES_PER_MATRIX = Float32Array.BYTES_PER_ELEMENT * MATRIX_SIZE;
 const BYTES_PER_MATRIX_ROW = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE;
 
 const VERTEX_STRIDE = (VECTOR_2_SIZE * 5) + (MATRIX_SIZE);
 const VERTEX_DATA_STRIDE = VERTEX_STRIDE * DRAW_COUNT;
+
+const BUFFER_SIZE = 1000 * VERTEX_DATA_STRIDE * Float32Array.BYTES_PER_ELEMENT;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -203,6 +205,7 @@ class RenderProcessor extends Processor {
     this._vaoExt.bindVertexArrayOES(vao);
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, BUFFER_SIZE, this.gl.DYNAMIC_DRAW);
 
     const attrs = [
       {
@@ -488,7 +491,7 @@ class RenderProcessor extends Processor {
 
   _setUpBuffers() {
     this._vaoExt.bindVertexArrayOES(this._vao);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, this._vertexData, this.gl.STATIC_DRAW);
+    this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, this._vertexData);
   }
 
   _processRemovedGameObjects() {
