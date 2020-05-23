@@ -213,6 +213,7 @@
         "height": 64,
         "slice": 6,
         "spacing": 5,
+        "extruding": 1,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,

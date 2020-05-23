@@ -10,6 +10,7 @@ class Renderable extends Component {
     this._type = config.type;
     this._slice = config.slice;
     this._spacing = config.spacing || 0;
+    this._extruding = config.extruding || 0;
     this._currentFrame = config.type === 'sprite' ? 0 : undefined;
     this._rotation = config.rotation;
     this._origin = config.origin;
@@ -64,6 +65,14 @@ class Renderable extends Component {
 
   get spacing() {
     return this._spacing;
+  }
+
+  set extruding(extruding) {
+    this._extruding = extruding;
+  }
+
+  get extruding() {
+    return this._extruding;
   }
 
   set currentFrame(currentFrame) {
@@ -122,6 +131,7 @@ class Renderable extends Component {
       type: this.type,
       slice: this.slice,
       spacing: this.spacing,
+      extruding: this.extruding,
       rotation: this.rotation,
       origin: this._origin,
       flipX: this.flipX,

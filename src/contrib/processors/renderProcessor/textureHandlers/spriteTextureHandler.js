@@ -2,15 +2,20 @@ import TextureHandler from './textureHandler';
 
 class SpriteTextureHandler extends TextureHandler {
   handle(textureDescriptor, renderableComponent) {
-    const width = renderableComponent.width;
-    const height = renderableComponent.height;
-    const step = width + renderableComponent.spacing;
+    const { x, y, width, height } = textureDescriptor;
+    const { spacing, extruding, slice } = renderableComponent;
+
+    const padding = 2 * extruding;
+    const frameWidth = ((width - ((slice - 1) * spacing)) / slice) - padding;
+    const frameHeight = height - padding;
+
+    const step = frameWidth + spacing + padding;
 
     return {
-      x: textureDescriptor.x + (step * renderableComponent.currentFrame),
-      y: textureDescriptor.y,
-      width: width,
-      height: height,
+      x: x + (step * renderableComponent.currentFrame) + extruding,
+      y: y + extruding,
+      width: frameWidth,
+      height: frameHeight,
     };
   }
 }
