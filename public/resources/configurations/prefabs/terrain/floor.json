@@ -195,7 +195,7 @@
             "speed": 1,
             "frames": [
               {
-                "index": 5
+                "disabled": true
               }
             ],
             "looped": true,
@@ -211,7 +211,7 @@
         "src": "terrain/floor",
         "width": 32,
         "height": 64,
-        "slice": 6,
+        "slice": 5,
         "spacing": 5,
         "extruding": 1,
         "rotation": 0,

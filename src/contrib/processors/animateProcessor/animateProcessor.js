@@ -24,6 +24,7 @@ class AnimateProcessor extends Processor {
     renderable.rotation = frame.rotation !== undefined ? frame.rotation : renderable.rotation;
     renderable.flipX = frame.flipX !== undefined ? frame.flipX : renderable.flipX;
     renderable.flipY = frame.flipY !== undefined ? frame.flipY : renderable.flipY;
+    renderable.disabled = frame.disabled;
   }
 
   process(options) {

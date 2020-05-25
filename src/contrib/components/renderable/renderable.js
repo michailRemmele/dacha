@@ -16,6 +16,7 @@ class Renderable extends Component {
     this._origin = config.origin;
     this._flipX = config.flipX;
     this._flipY = config.flipY;
+    this._disabled = config.disabled;
     this._sortingLayer = config.sortingLayer;
   }
 
@@ -115,6 +116,14 @@ class Renderable extends Component {
     return this._flipY;
   }
 
+  set disabled(disabled) {
+    this._disabled = disabled;
+  }
+
+  get disabled() {
+    return this._disabled;
+  }
+
   set sortingLayer(sortingLayer) {
     this._sortingLayer = sortingLayer;
   }
@@ -136,6 +145,7 @@ class Renderable extends Component {
       origin: this._origin,
       flipX: this.flipX,
       flipY: this.flipY,
+      disabled: this.disabled,
       sortingLayer: this.sortingLayer,
     });
   }

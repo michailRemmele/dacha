@@ -383,6 +383,15 @@ class RenderProcessor extends Processor {
   _setUpVertexData(gameObject, index) {
     const gameObjectId = gameObject.getId();
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+    const offset = index * VERTEX_DATA_STRIDE;
+
+    if (renderable.disabled) {
+      for (let i = 0; i < VERTEX_DATA_STRIDE; i++) {
+        this._vertexData[offset + i] = 0;
+      }
+      return;
+    }
+
     const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
@@ -403,7 +412,6 @@ class RenderProcessor extends Processor {
 
     const position = this._geometry[gameObjectId].position;
     const texCoord = this._geometry[gameObjectId].texCoord;
-    const offset = index * VERTEX_DATA_STRIDE;
 
     for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
       this._vertexData[j] = position[i];
