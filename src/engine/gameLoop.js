@@ -2,7 +2,7 @@ import IOC from './ioc/ioc';
 import MessageBus from './messageBus/messageBus';
 
 import { SCENE_PROVIDER_KEY_NAME, SECTIONS } from 'engine/consts/global';
-const MS_PER_UPDATE = 1000 / 120;
+const MS_PER_UPDATE = 1000 / 60;
 
 class GameLoop {
   constructor() {
