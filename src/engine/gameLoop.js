@@ -47,7 +47,7 @@ class GameLoop {
 
   run() {
     this.previous = undefined;
-    this.lag = 0;
+    this.lag = MS_PER_UPDATE;
 
     const that = this;
     this.gameLoopId = requestAnimationFrame(function tick(current) {

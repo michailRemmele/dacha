@@ -140,9 +140,7 @@
             "speed": 1,
             "frames": [
               {
-                "index": 7,
-                "flipY": false,
-                "rotation": 0
+                "disabled": true
               }
             ],
             "looped": true,
@@ -158,7 +156,7 @@
         "src": "items/blaster_bullet",
         "width": 32,
         "height": 32,
-        "slice": 8,
+        "slice": 7,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,

@@ -572,9 +572,7 @@
             "speed": 1,
             "frames": [
               {
-                "index": 16,
-                "flipY": false,
-                "rotation": 0
+                "disabled": true
               }
             ],
             "looped": true,
@@ -590,7 +588,9 @@
         "src": "units/rooster_enemy",
         "width": 45,
         "height": 50,
-        "slice": 17,
+        "slice": 16,
+        "spacing": 5,
+        "extruding": 1,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,

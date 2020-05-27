@@ -5,13 +5,24 @@ import Color from './color/color';
 import textureHandlers from './textureHandlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import MatrixTransformer from './matrixTransformer/matrixTransformer';
-import webglUtils from './vendor/webglUtils';
 
 const MAX_COLOR_NUMBER = 255;
-const RENDER_COMPONENTS_NUMBER = 2;
 const DRAW_OFFSET = 0;
 const DRAW_COUNT = 6;
 const STD_SCREEN_SIZE = 1080;
+
+const VECTOR_2_SIZE = 2;
+const BYTES_PER_VECTOR_2 = Float32Array.BYTES_PER_ELEMENT * VECTOR_2_SIZE;
+const MATRIX_ROW_SIZE = 3;
+const MATRIX_COLUMN_SIZE = 3;
+const MATRIX_SIZE = MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
+const BYTES_PER_MATRIX = Float32Array.BYTES_PER_ELEMENT * MATRIX_SIZE;
+const BYTES_PER_MATRIX_ROW = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE;
+
+const VERTEX_STRIDE = (VECTOR_2_SIZE * 5) + (MATRIX_SIZE);
+const VERTEX_DATA_STRIDE = VERTEX_STRIDE * DRAW_COUNT;
+
+const BUFFER_SIZE = 1000 * VERTEX_DATA_STRIDE * Float32Array.BYTES_PER_ELEMENT;
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -45,7 +56,12 @@ class RenderProcessor extends Processor {
 
     this._backgroundColor = new Color(backgroundColor);
 
-    this.canvas = window;
+    this._view = window;
+    this._viewWidth;
+    this._viewHeight;
+
+    this._windowDidResize = true;
+    this._onWindowResize = this._onWindowResize.bind(this);
 
     this._shaders = [];
 
@@ -56,14 +72,25 @@ class RenderProcessor extends Processor {
     this._store = store;
     this._gameObjectObserver = gameObjectObserver;
 
-    this._gameObjectCashMap = {};
-
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
+
+    this._vaoExt = null;
+
+    this._buffer = null;
+    this._vao = null;
+
+    this._geometry = {};
+    this._viewMatrixStats = {};
+
+    this._vertexData = null;
+    this._gameObjectsCount = 0;
   }
 
   processorDidMount() {
+    window.addEventListener('resize', this._onWindowResize);
     this.gl = this._initGraphicContext();
+    this._initExtensions();
     this._initScreen();
     this.program = this._initShaders();
     this._initProgramInfo();
@@ -71,6 +98,7 @@ class RenderProcessor extends Processor {
   }
 
   processorWillUnmount() {
+    window.removeEventListener('resize', this._onWindowResize);
     this._shaders.forEach((shader) => {
       this.gl.detachShader(this.program, shader);
       this.gl.deleteShader(shader);
@@ -80,10 +108,21 @@ class RenderProcessor extends Processor {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+    this._buffer = null;
     this._shaders = [];
     this.program = null;
     this.textures = null;
     this.gl = null;
+    this._vao = null;
+    this._vaoExt = null;
+    this._geometry = {};
+    this._viewMatrixStats = {};
+    this._vertexData = null;
+    this._gameObjectsCount = 0;
+  }
+
+  _onWindowResize() {
+    this._windowDidResize = true;
   }
 
   _initGraphicContext() {
@@ -91,7 +130,7 @@ class RenderProcessor extends Processor {
 
     try {
       graphicContext =
-        this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+        this._view.getContext('webgl') || this._view.getContext('experimental-webgl');
     } catch (e) {
       throw new Error('Unable to get graphic context.');
     }
@@ -101,6 +140,14 @@ class RenderProcessor extends Processor {
     }
 
     return graphicContext;
+  }
+
+  _initExtensions() {
+    this._vaoExt = this.gl.getExtension('OES_vertex_array_object');
+
+    if (!this._vaoExt) {
+      return alert('Unable to initialize OES_vertex_array_object extension');
+    }
   }
 
   _initScreen() {
@@ -141,14 +188,107 @@ class RenderProcessor extends Processor {
   _initProgramInfo() {
     this.gl.useProgram(this.program);
 
-    this.programInfo = {
-      attribs: {
-        setters: webglUtils.createAttributeSetters(this.gl, this.program),
-      },
-      uniforms: {
-        setters: webglUtils.createUniformSetters(this.gl, this.program),
-      },
+    this._variables = {
+      aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
+      aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
+      aModelViewMatrix: this.gl.getAttribLocation(this.program, 'a_modelViewMatrix'),
+      aTexSize: this.gl.getAttribLocation(this.program, 'a_texSize'),
+      aTexTranslate: this.gl.getAttribLocation(this.program, 'a_texTranslate'),
+      aGameObjectSize: this.gl.getAttribLocation(this.program, 'a_gameObjectSize'),
+      uViewMatrix: this.gl.getUniformLocation(this.program, 'u_viewMatrix'),
+      uTexAtlasSize: this.gl.getUniformLocation(this.program, 'u_texAtlasSize'),
     };
+
+    this._buffer = this.gl.createBuffer();
+    this._vao = this._createVAO();
+
+    this._setUpGlobalUniforms();
+  }
+
+  _createVAO() {
+    const vao = this._vaoExt.createVertexArrayOES();
+    this._vaoExt.bindVertexArrayOES(vao);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, BUFFER_SIZE, this.gl.DYNAMIC_DRAW);
+
+    const attrs = [
+      {
+        loc: this._variables.aPosition,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aTexCoord,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aModelViewMatrix,
+        type: 'mat3',
+      },
+      {
+        loc: this._variables.aTexSize,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aTexTranslate,
+        type: 'vec2',
+      },
+      {
+        loc: this._variables.aGameObjectSize,
+        type: 'vec2',
+      },
+    ];
+    const sizeMap = {
+      mat3: BYTES_PER_MATRIX,
+      vec2: BYTES_PER_VECTOR_2,
+    };
+    const stride = attrs.reduce((totalSize, attr) => (
+      totalSize + sizeMap[attr.type]
+    ), 0);
+
+    let offset = 0;
+    for (let i = 0; i < attrs.length; i++) {
+      if (attrs[i].type === 'vec2') {
+        this.gl.enableVertexAttribArray(attrs[i].loc);
+        this.gl.vertexAttribPointer(
+          attrs[i].loc,
+          VECTOR_2_SIZE,
+          this.gl.FLOAT,
+          false,
+          stride,
+          offset
+        );
+
+        offset += BYTES_PER_VECTOR_2;
+      } else if (attrs[i].type === 'mat3') {
+        for (let j = 0; j < MATRIX_ROW_SIZE; j++) {
+          const loc = attrs[i].loc + j;
+
+          this.gl.enableVertexAttribArray(loc);
+          this.gl.vertexAttribPointer(
+            loc,
+            MATRIX_ROW_SIZE,
+            this.gl.FLOAT,
+            false,
+            stride,
+            offset + (j * BYTES_PER_MATRIX_ROW)
+          );
+        }
+
+        offset += BYTES_PER_MATRIX;
+      }
+    }
+
+    this._vaoExt.bindVertexArrayOES(null);
+
+    return vao;
+  }
+
+  _setUpGlobalUniforms() {
+    this.gl.uniform2fv(
+      this._variables.uTexAtlasSize,
+      [ this.textureAtlasSize.width, this.textureAtlasSize.height ]
+    );
   }
 
   _initTextures() {
@@ -166,16 +306,8 @@ class RenderProcessor extends Processor {
     return texture;
   }
 
-  _getTransformationMatrix(props) {
-    const canvas = this.gl.canvas;
+  _getModelViewMatrix(renderable, x, y, rotation) {
     const matrixTransformer = this._matrixTransformer;
-    const { renderable, x, y, rotation } = props;
-
-    const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
-    const cameraTransform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
-    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
-
-    const scale =  zoom * this._screenScale;
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
@@ -183,9 +315,7 @@ class RenderProcessor extends Processor {
     renderable.flipX && matrixTransformer.flipX(matrix);
     renderable.flipY && matrixTransformer.flipY(matrix);
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
-    matrixTransformer.translate(matrix, x - cameraTransform.offsetX, y - cameraTransform.offsetY);
-    matrixTransformer.scale(matrix, scale, scale);
-    matrixTransformer.project(matrix, canvas.clientWidth, canvas.clientHeight);
+    matrixTransformer.translate(matrix, x, y);
 
     return matrix;
   }
@@ -196,8 +326,6 @@ class RenderProcessor extends Processor {
       const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME);
       const aSortingLayerOrder = this._sortingLayer[aRenderable.sortingLayer];
       const bSortingLayerOrder = this._sortingLayer[bRenderable.sortingLayer];
-      const { height: aHeight, width: aWidth } = aRenderable;
-      const { height: bHeight, width: bWidth } = bRenderable;
 
       if (aSortingLayerOrder > bSortingLayerOrder) {
         return 1;
@@ -210,10 +338,8 @@ class RenderProcessor extends Processor {
       const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME);
       const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME);
 
-      const aOffsetY = aTransform.offsetY + (aHeight / 2);
-      const aOffsetX = aTransform.offsetX + (aWidth / 2);
-      const bOffsetY = bTransform.offsetY + (bHeight / 2);
-      const bOffsetX = bTransform.offsetX + (bWidth / 2);
+      const aOffsetY = aTransform.offsetY + (aRenderable.height / 2);
+      const bOffsetY = bTransform.offsetY + (bRenderable.height / 2);
 
       if (aOffsetY > bOffsetY) {
         return 1;
@@ -222,6 +348,9 @@ class RenderProcessor extends Processor {
       if (aOffsetY < bOffsetY) {
         return -1;
       }
+
+      const aOffsetX = aTransform.offsetX + (aRenderable.width / 2);
+      const bOffsetX = bTransform.offsetX + (bRenderable.width / 2);
 
       if (aOffsetX > bOffsetX) {
         return 1;
@@ -235,101 +364,177 @@ class RenderProcessor extends Processor {
     };
   }
 
-  _checkOnGeometryChange(gameObject) {
-    const gameObjectId = gameObject.getId();
+  _setUpTextureInfo(textureInfo, renderable, offset) {
+    this._vertexData[offset] = textureInfo.width;
+    this._vertexData[offset + 1] = textureInfo.height;
+    this._vertexData[offset + 2] = textureInfo.x;
+    this._vertexData[offset + 3] = textureInfo.y;
+    this._vertexData[offset + 4] = renderable.width;
+    this._vertexData[offset + 5] = renderable.height;
+  }
 
-    if (!this._gameObjectCashMap[gameObjectId]) {
-      return true;
+  _setUpMatrix(matrix, offset) {
+    this._vertexData[offset] = matrix[0];
+    this._vertexData[offset + 1] = matrix[1];
+    this._vertexData[offset + 2] = matrix[2];
+    this._vertexData[offset + 3] = matrix[3];
+    this._vertexData[offset + 4] = matrix[4];
+    this._vertexData[offset + 5] = matrix[5];
+    this._vertexData[offset + 6] = matrix[6];
+    this._vertexData[offset + 7] = matrix[7];
+    this._vertexData[offset + 8] = matrix[8];
+  }
+
+  _setUpVertexData(gameObject, index) {
+    const gameObjectId = gameObject.getId();
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+    const offset = index * VERTEX_DATA_STRIDE;
+
+    if (renderable.disabled) {
+      for (let i = 0; i < VERTEX_DATA_STRIDE; i++) {
+        this._vertexData[offset + i] = 0;
+      }
+      return;
     }
 
-    const previousRenderable = this._gameObjectCashMap[gameObjectId].renderable;
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+    const texture = this.textureAtlasDescriptor[renderable.src];
+    const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-    return renderable.width !== previousRenderable.width
-      || renderable.height !== previousRenderable.height;
+    const modelViewMatrix = this._getModelViewMatrix(
+      renderable,
+      transform.offsetX,
+      transform.offsetY,
+      transform.rotation
+    );
+
+    if (!this._geometry[gameObjectId]) {
+      this._geometry[gameObjectId] = {
+        position: new Rectangle(renderable.width, renderable.height).toArray(),
+        texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
+      };
+    }
+
+    const position = this._geometry[gameObjectId].position;
+    const texCoord = this._geometry[gameObjectId].texCoord;
+
+    for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
+      this._vertexData[j] = position[i];
+      this._vertexData[j + 1] = position[i + 1];
+      this._vertexData[j + 2] = texCoord[i];
+      this._vertexData[j + 3] = texCoord[i + 1];
+
+      this._setUpMatrix(modelViewMatrix, j + (VECTOR_2_SIZE * 2));
+      this._setUpTextureInfo(textureInfo, renderable, j + (VECTOR_2_SIZE * 2) + MATRIX_SIZE);
+    }
   }
 
-  _createBufferInfo(renderable, textureInfo) {
-    const attribs = {
-      position: {
-        data: new Rectangle(renderable.width, renderable.height).toArray(),
-        numComponents: RENDER_COMPONENTS_NUMBER,
-      },
-      texCoord: {
-        data: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
-        numComponents: RENDER_COMPONENTS_NUMBER,
-      },
-    };
+  _resizeCanvas(canvas) {
+    if (!this._windowDidResize) {
+      return;
+    }
 
-    return webglUtils.createBufferInfoFromArrays(this.gl, attribs);
-  }
-
-  _resizeCanvas() {
-    const canvas = this.gl.canvas;
     const devicePixelRatio = window.devicePixelRatio || 1;
+    this._viewWidth = this._view.clientWidth;
+    this._viewHeight = this._view.clientHeight;
 
-    canvas.width = canvas.clientWidth * devicePixelRatio;
-    canvas.height = canvas.clientHeight * devicePixelRatio;
+    const canvasWidth = this._viewWidth * devicePixelRatio;
+    const canvasHeight = this._viewHeight * devicePixelRatio;
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
     const screenSize = Math.sqrt(
       Math.pow(canvas.clientWidth, 2) + Math.pow(canvas.clientHeight, 2)
     );
     const avaragingValue = 1 - this._scaleSensitivity;
     const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
+
     this._screenScale = normalizedSize / STD_SCREEN_SIZE;
+
+    this.gl.viewport(0, 0, canvasWidth, canvasHeight);
+
+    this._windowDidResize = false;
+  }
+
+  _updateViewMatrix() {
+    const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
+    const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
+    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
+    const scale =  zoom * this._screenScale;
+
+    const prevStats = this._viewMatrixStats;
+
+    if (
+      prevStats.x === transform.offsetX &&
+      prevStats.y === transform.offsetY &&
+      prevStats.width === this._viewWidth &&
+      prevStats.height === this._viewHeight &&
+      prevStats.scale === scale
+    ) {
+      return;
+    }
+
+    const matrixTransformer = this._matrixTransformer;
+    const viewMatrix = matrixTransformer.getIdentityMatrix();
+    matrixTransformer.translate(viewMatrix, -transform.offsetX, -transform.offsetY);
+    matrixTransformer.scale(viewMatrix, scale, scale);
+    matrixTransformer.project(viewMatrix, this._viewWidth, this._viewHeight);
+
+    this.gl.uniformMatrix3fv(
+      this._variables.uViewMatrix,
+      false,
+      viewMatrix
+    );
+
+    this._viewMatrixStats.width = this._viewWidth;
+    this._viewMatrixStats.height = this._viewHeight;
+    this._viewMatrixStats.x = transform.offsetX;
+    this._viewMatrixStats.y = transform.offsetY;
+    this._viewMatrixStats.scale = scale;
+  }
+
+  _allocateVertexData() {
+    const gameObjectsCount = this._gameObjectObserver.size();
+    if (this._gameObjectsCount !== gameObjectsCount) {
+      this._gameObjectsCount = gameObjectsCount;
+      this._vertexData = new Float32Array(this._gameObjectsCount * VERTEX_DATA_STRIDE);
+    }
+  }
+
+  _setUpBuffers() {
+    this._vaoExt.bindVertexArrayOES(this._vao);
+    this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, this._vertexData);
+  }
+
+  _processRemovedGameObjects() {
+    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
+      const gameObjectId = gameObject.getId();
+      this._geometry[gameObjectId] = null;
+    });
   }
 
   process() {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      this._gameObjectCashMap[gameObjectId] = null;
-    });
-
     const canvas = this.gl.canvas;
 
-    this._resizeCanvas();
-    this.gl.viewport(0, 0, canvas.width, canvas.height);
+    this._resizeCanvas(canvas);
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+    this._processRemovedGameObjects();
+
+    this._updateViewMatrix();
+    this._allocateVertexData();
     this._gameObjectObserver.sort(this._getCompareFunction());
-    this._gameObjectObserver.forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
 
-      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const texture = this.textureAtlasDescriptor[renderable.src];
-      const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
-
-      if (this._checkOnGeometryChange(gameObject)) {
-        this._gameObjectCashMap[gameObjectId] = {
-          renderable: renderable.clone(),
-          bufferInfo: this._createBufferInfo(renderable, textureInfo),
-        };
-      }
-
-      webglUtils.setBuffersAndAttributes(
-        this.gl,
-        this.programInfo.attribs.setters,
-        this._gameObjectCashMap[gameObjectId].bufferInfo
-      );
-
-      const uniforms = {
-        u_matrix: this._getTransformationMatrix({
-          renderable: renderable,
-          x: transform.offsetX,
-          y: transform.offsetY,
-          rotation: transform.rotation,
-        }),
-        u_textureAtlasSize: [ this.textureAtlasSize.width, this.textureAtlasSize.height ],
-        u_texCoordTranslation: [ textureInfo.x, textureInfo.y ],
-        u_quadSize: [ renderable.width, renderable.height ],
-        u_textureSize: [ textureInfo.width, textureInfo.height ],
-      };
-      webglUtils.setUniforms(this.programInfo.uniforms.setters, uniforms);
-
-      this.gl.drawArrays(this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
+    this._gameObjectObserver.forEach((gameObject, index) => {
+      this._setUpVertexData(gameObject, index);
     });
+
+    this._setUpBuffers();
+    this.gl.drawArrays(
+      this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * this._gameObjectObserver.size()
+    );
   }
 }
 

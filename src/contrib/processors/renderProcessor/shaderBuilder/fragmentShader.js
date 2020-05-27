@@ -2,25 +2,29 @@ const fragmentShader = `
 precision highp float;
 
 uniform sampler2D u_image;
+uniform vec2 u_texAtlasSize;
 
 varying vec2 v_texCoord;
-varying vec2 v_texCoordTranslation;
-varying vec2 v_textureAtlasSize;
-varying vec2 v_textureSize;
-varying vec2 v_quadSize;
+varying vec2 v_texSize;
+varying vec2 v_texTranslate;
+varying vec2 v_gameObjectSize;
+
+float calculateCoord(float gameObjectSize, float texSize, float texTranslate, float texCoord) {
+  if (gameObjectSize > texSize) {
+    float repeat = gameObjectSize / texSize;
+    return mod(texCoord * repeat, texSize) + texTranslate;
+  } else {
+    return texCoord + texTranslate;
+  }
+}
 
 void main() {
-  vec2 texCoord = v_texCoord;
-  
-  texCoord = vec2(
-    mod(v_texCoord.x * v_quadSize.x / v_textureSize.x, v_textureSize.x),
-    mod(v_texCoord.y * v_quadSize.y / v_textureSize.y, v_textureSize.y)
+  vec2 texCoord = vec2(
+    calculateCoord(v_gameObjectSize.x, v_texSize.x, v_texTranslate.x, v_texCoord.x),
+    calculateCoord(v_gameObjectSize.y, v_texSize.y, v_texTranslate.y, v_texCoord.y)
   );
-  
-  texCoord = texCoord + v_texCoordTranslation;
-  texCoord = texCoord / v_textureAtlasSize;
 
-  gl_FragColor = texture2D(u_image, texCoord);
+  gl_FragColor = texture2D(u_image, texCoord / u_texAtlasSize);
 }
 `;
 

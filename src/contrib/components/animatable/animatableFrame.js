@@ -4,6 +4,7 @@ class AnimatableFrame {
     this._rotation = config.rotation;
     this._flipX = config.flipX;
     this._flipY = config.flipY;
+    this._disabled = config.disabled;
   }
 
   set index(index) {
@@ -38,12 +39,21 @@ class AnimatableFrame {
     return this._flipY;
   }
 
+  set disabled(disabled) {
+    this._disabled = disabled;
+  }
+
+  get disabled() {
+    return this._disabled;
+  }
+
   clone() {
     return new AnimatableFrame({
       index: this.index,
       rotation: this.rotation,
       flipX: this.flipX,
       flipY: this.flipY,
+      disabled: this.disabled,
     });
   }
 }

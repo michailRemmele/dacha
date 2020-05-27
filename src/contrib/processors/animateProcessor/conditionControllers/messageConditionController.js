@@ -1,12 +1,8 @@
 import ConditionController from './conditionController';
 
 class MessageConditionController extends ConditionController {
-  check(props) {
-    const {
-      messageBus,
-      gameObject,
-      message: messageType,
-    } = props;
+  check(props, gameObject, messageBus) {
+    const { message: messageType } = props;
 
     const messages = messageBus.get(messageType) || [];
     return messages.some((message) => {
