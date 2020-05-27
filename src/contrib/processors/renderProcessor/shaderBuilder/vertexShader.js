@@ -16,8 +16,8 @@ varying vec2 v_texTranslate;
 varying vec2 v_gameObjectSize;
 
 void main() {
-  mat3 u_Matrix = u_viewMatrix * a_modelViewMatrix;
-  gl_Position = vec4((u_Matrix * vec3(a_position, 1)).xy, 0, 1);
+  mat3 matrix = u_viewMatrix * a_modelViewMatrix;
+  gl_Position = vec4((matrix * vec3(a_position, 1)).xy, 0, 1);
 
   v_texCoord = a_texCoord;
   v_texSize = a_texSize;
