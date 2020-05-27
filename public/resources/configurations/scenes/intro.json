@@ -50,7 +50,7 @@
             {
               "name": "camera",
               "config": {
-                "zoom": 3.5
+                "zoom": 2
               }
             }
           ]
@@ -2267,7 +2267,8 @@
           "terrain",
           "decorations",
           "units"
-        ]
+        ],
+        "scaleSensitivity": 50
       }
     }
   ]

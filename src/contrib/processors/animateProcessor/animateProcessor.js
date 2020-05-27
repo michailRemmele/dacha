@@ -24,6 +24,7 @@ class AnimateProcessor extends Processor {
     renderable.rotation = frame.rotation !== undefined ? frame.rotation : renderable.rotation;
     renderable.flipX = frame.flipX !== undefined ? frame.flipX : renderable.flipX;
     renderable.flipY = frame.flipY !== undefined ? frame.flipY : renderable.flipY;
+    renderable.disabled = frame.disabled;
   }
 
   process(options) {
@@ -37,11 +38,7 @@ class AnimateProcessor extends Processor {
       const nextTransition = animatable.currentState.transitions.find((transition) => {
         return transition.conditions.every((condition) => {
           const conditionController = this._conditionControllers[condition.type];
-          return conditionController.check({
-            ...condition.props,
-            gameObject: gameObject,
-            messageBus: messageBus,
-          });
+          return conditionController.check(condition.props, gameObject, messageBus);
         });
       });
 

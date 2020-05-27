@@ -11,13 +11,12 @@ class ComparatorConditionController extends ConditionController {
         }
         return value;
       },
-      componentValue: (value, gameObject) => {
-        const valuePath = value.split('.');
-        const componentName = valuePath.shift();
+      componentValue: (path, gameObject) => {
+        const componentName = path[0];
         let soughtValue = gameObject.getComponent(componentName);
 
-        for (let i = 0; i < valuePath.length && soughtValue !== undefined; i++) {
-          soughtValue = soughtValue[valuePath[i]];
+        for (let i = 1; i < path.length && soughtValue !== undefined; i++) {
+          soughtValue = soughtValue[path[i]];
         }
 
         return soughtValue;
@@ -47,8 +46,8 @@ class ComparatorConditionController extends ConditionController {
     return this._getters[arg.type](arg.value, gameObject);
   }
 
-  check(props) {
-    const { gameObject, operation } = props;
+  check(props, gameObject) {
+    const { operation } = props;
 
     if (!this._operations[operation]) {
       throw new Error(`Unknown operation type: ${operation}`);

@@ -9,11 +9,14 @@ class Renderable extends Component {
     this._height = config.height;
     this._type = config.type;
     this._slice = config.slice;
+    this._spacing = config.spacing || 0;
+    this._extruding = config.extruding || 0;
     this._currentFrame = config.type === 'sprite' ? 0 : undefined;
     this._rotation = config.rotation;
     this._origin = config.origin;
     this._flipX = config.flipX;
     this._flipY = config.flipY;
+    this._disabled = config.disabled;
     this._sortingLayer = config.sortingLayer;
   }
 
@@ -57,6 +60,22 @@ class Renderable extends Component {
     return this._slice;
   }
 
+  set spacing(spacing) {
+    this._spacing = spacing;
+  }
+
+  get spacing() {
+    return this._spacing;
+  }
+
+  set extruding(extruding) {
+    this._extruding = extruding;
+  }
+
+  get extruding() {
+    return this._extruding;
+  }
+
   set currentFrame(currentFrame) {
     this._currentFrame = currentFrame;
   }
@@ -97,6 +116,14 @@ class Renderable extends Component {
     return this._flipY;
   }
 
+  set disabled(disabled) {
+    this._disabled = disabled;
+  }
+
+  get disabled() {
+    return this._disabled;
+  }
+
   set sortingLayer(sortingLayer) {
     this._sortingLayer = sortingLayer;
   }
@@ -112,10 +139,13 @@ class Renderable extends Component {
       height: this.height,
       type: this.type,
       slice: this.slice,
+      spacing: this.spacing,
+      extruding: this.extruding,
       rotation: this.rotation,
       origin: this._origin,
       flipX: this.flipX,
       flipY: this.flipY,
+      disabled: this.disabled,
       sortingLayer: this.sortingLayer,
     });
   }

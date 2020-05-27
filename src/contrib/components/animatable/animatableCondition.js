@@ -1,7 +1,9 @@
+import conditionProps from './conditionProps';
+
 class AnimatableCondition {
   constructor(config) {
     this._type = config.type;
-    this._props = config.props;
+    this._props = new conditionProps[config.type](config.props);
   }
 
   set type(type) {
@@ -23,9 +25,7 @@ class AnimatableCondition {
   clone() {
     return new AnimatableCondition({
       type: this.type,
-      props: {
-        ...this.props,
-      },
+      props: this.props.clone(),
     });
   }
 }
