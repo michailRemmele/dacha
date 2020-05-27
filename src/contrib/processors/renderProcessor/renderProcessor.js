@@ -81,7 +81,6 @@ class RenderProcessor extends Processor {
     this._vao = null;
 
     this._geometry = {};
-    this._textureMatrixCache = {};
     this._viewMatrixStats = {};
 
     this._vertexData = null;
@@ -114,6 +113,12 @@ class RenderProcessor extends Processor {
     this.program = null;
     this.textures = null;
     this.gl = null;
+    this._vao = null;
+    this._vaoExt = null;
+    this._geometry = {};
+    this._viewMatrixStats = {};
+    this._vertexData = null;
+    this._gameObjectsCount = 0;
   }
 
   _onWindowResize() {
@@ -505,7 +510,6 @@ class RenderProcessor extends Processor {
   _processRemovedGameObjects() {
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
-      this._textureMatrixCache[gameObjectId] = null;
       this._geometry[gameObjectId] = null;
     });
   }
