@@ -1,3 +1,5 @@
+import { MathOps } from 'engine/mathLib';
+
 import AIStrategy from './aiStrategy';
 
 const SHOT_MSG = 'SHOT';
@@ -24,41 +26,11 @@ class EasyAIStrategy extends AIStrategy{
     this._store = store;
 
     this._playerId = this._player.getId();
-    this._cooldown = this._random(0, COOLDOWN);
+    this._cooldown = MathOps.random(0, COOLDOWN);
     this._distances = [];
     this._meleeEnemies = [];
     this._waypoint = null;
     this._enemy = null;
-  }
-
-  _random(min, max) {
-    return Math.floor(min + (Math.random() * (max + 1 - min)));
-  }
-
-  _radToDeg(rad) {
-    const angleInDegrees = rad * 180 / Math.PI;
-    return angleInDegrees < 0 ? angleInDegrees + 360 : angleInDegrees;
-  }
-
-  _degToRad(deg) {
-    return deg * Math.PI / 180;
-  }
-
-  _getAngleBetweenTwoPoints(x1, x2, y1, y2) {
-    return Math.atan2(y1 - y2, x1 - x2);
-  }
-
-  _getDistanceBetweenTwoPoints(x1, x2, y1, y2) {
-    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-  }
-
-  _getLinePoint(angle, x, y, length) {
-    const angleInRad = this._degToRad(angle);
-
-    return {
-      x: x - (length * Math.cos(angleInRad)),
-      y: y - (length * Math.sin(angleInRad)),
-    };
   }
 
   _getMovementBoundaries() {
@@ -82,7 +54,7 @@ class EasyAIStrategy extends AIStrategy{
       const { offsetX: enemyX, offsetY: enemyY } = enemy.getComponent(TRANSFORM_COMPONENT_NAME);
 
       return {
-        distance: this._getDistanceBetweenTwoPoints(enemyX, offsetX, enemyY, offsetY),
+        distance: MathOps.getDistanceBetweenTwoPoints(enemyX, offsetX, enemyY, offsetY),
         enemy,
       };
     });
@@ -125,15 +97,15 @@ class EasyAIStrategy extends AIStrategy{
     }
 
     if (this._meleeEnemies.length) {
-      this._enemy = this._meleeEnemies[this._random(0, this._meleeEnemies.length - 1)].enemy;
+      this._enemy = this._meleeEnemies[MathOps.random(0, this._meleeEnemies.length - 1)].enemy;
     }
 
     const closeToFallEnemies = this._findCloseToFallEnemies();
 
     if (closeToFallEnemies.length) {
-      this._enemy = closeToFallEnemies[this._random(0, closeToFallEnemies.length - 1)];
+      this._enemy = closeToFallEnemies[MathOps.random(0, closeToFallEnemies.length - 1)];
     } else {
-      this._enemy = playerEnemies[this._random(0, playerEnemies.length - 1)];
+      this._enemy = playerEnemies[MathOps.random(0, playerEnemies.length - 1)];
     }
   }
 
@@ -154,8 +126,8 @@ class EasyAIStrategy extends AIStrategy{
       return {
         enemy,
         distance,
-        direction: this._radToDeg(
-          this._getAngleBetweenTwoPoints(offsetX, enemyX, offsetY, enemyY)
+        direction: MathOps.radToDeg(
+          MathOps.getAngleBetweenTwoPoints(offsetX, enemyX, offsetY, enemyY)
         ),
       };
     });
@@ -196,7 +168,7 @@ class EasyAIStrategy extends AIStrategy{
       moveDirection = (left + (width / 2)) % 360;
     }
 
-    const waypoint = this._getLinePoint(moveDirection, offsetX, offsetY, RETREAT_DISTANCE);
+    const waypoint = MathOps.getLinePoint(moveDirection, offsetX, offsetY, RETREAT_DISTANCE);
 
     if (waypoint.x > minX && waypoint.x < maxX && waypoint.y > minY && waypoint.y < maxY) {
       return waypoint;
@@ -208,7 +180,7 @@ class EasyAIStrategy extends AIStrategy{
 
     const waypoint = this._findWayToRetreat();
 
-    this._waypoint = waypoint || { x: this._random(minX, maxX), y: this._random(minY, maxY) };
+    this._waypoint = waypoint || { x: MathOps.random(minX, maxX), y: MathOps.random(minY, maxY) };
   }
 
   _attack(messageBus) {
@@ -242,7 +214,7 @@ class EasyAIStrategy extends AIStrategy{
       return;
     }
 
-    const movementAngle = this._radToDeg(this._getAngleBetweenTwoPoints(
+    const movementAngle = MathOps.radToDeg(MathOps.getAngleBetweenTwoPoints(
       this._waypoint.x,
       offsetX,
       this._waypoint.y,

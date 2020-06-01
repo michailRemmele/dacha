@@ -1,5 +1,5 @@
-import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
+import { Vector2 } from 'engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';

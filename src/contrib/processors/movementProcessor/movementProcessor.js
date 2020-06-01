@@ -1,6 +1,5 @@
-import Vector2 from 'utils/vector/vector2';
-
 import Processor from 'engine/processor/processor';
+import { Vector2, VectorOps, MathOps } from 'engine/mathLib';
 
 const MOVEMENT_MSG = 'MOVEMENT';
 
@@ -14,22 +13,6 @@ class MovementProcessor extends Processor {
     this._gameObjectObserver = options.gameObjectObserver;
   }
 
-  _degToRad(deg) {
-    return deg * Math.PI / 180;
-  }
-
-  _fixCalcError(value) {
-    return Math.abs(value) < Number.EPSILON ? 0 : value;
-  }
-
-  _getVectorByAngle(angle) {
-    const radAngle = this._degToRad(angle);
-    const x = this._fixCalcError(Math.cos(radAngle));
-    const y = this._fixCalcError(Math.sin(radAngle));
-
-    return new Vector2(x, y);
-  }
-
   process(options) {
     const deltaTimeInSeconds = options.deltaTime / 1000;
     const messageBus = options.messageBus;
@@ -40,7 +23,7 @@ class MovementProcessor extends Processor {
       const gameObjectId = gameObject.getId();
 
       storage[gameObjectId] = storage[gameObjectId] || new Vector2(0, 0);
-      storage[gameObjectId].add(this._getVectorByAngle(directionAngle));
+      storage[gameObjectId].add(VectorOps.getVectorByAngle(MathOps.degToRad(directionAngle)));
 
       return storage;
     }, {});

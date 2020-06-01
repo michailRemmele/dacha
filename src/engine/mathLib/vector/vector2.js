@@ -1,4 +1,4 @@
-class Vector2 {
+export class Vector2 {
   constructor(x, y) {
     this._x = x;
     this._y = y;
@@ -34,5 +34,3 @@ class Vector2 {
     return new Vector2(this._x, this._y);
   }
 }
-
-export default Vector2;
