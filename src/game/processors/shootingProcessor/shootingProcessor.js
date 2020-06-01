@@ -1,5 +1,5 @@
-import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
+import { VectorOps, MathOps } from 'engine/mathLib';
 
 const DAMAGE_MSG = 'DAMAGE';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
@@ -42,26 +42,6 @@ class ShootingProcessor extends Processor {
     this._gameObjectSpawner = options.gameObjectSpawner;
 
     this._firedBullets = [];
-  }
-
-  _radToDeg(rad) {
-    const angleInDegrees = rad * 180 / Math.PI;
-    return angleInDegrees < 0 ? angleInDegrees + 360 : angleInDegrees;
-  }
-
-  _fixCalcError(value) {
-    return Math.abs(value) < Number.EPSILON ? 0 : value;
-  }
-
-  _getVectorByAngle(angle) {
-    const x = this._fixCalcError(Math.cos(angle));
-    const y = this._fixCalcError(Math.sin(angle));
-
-    return new Vector2(x, y);
-  }
-
-  _getAngleBetweenTwoPoints(x1, x2, y1, y2) {
-    return Math.atan2(y1 - y2, x1 - x2);
   }
 
   _pushTarget(target, directionVector, messageBus) {
@@ -155,11 +135,11 @@ class ShootingProcessor extends Processor {
     bulletTransform.offsetX = offsetX;
     bulletTransform.offsetY = offsetY;
 
-    const angle = this._getAngleBetweenTwoPoints(targetX, offsetX, targetY, offsetY);
+    const angle = MathOps.getAngleBetweenTwoPoints(targetX, offsetX, targetY, offsetY);
 
-    bulletTransform.rotation = this._radToDeg(angle);
+    bulletTransform.rotation = MathOps.radToDeg(angle);
 
-    const directionVector = this._getVectorByAngle(angle);
+    const directionVector = VectorOps.getVectorByAngle(angle);
 
     const forceValue = weapon.speed * bulletRigidBody.mass / ACCELERATION_DURATION_IN_SEC;
     directionVector.multiplyNumber(forceValue);

@@ -1,5 +1,5 @@
 import Component from 'engine/component/component';
-import Vector2 from 'utils/vector/vector2';
+import { Vector2 } from 'engine/mathLib';
 
 class Movement extends Component {
   constructor(config) {
