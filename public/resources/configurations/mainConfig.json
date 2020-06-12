@@ -3,7 +3,8 @@
   "scenes": {
     "intro": "resources/configurations/scenes/intro.json",
     "mainMenu": "resources/configurations/scenes/mainMenu.json",
-    "game": "resources/configurations/scenes/gameScene.json"
+    "platformerTest": "resources/configurations/scenes/platformerTestScene.json",
+    "topViewTest": "resources/configurations/scenes/topViewTestScene.json"
   },
   "prefabs": [
     {
@@ -23,7 +24,19 @@
     },
     {
       "src": "resources/configurations/prefabs/background/space.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/terrain/testFloor.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/units/testBox.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/terrain/testFloorTopView.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/terrain/testColumn.json"
     }
   ],
-  "startScene": "intro"
+  "startScene": "topViewTest"
 }

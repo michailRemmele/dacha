@@ -1,0 +1,87 @@
+{
+  "name": "testBox",
+  "type": "unit",
+  "children": [
+    {
+      "name": "roosterHitBox",
+      "children": [],
+      "components": [
+        {
+          "name": "hitBox",
+          "config": {}
+        },
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        },
+        {
+          "name": "colliderContainer",
+          "config": {
+            "type": "boxCollider",
+            "collider": {
+              "sizeX": 33,
+              "sizeY": 40,
+              "centerX": 0,
+              "centerY": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "rigidBody",
+      "config": {
+        "mass": 3,
+        "useGravity": true,
+        "isPermeable": false,
+        "ghost": false
+      }
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "boxCollider",
+        "collider": {
+          "sizeX": 45,
+          "sizeY": 50,
+          "centerX": 0,
+          "centerY": 0
+        }
+      }
+    },
+    {
+      "name": "movement",
+      "config": {
+        "speed": 100
+      }
+    },
+    {
+      "name": "renderable",
+      "config": {
+        "type": "static",
+        "src": "units/test_box",
+        "width": 45,
+        "height": 50,
+        "rotation": 0,
+        "origin": [ 0, 0 ],
+        "flipX": false,
+        "flipY": false,
+        "sortingLayer": "units"
+      }
+    }
+  ]
+}
