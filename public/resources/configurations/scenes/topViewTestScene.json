@@ -67,6 +67,12 @@
                 "attrs": {
                   "directionAngle": 0
                 }
+              },
+              "Q_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "platformerTest"
+                }
               }
             }
           }
@@ -335,6 +341,12 @@
         "windowNodeId": "root",
         "initialCamera": "1.2"
       }
+    },
+    {
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {}
     },
     {
       "name": "physicsProcessor",
