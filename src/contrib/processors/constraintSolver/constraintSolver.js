@@ -11,17 +11,7 @@ class ConstraintSolver extends Processor {
     super();
 
     this._gameObjectObserver = options.gameObjectObserver;
-    this._gameObjectsLastTransform = {};
     this._processedPairs = {};
-  }
-
-  _processAddedGameObjects() {
-    this._gameObjectObserver.getLastAdded().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-
-      this._gameObjectsLastTransform[gameObjectId] = transform.clone();
-    });
   }
 
   _validateCollision(gameObject1, gameObject2) {
@@ -29,29 +19,34 @@ class ConstraintSolver extends Processor {
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
     return rigidBody1 && !rigidBody1.ghost && !rigidBody1.isPermeable
-      && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable;
+      && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable
+      && (!rigidBody1.isStatic || !rigidBody2.isStatic);
   }
 
-  _resolveCollision(gameObject1, gameObject2, mtv) {
-    // const previousTransform = this._gameObjectsLastTransform[gameObject1.getId()];
-    // const transform = gameObject1.getComponent(TRANSFORM_COMPONENT_NAME);
+  _resolveCollision(gameObject1, gameObject2, mtv1, mtv2) {
+    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
+
     const transform1 = gameObject1.getComponent(TRANSFORM_COMPONENT_NAME);
     const transform2 = gameObject2.getComponent(TRANSFORM_COMPONENT_NAME);
 
-    // transform.offsetX = previousTransform.offsetX;
-    // transform.offsetY = previousTransform.offsetY;
+    if (rigidBody1.isStatic) {
+      transform2.offsetX += mtv2.x;
+      transform2.offsetY += mtv2.y;
+    } else if (rigidBody2.isStatic) {
+      transform1.offsetX += mtv1.x;
+      transform1.offsetY += mtv1.y;
+    } else {
+      transform1.offsetX += mtv1.x / 2;
+      transform1.offsetY += mtv1.y / 2;
 
-    transform1.offsetX -= mtv.x / 2;
-    transform1.offsetY -= mtv.y / 2;
-
-    transform2.offsetX += mtv.x / 2;
-    transform2.offsetY += mtv.y / 2;
+      transform2.offsetX += mtv2.x / 2;
+      transform2.offsetY += mtv2.y / 2;
+    }
   }
 
   process(options) {
     const messageBus = options.messageBus;
-
-    this._processAddedGameObjects();
 
     this._processedPairs = {};
 
@@ -59,7 +54,7 @@ class ConstraintSolver extends Processor {
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
     [ enterMessages, stayMessages ].forEach((messages) => {
       messages.forEach((message) => {
-        const { gameObject, otherGameObject, mtv } = message;
+        const { gameObject, otherGameObject, mtv1, mtv2 } = message;
 
         const id = gameObject.getId();
         const otherId = otherGameObject.getId();
@@ -75,15 +70,8 @@ class ConstraintSolver extends Processor {
           return;
         }
 
-        this._resolveCollision(gameObject, otherGameObject, mtv);
+        this._resolveCollision(gameObject, otherGameObject, mtv1, mtv2);
       });
-    });
-
-    this._gameObjectObserver.forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-
-      this._gameObjectsLastTransform[gameObjectId] = transform.clone();
     });
   }
 }

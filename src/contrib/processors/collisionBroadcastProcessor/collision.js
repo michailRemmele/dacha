@@ -5,11 +5,12 @@ const STATE = {
 };
 
 class Collision {
-  constructor(gameObject, otherGameObject, mtv) {
+  constructor(gameObject, otherGameObject, mtv1, mtv2) {
     this._gameObject = gameObject;
     this._otherGameObject = otherGameObject;
     this._lifetime = 2;
-    this._mtv = mtv;
+    this._mtv1 = mtv1;
+    this._mtv2 = mtv2;
   }
 
   set gameObject(gameObject) {
@@ -28,12 +29,20 @@ class Collision {
     return this._otherGameObject;
   }
 
-  set mtv(mtv) {
-    this._mtv = mtv;
+  set mtv1(mtv1) {
+    this._mtv1 = mtv1;
   }
 
-  get mtv() {
-    return this._mtv;
+  get mtv1() {
+    return this._mtv1;
+  }
+
+  set mtv2(mtv2) {
+    this._mtv2 = mtv2;
+  }
+
+  get mtv2() {
+    return this._mtv2;
   }
 
   isFinished() {

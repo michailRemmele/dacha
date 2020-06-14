@@ -17,7 +17,8 @@
         "mass": 1,
         "useGravity": false,
         "isPermeable": false,
-        "ghost": false
+        "ghost": false,
+        "isStatic": true
       }
     },
     {

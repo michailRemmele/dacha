@@ -1,4 +1,4 @@
-import { VectorOps } from 'engine/mathLib';
+import { Vector2, VectorOps } from 'engine/mathLib';
 
 class SAT {
   _projectPolygon(polygon, axisVector) {
@@ -111,6 +111,8 @@ class SAT {
   checkIntersectAxisAlignedBoxes(arg1, arg2) {
     let overlap;
     let normal;
+    let arg1ProjMin;
+    let arg2ProjMin;
 
     for (let j = 0; j < arg1.edges.length / 2; j++) {
       const axis = arg1.edges[j].normal;
@@ -131,19 +133,27 @@ class SAT {
       if (overlap === undefined || aOverlap < overlap) {
         overlap = aOverlap;
         normal = axis;
+        arg1ProjMin = aProjection.min;
+        arg2ProjMin = bProjection.min;
       }
 
       if (overlap === undefined || bOverlap < overlap) {
         overlap = bOverlap;
         normal = axis;
+        arg1ProjMin = aProjection.min;
+        arg2ProjMin = bProjection.min;
       }
     }
 
     const mtv = normal.clone();
     mtv.multiplyNumber(overlap);
 
+    const topLeftMtv = new Vector2(Math.abs(mtv.x), -Math.abs(mtv.y));
+    const downRightMtv = new Vector2(-Math.abs(mtv.x), Math.abs(mtv.y));
+
     return {
-      mtv,
+      mtv1: arg1ProjMin < arg2ProjMin ? topLeftMtv : downRightMtv,
+      mtv2: arg2ProjMin < arg1ProjMin ? topLeftMtv : downRightMtv,
     };
   }
 }

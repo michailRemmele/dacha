@@ -170,15 +170,18 @@ class CollisionDetectionProcessor extends Processor {
   }
 
   _sendCollisionMessage(messageBus, gameObject, otherGameObject, intersection) {
+    const { mtv1, mtv2 } = intersection;
+
     [
-      { gameObject: gameObject, otherGameObject: otherGameObject },
-      { gameObject: otherGameObject, otherGameObject: gameObject },
+      { gameObject, otherGameObject, mtv1, mtv2 },
+      { gameObject: otherGameObject, otherGameObject: gameObject, mtv1: mtv2, mtv2: mtv1 },
     ].forEach((entry) => {
       messageBus.send({
         type: COLLISION_MESSAGE,
         gameObject: entry.gameObject,
         otherGameObject: entry.otherGameObject,
-        intersection,
+        mtv1: entry.mtv1,
+        mtv2: entry.mtv2,
       });
     });
   }

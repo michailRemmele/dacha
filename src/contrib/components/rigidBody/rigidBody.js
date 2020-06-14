@@ -8,6 +8,7 @@ class RigidBody extends Component {
     this._useGravity = config.useGravity;
     this._isPermeable = config.isPermeable;
     this._ghost = config.ghost;
+    this._isStatic = config.isStatic;
   }
 
   set mass(mass) {
@@ -42,12 +43,21 @@ class RigidBody extends Component {
     return this._ghost;
   }
 
+  set isStatic(isStatic) {
+    this._isStatic = isStatic;
+  }
+
+  get isStatic() {
+    return this._isStatic;
+  }
+
   clone() {
     return new RigidBody({
       mass: this.mass,
       useGravity: this.useGravity,
       isPermeable: this.isPermeable,
       ghost: this.ghost,
+      isStatic: this.isStatic,
     });
   }
 }
