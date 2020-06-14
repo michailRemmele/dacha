@@ -169,7 +169,7 @@ class CollisionDetectionProcessor extends Processor {
     return this._intersectionCheckers[intersectionType].check(arg1, arg2);
   }
 
-  _sendCollisionMessage(messageBus, gameObject, otherGameObject) {
+  _sendCollisionMessage(messageBus, gameObject, otherGameObject, intersection) {
     [
       { gameObject: gameObject, otherGameObject: otherGameObject },
       { gameObject: otherGameObject, otherGameObject: gameObject },
@@ -178,6 +178,7 @@ class CollisionDetectionProcessor extends Processor {
         type: COLLISION_MESSAGE,
         gameObject: entry.gameObject,
         otherGameObject: entry.otherGameObject,
+        intersection,
       });
     });
   }
@@ -235,8 +236,11 @@ class CollisionDetectionProcessor extends Processor {
     });
 
     this._sweepAndPrune(this._getSortingAxis()).forEach((pair) => {
-      if (this._checkOnIntersection(pair)) {
-        this._sendCollisionMessage(messageBus, pair[0].gameObject, pair[1].gameObject);
+      const intersection = this._checkOnIntersection(pair);
+      if (intersection) {
+        this._sendCollisionMessage(
+          messageBus, pair[0].gameObject, pair[1].gameObject, intersection
+        );
       }
     });
   }

@@ -15,12 +15,13 @@ class CollisionBroadcastProcessor extends Processor {
   }
 
   _publishMessage(collision, messageBus) {
-    const { gameObject, otherGameObject } = collision;
+    const { gameObject, otherGameObject, mtv } = collision;
     const message = {
       type: `${COLLISION_MESSAGE}_${collision.getState()}`,
       id: gameObject.getId(),
-      gameObject: gameObject,
-      otherGameObject: otherGameObject,
+      gameObject,
+      otherGameObject,
+      mtv,
     };
 
     messageBus.send(message);
@@ -57,17 +58,19 @@ class CollisionBroadcastProcessor extends Processor {
 
     const collisionMessages = messageBus.get(COLLISION_MESSAGE) || [];
     collisionMessages.forEach((message) => {
-      const { gameObject, otherGameObject } = message;
+      const { gameObject, otherGameObject, intersection } = message;
+      const { mtv } = intersection;
       const gameObjectId = gameObject.getId();
       const otherGameObjectId = otherGameObject.getId();
 
       this._collisionMap[gameObjectId] = this._collisionMap[gameObjectId] || {};
 
       if (!this._collisionMap[gameObjectId][otherGameObjectId]) {
-        const collision = new Collision(gameObject, otherGameObject);
+        const collision = new Collision(gameObject, otherGameObject, mtv);
         this._collisionMap[gameObjectId][otherGameObjectId] = collision;
         this._activeCollisions.push(collision);
       } else {
+        this._collisionMap[gameObjectId][otherGameObjectId].mtv = mtv;
         this._collisionMap[gameObjectId][otherGameObjectId].signal();
       }
     });

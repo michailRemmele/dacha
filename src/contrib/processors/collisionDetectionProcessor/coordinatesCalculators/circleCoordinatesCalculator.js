@@ -11,6 +11,7 @@ class CircleCoordinatesCalculator extends CoordinatesCalculator {
         y: centerY + offsetY,
       },
       points: [],
+      edges: [],
     };
   }
 }

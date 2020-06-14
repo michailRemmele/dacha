@@ -1,6 +1,12 @@
 import IntersectionChecker from './intersectionChecker';
+import SAT from './sat';
 
 class CirclesIntersectionChecker extends IntersectionChecker {
+  constructor() {
+    super();
+    this.sat = new SAT();
+  }
+
   check(arg1, arg2) {
     const { radius: rArg1 } = arg1.collider;
     const { radius: rArg2 } = arg2.collider;

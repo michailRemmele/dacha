@@ -1,6 +1,12 @@
 import IntersectionChecker from './intersectionChecker';
+import SAT from './sat';
 
 class BoxAndCircleIntersectionChecker extends IntersectionChecker {
+  constructor() {
+    super();
+    this.sat = new SAT();
+  }
+
   check(arg1, arg2) {
     let box;
     let circle;

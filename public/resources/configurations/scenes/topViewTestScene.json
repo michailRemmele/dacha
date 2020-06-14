@@ -276,6 +276,23 @@
           }
         }
       ]
+    },
+    {
+      "id": "13",
+      "name": "testBox",
+      "fromPrefab": true,
+      "prefabName": "testBox",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 96,
+            "offsetY": 32,
+            "rotation": 0
+          }
+        }
+      ]
     }
   ],
   "processors": [
