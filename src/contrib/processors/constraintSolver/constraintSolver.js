@@ -54,23 +54,23 @@ class ConstraintSolver extends Processor {
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
     [ enterMessages, stayMessages ].forEach((messages) => {
       messages.forEach((message) => {
-        const { gameObject, otherGameObject, mtv1, mtv2 } = message;
+        const { gameObject1, gameObject2, mtv1, mtv2 } = message;
 
-        const id = gameObject.getId();
-        const otherId = otherGameObject.getId();
+        const id1 = gameObject1.getId();
+        const id2 = gameObject2.getId();
 
-        if (this._processedPairs[otherId] && this._processedPairs[otherId][id]) {
+        if (this._processedPairs[id2] && this._processedPairs[id2][id1]) {
           return;
         }
 
-        this._processedPairs[id] = this._processedPairs[id] || {};
-        this._processedPairs[id][otherId] = true;
+        this._processedPairs[id1] = this._processedPairs[id1] || {};
+        this._processedPairs[id1][id2] = true;
 
-        if (!this._validateCollision(gameObject, otherGameObject)) {
+        if (!this._validateCollision(gameObject1, gameObject2)) {
           return;
         }
 
-        this._resolveCollision(gameObject, otherGameObject, mtv1, mtv2);
+        this._resolveCollision(gameObject1, gameObject2, mtv1, mtv2);
       });
     });
   }

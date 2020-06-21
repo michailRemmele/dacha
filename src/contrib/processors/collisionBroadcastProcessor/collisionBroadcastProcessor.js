@@ -15,12 +15,12 @@ class CollisionBroadcastProcessor extends Processor {
   }
 
   _publishMessage(collision, messageBus) {
-    const { gameObject, otherGameObject, mtv1, mtv2 } = collision;
+    const { gameObject1, gameObject2, mtv1, mtv2 } = collision;
     const message = {
       type: `${COLLISION_MESSAGE}_${collision.getState()}`,
-      id: gameObject.getId(),
-      gameObject,
-      otherGameObject,
+      id: gameObject1.getId(),
+      gameObject1,
+      gameObject2,
       mtv1,
       mtv2,
     };
@@ -34,12 +34,12 @@ class CollisionBroadcastProcessor extends Processor {
       const id = gameObject.getId();
 
       this._activeCollisions = this._activeCollisions.filter((collision) => {
-        if (collision.gameObject.getId() !== id && collision.otherGameObject.getId() !== id) {
+        if (collision.gameObject1.getId() !== id && collision.gameObject2.getId() !== id) {
           return true;
         }
 
-        if (collision.otherGameObject.getId() === id) {
-          this._collisionMap[collision.gameObject.getId()][id] = null;
+        if (collision.gameObject2.getId() === id) {
+          this._collisionMap[collision.gameObject1.getId()][id] = null;
         }
 
         collision.tick();
@@ -59,32 +59,32 @@ class CollisionBroadcastProcessor extends Processor {
 
     const collisionMessages = messageBus.get(COLLISION_MESSAGE) || [];
     collisionMessages.forEach((message) => {
-      const { gameObject, otherGameObject, mtv1, mtv2 } = message;
-      const gameObjectId = gameObject.getId();
-      const otherGameObjectId = otherGameObject.getId();
+      const { gameObject1, gameObject2, mtv1, mtv2 } = message;
+      const gameObject1Id = gameObject1.getId();
+      const gameObject2Id = gameObject2.getId();
 
-      this._collisionMap[gameObjectId] = this._collisionMap[gameObjectId] || {};
+      this._collisionMap[gameObject1Id] = this._collisionMap[gameObject1Id] || {};
 
-      if (!this._collisionMap[gameObjectId][otherGameObjectId]) {
-        const collision = new Collision(gameObject, otherGameObject, mtv1, mtv2);
-        this._collisionMap[gameObjectId][otherGameObjectId] = collision;
+      if (!this._collisionMap[gameObject1Id][gameObject2Id]) {
+        const collision = new Collision(gameObject1, gameObject2, mtv1, mtv2);
+        this._collisionMap[gameObject1Id][gameObject2Id] = collision;
         this._activeCollisions.push(collision);
       } else {
-        this._collisionMap[gameObjectId][otherGameObjectId].mtv1 = mtv1;
-        this._collisionMap[gameObjectId][otherGameObjectId].mtv2 = mtv2;
-        this._collisionMap[gameObjectId][otherGameObjectId].signal();
+        this._collisionMap[gameObject1Id][gameObject2Id].mtv1 = mtv1;
+        this._collisionMap[gameObject1Id][gameObject2Id].mtv2 = mtv2;
+        this._collisionMap[gameObject1Id][gameObject2Id].signal();
       }
     });
 
     this._activeCollisions = this._activeCollisions.filter((collision) => {
-      const { gameObject, otherGameObject } = collision;
+      const { gameObject1, gameObject2 } = collision;
 
       this._publishMessage(collision, messageBus);
 
       collision.tick();
 
       if (collision.isFinished()) {
-        this._collisionMap[gameObject.getId()][otherGameObject.getId()] = null;
+        this._collisionMap[gameObject1.getId()][gameObject2.getId()] = null;
       }
 
       return !collision.isFinished();

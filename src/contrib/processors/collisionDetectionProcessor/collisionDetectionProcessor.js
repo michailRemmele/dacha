@@ -169,17 +169,17 @@ class CollisionDetectionProcessor extends Processor {
     return this._intersectionCheckers[intersectionType].check(arg1, arg2);
   }
 
-  _sendCollisionMessage(messageBus, gameObject, otherGameObject, intersection) {
+  _sendCollisionMessage(messageBus, gameObject1, gameObject2, intersection) {
     const { mtv1, mtv2 } = intersection;
 
     [
-      { gameObject, otherGameObject, mtv1, mtv2 },
-      { gameObject: otherGameObject, otherGameObject: gameObject, mtv1: mtv2, mtv2: mtv1 },
+      { gameObject1, gameObject2, mtv1, mtv2 },
+      { gameObject1: gameObject2, gameObject2: gameObject1, mtv1: mtv2, mtv2: mtv1 },
     ].forEach((entry) => {
       messageBus.send({
         type: COLLISION_MESSAGE,
-        gameObject: entry.gameObject,
-        otherGameObject: entry.otherGameObject,
+        gameObject1: entry.gameObject1,
+        gameObject2: entry.gameObject2,
         mtv1: entry.mtv1,
         mtv2: entry.mtv2,
       });

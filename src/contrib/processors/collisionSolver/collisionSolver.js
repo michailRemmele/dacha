@@ -29,7 +29,7 @@ class CollisionSolver extends Processor {
     this._gravitationalAcceleration = this._store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY);
   }
 
-  _addReactionForce(gameObject, messageBus, message) {
+  _addReactionForce(gameObject, messageBus) {
     const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
     const { useGravity, mass } = rigidBody;
 
@@ -74,14 +74,14 @@ class CollisionSolver extends Processor {
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
     [ enterMessages, stayMessages ].forEach((messages) => {
       messages.forEach((message) => {
-        const { gameObject, otherGameObject } = message;
+        const { gameObject1, gameObject2 } = message;
 
-        if (!this._validateCollision(gameObject, otherGameObject)) {
+        if (!this._validateCollision(gameObject1, gameObject2)) {
           return;
         }
 
-        this._addReactionForce(gameObject, messageBus, message);
-        this._stopMovement(gameObject, otherGameObject, messageBus);
+        this._addReactionForce(gameObject1, messageBus);
+        this._stopMovement(gameObject1, gameObject2, messageBus);
       });
     });
   }
