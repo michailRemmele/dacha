@@ -54,7 +54,7 @@ class Collision {
   }
 
   tick() {
-    this._lifetime -= 1;
+    this._lifetime -= this._lifetime || 1;
   }
 
   getState() {

@@ -32,11 +32,11 @@
       "src": "resources/configurations/prefabs/units/testBox.json"
     },
     {
-      "src": "resources/configurations/prefabs/terrain/testFloorTopView.json"
+      "src": "resources/configurations/prefabs/units/testBoxTopView.json"
     },
     {
       "src": "resources/configurations/prefabs/terrain/testColumn.json"
     }
   ],
-  "startScene": "topViewTest"
+  "startScene": "platformerTest"
 }

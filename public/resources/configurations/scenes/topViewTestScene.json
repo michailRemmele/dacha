@@ -3,9 +3,9 @@
   "gameObjects": [
     {
       "id": "1",
-      "name": "testBox",
+      "name": "testBoxTopView",
       "fromPrefab": true,
-      "prefabName": "testBox",
+      "prefabName": "testBoxTopView",
       "children": [
         {
           "id": "1.2",
@@ -91,159 +91,6 @@
       ]
     },
     {
-      "id": "2",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 0,
-            "offsetY": 0,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "3",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 64,
-            "offsetY": 0,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "4",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 128,
-            "offsetY": 0,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "5",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 0,
-            "offsetY": 64,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "6",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 64,
-            "offsetY": 64,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "7",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 128,
-            "offsetY": 64,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "8",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 0,
-            "offsetY": 128,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "9",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 64,
-            "offsetY": 128,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "10",
-      "name": "testFloorTopView",
-      "fromPrefab": true,
-      "prefabName": "testFloorTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 128,
-            "offsetY": 128,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
       "id": "11",
       "name": "testColumn",
       "fromPrefab": true,
@@ -279,9 +126,9 @@
     },
     {
       "id": "13",
-      "name": "testBox",
+      "name": "testBoxTopView",
       "fromPrefab": true,
-      "prefabName": "testBox",
+      "prefabName": "testBoxTopView",
       "children": [],
       "components": [
         {
@@ -360,12 +207,6 @@
       }
     },
     {
-      "name": "sceneLoadProcessor",
-      "section": "gameStateUpdateSection",
-      "filter": {},
-      "options": {}
-    },
-    {
       "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
@@ -430,6 +271,12 @@
           "transform"
         ]
       },
+      "options": {}
+    },
+    {
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {},
       "options": {}
     },
     {

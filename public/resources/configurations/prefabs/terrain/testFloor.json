@@ -18,7 +18,8 @@
         "useGravity": false,
         "isPermeable": false,
         "ghost": false,
-        "isStatic": true
+        "isStatic": true,
+        "drag": 0
       }
     },
     {

@@ -1,6 +1,6 @@
 {
-  "name": "testFloorTopView",
-  "type": "terrain",
+  "name": "testBoxTopView",
+  "type": "unit",
   "children": [],
   "components": [
     {
@@ -14,10 +14,11 @@
     {
       "name": "rigidBody",
       "config": {
-        "mass": 1,
+        "mass": 3,
         "useGravity": false,
-        "isPermeable": true,
-        "ghost": false
+        "isPermeable": false,
+        "ghost": false,
+        "drag": 0
       }
     },
     {
@@ -25,25 +26,31 @@
       "config": {
         "type": "boxCollider",
         "collider": {
-          "sizeX": 64,
-          "sizeY": 64,
+          "sizeX": 45,
+          "sizeY": 50,
           "centerX": 0,
           "centerY": 0
         }
       }
     },
     {
+      "name": "movement",
+      "config": {
+        "speed": 100
+      }
+    },
+    {
       "name": "renderable",
       "config": {
         "type": "static",
-        "src": "terrain/test_floor_top_view",
-        "width": 64,
-        "height": 64,
+        "src": "units/test_box",
+        "width": 45,
+        "height": 50,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
         "flipY": false,
-        "sortingLayer": "terrain"
+        "sortingLayer": "units"
       }
     }
   ]

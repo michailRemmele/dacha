@@ -2,6 +2,7 @@ import Processor from 'engine/processor/processor';
 import { Vector2 } from 'engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
+const STOP_MOVEMENT_MSG = 'STOP_MOVEMENT';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
 
@@ -28,7 +29,7 @@ class CollisionSolver extends Processor {
     this._gravitationalAcceleration = this._store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY);
   }
 
-  _addReactionForce(gameObject, messageBus) {
+  _addReactionForce(gameObject, messageBus, message) {
     const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
     const { useGravity, mass } = rigidBody;
 
@@ -42,6 +43,19 @@ class CollisionSolver extends Processor {
         value: reactionForce,
         gameObject,
         id: gameObject.getId(),
+      }, true);
+    }
+  }
+
+  _stopMovement(gameObject1, gameObject2, messageBus) {
+    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
+
+    if (!rigidBody1.isStatic && rigidBody2.isStatic) {
+      messageBus.send({
+        type: STOP_MOVEMENT_MSG,
+        gameObject: gameObject1,
+        id: gameObject1.getId(),
       }, true);
     }
   }
@@ -66,7 +80,8 @@ class CollisionSolver extends Processor {
           return;
         }
 
-        this._addReactionForce(gameObject, messageBus);
+        this._addReactionForce(gameObject, messageBus, message);
+        this._stopMovement(gameObject, otherGameObject, messageBus);
       });
     });
   }

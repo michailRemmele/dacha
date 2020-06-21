@@ -1,38 +1,7 @@
 {
   "name": "testBox",
   "type": "unit",
-  "children": [
-    {
-      "name": "roosterHitBox",
-      "children": [],
-      "components": [
-        {
-          "name": "hitBox",
-          "config": {}
-        },
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 0,
-            "offsetY": 0,
-            "rotation": 0
-          }
-        },
-        {
-          "name": "colliderContainer",
-          "config": {
-            "type": "boxCollider",
-            "collider": {
-              "sizeX": 33,
-              "sizeY": 40,
-              "centerX": 0,
-              "centerY": 0
-            }
-          }
-        }
-      ]
-    }
-  ],
+  "children": [],
   "components": [
     {
       "name": "transform",
@@ -48,7 +17,8 @@
         "mass": 3,
         "useGravity": true,
         "isPermeable": false,
-        "ghost": false
+        "ghost": false,
+        "drag": 0
       }
     },
     {

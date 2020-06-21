@@ -95,6 +95,7 @@ class FallProcessor extends Processor {
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
 
       if (!this._fallingGameObjectsMap[gameObjectId] && this._isFalling(gameObject)) {
+        rigidBody.useGravity = true;
         rigidBody.ghost = true;
 
         messageBus.send({
