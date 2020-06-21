@@ -29,24 +29,6 @@ class CollisionSolver extends Processor {
     this._gravitationalAcceleration = this._store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY);
   }
 
-  _addReactionForce(gameObject, messageBus) {
-    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-    const { useGravity, mass } = rigidBody;
-
-    if (useGravity) {
-      const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
-      reactionForce.multiplyNumber(mass * this._gravitationalAcceleration);
-
-      messageBus.send({
-        type: ADD_FORCE_MSG,
-        name: REACTION_FORCE,
-        value: reactionForce,
-        gameObject,
-        id: gameObject.getId(),
-      }, true);
-    }
-  }
-
   _stopMovement(gameObject1, gameObject2, messageBus) {
     const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
@@ -57,6 +39,26 @@ class CollisionSolver extends Processor {
         gameObject: gameObject1,
         id: gameObject1.getId(),
       }, true);
+    }
+  }
+
+  _addReactionForce(gameObject1, gameObject2, mtv1, _mtv2, messageBus) {
+    const rigidBody = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const { useGravity, mass } = rigidBody;
+
+    if (useGravity && mtv1.y && Math.sign(mtv1.y) === -1 && !mtv1.x) {
+      const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
+      reactionForce.multiplyNumber(mass * this._gravitationalAcceleration);
+
+      messageBus.send({
+        type: ADD_FORCE_MSG,
+        name: REACTION_FORCE,
+        value: reactionForce,
+        gameObject: gameObject1,
+        id: gameObject1.getId(),
+      }, true);
+
+      this._stopMovement(gameObject1, gameObject2, messageBus);
     }
   }
 
@@ -74,14 +76,13 @@ class CollisionSolver extends Processor {
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
     [ enterMessages, stayMessages ].forEach((messages) => {
       messages.forEach((message) => {
-        const { gameObject1, gameObject2 } = message;
+        const { gameObject1, gameObject2, mtv1, mtv2 } = message;
 
         if (!this._validateCollision(gameObject1, gameObject2)) {
           return;
         }
 
-        this._addReactionForce(gameObject1, messageBus);
-        this._stopMovement(gameObject1, gameObject2, messageBus);
+        this._addReactionForce(gameObject1, gameObject2, mtv1, mtv2, messageBus);
       });
     });
   }
