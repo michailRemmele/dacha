@@ -35,7 +35,7 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 0,
+            "offsetX": -64,
             "offsetY": -100,
             "rotation": 0
           }
@@ -74,6 +74,40 @@
                 "attrs": {}
               }
             }
+          }
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "name": "testBox",
+      "fromPrefab": true,
+      "prefabName": "testBox",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": -100,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "name": "testBox",
+      "fromPrefab": true,
+      "prefabName": "testBox",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 64,
+            "offsetY": -100,
+            "rotation": 0
           }
         }
       ]
@@ -140,7 +174,7 @@
           "name": "transform",
           "config": {
             "offsetX": 128,
-            "offsetY": 32,
+            "offsetY": 0,
             "rotation": 0
           }
         }
@@ -157,7 +191,41 @@
           "name": "transform",
           "config": {
             "offsetX": -128,
-            "offsetY": 32,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "testFloor",
+      "fromPrefab": true,
+      "prefabName": "testFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 192,
+            "offsetY": 64,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "testFloor",
+      "fromPrefab": true,
+      "prefabName": "testFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -192,
+            "offsetY": 64,
             "rotation": 0
           }
         }
