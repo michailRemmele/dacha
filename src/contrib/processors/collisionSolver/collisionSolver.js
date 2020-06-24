@@ -7,6 +7,9 @@ const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
+const RIGID_BODY_TYPE = {
+  STATIC: 'static',
+};
 
 const REACTION_FORCE = 'reactionForce';
 
@@ -33,7 +36,7 @@ class CollisionSolver extends Processor {
     const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
-    if (!rigidBody1.isStatic && rigidBody2.isStatic) {
+    if (rigidBody1.type !== RIGID_BODY_TYPE.STATIC && rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
       messageBus.send({
         type: STOP_MOVEMENT_MSG,
         gameObject: gameObject1,

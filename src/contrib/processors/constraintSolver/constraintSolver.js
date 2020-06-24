@@ -5,6 +5,11 @@ const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
+const RIGID_BODY_TYPE = {
+  STATIC: 'static',
+  DYNAMIC: 'dynamic',
+};
+
 const TRANSFORM_COMPONENT_NAME = 'transform';
 
 class ConstraintSolver extends Processor {
@@ -22,7 +27,7 @@ class ConstraintSolver extends Processor {
 
     return rigidBody1 && !rigidBody1.ghost && !rigidBody1.isPermeable
       && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable
-      && (!rigidBody1.isStatic || !rigidBody2.isStatic);
+      && (rigidBody1.type !== RIGID_BODY_TYPE.STATIC || rigidBody2.type !== RIGID_BODY_TYPE.STATIC);
   }
 
   _setMtv(id, mtvX, mtvY) {
@@ -57,9 +62,9 @@ class ConstraintSolver extends Processor {
     const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
-    if (rigidBody1.isStatic) {
+    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
       this._setMtv(id2, mtv2.x, mtv2.y);
-    } else if (rigidBody2.isStatic) {
+    } else if (rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
       this._setMtv(id1, mtv1.x, mtv1.y);
     } else {
       this._setMtv(id1, mtv1.x / 2, mtv1.y / 2);

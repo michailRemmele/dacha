@@ -14,11 +14,11 @@
     {
       "name": "rigidBody",
       "config": {
+        "type": "static",
         "mass": 1,
         "useGravity": false,
         "isPermeable": false,
         "ghost": false,
-        "isStatic": true,
         "drag": 0
       }
     },
