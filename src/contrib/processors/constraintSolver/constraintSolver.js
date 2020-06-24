@@ -30,29 +30,30 @@ class ConstraintSolver extends Processor {
       && (rigidBody1.type !== RIGID_BODY_TYPE.STATIC || rigidBody2.type !== RIGID_BODY_TYPE.STATIC);
   }
 
-  _setMtv(id, mtvX, mtvY) {
-    const entry = this._mtvMap[id];
+  _setMtv(id, mtvX, mtvY, type) {
+    this._mtvMap[id] = this._mtvMap[id] || {};
 
-    if (!entry) {
-      this._mtvMap[id] = {
-        mtv: new Vector2(mtvX, mtvY),
-      };
+    if (!this._mtvMap[id][type]) {
+      this._mtvMap[id][type] = new Vector2(mtvX, mtvY);
       return;
     }
 
-    if (mtvX && entry.mtv.x && Math.sign(mtvX) !== Math.sign(entry.mtv.x)) {
-      entry.mtv.x = 0;
-      entry.lockX = true;
-    } else if (!entry.lockX && Math.abs(mtvX) > Math.abs(entry.mtv.x)) {
-      entry.mtv.x = mtvX;
-    }
+    const settingStrategy = {
+      static: () => {
+        this._mtvMap[id][type].x = Math.abs(mtvX) > Math.abs(this._mtvMap[id][type].x)
+          ? mtvX
+          : this._mtvMap[id][type].x;
+        this._mtvMap[id][type].y = Math.abs(mtvY) > Math.abs(this._mtvMap[id][type].y)
+          ? mtvY
+          : this._mtvMap[id][type].y;
+      },
+      dynamic: () => {
+        this._mtvMap[id][type].x += mtvX;
+        this._mtvMap[id][type].y += mtvY;
+      },
+    };
 
-    if (mtvY && entry.mtv.y && Math.sign(mtvY) !== Math.sign(entry.mtv.y)) {
-      entry.mtv.y = 0;
-      entry.lockY = true;
-    } else if (!entry.lockY && Math.abs(mtvY) > Math.abs(entry.mtv.y)) {
-      entry.mtv.y = mtvY;
-    }
+    settingStrategy[type]();
   }
 
   _resolveCollision(gameObject1, gameObject2, mtv1, mtv2) {
@@ -63,12 +64,12 @@ class ConstraintSolver extends Processor {
     const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
-      this._setMtv(id2, mtv2.x, mtv2.y);
+      this._setMtv(id2, mtv2.x, mtv2.y, rigidBody1.type);
     } else if (rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
-      this._setMtv(id1, mtv1.x, mtv1.y);
+      this._setMtv(id1, mtv1.x, mtv1.y, rigidBody2.type);
     } else {
-      this._setMtv(id1, mtv1.x / 2, mtv1.y / 2);
-      this._setMtv(id2, mtv2.x / 2, mtv2.y / 2);
+      this._setMtv(id1, mtv1.x / 2, mtv1.y / 2, rigidBody2.type);
+      this._setMtv(id2, mtv2.x / 2, mtv2.y / 2, rigidBody1.type);
     }
   }
 
@@ -106,8 +107,29 @@ class ConstraintSolver extends Processor {
       const gameObject = this._gameObjectObserver.getById(id);
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
 
-      transform.offsetX += this._mtvMap[id].mtv.x;
-      transform.offsetY += this._mtvMap[id].mtv.y;
+      const mtvs = Object.keys(this._mtvMap[id]);
+
+      if (mtvs.length === 1) {
+        transform.offsetX += this._mtvMap[id][mtvs[0]].x;
+        transform.offsetY += this._mtvMap[id][mtvs[0]].y;
+        return;
+      }
+
+      const { static: staticMtv, dynamic: dynamicMtv } = this._mtvMap[id];
+
+      /*
+       * TODO:: Enable this part when it will be possible to run
+       * phycics pipeline several times per single game loop iteration
+       */
+      // transform.offsetX += Math.sign(staticMtv.x) === Math.sign(dynamicMtv.x)
+      //   ? staticMtv.x + dynamicMtv.x
+      //   : staticMtv.x || dynamicMtv.x;
+      // transform.offsetY += Math.sign(staticMtv.y) === Math.sign(dynamicMtv.y)
+      //   ? staticMtv.y + dynamicMtv.y
+      //   : staticMtv.y || dynamicMtv.y;
+
+      transform.offsetX += staticMtv.x + dynamicMtv.x;
+      transform.offsetY += staticMtv.y + dynamicMtv.y;
     });
   }
 }
