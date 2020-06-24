@@ -4,7 +4,8 @@
     "intro": "resources/configurations/scenes/intro.json",
     "mainMenu": "resources/configurations/scenes/mainMenu.json",
     "platformerTest": "resources/configurations/scenes/platformerTestScene.json",
-    "topViewTest": "resources/configurations/scenes/topViewTestScene.json"
+    "topViewTest": "resources/configurations/scenes/topViewTestScene.json",
+    "topViewCirclesTest": "resources/configurations/scenes/topViewCirclesTestScene.json"
   },
   "prefabs": [
     {
@@ -36,7 +37,13 @@
     },
     {
       "src": "resources/configurations/prefabs/terrain/testColumn.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/terrain/testCircleColumn.json"
+    },
+    {
+      "src": "resources/configurations/prefabs/units/testCircleTopView.json"
     }
   ],
-  "startScene": "platformerTest"
+  "startScene": "topViewCirclesTest"
 }
