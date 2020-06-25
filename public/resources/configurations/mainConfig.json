@@ -5,7 +5,8 @@
     "mainMenu": "resources/configurations/scenes/mainMenu.json",
     "platformerTest": "resources/configurations/scenes/platformerTestScene.json",
     "topViewTest": "resources/configurations/scenes/topViewTestScene.json",
-    "topViewCirclesTest": "resources/configurations/scenes/topViewCirclesTestScene.json"
+    "topViewCirclesTest": "resources/configurations/scenes/topViewCirclesTestScene.json",
+    "topViewMixedTest": "resources/configurations/scenes/topViewMixedTestScene.json"
   },
   "prefabs": [
     {
@@ -45,5 +46,5 @@
       "src": "resources/configurations/prefabs/units/testCircleTopView.json"
     }
   ],
-  "startScene": "topViewCirclesTest"
+  "startScene": "topViewMixedTest"
 }
