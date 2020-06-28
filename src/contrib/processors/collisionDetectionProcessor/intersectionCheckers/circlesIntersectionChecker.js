@@ -17,6 +17,13 @@ class CirclesIntersectionChecker extends IntersectionChecker {
       return false;
     }
 
+    if (distance === 0) {
+      return {
+        mtv1: new Vector2(rArg1 + rArg2, 0),
+        mtv2: new Vector2(-(rArg1 + rArg2), 0),
+      };
+    }
+
     const mtv = new Vector2(x, y);
     const overlap = rArg1 + rArg2 - distance;
     mtv.multiplyNumber(1 / distance * overlap);
