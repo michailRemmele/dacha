@@ -1,6 +1,6 @@
 {
-  "name": "testCircleTopView",
-  "type": "unit",
+  "name": "platformerFloor",
+  "type": "terrain",
   "children": [],
   "components": [
     {
@@ -14,8 +14,8 @@
     {
       "name": "rigidBody",
       "config": {
-        "type": "dynamic",
-        "mass": 3,
+        "type": "static",
+        "mass": 1,
         "useGravity": false,
         "isPermeable": false,
         "ghost": false,
@@ -25,32 +25,27 @@
     {
       "name": "colliderContainer",
       "config": {
-        "type": "circleCollider",
+        "type": "boxCollider",
         "collider": {
-          "radius": 20,
+          "sizeX": 64,
+          "sizeY": 32,
           "centerX": 0,
           "centerY": 0
         }
       }
     },
     {
-      "name": "movement",
-      "config": {
-        "speed": 150
-      }
-    },
-    {
       "name": "renderable",
       "config": {
         "type": "static",
-        "src": "units/test_circle",
-        "width": 40,
-        "height": 40,
+        "src": "terrain/test_floor",
+        "width": 64,
+        "height": 32,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
         "flipY": false,
-        "sortingLayer": "units"
+        "sortingLayer": "terrain"
       }
     }
   ]

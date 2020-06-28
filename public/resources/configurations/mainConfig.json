@@ -3,10 +3,10 @@
   "scenes": {
     "intro": "resources/configurations/scenes/intro.json",
     "mainMenu": "resources/configurations/scenes/mainMenu.json",
-    "platformerTest": "resources/configurations/scenes/platformerTestScene.json",
-    "topViewTest": "resources/configurations/scenes/topViewTestScene.json",
-    "topViewCirclesTest": "resources/configurations/scenes/topViewCirclesTestScene.json",
-    "topViewMixedTest": "resources/configurations/scenes/topViewMixedTestScene.json"
+    "platformer": "resources/configurations/scenes/test/collisions/platformer.json",
+    "boxes": "resources/configurations/scenes/test/collisions/boxes.json",
+    "circles": "resources/configurations/scenes/test/collisions/circles.json",
+    "boxesAndCircles": "resources/configurations/scenes/test/collisions/boxesAndCircles.json"
   },
   "prefabs": [
     {
@@ -28,23 +28,23 @@
       "src": "resources/configurations/prefabs/background/space.json"
     },
     {
-      "src": "resources/configurations/prefabs/terrain/testFloor.json"
+      "src": "resources/configurations/prefabs/terrain/test/collisions/platformerFloor.json"
     },
     {
-      "src": "resources/configurations/prefabs/units/testBox.json"
+      "src": "resources/configurations/prefabs/terrain/test/collisions/boxColumn.json"
     },
     {
-      "src": "resources/configurations/prefabs/units/testBoxTopView.json"
+      "src": "resources/configurations/prefabs/terrain/test/collisions/circleColumn.json"
     },
     {
-      "src": "resources/configurations/prefabs/terrain/testColumn.json"
+      "src": "resources/configurations/prefabs/units/test/collisions/box.json"
     },
     {
-      "src": "resources/configurations/prefabs/terrain/testCircleColumn.json"
+      "src": "resources/configurations/prefabs/units/test/collisions/platformerBox.json"
     },
     {
-      "src": "resources/configurations/prefabs/units/testCircleTopView.json"
+      "src": "resources/configurations/prefabs/units/test/collisions/circle.json"
     }
   ],
-  "startScene": "topViewMixedTest"
+  "startScene": "boxesAndCircles"
 }

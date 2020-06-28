@@ -1,6 +1,6 @@
 {
-  "name": "testCircleColumn",
-  "type": "decorations",
+  "name": "circle",
+  "type": "unit",
   "children": [],
   "components": [
     {
@@ -14,8 +14,8 @@
     {
       "name": "rigidBody",
       "config": {
-        "type": "static",
-        "mass": 1,
+        "type": "dynamic",
+        "mass": 3,
         "useGravity": false,
         "isPermeable": false,
         "ghost": false,
@@ -27,24 +27,30 @@
       "config": {
         "type": "circleCollider",
         "collider": {
-          "radius": 15,
+          "radius": 20,
           "centerX": 0,
           "centerY": 0
         }
       }
     },
     {
+      "name": "movement",
+      "config": {
+        "speed": 150
+      }
+    },
+    {
       "name": "renderable",
       "config": {
         "type": "static",
-        "src": "terrain/test_circle_column",
-        "width": 30,
-        "height": 30,
+        "src": "units/test_circle",
+        "width": 40,
+        "height": 40,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
         "flipY": false,
-        "sortingLayer": "decorations"
+        "sortingLayer": "units"
       }
     }
   ]

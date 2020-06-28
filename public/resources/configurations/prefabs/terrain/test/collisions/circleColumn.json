@@ -1,6 +1,6 @@
 {
-  "name": "testFloor",
-  "type": "terrain",
+  "name": "circleColumn",
+  "type": "decorations",
   "children": [],
   "components": [
     {
@@ -25,10 +25,9 @@
     {
       "name": "colliderContainer",
       "config": {
-        "type": "boxCollider",
+        "type": "circleCollider",
         "collider": {
-          "sizeX": 64,
-          "sizeY": 32,
+          "radius": 15,
           "centerX": 0,
           "centerY": 0
         }
@@ -38,14 +37,14 @@
       "name": "renderable",
       "config": {
         "type": "static",
-        "src": "terrain/test_floor",
-        "width": 64,
-        "height": 32,
+        "src": "terrain/test_circle_column",
+        "width": 30,
+        "height": 30,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
         "flipY": false,
-        "sortingLayer": "terrain"
+        "sortingLayer": "decorations"
       }
     }
   ]

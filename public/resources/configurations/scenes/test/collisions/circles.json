@@ -1,11 +1,11 @@
 {
-  "name": "topViewTest",
+  "name": "circles",
   "gameObjects": [
     {
       "id": "1",
-      "name": "testBoxTopView",
+      "name": "circle",
       "fromPrefab": true,
-      "prefabName": "testBoxTopView",
+      "prefabName": "circle",
       "children": [
         {
           "id": "1.2",
@@ -35,8 +35,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 32,
-            "offsetY": 32,
+            "offsetX": 0,
+            "offsetY": 11,
             "rotation": 0
           }
         },
@@ -68,10 +68,22 @@
                   "directionAngle": 0
                 }
               },
-              "Q_PRESSED": {
+              "M_PRESSED": {
                 "messageType": "LOAD_SCENE",
                 "attrs": {
-                  "name": "platformerTest"
+                  "name": "boxesAndCircles"
+                }
+              },
+              "B_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "boxes"
+                }
+              },
+              "P_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "platformer"
                 }
               }
             }
@@ -92,16 +104,16 @@
     },
     {
       "id": "11",
-      "name": "testColumn",
+      "name": "circleColumn",
       "fromPrefab": true,
-      "prefabName": "testColumn",
+      "prefabName": "circleColumn",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 116,
-            "offsetY": 96,
+            "offsetX": 200,
+            "offsetY": 62,
             "rotation": 0
           }
         }
@@ -109,16 +121,16 @@
     },
     {
       "id": "12",
-      "name": "testColumn",
+      "name": "circleColumn",
       "fromPrefab": true,
-      "prefabName": "testColumn",
+      "prefabName": "circleColumn",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 12,
-            "offsetY": 96,
+            "offsetX": 200,
+            "offsetY": -42,
             "rotation": 0
           }
         }
@@ -126,9 +138,9 @@
     },
     {
       "id": "13",
-      "name": "testBoxTopView",
+      "name": "circle",
       "fromPrefab": true,
-      "prefabName": "testBoxTopView",
+      "prefabName": "circle",
       "children": [],
       "components": [
         {
@@ -136,6 +148,91 @@
           "config": {
             "offsetX": 96,
             "offsetY": 32,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 134,
+            "offsetY": 53,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 96,
+            "offsetY": -9,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 134,
+            "offsetY": -29,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 58,
+            "offsetY": 11,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 134,
+            "offsetY": 12,
             "rotation": 0
           }
         }

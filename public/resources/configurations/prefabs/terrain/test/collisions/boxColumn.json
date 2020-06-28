@@ -1,6 +1,6 @@
 {
-  "name": "testBox",
-  "type": "unit",
+  "name": "boxColumn",
+  "type": "decorations",
   "children": [],
   "components": [
     {
@@ -14,9 +14,9 @@
     {
       "name": "rigidBody",
       "config": {
-        "type": "dynamic",
-        "mass": 3,
-        "useGravity": true,
+        "type": "static",
+        "mass": 1,
+        "useGravity": false,
         "isPermeable": false,
         "ghost": false,
         "drag": 0
@@ -27,31 +27,25 @@
       "config": {
         "type": "boxCollider",
         "collider": {
-          "sizeX": 45,
-          "sizeY": 50,
+          "sizeX": 32,
+          "sizeY": 32,
           "centerX": 0,
           "centerY": 0
         }
       }
     },
     {
-      "name": "movement",
-      "config": {
-        "speed": 100
-      }
-    },
-    {
       "name": "renderable",
       "config": {
         "type": "static",
-        "src": "units/test_box",
-        "width": 45,
-        "height": 50,
+        "src": "terrain/test_column",
+        "width": 32,
+        "height": 32,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,
         "flipY": false,
-        "sortingLayer": "units"
+        "sortingLayer": "decorations"
       }
     }
   ]

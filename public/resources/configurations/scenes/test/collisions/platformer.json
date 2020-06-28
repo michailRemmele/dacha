@@ -1,11 +1,11 @@
 {
-  "name": "topViewTest",
+  "name": "platformer",
   "gameObjects": [
     {
       "id": "1",
-      "name": "testCircleTopView",
+      "name": "platformerBox",
       "fromPrefab": true,
-      "prefabName": "testCircleTopView",
+      "prefabName": "platformerBox",
       "children": [
         {
           "id": "1.2",
@@ -35,8 +35,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 0,
-            "offsetY": 11,
+            "offsetX": -64,
+            "offsetY": -100,
             "rotation": 0
           }
         },
@@ -44,22 +44,10 @@
           "name": "keyboardControl",
           "config": {
             "inputEventBindings": {
-              "W_PRESSED": {
-                "messageType": "MOVEMENT",
-                "attrs": {
-                  "directionAngle": 270
-                }
-              },
               "A_PRESSED": {
                 "messageType": "MOVEMENT",
                 "attrs": {
                   "directionAngle": 180
-                }
-              },
-              "S_PRESSED": {
-                "messageType": "MOVEMENT",
-                "attrs": {
-                  "directionAngle": 90
                 }
               },
               "D_PRESSED": {
@@ -68,10 +56,22 @@
                   "directionAngle": 0
                 }
               },
-              "Q_PRESSED": {
+              "M_PRESSED": {
                 "messageType": "LOAD_SCENE",
                 "attrs": {
-                  "name": "platformerTest"
+                  "name": "boxesAndCircles"
+                }
+              },
+              "B_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "boxes"
+                }
+              },
+              "C_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "circles"
                 }
               }
             }
@@ -91,119 +91,17 @@
       ]
     },
     {
-      "id": "11",
-      "name": "testCircleColumn",
-      "fromPrefab": true,
-      "prefabName": "testCircleColumn",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 200,
-            "offsetY": 62,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "12",
-      "name": "testCircleColumn",
-      "fromPrefab": true,
-      "prefabName": "testCircleColumn",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 200,
-            "offsetY": -42,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "13",
-      "name": "testCircleTopView",
-      "fromPrefab": true,
-      "prefabName": "testCircleTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 96,
-            "offsetY": 32,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "14",
-      "name": "testCircleTopView",
-      "fromPrefab": true,
-      "prefabName": "testCircleTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 134,
-            "offsetY": 53,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "15",
-      "name": "testCircleTopView",
-      "fromPrefab": true,
-      "prefabName": "testCircleTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 96,
-            "offsetY": -9,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "16",
-      "name": "testCircleTopView",
-      "fromPrefab": true,
-      "prefabName": "testCircleTopView",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 134,
-            "offsetY": -29,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
       "id": "17",
-      "name": "testCircleTopView",
+      "name": "platformerBox",
       "fromPrefab": true,
-      "prefabName": "testCircleTopView",
+      "prefabName": "platformerBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 58,
-            "offsetY": 11,
+            "offsetX": 0,
+            "offsetY": -100,
             "rotation": 0
           }
         }
@@ -211,16 +109,135 @@
     },
     {
       "id": "18",
-      "name": "testCircleTopView",
+      "name": "platformerBox",
       "fromPrefab": true,
-      "prefabName": "testCircleTopView",
+      "prefabName": "platformerBox",
       "children": [],
       "components": [
         {
           "name": "transform",
           "config": {
-            "offsetX": 134,
-            "offsetY": 12,
+            "offsetX": 64,
+            "offsetY": -100,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -64,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 64,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 128,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -128,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 192,
+            "offsetY": 64,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -192,
+            "offsetY": 64,
             "rotation": 0
           }
         }

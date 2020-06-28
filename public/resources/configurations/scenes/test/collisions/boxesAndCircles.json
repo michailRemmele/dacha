@@ -1,11 +1,11 @@
 {
-  "name": "topViewTest",
+  "name": "boxesAndCircles",
   "gameObjects": [
     {
       "id": "1",
-      "name": "testCircleTopView",
+      "name": "circle",
       "fromPrefab": true,
-      "prefabName": "testCircleTopView",
+      "prefabName": "circle",
       "children": [
         {
           "id": "1.2",
@@ -68,10 +68,22 @@
                   "directionAngle": 0
                 }
               },
-              "Q_PRESSED": {
+              "B_PRESSED": {
                 "messageType": "LOAD_SCENE",
                 "attrs": {
-                  "name": "platformerTest"
+                  "name": "boxes"
+                }
+              },
+              "C_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "circles"
+                }
+              },
+              "P_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "platformer"
                 }
               }
             }
@@ -92,9 +104,9 @@
     },
     {
       "id": "11",
-      "name": "testColumn",
+      "name": "boxColumn",
       "fromPrefab": true,
-      "prefabName": "testColumn",
+      "prefabName": "boxColumn",
       "children": [],
       "components": [
         {
@@ -109,9 +121,9 @@
     },
     {
       "id": "12",
-      "name": "testColumn",
+      "name": "boxColumn",
       "fromPrefab": true,
-      "prefabName": "testColumn",
+      "prefabName": "boxColumn",
       "children": [],
       "components": [
         {
@@ -126,9 +138,9 @@
     },
     {
       "id": "13",
-      "name": "testBoxTopView",
+      "name": "box",
       "fromPrefab": true,
-      "prefabName": "testBoxTopView",
+      "prefabName": "box",
       "children": [],
       "components": [
         {
@@ -143,9 +155,9 @@
     },
     {
       "id": "14",
-      "name": "testCircleTopView",
+      "name": "circle",
       "fromPrefab": true,
-      "prefabName": "testCircleTopView",
+      "prefabName": "circle",
       "children": [],
       "components": [
         {
