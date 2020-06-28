@@ -46,4 +46,14 @@ export class MathOps {
       y: y - (length * Math.sin(angleInRad)),
     };
   }
+
+  static clamp(value, min, max) {
+    if (value < min) {
+      return min;
+    } else if (value > max) {
+      return max;
+    } else {
+      return value;
+    }
+  }
 }
