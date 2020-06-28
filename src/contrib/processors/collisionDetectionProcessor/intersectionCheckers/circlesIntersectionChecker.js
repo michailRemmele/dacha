@@ -3,6 +3,15 @@ import { Vector2 } from 'engine/mathLib';
 import IntersectionChecker from './intersectionChecker';
 
 class CirclesIntersectionChecker extends IntersectionChecker {
+  /*
+   * Checks circles at the intersection.
+   * Steps of the alghorith:
+   * 1. Calculate distance between circles centers.
+   * 2. If distance greater or equal to summ of circles radiuses then is no intersection.
+   * 3. If distance is zero then circles centers lie at the same point, so just X axis used for mtv.
+   * 4. If distance less than summ of circles radiuses and it's non-zero
+   *  then circles centers used to get the axis.
+   */
   check(arg1, arg2) {
     const { radius: rArg1 } = arg1.collider;
     const { radius: rArg2 } = arg2.collider;
