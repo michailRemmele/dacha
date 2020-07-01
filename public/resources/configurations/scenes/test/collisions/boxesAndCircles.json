@@ -88,17 +88,6 @@
               }
             }
           }
-        },
-        {
-          "name": "mouseControl",
-          "config": {
-            "inputEventBindings": {
-              "MOUSE_LEFT_BUTTON_PRESS": {
-                "messageType": "SHOT",
-                "attrs": {}
-              }
-            }
-          }
         }
       ]
     },
@@ -672,33 +661,11 @@
       "options": {}
     },
     {
-      "name": "mouseInputProcessor",
-      "section": "eventProcessSection",
-      "filter": {},
-      "options": {}
-    },
-    {
-      "name": "mouseInputCoordinatesProjector",
-      "section": "gameStateUpdateSection",
-      "filter": {},
-      "options": {}
-    },
-    {
       "name": "keyboardControlProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
         "components": [
           "keyboardControl"
-        ]
-      },
-      "options": {}
-    },
-    {
-      "name": "mouseControlProcessor",
-      "section": "gameStateUpdateSection",
-      "filter": {
-        "components": [
-          "mouseControl"
         ]
       },
       "options": {}
