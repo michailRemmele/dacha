@@ -20,10 +20,12 @@
     {
       "name": "rigidBody",
       "config": {
+        "type": "static",
         "mass": 1,
         "useGravity": false,
         "isPermeable": true,
-        "ghost": false
+        "ghost": false,
+        "drag": 0
       }
     },
     {

@@ -92,6 +92,12 @@
                 "attrs": {
                   "directionAngle": 0
                 }
+              },
+              "T_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "platformer"
+                }
               }
             }
           }
@@ -2163,12 +2169,6 @@
       }
     },
     {
-      "name": "sceneLoadProcessor",
-      "section": "gameStateUpdateSection",
-      "filter": {},
-      "options": {}
-    },
-    {
       "name": "physicsProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
@@ -2233,6 +2233,12 @@
           "transform"
         ]
       },
+      "options": {}
+    },
+    {
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {},
       "options": {}
     },
     {

@@ -1,0 +1,439 @@
+{
+  "name": "platformer",
+  "gameObjects": [
+    {
+      "id": "1",
+      "name": "platformerBox",
+      "fromPrefab": true,
+      "prefabName": "platformerBox",
+      "children": [
+        {
+          "id": "1.2",
+          "name": "mainCamera",
+          "fromPrefab": false,
+          "prefabName": "",
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "rotation": 0
+              }
+            },
+            {
+              "name": "camera",
+              "config": {
+                "zoom": 2
+              }
+            }
+          ]
+        }
+      ],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -64,
+            "offsetY": -150,
+            "rotation": 0
+          }
+        },
+        {
+          "name": "keyboardControl",
+          "config": {
+            "inputEventBindings": {
+              "A_PRESSED": {
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 180
+                }
+              },
+              "D_PRESSED": {
+                "messageType": "MOVEMENT",
+                "attrs": {
+                  "directionAngle": 0
+                }
+              },
+              "M_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "boxesAndCircles"
+                }
+              },
+              "B_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "boxes"
+                }
+              },
+              "C_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "circles"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "name": "platformerBox",
+      "fromPrefab": true,
+      "prefabName": "platformerBox",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": -80,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "name": "platformerBox",
+      "fromPrefab": true,
+      "prefabName": "platformerBox",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 64,
+            "offsetY": -80,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -64,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 64,
+            "offsetY": 0,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 160,
+            "offsetY": 106,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -160,
+            "offsetY": 106,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 96,
+            "offsetY": 106,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -96,
+            "offsetY": 106,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -64,
+            "offsetY": 228,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 64,
+            "offsetY": 228,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 350,
+            "rotation": 0
+          }
+        }
+      ]
+    }
+  ],
+  "processors": [
+    {
+      "name": "keyboardInputProcessor",
+      "section": "eventProcessSection",
+      "filter": {},
+      "options": {}
+    },
+    {
+      "name": "keyboardControlProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "keyboardControl"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "movementProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "movement",
+          "transform"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "cameraProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "camera",
+          "transform"
+        ]
+      },
+      "options": {
+        "windowNodeId": "root",
+        "initialCamera": "1.2"
+      }
+    },
+    {
+      "name": "physicsProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody",
+          "transform"
+        ]
+      },
+      "options": {
+        "gravitationalAcceleration": 450
+      }
+    },
+    {
+      "name": "jammer",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {
+        "messages": [
+          "COLLISION_ENTER",
+          "COLLISION_STAY",
+          "COLLISION_LEAVE"
+        ]
+      }
+    },
+    {
+      "name": "collisionDetectionProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "colliderContainer",
+          "transform"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "collisionBroadcastProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "colliderContainer"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "collisionSolver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "constraintSolver",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "rigidBody",
+          "transform"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {},
+      "options": {}
+    },
+    {
+      "name": "animateProcessor",
+      "section": "renderingSection",
+      "filter": {
+        "components": [
+          "animatable",
+          "renderable"
+        ]
+      },
+      "options": {}
+    },
+    {
+      "name": "renderProcessor",
+      "section": "renderingSection",
+      "filter": {
+        "components": [
+          "renderable",
+          "transform"
+        ]
+      },
+      "options": {
+        "windowNodeId": "root",
+        "textureAtlas": "resources/textureAtlas.png",
+        "textureAtlasDescriptor": "resources/textureAtlasMap.json",
+        "backgroundColor": "#F2F2F2",
+        "sortingLayers": [
+          "default",
+          "background",
+          "space",
+          "terrain",
+          "decorations",
+          "units"
+        ],
+        "scaleSensitivity": 50
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "circle",
+  "type": "unit",
+  "children": [],
+  "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "rigidBody",
+      "config": {
+        "type": "dynamic",
+        "mass": 3,
+        "useGravity": false,
+        "isPermeable": false,
+        "ghost": false,
+        "drag": 0
+      }
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "circleCollider",
+        "collider": {
+          "radius": 20,
+          "centerX": 0,
+          "centerY": 0
+        }
+      }
+    },
+    {
+      "name": "movement",
+      "config": {
+        "speed": 150
+      }
+    },
+    {
+      "name": "renderable",
+      "config": {
+        "type": "static",
+        "src": "units/test_circle",
+        "width": 40,
+        "height": 40,
+        "rotation": 0,
+        "origin": [ 0, 0 ],
+        "flipX": false,
+        "flipY": false,
+        "sortingLayer": "units"
+      }
+    }
+  ]
+}

@@ -2,16 +2,14 @@ import Processor from 'engine/processor/processor';
 import { Vector2 } from 'engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
+const STOP_MOVEMENT_MSG = 'STOP_MOVEMENT';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const TRANSFORM_COMPONENT_NAME = 'transform';
 
 const GRAVITY_FORCE = 'gravityForce';
-const REACTION_FORCE = 'reactionForce';
 
 const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';
-
-const FRICTION_FORCE_COEFFICIENT = 0.5;
 
 const DIRECTION_VECTOR = {
   UP: new Vector2(0, -1),
@@ -72,22 +70,22 @@ class PhysicsProcessor extends Processor {
     }
   }
 
-  _applyFrictionForce(gameObject, forceVectors, deltaTime) {
-    const { mass } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+  _applyDragForce(gameObject, deltaTime) {
+    const { mass, drag } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
     const gameObjectId = gameObject.getId();
     const velocity = this._gameObjectsVelocity[gameObjectId];
 
-    if (!forceVectors[REACTION_FORCE] || !velocity || (!velocity.x && !velocity.y)) {
+    if (!drag || !velocity || (!velocity.x && !velocity.y)) {
       return;
     }
 
     const velocitySignX = Math.sign(velocity.x);
     const velocitySignY = Math.sign(velocity.y);
 
-    const reactionForceValue = forceVectors[REACTION_FORCE].magnitude;
-    const frictionForceValue = -1 * FRICTION_FORCE_COEFFICIENT * reactionForceValue;
+    const reactionForceValue = mass * this._gravitationalAcceleration;
+    const dragForceValue = -1 * drag * reactionForceValue;
     const forceToVelocityMultiplier = deltaTime / mass;
-    const slowdownValue = frictionForceValue * forceToVelocityMultiplier;
+    const slowdownValue = dragForceValue * forceToVelocityMultiplier;
     const normalizationMultiplier = 1 / velocity.magnitude;
 
     const slowdown = velocity.clone();
@@ -117,6 +115,19 @@ class PhysicsProcessor extends Processor {
     });
   }
 
+  _processConstraints(messageBus) {
+    const stopMovementMessages = messageBus.get(STOP_MOVEMENT_MSG) || [];
+
+    stopMovementMessages.forEach((message) => {
+      const { gameObject } = message;
+      const gameObjectId = gameObject.getId();
+
+      if (this._gameObjectsVelocity[gameObjectId]) {
+        this._gameObjectsVelocity[gameObjectId].multiplyNumber(0);
+      }
+    });
+  }
+
   _processRemovedGameObjects() {
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
@@ -130,6 +141,7 @@ class PhysicsProcessor extends Processor {
     const messageBus = options.messageBus;
 
     this._processRemovedGameObjects();
+    this._processConstraints(messageBus);
 
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
@@ -164,7 +176,7 @@ class PhysicsProcessor extends Processor {
         velocityVector.add(velocityIncrease);
       }
 
-      this._applyFrictionForce(gameObject, forceVectors, deltaTimeInSeconds);
+      this._applyDragForce(gameObject, deltaTimeInSeconds);
 
       transform.offsetX = transform.offsetX + (velocityVector.x * deltaTimeInSeconds);
       transform.offsetY = transform.offsetY + (velocityVector.y * deltaTimeInSeconds);

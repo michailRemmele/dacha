@@ -4,8 +4,16 @@ export class Vector2 {
     this._y = y;
   }
 
+  set x(value) {
+    this._x = value;
+  }
+
   get x() {
     return this._x;
+  }
+
+  set y(value) {
+    this._y = value;
   }
 
   get y() {
