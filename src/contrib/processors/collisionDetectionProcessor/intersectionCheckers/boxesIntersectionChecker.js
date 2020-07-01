@@ -33,8 +33,9 @@ class BoxesIntersectionChecker extends IntersectionChecker {
   check(arg1, arg2) {
     let overlap;
     let normal;
-    let arg1ProjMin;
-    let arg2ProjMin;
+
+    const { x: xArg1, y: yArg1 } = arg1.coordinates.center;
+    const { x: xArg2, y: yArg2 } = arg2.coordinates.center;
 
     for (let j = 0; j < arg1.coordinates.edges.length / 2; j++) {
       const axis = arg1.coordinates.edges[j].normal;
@@ -55,27 +56,31 @@ class BoxesIntersectionChecker extends IntersectionChecker {
       if (overlap === undefined || aOverlap < overlap) {
         overlap = aOverlap;
         normal = axis;
-        arg1ProjMin = aProjection.min;
-        arg2ProjMin = bProjection.min;
       }
 
       if (overlap === undefined || bOverlap < overlap) {
         overlap = bOverlap;
         normal = axis;
-        arg1ProjMin = aProjection.min;
-        arg2ProjMin = bProjection.min;
       }
     }
 
     const mtv = normal.clone();
     mtv.multiplyNumber(overlap);
 
-    const topLeftMtv = new Vector2(Math.abs(mtv.x), -Math.abs(mtv.y));
-    const downRightMtv = new Vector2(-Math.abs(mtv.x), Math.abs(mtv.y));
+    const positiveX = Math.abs(mtv.x);
+    const negativeX = -Math.abs(mtv.x);
+    const positiveY = Math.abs(mtv.y);
+    const negativeY = -Math.abs(mtv.y);
 
     return {
-      mtv1: arg1ProjMin < arg2ProjMin ? topLeftMtv : downRightMtv,
-      mtv2: arg2ProjMin < arg1ProjMin ? topLeftMtv : downRightMtv,
+      mtv1: new Vector2(
+        xArg1 < xArg2 ? negativeX : positiveX,
+        yArg1 < yArg2 ? negativeY : positiveY
+      ),
+      mtv2: new Vector2(
+        xArg2 > xArg1 ? positiveX : negativeX,
+        yArg2 > yArg1 ? positiveY : negativeY
+      ),
     };
   }
 }
