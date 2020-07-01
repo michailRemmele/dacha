@@ -92,6 +92,12 @@
                 "attrs": {
                   "directionAngle": 0
                 }
+              },
+              "T_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "platformer"
+                }
               }
             }
           }

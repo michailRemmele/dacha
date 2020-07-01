@@ -112,8 +112,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 200,
-            "offsetY": 62,
+            "offsetX": 175,
+            "offsetY": 57,
             "rotation": 0
           }
         }
@@ -129,8 +129,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 200,
-            "offsetY": -42,
+            "offsetX": 175,
+            "offsetY": -32,
             "rotation": 0
           }
         }
@@ -400,7 +400,7 @@
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",
         "textureAtlasDescriptor": "resources/textureAtlasMap.json",
-        "backgroundColor": "#000",
+        "backgroundColor": "#F2F2F2",
         "sortingLayers": [
           "default",
           "background",

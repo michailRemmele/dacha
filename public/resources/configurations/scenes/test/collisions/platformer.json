@@ -36,7 +36,7 @@
           "name": "transform",
           "config": {
             "offsetX": -64,
-            "offsetY": -100,
+            "offsetY": -150,
             "rotation": 0
           }
         },
@@ -101,7 +101,7 @@
           "name": "transform",
           "config": {
             "offsetX": 0,
-            "offsetY": -100,
+            "offsetY": -80,
             "rotation": 0
           }
         }
@@ -118,7 +118,7 @@
           "name": "transform",
           "config": {
             "offsetX": 64,
-            "offsetY": -100,
+            "offsetY": -80,
             "rotation": 0
           }
         }
@@ -185,8 +185,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 128,
-            "offsetY": 0,
+            "offsetX": 160,
+            "offsetY": 106,
             "rotation": 0
           }
         }
@@ -202,8 +202,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": -128,
-            "offsetY": 0,
+            "offsetX": -160,
+            "offsetY": 106,
             "rotation": 0
           }
         }
@@ -219,8 +219,8 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 192,
-            "offsetY": 64,
+            "offsetX": 96,
+            "offsetY": 106,
             "rotation": 0
           }
         }
@@ -236,8 +236,59 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": -192,
-            "offsetY": 64,
+            "offsetX": -96,
+            "offsetY": 106,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": -64,
+            "offsetY": 228,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 64,
+            "offsetY": 228,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "name": "platformerFloor",
+      "fromPrefab": true,
+      "prefabName": "platformerFloor",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 350,
             "rotation": 0
           }
         }
@@ -405,7 +456,7 @@
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",
         "textureAtlasDescriptor": "resources/textureAtlasMap.json",
-        "backgroundColor": "#000",
+        "backgroundColor": "#F2F2F2",
         "sortingLayers": [
           "default",
           "background",

@@ -27,8 +27,8 @@
       "config": {
         "type": "boxCollider",
         "collider": {
-          "sizeX": 45,
-          "sizeY": 50,
+          "sizeX": 40,
+          "sizeY": 40,
           "centerX": 0,
           "centerY": 0
         }
@@ -37,7 +37,7 @@
     {
       "name": "movement",
       "config": {
-        "speed": 100
+        "speed": 150
       }
     },
     {
@@ -45,8 +45,8 @@
       "config": {
         "type": "static",
         "src": "units/test_box",
-        "width": 45,
-        "height": 50,
+        "width": 40,
+        "height": 40,
         "rotation": 0,
         "origin": [ 0, 0 ],
         "flipX": false,

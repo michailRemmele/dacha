@@ -36,7 +36,7 @@
           "name": "transform",
           "config": {
             "offsetX": 0,
-            "offsetY": 11,
+            "offsetY": 0,
             "rotation": 0
           }
         },
@@ -103,41 +103,7 @@
       ]
     },
     {
-      "id": "11",
-      "name": "boxColumn",
-      "fromPrefab": true,
-      "prefabName": "boxColumn",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 116,
-            "offsetY": 96,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "12",
-      "name": "boxColumn",
-      "fromPrefab": true,
-      "prefabName": "boxColumn",
-      "children": [],
-      "components": [
-        {
-          "name": "transform",
-          "config": {
-            "offsetX": 12,
-            "offsetY": 96,
-            "rotation": 0
-          }
-        }
-      ]
-    },
-    {
-      "id": "13",
+      "id": "100",
       "name": "box",
       "fromPrefab": true,
       "prefabName": "box",
@@ -146,15 +112,15 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 96,
-            "offsetY": 32,
+            "offsetX": 100,
+            "offsetY": 0,
             "rotation": 0
           }
         }
       ]
     },
     {
-      "id": "14",
+      "id": "101",
       "name": "circle",
       "fromPrefab": true,
       "prefabName": "circle",
@@ -163,8 +129,535 @@
         {
           "name": "transform",
           "config": {
-            "offsetX": 65,
-            "offsetY": 96,
+            "offsetX": 240,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "102",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 240,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "103",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 200,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "104",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 200,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "105",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 280,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "106",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 280,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "107",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 320,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "108",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 320,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "109",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 360,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "110",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 360,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "111",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 400,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "112",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 400,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "113",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 440,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "114",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 440,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "115",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 480,
+            "offsetY": 25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "116",
+      "name": "circle",
+      "fromPrefab": true,
+      "prefabName": "circle",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 480,
+            "offsetY": -25,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "200",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 240,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "201",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 240,
+            "offsetY": 65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "202",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 200,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "203",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 200,
+            "offsetY": 65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "204",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 280,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "205",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 280,
+            "offsetY": 65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "206",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 320,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "207",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 320,
+            "offsetY": 65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "208",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 360,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "209",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 360,
+            "offsetY": 65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "210",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 400,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "211",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 400,
+            "offsetY": 65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "212",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 440,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "213",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 440,
+            "offsetY": 65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "214",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 480,
+            "offsetY": -65,
+            "rotation": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "215",
+      "name": "box",
+      "fromPrefab": true,
+      "prefabName": "box",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 480,
+            "offsetY": 65,
             "rotation": 0
           }
         }
@@ -332,7 +825,7 @@
         "windowNodeId": "root",
         "textureAtlas": "resources/textureAtlas.png",
         "textureAtlasDescriptor": "resources/textureAtlasMap.json",
-        "backgroundColor": "#000",
+        "backgroundColor": "#F2F2F2",
         "sortingLayers": [
           "default",
           "background",

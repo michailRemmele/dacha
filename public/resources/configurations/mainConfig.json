@@ -46,5 +46,5 @@
       "src": "resources/configurations/prefabs/units/test/collisions/circle.json"
     }
   ],
-  "startScene": "boxesAndCircles"
+  "startScene": "intro"
 }
