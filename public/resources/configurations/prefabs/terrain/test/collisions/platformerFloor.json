@@ -1,0 +1,52 @@
+{
+  "name": "platformerFloor",
+  "type": "terrain",
+  "children": [],
+  "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "rigidBody",
+      "config": {
+        "type": "static",
+        "mass": 1,
+        "useGravity": false,
+        "isPermeable": false,
+        "ghost": false,
+        "drag": 0
+      }
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "boxCollider",
+        "collider": {
+          "sizeX": 64,
+          "sizeY": 32,
+          "centerX": 0,
+          "centerY": 0
+        }
+      }
+    },
+    {
+      "name": "renderable",
+      "config": {
+        "type": "static",
+        "src": "terrain/test_floor",
+        "width": 64,
+        "height": 32,
+        "rotation": 0,
+        "origin": [ 0, 0 ],
+        "flipX": false,
+        "flipY": false,
+        "sortingLayer": "terrain"
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "circleColumn",
+  "type": "decorations",
+  "children": [],
+  "components": [
+    {
+      "name": "transform",
+      "config": {
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "rigidBody",
+      "config": {
+        "type": "static",
+        "mass": 1,
+        "useGravity": false,
+        "isPermeable": false,
+        "ghost": false,
+        "drag": 0
+      }
+    },
+    {
+      "name": "colliderContainer",
+      "config": {
+        "type": "circleCollider",
+        "collider": {
+          "radius": 15,
+          "centerX": 0,
+          "centerY": 0
+        }
+      }
+    },
+    {
+      "name": "renderable",
+      "config": {
+        "type": "static",
+        "src": "terrain/test_circle_column",
+        "width": 30,
+        "height": 30,
+        "rotation": 0,
+        "origin": [ 0, 0 ],
+        "flipX": false,
+        "flipY": false,
+        "sortingLayer": "decorations"
+      }
+    }
+  ]
+}

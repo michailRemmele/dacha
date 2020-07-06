@@ -1,7 +1,8 @@
-import Vector2 from 'utils/vector/vector2';
 import Processor from 'engine/processor/processor';
+import { Vector2 } from 'engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
+const STOP_MOVEMENT_MSG = 'STOP_MOVEMENT';
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
 
@@ -28,11 +29,11 @@ class CollisionSolver extends Processor {
     this._gravitationalAcceleration = this._store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY);
   }
 
-  _addReactionForce(gameObject, messageBus) {
+  _addReactionForce(gameObject, mtv, messageBus) {
     const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
     const { useGravity, mass } = rigidBody;
 
-    if (useGravity) {
+    if (useGravity && mtv.y && Math.sign(mtv.y) === -1 && !mtv.x) {
       const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
       reactionForce.multiplyNumber(mass * this._gravitationalAcceleration);
 
@@ -40,6 +41,12 @@ class CollisionSolver extends Processor {
         type: ADD_FORCE_MSG,
         name: REACTION_FORCE,
         value: reactionForce,
+        gameObject,
+        id: gameObject.getId(),
+      }, true);
+
+      messageBus.send({
+        type: STOP_MOVEMENT_MSG,
         gameObject,
         id: gameObject.getId(),
       }, true);
@@ -60,13 +67,13 @@ class CollisionSolver extends Processor {
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
     [ enterMessages, stayMessages ].forEach((messages) => {
       messages.forEach((message) => {
-        const { gameObject, otherGameObject } = message;
+        const { gameObject1, gameObject2, mtv1 } = message;
 
-        if (!this._validateCollision(gameObject, otherGameObject)) {
+        if (!this._validateCollision(gameObject1, gameObject2)) {
           return;
         }
 
-        this._addReactionForce(gameObject, messageBus);
+        this._addReactionForce(gameObject1, mtv1, messageBus);
       });
     });
   }

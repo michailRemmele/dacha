@@ -78,8 +78,8 @@ class FallProcessor extends Processor {
     this._fallingGameObjects = this._fallingGameObjects.filter((gameObject) => {
       const collisionMessages = messageBus.getById(COLLISION_ENTER_MSG, gameObject.getId()) || [];
       return collisionMessages.every((message) => {
-        const { otherGameObject } = message;
-        const rigidBody = otherGameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+        const { gameObject2 } = message;
+        const rigidBody = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
         if (rigidBody) {
           const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
@@ -95,6 +95,7 @@ class FallProcessor extends Processor {
       const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
 
       if (!this._fallingGameObjectsMap[gameObjectId] && this._isFalling(gameObject)) {
+        rigidBody.useGravity = true;
         rigidBody.ghost = true;
 
         messageBus.send({

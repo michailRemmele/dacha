@@ -104,6 +104,7 @@ class MessageBus {
   reset() {
     this._messages = {};
     this._stashedMessages = [];
+    this._delayedMessages = [];
   }
 }
 
