@@ -7,6 +7,7 @@ import CollisionDetectionProcessorPlugin
 import CollisionSolverPlugin from './collisionSolverPlugin/collisionSolverPlugin';
 import ConstraintSolverPlugin from './constraintSolverPlugin/constraintSolverPlugin';
 import JammerPlugin from './jammerPlugin/jammerPlugin';
+import HtmlUiRendererPlugin from './htmlUiRendererPlugin/htmlUiRendererPlugin';
 import KeyboardInputProcessorPlugin
   from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
 import KeyboardControlProcessorPlugin
@@ -28,6 +29,7 @@ export default {
   collisionSolver: CollisionSolverPlugin,
   constraintSolver: ConstraintSolverPlugin,
   jammer: JammerPlugin,
+  htmlUiRenderer: HtmlUiRendererPlugin,
   keyboardInputProcessor: KeyboardInputProcessorPlugin,
   keyboardControlProcessor: KeyboardControlProcessorPlugin,
   mouseControlProcessor: MouseControlProcessorPlugin,
