@@ -1,9 +1,9 @@
 import Processor from 'engine/processor/processor';
 
-class HtmlUiRenderer extends Processor {
+class UiBridge extends Processor {
   process() {
 
   }
 }
 
-export default HtmlUiRenderer;
+export default UiBridge;

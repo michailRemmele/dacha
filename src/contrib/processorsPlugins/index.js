@@ -7,7 +7,6 @@ import CollisionDetectionProcessorPlugin
 import CollisionSolverPlugin from './collisionSolverPlugin/collisionSolverPlugin';
 import ConstraintSolverPlugin from './constraintSolverPlugin/constraintSolverPlugin';
 import JammerPlugin from './jammerPlugin/jammerPlugin';
-import HtmlUiRendererPlugin from './htmlUiRendererPlugin/htmlUiRendererPlugin';
 import KeyboardInputProcessorPlugin
   from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
 import KeyboardControlProcessorPlugin
@@ -20,6 +19,7 @@ import MovementProcessorPlugin from './movementProcessorPlugin/movementProcessor
 import PhysicsProcessorPlugin from './physicsProcessorPlugin/physicsProcessorPlugin';
 import RenderProcessorPlugin from './renderProcessorPlugin/renderProcessorPlugin';
 import SceneLoadProcessorPlugin from './sceneLoadProcessorPlugin/sceneLoadProcessorPlugin';
+import UiBridgePlugin from './uiBridgePlugin/uiBridgePlugin';
 
 export default {
   animateProcessor: AnimateProcessorPlugin,
@@ -29,7 +29,6 @@ export default {
   collisionSolver: CollisionSolverPlugin,
   constraintSolver: ConstraintSolverPlugin,
   jammer: JammerPlugin,
-  htmlUiRenderer: HtmlUiRendererPlugin,
   keyboardInputProcessor: KeyboardInputProcessorPlugin,
   keyboardControlProcessor: KeyboardControlProcessorPlugin,
   mouseControlProcessor: MouseControlProcessorPlugin,
@@ -39,4 +38,5 @@ export default {
   physicsProcessor: PhysicsProcessorPlugin,
   renderProcessor: RenderProcessorPlugin,
   sceneLoadProcessor: SceneLoadProcessorPlugin,
+  uiBridge: UiBridgePlugin,
 };

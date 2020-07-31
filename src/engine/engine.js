@@ -31,7 +31,7 @@ class Engine {
       GAME_OBJECT_CREATOR_KEY_NAME,
     } = global;
 
-    const { mainConfig, processorsPlugins, components } = this.options;
+    const { mainConfig, processorsPlugins, components, pluginHelpers } = this.options;
     const { projectSettings } = mainConfig;
 
     IOC.register(PROJECT_SETTINGS_KEY_NAME, new ResolveSingletonStrategy(projectSettings));
@@ -45,7 +45,7 @@ class Engine {
     const gameObjectCreator = new GameObjectCreator(components);
     IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(gameObjectCreator));
 
-    const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins);
+    const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins, pluginHelpers);
     IOC.register(SCENE_PROVIDER_KEY_NAME, new ResolveSingletonStrategy(sceneProvider));
 
     await Promise.all(mainConfig.prefabs.map((prefab) => {

@@ -10,7 +10,7 @@
       "options": {}
     },
     {
-      "name": "htmlUiRenderer",
+      "name": "uiBridge",
       "section": "renderingSection",
       "filter": {},
       "options": {}

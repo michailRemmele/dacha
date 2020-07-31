@@ -21,6 +21,7 @@ module.exports = {
   output: {
     path: paths.build,
     filename: '[name].[hash].js',
+    chunkFilename: '[name].[hash].js',
     library: '[name]',
   },
 
