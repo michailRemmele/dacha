@@ -4,10 +4,14 @@ import UiBridge from 'contrib/processors/uiBridge/uiBridge';
 
 class UiBridgePlugin extends ProcessorPlugin {
   async load(options) {
-    const { helpers } = options;
-    await helpers.loadUiApp();
+    const { helpers, sceneController } = options;
+    const { onInit, onDestroy } = await helpers.loadUiApp();
 
-    return new UiBridge({});
+    return new UiBridge({
+      onInit,
+      onDestroy,
+      sceneController,
+    });
   }
 }
 

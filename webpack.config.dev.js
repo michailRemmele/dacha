@@ -37,6 +37,7 @@ module.exports = {
   devtool: 'cheap-module-eval-source-map',
 
   resolve: {
+    extensions: [ '.js', '.jsx' ],
     alias: {
       resources: paths.resources,
     },
@@ -75,7 +76,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js(x?)$/,
         exclude: /(node_modules)/,
         use: [
           {
