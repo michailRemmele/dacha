@@ -48,12 +48,10 @@ class Engine {
     const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins);
     IOC.register(SCENE_PROVIDER_KEY_NAME, new ResolveSingletonStrategy(sceneProvider));
 
-    await Promise.all(mainConfig.prefabs.map((prefab) => {
-      return resourceLoader.load(prefab.src)
-        .then((prefabConfig) => {
-          prefabCollection.register(prefabConfig);
-        });
-    }));
+    for (let i = 0; i < mainConfig.prefabs.length; i++) {
+      const prefabConfig = await resourceLoader.load(mainConfig.prefabs[i].src);
+      prefabCollection.register(prefabConfig);
+    }
 
     await sceneProvider.loadScene(mainConfig.startScene);
     sceneProvider.moveToLoaded();
