@@ -26,11 +26,13 @@
     "babel-loader": "8.0.5",
     "eslint": "6.5.1",
     "eslint-plugin-react": "^7.20.5",
-    "spritesmith": "3.4.0"
+    "spritesmith": "3.4.0",
+    "webpack-bundle-analyzer": "3.8.0"
   },
   "scripts": {
     "start": "webpack-dev-server --hot --config webpack.config.dev.js",
-    "build": "webpack --config webpack.config.prod.js"
+    "build": "webpack --config webpack.config.prod.js",
+    "analyse": "webpack --config webpack.config.prod.js --profile --json > stats.json && webpack-bundle-analyzer stats.json ./build"
   },
   "babel": {
     "presets": [
