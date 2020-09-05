@@ -87,13 +87,28 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|jp(e?)g|svg)$/,
+        test: /\.(png|jp(e?)g)$/,
         use: [
           {
             loader: 'file-loader',
             options: {
               name: 'images/[hash]-[name].[ext]',
             },
+          },
+        ],
+      },
+      {
+        test: /\.svg$/,
+        use: [ '@svgr/webpack' ],
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
           },
         ],
       },
