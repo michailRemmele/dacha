@@ -1,5 +1,5 @@
 {
-  "name": "intro",
+  "name": "game",
   "gameObjects": [
     {
       "id": "0",
@@ -2171,7 +2171,7 @@
         "type": "unit"
       },
       "options": {
-        "restartScene": "intro"
+        "restartScene": "game"
       }
     },
     {
@@ -2282,6 +2282,12 @@
         ],
         "scaleSensitivity": 50
       }
+    },
+    {
+      "name": "uiBridge",
+      "section": "renderingSection",
+      "filter": {},
+      "options": {}
     }
   ]
 }

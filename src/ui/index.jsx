@@ -4,6 +4,11 @@ import { MemoryRouter, Switch, Route } from 'react-router';
 
 import SceneSwitcher from './elements/components/sceneSwitcher/SceneSwitcher';
 
+import MainMenu from './elements/pages/mainMenu/MainMenu';
+import Game from './elements/pages/game/Game';
+import Circles from './elements/pages/circles/Circles';
+import BoxesAndCircles from './elements/pages/boxesAndCircles/BoxesAndCircles';
+
 export function onInit(options) {
   const { sceneName } = options;
 
@@ -12,22 +17,16 @@ export function onInit(options) {
       <SceneSwitcher sceneName={sceneName}>
         <Switch>
           <Route path='/mainMenu'>
-            Main menu scene
+            <MainMenu/>
           </Route>
-          <Route path='/intro'>
-            Intro scene
-          </Route>
-          <Route path='/platformer'>
-            Platformer scene
-          </Route>
-          <Route path='/boxes'>
-            Boxes scene
+          <Route path='/game'>
+            <Game/>
           </Route>
           <Route path='/circles'>
-            Circles scene
+            <Circles/>
           </Route>
           <Route path='/boxesAndCircles'>
-            Box and Circles scene
+            <BoxesAndCircles/>
           </Route>
         </Switch>
       </SceneSwitcher>

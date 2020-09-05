@@ -1,7 +1,7 @@
 {
   "projectSettings": {},
   "scenes": {
-    "intro": "resources/configurations/scenes/intro.json",
+    "game": "resources/configurations/scenes/game.json",
     "mainMenu": "resources/configurations/scenes/mainMenu.json",
     "platformer": "resources/configurations/scenes/test/collisions/platformer.json",
     "boxes": "resources/configurations/scenes/test/collisions/boxes.json",
