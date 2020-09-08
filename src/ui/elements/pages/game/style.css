@@ -1,0 +1,14 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 100%;
+
+  font-family: sans-serif;
+}
+
+.game__weapon-bar {
+  align-self: flex-end;
+}
