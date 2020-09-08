@@ -41,26 +41,7 @@
 }
 
 .menu__button {
-  width: 250px;
-  height: 50px;
-
-  color: #fff;
-  background-color: transparent;
-  border: 1px solid #fff;
-
-  font-size: 24px;
-  text-transform: uppercase;
-}
-
-.menu__button:hover {
-  cursor: pointer;
-}
-
-.menu__button:focus, .menu__button:hover {
-  outline: none;
-
-  color: #000;
-  background-color: #fff;
+  width: 200px;
 }
 
 .main-menu__footer {

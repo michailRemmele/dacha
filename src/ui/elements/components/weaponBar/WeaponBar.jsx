@@ -11,12 +11,7 @@ class WeaponBar extends React.Component {
 
     return (
       <div className='weapon-bar__section'>
-        <span className='weapon-bar__label'>
-          Reload
-        </span>
-        <span className='weapon-bar__value'>
-          {this.props.cooldown}
-        </span>
+        {`Reload: ${this.props.cooldown}`}
       </div>
     );
   }
@@ -26,12 +21,7 @@ class WeaponBar extends React.Component {
       <div className={`weapon-bar ${this.props.className}`}>
         {this.renderCooldownSection()}
         <div className='weapon-bar__section'>
-          <span className='weapon-bar__label'>
-            Weapon
-          </span>
-          <span className='weapon-bar__value'>
-            {this.props.name}
-          </span>
+          {`Weapon: ${this.props.name}`}
         </div>
       </div>
     );

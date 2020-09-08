@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Button from '../../atoms/button/Button';
+
 import GithubIcon from './images/github.svg';
 import TelegramIcon from './images/telegram.svg';
 
@@ -18,7 +20,7 @@ class MainMenu extends React.Component {
           <nav className='main-menu__menu menu'>
             <ul className='menu__list'>
               <li className='menu__item'>
-                <button className='menu__button'>Play</button>
+                <Button className='menu__button' title='Play'/>
               </li>
             </ul>
           </nav>
