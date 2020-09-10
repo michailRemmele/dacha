@@ -1,4 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
+import withGame from '../../hocs/withGame/withGame';
 
 import Button from '../../atoms/button/Button';
 
@@ -7,7 +10,17 @@ import TelegramIcon from './images/telegram.svg';
 
 import './style.css';
 
+const LOAD_SCENE_MSG = 'LOAD_SCENE';
+const GAME_SCENE_NAME = 'game';
+
 class MainMenu extends React.Component {
+  onPlay() {
+    this.props.pushMessage({
+      type: LOAD_SCENE_MSG,
+      name: GAME_SCENE_NAME,
+    });
+  }
+
   render() {
     return (
       <div className='main-menu'>
@@ -20,7 +33,11 @@ class MainMenu extends React.Component {
           <nav className='main-menu__menu menu'>
             <ul className='menu__list'>
               <li className='menu__item'>
-                <Button className='menu__button' title='Play'/>
+                <Button
+                  className='menu__button'
+                  title='Play'
+                  onClick={() => this.onPlay()}
+                />
               </li>
             </ul>
           </nav>
@@ -54,6 +71,8 @@ class MainMenu extends React.Component {
   }
 }
 
-MainMenu.propTypes = {};
+MainMenu.propTypes = {
+  pushMessage: PropTypes.func,
+};
 
-export default MainMenu;
+export default withGame(MainMenu);

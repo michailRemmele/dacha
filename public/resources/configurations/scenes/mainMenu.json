@@ -1,46 +1,7 @@
 {
   "name": "mainMenu",
-  "gameObjects": [
-    {
-      "id": "1",
-      "name": "menuController",
-      "fromPrefab": false,
-      "prefabName": "",
-      "children": [],
-      "components": [
-        {
-          "name": "keyboardControl",
-          "config": {
-            "inputEventBindings": {
-              "S_PRESSED": {
-                "messageType": "LOAD_SCENE",
-                "attrs": {
-                  "name": "game"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
-  ],
+  "gameObjects": [],
   "processors": [
-    {
-      "name": "keyboardInputProcessor",
-      "section": "eventProcessSection",
-      "filter": {},
-      "options": {}
-    },
-    {
-      "name": "keyboardControlProcessor",
-      "section": "gameStateUpdateSection",
-      "filter": {
-        "components": [
-          "keyboardControl"
-        ]
-      },
-      "options": {}
-    },
     {
       "name": "sceneLoadProcessor",
       "section": "gameStateUpdateSection",

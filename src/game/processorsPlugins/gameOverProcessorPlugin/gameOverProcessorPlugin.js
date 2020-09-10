@@ -6,12 +6,10 @@ class GameOverProcessorPlugin extends ProcessorPlugin {
   async load(options) {
     const {
       gameObjectObserver,
-      restartScene,
     } = options;
 
     return new GameOverProcessor({
-      gameObjectObserver: gameObjectObserver,
-      restartScene: restartScene,
+      gameObjectObserver,
     });
   }
 }

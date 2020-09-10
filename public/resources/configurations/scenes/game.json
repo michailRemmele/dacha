@@ -2170,9 +2170,7 @@
       "filter": {
         "type": "unit"
       },
-      "options": {
-        "restartScene": "game"
-      }
+      "options": {}
     },
     {
       "name": "physicsProcessor",
