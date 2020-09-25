@@ -7,10 +7,12 @@ function withGame(WrappedComponent) {
     render() {
       return (
         <GameContext.Consumer>
-          {({ messageBusObserver, pushMessage }) => (
+          {({ messageBusObserver, pushMessage, gameObjects }) => (
             <WrappedComponent
-              messageBusObserver={messageBusObserver} {...this.props}
+              messageBusObserver={messageBusObserver}
               pushMessage={pushMessage}
+              gameObjects={gameObjects}
+              {...this.props}
             />
           )}
         </GameContext.Consumer>

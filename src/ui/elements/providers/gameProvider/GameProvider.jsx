@@ -10,6 +10,7 @@ class GameProvider extends React.Component {
       value: {
         messageBusObserver: this.props.messageBusObserver,
         pushMessage: this.props.pushMessage,
+        gameObjects: this.props.gameObjects,
       },
     };
   }
@@ -27,6 +28,7 @@ GameProvider.propTypes = {
   children: PropTypes.node,
   messageBusObserver: PropTypes.any,
   pushMessage: PropTypes.func,
+  gameObjects: PropTypes.any,
 };
 
 export default GameProvider;

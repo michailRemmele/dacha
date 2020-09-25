@@ -2284,7 +2284,12 @@
     {
       "name": "uiBridge",
       "section": "renderingSection",
-      "filter": {},
+      "filter": {
+        "components": [
+          "keyboardControl",
+          "mouseControl"
+        ]
+      },
       "options": {}
     }
   ]

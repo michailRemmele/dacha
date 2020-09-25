@@ -10,10 +10,16 @@
   color: #fff;
 
   padding: 30px;
+
+  user-select: none;
 }
 
 .weapon-bar__section + .weapon-bar__section {
   margin-left: 30px;
+}
+
+.weapon-bar__section_reload {
+  color: #c00;
 }
 
 @media screen and (max-width: 480px) {
@@ -22,6 +28,10 @@
     font-size: 24px;
 
     flex-direction: column;
+  }
+
+  .weapon-bar__section {
+    text-align: right;
   }
 
   .weapon-bar__section + .weapon-bar__section {

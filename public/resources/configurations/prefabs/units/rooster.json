@@ -51,6 +51,7 @@
     {
       "name": "weapon",
       "config": {
+        "name": "blaster",
         "bullet": "blasterBullet",
         "damage": 5,
         "fetterDuration": 300,

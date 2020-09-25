@@ -15,6 +15,10 @@ const LOAD_SCENE_MSG = 'LOAD_SCENE';
 const GAME_SCENE_NAME = 'game';
 const MAIN_MENU_SCENE_NAME = 'mainMenu';
 
+const PLAYER_ID = '1';
+const HEALTH_COMPONENT_NAME = 'health';
+const WEAPON_COMPONENT_NAME = 'weapon';
+
 const PAGE_STATE = {
   GAME: 'game',
   VICTORY: 'victory',
@@ -49,14 +53,17 @@ class Game extends React.Component {
       ),
     };
     this.messageBusSubscription = this.onMessageBusUpdate.bind(this);
+    this.playerSubscription = this.onPlayerUpdate.bind(this);
   }
 
   componentDidMount() {
     this.props.messageBusObserver.subscribe(this.messageBusSubscription);
+    this.props.gameObjects.subscribe(this.playerSubscription, PLAYER_ID);
   }
 
   componentWillUnmount() {
     this.props.messageBusObserver.unsubscribe(this.messageBusSubscription);
+    this.props.gameObjects.unsubscribe(this.playerSubscription, PLAYER_ID);
   }
 
   onMessageBusUpdate(messageBus) {
@@ -64,6 +71,38 @@ class Game extends React.Component {
       this.setState({ pageState: PAGE_STATE.VICTORY });
     } else if (messageBus.get(DEFEAT_MSG)) {
       this.setState({ pageState: PAGE_STATE.DEFEAT });
+    }
+  }
+
+  onPlayerUpdate(gameObject) {
+    if (!gameObject) {
+      this.setState({
+        health: 0,
+        isReload: false,
+      });
+      return;
+    }
+
+    const health = gameObject.getComponent(HEALTH_COMPONENT_NAME);
+    const weapon = gameObject.getComponent(WEAPON_COMPONENT_NAME);
+
+    const newState = {};
+
+    if (health.points !== this.state.health) {
+      newState.health = health.points;
+    }
+
+    const isReload = weapon.cooldownRemaining > 0;
+    if (isReload !== this.state.isReload) {
+      newState.isReload = isReload;
+    }
+
+    if (weapon.name !== this.state.weaponName) {
+      newState.weaponName = weapon.name;
+    }
+
+    if (Object.keys(newState).length) {
+      this.setState(newState);
     }
   }
 
@@ -104,8 +143,12 @@ class Game extends React.Component {
   renderHud() {
     return (
       <>
-        <HealthBar health={100}/>
-        <WeaponBar className='game__weapon-bar' name={'Blaster'} cooldown={60}/>
+        <HealthBar health={this.state.health}/>
+        <WeaponBar
+          className='game__weapon-bar'
+          name={this.state.weaponName}
+          isReload={this.state.isReload}
+        />
       </>
     );
   }
@@ -122,6 +165,7 @@ class Game extends React.Component {
 Game.propTypes = {
   messageBusObserver: PropTypes.any,
   pushMessage: PropTypes.func,
+  gameObjects: PropTypes.any,
 };
 
 export default withGame(Game);

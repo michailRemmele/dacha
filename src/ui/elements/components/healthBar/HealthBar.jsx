@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 
 import './style.css';
 
-class HealthBar extends React.Component {
+class HealthBar extends React.PureComponent {
   render() {
     return (
       <div className={`health-bar ${this.props.className}`}>
-        Health: {this.props.health}
+        Health: {this.props.health || ''}
       </div>
     );
   }
@@ -19,7 +19,7 @@ HealthBar.defaultProps = {
 
 HealthBar.propTypes = {
   className: PropTypes.string,
-  health: PropTypes.number.isRequired,
+  health: PropTypes.number,
 };
 
 export default HealthBar;

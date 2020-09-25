@@ -9,6 +9,8 @@
   color: #fff;
 
   padding: 30px;
+
+  user-select: none;
 }
 
 @media screen and (max-width: 480px) {

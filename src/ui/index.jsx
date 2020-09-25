@@ -12,12 +12,13 @@ import Circles from './elements/pages/circles/Circles';
 import BoxesAndCircles from './elements/pages/boxesAndCircles/BoxesAndCircles';
 
 export function onInit(options) {
-  const { sceneName, messageBusObserver, pushMessage } = options;
+  const { sceneName, messageBusObserver, pushMessage, gameObjects } = options;
 
   ReactDOM.render(
     <GameProvider
       messageBusObserver={messageBusObserver}
       pushMessage={pushMessage}
+      gameObjects={gameObjects}
     >
       <MemoryRouter>
         <SceneSwitcher sceneName={sceneName}>

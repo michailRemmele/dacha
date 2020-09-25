@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 
 import './style.css';
 
-class WeaponBar extends React.Component {
+class WeaponBar extends React.PureComponent {
   renderCooldownSection() {
-    if (!this.props.cooldown) {
+    if (!this.props.isReload) {
       return;
     }
 
     return (
-      <div className='weapon-bar__section'>
-        {`Reload: ${this.props.cooldown}`}
+      <div className='weapon-bar__section weapon-bar__section_reload'>
+        Reload
       </div>
     );
   }
@@ -21,7 +21,7 @@ class WeaponBar extends React.Component {
       <div className={`weapon-bar ${this.props.className}`}>
         {this.renderCooldownSection()}
         <div className='weapon-bar__section'>
-          {`Weapon: ${this.props.name}`}
+          {`Weapon: ${this.props.name || ''}`}
         </div>
       </div>
     );
@@ -34,8 +34,8 @@ WeaponBar.defaultProps = {
 
 WeaponBar.propTypes = {
   className: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  cooldown: PropTypes.number,
+  name: PropTypes.string,
+  isReload: PropTypes.bool,
 };
 
 export default WeaponBar;
