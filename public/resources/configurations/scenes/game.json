@@ -1,5 +1,5 @@
 {
-  "name": "intro",
+  "name": "game",
   "gameObjects": [
     {
       "id": "0",
@@ -97,6 +97,12 @@
                 "messageType": "LOAD_SCENE",
                 "attrs": {
                   "name": "platformer"
+                }
+              },
+              "M_PRESSED": {
+                "messageType": "LOAD_SCENE",
+                "attrs": {
+                  "name": "mainMenu"
                 }
               }
             }
@@ -2164,9 +2170,7 @@
       "filter": {
         "type": "unit"
       },
-      "options": {
-        "restartScene": "intro"
-      }
+      "options": {}
     },
     {
       "name": "physicsProcessor",
@@ -2276,6 +2280,17 @@
         ],
         "scaleSensitivity": 50
       }
+    },
+    {
+      "name": "uiBridge",
+      "section": "renderingSection",
+      "filter": {
+        "components": [
+          "keyboardControl",
+          "mouseControl"
+        ]
+      },
+      "options": {}
     }
   ]
 }

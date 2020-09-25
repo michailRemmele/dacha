@@ -378,6 +378,12 @@
         ],
         "scaleSensitivity": 50
       }
+    },
+    {
+      "name": "uiBridge",
+      "section": "renderingSection",
+      "filter": {},
+      "options": {}
     }
   ]
 }

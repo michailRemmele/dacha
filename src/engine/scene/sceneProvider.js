@@ -6,7 +6,7 @@ import SceneController from './sceneController';
 import { RESOURCES_LOADER_KEY_NAME } from 'engine/consts/global';
 
 class SceneProvider {
-  constructor(scenes, processorsPlugins) {
+  constructor(scenes, processorsPlugins, pluginHelpers) {
     this._sceneContainer = {};
     this._currentSceneName = undefined;
     this._sceneChangeSubscribers = [];
@@ -16,6 +16,7 @@ class SceneProvider {
       storage[name] = new ProcessorPlugin();
       return storage;
     }, {});
+    this._pluginHelpers = pluginHelpers;
     this._loadedScene = null;
     this._sceneController = new SceneController(this);
   }
@@ -48,6 +49,7 @@ class SceneProvider {
         gameObjectDestroyer: scene.getGameObjectDestroyer(),
         gameObjectObserver: gameObjectObserver,
         sceneController: this._sceneController,
+        helpers: this._pluginHelpers,
       })
         .then((processor) => {
           scene.addProcessor(processor, section);

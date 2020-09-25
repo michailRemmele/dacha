@@ -1,0 +1,81 @@
+.game {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 100%;
+
+  font-family: sans-serif;
+}
+
+.game__weapon-bar {
+  align-self: flex-end;
+}
+
+.game__overlay {
+  position: absolute;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 75%;
+  max-width: 400px;
+
+  padding: 30px;
+
+  background-color: #000;
+  color: #fff;
+}
+
+.dialog__title {
+  margin: 0 0 30px 0;
+  font-size: 48px;
+
+  text-transform: uppercase;
+}
+
+.dialog__footer {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+}
+
+.dialog__button + .dialog__button {
+  margin-left: 25px;
+}
+
+@media screen and (max-width: 480px) {
+  .dialog {
+    padding: 20px;
+  }
+
+  .dialog__title {
+    font-size: 36px;
+    margin: 0 0 20px 0;
+  }
+
+  .dialog__footer {
+    flex-direction: column;
+  }
+
+  .dialog__button + .dialog__button {
+    margin: 15px 0 0 0;
+  }
+}

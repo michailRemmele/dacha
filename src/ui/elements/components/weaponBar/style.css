@@ -1,0 +1,40 @@
+.weapon-bar {
+  display: flex;
+
+  font-family: sans-serif;
+  font-size: 36px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #000;
+
+  color: #fff;
+
+  padding: 30px;
+
+  user-select: none;
+}
+
+.weapon-bar__section + .weapon-bar__section {
+  margin-left: 30px;
+}
+
+.weapon-bar__section_reload {
+  color: #c00;
+}
+
+@media screen and (max-width: 480px) {
+  .weapon-bar {
+    padding: 15px;
+    font-size: 24px;
+
+    flex-direction: column;
+  }
+
+  .weapon-bar__section {
+    text-align: right;
+  }
+
+  .weapon-bar__section + .weapon-bar__section {
+    margin-left: 0;
+  }
+}

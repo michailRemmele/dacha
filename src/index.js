@@ -5,6 +5,7 @@ import contribProcessorsPlugins from 'contrib/processorsPlugins';
 import gameProcessorsPlugins from 'game/processorsPlugins';
 import contribComponents from 'contrib/components';
 import gameComponents from 'game/components';
+import pluginHelpers from 'pluginHelpers';
 
 const options = {
   mainConfig: mainConfig,
@@ -15,6 +16,9 @@ const options = {
   components: {
     ...contribComponents,
     ...gameComponents,
+  },
+  pluginHelpers: {
+    ...pluginHelpers,
   },
 };
 

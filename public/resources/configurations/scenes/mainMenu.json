@@ -1,16 +1,18 @@
 {
   "name": "mainMenu",
-  "gameObjects": [
-  ],
+  "gameObjects": [],
   "processors": [
     {
-      "name": "keyboardInputProcessor",
-      "section": "eventProcessSection",
+      "name": "sceneLoadProcessor",
+      "section": "gameStateUpdateSection",
       "filter": {},
-      "options": {
-        "keyBindings": {
-        }
-      }
+      "options": {}
+    },
+    {
+      "name": "uiBridge",
+      "section": "renderingSection",
+      "filter": {},
+      "options": {}
     }
   ]
 }

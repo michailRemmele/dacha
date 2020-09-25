@@ -27,6 +27,7 @@ module.exports = {
   output: {
     path: paths.build,
     filename: '[name].[hash].js',
+    chunkFilename: '[name].[hash].js',
     library: '[name]',
     publicPath: '/',
   },
@@ -36,6 +37,7 @@ module.exports = {
   devtool: 'cheap-module-eval-source-map',
 
   resolve: {
+    extensions: [ '.js', '.jsx' ],
     alias: {
       resources: paths.resources,
     },
@@ -74,7 +76,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js(x?)$/,
         exclude: /(node_modules)/,
         use: [
           {
@@ -83,13 +85,28 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|jp(e?)g|svg)$/,
+        test: /\.(png|jp(e?)g)$/,
         use: [
           {
             loader: 'file-loader',
             options: {
               name: 'images/[hash]-[name].[ext]',
             },
+          },
+        ],
+      },
+      {
+        test: /\.svg$/,
+        use: [ '@svgr/webpack' ],
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
           },
         ],
       },

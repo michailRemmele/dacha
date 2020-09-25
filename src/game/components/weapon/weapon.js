@@ -4,6 +4,7 @@ class Weapon extends Component {
   constructor(config) {
     super();
 
+    this._name = config.name;
     this._bullet = config.bullet;
     this._damage = config.damage;
     this._fetterDuration = config.fetterDuration;
@@ -11,6 +12,14 @@ class Weapon extends Component {
     this._range = config.range;
     this._cooldown = config.cooldown;
     this._cooldownRemaining = 0;
+  }
+
+  set name(name) {
+    this._name = name;
+  }
+
+  get name() {
+    return this._name;
   }
 
   set bullet(bullet) {
@@ -71,6 +80,7 @@ class Weapon extends Component {
 
   clone() {
     return new Weapon({
+      name: this.name,
       bullet: this.bullet,
       damage: this.damage,
       fetterDuration: this.fetterDuration,
