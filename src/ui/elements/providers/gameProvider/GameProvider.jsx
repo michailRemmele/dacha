@@ -9,7 +9,9 @@ class GameProvider extends React.Component {
     this.state = {
       value: {
         messageBusObserver: this.props.messageBusObserver,
+        storeObserver: this.props.storeObserver,
         pushMessage: this.props.pushMessage,
+        pushAction: this.props.pushAction,
         gameObjects: this.props.gameObjects,
       },
     };
@@ -27,7 +29,9 @@ class GameProvider extends React.Component {
 GameProvider.propTypes = {
   children: PropTypes.node,
   messageBusObserver: PropTypes.any,
+  storeObserver: PropTypes.any,
   pushMessage: PropTypes.func,
+  pushAction: PropTypes.func,
   gameObjects: PropTypes.any,
 };
 

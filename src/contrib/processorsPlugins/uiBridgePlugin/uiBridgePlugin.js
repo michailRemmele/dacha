@@ -4,7 +4,14 @@ import UiBridge from 'contrib/processors/uiBridge/uiBridge';
 
 class UiBridgePlugin extends ProcessorPlugin {
   async load(options) {
-    const { helpers, sceneController, gameObjectObserver } = options;
+    const {
+      helpers,
+      sceneController,
+      gameObjectObserver,
+      gameObjectSpawner,
+      gameObjectDestroyer,
+      store,
+    } = options;
     const { onInit, onDestroy } = await helpers.loadUiApp();
 
     return new UiBridge({
@@ -12,6 +19,9 @@ class UiBridgePlugin extends ProcessorPlugin {
       onDestroy,
       sceneController,
       gameObjectObserver,
+      gameObjectSpawner,
+      gameObjectDestroyer,
+      store,
     });
   }
 }
