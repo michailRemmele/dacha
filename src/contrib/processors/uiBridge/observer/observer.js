@@ -1,6 +1,6 @@
 class Observer {
-  constructor(initalValue) {
-    this._value = initalValue;
+  constructor() {
+    this._value = null;
     this._subscribers = [];
   }
 
