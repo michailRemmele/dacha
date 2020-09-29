@@ -7,6 +7,7 @@ import Renderable from './renderable/renderable';
 import Transform from './transform/transform';
 import Movement from './movement/movement';
 import MouseControl from './mouseControl/mouseControl';
+import Script from './script/script';
 
 export default {
   camera: Camera,
@@ -18,4 +19,5 @@ export default {
   transform: Transform,
   movement: Movement,
   mouseControl: MouseControl,
+  script: Script,
 };

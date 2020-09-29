@@ -2079,6 +2079,16 @@
       "options": {}
     },
     {
+      "name": "scriptProcessor",
+      "section": "gameStateUpdateSection",
+      "filter": {
+        "components": [
+          "script"
+        ]
+      },
+      "options": {}
+    },
+    {
       "name": "movementProcessor",
       "section": "gameStateUpdateSection",
       "filter": {
