@@ -4,7 +4,7 @@ class SceneController {
   }
 
   getCurrentName() {
-    return this._sceneProvider.getName();
+    return this._sceneProvider.getCurrentScene().getName();
   }
 
   load(name) {

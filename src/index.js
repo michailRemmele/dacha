@@ -1,24 +1,29 @@
 import Engine from './engine/engine';
-
-import mainConfig from 'resources/configurations/mainConfig.json';
+import Processor from 'engine/processor/processor';
+import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
+import Component from 'engine/component/component';
+import Script from 'contrib/processors/scriptProcessor/script';
 import contribProcessorsPlugins from 'contrib/processorsPlugins';
-import gameProcessorsPlugins from 'game/processorsPlugins';
 import contribComponents from 'contrib/components';
-import gameComponents from 'game/components';
+import IOC from 'engine/ioc/ioc';
+import { VectorOps, MathOps, Vector2 } from 'engine/mathLib';
+import {
+  RESOURCES_LOADER_KEY_NAME,
+  PROJECT_SETTINGS_KEY_NAME,
+} from 'engine/consts/global';
 
-const options = {
-  mainConfig: mainConfig,
-  processorsPlugins: {
-    ...contribProcessorsPlugins,
-    ...gameProcessorsPlugins,
-  },
-  components: {
-    ...contribComponents,
-    ...gameComponents,
-  },
+export {
+  Engine,
+  Processor,
+  ProcessorPlugin,
+  Component,
+  Script,
+  contribProcessorsPlugins,
+  contribComponents,
+  IOC,
+  VectorOps,
+  MathOps,
+  Vector2,
+  RESOURCES_LOADER_KEY_NAME,
+  PROJECT_SETTINGS_KEY_NAME,
 };
-
-const engine = new Engine(options);
-engine.start();
-
-console.log('Hello! You can contact the author via email: mikhail.remmele@gmail.com');

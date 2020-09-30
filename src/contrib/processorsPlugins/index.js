@@ -19,6 +19,8 @@ import MovementProcessorPlugin from './movementProcessorPlugin/movementProcessor
 import PhysicsProcessorPlugin from './physicsProcessorPlugin/physicsProcessorPlugin';
 import RenderProcessorPlugin from './renderProcessorPlugin/renderProcessorPlugin';
 import SceneLoadProcessorPlugin from './sceneLoadProcessorPlugin/sceneLoadProcessorPlugin';
+import ScriptProcessorPlugin from './scriptProcessorPlugin/scriptProcessorPlugin';
+import UiBridgePlugin from './uiBridgePlugin/uiBridgePlugin';
 
 export default {
   animateProcessor: AnimateProcessorPlugin,
@@ -37,4 +39,6 @@ export default {
   physicsProcessor: PhysicsProcessorPlugin,
   renderProcessor: RenderProcessorPlugin,
   sceneLoadProcessor: SceneLoadProcessorPlugin,
+  scriptProcessor: ScriptProcessorPlugin,
+  uiBridge: UiBridgePlugin,
 };

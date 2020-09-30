@@ -6,7 +6,7 @@ import SceneController from './sceneController';
 import { RESOURCES_LOADER_KEY_NAME } from 'engine/consts/global';
 
 class SceneProvider {
-  constructor(scenes, processorsPlugins) {
+  constructor(scenes, processorsPlugins, pluginHelpers) {
     this._sceneContainer = {};
     this._currentSceneName = undefined;
     this._sceneChangeSubscribers = [];
@@ -16,6 +16,7 @@ class SceneProvider {
       storage[name] = new ProcessorPlugin();
       return storage;
     }, {});
+    this._pluginHelpers = pluginHelpers;
     this._loadedScene = null;
     this._sceneController = new SceneController(this);
   }
@@ -36,23 +37,23 @@ class SceneProvider {
       gameObjects: sceneConfig.gameObjects,
     });
 
-    await Promise.all(sceneConfig.processors.map((processorInfo) => {
-      const { name, filter, options, section } = processorInfo;
+    for (let i = 0; i < sceneConfig.processors.length; i++) {
+      const { name, filter, options, section } = sceneConfig.processors[i];
 
       const gameObjectObserver = new GameObjectObserver(scene, filter);
 
-      return this._processorsPlugins[name].load({
+      const processor = await this._processorsPlugins[name].load({
         ...options,
         store: scene.getStore(),
         gameObjectSpawner: scene.getGameObjectSpawner(),
         gameObjectDestroyer: scene.getGameObjectDestroyer(),
         gameObjectObserver: gameObjectObserver,
         sceneController: this._sceneController,
-      })
-        .then((processor) => {
-          scene.addProcessor(processor, section);
-        });
-    }));
+        helpers: this._pluginHelpers,
+      });
+
+      scene.addProcessor(processor, section);
+    }
 
     this._loadedScene = scene;
   }
