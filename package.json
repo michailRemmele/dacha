@@ -1,5 +1,5 @@
 {
-  "name": "flyer-engine",
+  "name": "@flyer-engine/core",
   "version": "0.6.0",
   "dependencies": {
     "uuid-random": "1.0.9"
@@ -23,5 +23,17 @@
     "plugins": [
       "@babel/plugin-proposal-object-rest-spread"
     ]
-  }
+  },
+  "description": "Flyer Engine is a JavaScript game engine for building games in browser.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michailRemmele/flyer-engine.git"
+  },
+  "author": "Mikhail Remmele",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michailRemmele/flyer-engine/issues"
+  },
+  "homepage": "https://github.com/michailRemmele/flyer-engine#readme"
 }
