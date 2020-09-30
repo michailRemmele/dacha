@@ -1,4 +1,4 @@
-import Engine from './engine/engine';
+import Engine from 'engine/engine';
 import Processor from 'engine/processor/processor';
 import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
 import Component from 'engine/component/component';
