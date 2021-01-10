@@ -35,6 +35,12 @@ class ComparatorConditionController extends ConditionController {
       less: (arg1, arg2) => {
         return arg1 < arg2;
       },
+      greaterOrEqual: (arg1, arg2) => {
+        return arg1 >= arg2;
+      },
+      lessOrEqual: (arg1, arg2) => {
+        return arg1 <= arg2;
+      },
     };
   }
 
