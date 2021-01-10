@@ -1,6 +1,6 @@
 {
   "name": "@flyer-engine/core",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "dependencies": {
     "uuid-random": "1.0.9"
   },
