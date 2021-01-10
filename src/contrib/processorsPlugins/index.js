@@ -15,7 +15,6 @@ import MouseControlProcessorPlugin from './mouseControlProcessorPlugin/mouseCont
 import MouseInputProcessorPlugin from './mouseInputProcessorPlugin/mouseInputProcessorPlugin';
 import MouseInputCoordinatesProjectorPlugin
   from './mouseInputCoordinatesProjector/mouseInputCoordinatesProjector';
-import MovementProcessorPlugin from './movementProcessorPlugin/movementProcessorPlugin';
 import PhysicsProcessorPlugin from './physicsProcessorPlugin/physicsProcessorPlugin';
 import RenderProcessorPlugin from './renderProcessorPlugin/renderProcessorPlugin';
 import SceneLoadProcessorPlugin from './sceneLoadProcessorPlugin/sceneLoadProcessorPlugin';
@@ -35,7 +34,6 @@ export default {
   mouseControlProcessor: MouseControlProcessorPlugin,
   mouseInputProcessor: MouseInputProcessorPlugin,
   mouseInputCoordinatesProjector: MouseInputCoordinatesProjectorPlugin,
-  movementProcessor: MovementProcessorPlugin,
   physicsProcessor: PhysicsProcessorPlugin,
   renderProcessor: RenderProcessorPlugin,
   sceneLoadProcessor: SceneLoadProcessorPlugin,
