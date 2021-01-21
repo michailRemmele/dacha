@@ -46,16 +46,6 @@ class Frame {
   get disabled() {
     return this._disabled;
   }
-
-  clone() {
-    return new Frame({
-      index: this.index,
-      rotation: this.rotation,
-      flipX: this.flipX,
-      flipY: this.flipY,
-      disabled: this.disabled,
-    });
-  }
 }
 
 export default Frame;

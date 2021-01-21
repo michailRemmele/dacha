@@ -30,14 +30,6 @@ class ComparatorConditionProps {
   get arg2() {
     return this._arg2;
   }
-
-  clone() {
-    return new ComparatorConditionProps({
-      operation: this.operation,
-      arg1: this.arg1.clone(),
-      arg2: this.arg2.clone(),
-    });
-  }
 }
 
 export default ComparatorConditionProps;

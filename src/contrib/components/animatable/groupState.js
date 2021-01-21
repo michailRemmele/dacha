@@ -17,16 +17,6 @@ class GroupState extends State {
   get substates() {
     return this._substates;
   }
-
-  clone() {
-    return new GroupState({
-      name: this.name,
-      transitions: this.transitions,
-      substates: this.substates.map((substate) => {
-        return substate.clone();
-      }),
-    });
-  }
 }
 
 export default GroupState;

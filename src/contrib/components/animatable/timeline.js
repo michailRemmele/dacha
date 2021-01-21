@@ -23,15 +23,6 @@ class Timeline {
   get looped() {
     return this._looped;
   }
-
-  clone() {
-    return new Timeline({
-      frames: this.frames.map((frame) => {
-        return frame.clone();
-      }),
-      looped: this.looped,
-    });
-  }
 }
 
 export default Timeline;

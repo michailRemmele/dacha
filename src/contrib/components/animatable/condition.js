@@ -21,13 +21,6 @@ class Condition {
   get props() {
     return this._props;
   }
-
-  clone() {
-    return new Condition({
-      type: this.type,
-      props: this.props.clone(),
-    });
-  }
 }
 
 export default Condition;

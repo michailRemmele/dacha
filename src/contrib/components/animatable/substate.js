@@ -33,16 +33,6 @@ class Substate {
   get conditions() {
     return this._conditions;
   }
-
-  clone() {
-    return new Substate({
-      name: this.name,
-      timeline: this.timeline.clone(),
-      conditions: this.conditions.map((condition) => {
-        return condition.clone();
-      }),
-    });
-  }
 }
 
 export default Substate;

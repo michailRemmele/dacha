@@ -10,12 +10,6 @@ class MessageConditionProps {
   get message() {
     return this._message;
   }
-
-  clone() {
-    return new MessageConditionProps({
-      message: this.message,
-    });
-  }
 }
 
 export default MessageConditionProps;

@@ -4,6 +4,7 @@ class State {
   constructor(config) {
     this._name = config.name;
     this._speed = config.speed;
+    this._type = config.type;
     this._transitions = config.transitions.map((transition) => {
       return new Transition(transition);
     });
@@ -25,22 +26,20 @@ class State {
     return this._speed;
   }
 
+  set type(type) {
+    this._type = type;
+  }
+
+  get type() {
+    return this._type;
+  }
+
   set transitions(transitions) {
     this._transitions = transitions;
   }
 
   get transitions() {
     return this._transitions;
-  }
-
-  clone() {
-    return new State({
-      name: this.name,
-      speed: this.speed,
-      transitions: this.transitions.map((transition) => {
-        return transition.clone();
-      }),
-    });
   }
 }
 

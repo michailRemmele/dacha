@@ -15,14 +15,6 @@ class IndividualState extends State {
   get timeline() {
     return this._timeline;
   }
-
-  clone() {
-    return new IndividualState({
-      name: this.name,
-      transitions: this.transitions,
-      timeline: this.timeline.clone(),
-    });
-  }
 }
 
 export default IndividualState;

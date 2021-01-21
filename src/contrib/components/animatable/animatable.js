@@ -14,7 +14,8 @@ class Animatable extends Component {
       }
     });
     this._initialState = config.initialState;
-    this._currentState = this._initialState;
+
+    this.currentState = this._initialState;
     this._duration = 0;
   }
 
@@ -54,9 +55,7 @@ class Animatable extends Component {
 
   clone() {
     return new Animatable({
-      states: this.states.map((state) => {
-        return state.clone();
-      }),
+      states: this.states,
       initialState: this.initialState,
     });
   }
