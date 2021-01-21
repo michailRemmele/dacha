@@ -1,16 +1,21 @@
 import Component from 'engine/component/component';
-import AnimatableState from './animatableState';
+import IndividualState from './individualState';
+import GroupState from './groupState';
 
 class Animatable extends Component {
   constructor(config) {
     super();
 
     this._states = config.states.map((state) => {
-      return new AnimatableState(state);
+      if (state.type === 'individual') {
+        return new IndividualState(state);
+      } else if (state.type === 'group') {
+        return new GroupState(state);
+      }
     });
-    this._defaultState = config.defaultState;
-    this.currentState = this._defaultState;
-    this.duration = 0;
+    this._initialState = config.initialState;
+    this._currentState = this._initialState;
+    this._duration = 0;
   }
 
   set states(states) {
@@ -21,12 +26,12 @@ class Animatable extends Component {
     return this._states;
   }
 
-  set defaultState(defaultState) {
-    this._defaultState = defaultState;
+  set initialState(initialState) {
+    this._initialState = initialState;
   }
 
-  get defaultState() {
-    return this._defaultState;
+  get initialState() {
+    return this._initialState;
   }
 
   set currentState(currentState) {
@@ -52,7 +57,7 @@ class Animatable extends Component {
       states: this.states.map((state) => {
         return state.clone();
       }),
-      defaultState: this.defaultState,
+      initialState: this.initialState,
     });
   }
 }

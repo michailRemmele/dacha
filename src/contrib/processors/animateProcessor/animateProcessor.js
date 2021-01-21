@@ -35,7 +35,35 @@ class AnimateProcessor extends Processor {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME);
 
+      let timeline = animatable.currentState.timeline;
+
+      if (animatable.currentState.substates) {
+        const substate = animatable.currentState.substates.find((substate) => {
+          return substate.conditions.every((condition) => {
+            const conditionController = this._conditionControllers[condition.type];
+            return conditionController.check(condition.props, gameObject, messageBus);
+          });
+        });
+        timeline = substate.timeline;
+      }
+
+      const framesCount = timeline.frames.length;
+      const actualFrameRate = FRAME_RATE / animatable.currentState.speed;
+      const baseDuration = framesCount * actualFrameRate;
+
+      animatable.duration += deltaTime / baseDuration;
+
+      const currentFrame = animatable.duration < 1 || timeline.looped
+        ? Math.trunc((animatable.duration % 1) * framesCount)
+        : framesCount - 1;
+
+      this._setFrame(renderable, timeline.frames[currentFrame]);
+
       const nextTransition = animatable.currentState.transitions.find((transition) => {
+        if (transition.time && animatable.duration < transition.time) {
+          return false;
+        }
+
         return transition.conditions.every((condition) => {
           const conditionController = this._conditionControllers[condition.type];
           return conditionController.check(condition.props, gameObject, messageBus);
@@ -43,34 +71,9 @@ class AnimateProcessor extends Processor {
       });
 
       if (nextTransition) {
-        const previousState = animatable.currentState.name;
         animatable.currentState = nextTransition.state;
-        animatable.currentState.previousState = previousState;
         animatable.duration = 0;
       }
-
-      const frames = animatable.currentState.frames;
-      const framesCount = frames.length;
-      const speed = animatable.currentState.speed;
-      const actualFrameRate = FRAME_RATE / speed;
-      const baseDuration = framesCount * actualFrameRate;
-
-      animatable.duration += deltaTime;
-
-      if (animatable.duration >= baseDuration) {
-        if (!animatable.currentState.looped) {
-          animatable.currentState = animatable.currentState.fallbackState
-            ? animatable.currentState.fallbackState
-            : animatable.currentState.previousState || animatable.defaultState;
-          animatable.duration = 0;
-          this._setFrame(renderable, animatable.currentState.frames[0]);
-          return;
-        } else {
-          animatable.duration %= baseDuration;
-        }
-      }
-
-      this._setFrame(renderable, frames[Math.trunc(animatable.duration / actualFrameRate)]);
     });
   }
 }

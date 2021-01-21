@@ -1,10 +1,11 @@
-import AnimatableCondition from './animatableCondition';
+import Condition from './condition';
 
-class AnimatableTransition {
+class Transition {
   constructor(config) {
     this._state = config.state;
+    this._time = config.time;
     this._conditions = config.conditions.map((condition) => {
-      return new AnimatableCondition(condition);
+      return new Condition(condition);
     });
   }
 
@@ -16,6 +17,14 @@ class AnimatableTransition {
     return this._state;
   }
 
+  set time(time) {
+    this._time = time;
+  }
+
+  get time() {
+    return this._time;
+  }
+
   set conditions(conditions) {
     this._conditions = conditions;
   }
@@ -25,8 +34,9 @@ class AnimatableTransition {
   }
 
   clone() {
-    return new AnimatableTransition({
+    return new Transition({
       state: this.state,
+      time: this.time,
       conditions: this.conditions.map((condition) => {
         return condition.clone();
       }),
@@ -34,4 +44,4 @@ class AnimatableTransition {
   }
 }
 
-export default AnimatableTransition;
+export default Transition;
