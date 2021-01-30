@@ -1,13 +1,11 @@
 import Timeline from './timeline';
-import Condition from './condition';
 
 class Substate {
   constructor(config) {
     this._name = config.name;
     this._timeline = new Timeline(config.timeline);
-    this._conditions = config.conditions.map((condition) => {
-      return new Condition(condition);
-    });
+    this._x = config.x;
+    this._y = config.y;
   }
 
   set name(name) {
@@ -26,12 +24,20 @@ class Substate {
     return this._timeline;
   }
 
-  set conditions(conditions) {
-    this._conditions = conditions;
+  set x(x) {
+    this._x = x;
   }
 
-  get conditions() {
-    return this._conditions;
+  get x() {
+    return this._x;
+  }
+
+  set y(y) {
+    this._y = y;
+  }
+
+  get y() {
+    return this._y;
   }
 }
 

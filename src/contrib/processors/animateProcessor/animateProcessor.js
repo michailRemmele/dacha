@@ -1,6 +1,7 @@
 import Processor from 'engine/processor/processor';
 
 import conditionControllers from './conditionControllers';
+import substatePickers from './substatePickers';
 
 const FRAME_RATE = 100;
 
@@ -17,6 +18,11 @@ class AnimateProcessor extends Processor {
       storage[key] = new ConditionController();
       return storage;
     }, {});
+    this._substatePickers = Object.keys(substatePickers).reduce((storage, key) => {
+      const SubstatePicker = substatePickers[key];
+      storage[key] = new SubstatePicker();
+      return storage;
+    }, {});
   }
 
   _setFrame(renderable, frame) {
@@ -25,6 +31,11 @@ class AnimateProcessor extends Processor {
     renderable.flipX = frame.flipX !== undefined ? frame.flipX : renderable.flipX;
     renderable.flipY = frame.flipY !== undefined ? frame.flipY : renderable.flipY;
     renderable.disabled = frame.disabled;
+  }
+
+  _pickSubstate(gameObject, state) {
+    const substatePicker = this._substatePickers[state.pickMode];
+    return substatePicker.getSubstate(gameObject, state.substates, state.pickProps);
   }
 
   process(options) {
@@ -38,12 +49,7 @@ class AnimateProcessor extends Processor {
       let timeline = animatable.currentState.timeline;
 
       if (animatable.currentState.substates) {
-        const substate = animatable.currentState.substates.find((substate) => {
-          return substate.conditions.every((condition) => {
-            const conditionController = this._conditionControllers[condition.type];
-            return conditionController.check(condition.props, gameObject, messageBus);
-          });
-        });
+        const substate = this._pickSubstate(gameObject, animatable.currentState);
         timeline = substate.timeline;
       }
 
