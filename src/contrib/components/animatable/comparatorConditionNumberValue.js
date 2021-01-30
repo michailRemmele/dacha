@@ -19,13 +19,6 @@ class ComparatorConditionNumberValue {
   get value() {
     return this._value;
   }
-
-  clone() {
-    return new ComparatorConditionNumberValue({
-      type: this.type,
-      value: this.value,
-    });
-  }
 }
 
 export default ComparatorConditionNumberValue;

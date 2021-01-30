@@ -1,6 +1,7 @@
 import Processor from 'engine/processor/processor';
 
 import conditionControllers from './conditionControllers';
+import substatePickers from './substatePickers';
 
 const FRAME_RATE = 100;
 
@@ -17,6 +18,11 @@ class AnimateProcessor extends Processor {
       storage[key] = new ConditionController();
       return storage;
     }, {});
+    this._substatePickers = Object.keys(substatePickers).reduce((storage, key) => {
+      const SubstatePicker = substatePickers[key];
+      storage[key] = new SubstatePicker();
+      return storage;
+    }, {});
   }
 
   _setFrame(renderable, frame) {
@@ -27,6 +33,11 @@ class AnimateProcessor extends Processor {
     renderable.disabled = frame.disabled;
   }
 
+  _pickSubstate(gameObject, state) {
+    const substatePicker = this._substatePickers[state.pickMode];
+    return substatePicker.getSubstate(gameObject, state.substates, state.pickProps);
+  }
+
   process(options) {
     const deltaTime = options.deltaTime;
     const messageBus = options.messageBus;
@@ -35,7 +46,30 @@ class AnimateProcessor extends Processor {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME);
 
+      let timeline = animatable.currentState.timeline;
+
+      if (animatable.currentState.substates) {
+        const substate = this._pickSubstate(gameObject, animatable.currentState);
+        timeline = substate.timeline;
+      }
+
+      const framesCount = timeline.frames.length;
+      const actualFrameRate = FRAME_RATE / animatable.currentState.speed;
+      const baseDuration = framesCount * actualFrameRate;
+
+      animatable.duration += deltaTime / baseDuration;
+
+      const currentFrame = animatable.duration < 1 || timeline.looped
+        ? Math.trunc((animatable.duration % 1) * framesCount)
+        : framesCount - 1;
+
+      this._setFrame(renderable, timeline.frames[currentFrame]);
+
       const nextTransition = animatable.currentState.transitions.find((transition) => {
+        if (transition.time && animatable.duration < transition.time) {
+          return false;
+        }
+
         return transition.conditions.every((condition) => {
           const conditionController = this._conditionControllers[condition.type];
           return conditionController.check(condition.props, gameObject, messageBus);
@@ -43,34 +77,9 @@ class AnimateProcessor extends Processor {
       });
 
       if (nextTransition) {
-        const previousState = animatable.currentState.name;
         animatable.currentState = nextTransition.state;
-        animatable.currentState.previousState = previousState;
         animatable.duration = 0;
       }
-
-      const frames = animatable.currentState.frames;
-      const framesCount = frames.length;
-      const speed = animatable.currentState.speed;
-      const actualFrameRate = FRAME_RATE / speed;
-      const baseDuration = framesCount * actualFrameRate;
-
-      animatable.duration += deltaTime;
-
-      if (animatable.duration >= baseDuration) {
-        if (!animatable.currentState.looped) {
-          animatable.currentState = animatable.currentState.fallbackState
-            ? animatable.currentState.fallbackState
-            : animatable.currentState.previousState || animatable.defaultState;
-          animatable.duration = 0;
-          this._setFrame(renderable, animatable.currentState.frames[0]);
-          return;
-        } else {
-          animatable.duration %= baseDuration;
-        }
-      }
-
-      this._setFrame(renderable, frames[Math.trunc(animatable.duration / actualFrameRate)]);
     });
   }
 }

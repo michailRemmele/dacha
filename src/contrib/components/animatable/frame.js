@@ -1,4 +1,4 @@
-class AnimatableFrame {
+class Frame {
   constructor(config) {
     this._index = config.index;
     this._rotation = config.rotation;
@@ -46,16 +46,6 @@ class AnimatableFrame {
   get disabled() {
     return this._disabled;
   }
-
-  clone() {
-    return new AnimatableFrame({
-      index: this.index,
-      rotation: this.rotation,
-      flipX: this.flipX,
-      flipY: this.flipY,
-      disabled: this.disabled,
-    });
-  }
 }
 
-export default AnimatableFrame;
+export default Frame;

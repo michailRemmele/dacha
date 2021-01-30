@@ -1,4 +1,5 @@
 import ConditionController from './conditionController';
+import { getComponentValue } from '../utils';
 
 class ComparatorConditionController extends ConditionController {
   constructor() {
@@ -11,16 +12,7 @@ class ComparatorConditionController extends ConditionController {
         }
         return value;
       },
-      componentValue: (path, gameObject) => {
-        const componentName = path[0];
-        let soughtValue = gameObject.getComponent(componentName);
-
-        for (let i = 1; i < path.length && soughtValue !== undefined; i++) {
-          soughtValue = soughtValue[path[i]];
-        }
-
-        return soughtValue;
-      },
+      componentValue: getComponentValue,
     };
     this._operations = {
       equals: (arg1, arg2) => {
