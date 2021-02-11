@@ -8,8 +8,6 @@ const COLLISION_STAY_MSG = 'COLLISION_STAY';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 
-const REACTION_FORCE = 'reactionForce';
-
 const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';
 
 const REACTION_FORCE_VECTOR_X = 0;
@@ -39,7 +37,6 @@ class CollisionSolver extends Processor {
 
       messageBus.send({
         type: ADD_FORCE_MSG,
-        name: REACTION_FORCE,
         value: reactionForce,
         gameObject,
         id: gameObject.getId(),

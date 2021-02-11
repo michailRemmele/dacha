@@ -2,12 +2,11 @@ import Processor from 'engine/processor/processor';
 import { Vector2 } from 'engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
+const ADD_IMPULSE_MSG = 'ADD_IMPULSE';
 const STOP_MOVEMENT_MSG = 'STOP_MOVEMENT';
 
 const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 const TRANSFORM_COMPONENT_NAME = 'transform';
-
-const GRAVITY_FORCE = 'gravityForce';
 
 const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';
 
@@ -29,45 +28,10 @@ class PhysicsProcessor extends Processor {
     this._store = store;
 
     this._gameObjectsVelocity = {};
-    this._temproraryForcesMap = {};
   }
 
   processorDidMount() {
     this._store.set(GRAVITATIONAL_ACCELERATION_STORE_KEY, this._gravitationalAcceleration);
-  }
-
-  _filterTemporaryForces(gameObjectId, forceVectors, deltaTime) {
-    const temporaryForces = this._temproraryForcesMap[gameObjectId] || {};
-
-    Object.keys(forceVectors).forEach((forceName) => {
-      const forceDuration = temporaryForces[forceName];
-
-      if (forceDuration === null || forceDuration === undefined) {
-        return;
-      }
-
-      if (forceDuration <= 0) {
-        forceVectors[forceName] = null;
-        temporaryForces[forceName] = null;
-        return;
-      }
-
-      if (forceDuration < deltaTime) {
-        forceVectors[forceName].multiplyNumber(forceDuration / deltaTime);
-      }
-
-      temporaryForces[forceName] -= deltaTime;
-    });
-  }
-
-  _addGravityForce(rigidBody, forceVectors) {
-    const { mass, useGravity } = rigidBody;
-
-    if (useGravity && !forceVectors[GRAVITY_FORCE]) {
-      forceVectors[GRAVITY_FORCE] = new Vector2(0, 0);
-      forceVectors[GRAVITY_FORCE].add(DIRECTION_VECTOR.DOWN);
-      forceVectors[GRAVITY_FORCE].multiplyNumber(mass * this._gravitationalAcceleration);
-    }
   }
 
   _applyDragForce(gameObject, deltaTime) {
@@ -98,21 +62,42 @@ class PhysicsProcessor extends Processor {
     }
   }
 
-  _processIncomingForces(gameObjectId, forceVectors, messageBus) {
+  _getGravityForce(rigidBody) {
+    const { mass, useGravity } = rigidBody;
+
+    const gravityVector = new Vector2(0, 0);
+
+    if (useGravity) {
+      gravityVector.add(DIRECTION_VECTOR.DOWN);
+      gravityVector.multiplyNumber(mass * this._gravitationalAcceleration);
+    }
+
+    return gravityVector;
+  }
+
+  _getForceVector(gameObject, messageBus) {
+    const gameObjectId = gameObject.getId();
+    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+
+    const forceVector = new Vector2(0, 0);
+
+    forceVector.add(this._getGravityForce(rigidBody));
+
     const addForceMessages = messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
+    addForceMessages.forEach((message) => forceVector.add(message.value));
 
-    addForceMessages.forEach((message) => {
-      const { name, value, duration } = message;
-      this._temproraryForcesMap[gameObjectId] = this._temproraryForcesMap[gameObjectId] || {};
+    return forceVector;
+  }
 
-      if (duration) {
-        this._temproraryForcesMap[gameObjectId][name] = duration;
-      } else if (this._temproraryForcesMap[gameObjectId][name]) {
-        this._temproraryForcesMap[gameObjectId][name] = null;
-      }
+  _getImpulseVector(gameObject, messageBus) {
+    const gameObjectId = gameObject.getId();
+    const addImpulseMessages = messageBus.getById(ADD_IMPULSE_MSG, gameObjectId) || [];
 
-      forceVectors[name] = value;
-    });
+    return addImpulseMessages.reduce((vector, message) => {
+      vector.add(message.value);
+
+      return vector;
+    }, new Vector2(0, 0));
   }
 
   _processConstraints(messageBus) {
@@ -149,21 +134,8 @@ class PhysicsProcessor extends Processor {
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const { mass } = rigidBody;
 
-      const forceVectors = {};
-
-      this._addGravityForce(rigidBody, forceVectors);
-      this._processIncomingForces(gameObjectId, forceVectors, messageBus);
-      this._filterTemporaryForces(gameObjectId, forceVectors, deltaTimeInMsec);
-
-      const forceVector = Object.keys(forceVectors).reduce((resultantForceVector, forceName) => {
-        if (!forceVectors[forceName]) {
-          return resultantForceVector;
-        }
-
-        resultantForceVector.add(forceVectors[forceName]);
-
-        return resultantForceVector;
-      }, new Vector2(0, 0));
+      const forceVector = this._getForceVector(gameObject, messageBus);
+      const impulseVector = this._getImpulseVector(gameObject, messageBus);
 
       this._gameObjectsVelocity[gameObjectId] = this._gameObjectsVelocity[gameObjectId]
         || new Vector2(0, 0);
@@ -171,9 +143,13 @@ class PhysicsProcessor extends Processor {
       const velocityVector = this._gameObjectsVelocity[gameObjectId];
 
       if (forceVector.x || forceVector.y) {
-        const velocityIncrease = forceVector.clone();
-        velocityIncrease.multiplyNumber(deltaTimeInSeconds / mass);
-        velocityVector.add(velocityIncrease);
+        forceVector.multiplyNumber(deltaTimeInSeconds / mass);
+        velocityVector.add(forceVector);
+      }
+
+      if (impulseVector.x || impulseVector.y) {
+        impulseVector.multiplyNumber(1 / mass);
+        velocityVector.add(impulseVector);
       }
 
       this._applyDragForce(gameObject, deltaTimeInSeconds);
