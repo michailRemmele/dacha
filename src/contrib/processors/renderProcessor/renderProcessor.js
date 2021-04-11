@@ -306,12 +306,13 @@ class RenderProcessor extends Processor {
     return texture;
   }
 
-  _getModelViewMatrix(renderable, x, y, rotation) {
+  _getModelViewMatrix(renderable, x, y, rotation, scaleX, scaleY) {
     const matrixTransformer = this._matrixTransformer;
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
     matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
+    matrixTransformer.scale(matrix, scaleX, scaleY);
     renderable.flipX && matrixTransformer.flipX(matrix);
     renderable.flipY && matrixTransformer.flipY(matrix);
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
@@ -338,8 +339,8 @@ class RenderProcessor extends Processor {
       const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME);
       const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME);
 
-      const aOffsetY = aTransform.offsetY + (aRenderable.height / 2);
-      const bOffsetY = bTransform.offsetY + (bRenderable.height / 2);
+      const aOffsetY = aTransform.offsetY + (aTransform.scaleY * aRenderable.height / 2);
+      const bOffsetY = bTransform.offsetY + (bTransform.scaleY * bRenderable.height / 2);
 
       if (aOffsetY > bOffsetY) {
         return 1;
@@ -349,8 +350,8 @@ class RenderProcessor extends Processor {
         return -1;
       }
 
-      const aOffsetX = aTransform.offsetX + (aRenderable.width / 2);
-      const bOffsetX = bTransform.offsetX + (bRenderable.width / 2);
+      const aOffsetX = aTransform.offsetX + (aTransform.scaleX * aRenderable.width / 2);
+      const bOffsetX = bTransform.offsetX + (bTransform.scaleX * bRenderable.width / 2);
 
       if (aOffsetX > bOffsetX) {
         return 1;
@@ -405,7 +406,9 @@ class RenderProcessor extends Processor {
       renderable,
       transform.offsetX,
       transform.offsetY,
-      transform.rotation
+      transform.rotation,
+      transform.scaleX,
+      transform.scaleY
     );
 
     if (!this._geometry[gameObjectId]) {
