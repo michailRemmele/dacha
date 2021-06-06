@@ -42,8 +42,9 @@ class CollisionBroadcastProcessor extends Processor {
           this._collisionMap[collision.gameObject1.getId()][id] = null;
         }
 
-        collision.tick();
         this._publishMessage(collision, messageBus);
+
+        collision.tick();
 
         return false;
       });
