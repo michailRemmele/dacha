@@ -3,8 +3,8 @@ import BoxCollider from './boxCollider';
 import CircleCollider from './circleCollider';
 
 class ColliderContainer extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._colliders = {
       boxCollider: BoxCollider,
@@ -37,7 +37,7 @@ class ColliderContainer extends Component {
   }
 
   clone() {
-    return new ColliderContainer({
+    return new ColliderContainer(this.componentName, {
       type: this.type,
       collider: this.collider.clone(),
     });

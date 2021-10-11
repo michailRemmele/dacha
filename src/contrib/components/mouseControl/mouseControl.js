@@ -1,8 +1,8 @@
 import Component from 'engine/component/component';
 
 class MouseControl extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._inputEventBindings = config.inputEventBindings;
   }
@@ -16,7 +16,7 @@ class MouseControl extends Component {
   }
 
   clone() {
-    return new MouseControl({
+    return new MouseControl(this.componentName, {
       inputEventBindings: {
         ...this.inputEventBindings,
       },

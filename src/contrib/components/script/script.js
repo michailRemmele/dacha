@@ -1,8 +1,8 @@
 import Component from 'engine/component/component';
 
 class Script extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._name = config.name;
   }
@@ -16,7 +16,7 @@ class Script extends Component {
   }
 
   clone() {
-    return new Script({
+    return new Script(this.componentName, {
       name: this.name,
     });
   }

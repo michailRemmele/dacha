@@ -65,7 +65,7 @@ class GameObjectCreator {
 
     components.forEach((componentOptions) => {
       const Component = this._components[componentOptions.name];
-      gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
+      gameObject.setComponent(componentOptions.name, new Component(componentOptions.name, componentOptions.config));
     });
 
     return gameObject;
@@ -93,7 +93,7 @@ class GameObjectCreator {
 
     components.forEach((componentOptions) => {
       const Component = this._components[componentOptions.name];
-      gameObject.setComponent(componentOptions.name, new Component(componentOptions.config));
+      gameObject.setComponent(componentOptions.name, new Component(componentOptions.name, componentOptions.config));
     });
 
     return gameObject;

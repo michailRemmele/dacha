@@ -27,7 +27,7 @@ class PrefabCollection {
 
     components.forEach((componentOptions) => {
       const Component = this._components[componentOptions.name];
-      prefab.setComponent(componentOptions.name, new Component(componentOptions.config));
+      prefab.setComponent(componentOptions.name, new Component(componentOptions.name, componentOptions.config));
     });
 
     return prefab;

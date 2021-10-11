@@ -59,16 +59,7 @@ class GameObject {
 
   setComponent(name, component) {
     this._components[name] = component;
-
-    if (this._parent && this._parent.getComponent(name)) {
-      component.parent = this._parent.getComponent(name);
-    }
-
-    this._children.forEach((child) => {
-      if (child.getComponent(name)) {
-        child.getComponent(name).parent = component;
-      }
-    });
+    component.gameObject = this;
 
     this._subscribers.forEach((callback) => {
       callback({
@@ -80,13 +71,8 @@ class GameObject {
   }
 
   removeComponent(name) {
-    this._components[name] = undefined;
-
-    this._children.forEach((child) => {
-      if (child.getComponent(name)) {
-        child.getComponent(name).parent = undefined;
-      }
-    });
+    this._components[name] = void 0;
+    component.gameObject = void 0;
 
     this._subscribers.forEach((callback) => {
       callback({
