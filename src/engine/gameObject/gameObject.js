@@ -15,20 +15,18 @@ class GameObject {
     this.COMPONENT_REMOVED = COMPONENT_REMOVED;
   }
 
-  setParent(parent) {
+  set parent(parent) {
     this._parent = parent;
   }
 
-  getParent() {
+  get parent() {
     return this._parent;
   }
 
   getAncestor() {
     const findAncestor = (gameObject) => {
-      const parent = gameObject.getParent();
-
-      if (parent) {
-        return findAncestor(parent);
+      if (gameObject.parent) {
+        return findAncestor(gameObject.parent);
       }
 
       return gameObject;
@@ -39,6 +37,7 @@ class GameObject {
 
   appendChild(child) {
     this._children.push(child);
+    child.parent = this;
   }
 
   getChildren() {

@@ -1,13 +1,11 @@
 const findParentComponent = (gameObject, componentName) => {
-  const parentGameObject = gameObject.getParent();
-  
-  if (!parentGameObject) {
+  if (!gameObject.parent) {
     return;
   }
 
-  const parentComponent = parentGameObject.getComponent(componentName);
+  const parentComponent = gameObject.parent.getComponent(componentName);
 
-  return parentComponent ? parentComponent : findParentComponent(parentGameObject, componentName);
+  return parentComponent ? parentComponent : findParentComponent(gameObject.parent, componentName);
 }
 
 class Component {

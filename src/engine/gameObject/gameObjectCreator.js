@@ -39,7 +39,6 @@ class GameObjectCreator {
         const options = { prefabName: name, fromPrefab: true, isNew };
 
         const gameObjectChild = this._build(options, prefabChild);
-        gameObjectChild.setParent(gameObject);
         gameObject.appendChild(gameObjectChild);
       });
     } else {
@@ -54,7 +53,6 @@ class GameObjectCreator {
 
         const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
         const gameObjectChild = this._build(options, prefabChild);
-        gameObjectChild.setParent(gameObject);
         gameObject.appendChild(gameObjectChild);
       });
     }
@@ -87,7 +85,6 @@ class GameObjectCreator {
 
     children.forEach((child) => {
       const gameObjectChild = this._build(child);
-      gameObjectChild.setParent(gameObject);
       gameObject.appendChild(gameObjectChild);
     });
 
