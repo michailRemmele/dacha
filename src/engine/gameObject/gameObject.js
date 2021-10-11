@@ -70,8 +70,18 @@ class GameObject {
   }
 
   removeComponent(name) {
-    this._components[name] = void 0;
-    component.gameObject = void 0;
+    if (!this._components[name]) {
+      return;
+    }
+
+    this._components[name].gameObject = void 0;
+    this._components = Object.keys(this._components).reduce((acc, key) => {
+      if (key !== name) {
+        acc[key] = this._components[key];
+      }
+
+      return acc;
+    }, {});
 
     this._subscribers.forEach((callback) => {
       callback({

@@ -6,7 +6,7 @@ const findParentComponent = (gameObject, componentName) => {
   const parentComponent = gameObject.parent.getComponent(componentName);
 
   return parentComponent ? parentComponent : findParentComponent(gameObject.parent, componentName);
-}
+};
 
 class Component {
   constructor(name) {
@@ -34,7 +34,7 @@ class Component {
       return;
     }
 
-    return findParentComponent(this.gameObject, this.name);
+    return findParentComponent(this.gameObject, this.componentName);
   }
 
   clone() {
