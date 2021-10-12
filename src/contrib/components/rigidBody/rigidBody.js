@@ -1,8 +1,8 @@
 import Component from 'engine/component/component';
 
 class RigidBody extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._type = config.type;
     this._mass = config.mass;
@@ -61,7 +61,7 @@ class RigidBody extends Component {
   }
 
   clone() {
-    return new RigidBody({
+    return new RigidBody(this.componentName, {
       mass: this.mass,
       useGravity: this.useGravity,
       isPermeable: this.isPermeable,

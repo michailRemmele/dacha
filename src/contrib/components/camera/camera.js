@@ -1,8 +1,8 @@
 import Component from 'engine/component/component';
 
 class Camera extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._zoom = config.zoom;
     this._windowSizeX = 0;
@@ -34,7 +34,7 @@ class Camera extends Component {
   }
 
   clone() {
-    return new Camera({
+    return new Camera(this.componentName, {
       zoom: this.zoom,
     });
   }

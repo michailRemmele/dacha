@@ -3,8 +3,8 @@ import Component from 'engine/component/component';
 const PREFIX_SEPARATOR = '_';
 
 class KeyboardControl extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._inputEventBindings = config.inputEventBindings;
     this._keyStates = Object.keys(this._inputEventBindings).reduce((keyStates, inputEvent) => {
@@ -30,7 +30,7 @@ class KeyboardControl extends Component {
   }
 
   clone() {
-    return new KeyboardControl({
+    return new KeyboardControl(this.componentName, {
       inputEventBindings: {
         ...this.inputEventBindings,
       },

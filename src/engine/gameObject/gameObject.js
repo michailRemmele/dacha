@@ -15,20 +15,18 @@ class GameObject {
     this.COMPONENT_REMOVED = COMPONENT_REMOVED;
   }
 
-  setParent(parent) {
+  set parent(parent) {
     this._parent = parent;
   }
 
-  getParent() {
+  get parent() {
     return this._parent;
   }
 
   getAncestor() {
     const findAncestor = (gameObject) => {
-      const parent = gameObject.getParent();
-
-      if (parent) {
-        return findAncestor(parent);
+      if (gameObject.parent) {
+        return findAncestor(gameObject.parent);
       }
 
       return gameObject;
@@ -39,6 +37,7 @@ class GameObject {
 
   appendChild(child) {
     this._children.push(child);
+    child.parent = this;
   }
 
   getChildren() {
@@ -59,16 +58,7 @@ class GameObject {
 
   setComponent(name, component) {
     this._components[name] = component;
-
-    if (this._parent && this._parent.getComponent(name)) {
-      component.parent = this._parent.getComponent(name);
-    }
-
-    this._children.forEach((child) => {
-      if (child.getComponent(name)) {
-        child.getComponent(name).parent = component;
-      }
-    });
+    component.gameObject = this;
 
     this._subscribers.forEach((callback) => {
       callback({
@@ -80,13 +70,18 @@ class GameObject {
   }
 
   removeComponent(name) {
-    this._components[name] = undefined;
+    if (!this._components[name]) {
+      return;
+    }
 
-    this._children.forEach((child) => {
-      if (child.getComponent(name)) {
-        child.getComponent(name).parent = undefined;
+    this._components[name].gameObject = void 0;
+    this._components = Object.keys(this._components).reduce((acc, key) => {
+      if (key !== name) {
+        acc[key] = this._components[key];
       }
-    });
+
+      return acc;
+    }, {});
 
     this._subscribers.forEach((callback) => {
       callback({

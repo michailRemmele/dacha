@@ -1,8 +1,8 @@
 import Component from 'engine/component/component';
 
 class Renderable extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._src = config.src;
     this._width = config.width;
@@ -133,7 +133,7 @@ class Renderable extends Component {
   }
 
   clone() {
-    return new Renderable({
+    return new Renderable(this.componentName, {
       src: this.src,
       width: this.width,
       height: this.height,

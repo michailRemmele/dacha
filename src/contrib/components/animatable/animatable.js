@@ -3,8 +3,8 @@ import IndividualState from './individualState';
 import GroupState from './groupState';
 
 class Animatable extends Component {
-  constructor(config) {
-    super();
+  constructor(componentName, config) {
+    super(componentName, config);
 
     this._states = config.states.map((state) => {
       if (state.type === 'individual') {
@@ -54,7 +54,7 @@ class Animatable extends Component {
   }
 
   clone() {
-    return new Animatable({
+    return new Animatable(this.componentName, {
       states: this.states,
       initialState: this.initialState,
     });
