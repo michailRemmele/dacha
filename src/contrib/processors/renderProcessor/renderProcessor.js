@@ -361,7 +361,7 @@ class RenderProcessor extends Processor {
         return -1;
       }
 
-      return 0;
+      return aTransform.offsetZ - bTransform.offsetZ;
     };
   }
 
