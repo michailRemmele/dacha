@@ -35,6 +35,12 @@ class MessageBus {
     return this._messages[messageType] ? this._messages[messageType].map[id] : undefined;
   }
 
+  getMessageCount() {
+    return Object.keys(this._messages).reduce((acc, type) => {
+      return this._messages[type] ? acc + this._messages[type].array.length : acc;
+    }, 0);
+  }
+
   delete(messageType) {
     this._messages[messageType] = undefined;
   }

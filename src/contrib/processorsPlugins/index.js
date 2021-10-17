@@ -6,7 +6,7 @@ import CollisionDetectionProcessorPlugin
   from './collisionDetectionProcessorPlugin/collisionDetectionProcessorPlugin';
 import CollisionSolverPlugin from './collisionSolverPlugin/collisionSolverPlugin';
 import ConstraintSolverPlugin from './constraintSolverPlugin/constraintSolverPlugin';
-import FpsMeterPlugin from './fpsMeterPlugin/fpsMeterPlugin';
+import { GameStatsMeterPlugin } from './gameStatsMeterPlugin';
 import JammerPlugin from './jammerPlugin/jammerPlugin';
 import KeyboardInputProcessorPlugin
   from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
@@ -29,7 +29,7 @@ export default {
   collisionDetectionProcessor: CollisionDetectionProcessorPlugin,
   collisionSolver: CollisionSolverPlugin,
   constraintSolver: ConstraintSolverPlugin,
-  fpsMeter: FpsMeterPlugin,
+  gameStatsMeter: GameStatsMeterPlugin,
   jammer: JammerPlugin,
   keyboardInputProcessor: KeyboardInputProcessorPlugin,
   keyboardControlProcessor: KeyboardControlProcessorPlugin,
