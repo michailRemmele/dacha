@@ -40,6 +40,11 @@ class GameObject {
     child.parent = this;
   }
 
+  removeChild(child) {
+    this._children = this._children.filter((gameObject) => gameObject.getId() !== child.getId());
+    child.parent = void 0;
+  }
+
   getChildren() {
     return this._children;
   }

@@ -3,12 +3,20 @@ class GameObjectDestroyer {
     this._scene = scene;
   }
 
-  destroy(gameObject) {
-    gameObject.getChildren().forEach((children) => {
-      this._scene.removeGameObject(children);
-    });
-
+  _deleteFromScene(gameObject) {
     this._scene.removeGameObject(gameObject);
+
+    gameObject.getChildren().forEach((child) => {
+      this._deleteFromScene(child);
+    });
+  }
+
+  destroy(gameObject) {
+    if (gameObject.parent) {
+      gameObject.parent.removeChild(gameObject);
+    }
+
+    this._deleteFromScene(gameObject);
   }
 }
 
