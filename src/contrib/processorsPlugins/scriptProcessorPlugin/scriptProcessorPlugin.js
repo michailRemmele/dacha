@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import ScriptProcessor from 'contrib/processors/scriptProcessor/scriptProcessor';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import ScriptProcessor from '../../processors/scriptProcessor/scriptProcessor';
 
 class ScriptProcessorPlugin extends ProcessorPlugin {
   async load(options) {

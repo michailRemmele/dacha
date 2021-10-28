@@ -1,5 +1,5 @@
-import Processor from 'engine/processor/processor';
-import { Vector2 } from 'engine/mathLib';
+import Processor from '../../../engine/processor/processor';
+import { Vector2 } from '../../../engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
 const ADD_IMPULSE_MSG = 'ADD_IMPULSE';
@@ -121,9 +121,9 @@ class PhysicsProcessor extends Processor {
   }
 
   process(options) {
-    const deltaTimeInMsec = options.deltaTime;
+    const { messageBus, deltaTime } = options;
+    const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
-    const messageBus = options.messageBus;
 
     this._processRemovedGameObjects();
     this._processConstraints(messageBus);
@@ -154,8 +154,8 @@ class PhysicsProcessor extends Processor {
 
       this._applyDragForce(gameObject, deltaTimeInSeconds);
 
-      transform.offsetX = transform.offsetX + (velocityVector.x * deltaTimeInSeconds);
-      transform.offsetY = transform.offsetY + (velocityVector.y * deltaTimeInSeconds);
+      transform.offsetX += velocityVector.x * deltaTimeInSeconds;
+      transform.offsetY += velocityVector.y * deltaTimeInSeconds;
     });
   }
 }

@@ -16,9 +16,7 @@ class ResourceLoaderQualifier {
 
   getLoader(resource) {
     const resourceExt = this._getResourceExt(resource);
-    return this.loaders.find((loader) => {
-      return loader.getSupportedExtensions().includes(resourceExt);
-    });
+    return this.loaders.find((loader) => loader.getSupportedExtensions().includes(resourceExt));
   }
 }
 

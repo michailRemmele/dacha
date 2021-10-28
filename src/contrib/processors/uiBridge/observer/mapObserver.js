@@ -33,7 +33,7 @@ class MapObserver {
     }
 
     this._subscribers[id] = this._subscribers[id].filter(
-      (subscription) => subscription !== callback
+      (subscription) => subscription !== callback,
     );
   }
 }

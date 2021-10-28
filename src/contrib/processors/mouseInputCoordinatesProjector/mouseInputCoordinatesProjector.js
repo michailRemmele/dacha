@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 const INPUT_MESSAGE = 'MOUSE_INPUT_EVENT_QUERY';
 
@@ -16,7 +16,7 @@ class MouseInputCoordinatesProjector extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
     const { windowSizeX, windowSizeY, zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
     const windowCenterX = windowSizeX / 2;

@@ -1,7 +1,8 @@
 import IOC from './ioc/ioc';
 import MessageBus from './messageBus/messageBus';
 
-import { SCENE_PROVIDER_KEY_NAME, SECTIONS } from 'engine/consts/global';
+import { SCENE_PROVIDER_KEY_NAME, SECTIONS } from './consts/global';
+
 const MS_PER_UPDATE = 1000 / 60;
 
 class GameLoop {
@@ -17,7 +18,7 @@ class GameLoop {
     const section = currentScene.getProcessorSection(sectionName);
 
     options = {
-      ...(options ? options : {}),
+      ...options,
       messageBus: this.messageBus,
     };
 
@@ -70,7 +71,7 @@ class GameLoop {
       const { skipped, executed } = that._gameStateUpdate();
       that._processSection(
         SECTIONS.RENDERING_SECTION_NAME,
-        { deltaTime: elapsed, skipped, executed }
+        { deltaTime: elapsed, skipped, executed },
       );
 
       that.messageBus.clear();

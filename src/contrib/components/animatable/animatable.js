@@ -1,4 +1,4 @@
-import Component from 'engine/component/component';
+import Component from '../../../engine/component/component';
 import IndividualState from './individualState';
 import GroupState from './groupState';
 
@@ -9,9 +9,11 @@ class Animatable extends Component {
     this._states = config.states.map((state) => {
       if (state.type === 'individual') {
         return new IndividualState(state);
-      } else if (state.type === 'group') {
+      }
+      if (state.type === 'group') {
         return new GroupState(state);
       }
+      return void 0;
     });
     this._initialState = config.initialState;
 
@@ -36,9 +38,7 @@ class Animatable extends Component {
   }
 
   set currentState(currentState) {
-    this._currentState = this.states.find((state) => {
-      return state.name === currentState;
-    });
+    this._currentState = this.states.find((state) => state.name === currentState);
   }
 
   get currentState() {

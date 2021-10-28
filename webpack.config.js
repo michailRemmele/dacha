@@ -3,15 +3,16 @@
 process.env.NODE_ENV = 'production';
 
 const webpack = require('webpack');
-const paths = require('./paths');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+
+const paths = require('./paths');
 
 module.exports = {
   mode: 'none',
 
   entry: {
-    app: paths.indexJs,
+    app: paths.indexTs,
   },
 
   output: {
@@ -25,12 +26,10 @@ module.exports = {
 
   devtool: false,
 
-  resolve: {
-    extensions: [ '.js' ],
-    modules: [
-      'src',
-      'node_modules',
-    ],
+  optimization: {
+    noEmitOnErrors: true,
+    minimize: true,
+    minimizer: [ new TerserPlugin() ],
   },
 
   plugins: [
@@ -39,13 +38,12 @@ module.exports = {
       NODE_ENV: JSON.stringify(process.env.NODE_ENV),
     }),
     new CleanWebpackPlugin([ paths.build ]),
-    new UglifyJsPlugin(),
   ],
 
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|ts)$/,
         exclude: /(node_modules)/,
         use: [
           {

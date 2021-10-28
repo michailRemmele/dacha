@@ -1,4 +1,4 @@
-import { MathOps, Vector2 } from 'engine/mathLib';
+import { MathOps, Vector2 } from '../../../../engine/mathLib';
 
 import IntersectionChecker from './intersectionChecker';
 
@@ -49,7 +49,7 @@ class BoxAndCircleIntersectionChecker extends IntersectionChecker {
     const boxMaxY = boxY + (boxSizeY / 2);
 
     const getMtvs = (axis, overlap) => {
-      axis.multiplyNumber(1 / axis.magnitude * overlap);
+      axis.multiplyNumber((1 / axis.magnitude) * overlap);
 
       const positiveX = Math.abs(axis.x);
       const negativeX = -Math.abs(axis.x);
@@ -59,11 +59,11 @@ class BoxAndCircleIntersectionChecker extends IntersectionChecker {
       return {
         mtv1: new Vector2(
           xArg1 < xArg2 ? negativeX : positiveX,
-          yArg1 < yArg2 ? negativeY : positiveY
+          yArg1 < yArg2 ? negativeY : positiveY,
         ),
         mtv2: new Vector2(
           xArg2 > xArg1 ? positiveX : negativeX,
-          yArg2 > yArg1 ? positiveY : negativeY
+          yArg2 > yArg1 ? positiveY : negativeY,
         ),
       };
     };
@@ -93,32 +93,32 @@ class BoxAndCircleIntersectionChecker extends IntersectionChecker {
       }
 
       const distance = MathOps.getDistanceBetweenTwoPoints(
-        circleX, nearestBoxX, circleY, nearestBoxY
+        circleX, nearestBoxX, circleY, nearestBoxY,
       );
       const axis = new Vector2(nearestBoxX - circleX, nearestBoxY - circleY);
 
       return getMtvs(axis, circleRadius + distance);
-    } else {
-      nearestBoxX = MathOps.clamp(circleX, boxMinX, boxMaxX);
-      nearestBoxY = MathOps.clamp(circleY, boxMinY, boxMaxY);
+    }
 
-      const distance = MathOps.getDistanceBetweenTwoPoints(
-        circleX, nearestBoxX, circleY, nearestBoxY
+    nearestBoxX = MathOps.clamp(circleX, boxMinX, boxMaxX);
+    nearestBoxY = MathOps.clamp(circleY, boxMinY, boxMaxY);
+
+    const distance = MathOps.getDistanceBetweenTwoPoints(
+      circleX, nearestBoxX, circleY, nearestBoxY,
+    );
+
+    if (distance >= circleRadius) {
+      return false;
+    }
+
+    const axis = distance !== 0
+      ? new Vector2(nearestBoxX - circleX, nearestBoxY - circleY)
+      : new Vector2(
+        circleX === boxMinX || circleX === boxMaxX ? boxX - circleX : 0,
+        circleY === boxMinY || circleY === boxMaxY ? boxY - circleY : 0,
       );
 
-      if (distance >= circleRadius) {
-        return false;
-      }
-
-      const axis = distance !== 0
-        ? new Vector2(nearestBoxX - circleX, nearestBoxY - circleY)
-        : new Vector2(
-          circleX === boxMinX || circleX === boxMaxX ? boxX - circleX : 0,
-          circleY === boxMinY || circleY === boxMaxY ? boxY - circleY : 0
-        );
-
-      return getMtvs(axis, circleRadius - distance);
-    }
+    return getMtvs(axis, circleRadius - distance);
   }
 }
 

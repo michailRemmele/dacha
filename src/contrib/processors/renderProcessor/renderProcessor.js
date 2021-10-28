@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 import Rectangle from './geometry/shapes/rectangle';
 import Color from './color/color';
@@ -57,8 +57,8 @@ class RenderProcessor extends Processor {
     this._backgroundColor = new Color(backgroundColor);
 
     this._view = window;
-    this._viewWidth;
-    this._viewHeight;
+    this._viewWidth = void 0;
+    this._viewHeight = void 0;
 
     this._windowDidResize = true;
     this._onWindowResize = this._onWindowResize.bind(this);
@@ -106,6 +106,7 @@ class RenderProcessor extends Processor {
     this.gl.deleteProgram(this.program);
     this.gl.deleteTexture(this.textures);
 
+    // eslint-disable-next-line no-bitwise
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._buffer = null;
@@ -129,8 +130,8 @@ class RenderProcessor extends Processor {
     let graphicContext = null;
 
     try {
-      graphicContext =
-        this._view.getContext('webgl') || this._view.getContext('experimental-webgl');
+      graphicContext = this._view.getContext('webgl')
+        || this._view.getContext('experimental-webgl');
     } catch (e) {
       throw new Error('Unable to get graphic context.');
     }
@@ -146,7 +147,7 @@ class RenderProcessor extends Processor {
     this._vaoExt = this.gl.getExtension('OES_vertex_array_object');
 
     if (!this._vaoExt) {
-      return alert('Unable to initialize OES_vertex_array_object extension');
+      alert('Unable to initialize OES_vertex_array_object extension');
     }
   }
 
@@ -155,12 +156,13 @@ class RenderProcessor extends Processor {
       this._backgroundColor.red() / MAX_COLOR_NUMBER,
       this._backgroundColor.green() / MAX_COLOR_NUMBER,
       this._backgroundColor.blue() / MAX_COLOR_NUMBER,
-      1.0
+      1.0,
     );
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
     this.gl.depthFunc(this.gl.LEQUAL);
+    // eslint-disable-next-line no-bitwise
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
 
@@ -247,7 +249,7 @@ class RenderProcessor extends Processor {
     ), 0);
 
     let offset = 0;
-    for (let i = 0; i < attrs.length; i++) {
+    for (let i = 0; i < attrs.length; i += 1) {
       if (attrs[i].type === 'vec2') {
         this.gl.enableVertexAttribArray(attrs[i].loc);
         this.gl.vertexAttribPointer(
@@ -256,12 +258,12 @@ class RenderProcessor extends Processor {
           this.gl.FLOAT,
           false,
           stride,
-          offset
+          offset,
         );
 
         offset += BYTES_PER_VECTOR_2;
       } else if (attrs[i].type === 'mat3') {
-        for (let j = 0; j < MATRIX_ROW_SIZE; j++) {
+        for (let j = 0; j < MATRIX_ROW_SIZE; j += 1) {
           const loc = attrs[i].loc + j;
 
           this.gl.enableVertexAttribArray(loc);
@@ -271,7 +273,7 @@ class RenderProcessor extends Processor {
             this.gl.FLOAT,
             false,
             stride,
-            offset + (j * BYTES_PER_MATRIX_ROW)
+            offset + (j * BYTES_PER_MATRIX_ROW),
           );
         }
 
@@ -287,7 +289,7 @@ class RenderProcessor extends Processor {
   _setUpGlobalUniforms() {
     this.gl.uniform2fv(
       this._variables.uTexAtlasSize,
-      [ this.textureAtlasSize.width, this.textureAtlasSize.height ]
+      [this.textureAtlasSize.width, this.textureAtlasSize.height],
     );
   }
 
@@ -300,7 +302,7 @@ class RenderProcessor extends Processor {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
 
     this.gl.texImage2D(
-      this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.textureAtlas
+      this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.textureAtlas,
     );
 
     return texture;
@@ -313,8 +315,12 @@ class RenderProcessor extends Processor {
 
     matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
     matrixTransformer.scale(matrix, scaleX, scaleY);
-    renderable.flipX && matrixTransformer.flipX(matrix);
-    renderable.flipY && matrixTransformer.flipY(matrix);
+    if (renderable.flipX) {
+      matrixTransformer.flipX(matrix);
+    }
+    if (renderable.flipY) {
+      matrixTransformer.flipY(matrix);
+    }
     matrixTransformer.rotate(matrix, (renderable.rotation + rotation) % 360);
     matrixTransformer.translate(matrix, x, y);
 
@@ -339,8 +345,8 @@ class RenderProcessor extends Processor {
       const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME);
       const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME);
 
-      const aOffsetY = aTransform.offsetY + (aTransform.scaleY * aRenderable.height / 2);
-      const bOffsetY = bTransform.offsetY + (bTransform.scaleY * bRenderable.height / 2);
+      const aOffsetY = aTransform.offsetY + ((aTransform.scaleY * aRenderable.height) / 2);
+      const bOffsetY = bTransform.offsetY + ((bTransform.scaleY * bRenderable.height) / 2);
 
       if (aOffsetY > bOffsetY) {
         return 1;
@@ -350,8 +356,8 @@ class RenderProcessor extends Processor {
         return -1;
       }
 
-      const aOffsetX = aTransform.offsetX + (aTransform.scaleX * aRenderable.width / 2);
-      const bOffsetX = bTransform.offsetX + (bTransform.scaleX * bRenderable.width / 2);
+      const aOffsetX = aTransform.offsetX + ((aTransform.scaleX * aRenderable.width) / 2);
+      const bOffsetX = bTransform.offsetX + ((bTransform.scaleX * bRenderable.width) / 2);
 
       if (aOffsetX > bOffsetX) {
         return 1;
@@ -375,6 +381,7 @@ class RenderProcessor extends Processor {
   }
 
   _setUpMatrix(matrix, offset) {
+    /* eslint-disable prefer-destructuring */
     this._vertexData[offset] = matrix[0];
     this._vertexData[offset + 1] = matrix[1];
     this._vertexData[offset + 2] = matrix[2];
@@ -384,6 +391,7 @@ class RenderProcessor extends Processor {
     this._vertexData[offset + 6] = matrix[6];
     this._vertexData[offset + 7] = matrix[7];
     this._vertexData[offset + 8] = matrix[8];
+    /* eslint-enable prefer-destructuring */
   }
 
   _setUpVertexData(gameObject, index) {
@@ -392,7 +400,7 @@ class RenderProcessor extends Processor {
     const offset = index * VERTEX_DATA_STRIDE;
 
     if (renderable.disabled) {
-      for (let i = 0; i < VERTEX_DATA_STRIDE; i++) {
+      for (let i = 0; i < VERTEX_DATA_STRIDE; i += 1) {
         this._vertexData[offset + i] = 0;
       }
       return;
@@ -408,7 +416,7 @@ class RenderProcessor extends Processor {
       transform.offsetY,
       transform.rotation,
       transform.scaleX,
-      transform.scaleY
+      transform.scaleY,
     );
 
     if (!this._geometry[gameObjectId]) {
@@ -418,8 +426,7 @@ class RenderProcessor extends Processor {
       };
     }
 
-    const position = this._geometry[gameObjectId].position;
-    const texCoord = this._geometry[gameObjectId].texCoord;
+    const { position, texCoord } = this._geometry[gameObjectId].position;
 
     for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
       this._vertexData[j] = position[i];
@@ -448,7 +455,7 @@ class RenderProcessor extends Processor {
     canvas.height = canvasHeight;
 
     const screenSize = Math.sqrt(
-      Math.pow(canvas.clientWidth, 2) + Math.pow(canvas.clientHeight, 2)
+      Math.pow(canvas.clientWidth, 2) + Math.pow(canvas.clientHeight, 2),
     );
     const avaragingValue = 1 - this._scaleSensitivity;
     const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
@@ -464,16 +471,16 @@ class RenderProcessor extends Processor {
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
-    const scale =  zoom * this._screenScale;
+    const scale = zoom * this._screenScale;
 
     const prevStats = this._viewMatrixStats;
 
     if (
-      prevStats.x === transform.offsetX &&
-      prevStats.y === transform.offsetY &&
-      prevStats.width === this._viewWidth &&
-      prevStats.height === this._viewHeight &&
-      prevStats.scale === scale
+      prevStats.x === transform.offsetX
+      && prevStats.y === transform.offsetY
+      && prevStats.width === this._viewWidth
+      && prevStats.height === this._viewHeight
+      && prevStats.scale === scale
     ) {
       return;
     }
@@ -487,7 +494,7 @@ class RenderProcessor extends Processor {
     this.gl.uniformMatrix3fv(
       this._variables.uViewMatrix,
       false,
-      viewMatrix
+      viewMatrix,
     );
 
     this._viewMatrixStats.width = this._viewWidth;
@@ -518,10 +525,11 @@ class RenderProcessor extends Processor {
   }
 
   process() {
-    const canvas = this.gl.canvas;
+    const { canvas } = this.gl;
 
     this._resizeCanvas(canvas);
 
+    // eslint-disable-next-line no-bitwise
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._processRemovedGameObjects();
@@ -536,7 +544,7 @@ class RenderProcessor extends Processor {
 
     this._setUpBuffers();
     this.gl.drawArrays(
-      this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * this._gameObjectObserver.size()
+      this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * this._gameObjectObserver.size(),
     );
   }
 }

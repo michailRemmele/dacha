@@ -17,7 +17,7 @@ class MessageBus {
 
     const { type, id } = message;
 
-    this._messages[type] = this._messages[type] || { array: [], map: {}};
+    this._messages[type] = this._messages[type] || { array: [], map: {} };
 
     if (id) {
       this._messages[type].map[id] = this._messages[type].map[id] || [];
@@ -36,9 +36,9 @@ class MessageBus {
   }
 
   getMessageCount() {
-    return Object.keys(this._messages).reduce((acc, type) => {
-      return this._messages[type] ? acc + this._messages[type].array.length : acc;
-    }, 0);
+    return Object.keys(this._messages).reduce((acc, type) => (this._messages[type]
+      ? acc + this._messages[type].array.length
+      : acc), 0);
   }
 
   delete(messageType) {
@@ -52,9 +52,8 @@ class MessageBus {
       return;
     }
 
-    this._messages[messageType].array = this._messages[messageType].array.filter((message) => {
-      return !messagesToDelete.includes(message);
-    });
+    this._messages[messageType].array = this._messages[messageType].array
+      .filter((message) => !messagesToDelete.includes(message));
     this._messages[messageType].map[id] = undefined;
   }
 
@@ -75,7 +74,7 @@ class MessageBus {
           return;
         }
 
-        storage[key] = storage[key] || { array: [], map: {}};
+        storage[key] = storage[key] || { array: [], map: {} };
         storage[key].array = storage[key].array.concat(messages[key].array);
         storage[key].map = Object.keys(messages[key].map).reduce((map, messageId) => {
           if (!map[messageId]) {

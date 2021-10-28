@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import ConstraintSolver from 'contrib/processors/constraintSolver/constraintSolver';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import ConstraintSolver from '../../processors/constraintSolver/constraintSolver';
 
 class ConstraintSolverPlugin extends ProcessorPlugin {
   async load(options) {

@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import CameraProcessor from 'contrib/processors/cameraProcessor/cameraProcessor';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import CameraProcessor from '../../processors/cameraProcessor/cameraProcessor';
 
 class CameraProcessorPlugin extends ProcessorPlugin {
   async load(options) {
@@ -14,10 +13,10 @@ class CameraProcessorPlugin extends ProcessorPlugin {
     const window = document.getElementById(windowNodeId);
 
     return new CameraProcessor({
-      initialCamera: initialCamera,
-      window: window,
-      gameObjectObserver: gameObjectObserver,
-      store: store,
+      initialCamera,
+      window,
+      gameObjectObserver,
+      store,
     });
   }
 }

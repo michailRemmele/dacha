@@ -1,11 +1,11 @@
 const findParentComponent = (gameObject, componentName) => {
   if (!gameObject.parent) {
-    return;
+    return void 0;
   }
 
   const parentComponent = gameObject.parent.getComponent(componentName);
 
-  return parentComponent ? parentComponent : findParentComponent(gameObject.parent, componentName);
+  return parentComponent || findParentComponent(gameObject.parent, componentName);
 };
 
 class Component {
@@ -31,7 +31,7 @@ class Component {
 
   getParentComponent() {
     if (!this.gameObject) {
-      return;
+      return void 0;
     }
 
     return findParentComponent(this.gameObject, this.componentName);

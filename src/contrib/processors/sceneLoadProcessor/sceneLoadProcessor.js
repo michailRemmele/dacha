@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 const LOAD_SCENE_MSG = 'LOAD_SCENE';
 
@@ -27,7 +27,7 @@ class SceneLoadProcessor extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     if (!this._sceneLoading) {
       this._loadScene(messageBus);

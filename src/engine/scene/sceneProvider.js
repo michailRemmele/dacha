@@ -1,9 +1,9 @@
-import IOC from 'engine/ioc/ioc';
+import IOC from '../ioc/ioc';
 import Scene from './scene';
-import GameObjectObserver from 'engine/gameObject/gameObjectObserver';
+import GameObjectObserver from '../gameObject/gameObjectObserver';
 import SceneController from './sceneController';
 
-import { RESOURCES_LOADER_KEY_NAME } from 'engine/consts/global';
+import { RESOURCES_LOADER_KEY_NAME } from '../consts/global';
 
 class SceneProvider {
   constructor(scenes, processorsPlugins, pluginHelpers) {
@@ -37,17 +37,21 @@ class SceneProvider {
       gameObjects: sceneConfig.gameObjects,
     });
 
-    for (let i = 0; i < sceneConfig.processors.length; i++) {
-      const { name, filter, options, section } = sceneConfig.processors[i];
+    for (let i = 0; i < sceneConfig.processors.length; i += 1) {
+      const {
+        processorName, filter, options, section,
+      } = sceneConfig.processors[i];
 
       const gameObjectObserver = new GameObjectObserver(scene, filter);
 
-      const processor = await this._processorsPlugins[name].load({
+      // For pure async await syntax in method. Need to refactor later
+      // eslint-disable-next-line no-await-in-loop
+      const processor = await this._processorsPlugins[processorName].load({
         ...options,
         store: scene.getStore(),
         gameObjectSpawner: scene.getGameObjectSpawner(),
         gameObjectDestroyer: scene.getGameObjectDestroyer(),
-        gameObjectObserver: gameObjectObserver,
+        gameObjectObserver,
         sceneController: this._sceneController,
         helpers: this._pluginHelpers,
       });

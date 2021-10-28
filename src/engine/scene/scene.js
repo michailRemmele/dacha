@@ -1,9 +1,9 @@
-import { SECTIONS, GAME_OBJECT_CREATOR_KEY_NAME } from 'engine/consts/global';
+import { SECTIONS, GAME_OBJECT_CREATOR_KEY_NAME } from '../consts/global';
 
-import IOC from 'engine/ioc/ioc';
+import IOC from '../ioc/ioc';
 import Store from './store';
-import GameObjectSpawner from 'engine/gameObject/gameObjectSpawner';
-import GameObjectDestroyer from 'engine/gameObject/gameObjectDestroyer';
+import GameObjectSpawner from '../gameObject/gameObjectSpawner';
+import GameObjectDestroyer from '../gameObject/gameObjectDestroyer';
 
 const GAME_OBJECT_ADDED = 'GAME_OBJECT_ADDED';
 const GAME_OBJECT_REMOVED = 'GAME_OBJECT_REMOVED';
@@ -85,7 +85,7 @@ class Scene {
     this._gameObjectsChangeSubscribers.forEach((callback) => {
       callback({
         type: GAME_OBJECT_ADDED,
-        gameObject: gameObject,
+        gameObject,
       });
     });
   }
@@ -97,7 +97,7 @@ class Scene {
     this._gameObjectsChangeSubscribers.forEach((callback) => {
       callback({
         type: GAME_OBJECT_REMOVED,
-        gameObject: gameObject,
+        gameObject,
       });
     });
   }

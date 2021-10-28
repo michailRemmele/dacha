@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 import conditionControllers from './conditionControllers';
 import substatePickers from './substatePickers';
@@ -39,14 +39,13 @@ class AnimateProcessor extends Processor {
   }
 
   process(options) {
-    const deltaTime = options.deltaTime;
-    const messageBus = options.messageBus;
+    const { deltaTime, messageBus } = options;
 
     this._gameObjectObserver.forEach((gameObject) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
       const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME);
 
-      let timeline = animatable.currentState.timeline;
+      let { timeline } = animatable.currentState;
 
       if (animatable.currentState.substates) {
         const substate = this._pickSubstate(gameObject, animatable.currentState);

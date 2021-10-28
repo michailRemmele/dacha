@@ -4,9 +4,7 @@ class Transition {
   constructor(config) {
     this._state = config.state;
     this._time = config.time;
-    this._conditions = config.conditions.map((condition) => {
-      return new Condition(condition);
-    });
+    this._conditions = config.conditions.map((condition) => new Condition(condition));
   }
 
   set state(state) {

@@ -1,7 +1,6 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
 import CollisionBroadcastProcessor
-  from 'contrib/processors/collisionBroadcastProcessor/collisionBroadcastProcessor';
+  from '../../processors/collisionBroadcastProcessor/collisionBroadcastProcessor';
 
 class CollisionBroadcastProcessorPlugin extends ProcessorPlugin {
   async load(options) {

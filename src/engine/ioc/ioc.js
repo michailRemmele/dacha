@@ -1,4 +1,4 @@
-import ScopeProvider from 'engine/scope/scopeProvider';
+import ScopeProvider from '../scope/scopeProvider';
 import ResolveDependencyStrategy from './resolveDependencyStrategy';
 
 class IOC {
@@ -11,23 +11,23 @@ class IOC {
   }
 
   resolve(key, ...args) {
-    let scope = ScopeProvider.getCurrentScope();
+    const scope = ScopeProvider.getCurrentScope();
     return scope.resolve(key, args);
   }
 
   register(key, resolveDependencyStrategy) {
     if (!(resolveDependencyStrategy instanceof ResolveDependencyStrategy)) {
       throw new Error(
-        'Resolve dependency strategy should be inherits from ResolveDependencyStrategy'
+        'Resolve dependency strategy should be inherits from ResolveDependencyStrategy',
       );
     }
 
-    let scope = ScopeProvider.getCurrentScope();
+    const scope = ScopeProvider.getCurrentScope();
     scope.register(key, resolveDependencyStrategy);
   }
 
   remove(key) {
-    let scope = ScopeProvider.getCurrentScope();
+    const scope = ScopeProvider.getCurrentScope();
     scope.remove(key);
   }
 }

@@ -1,4 +1,4 @@
-import Component from 'engine/component/component';
+import Component from '../../../engine/component/component';
 
 class Camera extends Component {
   constructor(componentName, config) {

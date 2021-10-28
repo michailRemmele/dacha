@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import UiBridge from 'contrib/processors/uiBridge/uiBridge';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import UiBridge from '../../processors/uiBridge/uiBridge';
 
 class UiBridgePlugin extends ProcessorPlugin {
   async load(options) {

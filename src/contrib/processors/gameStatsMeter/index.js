@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 const GAME_STATS_UPDATE_MSG = 'GAME_STATS_UPDATE';
 const MS_IN_SEC = 1000;
@@ -19,7 +19,9 @@ export class GameStatsMeter extends Processor {
   }
 
   process(options) {
-    const { messageBus, deltaTime, skipped, executed } = options;
+    const {
+      messageBus, deltaTime, skipped, executed,
+    } = options;
 
     this._fps += 1;
     this._time += deltaTime;
@@ -34,11 +36,11 @@ export class GameStatsMeter extends Processor {
     if (this._time >= this._frequency) {
       messageBus.send({
         type: GAME_STATS_UPDATE_MSG,
-        fps: this._fps * MS_IN_SEC / this._time,
+        fps: (this._fps * MS_IN_SEC) / this._time,
         gameObjectsCount: this._gameObjectObserver.size(),
-        messagesCount: this._messages * MS_IN_SEC / this._time,
-        skippedStateUpdate: this._skippedStateUpdate * MS_IN_SEC / this._time,
-        executedStateUpdate: this._executedStateUpdate * MS_IN_SEC / this._time,
+        messagesCount: (this._messages * MS_IN_SEC) / this._time,
+        skippedStateUpdate: (this._skippedStateUpdate * MS_IN_SEC) / this._time,
+        executedStateUpdate: (this._executedStateUpdate * MS_IN_SEC) / this._time,
       });
 
       this._fps = 0;

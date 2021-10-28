@@ -8,7 +8,7 @@ import GameObjectCreator from './gameObject/gameObjectCreator';
 import PrefabCollection from './prefab/prefabCollection';
 import GameLoop from './gameLoop';
 
-import * as global from 'engine/consts/global';
+import * as global from './consts/global';
 
 class Engine {
   constructor(options) {
@@ -31,7 +31,9 @@ class Engine {
       GAME_OBJECT_CREATOR_KEY_NAME,
     } = global;
 
-    const { mainConfig, processorsPlugins, components, pluginHelpers } = this.options;
+    const {
+      mainConfig, processorsPlugins, components, pluginHelpers,
+    } = this.options;
     const { projectSettings } = mainConfig;
 
     IOC.register(PROJECT_SETTINGS_KEY_NAME, new ResolveSingletonStrategy(projectSettings));
@@ -48,7 +50,9 @@ class Engine {
     const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins, pluginHelpers);
     IOC.register(SCENE_PROVIDER_KEY_NAME, new ResolveSingletonStrategy(sceneProvider));
 
-    for (let i = 0; i < mainConfig.prefabs.length; i++) {
+    for (let i = 0; i < mainConfig.prefabs.length; i += 1) {
+      // For pure async await syntax in method. Need to refactor later
+      // eslint-disable-next-line no-await-in-loop
       const prefabConfig = await resourceLoader.load(mainConfig.prefabs[i].src);
       prefabCollection.register(prefabConfig);
     }

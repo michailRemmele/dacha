@@ -1,7 +1,6 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
 import KeyboardInputProcessor
-  from 'contrib/processors/keyboardInputProcessor/keyboardInputProcessor';
+  from '../../processors/keyboardInputProcessor/keyboardInputProcessor';
 
 class KeyboardInputProcessorPlugin extends ProcessorPlugin {
   async load() {

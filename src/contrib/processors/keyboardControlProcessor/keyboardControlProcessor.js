@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 const CONTROL_COMPONENT_NAME = 'keyboardControl';
 
@@ -16,7 +16,7 @@ class KeyboardControlProcessor extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     this._gameObjectObserver.forEach((gameObject) => {
       const control = gameObject.getComponent(CONTROL_COMPONENT_NAME);
@@ -48,7 +48,7 @@ class KeyboardControlProcessor extends Processor {
           messageBus.send({
             type: eventBinding.messageType,
             ...eventBinding.attrs,
-            gameObject: gameObject,
+            gameObject,
             id: gameObject.getId(),
           });
         }

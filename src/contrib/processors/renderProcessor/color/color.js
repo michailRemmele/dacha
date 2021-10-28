@@ -27,6 +27,7 @@ class Color {
         this._color = new Reader().read(color);
         return true;
       }
+      return false;
     });
 
     if (!this._color) {

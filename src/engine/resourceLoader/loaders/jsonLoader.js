@@ -3,7 +3,7 @@ import Loader from './loader';
 class JsonLoader extends Loader {
   constructor() {
     super();
-    this._supportedExtensions = [ '.json' ];
+    this._supportedExtensions = ['.json'];
   }
 
   getSupportedExtensions() {
@@ -12,12 +12,8 @@ class JsonLoader extends Loader {
 
   load(resource) {
     return fetch(resource)
-      .then((response) => {
-        return response.json();
-      })
-      .catch((error) => {
-        return new Error(`Failed to load json: ${error.message}`);
-      });
+      .then((response) => response.json())
+      .catch((error) => new Error(`Failed to load json: ${error.message}`));
   }
 }
 

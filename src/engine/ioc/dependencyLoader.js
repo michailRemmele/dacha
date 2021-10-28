@@ -4,9 +4,7 @@ import ResolveByCallbackStrategy from './resolveByCallbackStrategy';
 class DependencyLoader {
   loadAll(dependencies) {
     Object.keys(dependencies).forEach((key) => {
-      IOC.register(key, new ResolveByCallbackStrategy(() => {
-        return new dependencies[key]();
-      }));
+      IOC.register(key, new ResolveByCallbackStrategy(() => new dependencies[key]()));
     });
   }
 }

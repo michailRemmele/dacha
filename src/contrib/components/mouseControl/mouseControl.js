@@ -1,4 +1,4 @@
-import Component from 'engine/component/component';
+import Component from '../../../engine/component/component';
 
 class MouseControl extends Component {
   constructor(componentName, config) {

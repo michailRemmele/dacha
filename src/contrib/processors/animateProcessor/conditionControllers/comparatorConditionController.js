@@ -15,24 +15,12 @@ class ComparatorConditionController extends ConditionController {
       componentValue: getComponentValue,
     };
     this._operations = {
-      equals: (arg1, arg2) => {
-        return arg1 === arg2;
-      },
-      notEquals: (arg1, arg2) => {
-        return arg1 !== arg2;
-      },
-      greater: (arg1, arg2) => {
-        return arg1 > arg2;
-      },
-      less: (arg1, arg2) => {
-        return arg1 < arg2;
-      },
-      greaterOrEqual: (arg1, arg2) => {
-        return arg1 >= arg2;
-      },
-      lessOrEqual: (arg1, arg2) => {
-        return arg1 <= arg2;
-      },
+      equals: (arg1, arg2) => arg1 === arg2,
+      notEquals: (arg1, arg2) => arg1 !== arg2,
+      greater: (arg1, arg2) => arg1 > arg2,
+      less: (arg1, arg2) => arg1 < arg2,
+      greaterOrEqual: (arg1, arg2) => arg1 >= arg2,
+      lessOrEqual: (arg1, arg2) => arg1 <= arg2,
     };
   }
 

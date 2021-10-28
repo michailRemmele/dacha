@@ -1,16 +1,14 @@
 import State from './state';
 import Substate from './substate';
-import pickProps from './pickProps';
+import defaultPickProps from './pickProps';
 
 class GroupState extends State {
   constructor(config) {
     super(config);
 
-    this._substates = config.substates.map((substate) => {
-      return new Substate(substate);
-    });
+    this._substates = config.substates.map((substate) => new Substate(substate));
     this._pickMode = config.pickMode;
-    this._pickProps = new pickProps[config.pickMode](config.pickProps);
+    this._pickProps = new defaultPickProps[config.pickMode](config.pickProps);
   }
 
   set substates(substates) {

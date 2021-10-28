@@ -1,4 +1,4 @@
-import Component from 'engine/component/component';
+import Component from '../../../engine/component/component';
 
 const PREFIX_SEPARATOR = '_';
 

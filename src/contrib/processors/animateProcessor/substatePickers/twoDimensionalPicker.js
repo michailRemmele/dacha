@@ -1,4 +1,4 @@
-import { MathOps } from 'engine/mathLib';
+import { MathOps } from '../../../../engine/mathLib';
 
 import Picker from './picker';
 import { getComponentValue } from '../utils';
@@ -10,7 +10,7 @@ class TwoDimensionalPicker extends Picker {
 
   getSubstate(gameObject, substates, props) {
     if (!substates.length) {
-      return;
+      return void 0;
     }
 
     if (substates.length === 1) {
@@ -23,7 +23,7 @@ class TwoDimensionalPicker extends Picker {
     let pickedSubstate = substates[0];
     let minDistance = this._getDistance(x, pickedSubstate.x, y, pickedSubstate.y);
 
-    for (let i = 1; i < substates.length; i++) {
+    for (let i = 1; i < substates.length; i += 1) {
       const distance = this._getDistance(x, substates[i].x, y, substates[i].y);
 
       if (distance < minDistance) {
