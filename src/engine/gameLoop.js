@@ -29,8 +29,10 @@ class GameLoop {
   _gameStateUpdate() {
     if (this.lag < MS_PER_UPDATE) {
       this.messageBus.stash();
-      return;
+      return { skipped: true };
     }
+
+    let executed = 0;
 
     while (this.lag >= MS_PER_UPDATE) {
       this._processSection(SECTIONS.GAME_STATE_UPDATE_SECTION_NAME, { deltaTime: MS_PER_UPDATE });
@@ -40,9 +42,13 @@ class GameLoop {
         this.messageBus.stash();
         this.messageBus.sendDelayed();
       }
+
+      executed += 1;
     }
 
     this.messageBus.restore();
+
+    return { executed };
   }
 
   run() {
@@ -60,9 +66,12 @@ class GameLoop {
       that.messageBus.restore();
       that.messageBus.sendDelayed();
 
-      that._processSection(SECTIONS.EVENT_PROCESS_SECTION_NAME);
-      that._gameStateUpdate();
-      that._processSection(SECTIONS.RENDERING_SECTION_NAME, { deltaTime: elapsed });
+      that._processSection(SECTIONS.EVENT_PROCESS_SECTION_NAME, { deltaTime: elapsed });
+      const { skipped, executed } = that._gameStateUpdate();
+      that._processSection(
+        SECTIONS.RENDERING_SECTION_NAME,
+        { deltaTime: elapsed, skipped, executed }
+      );
 
       that.messageBus.clear();
       that.gameLoopId = requestAnimationFrame(tick);
