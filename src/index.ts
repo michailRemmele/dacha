@@ -1,7 +1,7 @@
 import Engine from './engine/engine';
 import Processor from './engine/processor/processor';
 import ProcessorPlugin from './engine/processorPlugin/processorPlugin';
-import Component from './engine/component/component';
+import { Component } from './engine/component';
 import Script from './contrib/processors/scriptProcessor/script';
 import contribProcessorsPlugins from './contrib/processorsPlugins';
 import contribComponents from './contrib/components';

@@ -1,4 +1,4 @@
-import Component from '../../../engine/component/component';
+import { Component } from '../../../engine/component';
 import IndividualState from './individualState';
 import GroupState from './groupState';
 

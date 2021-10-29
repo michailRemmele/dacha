@@ -40,6 +40,13 @@ module.exports = {
     new CleanWebpackPlugin([ paths.build ]),
   ],
 
+  resolve: {
+    extensions: ['.js', '.ts'],
+    modules: [
+      'node_modules',
+    ],
+  },
+
   module: {
     rules: [
       {
@@ -48,6 +55,12 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-typescript'],
+              plugins: [
+                '@babel/plugin-proposal-object-rest-spread'
+              ]
+            }
           },
         ],
       },

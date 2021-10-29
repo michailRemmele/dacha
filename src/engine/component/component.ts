@@ -1,4 +1,6 @@
-const findParentComponent = (gameObject, componentName) => {
+import { GameObject } from '../gameObject';
+
+const findParentComponent = (gameObject: GameObject, componentName: string): Component | void => {
   if (!gameObject.parent) {
     return void 0;
   }
@@ -8,9 +10,13 @@ const findParentComponent = (gameObject, componentName) => {
   return parentComponent || findParentComponent(gameObject.parent, componentName);
 };
 
-class Component {
-  constructor(name) {
+export abstract class Component {
+  private _componentName: string;
+  private _gameObject?: GameObject;
+
+  constructor(name: string) {
     this._componentName = name;
+    this._gameObject = void 0;
   }
 
   set componentName(name) {
@@ -37,9 +43,5 @@ class Component {
     return findParentComponent(this.gameObject, this.componentName);
   }
 
-  clone() {
-    throw new Error('You should override this function');
-  }
+  abstract clone(): Component;
 }
-
-export default Component;
