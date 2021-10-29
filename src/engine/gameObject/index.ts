@@ -1,1 +1,1 @@
-export { GameObject } from './gameObject';
+export { GameObject } from './game-object';

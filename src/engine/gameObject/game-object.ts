@@ -1,6 +1,6 @@
 import { Component } from '../component';
 
-interface ComponentsEditionEvent {
+export interface ComponentsEditionEvent {
   type: 'COMPONENT_ADDED' | 'COMPONENT_REMOVED';
   componentName: string;
   gameObject: GameObject;
