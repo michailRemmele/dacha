@@ -1,6 +1,6 @@
 {
   "name": "@flyer-engine/core",
-  "main": "./src/index.ts",
+  "main": "./build/flyer-engine.js",
   "version": "0.7.0",
   "dependencies": {
     "uuid-random": "1.0.9"
@@ -24,10 +24,18 @@
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.8.2"
   },
+  "files": [
+    "build/flyer-engine.js",
+    "src",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "webpack",
     "lint": "eslint .",
-    "postinstall": "husky install"
+    "prepare": "husky install",
+    "prepublishOnly": "npm run build"
   },
   "description": "Flyer Engine is a JavaScript game engine for building games in browser.",
   "repository": {

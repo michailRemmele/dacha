@@ -39,7 +39,7 @@ class SceneProvider {
 
     for (let i = 0; i < sceneConfig.processors.length; i += 1) {
       const {
-        processorName, filter, options, section,
+        name: processorName, filter, options, section,
       } = sceneConfig.processors[i];
 
       const gameObjectObserver = new GameObjectObserver(scene, filter);
