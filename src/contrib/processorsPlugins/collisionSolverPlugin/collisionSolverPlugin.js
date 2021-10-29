@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import CollisionSolver from 'contrib/processors/collisionSolver/collisionSolver';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import CollisionSolver from '../../processors/collisionSolver/collisionSolver';
 
 class CollisionSolverPlugin extends ProcessorPlugin {
   async load(options) {

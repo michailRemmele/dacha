@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 import Collision from './collision';
 
@@ -15,7 +15,9 @@ class CollisionBroadcastProcessor extends Processor {
   }
 
   _publishMessage(collision, messageBus) {
-    const { gameObject1, gameObject2, mtv1, mtv2 } = collision;
+    const {
+      gameObject1, gameObject2, mtv1, mtv2,
+    } = collision;
     const message = {
       type: `${COLLISION_MESSAGE}_${collision.getState()}`,
       id: gameObject1.getId(),
@@ -60,7 +62,9 @@ class CollisionBroadcastProcessor extends Processor {
 
     const collisionMessages = messageBus.get(COLLISION_MESSAGE) || [];
     collisionMessages.forEach((message) => {
-      const { gameObject1, gameObject2, mtv1, mtv2 } = message;
+      const {
+        gameObject1, gameObject2, mtv1, mtv2,
+      } = message;
       const gameObject1Id = gameObject1.getId();
       const gameObject2Id = gameObject2.getId();
 

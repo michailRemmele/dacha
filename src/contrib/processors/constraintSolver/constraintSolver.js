@@ -1,5 +1,5 @@
-import Processor from 'engine/processor/processor';
-import { Vector2 } from 'engine/mathLib';
+import Processor from '../../../engine/processor/processor';
+import { Vector2 } from '../../../engine/mathLib';
 
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 const COLLISION_STAY_MSG = 'COLLISION_STAY';
@@ -74,16 +74,18 @@ class ConstraintSolver extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     this._processedPairs = {};
     this._mtvMap = {};
 
     const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
-    [ enterMessages, stayMessages ].forEach((messages) => {
+    [enterMessages, stayMessages].forEach((messages) => {
       messages.forEach((message) => {
-        const { gameObject1, gameObject2, mtv1, mtv2 } = message;
+        const {
+          gameObject1, gameObject2, mtv1, mtv2,
+        } = message;
 
         const id1 = gameObject1.getId();
         const id2 = gameObject2.getId();

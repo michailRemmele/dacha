@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import PhysicsProcessor from 'contrib/processors/physicsProcessor/physicsProcessor';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import PhysicsProcessor from '../../processors/physicsProcessor/physicsProcessor';
 
 class PhysicsProcessorPlugin extends ProcessorPlugin {
   async load(options) {

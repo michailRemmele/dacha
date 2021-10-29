@@ -3,7 +3,7 @@ import Loader from './loader';
 class ImageLoader extends Loader {
   constructor() {
     super();
-    this._supportedExtensions = [ '.png' ];
+    this._supportedExtensions = ['.png'];
   }
 
   getSupportedExtensions() {

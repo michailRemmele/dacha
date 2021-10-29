@@ -1,5 +1,5 @@
-import Processor from 'engine/processor/processor';
-import { Vector2 } from 'engine/mathLib';
+import Processor from '../../../engine/processor/processor';
+import { Vector2 } from '../../../engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
 const STOP_MOVEMENT_MSG = 'STOP_MOVEMENT';
@@ -58,11 +58,11 @@ class CollisionSolver extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
     const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
-    [ enterMessages, stayMessages ].forEach((messages) => {
+    [enterMessages, stayMessages].forEach((messages) => {
       messages.forEach((message) => {
         const { gameObject1, gameObject2, mtv1 } = message;
 

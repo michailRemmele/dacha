@@ -5,9 +5,7 @@ class State {
     this._name = config.name;
     this._speed = config.speed;
     this._type = config.type;
-    this._transitions = config.transitions.map((transition) => {
-      return new Transition(transition);
-    });
+    this._transitions = config.transitions.map((transition) => new Transition(transition));
   }
 
   set name(name) {

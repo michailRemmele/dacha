@@ -1,4 +1,4 @@
-import { Vector2 } from 'engine/mathLib';
+import { Vector2 } from '../../../../engine/mathLib';
 
 import IntersectionChecker from './intersectionChecker';
 
@@ -35,7 +35,7 @@ class CirclesIntersectionChecker extends IntersectionChecker {
 
     const mtv = new Vector2(x, y);
     const overlap = rArg1 + rArg2 - distance;
-    mtv.multiplyNumber(1 / distance * overlap);
+    mtv.multiplyNumber((1 / distance) * overlap);
 
     const positiveX = Math.abs(mtv.x);
     const negativeX = -Math.abs(mtv.x);
@@ -45,11 +45,11 @@ class CirclesIntersectionChecker extends IntersectionChecker {
     return {
       mtv1: new Vector2(
         xArg1 < xArg2 ? negativeX : positiveX,
-        yArg1 < yArg2 ? negativeY : positiveY
+        yArg1 < yArg2 ? negativeY : positiveY,
       ),
       mtv2: new Vector2(
         xArg2 < xArg1 ? negativeX : positiveX,
-        yArg2 < yArg1 ? negativeY : positiveY
+        yArg2 < yArg1 ? negativeY : positiveY,
       ),
     };
   }

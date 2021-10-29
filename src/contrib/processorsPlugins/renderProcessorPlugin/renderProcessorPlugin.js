@@ -1,8 +1,7 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-import IOC from 'engine/ioc/ioc';
-import { RESOURCES_LOADER_KEY_NAME } from 'engine/consts/global';
-
-import RenderProcessor from 'contrib/processors/renderProcessor/renderProcessor';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import IOC from '../../../engine/ioc/ioc';
+import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
+import RenderProcessor from '../../processors/renderProcessor/renderProcessor';
 
 class RenderProcessorPlugin extends ProcessorPlugin {
   async load(options) {
@@ -20,10 +19,10 @@ class RenderProcessorPlugin extends ProcessorPlugin {
     } = options;
 
     const window = document.getElementById(windowNodeId);
-    const resources = [ textureAtlas, textureAtlasDescriptor ];
-    const loadedResources = await Promise.all(resources.map((resource) => {
-      return resourceLoader.load(resource);
-    }));
+    const resources = [textureAtlas, textureAtlasDescriptor];
+    const loadedResources = await Promise.all(
+      resources.map((resource) => resourceLoader.load(resource)),
+    );
 
     return new RenderProcessor({
       window,

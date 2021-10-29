@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 import coordintatesCalculators from './coordinatesCalculators';
 import aabbBuilders from './aabbBuilders';
@@ -64,10 +64,10 @@ class CollisionDetectionProcessor extends Processor {
   }
 
   _addToAxisSortedList(entry, axis) {
-    [ entry.aabb.min[axis], entry.aabb.max[axis] ].forEach((value) => {
+    [entry.aabb.min[axis], entry.aabb.max[axis]].forEach((value) => {
       this._axis[axis].sortedList.push({
         [axis]: value,
-        entry: entry,
+        entry,
       });
     });
   }
@@ -76,11 +76,11 @@ class CollisionDetectionProcessor extends Processor {
     const { gameObject, aabb, coordinates } = entry;
 
     const gameObjectId = gameObject.getId();
-    const sortedListCoordinates = [ aabb.min[axis], aabb.max[axis] ];
-    const sortedList = this._axis[axis].sortedList;
+    const sortedListCoordinates = [aabb.min[axis], aabb.max[axis]];
+    const { sortedList } = this._axis[axis];
 
-    for (let i = 0; i < sortedList.length; i++) {
-      if (gameObjectId === sortedList[i].entry.gameObject.getId())  {
+    for (let i = 0; i < sortedList.length; i += 1) {
+      if (gameObjectId === sortedList[i].entry.gameObject.getId()) {
         sortedList[i][axis] = sortedListCoordinates.shift();
         sortedList[i].entry.aabb = aabb;
         sortedList[i].entry.coordinates = coordinates;
@@ -94,9 +94,9 @@ class CollisionDetectionProcessor extends Processor {
   _removeFromSortedList(gameObject, axis) {
     const gameObjectId = gameObject.getId();
 
-    this._axis[axis].sortedList = this._axis[axis].sortedList.filter((item) => {
-      return gameObjectId !== item.entry.gameObject.getId();
-    });
+    this._axis[axis].sortedList = this._axis[axis].sortedList.filter(
+      (item) => gameObjectId !== item.entry.gameObject.getId(),
+    );
   }
 
   _getSortingAxis() {
@@ -107,10 +107,8 @@ class CollisionDetectionProcessor extends Processor {
   }
 
   _sweepAndPrune(mainAxis) {
-    const sortedList = this._axis[mainAxis].sortedList;
-    const additionalAxes = Object.values(AXIS).filter((axis) => {
-      return mainAxis !== axis;
-    });
+    const { sortedList } = this._axis[mainAxis];
+    const additionalAxes = Object.values(AXIS).filter((axis) => mainAxis !== axis);
 
     sortedList.sort((arg1, arg2) => {
       if (arg1[mainAxis] > arg2[mainAxis]) {
@@ -122,12 +120,12 @@ class CollisionDetectionProcessor extends Processor {
       return 0;
     });
 
-    let collisions = sortedList.reduce((storage, item) => {
-      const entry = item.entry;
+    let { collisions } = sortedList.reduce((storage, item) => {
+      const { entry } = item;
 
       if (!storage.activeEntries.has(entry)) {
         storage.activeEntries.forEach((activeEntry) => {
-          storage.collisions.push([ entry, activeEntry ]);
+          storage.collisions.push([entry, activeEntry]);
         });
         storage.activeEntries.add(entry);
       } else {
@@ -135,7 +133,7 @@ class CollisionDetectionProcessor extends Processor {
       }
 
       return storage;
-    }, { collisions: [], activeEntries: new Set() }).collisions;
+    }, { collisions: [], activeEntries: new Set() });
 
     additionalAxes.forEach((additionalAxis) => {
       collisions = collisions.filter((pair) => {
@@ -173,8 +171,12 @@ class CollisionDetectionProcessor extends Processor {
     const { mtv1, mtv2 } = intersection;
 
     [
-      { gameObject1, gameObject2, mtv1, mtv2 },
-      { gameObject1: gameObject2, gameObject2: gameObject1, mtv1: mtv2, mtv2: mtv1 },
+      {
+        gameObject1, gameObject2, mtv1, mtv2,
+      },
+      {
+        gameObject1: gameObject2, gameObject2: gameObject1, mtv1: mtv2, mtv2: mtv1,
+      },
     ].forEach((entry) => {
       messageBus.send({
         type: COLLISION_MESSAGE,
@@ -187,7 +189,7 @@ class CollisionDetectionProcessor extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
@@ -211,11 +213,11 @@ class CollisionDetectionProcessor extends Processor {
 
       const coordinates = this._coordintatesCalculators[colliderContainer.type].calc(
         colliderContainer.collider,
-        transform
+        transform,
       );
       const aabb = this._aabbBuilders[colliderContainer.type].getAABB(
         colliderContainer.collider,
-        coordinates
+        coordinates,
       );
 
       Object.values(AXIS).forEach((axis) => {
@@ -223,9 +225,9 @@ class CollisionDetectionProcessor extends Processor {
         this._axis[axis].dispersionCalculator.addToSample(gameObjectId, average);
 
         const entry = {
-          gameObject: gameObject,
-          aabb: aabb,
-          coordinates: coordinates,
+          gameObject,
+          aabb,
+          coordinates,
         };
 
         if (!this._lastProcessedGameObjects[gameObjectId]) {
@@ -242,7 +244,7 @@ class CollisionDetectionProcessor extends Processor {
       const intersection = this._checkOnIntersection(pair);
       if (intersection) {
         this._sendCollisionMessage(
-          messageBus, pair[0].gameObject, pair[1].gameObject, intersection
+          messageBus, pair[0].gameObject, pair[1].gameObject, intersection,
         );
       }
     });

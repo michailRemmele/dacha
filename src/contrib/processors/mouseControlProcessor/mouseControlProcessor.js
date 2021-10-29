@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 const CONTROL_COMPONENT_NAME = 'mouseControl';
 
@@ -12,7 +12,7 @@ class MouseControlProcessor extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     const messages = messageBus.get(INPUT_MESSAGE) || [];
     messages.forEach((message) => {
@@ -29,7 +29,7 @@ class MouseControlProcessor extends Processor {
             messageBus.send({
               type: eventBinding.messageType,
               ...eventBinding.attrs,
-              gameObject: gameObject,
+              gameObject,
               id: gameObject.getId(),
               x: inputEvent.x,
               y: inputEvent.y,

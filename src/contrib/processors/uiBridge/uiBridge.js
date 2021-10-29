@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 import Observer from './observer/observer';
 import MapObserver from './observer/mapObserver';

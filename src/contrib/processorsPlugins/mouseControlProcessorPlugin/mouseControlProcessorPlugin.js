@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import MouseControlProcessor from 'contrib/processors/mouseControlProcessor/mouseControlProcessor';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import MouseControlProcessor from '../../processors/mouseControlProcessor/mouseControlProcessor';
 
 class MouseControlProcessorPlugin extends ProcessorPlugin {
   async load(options) {

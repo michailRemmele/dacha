@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import Jammer from 'contrib/processors/jammer/jammer';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import Jammer from '../../processors/jammer/jammer';
 
 class JammerPlugin extends ProcessorPlugin {
   async load(options) {

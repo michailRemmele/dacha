@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from 'engine/mathLib';
+import { Vector2, VectorOps } from '../../../../engine/mathLib';
 
 import IntersectionChecker from './intersectionChecker';
 
@@ -11,7 +11,7 @@ class BoxesIntersectionChecker extends IntersectionChecker {
       max: initialProjectionValue,
     };
 
-    for (let i = 1; i < polygon.edges.length; i++) {
+    for (let i = 1; i < polygon.edges.length; i += 1) {
       const projectionValue = VectorOps.dotProduct(polygon.edges[i].point1, axisVector);
 
       if (projectionValue < projection.min) {
@@ -37,7 +37,7 @@ class BoxesIntersectionChecker extends IntersectionChecker {
     const { x: xArg1, y: yArg1 } = arg1.coordinates.center;
     const { x: xArg2, y: yArg2 } = arg2.coordinates.center;
 
-    for (let j = 0; j < arg1.coordinates.edges.length / 2; j++) {
+    for (let j = 0; j < arg1.coordinates.edges.length / 2; j += 1) {
       const axis = arg1.coordinates.edges[j].normal;
 
       const aProjection = this._projectPolygon(arg1.coordinates, axis);
@@ -75,11 +75,11 @@ class BoxesIntersectionChecker extends IntersectionChecker {
     return {
       mtv1: new Vector2(
         xArg1 < xArg2 ? negativeX : positiveX,
-        yArg1 < yArg2 ? negativeY : positiveY
+        yArg1 < yArg2 ? negativeY : positiveY,
       ),
       mtv2: new Vector2(
         xArg2 > xArg1 ? positiveX : negativeX,
-        yArg2 > yArg1 ? positiveY : negativeY
+        yArg2 > yArg1 ? positiveY : negativeY,
       ),
     };
   }

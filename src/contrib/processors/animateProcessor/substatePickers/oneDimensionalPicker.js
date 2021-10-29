@@ -8,7 +8,7 @@ class OneDimensionalPicker extends Picker {
 
   getSubstate(gameObject, substates, props) {
     if (!substates.length) {
-      return;
+      return void 0;
     }
 
     if (substates.length === 1) {
@@ -20,7 +20,7 @@ class OneDimensionalPicker extends Picker {
     let pickedSubstate = substates[0];
     let minDistance = this._getDistance(x, pickedSubstate.x);
 
-    for (let i = 1; i < substates.length; i++) {
+    for (let i = 1; i < substates.length; i += 1) {
       const distance = this._getDistance(x, substates[i].x);
 
       if (distance < minDistance) {

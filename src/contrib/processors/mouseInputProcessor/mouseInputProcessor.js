@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 import MouseInputListener from './mouseInputListener';
 
@@ -35,16 +35,14 @@ class MouseInputProcessor extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     const firedEvents = this._inputListener.getFiredEvents() || [];
-    const inputQuery = firedEvents.map((event) => {
-      return {
-        type: EVENT_TYPE[event.type](event),
-        x: event.clientX,
-        y: event.clientY,
-      };
-    });
+    const inputQuery = firedEvents.map((event) => ({
+      type: EVENT_TYPE[event.type](event),
+      x: event.clientX,
+      y: event.clientY,
+    }));
     this._inputListener.clearFiredEvents();
 
     messageBus.send({

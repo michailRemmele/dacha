@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 const SCRIPT_COMPONENT_NAME = 'script';
 

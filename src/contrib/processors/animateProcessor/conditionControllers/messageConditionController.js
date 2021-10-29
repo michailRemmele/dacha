@@ -5,9 +5,7 @@ class MessageConditionController extends ConditionController {
     const { message: messageType } = props;
 
     const messages = messageBus.get(messageType) || [];
-    return messages.some((message) => {
-      return message.gameObject.getId() === gameObject.getId();
-    });
+    return messages.some((message) => message.gameObject.getId() === gameObject.getId());
   }
 }
 

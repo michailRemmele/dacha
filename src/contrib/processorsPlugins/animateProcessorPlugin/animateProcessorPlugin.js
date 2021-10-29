@@ -1,6 +1,5 @@
-import ProcessorPlugin from 'engine/processorPlugin/processorPlugin';
-
-import AnimateProcessor from 'contrib/processors/animateProcessor/animateProcessor';
+import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import AnimateProcessor from '../../processors/animateProcessor/animateProcessor';
 
 class AnimateProcessorPlugin extends ProcessorPlugin {
   async load(options) {

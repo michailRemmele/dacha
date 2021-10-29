@@ -25,7 +25,7 @@ class GameObjectObserver {
     });
 
     scene.subscribeOnGameObjectsChange((event) => {
-      const gameObject = event.gameObject;
+      const { gameObject } = event;
 
       if (scene.GAME_OBJECT_ADDED === event.type) {
         gameObject.subscribe(this._subscribeGameObject.bind(this));
@@ -37,7 +37,7 @@ class GameObjectObserver {
   }
 
   _subscribeGameObject(event) {
-    const gameObject = event.gameObject;
+    const { gameObject } = event;
 
     if (this._test(gameObject)) {
       this._accept(gameObject);
@@ -55,17 +55,13 @@ class GameObjectObserver {
   }
 
   _remove(gameObject) {
-    const remove = (gameObjects) => {
-      return gameObjects.filter((gameObject) => {
-        return gameObjectId !== gameObject.getId();
-      });
-    };
+    const remove = (gameObjects, id) => gameObjects.filter((item) => id !== item.getId());
 
     const gameObjectId = gameObject.getId();
 
-    this._observedGameObjects = remove(this._observedGameObjects, gameObject);
-    this._acceptedGameObjects = remove(this._acceptedGameObjects, gameObject);
-    this._acceptedGameObjectsMap[gameObjectId] = undefined;
+    this._observedGameObjects = remove(this._observedGameObjects, gameObjectId);
+    this._acceptedGameObjects = remove(this._acceptedGameObjects, gameObjectId);
+    this._acceptedGameObjectsMap[gameObjectId] = void 0;
 
     this._removedFromAccepted.push(gameObject);
   }
@@ -77,9 +73,7 @@ class GameObjectObserver {
       return false;
     }
 
-    return this._components.every((component) => {
-      return gameObject.getComponent(component);
-    });
+    return this._components.every((component) => gameObject.getComponent(component));
   }
 
   _accept(gameObject) {
@@ -102,10 +96,10 @@ class GameObjectObserver {
       return;
     }
 
-    this._acceptedGameObjects = this._acceptedGameObjects.filter((acceptedGameObject) => {
-      return gameObjectId !== acceptedGameObject.getId();
-    });
-    this._acceptedGameObjectsMap[gameObjectId] = undefined;
+    this._acceptedGameObjects = this._acceptedGameObjects.filter(
+      (acceptedGameObject) => gameObjectId !== acceptedGameObject.getId(),
+    );
+    this._acceptedGameObjectsMap[gameObjectId] = void 0;
 
     this._removedFromAccepted.push(gameObject);
   }

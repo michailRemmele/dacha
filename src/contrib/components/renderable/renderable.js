@@ -1,4 +1,4 @@
-import Component from 'engine/component/component';
+import { Component } from '../../../engine/component';
 
 class Renderable extends Component {
   constructor(componentName, config) {
@@ -97,7 +97,7 @@ class Renderable extends Component {
   }
 
   get origin() {
-    return [ this._origin[0] - (this.width / 2), this._origin[1] - (this.height / 2) ];
+    return [this._origin[0] - (this.width / 2), this._origin[1] - (this.height / 2)];
   }
 
   set flipX(flipX) {

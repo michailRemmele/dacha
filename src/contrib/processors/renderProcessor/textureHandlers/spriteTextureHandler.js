@@ -2,7 +2,9 @@ import TextureHandler from './textureHandler';
 
 class SpriteTextureHandler extends TextureHandler {
   handle(textureDescriptor, renderableComponent) {
-    const { x, y, width, height } = textureDescriptor;
+    const {
+      x, y, width, height,
+    } = textureDescriptor;
     const { spacing, extruding, slice } = renderableComponent;
 
     const padding = 2 * extruding;

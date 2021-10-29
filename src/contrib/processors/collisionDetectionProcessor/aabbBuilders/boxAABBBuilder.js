@@ -15,7 +15,7 @@ class BoxAABBBuilder extends AABBBuilder {
       storage.max.y = maxY === null || coordinate.y > maxY ? coordinate.y : maxY;
 
       return storage;
-    }, { min: { x: null, y: null }, max: { x: null, y: null }});
+    }, { min: { x: null, y: null }, max: { x: null, y: null } });
 
     return new AABB({ x: minMax.min.x, y: minMax.min.y }, { x: minMax.max.x, y: minMax.max.y });
   }

@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 class Jammer extends Processor {
   constructor(options) {
@@ -8,7 +8,7 @@ class Jammer extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     this._messages.forEach((message) => {
       messageBus.delete(message);

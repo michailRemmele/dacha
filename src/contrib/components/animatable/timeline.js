@@ -2,9 +2,7 @@ import Frame from './frame';
 
 class Timeline {
   constructor(config) {
-    this._frames = config.frames.map((frame) => {
-      return new Frame(frame);
-    });
+    this._frames = config.frames.map((frame) => new Frame(frame));
     this._looped = config.looped;
   }
 

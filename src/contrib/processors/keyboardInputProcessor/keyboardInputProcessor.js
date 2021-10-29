@@ -1,4 +1,4 @@
-import Processor from 'engine/processor/processor';
+import Processor from '../../../engine/processor/processor';
 
 import InputListener from './inputListener';
 import KeyCodeMapper from './keyCodeMapper';
@@ -40,7 +40,7 @@ class KeyboardInputProcessor extends Processor {
   }
 
   process(options) {
-    const messageBus = options.messageBus;
+    const { messageBus } = options;
 
     const eventQuery = [];
 

@@ -1,4 +1,4 @@
-import Component from 'engine/component/component';
+import { Component } from '../../../engine/component';
 
 class Transform extends Component {
   constructor(componentName, config) {

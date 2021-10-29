@@ -9,8 +9,8 @@ class MouseInputListener {
   }
 
   startListen() {
-    LISTENING_EVENTS.forEach((event) => {
-      this._window[event] = (event) => {
+    LISTENING_EVENTS.forEach((listeningEvent) => {
+      this._window[listeningEvent] = (event) => {
         this._firedEvents.push(event);
       };
     });

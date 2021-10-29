@@ -1,4 +1,4 @@
-import Component from 'engine/component/component';
+import { Component } from '../../../engine/component';
 
 class Script extends Component {
   constructor(componentName, config) {

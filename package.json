@@ -1,31 +1,43 @@
 {
   "name": "@flyer-engine/core",
+  "main": "./build/flyer-engine.js",
   "version": "0.7.0",
   "dependencies": {
     "uuid-random": "1.0.9"
   },
   "devDependencies": {
-    "clean-webpack-plugin": "1.0.1",
-    "uglifyjs-webpack-plugin": "1.3.0",
     "@babel/core": "7.3.4",
     "@babel/plugin-proposal-object-rest-spread": "7.3.4",
+    "@babel/preset-typescript": "7.15.0",
+    "@typescript-eslint/eslint-plugin": "5.2.0",
+    "@typescript-eslint/parser": "5.2.0",
     "babel-loader": "8.0.5",
-    "eslint": "6.5.1",
+    "clean-webpack-plugin": "1.0.1",
+    "eslint": "7.32.0",
+    "eslint-config-airbnb-typescript": "14.0.1",
+    "eslint-import-resolver-typescript": "2.5.0",
+    "eslint-plugin-import": "2.25.2",
+    "husky": "7.0.4",
+    "terser-webpack-plugin": "4.2.3",
+    "typescript": "4.4.4",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.8.2"
   },
+  "files": [
+    "build/flyer-engine.js",
+    "src",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "webpack --config webpack.config.prod.js"
-  },
-  "babel": {
-    "presets": [],
-    "plugins": [
-      "@babel/plugin-proposal-object-rest-spread"
-    ]
+    "build": "webpack",
+    "lint": "eslint .",
+    "prepare": "husky install",
+    "prepublishOnly": "npm run build"
   },
   "description": "Flyer Engine is a JavaScript game engine for building games in browser.",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/michailRemmele/flyer-engine.git"

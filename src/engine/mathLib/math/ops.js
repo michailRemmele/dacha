@@ -10,7 +10,7 @@ export class MathOps {
    * Convert radians to degrees
    */
   static radToDeg(rad) {
-    const angleInDegrees = rad * 180 / Math.PI;
+    const angleInDegrees = (rad * 180) / Math.PI;
     return angleInDegrees < 0 ? angleInDegrees + 360 : angleInDegrees;
   }
 
@@ -18,7 +18,7 @@ export class MathOps {
    * Convert degrees to radians
    */
   static degToRad(deg) {
-    return deg * Math.PI / 180;
+    return (deg * Math.PI) / 180;
   }
 
   /*
@@ -50,10 +50,10 @@ export class MathOps {
   static clamp(value, min, max) {
     if (value < min) {
       return min;
-    } else if (value > max) {
-      return max;
-    } else {
-      return value;
     }
+    if (value > max) {
+      return max;
+    }
+    return value;
   }
 }

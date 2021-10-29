@@ -1,9 +1,9 @@
 import uuid from 'uuid-random';
 
-import IOC from 'engine/ioc/ioc';
-import GameObject from 'engine/gameObject/gameObject';
+import IOC from '../ioc/ioc';
+import { PREFAB_COLLECTION_KEY_NAME } from '../consts/global';
 
-import { PREFAB_COLLECTION_KEY_NAME } from 'engine/consts/global';
+import { GameObject } from './gameObject';
 
 class GameObjectCreator {
   constructor(components) {
@@ -21,8 +21,8 @@ class GameObjectCreator {
     } = options;
     let { id, name } = options;
 
-    id = id ? id : uuid();
-    name = name ? name : id;
+    id = id || uuid();
+    name = name || id;
 
     if (!prefab) {
       throw new Error(`Can't create game object ${name} from prefab. `
@@ -35,10 +35,10 @@ class GameObjectCreator {
 
     if (isNew) {
       prefab.getChildren().forEach((prefabChild) => {
-        const { name } = prefabChild;
-        const options = { prefabName: name, fromPrefab: true, isNew };
+        const { name: childName } = prefabChild;
+        const childOptions = { prefabName: childName, fromPrefab: true, isNew };
 
-        const gameObjectChild = this._build(options, prefabChild);
+        const gameObjectChild = this._build(childOptions, prefabChild);
         gameObject.appendChild(gameObjectChild);
       });
     } else {
@@ -48,11 +48,11 @@ class GameObjectCreator {
         return storage;
       }, {});
 
-      children.forEach((options) => {
-        const { prefabName, fromPrefab } = options;
+      children.forEach((childOptions) => {
+        const { prefabName: childPrefabName, fromPrefab } = childOptions;
 
-        const prefabChild = fromPrefab ? prefabChildrenMap[prefabName] : undefined;
-        const gameObjectChild = this._build(options, prefabChild);
+        const prefabChild = fromPrefab ? prefabChildrenMap[childPrefabName] : void 0;
+        const gameObjectChild = this._build(childOptions, prefabChild);
         gameObject.appendChild(gameObjectChild);
       });
     }
@@ -63,7 +63,10 @@ class GameObjectCreator {
 
     components.forEach((componentOptions) => {
       const Component = this._components[componentOptions.name];
-      gameObject.setComponent(componentOptions.name, new Component(componentOptions.name, componentOptions.config));
+      gameObject.setComponent(
+        componentOptions.name,
+        new Component(componentOptions.name, componentOptions.config),
+      );
     });
 
     return gameObject;
@@ -77,7 +80,7 @@ class GameObjectCreator {
     } = options;
     let { id } = options;
 
-    id = id ? id : uuid();
+    id = id || uuid();
 
     const gameObject = new GameObject(id);
 
@@ -90,7 +93,10 @@ class GameObjectCreator {
 
     components.forEach((componentOptions) => {
       const Component = this._components[componentOptions.name];
-      gameObject.setComponent(componentOptions.name, new Component(componentOptions.name, componentOptions.config));
+      gameObject.setComponent(
+        componentOptions.name,
+        new Component(componentOptions.name, componentOptions.config),
+      );
     });
 
     return gameObject;

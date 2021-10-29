@@ -11,21 +11,21 @@ class MatrixTransformer {
     const projectedWidth = 2 / width;
     const projectedHeight = 2 / height;
 
-    matrix[0] = matrix[0] * projectedWidth;
+    matrix[0] *= projectedWidth;
     matrix[1] = -matrix[1] * projectedHeight;
-    matrix[3] = matrix[3] * projectedWidth;
+    matrix[3] *= projectedWidth;
     matrix[4] = -matrix[4] * projectedHeight;
-    matrix[6] = matrix[6] * projectedWidth;
+    matrix[6] *= projectedWidth;
     matrix[7] = -matrix[7] * projectedHeight;
   }
 
   translate(matrix, tx, ty) {
-    matrix[0] = matrix[0] + (matrix[2] * tx);
-    matrix[1] = matrix[1] + (matrix[2] * ty);
-    matrix[3] = matrix[3] + (matrix[5] * tx);
-    matrix[4] = matrix[4] + (matrix[5] * ty);
-    matrix[6] = matrix[6] + (matrix[8] * tx);
-    matrix[7] = matrix[7] + (matrix[8] * ty);
+    matrix[0] += matrix[2] * tx;
+    matrix[1] += matrix[2] * ty;
+    matrix[3] += matrix[5] * tx;
+    matrix[4] += matrix[5] * ty;
+    matrix[6] += matrix[8] * tx;
+    matrix[7] += matrix[8] * ty;
   }
 
   flipX(matrix) {
@@ -37,16 +37,16 @@ class MatrixTransformer {
   }
 
   scale(matrix, scaleX, scaleY) {
-    matrix[0] = matrix[0] * scaleX;
-    matrix[1] = matrix[1] * scaleY;
-    matrix[3] = matrix[3] * scaleX;
-    matrix[4] = matrix[4] * scaleY;
-    matrix[6] = matrix[6] * scaleX;
-    matrix[7] = matrix[7] * scaleY;
+    matrix[0] *= scaleX;
+    matrix[1] *= scaleY;
+    matrix[3] *= scaleX;
+    matrix[4] *= scaleY;
+    matrix[6] *= scaleX;
+    matrix[7] *= scaleY;
   }
 
   rotate(matrix, angle) {
-    angle = angle * Math.PI / 180;
+    angle = (angle * Math.PI) / 180;
     const cos = Math.cos(angle);
     const sin = -Math.sin(angle);
 
