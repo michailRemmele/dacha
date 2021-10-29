@@ -1,12 +1,6 @@
-import { findParentComponent, Component } from '../component';
+import { findParentComponent } from '../component';
 import { GameObject } from '../../gameObject';
-
-const createMockComponent = (name: string): Component => ({
-  componentName: name,
-  clone: () => createMockComponent(name),
-  getParentComponent: () => {},
-  gameObject: void 0,
-});
+import { createMockComponent } from '../../../__mocks__';
 
 describe('Engine -> Component -> findParentComponent()', () => {
   it('Returns nothing for game object without parent', () => {

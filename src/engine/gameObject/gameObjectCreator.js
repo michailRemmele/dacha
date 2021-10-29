@@ -3,7 +3,7 @@ import uuid from 'uuid-random';
 import IOC from '../ioc/ioc';
 import { PREFAB_COLLECTION_KEY_NAME } from '../consts/global';
 
-import { GameObject } from './gameObject';
+import { GameObject } from './game-object';
 
 class GameObjectCreator {
   constructor(components) {
