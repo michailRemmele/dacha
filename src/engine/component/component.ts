@@ -1,6 +1,9 @@
 import { GameObject } from '../gameObject';
 
-const findParentComponent = (gameObject: GameObject, componentName: string): Component | void => {
+export const findParentComponent = (
+  gameObject: GameObject,
+  componentName: string,
+): Component | void => {
   if (!gameObject.parent) {
     return void 0;
   }
@@ -11,28 +14,12 @@ const findParentComponent = (gameObject: GameObject, componentName: string): Com
 };
 
 export abstract class Component {
-  private _componentName: string;
-  private _gameObject?: GameObject;
+  public componentName: string;
+  public gameObject?: GameObject;
 
   constructor(name: string) {
-    this._componentName = name;
-    this._gameObject = void 0;
-  }
-
-  set componentName(name) {
-    this._componentName = name;
-  }
-
-  get componentName() {
-    return this._componentName;
-  }
-
-  set gameObject(gameObject) {
-    this._gameObject = gameObject;
-  }
-
-  get gameObject() {
-    return this._gameObject;
+    this.componentName = name;
+    this.gameObject = void 0;
   }
 
   getParentComponent() {
