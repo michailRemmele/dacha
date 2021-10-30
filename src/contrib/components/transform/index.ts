@@ -1,8 +1,24 @@
 import { Component } from '../../../engine/component';
 
-class Transform extends Component {
-  constructor(componentName, config) {
-    super(componentName, config);
+interface TransformConfig {
+  offsetX: number;
+  offsetY: number;
+  offsetZ: number;
+  rotation: number;
+  scaleX: number;
+  scaleY: number;
+}
+
+export class Transform extends Component {
+  private _offsetX: number;
+  private _offsetY: number;
+  private _offsetZ: number;
+  private _rotation: number;
+  private _scaleX: number;
+  private _scaleY: number;
+
+  constructor(componentName: string, config: TransformConfig) {
+    super(componentName);
 
     this._offsetX = config.offsetX;
     this._offsetY = config.offsetY;
@@ -12,8 +28,8 @@ class Transform extends Component {
     this._scaleY = config.scaleY || 1;
   }
 
-  _getPropertyFromParent(name, defaultValue) {
-    const parentComponent = this.getParentComponent();
+  _getPropertyFromParent(name: string, defaultValue: number): number {
+    const parentComponent = this.getParentComponent() as Record<string, number> | void;
     return parentComponent ? parentComponent[name] : defaultValue;
   }
 
@@ -76,5 +92,3 @@ class Transform extends Component {
     });
   }
 }
-
-export default Transform;
