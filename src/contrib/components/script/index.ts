@@ -1,8 +1,14 @@
 import { Component } from '../../../engine/component';
 
-class Script extends Component {
-  constructor(componentName, config) {
-    super(componentName, config);
+interface ScriptConfig {
+  name: string;
+}
+
+export class Script extends Component {
+  private _name: string;
+
+  constructor(componentName: string, config: ScriptConfig) {
+    super(componentName);
 
     this._name = config.name;
   }
@@ -21,5 +27,3 @@ class Script extends Component {
     });
   }
 }
-
-export default Script;

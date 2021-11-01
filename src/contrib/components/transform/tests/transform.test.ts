@@ -89,4 +89,92 @@ describe('Contrib -> components -> Transform', () => {
     expect(transform3.relativeScaleX).toEqual(9);
     expect(transform3.relativeScaleY).toEqual(12);
   });
+
+  it('Correct updates absolute values ', () => {
+    transform1.offsetX = 80;
+    transform1.offsetY = 55;
+    transform1.offsetZ = 12;
+    transform1.rotation = 780;
+    transform1.scaleX = 81;
+    transform1.scaleY = 192;
+
+    transform2.offsetX = 25;
+    transform2.offsetY = 15;
+    transform2.offsetZ = 3;
+    transform2.rotation = 360;
+    transform2.scaleX = 27;
+    transform2.scaleY = 48;
+
+    transform3.offsetX = 15;
+    transform3.offsetY = 10;
+    transform3.offsetZ = 2;
+    transform3.rotation = 180;
+    transform3.scaleX = 3;
+    transform3.scaleY = 6;
+
+    expect(transform1.offsetX).toEqual(40);
+    expect(transform1.offsetY).toEqual(30);
+    expect(transform1.offsetZ).toEqual(9);
+    expect(transform1.rotation).toEqual(600);
+    expect(transform1.scaleX).toEqual(13.5);
+    expect(transform1.scaleY).toEqual(48);
+
+    expect(transform2.offsetX).toEqual(10);
+    expect(transform2.offsetY).toEqual(5);
+    expect(transform2.offsetZ).toEqual(2);
+    expect(transform2.rotation).toEqual(270);
+    expect(transform2.scaleX).toEqual(9);
+    expect(transform2.scaleY).toEqual(24);
+
+    expect(transform3.offsetX).toEqual(15);
+    expect(transform3.offsetY).toEqual(10);
+    expect(transform3.offsetZ).toEqual(2);
+    expect(transform3.rotation).toEqual(180);
+    expect(transform3.scaleX).toEqual(3);
+    expect(transform3.scaleY).toEqual(6);
+  });
+
+  it('Correct updates relative values ', () => {
+    transform1.offsetX = 80;
+    transform1.offsetY = 55;
+    transform1.offsetZ = 12;
+    transform1.rotation = 780;
+    transform1.scaleX = 81;
+    transform1.scaleY = 192;
+
+    transform2.offsetX = 25;
+    transform2.offsetY = 15;
+    transform2.offsetZ = 3;
+    transform2.rotation = 360;
+    transform2.scaleX = 27;
+    transform2.scaleY = 48;
+
+    transform3.offsetX = 15;
+    transform3.offsetY = 10;
+    transform3.offsetZ = 2;
+    transform3.rotation = 180;
+    transform3.scaleX = 3;
+    transform3.scaleY = 6;
+
+    expect(transform1.relativeOffsetX).toEqual(30);
+    expect(transform1.relativeOffsetY).toEqual(25);
+    expect(transform1.relativeOffsetZ).toEqual(7);
+    expect(transform1.relativeRotation).toEqual(330);
+    expect(transform1.relativeScaleX).toEqual(1.5);
+    expect(transform1.relativeScaleY).toEqual(2);
+
+    expect(transform2.relativeOffsetX).toEqual(-5);
+    expect(transform2.relativeOffsetY).toEqual(-5);
+    expect(transform2.relativeOffsetZ).toEqual(0);
+    expect(transform2.relativeRotation).toEqual(90);
+    expect(transform2.relativeScaleX).toEqual(3);
+    expect(transform2.relativeScaleY).toEqual(4);
+
+    expect(transform3.relativeOffsetX).toEqual(15);
+    expect(transform3.relativeOffsetY).toEqual(10);
+    expect(transform3.relativeOffsetZ).toEqual(2);
+    expect(transform3.relativeRotation).toEqual(180);
+    expect(transform3.relativeScaleX).toEqual(3);
+    expect(transform3.relativeScaleY).toEqual(6);
+  });
 });

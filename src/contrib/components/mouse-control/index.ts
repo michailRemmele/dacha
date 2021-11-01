@@ -1,8 +1,21 @@
 import { Component } from '../../../engine/component';
 
-class MouseControl extends Component {
-  constructor(componentName, config) {
-    super(componentName, config);
+interface InputEventBindings {
+  [key: string]: {
+    messageType: string
+    attrs: Record<string, unknown>
+  }
+}
+
+interface MouseControlConfig {
+  inputEventBindings: InputEventBindings
+}
+
+export class MouseControl extends Component {
+  private _inputEventBindings: InputEventBindings;
+
+  constructor(componentName: string, config: MouseControlConfig) {
+    super(componentName);
 
     this._inputEventBindings = config.inputEventBindings;
   }
@@ -23,5 +36,3 @@ class MouseControl extends Component {
     });
   }
 }
-
-export default MouseControl;

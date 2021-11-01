@@ -1,8 +1,26 @@
 import { Component } from '../../../engine/component';
 
-class RigidBody extends Component {
-  constructor(componentName, config) {
-    super(componentName, config);
+type RigidBodyType = 'dynamic' | 'static';
+
+interface RigidBodyConfig {
+  type: RigidBodyType;
+  mass: number;
+  useGravity: boolean;
+  drag: number;
+  isPermeable: boolean;
+  ghost: boolean;
+}
+
+export class RigidBody extends Component {
+  private _type: RigidBodyType;
+  private _mass: number;
+  private _useGravity: boolean;
+  private _isPermeable: boolean;
+  private _ghost: boolean;
+  private _drag: number;
+
+  constructor(componentName: string, config: RigidBodyConfig) {
+    super(componentName);
 
     this._type = config.type;
     this._mass = config.mass;
@@ -71,5 +89,3 @@ class RigidBody extends Component {
     });
   }
 }
-
-export default RigidBody;

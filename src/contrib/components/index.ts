@@ -1,12 +1,12 @@
 import Camera from './camera/camera';
 import KeyboardControl from './keyboardControl/keyboardControl';
 import ColliderContainer from './colliderContainer/colliderContainer';
-import RigidBody from './rigidBody/rigidBody';
+import { RigidBody } from './rigid-body';
 import Animatable from './animatable/animatable';
 import Renderable from './renderable/renderable';
 import { Transform } from './transform';
-import MouseControl from './mouseControl/mouseControl';
-import Script from './script/script';
+import { MouseControl } from './mouse-control';
+import { Script } from './script';
 
 export default {
   camera: Camera,
