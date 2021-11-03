@@ -9,7 +9,7 @@ describe('Contrib -> components -> RigidBody', () => {
       isPermeable: false,
       ghost: false,
       drag: 1,
-    });
+    }).clone();
 
     expect(rigidBody.type).toEqual('dynamic');
     expect(rigidBody.mass).toEqual(10);
@@ -27,7 +27,7 @@ describe('Contrib -> components -> RigidBody', () => {
       isPermeable: false,
       ghost: false,
       drag: 1,
-    });
+    }).clone();
 
     rigidBody.type = 'static';
     rigidBody.mass = 20;

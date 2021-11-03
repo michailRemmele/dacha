@@ -1,6 +1,6 @@
-import Camera from './camera/camera';
-import KeyboardControl from './keyboardControl/keyboardControl';
-import ColliderContainer from './colliderContainer/colliderContainer';
+import { Camera } from './camera';
+import { KeyboardControl } from './keyboard-control';
+import { ColliderContainer } from './collider-container';
 import { RigidBody } from './rigid-body';
 import Animatable from './animatable/animatable';
 import Renderable from './renderable/renderable';

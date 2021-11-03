@@ -1,5 +1,10 @@
-class BoxCollider {
-  constructor(config) {
+export class BoxCollider {
+  private _sizeX: number;
+  private _sizeY: number;
+  private _centerX: number;
+  private _centerY: number;
+
+  constructor(config: Record<string, number>) {
     this._sizeX = config.sizeX;
     this._sizeY = config.sizeY;
     this._centerX = config.centerX;
@@ -37,15 +42,4 @@ class BoxCollider {
   get centerY() {
     return this._centerY;
   }
-
-  clone() {
-    return new BoxCollider({
-      sizeX: this.sizeX,
-      sizeY: this.sizeY,
-      centerX: this.centerX,
-      centerY: this.centerY,
-    });
-  }
 }
-
-export default BoxCollider;

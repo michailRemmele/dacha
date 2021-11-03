@@ -1,5 +1,9 @@
-class CircleCollider {
-  constructor(config) {
+export class CircleCollider {
+  private _radius: number;
+  private _centerX: number;
+  private _centerY: number;
+
+  constructor(config: Record<string, number>) {
     this._radius = config.radius;
     this._centerX = config.centerX;
     this._centerY = config.centerY;
@@ -28,14 +32,4 @@ class CircleCollider {
   get centerY() {
     return this._centerY;
   }
-
-  clone() {
-    return new CircleCollider({
-      radius: this.radius,
-      centerX: this.centerX,
-      centerY: this.centerY,
-    });
-  }
 }
-
-export default CircleCollider;

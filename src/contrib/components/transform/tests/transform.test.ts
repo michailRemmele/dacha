@@ -14,7 +14,7 @@ describe('Contrib -> components -> Transform', () => {
       rotation: 90,
       scaleX: 3,
       scaleY: 4,
-    });
+    }).clone();
     transform2 = new Transform('transform', {
       offsetX: 20,
       offsetY: 10,
@@ -22,7 +22,7 @@ describe('Contrib -> components -> Transform', () => {
       rotation: 180,
       scaleX: 6,
       scaleY: 8,
-    });
+    }).clone();
     transform3 = new Transform('transform', {
       offsetX: 30,
       offsetY: 20,
@@ -30,7 +30,7 @@ describe('Contrib -> components -> Transform', () => {
       rotation: 270,
       scaleX: 9,
       scaleY: 12,
-    });
+    }).clone();
 
     const gameObject1 = new GameObject('mock-game-object-1');
     const gameObject2 = new GameObject('mock-game-object-2');

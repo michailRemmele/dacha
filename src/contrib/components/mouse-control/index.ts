@@ -1,20 +1,10 @@
 import { Component } from '../../../engine/component';
-
-interface InputEventBindings {
-  [key: string]: {
-    messageType: string
-    attrs: Record<string, unknown>
-  }
-}
-
-interface MouseControlConfig {
-  inputEventBindings: InputEventBindings
-}
+import { InputEventsConfig, InputEventBindings } from '../../types';
 
 export class MouseControl extends Component {
   private _inputEventBindings: InputEventBindings;
 
-  constructor(componentName: string, config: MouseControlConfig) {
+  constructor(componentName: string, config: InputEventsConfig) {
     super(componentName);
 
     this._inputEventBindings = config.inputEventBindings;
