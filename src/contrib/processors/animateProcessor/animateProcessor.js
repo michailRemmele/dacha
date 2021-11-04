@@ -76,7 +76,7 @@ class AnimateProcessor extends Processor {
       });
 
       if (nextTransition) {
-        animatable.currentState = nextTransition.state;
+        animatable.updateCurrentState(nextTransition.state);
         animatable.duration = 0;
       }
     });
