@@ -1,0 +1,446 @@
+{
+  "initialState": "idle",
+  "states": [
+    {
+      "name": "idle",
+      "speed": 0.5,
+      "transitions": [
+        {
+          "state": "death",
+          "conditions": [
+            {
+              "type": "message",
+              "props": {
+                "message": "DEATH"
+              }
+            }
+          ],
+          "time": 0
+        },
+        {
+          "state": "run",
+          "conditions": [
+            {
+              "type": "comparator",
+              "props": {
+                "arg1": {
+                  "type": "componentValue",
+                  "value": "movement.vector.x"
+                },
+                "operation": "notEquals",
+                "arg2": {
+                  "type": "number",
+                  "value": 0
+                }
+              }
+            }
+          ],
+          "time": 0
+        },
+        {
+          "state": "run",
+          "conditions": [
+            {
+              "type": "comparator",
+              "props": {
+                "arg1": {
+                  "type": "componentValue",
+                  "value": "movement.vector.y"
+                },
+                "operation": "notEquals",
+                "arg2": {
+                  "type": "number",
+                  "value": 0
+                }
+              }
+            }
+          ],
+          "time": 0
+        }
+      ],
+      "type": "group",
+      "pickMode": "2D",
+      "pickProps": {
+        "x": "viewDirection.x",
+        "y": "viewDirection.y"
+      },
+      "substates": [
+        {
+          "name": "idleRight",
+          "timeline": {
+            "frames": [
+              {
+                "index": 0,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 1,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 2,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": 1,
+          "y": 0
+        },
+        {
+          "name": "idleLeft",
+          "timeline": {
+            "frames": [
+              {
+                "index": 0,
+                "rotation": 0,
+                "flipX": true,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 1,
+                "rotation": 0,
+                "flipX": true,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 2,
+                "rotation": 0,
+                "flipX": true,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": -1,
+          "y": 0
+        },
+        {
+          "name": "idleTop",
+          "timeline": {
+            "frames": [
+              {
+                "index": 6,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 7,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 8,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": 0,
+          "y": -1
+        },
+        {
+          "name": "idleBottom",
+          "timeline": {
+            "frames": [
+              {
+                "index": 3,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 4,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 5,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": 0,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "name": "run",
+      "speed": 1,
+      "transitions": [
+        {
+          "state": "death",
+          "conditions": [
+            {
+              "type": "message",
+              "props": {
+                "message": "DEATH"
+              }
+            }
+          ],
+          "time": 0
+        },
+        {
+          "state": "idle",
+          "conditions": [
+            {
+              "type": "comparator",
+              "props": {
+                "arg1": {
+                  "type": "componentValue",
+                  "value": "movement.vector.x"
+                },
+                "operation": "equals",
+                "arg2": {
+                  "type": "number",
+                  "value": 0
+                }
+              }
+            },
+            {
+              "type": "comparator",
+              "props": {
+                "arg1": {
+                  "type": "componentValue",
+                  "value": "movement.vector.y"
+                },
+                "operation": "equals",
+                "arg2": {
+                  "type": "number",
+                  "value": 0
+                }
+              }
+            }
+          ],
+          "time": 0
+        }
+      ],
+      "type": "group",
+      "pickMode": "2D",
+      "pickProps": {
+        "x": "viewDirection.x",
+        "y": "viewDirection.y"
+      },
+      "substates": [
+        {
+          "name": "runRight",
+          "timeline": {
+            "frames": [
+              {
+                "index": 9,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 10,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 11,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 10,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": 1,
+          "y": 0
+        },
+        {
+          "name": "runLeft",
+          "timeline": {
+            "frames": [
+              {
+                "index": 9,
+                "rotation": 0,
+                "flipX": true,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 10,
+                "rotation": 0,
+                "flipX": true,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 11,
+                "rotation": 0,
+                "flipX": true,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 10,
+                "rotation": 0,
+                "flipX": true,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": -1,
+          "y": 0
+        },
+        {
+          "name": "runTop",
+          "timeline": {
+            "frames": [
+              {
+                "index": 15,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 16,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 17,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 16,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": 0,
+          "y": -1
+        },
+        {
+          "name": "runBottom",
+          "timeline": {
+            "frames": [
+              {
+                "index": 12,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 13,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 14,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              },
+              {
+                "index": 13,
+                "rotation": 0,
+                "flipX": false,
+                "flipY": false,
+                "disabled": false
+              }
+            ],
+            "looped": true
+          },
+          "x": 0,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "name": "death",
+      "speed": 1,
+      "transitions": [],
+      "type": "individual",
+      "timeline": {
+        "frames": [
+          {
+            "index": 27,
+            "rotation": 0,
+            "flipX": false,
+            "flipY": false,
+            "disabled": false
+          },
+          {
+            "index": 24,
+            "rotation": 0,
+            "flipX": false,
+            "flipY": false,
+            "disabled": false
+          },
+          {
+            "index": 25,
+            "rotation": 0,
+            "flipX": false,
+            "flipY": false,
+            "disabled": false
+          },
+          {
+            "index": 26,
+            "rotation": 0,
+            "flipX": false,
+            "flipY": false,
+            "disabled": false
+          }
+        ],
+        "looped": false
+      }
+    }
+  ]
+}
