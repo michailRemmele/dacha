@@ -6,8 +6,9 @@
     "uuid-random": "1.0.9"
   },
   "devDependencies": {
-    "@babel/core": "7.3.4",
-    "@babel/plugin-proposal-object-rest-spread": "7.3.4",
+    "@babel/core": "7.16.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.16.0",
+    "@babel/plugin-proposal-optional-chaining": "7.16.0",
     "@babel/preset-typescript": "7.15.0",
     "@types/jest": "27.0.2",
     "@typescript-eslint/eslint-plugin": "5.2.0",
