@@ -177,4 +177,18 @@ describe('Contrib -> components -> Transform', () => {
     expect(transform3.relativeScaleX).toEqual(3);
     expect(transform3.relativeScaleY).toEqual(6);
   });
+
+  it('Clones return deep copy of original component', () => {
+    const originalTransform = new Transform('transform', {
+      offsetX: 10,
+      offsetY: 5,
+      offsetZ: 1,
+      rotation: 90,
+      scaleX: 3,
+      scaleY: 4,
+    });
+    const cloneTransform = originalTransform.clone();
+
+    expect(originalTransform).not.toBe(cloneTransform);
+  });
 });
