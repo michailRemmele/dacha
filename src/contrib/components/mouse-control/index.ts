@@ -2,27 +2,27 @@ import { Component } from '../../../engine/component';
 import { InputEventsConfig, InputEventBindings } from '../../types';
 
 export class MouseControl extends Component {
-  private _inputEventBindings: InputEventBindings;
+  inputEventBindings: InputEventBindings;
 
   constructor(componentName: string, config: InputEventsConfig) {
     super(componentName);
 
-    this._inputEventBindings = config.inputEventBindings;
-  }
-
-  set inputEventBindings(inputEventBindings) {
-    this._inputEventBindings = inputEventBindings;
-  }
-
-  get inputEventBindings() {
-    return this._inputEventBindings;
+    this.inputEventBindings = config.inputEventBindings;
   }
 
   clone() {
     return new MouseControl(this.componentName, {
-      inputEventBindings: {
-        ...this.inputEventBindings,
-      },
+      inputEventBindings: Object.keys(this.inputEventBindings).reduce(
+        (acc: InputEventBindings, key) => {
+          acc[key] = {
+            messageType: this.inputEventBindings[key].messageType,
+            attrs: {
+              ...this.inputEventBindings[key].attrs,
+            },
+          };
+          return acc;
+        }, {},
+      ),
     });
   }
 }

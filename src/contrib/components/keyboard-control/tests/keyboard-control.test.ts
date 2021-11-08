@@ -65,4 +65,36 @@ describe('Contrib -> components -> KeyboardControl', () => {
       W: 'PRESSED',
     });
   });
+
+  it('Clones return deep copy of original component', () => {
+    const originalKeyboardControl = new KeyboardControl('keyboardControl', {
+      inputEventBindings: {
+        W_PRESSED: {
+          messageType: 'WALK',
+          attrs: {
+            angle: 90,
+          },
+        },
+      },
+    });
+    const cloneKeyboardControl = originalKeyboardControl.clone();
+
+    expect(originalKeyboardControl).not.toBe(cloneKeyboardControl);
+
+    expect(originalKeyboardControl.inputEventBindings).not.toBe(
+      cloneKeyboardControl.inputEventBindings,
+    );
+    expect(originalKeyboardControl.inputEventBindings.W_PRESSED).not.toBe(
+      cloneKeyboardControl.inputEventBindings.W_PRESSED,
+    );
+    expect(
+      originalKeyboardControl.inputEventBindings.W_PRESSED.attrs,
+    ).not.toBe(
+      cloneKeyboardControl.inputEventBindings.W_PRESSED.attrs,
+    );
+
+    expect(originalKeyboardControl.keyStates).not.toBe(
+      cloneKeyboardControl.keyStates,
+    );
+  });
 });

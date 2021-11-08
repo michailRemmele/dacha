@@ -43,4 +43,18 @@ describe('Contrib -> components -> RigidBody', () => {
     expect(rigidBody.ghost).toEqual(true);
     expect(rigidBody.drag).toEqual(2);
   });
+
+  it('Clones return deep copy of original component', () => {
+    const originalRigidBody = new RigidBody('rigidBody', {
+      type: 'dynamic',
+      mass: 10,
+      useGravity: true,
+      isPermeable: false,
+      ghost: false,
+      drag: 1,
+    });
+    const cloneRigidBody = originalRigidBody.clone();
+
+    expect(originalRigidBody).not.toBe(cloneRigidBody);
+  });
 });

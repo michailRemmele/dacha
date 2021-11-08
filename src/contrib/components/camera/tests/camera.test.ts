@@ -24,4 +24,13 @@ describe('Contrib -> components -> Camera', () => {
     expect(camera.windowSizeX).toEqual(1920);
     expect(camera.windowSizeY).toEqual(1080);
   });
+
+  it('Clones return deep copy of original component', () => {
+    const originalCamera = new Camera('camera', {
+      zoom: 100,
+    });
+    const cloneCamera = originalCamera.clone();
+
+    expect(originalCamera).not.toBe(cloneCamera);
+  });
 });

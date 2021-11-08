@@ -72,7 +72,7 @@ export class Renderable extends Component {
       spacing: this.spacing,
       extruding: this.extruding,
       rotation: this.rotation,
-      origin: this._origin,
+      origin: this._origin.slice(0) as [number, number],
       flipX: this.flipX,
       flipY: this.flipY,
       disabled: this.disabled,

@@ -14,8 +14,8 @@ const COLLIDER_MAP = {
 };
 
 export class ColliderContainer extends Component {
-  private _type: 'boxCollider' | 'circleCollider';
-  private _collider: BoxCollider | CircleCollider;
+  type: 'boxCollider' | 'circleCollider';
+  collider: BoxCollider | CircleCollider;
 
   constructor(
     componentName: string,
@@ -23,7 +23,7 @@ export class ColliderContainer extends Component {
   ) {
     super(componentName);
 
-    this._type = config.type;
+    this.type = config.type;
 
     if (!COLLIDER_MAP[this.type]) {
       throw new Error(`Not found collider with same type: ${this.type}`);
@@ -31,23 +31,7 @@ export class ColliderContainer extends Component {
 
     const Collider = COLLIDER_MAP[this.type];
 
-    this._collider = new Collider(config.collider);
-  }
-
-  set type(type) {
-    this._type = type;
-  }
-
-  get type() {
-    return this._type;
-  }
-
-  set collider(collider) {
-    this._collider = collider;
-  }
-
-  get collider() {
-    return this._collider;
+    this.collider = new Collider(config.collider);
   }
 
   clone() {

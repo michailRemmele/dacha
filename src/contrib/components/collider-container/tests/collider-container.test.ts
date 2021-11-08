@@ -91,4 +91,39 @@ describe('Contrib -> components -> ColliderContainer', () => {
       });
     }).toThrowError('Not found collider with same type: superCollider');
   });
+
+  it('Clones return deep copy of original component', () => {
+    const originalBoxColliderContainer = new ColliderContainer('colliderContainer', {
+      type: 'boxCollider',
+      collider: {
+        sizeX: 10,
+        sizeY: 20,
+        centerX: 1,
+        centerY: 2,
+      },
+    });
+    const cloneBoxColliderContainer = originalBoxColliderContainer.clone();
+
+    expect(originalBoxColliderContainer).not.toBe(cloneBoxColliderContainer);
+
+    expect(originalBoxColliderContainer.collider).not.toBe(
+      cloneBoxColliderContainer.collider,
+    );
+
+    const originalCircleColliderContainer = new ColliderContainer('colliderContainer', {
+      type: 'circleCollider',
+      collider: {
+        radius: 20,
+        centerX: 1,
+        centerY: 2,
+      },
+    });
+    const cloneCircleColliderContainer = originalBoxColliderContainer.clone();
+
+    expect(originalCircleColliderContainer).not.toBe(cloneCircleColliderContainer);
+
+    expect(originalCircleColliderContainer.collider).not.toBe(
+      cloneCircleColliderContainer.collider,
+    );
+  });
 });

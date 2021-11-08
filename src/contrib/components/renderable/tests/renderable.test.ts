@@ -78,4 +78,26 @@ describe('Contrib -> components -> Renderable', () => {
     expect(renderable.disabled).toEqual(true);
     expect(renderable.sortingLayer).toEqual('units');
   });
+
+  it('Clones return deep copy of original component', () => {
+    const originalRenderable = new Renderable('renderable', {
+      src: 'some-path-to-texture',
+      type: 'sprite',
+      width: 100,
+      height: 200,
+      slice: 10,
+      spacing: 5,
+      extruding: 2,
+      rotation: 45,
+      origin: [0, 0],
+      flipX: false,
+      flipY: true,
+      disabled: false,
+      sortingLayer: 'terrain',
+    });
+    const cloneRenderable = originalRenderable.clone();
+
+    expect(originalRenderable).not.toBe(cloneRenderable);
+    expect(originalRenderable.origin).not.toBe(cloneRenderable.origin);
+  });
 });
