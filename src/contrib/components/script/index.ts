@@ -5,20 +5,12 @@ interface ScriptConfig {
 }
 
 export class Script extends Component {
-  private _name: string;
+  name: string;
 
   constructor(componentName: string, config: ScriptConfig) {
     super(componentName);
 
-    this._name = config.name;
-  }
-
-  set name(name) {
-    this._name = name;
-  }
-
-  get name() {
-    return this._name;
+    this.name = config.name;
   }
 
   clone() {

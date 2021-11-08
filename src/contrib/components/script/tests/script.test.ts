@@ -18,4 +18,13 @@ describe('Contrib -> components -> Script', () => {
 
     expect(script.name).toEqual('some-another-script');
   });
+
+  it('Clones return deep copy of original component', () => {
+    const originalScript = new Script('script', {
+      name: 'some-script',
+    });
+    const cloneScript = originalScript.clone();
+
+    expect(originalScript).not.toBe(cloneScript);
+  });
 });
