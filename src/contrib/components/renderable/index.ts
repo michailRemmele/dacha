@@ -45,7 +45,7 @@ export class Renderable extends Component {
     this.slice = config.slice;
     this.spacing = config.spacing || 0;
     this.extruding = config.extruding || 0;
-    this.currentFrame = config.type === 'sprite' ? 0 : undefined;
+    this.currentFrame = config.type === 'sprite' ? 0 : void 0;
     this.rotation = config.rotation;
     this._origin = config.origin;
     this.flipX = config.flipX;
@@ -80,5 +80,3 @@ export class Renderable extends Component {
     });
   }
 }
-
-export default Renderable;

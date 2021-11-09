@@ -118,7 +118,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
         centerY: 2,
       },
     });
-    const cloneCircleColliderContainer = originalBoxColliderContainer.clone();
+    const cloneCircleColliderContainer = originalCircleColliderContainer.clone();
 
     expect(originalCircleColliderContainer).not.toBe(cloneCircleColliderContainer);
 

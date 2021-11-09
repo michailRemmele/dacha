@@ -23,5 +23,3 @@ export class Camera extends Component {
     });
   }
 }
-
-export default Camera;
