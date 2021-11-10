@@ -2,6 +2,7 @@ import { SECTIONS, GAME_OBJECT_CREATOR_KEY_NAME } from '../consts/global';
 
 import IOC from '../ioc/ioc';
 import Store from './store';
+import { GameObjectObserver } from '../gameObject';
 import GameObjectSpawner from '../gameObject/gameObjectSpawner';
 import GameObjectDestroyer from '../gameObject/gameObjectDestroyer';
 
@@ -63,6 +64,10 @@ class Scene {
 
   getStore() {
     return this._store;
+  }
+
+  createGameObjectObserver(filter) {
+    return new GameObjectObserver(this, filter);
   }
 
   getGameObjectSpawner() {

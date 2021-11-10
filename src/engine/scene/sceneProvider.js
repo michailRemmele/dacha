@@ -1,6 +1,6 @@
 import IOC from '../ioc/ioc';
 import Scene from './scene';
-import GameObjectObserver from '../gameObject/gameObjectObserver';
+import { GameObjectObserver } from '../gameObject';
 import SceneController from './sceneController';
 
 import { RESOURCES_LOADER_KEY_NAME } from '../consts/global';

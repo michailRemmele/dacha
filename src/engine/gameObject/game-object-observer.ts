@@ -1,5 +1,33 @@
-class GameObjectObserver {
-  constructor(scene, filter) {
+import { GameObject } from './game-object';
+
+// TODO: Move to scene.ts
+interface GameObjectChangeEvent {
+  type: string;
+  gameObject: GameObject;
+}
+
+// TODO: Replace to real Scene class
+interface Scene {
+  getGameObjects(): Array<GameObject>;
+  subscribeOnGameObjectsChange(callback: (event: GameObjectChangeEvent) => void): void;
+  GAME_OBJECT_ADDED: string;
+}
+
+interface GameObjectObserverFilter {
+  type?: string;
+  components?: Array<string>;
+}
+
+export class GameObjectObserver {
+  private _components: Array<string>;
+  private _type?: string;
+  private _observedGameObjects: Array<GameObject>;
+  private _addedToAccepted: Array<GameObject>;
+  private _removedFromAccepted: Array<GameObject>;
+  private _acceptedGameObjects: Array<GameObject>;
+  private _acceptedGameObjectsMap: Record<string, GameObject | undefined>;
+
+  constructor(scene: Scene, filter: GameObjectObserverFilter) {
     const {
       type,
       components = [],
@@ -36,7 +64,7 @@ class GameObjectObserver {
     });
   }
 
-  _subscribeGameObject(event) {
+  _subscribeGameObject(event: GameObjectChangeEvent) {
     const { gameObject } = event;
 
     if (this._test(gameObject)) {
@@ -46,7 +74,7 @@ class GameObjectObserver {
     }
   }
 
-  _add(gameObject) {
+  _add(gameObject: GameObject) {
     this._observedGameObjects.push(gameObject);
 
     if (this._test(gameObject)) {
@@ -54,8 +82,10 @@ class GameObjectObserver {
     }
   }
 
-  _remove(gameObject) {
-    const remove = (gameObjects, id) => gameObjects.filter((item) => id !== item.getId());
+  _remove(gameObject: GameObject) {
+    const remove = (gameObjects: Array<GameObject>, id: string) => gameObjects.filter(
+      (item) => id !== item.getId(),
+    );
 
     const gameObjectId = gameObject.getId();
 
@@ -66,7 +96,7 @@ class GameObjectObserver {
     this._removedFromAccepted.push(gameObject);
   }
 
-  _test(gameObject) {
+  _test(gameObject: GameObject) {
     const type = gameObject.getType();
 
     if (this._type && this._type !== type) {
@@ -76,7 +106,7 @@ class GameObjectObserver {
     return this._components.every((component) => gameObject.getComponent(component));
   }
 
-  _accept(gameObject) {
+  _accept(gameObject: GameObject) {
     const gameObjectId = gameObject.getId();
 
     if (this._acceptedGameObjectsMap[gameObjectId]) {
@@ -89,7 +119,7 @@ class GameObjectObserver {
     this._addedToAccepted.push(gameObject);
   }
 
-  _decline(gameObject) {
+  _decline(gameObject: GameObject) {
     const gameObjectId = gameObject.getId();
 
     if (!this._acceptedGameObjectsMap[gameObjectId]) {
@@ -122,25 +152,23 @@ class GameObjectObserver {
     return lastAdded;
   }
 
-  getById(id) {
+  getById(id: string) {
     return this._acceptedGameObjectsMap[id];
   }
 
-  getByIndex(index) {
+  getByIndex(index: number) {
     return this._acceptedGameObjects[index];
   }
 
-  forEach(callback) {
+  forEach(callback: (gameObject: GameObject) => void) {
     this._acceptedGameObjects.forEach(callback);
   }
 
-  map(callback) {
+  map(callback: (gameObject: GameObject) => unknown) {
     return this._acceptedGameObjects.map(callback);
   }
 
-  sort(compareFunction) {
+  sort(compareFunction: (a: GameObject, b: GameObject) => number) {
     this._acceptedGameObjects = this._acceptedGameObjects.sort(compareFunction);
   }
 }
-
-export default GameObjectObserver;
