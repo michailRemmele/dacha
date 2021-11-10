@@ -24,7 +24,6 @@ class Engine {
 
   async start() {
     const {
-      SCENE_PROVIDER_KEY_NAME,
       RESOURCES_LOADER_KEY_NAME,
       PREFAB_COLLECTION_KEY_NAME,
       PROJECT_SETTINGS_KEY_NAME,
@@ -48,7 +47,6 @@ class Engine {
     IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(gameObjectCreator));
 
     const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins, pluginHelpers);
-    IOC.register(SCENE_PROVIDER_KEY_NAME, new ResolveSingletonStrategy(sceneProvider));
 
     for (let i = 0; i < mainConfig.prefabs.length; i += 1) {
       // For pure async await syntax in method. Need to refactor later
@@ -60,7 +58,7 @@ class Engine {
     await sceneProvider.loadScene(mainConfig.startScene);
     sceneProvider.moveToLoaded();
 
-    const gameLoop = new GameLoop();
+    const gameLoop = new GameLoop(sceneProvider);
     gameLoop.run();
 
     window.onblur = () => gameLoop.stop();
