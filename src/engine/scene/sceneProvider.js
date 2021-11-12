@@ -1,6 +1,5 @@
 import IOC from '../ioc/ioc';
 import Scene from './scene';
-import { GameObjectObserver } from '../gameObject';
 import SceneController from './sceneController';
 
 import { RESOURCES_LOADER_KEY_NAME } from '../consts/global';
@@ -39,10 +38,8 @@ class SceneProvider {
 
     for (let i = 0; i < sceneConfig.processors.length; i += 1) {
       const {
-        name: processorName, filter, options, section,
+        name: processorName, options, section,
       } = sceneConfig.processors[i];
-
-      const gameObjectObserver = new GameObjectObserver(scene, filter);
 
       // For pure async await syntax in method. Need to refactor later
       // eslint-disable-next-line no-await-in-loop
@@ -51,7 +48,7 @@ class SceneProvider {
         store: scene.getStore(),
         gameObjectSpawner: scene.getGameObjectSpawner(),
         gameObjectDestroyer: scene.getGameObjectDestroyer(),
-        gameObjectObserver,
+        createGameObjectObserver: (filter) => scene.createGameObjectObserver(filter),
         sceneController: this._sceneController,
         helpers: this._pluginHelpers,
       });

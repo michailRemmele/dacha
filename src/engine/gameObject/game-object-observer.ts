@@ -13,7 +13,7 @@ interface Scene {
   GAME_OBJECT_ADDED: string;
 }
 
-interface GameObjectObserverFilter {
+export interface GameObjectObserverFilter {
   type?: string;
   components?: Array<string>;
 }

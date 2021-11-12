@@ -1,2 +1,2 @@
 export { GameObject } from './game-object';
-export { GameObjectObserver } from './game-object-observer';
+export { GameObjectObserver, GameObjectObserverFilter } from './game-object-observer';

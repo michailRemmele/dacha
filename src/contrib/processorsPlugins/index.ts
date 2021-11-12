@@ -1,11 +1,9 @@
-import AnimateProcessorPlugin from './animateProcessorPlugin/animateProcessorPlugin';
-import CameraProcessorPlugin from './cameraProcessorPlugin/cameraProcessorPlugin';
-import CollisionBroadcastProcessorPlugin
-  from './collisionBroadcastProcessorPlugin/collisionBroadcastProcessorPlugin';
-import CollisionDetectionProcessorPlugin
-  from './collisionDetectionProcessorPlugin/collisionDetectionProcessorPlugin';
-import CollisionSolverPlugin from './collisionSolverPlugin/collisionSolverPlugin';
-import ConstraintSolverPlugin from './constraintSolverPlugin/constraintSolverPlugin';
+import { AnimateProcessorPlugin } from './animate-processor-plugin';
+import { CameraProcessorPlugin } from './camera-processor-plugin';
+import { CollisionBroadcastProcessorPlugin } from './collision-broadcast-processor-plugin';
+import { CollisionDetectionProcessorPlugin } from './collision-detection-processor-plugin';
+import { CollisionSolverPlugin } from './collision-solver-plugin';
+import { ConstraintSolverPlugin } from './constraint-solver-plugin';
 import { GameStatsMeterPlugin } from './gameStatsMeterPlugin';
 import JammerPlugin from './jammerPlugin/jammerPlugin';
 import KeyboardInputProcessorPlugin
