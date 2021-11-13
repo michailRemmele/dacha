@@ -4,21 +4,18 @@ import { CollisionBroadcastProcessorPlugin } from './collision-broadcast-process
 import { CollisionDetectionProcessorPlugin } from './collision-detection-processor-plugin';
 import { CollisionSolverPlugin } from './collision-solver-plugin';
 import { ConstraintSolverPlugin } from './constraint-solver-plugin';
-import { GameStatsMeterPlugin } from './gameStatsMeterPlugin';
-import JammerPlugin from './jammerPlugin/jammerPlugin';
-import KeyboardInputProcessorPlugin
-  from './keyboardInputProcessorPlugin/keyboardInputProcessorPlugin';
-import KeyboardControlProcessorPlugin
-  from './keyboardControlProcessorPlugin/keyboardControlProcessorPlugin';
-import MouseControlProcessorPlugin from './mouseControlProcessorPlugin/mouseControlProcessorPlugin';
-import MouseInputProcessorPlugin from './mouseInputProcessorPlugin/mouseInputProcessorPlugin';
-import MouseInputCoordinatesProjectorPlugin
-  from './mouseInputCoordinatesProjector/mouseInputCoordinatesProjector';
-import PhysicsProcessorPlugin from './physicsProcessorPlugin/physicsProcessorPlugin';
-import RenderProcessorPlugin from './renderProcessorPlugin/renderProcessorPlugin';
-import SceneLoadProcessorPlugin from './sceneLoadProcessorPlugin/sceneLoadProcessorPlugin';
-import ScriptProcessorPlugin from './scriptProcessorPlugin/scriptProcessorPlugin';
-import UiBridgePlugin from './uiBridgePlugin/uiBridgePlugin';
+import { GameStatsMeterPlugin } from './game-stats-meter-plugin';
+import { JammerPlugin } from './jammer-plugin';
+import { KeyboardInputProcessorPlugin } from './keyboard-input-processor-plugin';
+import { KeyboardControlProcessorPlugin } from './keyboard-control-processor-plugin';
+import { MouseControlProcessorPlugin } from './mouse-control-processor-plugin';
+import { MouseInputProcessorPlugin } from './mouse-input-processor-plugin';
+import { MouseInputCoordinatesProjectorPlugin } from './mouse-input-coordinates-projector';
+import { PhysicsProcessorPlugin } from './physics-processor-plugin';
+import { RenderProcessorPlugin } from './render-processor-plugin';
+import { SceneLoadProcessorPlugin } from './scene-load-processor-plugin';
+import { ScriptProcessorPlugin } from './script-processor-plugin';
+import { UiBridgePlugin } from './ui-bridge-plugin';
 
 export default {
   animateProcessor: AnimateProcessorPlugin,

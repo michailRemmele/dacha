@@ -1,9 +1,9 @@
-import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
 import MouseInputCoordinatesProjector
   from '../../processors/mouseInputCoordinatesProjector/mouseInputCoordinatesProjector';
 
-class MouseInputCoordinatesProjectorPlugin extends ProcessorPlugin {
-  async load(options) {
+export class MouseInputCoordinatesProjectorPlugin implements ProcessorPlugin {
+  load(options: ProcessorPluginOptions) {
     const {
       store,
     } = options;
@@ -13,5 +13,3 @@ class MouseInputCoordinatesProjectorPlugin extends ProcessorPlugin {
     });
   }
 }
-
-export default MouseInputCoordinatesProjectorPlugin;

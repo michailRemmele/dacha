@@ -1,8 +1,8 @@
-import ProcessorPlugin from '../../../engine/processorPlugin/processorPlugin';
+import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
 import SceneLoadProcessor from '../../processors/sceneLoadProcessor/sceneLoadProcessor';
 
-class SceneLoadProcessorPlugin extends ProcessorPlugin {
-  async load(options) {
+export class SceneLoadProcessorPlugin implements ProcessorPlugin {
+  load(options: ProcessorPluginOptions) {
     const { sceneController } = options;
 
     return new SceneLoadProcessor({
@@ -10,5 +10,3 @@ class SceneLoadProcessorPlugin extends ProcessorPlugin {
     });
   }
 }
-
-export default SceneLoadProcessorPlugin;
