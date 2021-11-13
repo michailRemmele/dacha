@@ -1,6 +1,8 @@
 export {
-  Processor,
-  ProcessorOptions,
   ProcessorPlugin,
   ProcessorPluginOptions,
 } from './process-plugin';
+export {
+  Processor,
+  ProcessorOptions,
+} from './processor';

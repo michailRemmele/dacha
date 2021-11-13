@@ -1,5 +1,3 @@
-import Processor from '../../../engine/processor/processor';
-
 import InputListener from './inputListener';
 import KeyCodeMapper from './keyCodeMapper';
 
@@ -10,10 +8,8 @@ const RELEASE_EVENT_TYPE = 'RELEASED';
 
 const PREFIX_SEPARATOR = '_';
 
-class KeyboardInputProcessor extends Processor {
+class KeyboardInputProcessor {
   constructor() {
-    super();
-
     this._inputListener = new InputListener(window);
     this._keyCodeMapper = new KeyCodeMapper();
 

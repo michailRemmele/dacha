@@ -1,4 +1,4 @@
-import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
+import { ProcessorPlugin, ProcessorPluginOptions, Processor } from '../../../engine/processor';
 import CameraProcessor from '../../processors/cameraProcessor/cameraProcessor';
 
 const CAMERA_COMPONENT_NAME = 'camera';

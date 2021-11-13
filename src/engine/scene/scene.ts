@@ -1,22 +1,45 @@
 import { SECTIONS, GAME_OBJECT_CREATOR_KEY_NAME } from '../consts/global';
-
+import { Processor } from '../processor';
 import IOC from '../ioc/ioc';
-import Store from './store';
-import { GameObjectObserver } from '../gameObject';
+import { GameObjectObserver, GameObjectObserverFilter, GameObject } from '../gameObject';
 import GameObjectSpawner from '../gameObject/gameObjectSpawner';
 import GameObjectDestroyer from '../gameObject/gameObjectDestroyer';
 
-const GAME_OBJECT_ADDED = 'GAME_OBJECT_ADDED';
-const GAME_OBJECT_REMOVED = 'GAME_OBJECT_REMOVED';
+import { Store } from './store';
+import { GAME_OBJECT_ADDED, GAME_OBJECT_REMOVED } from './consts';
 
-class Scene {
-  constructor(options) {
+// TODO: Remove once game object creator will be moved to ts
+interface GameObjectCreator {
+  create(options: unknown): Array<GameObject>;
+}
+
+interface SceneOptions {
+  name: string;
+  gameObjects: Array<unknown>;
+}
+
+export interface GameObjectChangeEvent {
+  type: string;
+  gameObject: GameObject;
+}
+
+export class Scene {
+  private _name: string;
+  private _gameObjects: Record<string, GameObject>;
+  private _store: Store;
+  private _gameObjectCreator: GameObjectCreator;
+  private _gameObjectSpawner: unknown;
+  private _gameObjectDestroyer: unknown;
+  private _processorSections: Record<string, Array<Processor>>;
+  private _gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
+
+  constructor(options: SceneOptions) {
     const { name, gameObjects } = options;
 
     this._name = name;
     this._gameObjects = {};
     this._store = new Store();
-    this._gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME);
+    this._gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME) as GameObjectCreator;
     this._gameObjectSpawner = new GameObjectSpawner(this, this._gameObjectCreator);
     this._gameObjectDestroyer = new GameObjectDestroyer(this);
 
@@ -28,11 +51,8 @@ class Scene {
 
     this._gameObjectsChangeSubscribers = [];
 
-    this.GAME_OBJECT_ADDED = GAME_OBJECT_ADDED;
-    this.GAME_OBJECT_REMOVED = GAME_OBJECT_REMOVED;
-
     gameObjects.forEach((gameObjectOptions) => {
-      this._gameObjectCreator.create(gameObjectOptions).forEach((gameObject) => {
+      this._gameObjectCreator.create(gameObjectOptions).forEach((gameObject: GameObject) => {
         this.addGameObject(gameObject);
       });
     });
@@ -41,7 +61,9 @@ class Scene {
   mount() {
     Object.keys(this._processorSections).forEach((section) => {
       this._processorSections[section].forEach((processor) => {
-        processor.processorDidMount();
+        if (processor.processorDidMount) {
+          processor.processorDidMount();
+        }
       });
     });
   }
@@ -49,16 +71,18 @@ class Scene {
   unmount() {
     Object.keys(this._processorSections).forEach((section) => {
       this._processorSections[section].forEach((processor) => {
-        processor.processorWillUnmount();
+        if (processor.processorWillUnmount) {
+          processor?.processorWillUnmount();
+        }
       });
     });
   }
 
-  addProcessor(proccessor, section) {
+  addProcessor(proccessor: Processor, section: string) {
     this._processorSections[section].push(proccessor);
   }
 
-  getProcessorSection(section) {
+  getProcessorSection(section: string) {
     return this._processorSections[section];
   }
 
@@ -66,7 +90,7 @@ class Scene {
     return this._store;
   }
 
-  createGameObjectObserver(filter) {
+  createGameObjectObserver(filter: GameObjectObserverFilter) {
     return new GameObjectObserver(this, filter);
   }
 
@@ -78,7 +102,7 @@ class Scene {
     return this._gameObjectDestroyer;
   }
 
-  addGameObject(gameObject) {
+  addGameObject(gameObject: GameObject) {
     const id = gameObject.getId();
 
     if (this._gameObjects[id]) {
@@ -95,9 +119,16 @@ class Scene {
     });
   }
 
-  removeGameObject(gameObject) {
+  removeGameObject(gameObject: GameObject) {
     gameObject.clearSubscriptions();
-    this._gameObjects[gameObject.getId()] = undefined;
+    this._gameObjects = Object.keys(this._gameObjects)
+      .reduce((acc: Record<string, GameObject>, key) => {
+        if (key !== gameObject.getId()) {
+          acc[key] = this._gameObjects[key];
+        }
+
+        return acc;
+      }, {});
 
     this._gameObjectsChangeSubscribers.forEach((callback) => {
       callback({
@@ -115,7 +146,7 @@ class Scene {
     return Object.values(this._gameObjects);
   }
 
-  subscribeOnGameObjectsChange(callback) {
+  subscribeOnGameObjectsChange(callback: (event: GameObjectChangeEvent) => void) {
     if (!(callback instanceof Function)) {
       throw new Error('On subscribe callback should be a function');
     }
@@ -123,5 +154,3 @@ class Scene {
     this._gameObjectsChangeSubscribers.push(callback);
   }
 }
-
-export default Scene;

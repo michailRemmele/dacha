@@ -1,17 +1,10 @@
+import {
+  GAME_OBJECT_ADDED,
+  Scene,
+  GameObjectChangeEvent,
+} from '../scene';
+
 import { GameObject } from './game-object';
-
-// TODO: Move to scene.ts
-interface GameObjectChangeEvent {
-  type: string;
-  gameObject: GameObject;
-}
-
-// TODO: Replace to real Scene class
-interface Scene {
-  getGameObjects(): Array<GameObject>;
-  subscribeOnGameObjectsChange(callback: (event: GameObjectChangeEvent) => void): void;
-  GAME_OBJECT_ADDED: string;
-}
 
 export interface GameObjectObserverFilter {
   type?: string;
@@ -55,7 +48,7 @@ export class GameObjectObserver {
     scene.subscribeOnGameObjectsChange((event) => {
       const { gameObject } = event;
 
-      if (scene.GAME_OBJECT_ADDED === event.type) {
+      if (event.type === GAME_OBJECT_ADDED) {
         gameObject.subscribe(this._subscribeGameObject.bind(this));
         this._add(gameObject);
       } else {
@@ -64,7 +57,7 @@ export class GameObjectObserver {
     });
   }
 
-  _subscribeGameObject(event: GameObjectChangeEvent) {
+  private _subscribeGameObject(event: GameObjectChangeEvent) {
     const { gameObject } = event;
 
     if (this._test(gameObject)) {
@@ -74,7 +67,7 @@ export class GameObjectObserver {
     }
   }
 
-  _add(gameObject: GameObject) {
+  private _add(gameObject: GameObject) {
     this._observedGameObjects.push(gameObject);
 
     if (this._test(gameObject)) {
@@ -82,7 +75,7 @@ export class GameObjectObserver {
     }
   }
 
-  _remove(gameObject: GameObject) {
+  private _remove(gameObject: GameObject) {
     const remove = (gameObjects: Array<GameObject>, id: string) => gameObjects.filter(
       (item) => id !== item.getId(),
     );
@@ -96,7 +89,7 @@ export class GameObjectObserver {
     this._removedFromAccepted.push(gameObject);
   }
 
-  _test(gameObject: GameObject) {
+  private _test(gameObject: GameObject) {
     const type = gameObject.getType();
 
     if (this._type && this._type !== type) {
@@ -106,7 +99,7 @@ export class GameObjectObserver {
     return this._components.every((component) => gameObject.getComponent(component));
   }
 
-  _accept(gameObject: GameObject) {
+  private _accept(gameObject: GameObject) {
     const gameObjectId = gameObject.getId();
 
     if (this._acceptedGameObjectsMap[gameObjectId]) {
@@ -119,7 +112,7 @@ export class GameObjectObserver {
     this._addedToAccepted.push(gameObject);
   }
 
-  _decline(gameObject: GameObject) {
+  private _decline(gameObject: GameObject) {
     const gameObjectId = gameObject.getId();
 
     if (!this._acceptedGameObjectsMap[gameObjectId]) {
@@ -160,11 +153,11 @@ export class GameObjectObserver {
     return this._acceptedGameObjects[index];
   }
 
-  forEach(callback: (gameObject: GameObject) => void) {
+  forEach(callback: (gameObject: GameObject, index: number) => void) {
     this._acceptedGameObjects.forEach(callback);
   }
 
-  map(callback: (gameObject: GameObject) => unknown) {
+  map(callback: (gameObject: GameObject, index: number) => unknown) {
     return this._acceptedGameObjects.map(callback);
   }
 

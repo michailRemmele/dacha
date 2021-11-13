@@ -1,5 +1,3 @@
-import Processor from '../../../engine/processor/processor';
-
 import Rectangle from './geometry/shapes/rectangle';
 import Color from './color/color';
 import textureHandlers from './textureHandlers';
@@ -29,10 +27,8 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 const CAMERA_COMPONENT_NAME = 'camera';
 const CURRENT_CAMERA_NAME = 'currentCamera';
 
-class RenderProcessor extends Processor {
+class RenderProcessor {
   constructor(options) {
-    super();
-
     const {
       window, textureAtlas,
       textureAtlasDescriptor, backgroundColor,

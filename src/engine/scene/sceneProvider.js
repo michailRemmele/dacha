@@ -1,5 +1,5 @@
 import IOC from '../ioc/ioc';
-import Scene from './scene';
+import { Scene } from './scene';
 import SceneController from './sceneController';
 
 import { RESOURCES_LOADER_KEY_NAME } from '../consts/global';

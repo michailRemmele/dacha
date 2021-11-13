@@ -1,7 +1,7 @@
 import { GameObject, ComponentsEditionEvent } from '../game-object';
 import { createMockComponent } from '../../../__mocks__';
 
-describe('Engine -> GameObject()', () => {
+describe('Engine -> GameObject', () => {
   it('Returns correct id', () => {
     const gameObject1 = new GameObject('game-object-1');
     const gameObject2 = new GameObject('game-object-2');

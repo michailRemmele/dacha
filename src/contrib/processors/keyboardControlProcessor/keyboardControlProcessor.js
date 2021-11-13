@@ -1,5 +1,3 @@
-import Processor from '../../../engine/processor/processor';
-
 const CONTROL_COMPONENT_NAME = 'keyboardControl';
 
 const INPUT_MESSAGE = 'INPUT_EVENT_QUERY';
@@ -8,10 +6,8 @@ const RELEASE_EVENT_TYPE = 'RELEASED';
 
 const PREFIX_SEPARATOR = '_';
 
-class KeyboardControlProcessor extends Processor {
+class KeyboardControlProcessor {
   constructor(options) {
-    super();
-
     this._gameObjectObserver = options.gameObjectObserver;
   }
 

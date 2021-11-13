@@ -1,6 +1,4 @@
 import Engine from './engine/engine';
-import Processor from './engine/processor/processor';
-import { ProcessorPlugin } from './engine/processor';
 import { Component } from './engine/component';
 import Script from './contrib/processors/scriptProcessor/script';
 import contribProcessorsPlugins from './contrib/processorsPlugins';
@@ -13,9 +11,14 @@ import {
 } from './engine/consts/global';
 
 export {
-  Engine,
-  Processor,
   ProcessorPlugin,
+  ProcessorPluginOptions,
+  Processor,
+  ProcessorOptions,
+} from './engine/processor';
+
+export {
+  Engine,
   Component,
   Script,
   contribProcessorsPlugins,

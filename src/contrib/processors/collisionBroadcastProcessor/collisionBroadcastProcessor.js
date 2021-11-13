@@ -1,13 +1,9 @@
-import Processor from '../../../engine/processor/processor';
-
 import Collision from './collision';
 
 const COLLISION_MESSAGE = 'COLLISION';
 
-class CollisionBroadcastProcessor extends Processor {
+class CollisionBroadcastProcessor {
   constructor(options) {
-    super();
-
     this._gameObjectObserver = options.gameObjectObserver;
 
     this._collisionMap = {};

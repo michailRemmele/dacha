@@ -1,4 +1,3 @@
-import Processor from '../../../engine/processor/processor';
 import { Vector2 } from '../../../engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
@@ -13,10 +12,8 @@ const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';
 const REACTION_FORCE_VECTOR_X = 0;
 const REACTION_FORCE_VECTOR_Y = -1;
 
-class CollisionSolver extends Processor {
+class CollisionSolver {
   constructor(options) {
-    super();
-
     const { gameObjectObserver, store } = options;
 
     this._store = store;

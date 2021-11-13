@@ -1,4 +1,3 @@
-import Processor from '../../../engine/processor/processor';
 import { Vector2 } from '../../../engine/mathLib';
 
 const ADD_FORCE_MSG = 'ADD_FORCE';
@@ -17,10 +16,8 @@ const DIRECTION_VECTOR = {
   DOWN: new Vector2(0, 1),
 };
 
-class PhysicsProcessor extends Processor {
+class PhysicsProcessor {
   constructor(options) {
-    super();
-
     const { gravitationalAcceleration, gameObjectObserver, store } = options;
 
     this._gravitationalAcceleration = gravitationalAcceleration;

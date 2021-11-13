@@ -1,15 +1,6 @@
 import { GameObjectObserver, GameObjectObserverFilter } from '../gameObject';
 
-// TODO: Remove once processor will be moved to ts
-export interface ProcessorOptions {
-  deltaTime: number;
-  messageBus: object;
-}
-
-// TODO: Remove once processor will be moved to ts
-export interface Processor {
-  process(options: ProcessorOptions): void;
-}
+import { Processor } from './processor';
 
 export type PluginHelper = () => Promise<Record<string, unknown>>;
 

@@ -1,5 +1,3 @@
-import Processor from '../../../engine/processor/processor';
-
 import coordintatesCalculators from './coordinatesCalculators';
 import aabbBuilders from './aabbBuilders';
 import intersectionCheckers from './intersectionCheckers';
@@ -15,10 +13,8 @@ const AXIS = {
 
 const COLLISION_MESSAGE = 'COLLISION';
 
-class CollisionDetectionProcessor extends Processor {
+class CollisionDetectionProcessor {
   constructor(options) {
-    super();
-
     this._gameObjectObserver = options.gameObjectObserver;
     this._coordintatesCalculators = Object.keys(coordintatesCalculators).reduce((storage, key) => {
       const CoordinatesCalculator = coordintatesCalculators[key];
