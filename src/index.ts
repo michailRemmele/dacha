@@ -1,7 +1,7 @@
 import Engine from './engine/engine';
 import { Component } from './engine/component';
 import Script from './contrib/processors/scriptProcessor/script';
-import contribProcessorsPlugins from './contrib/processorsPlugins';
+import { processorsPlugins as contribProcessorsPlugins } from './contrib/processors-plugins';
 import contribComponents from './contrib/components';
 import IOC from './engine/ioc/ioc';
 import { VectorOps, MathOps, Vector2 } from './engine/mathLib';

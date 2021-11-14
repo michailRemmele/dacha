@@ -17,7 +17,7 @@ import { SceneLoadProcessorPlugin } from './scene-load-processor-plugin';
 import { ScriptProcessorPlugin } from './script-processor-plugin';
 import { UiBridgePlugin } from './ui-bridge-plugin';
 
-export default {
+export const processorsPlugins = {
   animateProcessor: AnimateProcessorPlugin,
   cameraProcessor: CameraProcessorPlugin,
   collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,

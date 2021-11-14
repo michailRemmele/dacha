@@ -1,4 +1,5 @@
 import { GameObjectObserver, GameObjectObserverFilter } from '../gameObject';
+import { Store } from '../scene';
 
 import { Processor } from './processor';
 
@@ -10,7 +11,7 @@ export interface ProcessorPluginOptions {
   gameObjectDestroyer: unknown,
   sceneController: unknown,
   helpers: Record<string, PluginHelper>,
-  store: Record<string, unknown>;
+  store: Store;
 }
 
 export interface ProcessorPlugin {
