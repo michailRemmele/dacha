@@ -1,11 +1,7 @@
-import Processor from '../../../engine/processor/processor';
-
 const SCRIPT_COMPONENT_NAME = 'script';
 
-class ScriptProcessor extends Processor {
+class ScriptProcessor {
   constructor(options) {
-    super();
-
     const {
       gameObjectObserver,
       gameObjectSpawner,

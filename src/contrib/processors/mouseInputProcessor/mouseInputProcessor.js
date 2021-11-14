@@ -1,5 +1,3 @@
-import Processor from '../../../engine/processor/processor';
-
 import MouseInputListener from './mouseInputListener';
 
 const INPUT_MESSAGE = 'MOUSE_INPUT_EVENT_QUERY';
@@ -19,10 +17,8 @@ const EVENT_TYPE = {
   dblclick: () => 'MOUSE_DOUBLE_CLICK',
 };
 
-class MouseInputProcessor extends Processor {
+class MouseInputProcessor {
   constructor() {
-    super();
-
     this._inputListener = new MouseInputListener(window);
   }
 

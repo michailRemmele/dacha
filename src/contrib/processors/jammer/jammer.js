@@ -1,9 +1,5 @@
-import Processor from '../../../engine/processor/processor';
-
-class Jammer extends Processor {
+class Jammer {
   constructor(options) {
-    super();
-
     this._messages = options.messages;
   }
 

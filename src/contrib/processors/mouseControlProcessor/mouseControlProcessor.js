@@ -1,13 +1,9 @@
-import Processor from '../../../engine/processor/processor';
-
 const CONTROL_COMPONENT_NAME = 'mouseControl';
 
 const INPUT_MESSAGE = 'MOUSE_INPUT_EVENT_QUERY';
 
-class MouseControlProcessor extends Processor {
+class MouseControlProcessor {
   constructor(options) {
-    super();
-
     this._gameObjectObserver = options.gameObjectObserver;
   }
 

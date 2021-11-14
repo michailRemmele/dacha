@@ -1,12 +1,8 @@
-import Processor from '../../../engine/processor/processor';
-
 import Observer from './observer/observer';
 import MapObserver from './observer/mapObserver';
 
-class UiBridge extends Processor {
+class UiBridge {
   constructor(options) {
-    super();
-
     const {
       onInit,
       onDestroy,

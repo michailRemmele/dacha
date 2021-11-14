@@ -1,11 +1,7 @@
-import Processor from '../../../engine/processor/processor';
-
 const LOAD_SCENE_MSG = 'LOAD_SCENE';
 
-class SceneLoadProcessor extends Processor {
+class SceneLoadProcessor {
   constructor(options) {
-    super();
-
     this._sceneController = options.sceneController;
     this._sceneLoading = false;
   }

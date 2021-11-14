@@ -1,5 +1,3 @@
-import Processor from '../../../engine/processor/processor';
-
 import conditionControllers from './conditionControllers';
 import substatePickers from './substatePickers';
 
@@ -8,10 +6,8 @@ const FRAME_RATE = 100;
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const ANIMATABLE_COMPONENT_NAME = 'animatable';
 
-class AnimateProcessor extends Processor {
+class AnimateProcessor {
   constructor(options) {
-    super();
-
     this._gameObjectObserver = options.gameObjectObserver;
     this._conditionControllers = Object.keys(conditionControllers).reduce((storage, key) => {
       const ConditionController = conditionControllers[key];

@@ -1,12 +1,8 @@
-import Processor from '../../../engine/processor/processor';
-
 const GAME_STATS_UPDATE_MSG = 'GAME_STATS_UPDATE';
 const MS_IN_SEC = 1000;
 
-export class GameStatsMeter extends Processor {
+export class GameStatsMeter {
   constructor(options) {
-    super();
-
     this._frequency = options.frequency || MS_IN_SEC;
     this._gameObjectObserver = options.gameObjectObserver;
 

@@ -1,4 +1,3 @@
-import Processor from '../../../engine/processor/processor';
 import { Vector2 } from '../../../engine/mathLib';
 
 const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
@@ -12,10 +11,8 @@ const RIGID_BODY_TYPE = {
 
 const TRANSFORM_COMPONENT_NAME = 'transform';
 
-class ConstraintSolver extends Processor {
+class ConstraintSolver {
   constructor(options) {
-    super();
-
     this._gameObjectObserver = options.gameObjectObserver;
     this._processedPairs = {};
     this._mtvMap = {};

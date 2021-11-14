@@ -1,14 +1,10 @@
-import Processor from '../../../engine/processor/processor';
-
 const CURRENT_CAMERA_NAME = 'currentCamera';
 const SET_CAMERA_MESSAGE = 'SET_CAMERA';
 
 const CAMERA_COMPONENT_NAME = 'camera';
 
-class CameraProcessor extends Processor {
+class CameraProcessor {
   constructor(options) {
-    super();
-
     const {
       store, gameObjectObserver, window, initialCamera,
     } = options;
