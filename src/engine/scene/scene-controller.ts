@@ -1,5 +1,9 @@
-class SceneController {
-  constructor(sceneProvider) {
+import { SceneProvider } from './scene-provider';
+
+export class SceneController {
+  private _sceneProvider: SceneProvider;
+
+  constructor(sceneProvider: SceneProvider) {
     this._sceneProvider = sceneProvider;
   }
 
@@ -7,8 +11,8 @@ class SceneController {
     return this._sceneProvider.getCurrentScene().getName();
   }
 
-  load(name) {
-    this._sceneProvider.loadScene(name);
+  load(name: string) {
+    return this._sceneProvider.loadScene(name);
   }
 
   isLoaded() {
@@ -19,9 +23,7 @@ class SceneController {
     this._sceneProvider.moveToLoaded();
   }
 
-  moveTo(name) {
+  moveTo(name: string) {
     this._sceneProvider.setCurrentScene(name);
   }
 }
-
-export default SceneController;

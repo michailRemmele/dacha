@@ -2,7 +2,7 @@ import ScopeProvider from './scope/scopeProvider';
 import IOC from './ioc/ioc';
 import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
 
-import SceneProvider from './scene/sceneProvider';
+import { SceneProvider } from './scene/scene-provider';
 import ResourceLoader from './resourceLoader/resourceLoader';
 import GameObjectCreator from './gameObject/gameObjectCreator';
 import PrefabCollection from './prefab/prefabCollection';

@@ -13,7 +13,7 @@ interface GameObjectCreator {
   create(options: unknown): Array<GameObject>;
 }
 
-interface SceneOptions {
+export interface SceneOptions {
   name: string;
   gameObjects: Array<unknown>;
 }
