@@ -6,33 +6,38 @@ class GameLoop {
 
     this.sceneProvider = sceneProvider;
     this.messageBus = new MessageBus();
+
+    this.bindedTick = this._tick.bind(this);
+  }
+
+  _tick() {
+    const current = performance.now();
+
+    const elapsed = current - this.previous;
+
+    this.messageBus.sendDelayed();
+
+    const currentScene = this.sceneProvider.getCurrentScene();
+    const options = {
+      deltaTime: elapsed,
+      messageBus: this.messageBus,
+    };
+
+    currentScene.getProcessors().forEach((processor) => {
+      processor.process(options);
+    });
+
+    this.messageBus.clear();
+
+    this.previous = current;
+
+    this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
 
   run() {
-    this.previous = undefined;
+    this.previous = performance.now();
 
-    const that = this;
-    this.gameLoopId = requestAnimationFrame(function tick(current) {
-      that.previous = that.previous || current;
-
-      const elapsed = current - that.previous;
-      that.previous = current;
-
-      that.messageBus.sendDelayed();
-
-      const currentScene = that.sceneProvider.getCurrentScene();
-      const options = {
-        deltaTime: elapsed,
-        messageBus: that.messageBus,
-      };
-
-      currentScene.getProcessors().forEach((processor) => {
-        processor.process(options);
-      });
-
-      that.messageBus.clear();
-      that.gameLoopId = requestAnimationFrame(tick);
-    });
+    this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
 
   stop() {
