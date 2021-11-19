@@ -20,10 +20,10 @@ class GameLoop {
 
       that.messageBus.sendDelayed();
 
-      const currentScene = this.sceneProvider.getCurrentScene();
+      const currentScene = that.sceneProvider.getCurrentScene();
       const options = {
         deltaTime: elapsed,
-        messageBus: this.messageBus,
+        messageBus: that.messageBus,
       };
 
       currentScene.getProcessors().forEach((processor) => {

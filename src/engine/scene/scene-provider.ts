@@ -90,11 +90,11 @@ export class SceneProvider {
   }
 
   moveToLoaded() {
-    if (!this._loadedScene || !this._currentSceneName) {
+    if (!this._loadedScene) {
       return;
     }
 
-    if (this._sceneContainer[this._currentSceneName]) {
+    if (this._currentSceneName && this._sceneContainer[this._currentSceneName]) {
       this.leaveCurrentScene();
     }
 
