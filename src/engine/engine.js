@@ -6,7 +6,7 @@ import { SceneProvider } from './scene/scene-provider';
 import ResourceLoader from './resourceLoader/resourceLoader';
 import GameObjectCreator from './gameObject/gameObjectCreator';
 import PrefabCollection from './prefab/prefabCollection';
-import GameLoop from './gameLoop';
+import { GameLoop } from './game-loop';
 
 import * as global from './consts/global';
 
