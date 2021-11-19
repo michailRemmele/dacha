@@ -14,7 +14,6 @@ interface ResourceLoader {
 interface SceneConfig extends SceneOptions {
   processors: Array<{
     name: string;
-    section: string;
     options: Record<string, unknown>;
   }>;
 }
@@ -66,9 +65,7 @@ export class SceneProvider {
     });
 
     for (let i = 0; i < sceneConfig.processors.length; i += 1) {
-      const {
-        name: processorName, options, section,
-      } = sceneConfig.processors[i];
+      const { name: processorName, options } = sceneConfig.processors[i];
 
       // For pure async await syntax in method. Need to refactor later
       // eslint-disable-next-line no-await-in-loop
@@ -82,7 +79,7 @@ export class SceneProvider {
         helpers: this._pluginHelpers,
       });
 
-      scene.addProcessor(processor, section);
+      scene.addProcessor(processor);
     }
 
     this._loadedScene = scene;

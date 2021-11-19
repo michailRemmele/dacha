@@ -1,4 +1,4 @@
-import { SECTIONS, GAME_OBJECT_CREATOR_KEY_NAME } from '../consts/global';
+import { GAME_OBJECT_CREATOR_KEY_NAME } from '../consts/global';
 import { Processor } from '../processor';
 import IOC from '../ioc/ioc';
 import { GameObjectObserver, GameObjectObserverFilter, GameObject } from '../gameObject';
@@ -30,7 +30,7 @@ export class Scene {
   private _gameObjectCreator: GameObjectCreator;
   private _gameObjectSpawner: unknown;
   private _gameObjectDestroyer: unknown;
-  private _processorSections: Record<string, Array<Processor>>;
+  private _processors: Array<Processor>;
   private _gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
 
   constructor(options: SceneOptions) {
@@ -43,11 +43,7 @@ export class Scene {
     this._gameObjectSpawner = new GameObjectSpawner(this, this._gameObjectCreator);
     this._gameObjectDestroyer = new GameObjectDestroyer(this);
 
-    this._processorSections = {
-      [SECTIONS.EVENT_PROCESS_SECTION_NAME]: [],
-      [SECTIONS.GAME_STATE_UPDATE_SECTION_NAME]: [],
-      [SECTIONS.RENDERING_SECTION_NAME]: [],
-    };
+    this._processors = [];
 
     this._gameObjectsChangeSubscribers = [];
 
@@ -59,31 +55,27 @@ export class Scene {
   }
 
   mount() {
-    Object.keys(this._processorSections).forEach((section) => {
-      this._processorSections[section].forEach((processor) => {
-        if (processor.processorDidMount) {
-          processor.processorDidMount();
-        }
-      });
+    this._processors.forEach((processor) => {
+      if (processor.processorDidMount) {
+        processor.processorDidMount();
+      }
     });
   }
 
   unmount() {
-    Object.keys(this._processorSections).forEach((section) => {
-      this._processorSections[section].forEach((processor) => {
-        if (processor.processorWillUnmount) {
-          processor?.processorWillUnmount();
-        }
-      });
+    this._processors.forEach((processor) => {
+      if (processor.processorWillUnmount) {
+        processor?.processorWillUnmount();
+      }
     });
   }
 
-  addProcessor(proccessor: Processor, section: string) {
-    this._processorSections[section].push(proccessor);
+  addProcessor(proccessor: Processor) {
+    this._processors.push(proccessor);
   }
 
-  getProcessorSection(section: string) {
-    return this._processorSections[section];
+  getProcessors() {
+    return this._processors;
   }
 
   getStore() {

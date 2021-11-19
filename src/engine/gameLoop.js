@@ -1,9 +1,5 @@
 import MessageBus from './messageBus/messageBus';
 
-import { SECTIONS } from './consts/global';
-
-const MS_PER_UPDATE = 1000 / 60;
-
 class GameLoop {
   constructor(sceneProvider) {
     this.gameLoopId = null;
@@ -12,48 +8,8 @@ class GameLoop {
     this.messageBus = new MessageBus();
   }
 
-  _processSection(sectionName, options) {
-    const currentScene = this.sceneProvider.getCurrentScene();
-    const section = currentScene.getProcessorSection(sectionName);
-
-    options = {
-      ...options,
-      messageBus: this.messageBus,
-    };
-
-    section.forEach((processor) => {
-      processor.process(options);
-    });
-  }
-
-  _gameStateUpdate() {
-    if (this.lag < MS_PER_UPDATE) {
-      this.messageBus.stash();
-      return { skipped: true };
-    }
-
-    let executed = 0;
-
-    while (this.lag >= MS_PER_UPDATE) {
-      this._processSection(SECTIONS.GAME_STATE_UPDATE_SECTION_NAME, { deltaTime: MS_PER_UPDATE });
-      this.lag -= MS_PER_UPDATE;
-
-      if (this.lag >= MS_PER_UPDATE) {
-        this.messageBus.stash();
-        this.messageBus.sendDelayed();
-      }
-
-      executed += 1;
-    }
-
-    this.messageBus.restore();
-
-    return { executed };
-  }
-
   run() {
     this.previous = undefined;
-    this.lag = MS_PER_UPDATE;
 
     const that = this;
     this.gameLoopId = requestAnimationFrame(function tick(current) {
@@ -61,17 +17,18 @@ class GameLoop {
 
       const elapsed = current - that.previous;
       that.previous = current;
-      that.lag += elapsed;
 
-      that.messageBus.restore();
       that.messageBus.sendDelayed();
 
-      that._processSection(SECTIONS.EVENT_PROCESS_SECTION_NAME, { deltaTime: elapsed });
-      const { skipped, executed } = that._gameStateUpdate();
-      that._processSection(
-        SECTIONS.RENDERING_SECTION_NAME,
-        { deltaTime: elapsed, skipped, executed },
-      );
+      const currentScene = this.sceneProvider.getCurrentScene();
+      const options = {
+        deltaTime: elapsed,
+        messageBus: this.messageBus,
+      };
+
+      currentScene.getProcessors().forEach((processor) => {
+        processor.process(options);
+      });
 
       that.messageBus.clear();
       that.gameLoopId = requestAnimationFrame(tick);
