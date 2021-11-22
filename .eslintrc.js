@@ -14,6 +14,9 @@ const commonRules = {
   ],
   'no-param-reassign': 1,
   'no-restricted-properties': 1,
+  'import/no-cycle': [
+    'warn',
+  ],
 };
 
 module.exports = {

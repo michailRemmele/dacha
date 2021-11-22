@@ -4,3 +4,5 @@ export {
 } from './consts';
 export { Scene, GameObjectChangeEvent } from './scene';
 export { Store } from './store';
+export { SceneProvider } from './scene-provider';
+export { SceneController } from './scene-controller';

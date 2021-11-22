@@ -1,35 +1,63 @@
 import IOC from '../ioc/ioc';
-import { Scene } from './scene';
-import SceneController from './sceneController';
+import { ProcessorPlugin, PluginHelper } from '../processor';
+
+import { Scene, SceneOptions } from './scene';
+import { SceneController } from './scene-controller';
 
 import { RESOURCES_LOADER_KEY_NAME } from '../consts/global';
 
-class SceneProvider {
-  constructor(scenes, processorsPlugins, pluginHelpers) {
+// TODO: Remove once resource loader will be moved to ts
+interface ResourceLoader {
+  load: (resource: string) => unknown;
+}
+
+interface SceneConfig extends SceneOptions {
+  processors: Array<{
+    name: string;
+    options: Record<string, unknown>;
+  }>;
+}
+
+export class SceneProvider {
+  private _sceneContainer: Record<string, Scene>;
+  private _currentSceneName?: string;
+  private _sceneChangeSubscribers: Array<(scene: Scene) => void>;
+  private _availableScenes: Record<string, string>;
+  private _processorsPlugins: Record<string, ProcessorPlugin>;
+  private _pluginHelpers: Record<string, PluginHelper>;
+  private _loadedScene?: Scene;
+  private _sceneController: SceneController;
+
+  constructor(
+    scenes: Record<string, string>,
+    processorsPlugins: Record<string, { new(): ProcessorPlugin }>,
+    pluginHelpers: Record<string, PluginHelper>,
+  ) {
     this._sceneContainer = {};
-    this._currentSceneName = undefined;
+    this._currentSceneName = void 0;
     this._sceneChangeSubscribers = [];
     this._availableScenes = scenes;
-    this._processorsPlugins = Object.keys(processorsPlugins).reduce((storage, name) => {
-      const ProcessorPlugin = processorsPlugins[name];
-      storage[name] = new ProcessorPlugin();
-      return storage;
-    }, {});
+    this._processorsPlugins = Object
+      .keys(processorsPlugins)
+      .reduce((storage: Record<string, ProcessorPlugin>, name) => {
+        storage[name] = new processorsPlugins[name]();
+        return storage;
+      }, {});
     this._pluginHelpers = pluginHelpers;
-    this._loadedScene = null;
+    this._loadedScene = void 0;
     this._sceneController = new SceneController(this);
   }
 
-  async loadScene(name) {
+  async loadScene(name: string) {
     if (!this._availableScenes[name]) {
       throw new Error(`Error while loading the scene. Not found scene with same name: ${name}`);
     }
 
-    this._loadedScene = undefined;
+    this._loadedScene = void 0;
 
-    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME);
+    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
 
-    const sceneConfig = await resourceLoader.load(this._availableScenes[name]);
+    const sceneConfig = await resourceLoader.load(this._availableScenes[name]) as SceneConfig;
 
     const scene = new Scene({
       name: sceneConfig.name,
@@ -37,9 +65,7 @@ class SceneProvider {
     });
 
     for (let i = 0; i < sceneConfig.processors.length; i += 1) {
-      const {
-        name: processorName, options, section,
-      } = sceneConfig.processors[i];
+      const { name: processorName, options } = sceneConfig.processors[i];
 
       // For pure async await syntax in method. Need to refactor later
       // eslint-disable-next-line no-await-in-loop
@@ -53,7 +79,7 @@ class SceneProvider {
         helpers: this._pluginHelpers,
       });
 
-      scene.addProcessor(processor, section);
+      scene.addProcessor(processor);
     }
 
     this._loadedScene = scene;
@@ -68,7 +94,7 @@ class SceneProvider {
       return;
     }
 
-    if (this._sceneContainer[this._currentSceneName]) {
+    if (this._currentSceneName && this._sceneContainer[this._currentSceneName]) {
       this.leaveCurrentScene();
     }
 
@@ -79,6 +105,10 @@ class SceneProvider {
   }
 
   leaveCurrentScene() {
+    if (!this._currentSceneName) {
+      throw new Error('Error while leaving current scene. Current scene is not specified');
+    }
+
     if (!this._sceneContainer[this._currentSceneName]) {
       throw new Error('Error while leaving current scene. Current scene is null');
     }
@@ -87,29 +117,38 @@ class SceneProvider {
     this._currentSceneName = undefined;
   }
 
-  removeScene(name) {
+  removeScene(name: string) {
     if (name === this._currentSceneName) {
       this.leaveCurrentScene();
     }
 
-    this._sceneContainer[name] = undefined;
+    this._sceneContainer = Object.keys(this._sceneContainer)
+      .reduce((acc: Record<string, Scene>, key) => {
+        if (key !== name) {
+          acc[key] = this._sceneContainer[key];
+        }
+
+        return acc;
+      }, {});
   }
 
-  setCurrentScene(name) {
+  setCurrentScene(name: string) {
     if (!this._sceneContainer[name]) {
       throw new Error(`Error while setting new scene. Not found scene with same name: ${name}`);
     }
 
-    if (this._sceneContainer[this._currentSceneName]) {
+    if (this._currentSceneName && this._sceneContainer[this._currentSceneName]) {
       this._sceneContainer[this._currentSceneName].unmount();
     }
 
     this._currentSceneName = name;
 
-    this._sceneContainer[this._currentSceneName].mount();
+    const currentScene = this._sceneContainer[this._currentSceneName];
+
+    currentScene.mount();
 
     this._sceneChangeSubscribers.forEach((callback) => {
-      callback(this._sceneContainer[this._currentSceneName]);
+      callback(currentScene);
     });
   }
 
@@ -121,7 +160,7 @@ class SceneProvider {
     return this._sceneContainer[this._currentSceneName];
   }
 
-  subscribeOnSceneChange(callback) {
+  subscribeOnSceneChange(callback: (scene: Scene) => void) {
     if (!(callback instanceof Function)) {
       throw new Error('On subscribe callback should be a function');
     }
@@ -129,5 +168,3 @@ class SceneProvider {
     this._sceneChangeSubscribers.push(callback);
   }
 }
-
-export default SceneProvider;
