@@ -1,4 +1,4 @@
-import Rectangle from './geometry/shapes/rectangle';
+import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
 import textureHandlers from './textureHandlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
