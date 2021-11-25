@@ -1,6 +1,6 @@
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
-import textureHandlers from './textureHandlers';
+import { textureHandlers } from './texture-handlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
 import MatrixTransformer from './matrixTransformer/matrixTransformer';
 
