@@ -1,4 +1,4 @@
-const fragmentShader = `
+export const fragmentShader = `
 precision highp float;
 
 uniform sampler2D u_image;
@@ -27,5 +27,3 @@ void main() {
   gl_FragColor = texture2D(u_image, texCoord / u_texAtlasSize);
 }
 `;
-
-export default fragmentShader;

@@ -1,4 +1,4 @@
-const vertexShader = `
+export const vertexShader = `
 attribute vec2 a_position;
 attribute vec2 a_texCoord;
 
@@ -25,5 +25,3 @@ void main() {
   v_gameObjectSize = a_gameObjectSize;
 }
 `;
-
-export default vertexShader;

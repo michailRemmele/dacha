@@ -1,7 +1,7 @@
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
 import { textureHandlers } from './texture-handlers';
-import ShaderBuilder from './shaderBuilder/shaderBuilder';
+import { ShaderBuilder, VERTEX_SHADER, FRAGMENT_SHADER } from './shader-builder';
 import { MatrixTransformer } from './matrix-transformer';
 
 const MAX_COLOR_NUMBER = 255;
@@ -165,8 +165,8 @@ class RenderProcessor {
   _initShaders() {
     const shaderBuilder = new ShaderBuilder(this.gl);
 
-    const vertexShader = shaderBuilder.create(shaderBuilder.VERTEX_SHADER);
-    const fragmentShader = shaderBuilder.create(shaderBuilder.FRAGMENT_SHADER);
+    const vertexShader = shaderBuilder.create(VERTEX_SHADER);
+    const fragmentShader = shaderBuilder.create(FRAGMENT_SHADER);
 
     const shaderProgram = this.gl.createProgram();
     this.gl.attachShader(shaderProgram, vertexShader);
