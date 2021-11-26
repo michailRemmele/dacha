@@ -2,7 +2,7 @@ import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
 import { textureHandlers } from './texture-handlers';
 import ShaderBuilder from './shaderBuilder/shaderBuilder';
-import MatrixTransformer from './matrixTransformer/matrixTransformer';
+import { MatrixTransformer } from './matrix-transformer';
 
 const MAX_COLOR_NUMBER = 255;
 const DRAW_OFFSET = 0;
