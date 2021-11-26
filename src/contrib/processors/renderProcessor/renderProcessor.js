@@ -422,7 +422,7 @@ class RenderProcessor {
       };
     }
 
-    const { position, texCoord } = this._geometry[gameObjectId].position;
+    const { position, texCoord } = this._geometry[gameObjectId];
 
     for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
       this._vertexData[j] = position[i];
