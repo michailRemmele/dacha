@@ -1,5 +1,11 @@
-class MatrixTransformer {
-  getIdentityMatrix() {
+export type Matrix3x3 = [
+  number, number, number,
+  number, number, number,
+  number, number, number,
+];
+
+export class MatrixTransformer {
+  getIdentityMatrix(): Matrix3x3 {
     return [
       1, 0, 0,
       0, 1, 0,
@@ -7,7 +13,7 @@ class MatrixTransformer {
     ];
   }
 
-  project(matrix, width, height) {
+  project(matrix: Matrix3x3, width: number, height: number) {
     const projectedWidth = 2 / width;
     const projectedHeight = 2 / height;
 
@@ -19,7 +25,7 @@ class MatrixTransformer {
     matrix[7] = -matrix[7] * projectedHeight;
   }
 
-  translate(matrix, tx, ty) {
+  translate(matrix: Matrix3x3, tx: number, ty: number) {
     matrix[0] += matrix[2] * tx;
     matrix[1] += matrix[2] * ty;
     matrix[3] += matrix[5] * tx;
@@ -28,15 +34,15 @@ class MatrixTransformer {
     matrix[7] += matrix[8] * ty;
   }
 
-  flipX(matrix) {
+  flipX(matrix: Matrix3x3) {
     this.scale(matrix, -1, 1);
   }
 
-  flipY(matrix) {
+  flipY(matrix: Matrix3x3) {
     this.scale(matrix, 1, -1);
   }
 
-  scale(matrix, scaleX, scaleY) {
+  scale(matrix: Matrix3x3, scaleX: number, scaleY: number) {
     matrix[0] *= scaleX;
     matrix[1] *= scaleY;
     matrix[3] *= scaleX;
@@ -45,7 +51,7 @@ class MatrixTransformer {
     matrix[7] *= scaleY;
   }
 
-  rotate(matrix, angle) {
+  rotate(matrix: Matrix3x3, angle: number) {
     angle = (angle * Math.PI) / 180;
     const cos = Math.cos(angle);
     const sin = -Math.sin(angle);
@@ -62,5 +68,3 @@ class MatrixTransformer {
     matrix[7] = (matrix[7] * cos) - (matrix6 * sin);
   }
 }
-
-export default MatrixTransformer;
