@@ -1,8 +1,14 @@
+import { GameObject, GameObjectObserver } from '../../../engine/gameObject';
+import { Store } from '../../../engine/scene';
+import { Renderable } from '../../components/renderable';
+import { Transform } from '../../components/transform';
+import { Camera } from '../../components/camera';
+
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
-import { textureHandlers } from './texture-handlers';
+import { textureHandlers, TextureHandler, TextureDescriptor } from './texture-handlers';
 import { ShaderBuilder, VERTEX_SHADER, FRAGMENT_SHADER } from './shader-builder';
-import { MatrixTransformer } from './matrix-transformer';
+import { MatrixTransformer, Matrix3x3 } from './matrix-transformer';
 
 const MAX_COLOR_NUMBER = 255;
 const DRAW_OFFSET = 0;
@@ -27,8 +33,64 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 const CAMERA_COMPONENT_NAME = 'camera';
 const CURRENT_CAMERA_NAME = 'currentCamera';
 
-class RenderProcessor {
-  constructor(options) {
+interface ViewMatrixStats {
+  width?: number;
+  height?: number;
+  x?: number;
+  y?: number;
+  scale?: number;
+}
+
+interface RendererOptions {
+  window: HTMLElement;
+  textureAtlas: HTMLImageElement;
+  textureAtlasDescriptor: Record<string, TextureDescriptor>;
+  backgroundColor: string;
+  gameObjectObserver: GameObjectObserver;
+  sortingLayers: Array<string>;
+  store: Store;
+  scaleSensitivity: number;
+}
+
+export { TextureDescriptor } from './texture-handlers';
+
+export class RenderProcessor {
+  private textureAtlas: HTMLImageElement;
+  private textureAtlasSize: {
+    width: number;
+    height: number;
+  };
+  private textureAtlasDescriptor: Record<string, TextureDescriptor>;
+  private textureHandlers: Record<string, TextureHandler>;
+  private _matrixTransformer: MatrixTransformer;
+  private _backgroundColor: Color;
+  private _view: HTMLCanvasElement;
+  private _viewWidth: number;
+  private _viewHeight: number;
+  private _windowDidResize: boolean;
+  private _onWindowResizeBind: () => void;
+  private _shaders: Array<WebGLShader>;
+  private _sortingLayer: Record<string, number>;
+  private _store: Store;
+  private _gameObjectObserver: GameObjectObserver;
+  private _scaleSensitivity: number;
+  private _screenScale: number;
+  private _vaoExt: OES_vertex_array_object | null;
+  private _buffer: WebGLBuffer | null;
+  private _vao: WebGLVertexArrayObjectOES | null;
+  private _geometry: Record<string, {
+    position: Array<number>;
+    texCoord: Array<number>;
+  } | null>;
+  private _viewMatrixStats: ViewMatrixStats;
+  private _vertexData: Float32Array | null;
+  private _gameObjectsCount: number;
+  private gl: WebGL2RenderingContext | null;
+  private program: WebGLProgram | null;
+  private textures: WebGLTexture | null;
+  private _variables: Record<string, number | WebGLUniformLocation | null>;
+
+  constructor(options: RendererOptions) {
     const {
       window, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
@@ -42,26 +104,32 @@ class RenderProcessor {
       height: this.textureAtlas.height,
     };
     this.textureAtlasDescriptor = textureAtlasDescriptor;
-    this.textureHandlers = Object.keys(textureHandlers).reduce((storage, key) => {
-      const TextureHandler = textureHandlers[key];
-      storage[key] = new TextureHandler();
-      return storage;
-    }, {});
+    this.textureHandlers = Object
+      .keys(textureHandlers)
+      .reduce((storage: Record<string, TextureHandler>, key) => {
+        const TextureHandlerClass = textureHandlers[key as 'static' | 'sprite'];
+        storage[key] = new TextureHandlerClass();
+        return storage;
+      }, {});
 
     this._matrixTransformer = new MatrixTransformer();
 
     this._backgroundColor = new Color(backgroundColor);
 
-    this._view = window;
-    this._viewWidth = void 0;
-    this._viewHeight = void 0;
+    this._view = window as HTMLCanvasElement;
+    this._viewWidth = 0;
+    this._viewHeight = 0;
 
     this._windowDidResize = true;
-    this._onWindowResize = this._onWindowResize.bind(this);
+    this._onWindowResizeBind = this._onWindowResize.bind(this);
 
+    this.gl = null;
+    this.program = null;
+    this.textures = null;
     this._shaders = [];
+    this._variables = {};
 
-    this._sortingLayer = sortingLayers.reduce((storage, layer, index) => {
+    this._sortingLayer = sortingLayers.reduce((storage: Record<string, number>, layer, index) => {
       storage[layer] = index;
       return storage;
     }, {});
@@ -84,7 +152,7 @@ class RenderProcessor {
   }
 
   processorDidMount() {
-    window.addEventListener('resize', this._onWindowResize);
+    window.addEventListener('resize', this._onWindowResizeBind);
     this.gl = this._initGraphicContext();
     this._initExtensions();
     this._initScreen();
@@ -94,16 +162,18 @@ class RenderProcessor {
   }
 
   processorWillUnmount() {
-    window.removeEventListener('resize', this._onWindowResize);
+    window.removeEventListener('resize', this._onWindowResizeBind);
     this._shaders.forEach((shader) => {
-      this.gl.detachShader(this.program, shader);
-      this.gl.deleteShader(shader);
+      if (this.program) {
+        this.gl?.detachShader(this.program, shader);
+      }
+      this.gl?.deleteShader(shader);
     });
-    this.gl.deleteProgram(this.program);
-    this.gl.deleteTexture(this.textures);
+    this.gl?.deleteProgram(this.program);
+    this.gl?.deleteTexture(this.textures);
 
     // eslint-disable-next-line no-bitwise
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    this.gl?.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._buffer = null;
     this._shaders = [];
@@ -123,7 +193,7 @@ class RenderProcessor {
   }
 
   _initGraphicContext() {
-    let graphicContext = null;
+    let graphicContext: RenderingContext | null = null;
 
     try {
       graphicContext = this._view.getContext('webgl')
@@ -136,18 +206,28 @@ class RenderProcessor {
       throw new Error('Unable to initialize WebGL. Your browser may not support it.');
     }
 
-    return graphicContext;
+    return graphicContext as WebGL2RenderingContext;
   }
 
   _initExtensions() {
-    this._vaoExt = this.gl.getExtension('OES_vertex_array_object');
-
-    if (!this._vaoExt) {
-      alert('Unable to initialize OES_vertex_array_object extension');
+    if (!this.gl) {
+      throw new Error('Unable to initialize extension. The graphic context is not initialized');
     }
+
+    const vaoExt = this.gl.getExtension('OES_vertex_array_object');
+
+    if (!vaoExt) {
+      throw new Error('Unable to initialize extension.');
+    }
+
+    this._vaoExt = vaoExt;
   }
 
   _initScreen() {
+    if (!this.gl) {
+      throw new Error('Unable to initialize screen. The graphic context is not initialized.');
+    }
+
     this.gl.clearColor(
       this._backgroundColor.red() / MAX_COLOR_NUMBER,
       this._backgroundColor.green() / MAX_COLOR_NUMBER,
@@ -163,12 +243,21 @@ class RenderProcessor {
   }
 
   _initShaders() {
+    if (!this.gl) {
+      throw new Error('Unable to initialize shaders. The graphic context is not initialized');
+    }
+
     const shaderBuilder = new ShaderBuilder(this.gl);
 
     const vertexShader = shaderBuilder.create(VERTEX_SHADER);
     const fragmentShader = shaderBuilder.create(FRAGMENT_SHADER);
 
     const shaderProgram = this.gl.createProgram();
+
+    if (!shaderProgram) {
+      throw new Error('Can\'t create shader program');
+    }
+
     this.gl.attachShader(shaderProgram, vertexShader);
     this.gl.attachShader(shaderProgram, fragmentShader);
 
@@ -184,6 +273,13 @@ class RenderProcessor {
   }
 
   _initProgramInfo() {
+    if (!this.gl) {
+      throw new Error('Unable to activate program. The graphic context is not initialized');
+    }
+    if (!this.program) {
+      throw new Error('Unable to activate program. The program is not initialized');
+    }
+
     this.gl.useProgram(this.program);
 
     this._variables = {
@@ -204,6 +300,13 @@ class RenderProcessor {
   }
 
   _createVAO() {
+    if (!this.gl) {
+      throw new Error('Unable to create Vertex Array Object. The graphic context is not initialized');
+    }
+    if (!this._vaoExt) {
+      throw new Error('Unable to create Vertex Array Object. VAO extension is not available');
+    }
+
     const vao = this._vaoExt.createVertexArrayOES();
     this._vaoExt.bindVertexArrayOES(vao);
 
@@ -212,27 +315,27 @@ class RenderProcessor {
 
     const attrs = [
       {
-        loc: this._variables.aPosition,
+        loc: this._variables.aPosition as number,
         type: 'vec2',
       },
       {
-        loc: this._variables.aTexCoord,
+        loc: this._variables.aTexCoord as number,
         type: 'vec2',
       },
       {
-        loc: this._variables.aModelViewMatrix,
+        loc: this._variables.aModelViewMatrix as number,
         type: 'mat3',
       },
       {
-        loc: this._variables.aTexSize,
+        loc: this._variables.aTexSize as number,
         type: 'vec2',
       },
       {
-        loc: this._variables.aTexTranslate,
+        loc: this._variables.aTexTranslate as number,
         type: 'vec2',
       },
       {
-        loc: this._variables.aGameObjectSize,
+        loc: this._variables.aGameObjectSize as number,
         type: 'vec2',
       },
     ];
@@ -241,7 +344,7 @@ class RenderProcessor {
       vec2: BYTES_PER_VECTOR_2,
     };
     const stride = attrs.reduce((totalSize, attr) => (
-      totalSize + sizeMap[attr.type]
+      totalSize + sizeMap[attr.type as 'vec2' | 'mat3']
     ), 0);
 
     let offset = 0;
@@ -283,6 +386,10 @@ class RenderProcessor {
   }
 
   _setUpGlobalUniforms() {
+    if (!this.gl) {
+      throw new Error('Unable to set up global uniforms. The graphic context is not initialized');
+    }
+
     this.gl.uniform2fv(
       this._variables.uTexAtlasSize,
       [this.textureAtlasSize.width, this.textureAtlasSize.height],
@@ -290,6 +397,10 @@ class RenderProcessor {
   }
 
   _initTextures() {
+    if (!this.gl) {
+      throw new Error('Unable to initialize textures. The graphic context is not initialized');
+    }
+
     const texture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
@@ -304,7 +415,14 @@ class RenderProcessor {
     return texture;
   }
 
-  _getModelViewMatrix(renderable, x, y, rotation, scaleX, scaleY) {
+  _getModelViewMatrix(
+    renderable: Renderable,
+    x: number,
+    y: number,
+    rotation: number,
+    scaleX: number,
+    scaleY: number,
+  ) {
     const matrixTransformer = this._matrixTransformer;
 
     const matrix = matrixTransformer.getIdentityMatrix();
@@ -324,9 +442,9 @@ class RenderProcessor {
   }
 
   _getCompareFunction() {
-    return (a, b) => {
-      const aRenderable = a.getComponent(RENDERABLE_COMPONENT_NAME);
-      const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME);
+    return (a: GameObject, b: GameObject) => {
+      const aRenderable = a.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+      const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
       const aSortingLayerOrder = this._sortingLayer[aRenderable.sortingLayer];
       const bSortingLayerOrder = this._sortingLayer[bRenderable.sortingLayer];
 
@@ -338,8 +456,8 @@ class RenderProcessor {
         return -1;
       }
 
-      const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME);
-      const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME);
+      const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+      const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
 
       const aOffsetY = aTransform.offsetY + ((aTransform.scaleY * aRenderable.height) / 2);
       const bOffsetY = bTransform.offsetY + ((bTransform.scaleY * bRenderable.height) / 2);
@@ -367,42 +485,47 @@ class RenderProcessor {
     };
   }
 
-  _setUpTextureInfo(textureInfo, renderable, offset) {
-    this._vertexData[offset] = textureInfo.width;
-    this._vertexData[offset + 1] = textureInfo.height;
-    this._vertexData[offset + 2] = textureInfo.x;
-    this._vertexData[offset + 3] = textureInfo.y;
-    this._vertexData[offset + 4] = renderable.width;
-    this._vertexData[offset + 5] = renderable.height;
+  _setUpTextureInfo(textureInfo: TextureDescriptor, renderable: Renderable, offset: number) {
+    const vertexData = this._vertexData as Float32Array;
+
+    vertexData[offset] = textureInfo.width;
+    vertexData[offset + 1] = textureInfo.height;
+    vertexData[offset + 2] = textureInfo.x;
+    vertexData[offset + 3] = textureInfo.y;
+    vertexData[offset + 4] = renderable.width;
+    vertexData[offset + 5] = renderable.height;
   }
 
-  _setUpMatrix(matrix, offset) {
+  _setUpMatrix(matrix: Matrix3x3, offset: number) {
+    const vertexData = this._vertexData as Float32Array;
+
     /* eslint-disable prefer-destructuring */
-    this._vertexData[offset] = matrix[0];
-    this._vertexData[offset + 1] = matrix[1];
-    this._vertexData[offset + 2] = matrix[2];
-    this._vertexData[offset + 3] = matrix[3];
-    this._vertexData[offset + 4] = matrix[4];
-    this._vertexData[offset + 5] = matrix[5];
-    this._vertexData[offset + 6] = matrix[6];
-    this._vertexData[offset + 7] = matrix[7];
-    this._vertexData[offset + 8] = matrix[8];
+    vertexData[offset] = matrix[0];
+    vertexData[offset + 1] = matrix[1];
+    vertexData[offset + 2] = matrix[2];
+    vertexData[offset + 3] = matrix[3];
+    vertexData[offset + 4] = matrix[4];
+    vertexData[offset + 5] = matrix[5];
+    vertexData[offset + 6] = matrix[6];
+    vertexData[offset + 7] = matrix[7];
+    vertexData[offset + 8] = matrix[8];
     /* eslint-enable prefer-destructuring */
   }
 
-  _setUpVertexData(gameObject, index) {
+  _setUpVertexData(gameObject: GameObject, index: number) {
+    const vertexData = this._vertexData as Float32Array;
     const gameObjectId = gameObject.getId();
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
     const offset = index * VERTEX_DATA_STRIDE;
 
     if (renderable.disabled) {
       for (let i = 0; i < VERTEX_DATA_STRIDE; i += 1) {
-        this._vertexData[offset + i] = 0;
+        vertexData[offset + i] = 0;
       }
       return;
     }
 
-    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
@@ -415,31 +538,31 @@ class RenderProcessor {
       transform.scaleY,
     );
 
-    if (!this._geometry[gameObjectId]) {
-      this._geometry[gameObjectId] = {
-        position: new Rectangle(renderable.width, renderable.height).toArray(),
-        texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
-      };
-    }
+    const geometry = this._geometry[gameObjectId] || {
+      position: new Rectangle(renderable.width, renderable.height).toArray(),
+      texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
+    };
+    this._geometry[gameObjectId] = geometry;
 
-    const { position, texCoord } = this._geometry[gameObjectId];
+    const { position, texCoord } = geometry;
 
     for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
-      this._vertexData[j] = position[i];
-      this._vertexData[j + 1] = position[i + 1];
-      this._vertexData[j + 2] = texCoord[i];
-      this._vertexData[j + 3] = texCoord[i + 1];
+      vertexData[j] = position[i];
+      vertexData[j + 1] = position[i + 1];
+      vertexData[j + 2] = texCoord[i];
+      vertexData[j + 3] = texCoord[i + 1];
 
       this._setUpMatrix(modelViewMatrix, j + (VECTOR_2_SIZE * 2));
       this._setUpTextureInfo(textureInfo, renderable, j + (VECTOR_2_SIZE * 2) + MATRIX_SIZE);
     }
   }
 
-  _resizeCanvas(canvas) {
+  _resizeCanvas(canvas: HTMLCanvasElement) {
     if (!this._windowDidResize) {
       return;
     }
 
+    const gl = this.gl as WebGLRenderingContext;
     const devicePixelRatio = window.devicePixelRatio || 1;
     this._viewWidth = this._view.clientWidth;
     this._viewHeight = this._view.clientHeight;
@@ -458,15 +581,16 @@ class RenderProcessor {
 
     this._screenScale = normalizedSize / STD_SCREEN_SIZE;
 
-    this.gl.viewport(0, 0, canvasWidth, canvasHeight);
+    gl.viewport(0, 0, canvasWidth, canvasHeight);
 
     this._windowDidResize = false;
   }
 
   _updateViewMatrix() {
-    const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
-    const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
-    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
+    const gl = this.gl as WebGLRenderingContext;
+    const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as GameObject;
+    const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
     const scale = zoom * this._screenScale;
 
     const prevStats = this._viewMatrixStats;
@@ -487,7 +611,7 @@ class RenderProcessor {
     matrixTransformer.scale(viewMatrix, scale, scale);
     matrixTransformer.project(viewMatrix, this._viewWidth, this._viewHeight);
 
-    this.gl.uniformMatrix3fv(
+    gl.uniformMatrix3fv(
       this._variables.uViewMatrix,
       false,
       viewMatrix,
@@ -509,8 +633,12 @@ class RenderProcessor {
   }
 
   _setUpBuffers() {
-    this._vaoExt.bindVertexArrayOES(this._vao);
-    this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, this._vertexData);
+    const vaoExt = this._vaoExt as OES_vertex_array_object;
+    const gl = this.gl as WebGLRenderingContext;
+    const vertexData = this._vertexData as Float32Array;
+
+    vaoExt.bindVertexArrayOES(this._vao);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
   }
 
   _processRemovedGameObjects() {
@@ -521,17 +649,24 @@ class RenderProcessor {
   }
 
   process() {
-    const { canvas } = this.gl;
+    const gl = this.gl as WebGLRenderingContext;
+
+    const { canvas } = gl;
 
     this._resizeCanvas(canvas);
 
     // eslint-disable-next-line no-bitwise
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     this._processRemovedGameObjects();
 
     this._updateViewMatrix();
     this._allocateVertexData();
+
+    if (!this._vertexData) {
+      return;
+    }
+
     this._gameObjectObserver.sort(this._getCompareFunction());
 
     this._gameObjectObserver.forEach((gameObject, index) => {
@@ -539,10 +674,8 @@ class RenderProcessor {
     });
 
     this._setUpBuffers();
-    this.gl.drawArrays(
-      this.gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * this._gameObjectObserver.size(),
+    gl.drawArrays(
+      gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * this._gameObjectObserver.size(),
     );
   }
 }
-
-export default RenderProcessor;

@@ -1,7 +1,7 @@
 import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
 import IOC from '../../../engine/ioc/ioc';
 import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
-import RenderProcessor from '../../processors/renderProcessor/renderProcessor';
+import { RenderProcessor, TextureDescriptor } from '../../processors/render-processor';
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
@@ -36,10 +36,15 @@ export class RenderProcessorPlugin implements ProcessorPlugin {
     } = options;
 
     const window = document.getElementById(windowNodeId);
+
+    if (!window) {
+      throw new Error('Unable to load RenderProcessor. Root canvas node not found');
+    }
+
     const resources = [textureAtlas, textureAtlasDescriptor];
     const loadedResources = await Promise.all(
       resources.map((resource) => resourceLoader.load(resource)),
-    );
+    ) as [HTMLImageElement, Record<string, TextureDescriptor>];
 
     return new RenderProcessor({
       window,
