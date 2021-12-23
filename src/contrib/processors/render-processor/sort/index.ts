@@ -1,17 +1,17 @@
 import type { GameObject } from '../../../../engine/gameObject';
 
-import { Sorter, SortFn } from './types';
+import { SortFn } from './types';
 
-export { LayerSorter } from './layer-sorter';
-export { XAxisSorter } from './x-axis-sorter';
-export { YAxisSorter } from './y-axis-sorter';
-export { ZAxisSorter } from './z-axis-sorter';
+export { createSortByLayer } from './layer-sorter';
+export { sortByXAxis } from './x-axis-sorter';
+export { sortByYAxis } from './y-axis-sorter';
+export { sortByZAxis } from './z-axis-sorter';
 
-export const composeSort = (sorters: Array<Sorter>): SortFn => (a: GameObject, b: GameObject) => {
+export const composeSort = (sortFns: Array<SortFn>): SortFn => (a: GameObject, b: GameObject) => {
   let result = 0;
 
-  for (let i = 0; i < sorters.length; i += 1) {
-    result = sorters[i].sort(a, b);
+  for (let i = 0; i < sortFns.length; i += 1) {
+    result = sortFns[i](a, b);
 
     if (result !== 0) {
       return result;

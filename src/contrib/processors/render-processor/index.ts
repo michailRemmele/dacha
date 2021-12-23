@@ -12,10 +12,10 @@ import { MatrixTransformer, Matrix3x3 } from './matrix-transformer';
 import {
   composeSort,
   SortFn,
-  LayerSorter,
-  YAxisSorter,
-  XAxisSorter,
-  ZAxisSorter,
+  createSortByLayer,
+  sortByYAxis,
+  sortByXAxis,
+  sortByZAxis,
 } from './sort';
 import {
   MAX_COLOR_NUMBER,
@@ -134,10 +134,10 @@ export class RenderProcessor {
     this._variables = {};
 
     this.sortFn = composeSort([
-      new LayerSorter(sortingLayers),
-      new YAxisSorter(),
-      new XAxisSorter(),
-      new ZAxisSorter(),
+      createSortByLayer(sortingLayers),
+      sortByYAxis,
+      sortByXAxis,
+      sortByZAxis,
     ]);
 
     this._store = store;
