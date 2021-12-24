@@ -1,6 +1,7 @@
 import { Component } from '../../../engine/component';
 
 type RenderableType = 'sprite' | 'static';
+type FitType = 'stretch' | 'repeat';
 
 export interface RenderableConfig {
   src: string;
@@ -16,6 +17,7 @@ export interface RenderableConfig {
   flipY: boolean;
   disabled: boolean;
   sortingLayer: string;
+  fit: FitType;
 }
 
 export class Renderable extends Component {
@@ -34,6 +36,7 @@ export class Renderable extends Component {
   disabled: boolean;
   sortingLayer: string;
   currentFrame?: number;
+  fit: FitType;
 
   constructor(componentName: string, config: RenderableConfig) {
     super(componentName);
@@ -52,6 +55,7 @@ export class Renderable extends Component {
     this.flipY = config.flipY;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
+    this.fit = config.fit;
   }
 
   set origin(origin: [number, number]) {
@@ -77,6 +81,7 @@ export class Renderable extends Component {
       flipY: this.flipY,
       disabled: this.disabled,
       sortingLayer: this.sortingLayer,
+      fit: this.fit,
     });
   }
 }

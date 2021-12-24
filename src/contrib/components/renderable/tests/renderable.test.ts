@@ -16,6 +16,7 @@ describe('Contrib -> components -> Renderable', () => {
       flipY: true,
       disabled: false,
       sortingLayer: 'terrain',
+      fit: 'stretch',
     }).clone();
 
     expect(renderable.src).toEqual('some-path-to-texture');
@@ -31,6 +32,7 @@ describe('Contrib -> components -> Renderable', () => {
     expect(renderable.flipY).toEqual(true);
     expect(renderable.disabled).toEqual(false);
     expect(renderable.sortingLayer).toEqual('terrain');
+    expect(renderable.fit).toEqual('stretch');
   });
 
   it('Correct updates values ', () => {
@@ -48,6 +50,7 @@ describe('Contrib -> components -> Renderable', () => {
       flipY: true,
       disabled: false,
       sortingLayer: 'terrain',
+      fit: 'stretch',
     }).clone();
 
     renderable.src = 'another-path-to-texture';
@@ -63,6 +66,7 @@ describe('Contrib -> components -> Renderable', () => {
     renderable.flipY = false;
     renderable.disabled = true;
     renderable.sortingLayer = 'units';
+    renderable.fit = 'repeat';
 
     expect(renderable.src).toEqual('another-path-to-texture');
     expect(renderable.type).toEqual('static');
@@ -77,6 +81,7 @@ describe('Contrib -> components -> Renderable', () => {
     expect(renderable.flipY).toEqual(false);
     expect(renderable.disabled).toEqual(true);
     expect(renderable.sortingLayer).toEqual('units');
+    expect(renderable.fit).toEqual('repeat');
   });
 
   it('Clones return deep copy of original component', () => {
@@ -94,6 +99,7 @@ describe('Contrib -> components -> Renderable', () => {
       flipY: true,
       disabled: false,
       sortingLayer: 'terrain',
+      fit: 'stretch',
     });
     const cloneRenderable = originalRenderable.clone();
 

@@ -18,6 +18,7 @@ describe('Contrib -> RenderProcessor -> Sort -> sortByYAxis()', () => {
     flipY: false,
     disabled: false,
     sortingLayer: 'some-layer',
+    fit: 'stretch',
   };
   const baseTransformProps: TransformConfig = {
     offsetX: 0,

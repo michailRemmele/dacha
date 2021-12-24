@@ -26,6 +26,7 @@ describe('Contrib -> RenderProcessor -> texture handlers -> SpriteTextureHandler
       flipY: false,
       disabled: false,
       sortingLayer: 'test-layer',
+      fit: 'stretch',
     });
 
     expect(textureHandler.handle(testDescriptor, renderable)).toEqual({

@@ -6,6 +6,7 @@ export { createSortByLayer } from './sort-by-layer';
 export { sortByXAxis } from './sort-by-x-axis';
 export { sortByYAxis } from './sort-by-y-axis';
 export { sortByZAxis } from './sort-by-z-axis';
+export { sortByFit } from './sort-by-fit';
 
 export const composeSort = (sortFns: Array<SortFn>): SortFn => (a: GameObject, b: GameObject) => {
   let result = 0;

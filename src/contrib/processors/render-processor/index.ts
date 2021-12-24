@@ -16,6 +16,7 @@ import {
   sortByYAxis,
   sortByXAxis,
   sortByZAxis,
+  sortByFit,
 } from './sort';
 import {
   MAX_COLOR_NUMBER,
@@ -138,6 +139,7 @@ export class RenderProcessor {
       sortByYAxis,
       sortByXAxis,
       sortByZAxis,
+      sortByFit,
     ]);
 
     this._store = store;
