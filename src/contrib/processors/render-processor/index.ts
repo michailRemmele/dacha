@@ -9,29 +9,33 @@ import { Color } from './color';
 import { textureHandlers, TextureHandler, TextureDescriptor } from './texture-handlers';
 import { ShaderBuilder, VERTEX_SHADER, FRAGMENT_SHADER } from './shader-builder';
 import { MatrixTransformer, Matrix3x3 } from './matrix-transformer';
-
-const MAX_COLOR_NUMBER = 255;
-const DRAW_OFFSET = 0;
-const DRAW_COUNT = 6;
-const STD_SCREEN_SIZE = 1080;
-
-const VECTOR_2_SIZE = 2;
-const BYTES_PER_VECTOR_2 = Float32Array.BYTES_PER_ELEMENT * VECTOR_2_SIZE;
-const MATRIX_ROW_SIZE = 3;
-const MATRIX_COLUMN_SIZE = 3;
-const MATRIX_SIZE = MATRIX_ROW_SIZE * MATRIX_COLUMN_SIZE;
-const BYTES_PER_MATRIX = Float32Array.BYTES_PER_ELEMENT * MATRIX_SIZE;
-const BYTES_PER_MATRIX_ROW = Float32Array.BYTES_PER_ELEMENT * MATRIX_ROW_SIZE;
-
-const VERTEX_STRIDE = (VECTOR_2_SIZE * 5) + (MATRIX_SIZE);
-const VERTEX_DATA_STRIDE = VERTEX_STRIDE * DRAW_COUNT;
-
-const BUFFER_SIZE = 1000 * VERTEX_DATA_STRIDE * Float32Array.BYTES_PER_ELEMENT;
-
-const RENDERABLE_COMPONENT_NAME = 'renderable';
-const TRANSFORM_COMPONENT_NAME = 'transform';
-const CAMERA_COMPONENT_NAME = 'camera';
-const CURRENT_CAMERA_NAME = 'currentCamera';
+import {
+  composeSort,
+  SortFn,
+  createSortByLayer,
+  sortByYAxis,
+  sortByXAxis,
+  sortByZAxis,
+} from './sort';
+import {
+  MAX_COLOR_NUMBER,
+  DRAW_OFFSET,
+  DRAW_COUNT,
+  STD_SCREEN_SIZE,
+  VECTOR_2_SIZE,
+  BYTES_PER_VECTOR_2,
+  MATRIX_ROW_SIZE,
+  MATRIX_SIZE,
+  BYTES_PER_MATRIX,
+  BYTES_PER_MATRIX_ROW,
+  VERTEX_STRIDE,
+  VERTEX_DATA_STRIDE,
+  BUFFER_SIZE,
+  RENDERABLE_COMPONENT_NAME,
+  TRANSFORM_COMPONENT_NAME,
+  CAMERA_COMPONENT_NAME,
+  CURRENT_CAMERA_NAME,
+} from './consts';
 
 interface ViewMatrixStats {
   width?: number;
@@ -70,7 +74,6 @@ export class RenderProcessor {
   private _windowDidResize: boolean;
   private _onWindowResizeBind: () => void;
   private _shaders: Array<WebGLShader>;
-  private _sortingLayer: Record<string, number>;
   private _store: Store;
   private _gameObjectObserver: GameObjectObserver;
   private _scaleSensitivity: number;
@@ -89,6 +92,7 @@ export class RenderProcessor {
   private program: WebGLProgram | null;
   private textures: WebGLTexture | null;
   private _variables: Record<string, number | WebGLUniformLocation | null>;
+  private sortFn: SortFn;
 
   constructor(options: RendererOptions) {
     const {
@@ -129,10 +133,13 @@ export class RenderProcessor {
     this._shaders = [];
     this._variables = {};
 
-    this._sortingLayer = sortingLayers.reduce((storage: Record<string, number>, layer, index) => {
-      storage[layer] = index;
-      return storage;
-    }, {});
+    this.sortFn = composeSort([
+      createSortByLayer(sortingLayers),
+      sortByYAxis,
+      sortByXAxis,
+      sortByZAxis,
+    ]);
+
     this._store = store;
     this._gameObjectObserver = gameObjectObserver;
 
@@ -441,50 +448,6 @@ export class RenderProcessor {
     return matrix;
   }
 
-  _getCompareFunction() {
-    return (a: GameObject, b: GameObject) => {
-      const aRenderable = a.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-      const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-      const aSortingLayerOrder = this._sortingLayer[aRenderable.sortingLayer];
-      const bSortingLayerOrder = this._sortingLayer[bRenderable.sortingLayer];
-
-      if (aSortingLayerOrder > bSortingLayerOrder) {
-        return 1;
-      }
-
-      if (aSortingLayerOrder < bSortingLayerOrder) {
-        return -1;
-      }
-
-      const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-      const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-
-      const aOffsetY = aTransform.offsetY + ((aTransform.scaleY * aRenderable.height) / 2);
-      const bOffsetY = bTransform.offsetY + ((bTransform.scaleY * bRenderable.height) / 2);
-
-      if (aOffsetY > bOffsetY) {
-        return 1;
-      }
-
-      if (aOffsetY < bOffsetY) {
-        return -1;
-      }
-
-      const aOffsetX = aTransform.offsetX + ((aTransform.scaleX * aRenderable.width) / 2);
-      const bOffsetX = bTransform.offsetX + ((bTransform.scaleX * bRenderable.width) / 2);
-
-      if (aOffsetX > bOffsetX) {
-        return 1;
-      }
-
-      if (aOffsetX < bOffsetX) {
-        return -1;
-      }
-
-      return aTransform.offsetZ - bTransform.offsetZ;
-    };
-  }
-
   _setUpTextureInfo(textureInfo: TextureDescriptor, renderable: Renderable, offset: number) {
     const vertexData = this._vertexData as Float32Array;
 
@@ -667,7 +630,7 @@ export class RenderProcessor {
       return;
     }
 
-    this._gameObjectObserver.sort(this._getCompareFunction());
+    this._gameObjectObserver.sort(this.sortFn);
 
     this._gameObjectObserver.forEach((gameObject, index) => {
       this._setUpVertexData(gameObject, index);

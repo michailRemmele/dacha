@@ -2,7 +2,7 @@ import { Component } from '../../../engine/component';
 
 type RenderableType = 'sprite' | 'static';
 
-interface RenderableConfig {
+export interface RenderableConfig {
   src: string;
   width: number;
   height: number;

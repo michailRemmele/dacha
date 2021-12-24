@@ -1,6 +1,6 @@
 import { Component } from '../../../engine/component';
 
-interface TransformConfig {
+export interface TransformConfig {
   offsetX: number;
   offsetY: number;
   offsetZ: number;
