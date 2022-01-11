@@ -67,40 +67,77 @@ describe('Engine -> GameObjectObserver', () => {
     });
   });
 
-  it('Correct returns new added game objects', () => {
+  it('Correct subscribe on new game objects additions', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
       components: ['test-1'],
       type: 'correct-type',
     });
+    const testFn1 = jest.fn();
+    const testFn2 = jest.fn();
+
+    gameObjectObserver.subscribe('onadd', testFn1);
+    gameObjectObserver.subscribe('onadd', testFn2);
 
     scene.addGameObject(gameObject1);
-    expect(gameObjectObserver.getLastAdded()).toEqual([gameObject1]);
+
+    expect(testFn1.mock.calls.length).toEqual(0);
+    expect(testFn2.mock.calls.length).toEqual(0);
+
+    gameObjectObserver.fireEvents();
+
+    expect(testFn1.mock.calls.length).toEqual(1);
+    expect(testFn1.mock.calls[0]).toEqual([gameObject1]);
+    expect(testFn2.mock.calls.length).toEqual(1);
+    expect(testFn2.mock.calls[0]).toEqual([gameObject1]);
     expect(gameObjectObserver.size()).toEqual(1);
 
     scene.addGameObject(gameObject2);
-    expect(gameObjectObserver.getLastAdded()).toEqual([]);
+    gameObjectObserver.fireEvents();
+
+    expect(testFn1.mock.calls.length).toEqual(1);
+    expect(testFn2.mock.calls.length).toEqual(1);
     expect(gameObjectObserver.size()).toEqual(1);
 
     scene.addGameObject(gameObject3);
-    expect(gameObjectObserver.getLastAdded()).toEqual([]);
+    gameObjectObserver.fireEvents();
+
+    expect(testFn1.mock.calls.length).toEqual(1);
+    expect(testFn2.mock.calls.length).toEqual(1);
     expect(gameObjectObserver.size()).toEqual(1);
 
     gameObject3.setComponent('test-1', createMockComponent('test-1'));
-    expect(gameObjectObserver.getLastAdded()).toEqual([gameObject3]);
+    gameObjectObserver.fireEvents();
+
+    expect(testFn1.mock.calls.length).toEqual(2);
+    expect(testFn1.mock.calls[1]).toEqual([gameObject3]);
+    expect(testFn2.mock.calls.length).toEqual(2);
+    expect(testFn2.mock.calls[1]).toEqual([gameObject3]);
     expect(gameObjectObserver.size()).toEqual(2);
 
     scene.addGameObject(gameObject4);
     scene.addGameObject(gameObject5);
-    expect(gameObjectObserver.getLastAdded()).toEqual([gameObject4, gameObject5]);
-    expect(gameObjectObserver.getLastAdded()).toEqual([]);
+    gameObjectObserver.fireEvents();
+
+    expect(testFn1.mock.calls.length).toEqual(4);
+    expect(testFn1.mock.calls[2]).toEqual([gameObject4]);
+    expect(testFn1.mock.calls[3]).toEqual([gameObject5]);
+    expect(testFn2.mock.calls.length).toEqual(4);
+    expect(testFn2.mock.calls[2]).toEqual([gameObject4]);
+    expect(testFn2.mock.calls[3]).toEqual([gameObject5]);
     expect(gameObjectObserver.size()).toEqual(4);
   });
 
-  it('Correct returns new removed game objects', () => {
+  it('Correct subscribe on new game objects removes', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
       components: ['test-1'],
       type: 'correct-type',
     });
+
+    const testFn1 = jest.fn();
+    const testFn2 = jest.fn();
+
+    gameObjectObserver.subscribe('onremove', testFn1);
+    gameObjectObserver.subscribe('onremove', testFn2);
 
     scene.addGameObject(gameObject1);
     scene.addGameObject(gameObject2);
@@ -108,19 +145,55 @@ describe('Engine -> GameObjectObserver', () => {
     scene.addGameObject(gameObject4);
     scene.addGameObject(gameObject5);
 
+    gameObjectObserver.fireEvents();
+
+    expect(testFn1.mock.calls.length).toEqual(0);
+    expect(testFn2.mock.calls.length).toEqual(0);
     expect(gameObjectObserver.size()).toEqual(3);
 
     gameObject1.removeComponent('test-1');
+    gameObjectObserver.fireEvents();
 
-    expect(gameObjectObserver.getLastRemoved()).toEqual([gameObject1]);
+    expect(testFn1.mock.calls.length).toEqual(1);
+    expect(testFn1.mock.calls[0]).toEqual([gameObject1]);
+    expect(testFn2.mock.calls.length).toEqual(1);
+    expect(testFn2.mock.calls[0]).toEqual([gameObject1]);
     expect(gameObjectObserver.size()).toEqual(2);
 
     scene.removeGameObject(gameObject4);
     gameObject5.removeComponent('test-1');
+    gameObjectObserver.fireEvents();
 
-    expect(gameObjectObserver.getLastRemoved()).toEqual([gameObject4, gameObject5]);
-    expect(gameObjectObserver.getLastRemoved()).toEqual([]);
+    expect(testFn1.mock.calls.length).toEqual(3);
+    expect(testFn1.mock.calls[1]).toEqual([gameObject4]);
+    expect(testFn1.mock.calls[2]).toEqual([gameObject5]);
+    expect(testFn2.mock.calls.length).toEqual(3);
+    expect(testFn2.mock.calls[1]).toEqual([gameObject4]);
+    expect(testFn2.mock.calls[2]).toEqual([gameObject5]);
     expect(gameObjectObserver.size()).toEqual(0);
+  });
+
+  it('Correct unsubscribe from game object observer events', () => {
+    const gameObjectObserver = new GameObjectObserver(scene, {
+      components: ['test-1'],
+      type: 'correct-type',
+    });
+
+    const testFn = jest.fn();
+
+    gameObjectObserver.subscribe('onadd', testFn);
+
+    scene.addGameObject(gameObject1);
+    gameObjectObserver.fireEvents();
+
+    expect(testFn.mock.calls.length).toEqual(1);
+
+    gameObjectObserver.unsubscribe('onadd', testFn);
+
+    scene.addGameObject(gameObject4);
+    gameObjectObserver.fireEvents();
+
+    expect(testFn.mock.calls.length).toEqual(1);
   });
 
   it('Correct returns game objects by id and index', () => {
