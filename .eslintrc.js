@@ -14,9 +14,6 @@ const commonRules = {
   ],
   'no-param-reassign': 1,
   'no-restricted-properties': 1,
-  'import/no-cycle': [
-    'warn',
-  ],
 };
 
 module.exports = {
@@ -27,6 +24,7 @@ module.exports = {
   extends: [
     'airbnb-base',
   ],
+  parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaVersion: 9,
     ecmaFeatures: {
@@ -43,7 +41,6 @@ module.exports = {
   overrides: [
     {
       files: ['*.ts'],
-      parser: '@typescript-eslint/parser',
       parserOptions: {
         project: './tsconfig.json',
       },

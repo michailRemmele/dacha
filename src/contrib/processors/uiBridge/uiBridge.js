@@ -38,11 +38,17 @@ class UiBridge {
       pushAction: this._pushAction.bind(this),
       gameObjects: this._gameObjects,
     });
+    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
   }
 
   processorWillUnmount() {
     this._onUiDestroy();
+    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
   }
+
+  _handleGameObjectRemove = (gameObject) => {
+    this._gameObjects.next(null, gameObject.getId());
+  };
 
   _pushAction(action) {
     this._actionsQueue.push(action);
@@ -52,16 +58,10 @@ class UiBridge {
     this._messageQueue.push(message);
   }
 
-  _processRemovedGameObjects() {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      this._gameObjects.next(null, gameObject.getId());
-    });
-  }
-
   process(options) {
     const { messageBus, deltaTime } = options;
 
-    this._processRemovedGameObjects();
+    this._gameObjectObserver.fireEvents();
 
     this._gameObjectObserver.forEach((gameObject) => {
       this._gameObjects.next(gameObject, gameObject.getId());
