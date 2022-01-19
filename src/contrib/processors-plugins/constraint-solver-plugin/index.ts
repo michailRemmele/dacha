@@ -13,6 +13,7 @@ export class ConstraintSolverPlugin implements ProcessorPlugin {
           TRANSFORM_COMPONENT_NAME,
         ],
       }),
+      messageBus: options.messageBus,
     });
   }
 }

@@ -11,6 +11,7 @@ class UiBridge {
       gameObjectSpawner,
       gameObjectDestroyer,
       store,
+      messageBus,
     } = options;
 
     this._onUiInit = onInit;
@@ -20,6 +21,7 @@ class UiBridge {
     this._gameObjectSpawner = gameObjectSpawner;
     this._gameObjectDestroyer = gameObjectDestroyer;
     this._store = store;
+    this.messageBus = messageBus;
 
     this._messageBusObserver = new Observer();
     this._storeObserver = new Observer();
@@ -59,7 +61,7 @@ class UiBridge {
   }
 
   process(options) {
-    const { messageBus, deltaTime } = options;
+    const { deltaTime } = options;
 
     this._gameObjectObserver.fireEvents();
 
@@ -67,18 +69,18 @@ class UiBridge {
       this._gameObjects.next(gameObject, gameObject.getId());
     });
 
-    this._messageBusObserver.next(messageBus);
+    this._messageBusObserver.next(this.messageBus);
     this._storeObserver.next(this._store);
 
     this._messageQueue.forEach((message) => {
-      messageBus.send(message, true);
+      this.messageBus.send(message, true);
     });
 
     this._messageQueue = [];
 
     this._actionsQueue.forEach((action) => {
       action({
-        messageBus,
+        messageBus: this.messageBus,
         deltaTime,
         store: this._store,
         gameObjectSpawner: this._gameObjectSpawner,

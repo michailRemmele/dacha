@@ -18,11 +18,14 @@ const DIRECTION_VECTOR = {
 
 class PhysicsProcessor {
   constructor(options) {
-    const { gravitationalAcceleration, gameObjectObserver, store } = options;
+    const {
+      gravitationalAcceleration, gameObjectObserver, store, messageBus,
+    } = options;
 
     this._gravitationalAcceleration = gravitationalAcceleration;
     this._gameObjectObserver = gameObjectObserver;
     this._store = store;
+    this.messageBus = messageBus;
 
     this._gameObjectsVelocity = {};
   }
@@ -81,7 +84,7 @@ class PhysicsProcessor {
     return gravityVector;
   }
 
-  _getForceVector(gameObject, messageBus) {
+  _getForceVector(gameObject) {
     const gameObjectId = gameObject.getId();
     const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
 
@@ -89,15 +92,15 @@ class PhysicsProcessor {
 
     forceVector.add(this._getGravityForce(rigidBody));
 
-    const addForceMessages = messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
+    const addForceMessages = this.messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
     addForceMessages.forEach((message) => forceVector.add(message.value));
 
     return forceVector;
   }
 
-  _getImpulseVector(gameObject, messageBus) {
+  _getImpulseVector(gameObject) {
     const gameObjectId = gameObject.getId();
-    const addImpulseMessages = messageBus.getById(ADD_IMPULSE_MSG, gameObjectId) || [];
+    const addImpulseMessages = this.messageBus.getById(ADD_IMPULSE_MSG, gameObjectId) || [];
 
     return addImpulseMessages.reduce((vector, message) => {
       vector.add(message.value);
@@ -106,8 +109,8 @@ class PhysicsProcessor {
     }, new Vector2(0, 0));
   }
 
-  _processConstraints(messageBus) {
-    const stopMovementMessages = messageBus.get(STOP_MOVEMENT_MSG) || [];
+  _processConstraints() {
+    const stopMovementMessages = this.messageBus.get(STOP_MOVEMENT_MSG) || [];
 
     stopMovementMessages.forEach((message) => {
       const { gameObject } = message;
@@ -120,13 +123,13 @@ class PhysicsProcessor {
   }
 
   process(options) {
-    const { messageBus, deltaTime } = options;
+    const { deltaTime } = options;
     const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
 
     this._gameObjectObserver.fireEvents();
 
-    this._processConstraints(messageBus);
+    this._processConstraints();
 
     this._gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
@@ -134,8 +137,8 @@ class PhysicsProcessor {
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
       const { mass } = rigidBody;
 
-      const forceVector = this._getForceVector(gameObject, messageBus);
-      const impulseVector = this._getImpulseVector(gameObject, messageBus);
+      const forceVector = this._getForceVector(gameObject);
+      const impulseVector = this._getImpulseVector(gameObject);
 
       this._gameObjectsVelocity[gameObjectId] = this._gameObjectsVelocity[gameObjectId]
         || new Vector2(0, 0);

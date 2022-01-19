@@ -9,15 +9,14 @@ const PREFIX_SEPARATOR = '_';
 class KeyboardControlProcessor {
   constructor(options) {
     this._gameObjectObserver = options.gameObjectObserver;
+    this.messageBus = options.messageBus;
   }
 
-  process(options) {
-    const { messageBus } = options;
-
+  process() {
     this._gameObjectObserver.forEach((gameObject) => {
       const control = gameObject.getComponent(CONTROL_COMPONENT_NAME);
 
-      const messages = messageBus.get(INPUT_MESSAGE) || [];
+      const messages = this.messageBus.get(INPUT_MESSAGE) || [];
       messages.forEach((message) => {
         message.query.forEach((inputEvent) => {
           const splitEvent = inputEvent.split(PREFIX_SEPARATOR);
@@ -41,7 +40,7 @@ class KeyboardControlProcessor {
             throw new Error(`The message type not specified for input event: ${inputEventType}`);
           }
 
-          messageBus.send({
+          this.messageBus.send({
             type: eventBinding.messageType,
             ...eventBinding.attrs,
             gameObject,

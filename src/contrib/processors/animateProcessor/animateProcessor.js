@@ -9,6 +9,7 @@ const ANIMATABLE_COMPONENT_NAME = 'animatable';
 class AnimateProcessor {
   constructor(options) {
     this._gameObjectObserver = options.gameObjectObserver;
+    this.messageBus = options.messageBus;
     this._conditionControllers = Object.keys(conditionControllers).reduce((storage, key) => {
       const ConditionController = conditionControllers[key];
       storage[key] = new ConditionController();
@@ -35,7 +36,7 @@ class AnimateProcessor {
   }
 
   process(options) {
-    const { deltaTime, messageBus } = options;
+    const { deltaTime } = options;
 
     this._gameObjectObserver.forEach((gameObject) => {
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME);
@@ -67,7 +68,7 @@ class AnimateProcessor {
 
         return transition.conditions.every((condition) => {
           const conditionController = this._conditionControllers[condition.type];
-          return conditionController.check(condition.props, gameObject, messageBus);
+          return conditionController.check(condition.props, gameObject, this.messageBus);
         });
       });
 

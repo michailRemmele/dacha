@@ -4,6 +4,7 @@ import IOC from '../ioc/ioc';
 import { GameObjectObserver, GameObjectObserverFilter, GameObject } from '../gameObject';
 import GameObjectSpawner from '../gameObject/gameObjectSpawner';
 import GameObjectDestroyer from '../gameObject/gameObjectDestroyer';
+import { MessageBus } from '../message-bus';
 
 import { Store } from './store';
 import { GAME_OBJECT_ADDED, GAME_OBJECT_REMOVED } from './consts';
@@ -30,6 +31,7 @@ export class Scene {
   private _gameObjectCreator: GameObjectCreator;
   private _gameObjectSpawner: unknown;
   private _gameObjectDestroyer: unknown;
+  private messageBus: MessageBus;
   private _processors: Array<Processor>;
   private _gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
 
@@ -42,6 +44,7 @@ export class Scene {
     this._gameObjectCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME) as GameObjectCreator;
     this._gameObjectSpawner = new GameObjectSpawner(this, this._gameObjectCreator);
     this._gameObjectDestroyer = new GameObjectDestroyer(this);
+    this.messageBus = new MessageBus();
 
     this._processors = [];
 
@@ -92,6 +95,10 @@ export class Scene {
 
   getGameObjectDestroyer() {
     return this._gameObjectDestroyer;
+  }
+
+  getMessageBus() {
+    return this.messageBus;
   }
 
   addGameObject(gameObject: GameObject) {

@@ -75,6 +75,7 @@ export class SceneProvider {
         gameObjectSpawner: scene.getGameObjectSpawner(),
         gameObjectDestroyer: scene.getGameObjectDestroyer(),
         createGameObjectObserver: (filter) => scene.createGameObjectObserver(filter),
+        messageBus: scene.getMessageBus(),
         sceneController: this._sceneController,
         helpers: this._pluginHelpers,
       });

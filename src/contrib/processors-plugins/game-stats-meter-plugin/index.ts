@@ -10,11 +10,13 @@ export class GameStatsMeterPlugin implements ProcessorPlugin {
     const {
       frequency,
       createGameObjectObserver,
+      messageBus,
     } = options;
 
     return new GameStatsMeter({
       frequency,
       gameObjectObserver: createGameObjectObserver({}),
+      messageBus,
     });
   }
 }

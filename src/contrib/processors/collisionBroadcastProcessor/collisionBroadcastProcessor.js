@@ -5,6 +5,7 @@ const COLLISION_MESSAGE = 'COLLISION';
 class CollisionBroadcastProcessor {
   constructor(options) {
     this._gameObjectObserver = options.gameObjectObserver;
+    this.messageBus = options.messageBus;
 
     this._collisionMap = {};
     this._activeCollisions = [];
@@ -30,10 +31,6 @@ class CollisionBroadcastProcessor {
         this._collisionMap[collision.gameObject1.getId()][id] = null;
       }
 
-      /**
-       * TODO: Need to pass message bus via processor's constructor
-       */
-      // this._publishMessage(collision, messageBus);
       this._publishMessage(collision);
 
       collision.tick();
@@ -44,7 +41,7 @@ class CollisionBroadcastProcessor {
     this._collisionMap[id] = null;
   };
 
-  _publishMessage(collision, messageBus) {
+  _publishMessage(collision) {
     const {
       gameObject1, gameObject2, mtv1, mtv2,
     } = collision;
@@ -57,16 +54,14 @@ class CollisionBroadcastProcessor {
       mtv2,
     };
 
-    messageBus.send(message);
-    messageBus.send(message, true);
+    this.messageBus.send(message);
+    this.messageBus.send(message, true);
   }
 
-  process(options) {
-    const { messageBus } = options;
-
+  process() {
     this._gameObjectObserver.fireEvents();
 
-    const collisionMessages = messageBus.get(COLLISION_MESSAGE) || [];
+    const collisionMessages = this.messageBus.get(COLLISION_MESSAGE) || [];
     collisionMessages.forEach((message) => {
       const {
         gameObject1, gameObject2, mtv1, mtv2,
@@ -90,7 +85,7 @@ class CollisionBroadcastProcessor {
     this._activeCollisions = this._activeCollisions.filter((collision) => {
       const { gameObject1, gameObject2 } = collision;
 
-      this._publishMessage(collision, messageBus);
+      this._publishMessage(collision);
 
       collision.tick();
 

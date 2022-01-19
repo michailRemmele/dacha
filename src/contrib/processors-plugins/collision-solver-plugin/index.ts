@@ -8,6 +8,7 @@ export class CollisionSolverPlugin implements ProcessorPlugin {
     const {
       createGameObjectObserver,
       store,
+      messageBus,
     } = options;
 
     return new CollisionSolver({
@@ -17,6 +18,7 @@ export class CollisionSolverPlugin implements ProcessorPlugin {
         ],
       }),
       store,
+      messageBus,
     });
   }
 }

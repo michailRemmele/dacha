@@ -8,6 +8,7 @@ class ScriptProcessor {
       gameObjectDestroyer,
       store,
       scripts,
+      messageBus,
     } = options;
 
     this._gameObjectObserver = gameObjectObserver;
@@ -15,6 +16,7 @@ class ScriptProcessor {
     this._gameObjectDestroyer = gameObjectDestroyer;
     this._store = store;
     this._scripts = scripts;
+    this.messageBus = messageBus;
 
     this._activeScripts = {};
   }
@@ -32,7 +34,7 @@ class ScriptProcessor {
   };
 
   process(options) {
-    const { messageBus, deltaTime } = options;
+    const { deltaTime } = options;
 
     this._gameObjectObserver.fireEvents();
 
@@ -45,7 +47,7 @@ class ScriptProcessor {
       this._activeScripts[id] = this._activeScripts[id]
         || new Script(gameObject, this._store, this._gameObjectSpawner, this._gameObjectDestroyer);
 
-      this._activeScripts[id].update(messageBus, deltaTime);
+      this._activeScripts[id].update(this.messageBus, deltaTime);
     });
   }
 }

@@ -5,6 +5,7 @@ export class GameStatsMeter {
   constructor(options) {
     this._frequency = options.frequency || MS_IN_SEC;
     this._gameObjectObserver = options.gameObjectObserver;
+    this.messageBus = options.messageBus;
 
     this._fps = 0;
     this._time = 0;
@@ -16,12 +17,12 @@ export class GameStatsMeter {
 
   process(options) {
     const {
-      messageBus, deltaTime, skipped, executed,
+      deltaTime, skipped, executed,
     } = options;
 
     this._fps += 1;
     this._time += deltaTime;
-    this._messages += messageBus.getMessageCount();
+    this._messages += this.messageBus.getMessageCount();
 
     if (skipped) {
       this._skippedStateUpdate += 1;
@@ -30,7 +31,7 @@ export class GameStatsMeter {
     }
 
     if (this._time >= this._frequency) {
-      messageBus.send({
+      this.messageBus.send({
         type: GAME_STATS_UPDATE_MSG,
         fps: (this._fps * MS_IN_SEC) / this._time,
         gameObjectsCount: this._gameObjectObserver.size(),

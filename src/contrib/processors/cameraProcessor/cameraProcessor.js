@@ -6,10 +6,11 @@ const CAMERA_COMPONENT_NAME = 'camera';
 class CameraProcessor {
   constructor(options) {
     const {
-      store, gameObjectObserver, window, initialCamera,
+      store, gameObjectObserver, window, initialCamera, messageBus,
     } = options;
 
     this._gameObjectObserver = gameObjectObserver;
+    this.messageBus = messageBus;
     this._store = store;
     this._window = window;
 
@@ -39,10 +40,8 @@ class CameraProcessor {
     this._store.set(CURRENT_CAMERA_NAME, camera);
   }
 
-  process(options) {
-    const { messageBus } = options;
-
-    const messages = messageBus.get(SET_CAMERA_MESSAGE);
+  process() {
+    const messages = this.messageBus.get(SET_CAMERA_MESSAGE);
     if (messages) {
       const { gameObjectId } = messages[messages.length - 1];
       const newCamera = this._gameObjectObserver.getById(gameObjectId);

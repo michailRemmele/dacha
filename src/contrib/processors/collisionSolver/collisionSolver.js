@@ -14,17 +14,18 @@ const REACTION_FORCE_VECTOR_Y = -1;
 
 class CollisionSolver {
   constructor(options) {
-    const { gameObjectObserver, store } = options;
+    const { gameObjectObserver, store, messageBus } = options;
 
     this._store = store;
     this._gameObjectObserver = gameObjectObserver;
+    this.messageBus = messageBus;
   }
 
   processorDidMount() {
     this._gravitationalAcceleration = this._store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY);
   }
 
-  _addReactionForce(gameObject, mtv, messageBus) {
+  _addReactionForce(gameObject, mtv) {
     const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
     const { useGravity, mass } = rigidBody;
 
@@ -32,14 +33,14 @@ class CollisionSolver {
       const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
       reactionForce.multiplyNumber(mass * this._gravitationalAcceleration);
 
-      messageBus.send({
+      this.messageBus.send({
         type: ADD_FORCE_MSG,
         value: reactionForce,
         gameObject,
         id: gameObject.getId(),
       }, true);
 
-      messageBus.send({
+      this.messageBus.send({
         type: STOP_MOVEMENT_MSG,
         gameObject,
         id: gameObject.getId(),
@@ -54,11 +55,9 @@ class CollisionSolver {
     return rigidBody1 && !rigidBody1.ghost && rigidBody2 && !rigidBody2.ghost;
   }
 
-  process(options) {
-    const { messageBus } = options;
-
-    const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
-    const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
+  process() {
+    const enterMessages = this.messageBus.get(COLLISION_ENTER_MSG) || [];
+    const stayMessages = this.messageBus.get(COLLISION_STAY_MSG) || [];
     [enterMessages, stayMessages].forEach((messages) => {
       messages.forEach((message) => {
         const { gameObject1, gameObject2, mtv1 } = message;
@@ -67,7 +66,7 @@ class CollisionSolver {
           return;
         }
 
-        this._addReactionForce(gameObject1, mtv1, messageBus);
+        this._addReactionForce(gameObject1, mtv1);
       });
     });
   }

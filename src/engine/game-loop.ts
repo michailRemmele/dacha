@@ -1,11 +1,9 @@
-import { MessageBus } from './message-bus';
 import { SceneProvider } from './scene';
 
 export class GameLoop {
   private gameLoopId: number;
   private previous: number;
   private sceneProvider: SceneProvider;
-  private messageBus: MessageBus;
   private bindedTick: () => void;
 
   constructor(sceneProvider: SceneProvider) {
@@ -13,7 +11,6 @@ export class GameLoop {
     this.previous = 0;
 
     this.sceneProvider = sceneProvider;
-    this.messageBus = new MessageBus();
 
     this.bindedTick = this._tick.bind(this);
   }
@@ -23,19 +20,20 @@ export class GameLoop {
 
     const elapsed = current - this.previous;
 
-    this.messageBus.sendDelayed();
-
     const currentScene = this.sceneProvider.getCurrentScene();
+    const messageBus = currentScene.getMessageBus();
+
+    messageBus.sendDelayed();
+
     const options = {
       deltaTime: elapsed,
-      messageBus: this.messageBus,
     };
 
     currentScene.getProcessors().forEach((processor) => {
       processor.process(options);
     });
 
-    this.messageBus.clear();
+    messageBus.clear();
 
     this.previous = current;
 

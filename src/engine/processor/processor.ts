@@ -1,6 +1,5 @@
 export interface ProcessorOptions {
   deltaTime: number;
-  messageBus: object;
 }
 
 export interface Processor {

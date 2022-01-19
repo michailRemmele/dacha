@@ -11,6 +11,7 @@ export class MouseControlProcessorPlugin implements ProcessorPlugin {
           CONTROL_COMPONENT_NAME,
         ],
       }),
+      messageBus: options.messageBus,
     });
   }
 }

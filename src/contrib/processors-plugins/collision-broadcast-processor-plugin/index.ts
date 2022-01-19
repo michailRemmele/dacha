@@ -12,6 +12,7 @@ export class CollisionBroadcastProcessorPlugin implements ProcessorPlugin {
           COLLIDER_CONTAINER_COMPONENT_NAME,
         ],
       }),
+      messageBus: options.messageBus,
     });
   }
 }

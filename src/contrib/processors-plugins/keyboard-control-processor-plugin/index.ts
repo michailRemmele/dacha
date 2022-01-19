@@ -12,6 +12,7 @@ export class KeyboardControlProcessorPlugin implements ProcessorPlugin {
           CONTROL_COMPONENT_NAME,
         ],
       }),
+      messageBus: options.messageBus,
     });
   }
 }
