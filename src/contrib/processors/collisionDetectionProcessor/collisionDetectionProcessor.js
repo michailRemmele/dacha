@@ -45,6 +45,25 @@ class CollisionDetectionProcessor {
     this._lastProcessedGameObjects = {};
   }
 
+  processorDidMount() {
+    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  processorWillUnmount() {
+    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  _handleGameObjectRemove = (gameObject) => {
+    const gameObjectId = gameObject.getId();
+
+    Object.values(AXIS).forEach((axis) => {
+      this._axis[axis].dispersionCalculator.removeFromSample(gameObjectId);
+      this._removeFromSortedList(gameObject, axis);
+    });
+
+    this._lastProcessedGameObjects[gameObjectId] = null;
+  };
+
   _checkOnReorientation(gameObject) {
     const gameObjectId = gameObject.getId();
 
@@ -187,16 +206,7 @@ class CollisionDetectionProcessor {
   process(options) {
     const { messageBus } = options;
 
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-
-      Object.values(AXIS).forEach((axis) => {
-        this._axis[axis].dispersionCalculator.removeFromSample(gameObjectId);
-        this._removeFromSortedList(gameObject, axis);
-      });
-
-      this._lastProcessedGameObjects[gameObjectId] = null;
-    });
+    this._gameObjectObserver.fireEvents();
 
     this._gameObjectObserver.forEach((gameObject) => {
       if (!this._checkOnReorientation(gameObject)) {

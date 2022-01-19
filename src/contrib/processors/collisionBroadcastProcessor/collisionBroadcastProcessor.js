@@ -10,6 +10,40 @@ class CollisionBroadcastProcessor {
     this._activeCollisions = [];
   }
 
+  processorDidMount() {
+    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  processorWillUnmount() {
+    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  _handleGameObjectRemove = (gameObject) => {
+    const id = gameObject.getId();
+
+    this._activeCollisions = this._activeCollisions.filter((collision) => {
+      if (collision.gameObject1.getId() !== id && collision.gameObject2.getId() !== id) {
+        return true;
+      }
+
+      if (collision.gameObject2.getId() === id) {
+        this._collisionMap[collision.gameObject1.getId()][id] = null;
+      }
+
+      /**
+       * TODO: Need to pass message bus via processor's constructor
+       */
+      // this._publishMessage(collision, messageBus);
+      this._publishMessage(collision);
+
+      collision.tick();
+
+      return false;
+    });
+
+    this._collisionMap[id] = null;
+  };
+
   _publishMessage(collision, messageBus) {
     const {
       gameObject1, gameObject2, mtv1, mtv2,
@@ -27,34 +61,10 @@ class CollisionBroadcastProcessor {
     messageBus.send(message, true);
   }
 
-  _processRemovedGameObjects(messageBus) {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const id = gameObject.getId();
-
-      this._activeCollisions = this._activeCollisions.filter((collision) => {
-        if (collision.gameObject1.getId() !== id && collision.gameObject2.getId() !== id) {
-          return true;
-        }
-
-        if (collision.gameObject2.getId() === id) {
-          this._collisionMap[collision.gameObject1.getId()][id] = null;
-        }
-
-        this._publishMessage(collision, messageBus);
-
-        collision.tick();
-
-        return false;
-      });
-
-      this._collisionMap[id] = null;
-    });
-  }
-
   process(options) {
     const { messageBus } = options;
 
-    this._processRemovedGameObjects(messageBus);
+    this._gameObjectObserver.fireEvents();
 
     const collisionMessages = messageBus.get(COLLISION_MESSAGE) || [];
     collisionMessages.forEach((message) => {

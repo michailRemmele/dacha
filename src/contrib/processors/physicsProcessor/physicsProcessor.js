@@ -29,7 +29,16 @@ class PhysicsProcessor {
 
   processorDidMount() {
     this._store.set(GRAVITATIONAL_ACCELERATION_STORE_KEY, this._gravitationalAcceleration);
+    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
   }
+
+  processorWillUnmount() {
+    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  _handleGameObjectRemove = (gameObject) => {
+    this._gameObjectsVelocity[gameObject.getId()] = null;
+  };
 
   _applyDragForce(gameObject, deltaTime) {
     const { mass, drag } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
@@ -110,19 +119,13 @@ class PhysicsProcessor {
     });
   }
 
-  _processRemovedGameObjects() {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      this._gameObjectsVelocity[gameObjectId] = null;
-    });
-  }
-
   process(options) {
     const { messageBus, deltaTime } = options;
     const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
 
-    this._processRemovedGameObjects();
+    this._gameObjectObserver.fireEvents();
+
     this._processConstraints(messageBus);
 
     this._gameObjectObserver.forEach((gameObject) => {

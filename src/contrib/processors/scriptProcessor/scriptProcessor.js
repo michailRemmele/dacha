@@ -19,17 +19,22 @@ class ScriptProcessor {
     this._activeScripts = {};
   }
 
-  _processRemovedGameObjects() {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const id = gameObject.getId();
-      this._activeScripts[id] = null;
-    });
+  processorDidMount() {
+    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
   }
+
+  processorWillUnmount() {
+    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  _handleGameObjectRemove = (gameObject) => {
+    this._activeScripts[gameObject.getId()] = null;
+  };
 
   process(options) {
     const { messageBus, deltaTime } = options;
 
-    this._processRemovedGameObjects();
+    this._gameObjectObserver.fireEvents();
 
     this._gameObjectObserver.forEach((gameObject) => {
       const id = gameObject.getId();
