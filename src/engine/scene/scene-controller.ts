@@ -1,4 +1,4 @@
-import { SceneProvider } from './scene-provider';
+import type { SceneProvider } from './scene-provider';
 
 export class SceneController {
   private _sceneProvider: SceneProvider;

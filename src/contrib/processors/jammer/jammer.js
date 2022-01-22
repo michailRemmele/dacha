@@ -1,13 +1,12 @@
 class Jammer {
   constructor(options) {
     this._messages = options.messages;
+    this.messageBus = options.messageBus;
   }
 
-  process(options) {
-    const { messageBus } = options;
-
+  process() {
     this._messages.forEach((message) => {
-      messageBus.delete(message);
+      this.messageBus.delete(message);
     });
   }
 }

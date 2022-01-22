@@ -5,12 +5,11 @@ const INPUT_MESSAGE = 'MOUSE_INPUT_EVENT_QUERY';
 class MouseControlProcessor {
   constructor(options) {
     this._gameObjectObserver = options.gameObjectObserver;
+    this.messageBus = options.messageBus;
   }
 
-  process(options) {
-    const { messageBus } = options;
-
-    const messages = messageBus.get(INPUT_MESSAGE) || [];
+  process() {
+    const messages = this.messageBus.get(INPUT_MESSAGE) || [];
     messages.forEach((message) => {
       message.query.forEach((inputEvent) => {
         this._gameObjectObserver.forEach((gameObject) => {
@@ -22,7 +21,7 @@ class MouseControlProcessor {
               throw new Error(`The message type not specified for input event: ${inputEvent.type}`);
             }
 
-            messageBus.send({
+            this.messageBus.send({
               type: eventBinding.messageType,
               ...eventBinding.attrs,
               gameObject,

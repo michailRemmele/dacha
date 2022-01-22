@@ -3,15 +3,26 @@ import {
   Scene,
   GameObjectChangeEvent,
 } from '../scene';
+import type { EventEmitter } from '../types';
 
 import { GameObject } from './game-object';
+
+interface ObserverEventMap {
+  'onadd': GameObject
+  'onremove': GameObject
+}
+
+interface ObserverSubscriptions {
+  'onadd': Array<(event: ObserverEventMap['onadd']) => void>
+  'onremove': Array<(event: ObserverEventMap['onremove']) => void>
+}
 
 export interface GameObjectObserverFilter {
   type?: string;
   components?: Array<string>;
 }
 
-export class GameObjectObserver {
+export class GameObjectObserver implements EventEmitter {
   private _components: Array<string>;
   private _type?: string;
   private _observedGameObjects: Array<GameObject>;
@@ -19,6 +30,7 @@ export class GameObjectObserver {
   private _removedFromAccepted: Array<GameObject>;
   private _acceptedGameObjects: Array<GameObject>;
   private _acceptedGameObjectsMap: Record<string, GameObject | undefined>;
+  private subscriptions: ObserverSubscriptions;
 
   constructor(scene: Scene, filter: GameObjectObserverFilter) {
     const {
@@ -32,6 +44,10 @@ export class GameObjectObserver {
     this._addedToAccepted = [];
     this._removedFromAccepted = [];
     this._acceptedGameObjectsMap = {};
+    this.subscriptions = {
+      onadd: [],
+      onremove: [],
+    };
     this._acceptedGameObjects = this._observedGameObjects.filter((gameObject) => {
       gameObject.subscribe(this._subscribeGameObject.bind(this));
 
@@ -131,20 +147,6 @@ export class GameObjectObserver {
     return this._acceptedGameObjects.length;
   }
 
-  getLastRemoved() {
-    const lastRemoved = this._removedFromAccepted;
-    this._removedFromAccepted = [];
-
-    return lastRemoved;
-  }
-
-  getLastAdded() {
-    const lastAdded = this._addedToAccepted;
-    this._addedToAccepted = [];
-
-    return lastAdded;
-  }
-
   getById(id: string) {
     return this._acceptedGameObjectsMap[id];
   }
@@ -163,5 +165,41 @@ export class GameObjectObserver {
 
   sort(compareFunction: (a: GameObject, b: GameObject) => number) {
     this._acceptedGameObjects = this._acceptedGameObjects.sort(compareFunction);
+  }
+
+  subscribe<K extends keyof ObserverEventMap>(
+    type: K,
+    callback: (event: ObserverEventMap[K]) => void,
+  ) {
+    if (!this.subscriptions[type]) {
+      return;
+    }
+
+    this.subscriptions[type].push(callback);
+  }
+
+  unsubscribe<K extends keyof ObserverEventMap>(
+    type: K,
+    callback: (event: ObserverEventMap[K]) => void,
+  ) {
+    if (!this.subscriptions[type]) {
+      return;
+    }
+
+    this.subscriptions[type] = this.subscriptions[type].filter(
+      (currentCallback: (gameObject: GameObject) => void) => callback !== currentCallback,
+    );
+  }
+
+  fireEvents() {
+    this.subscriptions.onadd.forEach((callback: (gameObject: GameObject) => void) => {
+      this._addedToAccepted.forEach((gameObject: GameObject) => callback(gameObject));
+    });
+    this._addedToAccepted = [];
+
+    this.subscriptions.onremove.forEach((callback: (gameObject: GameObject) => void) => {
+      this._removedFromAccepted.forEach((gameObject: GameObject) => callback(gameObject));
+    });
+    this._removedFromAccepted = [];
   }
 }

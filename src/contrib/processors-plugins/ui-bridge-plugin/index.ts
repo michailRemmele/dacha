@@ -15,6 +15,7 @@ export class UiBridgePlugin implements ProcessorPlugin {
       gameObjectDestroyer,
       store,
       filterComponents,
+      messageBus,
     } = options;
     const { onInit, onDestroy } = await helpers.loadUiApp();
 
@@ -28,6 +29,7 @@ export class UiBridgePlugin implements ProcessorPlugin {
       gameObjectSpawner,
       gameObjectDestroyer,
       store,
+      messageBus,
     });
   }
 }

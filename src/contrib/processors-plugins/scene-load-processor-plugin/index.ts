@@ -3,10 +3,11 @@ import SceneLoadProcessor from '../../processors/sceneLoadProcessor/sceneLoadPro
 
 export class SceneLoadProcessorPlugin implements ProcessorPlugin {
   load(options: ProcessorPluginOptions) {
-    const { sceneController } = options;
+    const { sceneController, messageBus } = options;
 
     return new SceneLoadProcessor({
       sceneController,
+      messageBus,
     });
   }
 }

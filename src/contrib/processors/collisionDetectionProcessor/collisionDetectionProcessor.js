@@ -16,6 +16,7 @@ const COLLISION_MESSAGE = 'COLLISION';
 class CollisionDetectionProcessor {
   constructor(options) {
     this._gameObjectObserver = options.gameObjectObserver;
+    this.messageBus = options.messageBus;
     this._coordintatesCalculators = Object.keys(coordintatesCalculators).reduce((storage, key) => {
       const CoordinatesCalculator = coordintatesCalculators[key];
       storage[key] = new CoordinatesCalculator();
@@ -44,6 +45,25 @@ class CollisionDetectionProcessor {
     };
     this._lastProcessedGameObjects = {};
   }
+
+  processorDidMount() {
+    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  processorWillUnmount() {
+    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+  }
+
+  _handleGameObjectRemove = (gameObject) => {
+    const gameObjectId = gameObject.getId();
+
+    Object.values(AXIS).forEach((axis) => {
+      this._axis[axis].dispersionCalculator.removeFromSample(gameObjectId);
+      this._removeFromSortedList(gameObject, axis);
+    });
+
+    this._lastProcessedGameObjects[gameObjectId] = null;
+  };
 
   _checkOnReorientation(gameObject) {
     const gameObjectId = gameObject.getId();
@@ -163,7 +183,7 @@ class CollisionDetectionProcessor {
     return this._intersectionCheckers[intersectionType].check(arg1, arg2);
   }
 
-  _sendCollisionMessage(messageBus, gameObject1, gameObject2, intersection) {
+  _sendCollisionMessage(gameObject1, gameObject2, intersection) {
     const { mtv1, mtv2 } = intersection;
 
     [
@@ -174,7 +194,7 @@ class CollisionDetectionProcessor {
         gameObject1: gameObject2, gameObject2: gameObject1, mtv1: mtv2, mtv2: mtv1,
       },
     ].forEach((entry) => {
-      messageBus.send({
+      this.messageBus.send({
         type: COLLISION_MESSAGE,
         gameObject1: entry.gameObject1,
         gameObject2: entry.gameObject2,
@@ -184,19 +204,8 @@ class CollisionDetectionProcessor {
     });
   }
 
-  process(options) {
-    const { messageBus } = options;
-
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-
-      Object.values(AXIS).forEach((axis) => {
-        this._axis[axis].dispersionCalculator.removeFromSample(gameObjectId);
-        this._removeFromSortedList(gameObject, axis);
-      });
-
-      this._lastProcessedGameObjects[gameObjectId] = null;
-    });
+  process() {
+    this._gameObjectObserver.fireEvents();
 
     this._gameObjectObserver.forEach((gameObject) => {
       if (!this._checkOnReorientation(gameObject)) {
@@ -240,7 +249,7 @@ class CollisionDetectionProcessor {
       const intersection = this._checkOnIntersection(pair);
       if (intersection) {
         this._sendCollisionMessage(
-          messageBus, pair[0].gameObject, pair[1].gameObject, intersection,
+          pair[0].gameObject, pair[1].gameObject, intersection,
         );
       }
     });

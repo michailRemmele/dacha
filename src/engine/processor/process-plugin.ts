@@ -1,7 +1,8 @@
-import { GameObjectObserver, GameObjectObserverFilter } from '../gameObject';
-import { Store } from '../scene';
+import type { GameObjectObserver, GameObjectObserverFilter } from '../gameObject';
+import type { Store } from '../scene';
+import type { MessageBus } from '../message-bus';
 
-import { Processor } from './processor';
+import type { Processor } from './processor';
 
 export type PluginHelper = () => Promise<Record<string, unknown>>;
 
@@ -12,6 +13,7 @@ export interface ProcessorPluginOptions {
   sceneController: unknown,
   helpers: Record<string, PluginHelper>,
   store: Store;
+  messageBus: MessageBus;
 }
 
 export interface ProcessorPlugin {

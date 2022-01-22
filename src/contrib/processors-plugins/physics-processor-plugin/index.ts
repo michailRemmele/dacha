@@ -14,6 +14,7 @@ export class PhysicsProcessorPlugin implements ProcessorPlugin {
       gravitationalAcceleration,
       createGameObjectObserver,
       store,
+      messageBus,
     } = options;
 
     return new PhysicsProcessor({
@@ -25,6 +26,7 @@ export class PhysicsProcessorPlugin implements ProcessorPlugin {
         ],
       }),
       store,
+      messageBus,
     });
   }
 }

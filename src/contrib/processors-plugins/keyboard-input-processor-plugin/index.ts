@@ -1,9 +1,11 @@
-import { ProcessorPlugin } from '../../../engine/processor';
+import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
 import KeyboardInputProcessor
   from '../../processors/keyboardInputProcessor/keyboardInputProcessor';
 
 export class KeyboardInputProcessorPlugin implements ProcessorPlugin {
-  load() {
-    return new KeyboardInputProcessor();
+  load(options: ProcessorPluginOptions) {
+    return new KeyboardInputProcessor({
+      messageBus: options.messageBus,
+    });
   }
 }

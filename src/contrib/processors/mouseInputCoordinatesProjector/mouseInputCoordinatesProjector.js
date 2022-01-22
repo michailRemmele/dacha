@@ -6,13 +6,13 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 
 class MouseInputCoordinatesProjector {
   constructor(options) {
-    const { store } = options;
+    const { store, messageBus } = options;
 
     this._store = store;
+    this.messageBus = messageBus;
   }
 
-  process(options) {
-    const { messageBus } = options;
+  process() {
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME);
     const { windowSizeX, windowSizeY, zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME);
     const windowCenterX = windowSizeX / 2;
@@ -23,7 +23,7 @@ class MouseInputCoordinatesProjector {
       offsetY: cameraOffsetY,
     } = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME);
 
-    const messages = messageBus.get(INPUT_MESSAGE) || [];
+    const messages = this.messageBus.get(INPUT_MESSAGE) || [];
     messages.forEach((message) => {
       message.query.forEach((inputEvent) => {
         inputEvent.screenX = inputEvent.x;

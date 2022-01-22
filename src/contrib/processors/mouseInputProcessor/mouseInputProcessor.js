@@ -18,7 +18,8 @@ const EVENT_TYPE = {
 };
 
 class MouseInputProcessor {
-  constructor() {
+  constructor(options) {
+    this.messageBus = options.messageBus;
     this._inputListener = new MouseInputListener(window);
   }
 
@@ -30,9 +31,7 @@ class MouseInputProcessor {
     this._inputListener.stopListen();
   }
 
-  process(options) {
-    const { messageBus } = options;
-
+  process() {
     const firedEvents = this._inputListener.getFiredEvents() || [];
     const inputQuery = firedEvents.map((event) => ({
       type: EVENT_TYPE[event.type](event),
@@ -41,7 +40,7 @@ class MouseInputProcessor {
     }));
     this._inputListener.clearFiredEvents();
 
-    messageBus.send({
+    this.messageBus.send({
       type: INPUT_MESSAGE,
       query: inputQuery,
     });

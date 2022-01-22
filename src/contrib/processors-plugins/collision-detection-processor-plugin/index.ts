@@ -14,6 +14,7 @@ export class CollisionDetectionProcessorPlugin implements ProcessorPlugin {
           TRANSFORM_COMPONENT_NAME,
         ],
       }),
+      messageBus: options.messageBus,
     });
   }
 }

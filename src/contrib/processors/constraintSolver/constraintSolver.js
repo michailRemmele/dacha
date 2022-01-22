@@ -14,6 +14,7 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 class ConstraintSolver {
   constructor(options) {
     this._gameObjectObserver = options.gameObjectObserver;
+    this.messageBus = options.messageBus;
     this._processedPairs = {};
     this._mtvMap = {};
   }
@@ -70,14 +71,12 @@ class ConstraintSolver {
     }
   }
 
-  process(options) {
-    const { messageBus } = options;
-
+  process() {
     this._processedPairs = {};
     this._mtvMap = {};
 
-    const enterMessages = messageBus.get(COLLISION_ENTER_MSG) || [];
-    const stayMessages = messageBus.get(COLLISION_STAY_MSG) || [];
+    const enterMessages = this.messageBus.get(COLLISION_ENTER_MSG) || [];
+    const stayMessages = this.messageBus.get(COLLISION_STAY_MSG) || [];
     [enterMessages, stayMessages].forEach((messages) => {
       messages.forEach((message) => {
         const {

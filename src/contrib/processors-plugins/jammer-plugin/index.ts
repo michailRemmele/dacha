@@ -9,10 +9,12 @@ export class JammerPlugin implements ProcessorPlugin {
   load(options: JammerPluginOptions) {
     const {
       messages,
+      messageBus,
     } = options;
 
     return new Jammer({
       messages,
+      messageBus,
     });
   }
 }

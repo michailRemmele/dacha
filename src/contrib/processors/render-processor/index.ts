@@ -160,6 +160,7 @@ export class RenderProcessor {
 
   processorDidMount() {
     window.addEventListener('resize', this._onWindowResizeBind);
+    this._gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
     this.gl = this._initGraphicContext();
     this._initExtensions();
     this._initScreen();
@@ -170,6 +171,7 @@ export class RenderProcessor {
 
   processorWillUnmount() {
     window.removeEventListener('resize', this._onWindowResizeBind);
+    this._gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
     this._shaders.forEach((shader) => {
       if (this.program) {
         this.gl?.detachShader(this.program, shader);
@@ -194,6 +196,11 @@ export class RenderProcessor {
     this._vertexData = null;
     this._gameObjectsCount = 0;
   }
+
+  private handleGameObjectRemove = (gameObject: GameObject) => {
+    const gameObjectId = gameObject.getId();
+    this._geometry[gameObjectId] = null;
+  };
 
   _onWindowResize() {
     this._windowDidResize = true;
@@ -604,14 +611,9 @@ export class RenderProcessor {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
   }
 
-  _processRemovedGameObjects() {
-    this._gameObjectObserver.getLastRemoved().forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      this._geometry[gameObjectId] = null;
-    });
-  }
-
   process() {
+    this._gameObjectObserver.fireEvents();
+
     const gl = this.gl as WebGLRenderingContext;
 
     const { canvas } = gl;
@@ -620,8 +622,6 @@ export class RenderProcessor {
 
     // eslint-disable-next-line no-bitwise
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    this._processRemovedGameObjects();
 
     this._updateViewMatrix();
     this._allocateVertexData();

@@ -9,7 +9,8 @@ const RELEASE_EVENT_TYPE = 'RELEASED';
 const PREFIX_SEPARATOR = '_';
 
 class KeyboardInputProcessor {
-  constructor() {
+  constructor(options) {
+    this.messageBus = options.messageBus;
     this._inputListener = new InputListener(window);
     this._keyCodeMapper = new KeyCodeMapper();
 
@@ -35,9 +36,7 @@ class KeyboardInputProcessor {
     this._inputListener.stopListen();
   }
 
-  process(options) {
-    const { messageBus } = options;
-
+  process() {
     const eventQuery = [];
 
     this._events.forEach((event) => {
@@ -48,7 +47,7 @@ class KeyboardInputProcessor {
       event.onProcessComplete();
     });
 
-    messageBus.send({
+    this.messageBus.send({
       type: INPUT_MESSAGE,
       query: eventQuery,
     });

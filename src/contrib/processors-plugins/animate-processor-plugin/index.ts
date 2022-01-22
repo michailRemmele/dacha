@@ -13,6 +13,7 @@ export class AnimateProcessorPlugin implements ProcessorPlugin {
           RENDERABLE_COMPONENT_NAME,
         ],
       }),
+      messageBus: options.messageBus,
     });
   }
 }

@@ -11,6 +11,7 @@ export class ScriptProcessorPlugin implements ProcessorPlugin {
       gameObjectSpawner,
       gameObjectDestroyer,
       store,
+      messageBus,
     } = options;
     const { scripts } = await helpers.loadScripts();
 
@@ -24,6 +25,7 @@ export class ScriptProcessorPlugin implements ProcessorPlugin {
       gameObjectDestroyer,
       store,
       scripts,
+      messageBus,
     });
   }
 }

@@ -6,10 +6,12 @@ export class MouseInputCoordinatesProjectorPlugin implements ProcessorPlugin {
   load(options: ProcessorPluginOptions) {
     const {
       store,
+      messageBus,
     } = options;
 
     return new MouseInputCoordinatesProjector({
       store,
+      messageBus,
     });
   }
 }

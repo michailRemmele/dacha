@@ -1,8 +1,10 @@
-import { ProcessorPlugin } from '../../../engine/processor';
+import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
 import MouseInputProcessor from '../../processors/mouseInputProcessor/mouseInputProcessor';
 
 export class MouseInputProcessorPlugin implements ProcessorPlugin {
-  load() {
-    return new MouseInputProcessor();
+  load(options: ProcessorPluginOptions) {
+    return new MouseInputProcessor({
+      messageBus: options.messageBus,
+    });
   }
 }

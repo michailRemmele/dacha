@@ -16,6 +16,7 @@ export class CameraProcessorPlugin implements ProcessorPlugin {
       windowNodeId,
       createGameObjectObserver,
       store,
+      messageBus,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -30,6 +31,7 @@ export class CameraProcessorPlugin implements ProcessorPlugin {
         ],
       }),
       store,
+      messageBus,
     });
   }
 }
