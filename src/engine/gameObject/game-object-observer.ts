@@ -147,20 +147,6 @@ export class GameObjectObserver implements EventEmitter {
     return this._acceptedGameObjects.length;
   }
 
-  getLastRemoved() {
-    const lastRemoved = this._removedFromAccepted;
-    this._removedFromAccepted = [];
-
-    return lastRemoved;
-  }
-
-  getLastAdded() {
-    const lastAdded = this._addedToAccepted;
-    this._addedToAccepted = [];
-
-    return lastAdded;
-  }
-
   getById(id: string) {
     return this._acceptedGameObjectsMap[id];
   }
