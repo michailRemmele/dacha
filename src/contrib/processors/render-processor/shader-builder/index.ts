@@ -4,6 +4,8 @@ import { vertexShader } from './vertex-shader';
 export const FRAGMENT_SHADER = 'FRAGMENT_SHADER';
 export const VERTEX_SHADER = 'VERTEX_SHADER';
 
+export { ShaderProvider } from './shader-provider';
+
 const shaders = {
   [FRAGMENT_SHADER]: fragmentShader,
   [VERTEX_SHADER]: vertexShader,

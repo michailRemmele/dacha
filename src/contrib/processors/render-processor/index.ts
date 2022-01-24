@@ -7,7 +7,12 @@ import { Camera } from '../../components/camera';
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
 import { textureHandlers, TextureHandler, TextureDescriptor } from './texture-handlers';
-import { ShaderBuilder, VERTEX_SHADER, FRAGMENT_SHADER } from './shader-builder';
+import {
+  ShaderBuilder,
+  VERTEX_SHADER,
+  FRAGMENT_SHADER,
+  ShaderProvider,
+} from './shader-builder';
 import { MatrixTransformer, Matrix3x3 } from './matrix-transformer';
 import {
   composeSort,
@@ -75,6 +80,7 @@ export class RenderProcessor {
   private _windowDidResize: boolean;
   private _onWindowResizeBind: () => void;
   private _shaders: Array<WebGLShader>;
+  private shaderProvider: ShaderProvider;
   private _store: Store;
   private _gameObjectObserver: GameObjectObserver;
   private _scaleSensitivity: number;
@@ -120,6 +126,8 @@ export class RenderProcessor {
     this._matrixTransformer = new MatrixTransformer();
 
     this._backgroundColor = new Color(backgroundColor);
+
+    this.shaderProvider = new ShaderProvider(gameObjectObserver);
 
     this._view = window as HTMLCanvasElement;
     this._viewWidth = 0;
