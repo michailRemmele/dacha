@@ -1,9 +1,9 @@
 import { Renderable, RenderableConfig } from '../../../../components/renderable';
 import { GameObject } from '../../../../../engine/gameObject/game-object';
 
-import { createSortByLayer } from '../sort-by-layer';
+import { sortByFit } from '../sort-by-fit';
 
-describe('Contrib -> RenderProcessor -> Sort -> sortByLayer()', () => {
+describe('Contrib -> RenderProcessor -> Sort -> sortByFit()', () => {
   const baseRenderableProps: RenderableConfig = {
     src: 'some-path',
     width: 0,
@@ -24,22 +24,18 @@ describe('Contrib -> RenderProcessor -> Sort -> sortByLayer()', () => {
     const gameObject1 = new GameObject('game-object-1');
     const gameObject2 = new GameObject('game-object-2');
 
-    const layers = ['layer-1', 'layer-2', 'layer-3'];
-
     gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
     gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
 
-    (gameObject1.getComponent('renderable') as Renderable).sortingLayer = 'layer-1';
-    (gameObject2.getComponent('renderable') as Renderable).sortingLayer = 'layer-2';
+    expect(sortByFit(gameObject1, gameObject2)).toBe(0);
 
-    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(-1);
+    (gameObject2.getComponent('renderable') as Renderable).fit = 'repeat';
 
-    (gameObject1.getComponent('renderable') as Renderable).sortingLayer = 'layer-3';
+    expect(sortByFit(gameObject1, gameObject2)).toBeGreaterThan(0);
 
-    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(1);
+    (gameObject2.getComponent('renderable') as Renderable).fit = 'stretch';
+    (gameObject1.getComponent('renderable') as Renderable).fit = 'repeat';
 
-    (gameObject1.getComponent('renderable') as Renderable).sortingLayer = 'layer-2';
-
-    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(0);
+    expect(sortByFit(gameObject1, gameObject2)).toBeLessThan(0);
   });
 });
