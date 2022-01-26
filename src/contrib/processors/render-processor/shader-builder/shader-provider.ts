@@ -18,8 +18,8 @@ export class ShaderProvider {
     this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
   }
 
-  getShadingId(gameObject: GameObject): string {
-    return this.shadingIdMap[gameObject.getId()];
+  getShadingId(gameObjectId: string): string {
+    return this.shadingIdMap[gameObjectId];
   }
 
   private handleGameObjectAdd = (gameObject: GameObject): void => {
