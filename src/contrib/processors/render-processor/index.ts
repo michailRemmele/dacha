@@ -7,7 +7,12 @@ import { Camera } from '../../components/camera';
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
 import { textureHandlers, TextureHandler, TextureDescriptor } from './texture-handlers';
-import { ShaderBuilder, VERTEX_SHADER, FRAGMENT_SHADER } from './shader-builder';
+import {
+  ShaderBuilder,
+  VERTEX_SHADER,
+  FRAGMENT_SHADER,
+  ShaderProvider,
+} from './shader-builder';
 import { MatrixTransformer, Matrix3x3 } from './matrix-transformer';
 import {
   composeSort,
@@ -18,6 +23,7 @@ import {
   sortByZAxis,
   sortByFit,
 } from './sort';
+import { splitToBatch } from './utils';
 import {
   MAX_COLOR_NUMBER,
   DRAW_OFFSET,
@@ -36,6 +42,7 @@ import {
   TRANSFORM_COMPONENT_NAME,
   CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
+  MAX_BATCH_SIZE,
 } from './consts';
 
 interface ViewMatrixStats {
@@ -75,6 +82,7 @@ export class RenderProcessor {
   private _windowDidResize: boolean;
   private _onWindowResizeBind: () => void;
   private _shaders: Array<WebGLShader>;
+  private shaderProvider: ShaderProvider;
   private _store: Store;
   private _gameObjectObserver: GameObjectObserver;
   private _scaleSensitivity: number;
@@ -87,8 +95,8 @@ export class RenderProcessor {
     texCoord: Array<number>;
   } | null>;
   private _viewMatrixStats: ViewMatrixStats;
-  private _vertexData: Float32Array | null;
-  private _gameObjectsCount: number;
+  private _vertexData: Float32Array;
+  private lastBatchSize: number;
   private gl: WebGL2RenderingContext | null;
   private program: WebGLProgram | null;
   private textures: WebGLTexture | null;
@@ -120,6 +128,8 @@ export class RenderProcessor {
     this._matrixTransformer = new MatrixTransformer();
 
     this._backgroundColor = new Color(backgroundColor);
+
+    this.shaderProvider = new ShaderProvider(gameObjectObserver);
 
     this._view = window as HTMLCanvasElement;
     this._viewWidth = 0;
@@ -156,8 +166,8 @@ export class RenderProcessor {
     this._geometry = {};
     this._viewMatrixStats = {};
 
-    this._vertexData = null;
-    this._gameObjectsCount = 0;
+    this._vertexData = new Float32Array(MAX_BATCH_SIZE * VERTEX_DATA_STRIDE);
+    this.lastBatchSize = 0;
   }
 
   processorDidMount() {
@@ -195,8 +205,7 @@ export class RenderProcessor {
     this._vaoExt = null;
     this._geometry = {};
     this._viewMatrixStats = {};
-    this._vertexData = null;
-    this._gameObjectsCount = 0;
+    this.lastBatchSize = 0;
   }
 
   private handleGameObjectRemove = (gameObject: GameObject) => {
@@ -458,7 +467,7 @@ export class RenderProcessor {
   }
 
   _setUpTextureInfo(textureInfo: TextureDescriptor, renderable: Renderable, offset: number) {
-    const vertexData = this._vertexData as Float32Array;
+    const vertexData = this._vertexData;
 
     vertexData[offset] = textureInfo.width;
     vertexData[offset + 1] = textureInfo.height;
@@ -469,7 +478,7 @@ export class RenderProcessor {
   }
 
   _setUpMatrix(matrix: Matrix3x3, offset: number) {
-    const vertexData = this._vertexData as Float32Array;
+    const vertexData = this._vertexData;
 
     /* eslint-disable prefer-destructuring */
     vertexData[offset] = matrix[0];
@@ -484,12 +493,13 @@ export class RenderProcessor {
     /* eslint-enable prefer-destructuring */
   }
 
-  _setUpVertexData(gameObject: GameObject, index: number) {
-    const vertexData = this._vertexData as Float32Array;
+  private setUpVertexData(gameObject: GameObject, index: number) {
+    const vertexData = this._vertexData;
     const gameObjectId = gameObject.getId();
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
     const offset = index * VERTEX_DATA_STRIDE;
 
+    // TODO: Filter hidden object while frustum culling step and remove that
     if (renderable.disabled) {
       for (let i = 0; i < VERTEX_DATA_STRIDE; i += 1) {
         vertexData[offset + i] = 0;
@@ -529,7 +539,7 @@ export class RenderProcessor {
     }
   }
 
-  _resizeCanvas(canvas: HTMLCanvasElement) {
+  private resizeCanvas(canvas: HTMLCanvasElement) {
     if (!this._windowDidResize) {
       return;
     }
@@ -558,7 +568,7 @@ export class RenderProcessor {
     this._windowDidResize = false;
   }
 
-  _updateViewMatrix() {
+  private updateViewMatrix() {
     const gl = this.gl as WebGLRenderingContext;
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as GameObject;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
@@ -596,18 +606,25 @@ export class RenderProcessor {
     this._viewMatrixStats.scale = scale;
   }
 
-  _allocateVertexData() {
-    const gameObjectsCount = this._gameObjectObserver.size();
-    if (this._gameObjectsCount !== gameObjectsCount) {
-      this._gameObjectsCount = gameObjectsCount;
-      this._vertexData = new Float32Array(this._gameObjectsCount * VERTEX_DATA_STRIDE);
+  private cleanVertexData(batchSize: number): void {
+    if (batchSize >= this.lastBatchSize) {
+      this.lastBatchSize = batchSize;
+      return;
     }
+
+    for (let i = batchSize; i < this.lastBatchSize; i += 1) {
+      for (let j = 0; j < VERTEX_DATA_STRIDE; j += 1) {
+        this._vertexData[(i * VERTEX_DATA_STRIDE) + j] = 0;
+      }
+    }
+
+    this.lastBatchSize = batchSize;
   }
 
-  _setUpBuffers() {
+  private setUpBuffers() {
     const vaoExt = this._vaoExt as OES_vertex_array_object;
     const gl = this.gl as WebGLRenderingContext;
-    const vertexData = this._vertexData as Float32Array;
+    const vertexData = this._vertexData;
 
     vaoExt.bindVertexArrayOES(this._vao);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
@@ -620,27 +637,29 @@ export class RenderProcessor {
 
     const { canvas } = gl;
 
-    this._resizeCanvas(canvas);
+    this.resizeCanvas(canvas);
 
     // eslint-disable-next-line no-bitwise
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    this._updateViewMatrix();
-    this._allocateVertexData();
-
-    if (!this._vertexData) {
-      return;
-    }
+    this.updateViewMatrix();
 
     this._gameObjectObserver.sort(this.sortFn);
 
-    this._gameObjectObserver.forEach((gameObject, index) => {
-      this._setUpVertexData(gameObject, index);
-    });
-
-    this._setUpBuffers();
-    gl.drawArrays(
-      gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * this._gameObjectObserver.size(),
+    const batches = splitToBatch(
+      this._gameObjectObserver.getList(), this.shaderProvider, MAX_BATCH_SIZE,
     );
+
+    batches.forEach((batch) => {
+      this.cleanVertexData(batch.length);
+
+      batch.forEach((gameObject, index) => {
+        this.setUpVertexData(gameObject, index);
+        this.setUpBuffers();
+        gl.drawArrays(
+          gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * batch.length,
+        );
+      });
+    });
   }
 }

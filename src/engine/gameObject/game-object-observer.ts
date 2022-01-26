@@ -167,6 +167,10 @@ export class GameObjectObserver implements EventEmitter {
     this._acceptedGameObjects = this._acceptedGameObjects.sort(compareFunction);
   }
 
+  getList(): Array<GameObject> {
+    return this._acceptedGameObjects;
+  }
+
   subscribe<K extends keyof ObserverEventMap>(
     type: K,
     callback: (event: ObserverEventMap[K]) => void,
