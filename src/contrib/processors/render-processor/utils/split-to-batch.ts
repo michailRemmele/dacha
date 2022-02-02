@@ -9,7 +9,6 @@ interface BatchSplitterAcc {
 export const splitToBatch = (
   gameObjects: Array<GameObject>,
   shaderProvider: ShaderProvider,
-  maxBatchSize: number,
 ): Array<Array<GameObject>> => {
   if (!gameObjects.length) {
     return [];
@@ -20,7 +19,7 @@ export const splitToBatch = (
 
     const currentBatch = acc.batches[acc.batches.length - 1];
 
-    if (shadingId === acc.prevShadingId && currentBatch.length < maxBatchSize) {
+    if (shadingId === acc.prevShadingId) {
       currentBatch.push(gameObject);
     } else {
       acc.batches.push([gameObject]);
