@@ -13,7 +13,7 @@ import {
   FRAGMENT_SHADER,
   ShaderProvider,
 } from './shader-builder';
-import { MatrixTransformer, Matrix3x3 } from './matrix-transformer';
+import { MatrixTransformer } from './matrix-transformer';
 import {
   composeSort,
   SortFn,
@@ -31,10 +31,6 @@ import {
   STD_SCREEN_SIZE,
   VECTOR_2_SIZE,
   BYTES_PER_VECTOR_2,
-  MATRIX_ROW_SIZE,
-  MATRIX_SIZE,
-  BYTES_PER_MATRIX,
-  BYTES_PER_MATRIX_ROW,
   VERTEX_STRIDE,
   VERTEX_DATA_STRIDE,
   BUFFER_SIZE,
@@ -42,7 +38,6 @@ import {
   TRANSFORM_COMPONENT_NAME,
   CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
-  MAX_BATCH_SIZE,
 } from './consts';
 
 interface ViewMatrixStats {
@@ -96,7 +91,6 @@ export class RenderProcessor {
   } | null>;
   private _viewMatrixStats: ViewMatrixStats;
   private _vertexData: Float32Array;
-  private lastBatchSize: number;
   private gl: WebGL2RenderingContext | null;
   private program: WebGLProgram | null;
   private textures: WebGLTexture | null;
@@ -166,8 +160,7 @@ export class RenderProcessor {
     this._geometry = {};
     this._viewMatrixStats = {};
 
-    this._vertexData = new Float32Array(MAX_BATCH_SIZE * VERTEX_DATA_STRIDE);
-    this.lastBatchSize = 0;
+    this._vertexData = new Float32Array(VERTEX_DATA_STRIDE);
   }
 
   processorDidMount() {
@@ -205,7 +198,6 @@ export class RenderProcessor {
     this._vaoExt = null;
     this._geometry = {};
     this._viewMatrixStats = {};
-    this.lastBatchSize = 0;
   }
 
   private handleGameObjectRemove = (gameObject: GameObject) => {
@@ -310,12 +302,12 @@ export class RenderProcessor {
     this._variables = {
       aPosition: this.gl.getAttribLocation(this.program, 'a_position'),
       aTexCoord: this.gl.getAttribLocation(this.program, 'a_texCoord'),
-      aModelViewMatrix: this.gl.getAttribLocation(this.program, 'a_modelViewMatrix'),
-      aTexSize: this.gl.getAttribLocation(this.program, 'a_texSize'),
-      aTexTranslate: this.gl.getAttribLocation(this.program, 'a_texTranslate'),
-      aGameObjectSize: this.gl.getAttribLocation(this.program, 'a_gameObjectSize'),
       uViewMatrix: this.gl.getUniformLocation(this.program, 'u_viewMatrix'),
       uTexAtlasSize: this.gl.getUniformLocation(this.program, 'u_texAtlasSize'),
+      uModelViewMatrix: this.gl.getUniformLocation(this.program, 'u_modelViewMatrix'),
+      uTexSize: this.gl.getUniformLocation(this.program, 'u_texSize'),
+      uTexTranslate: this.gl.getUniformLocation(this.program, 'u_texTranslate'),
+      uGameObjectSize: this.gl.getUniformLocation(this.program, 'u_gameObjectSize'),
     };
 
     this._buffer = this.gl.createBuffer();
@@ -339,70 +331,24 @@ export class RenderProcessor {
     this.gl.bufferData(this.gl.ARRAY_BUFFER, BUFFER_SIZE, this.gl.DYNAMIC_DRAW);
 
     const attrs = [
-      {
-        loc: this._variables.aPosition as number,
-        type: 'vec2',
-      },
-      {
-        loc: this._variables.aTexCoord as number,
-        type: 'vec2',
-      },
-      {
-        loc: this._variables.aModelViewMatrix as number,
-        type: 'mat3',
-      },
-      {
-        loc: this._variables.aTexSize as number,
-        type: 'vec2',
-      },
-      {
-        loc: this._variables.aTexTranslate as number,
-        type: 'vec2',
-      },
-      {
-        loc: this._variables.aGameObjectSize as number,
-        type: 'vec2',
-      },
+      this._variables.aPosition as number,
+      this._variables.aTexCoord as number,
     ];
-    const sizeMap = {
-      mat3: BYTES_PER_MATRIX,
-      vec2: BYTES_PER_VECTOR_2,
-    };
-    const stride = attrs.reduce((totalSize, attr) => (
-      totalSize + sizeMap[attr.type as 'vec2' | 'mat3']
-    ), 0);
+    const stride = attrs.length * BYTES_PER_VECTOR_2;
 
     let offset = 0;
     for (let i = 0; i < attrs.length; i += 1) {
-      if (attrs[i].type === 'vec2') {
-        this.gl.enableVertexAttribArray(attrs[i].loc);
-        this.gl.vertexAttribPointer(
-          attrs[i].loc,
-          VECTOR_2_SIZE,
-          this.gl.FLOAT,
-          false,
-          stride,
-          offset,
-        );
+      this.gl.enableVertexAttribArray(attrs[i]);
+      this.gl.vertexAttribPointer(
+        attrs[i],
+        VECTOR_2_SIZE,
+        this.gl.FLOAT,
+        false,
+        stride,
+        offset,
+      );
 
-        offset += BYTES_PER_VECTOR_2;
-      } else if (attrs[i].type === 'mat3') {
-        for (let j = 0; j < MATRIX_ROW_SIZE; j += 1) {
-          const loc = attrs[i].loc + j;
-
-          this.gl.enableVertexAttribArray(loc);
-          this.gl.vertexAttribPointer(
-            loc,
-            MATRIX_ROW_SIZE,
-            this.gl.FLOAT,
-            false,
-            stride,
-            offset + (j * BYTES_PER_MATRIX_ROW),
-          );
-        }
-
-        offset += BYTES_PER_MATRIX;
-      }
+      offset += BYTES_PER_VECTOR_2;
     }
 
     this._vaoExt.bindVertexArrayOES(null);
@@ -464,79 +410,6 @@ export class RenderProcessor {
     matrixTransformer.translate(matrix, x, y);
 
     return matrix;
-  }
-
-  _setUpTextureInfo(textureInfo: TextureDescriptor, renderable: Renderable, offset: number) {
-    const vertexData = this._vertexData;
-
-    vertexData[offset] = textureInfo.width;
-    vertexData[offset + 1] = textureInfo.height;
-    vertexData[offset + 2] = textureInfo.x;
-    vertexData[offset + 3] = textureInfo.y;
-    vertexData[offset + 4] = renderable.width;
-    vertexData[offset + 5] = renderable.height;
-  }
-
-  _setUpMatrix(matrix: Matrix3x3, offset: number) {
-    const vertexData = this._vertexData;
-
-    /* eslint-disable prefer-destructuring */
-    vertexData[offset] = matrix[0];
-    vertexData[offset + 1] = matrix[1];
-    vertexData[offset + 2] = matrix[2];
-    vertexData[offset + 3] = matrix[3];
-    vertexData[offset + 4] = matrix[4];
-    vertexData[offset + 5] = matrix[5];
-    vertexData[offset + 6] = matrix[6];
-    vertexData[offset + 7] = matrix[7];
-    vertexData[offset + 8] = matrix[8];
-    /* eslint-enable prefer-destructuring */
-  }
-
-  private setUpVertexData(gameObject: GameObject, index: number) {
-    const vertexData = this._vertexData;
-    const gameObjectId = gameObject.getId();
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-    const offset = index * VERTEX_DATA_STRIDE;
-
-    // TODO: Filter hidden object while frustum culling step and remove that
-    if (renderable.disabled) {
-      for (let i = 0; i < VERTEX_DATA_STRIDE; i += 1) {
-        vertexData[offset + i] = 0;
-      }
-      return;
-    }
-
-    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-    const texture = this.textureAtlasDescriptor[renderable.src];
-    const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
-
-    const modelViewMatrix = this._getModelViewMatrix(
-      renderable,
-      transform.offsetX,
-      transform.offsetY,
-      transform.rotation,
-      transform.scaleX,
-      transform.scaleY,
-    );
-
-    const geometry = this._geometry[gameObjectId] || {
-      position: new Rectangle(renderable.width, renderable.height).toArray(),
-      texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
-    };
-    this._geometry[gameObjectId] = geometry;
-
-    const { position, texCoord } = geometry;
-
-    for (let i = 0, j = offset; i < position.length; i += 2, j += VERTEX_STRIDE) {
-      vertexData[j] = position[i];
-      vertexData[j + 1] = position[i + 1];
-      vertexData[j + 2] = texCoord[i];
-      vertexData[j + 3] = texCoord[i + 1];
-
-      this._setUpMatrix(modelViewMatrix, j + (VECTOR_2_SIZE * 2));
-      this._setUpTextureInfo(textureInfo, renderable, j + (VECTOR_2_SIZE * 2) + MATRIX_SIZE);
-    }
   }
 
   private resizeCanvas(canvas: HTMLCanvasElement) {
@@ -606,21 +479,6 @@ export class RenderProcessor {
     this._viewMatrixStats.scale = scale;
   }
 
-  private cleanVertexData(batchSize: number): void {
-    if (batchSize >= this.lastBatchSize) {
-      this.lastBatchSize = batchSize;
-      return;
-    }
-
-    for (let i = batchSize; i < this.lastBatchSize; i += 1) {
-      for (let j = 0; j < VERTEX_DATA_STRIDE; j += 1) {
-        this._vertexData[(i * VERTEX_DATA_STRIDE) + j] = 0;
-      }
-    }
-
-    this.lastBatchSize = batchSize;
-  }
-
   private setUpBuffers() {
     const vaoExt = this._vaoExt as OES_vertex_array_object;
     const gl = this.gl as WebGLRenderingContext;
@@ -628,6 +486,66 @@ export class RenderProcessor {
 
     vaoExt.bindVertexArrayOES(this._vao);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
+  }
+
+  private setUpVertexData(gameObject: GameObject) {
+    const vertexData = this._vertexData;
+    const gameObjectId = gameObject.getId();
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+
+    // TODO: Filter hidden object while frustum culling step and remove that
+    if (renderable.disabled) {
+      for (let i = 0; i < VERTEX_DATA_STRIDE; i += 1) {
+        vertexData[i] = 0;
+      }
+      return;
+    }
+
+    const texture = this.textureAtlasDescriptor[renderable.src];
+    const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
+
+    const geometry = this._geometry[gameObjectId] || {
+      position: new Rectangle(renderable.width, renderable.height).toArray(),
+      texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
+    };
+    this._geometry[gameObjectId] = geometry;
+
+    const { position, texCoord } = geometry;
+
+    for (let i = 0, j = 0; i < position.length; i += 2, j += VERTEX_STRIDE) {
+      vertexData[j] = position[i];
+      vertexData[j + 1] = position[i + 1];
+      vertexData[j + 2] = texCoord[i];
+      vertexData[j + 3] = texCoord[i + 1];
+    }
+  }
+
+  private setUpUniforms(gameObject: GameObject) {
+    const gl = this.gl as WebGLRenderingContext;
+
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+
+    const texture = this.textureAtlasDescriptor[renderable.src];
+    const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
+
+    const modelViewMatrix = this._getModelViewMatrix(
+      renderable,
+      transform.offsetX,
+      transform.offsetY,
+      transform.rotation,
+      transform.scaleX,
+      transform.scaleY,
+    );
+
+    gl.uniformMatrix3fv(
+      this._variables.uModelViewMatrix,
+      false,
+      modelViewMatrix,
+    );
+    gl.uniform2fv(this._variables.uTexSize, [textureInfo.width, textureInfo.height]);
+    gl.uniform2fv(this._variables.uTexTranslate, [textureInfo.x, textureInfo.y]);
+    gl.uniform2fv(this._variables.uGameObjectSize, [renderable.width, renderable.height]);
   }
 
   process() {
@@ -647,18 +565,15 @@ export class RenderProcessor {
     this._gameObjectObserver.sort(this.sortFn);
 
     const batches = splitToBatch(
-      this._gameObjectObserver.getList(), this.shaderProvider, MAX_BATCH_SIZE,
+      this._gameObjectObserver.getList(), this.shaderProvider,
     );
 
     batches.forEach((batch) => {
-      this.cleanVertexData(batch.length);
-
-      batch.forEach((gameObject, index) => {
-        this.setUpVertexData(gameObject, index);
+      batch.forEach((gameObject) => {
+        this.setUpUniforms(gameObject);
+        this.setUpVertexData(gameObject);
         this.setUpBuffers();
-        gl.drawArrays(
-          gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT * batch.length,
-        );
+        gl.drawArrays(gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
       });
     });
   }
