@@ -6,6 +6,7 @@
     "uuid-random": "1.0.9"
   },
   "devDependencies": {
+    "@babel/cli": "7.16.8",
     "@babel/core": "7.16.0",
     "@babel/eslint-parser": "7.16.5",
     "@babel/plugin-proposal-class-properties": "7.16.0",
@@ -33,12 +34,14 @@
   "files": [
     "build/flyer-engine.js",
     "src",
+    "esm",
     "package.json",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "webpack",
+    "build:esm": "rm -rf esm && npx babel src --out-dir esm --extensions \".ts,.js\" --ignore \"src/**/*.test.ts\"",
     "lint": "eslint .",
     "test": "jest",
     "prepare": "husky install",
