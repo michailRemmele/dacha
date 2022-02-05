@@ -15,6 +15,7 @@ import { PhysicsProcessorPlugin } from './physics-processor-plugin';
 import { RenderProcessorPlugin } from './render-processor-plugin';
 import { SceneLoadProcessorPlugin } from './scene-load-processor-plugin';
 import { ScriptProcessorPlugin } from './script-processor-plugin';
+import { ThreeJSRendererPlugin } from './three-js-renderer-plugin';
 import { UiBridgePlugin } from './ui-bridge-plugin';
 
 export const processorsPlugins = {
@@ -35,5 +36,6 @@ export const processorsPlugins = {
   renderProcessor: RenderProcessorPlugin,
   sceneLoadProcessor: SceneLoadProcessorPlugin,
   scriptProcessor: ScriptProcessorPlugin,
+  threeJSRenderer: ThreeJSRendererPlugin,
   uiBridge: UiBridgePlugin,
 };

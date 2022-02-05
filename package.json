@@ -3,6 +3,7 @@
   "main": "./build/flyer-engine.js",
   "version": "0.7.0",
   "dependencies": {
+    "three": "0.137.5",
     "uuid-random": "1.0.9"
   },
   "devDependencies": {
@@ -14,6 +15,7 @@
     "@babel/plugin-proposal-optional-chaining": "7.16.0",
     "@babel/preset-typescript": "7.15.0",
     "@types/jest": "27.0.2",
+    "@types/three": "0.137.0",
     "@typescript-eslint/eslint-plugin": "5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
     "babel-loader": "8.0.5",
