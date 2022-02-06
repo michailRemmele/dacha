@@ -54,6 +54,7 @@ module.exports = {
       rules: {
         ...commonRules,
         '@typescript-eslint/lines-between-class-members': 0,
+        '@typescript-eslint/explicit-function-return-type': 'warn',
       },
     },
   ],

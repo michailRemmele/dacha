@@ -5,7 +5,7 @@ import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
 import { SceneProvider } from './scene/scene-provider';
 import ResourceLoader from './resourceLoader/resourceLoader';
 import GameObjectCreator from './gameObject/gameObjectCreator';
-import PrefabCollection from './prefab/prefabCollection';
+import { PrefabCollection } from './prefab';
 import { GameLoop } from './game-loop';
 
 import * as global from './consts/global';
