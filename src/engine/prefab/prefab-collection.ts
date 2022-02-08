@@ -64,4 +64,8 @@ export class PrefabCollection {
 
     return this.storage[name].clone();
   }
+
+  getAll(): Array<Prefab> {
+    return Object.values(this.storage);
+  }
 }
