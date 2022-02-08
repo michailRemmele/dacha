@@ -19,11 +19,11 @@ export class CameraProcessorPlugin implements ProcessorPlugin {
       messageBus,
     } = options;
 
-    const window = document.getElementById(windowNodeId);
+    const windowNode = document.getElementById(windowNodeId) || window;
 
     return new CameraProcessor({
       initialCamera,
-      window,
+      window: windowNode,
       gameObjectObserver: createGameObjectObserver({
         components: [
           CAMERA_COMPONENT_NAME,
