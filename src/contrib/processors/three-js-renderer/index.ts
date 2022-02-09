@@ -24,6 +24,7 @@ import {
   sortByYAxis,
   sortByXAxis,
   sortByZAxis,
+  sortByFit,
 } from '../render-processor/sort';
 
 import { MatrixTransformer } from './matrix-transformer';
@@ -74,6 +75,7 @@ export class ThreeJSRenderer {
       sortByYAxis,
       sortByXAxis,
       sortByZAxis,
+      sortByFit,
     ]);
 
     this.gameObjectsMap = {};
@@ -193,14 +195,13 @@ export class ThreeJSRenderer {
         return;
       }
 
-      object.position.set(transform.offsetX, transform.offsetY, transform.offsetZ);
       object.scale.set(
-        renderable.flipX ? -1 : 1,
-        renderable.flipY ? -1 : 1,
+        (renderable.flipX ? -1 : 1) * transform.scaleX,
+        (renderable.flipY ? -1 : 1) * transform.scaleY,
         1,
       );
       object.rotation.set(0, 0, MathOps.degToRad(transform.rotation + renderable.rotation));
-      // TODO: Need to add origin property support
+      object.position.set(transform.offsetX, transform.offsetY, transform.offsetZ);
       object.renderOrder = index;
 
       if (!this.textureMap[renderable.src]) {

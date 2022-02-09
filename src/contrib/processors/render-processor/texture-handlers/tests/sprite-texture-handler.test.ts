@@ -21,7 +21,7 @@ describe('Contrib -> RenderProcessor -> texture handlers -> SpriteTextureHandler
       extruding: 5,
       spacing: 10,
       rotation: 0,
-      origin: [0, 0],
+      sortCenter: [0, 0],
       flipX: false,
       flipY: false,
       disabled: false,

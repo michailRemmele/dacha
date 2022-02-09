@@ -11,7 +11,7 @@ describe('Contrib -> components -> Renderable', () => {
       spacing: 5,
       extruding: 2,
       rotation: 45,
-      origin: [0, 0],
+      sortCenter: [0, 0],
       flipX: false,
       flipY: true,
       disabled: false,
@@ -27,7 +27,7 @@ describe('Contrib -> components -> Renderable', () => {
     expect(renderable.spacing).toEqual(5);
     expect(renderable.extruding).toEqual(2);
     expect(renderable.rotation).toEqual(45);
-    expect(renderable.origin).toEqual([-50, -100]);
+    expect(renderable.sortCenter).toEqual([0, 0]);
     expect(renderable.flipX).toEqual(false);
     expect(renderable.flipY).toEqual(true);
     expect(renderable.disabled).toEqual(false);
@@ -45,7 +45,7 @@ describe('Contrib -> components -> Renderable', () => {
       spacing: 5,
       extruding: 2,
       rotation: 45,
-      origin: [0, 0],
+      sortCenter: [0, 0],
       flipX: false,
       flipY: true,
       disabled: false,
@@ -61,7 +61,7 @@ describe('Contrib -> components -> Renderable', () => {
     renderable.spacing = 3;
     renderable.extruding = 2;
     renderable.rotation = 90;
-    renderable.origin = [5, 10];
+    renderable.sortCenter = [5, 10];
     renderable.flipX = true;
     renderable.flipY = false;
     renderable.disabled = true;
@@ -76,7 +76,7 @@ describe('Contrib -> components -> Renderable', () => {
     expect(renderable.spacing).toEqual(3);
     expect(renderable.extruding).toEqual(2);
     expect(renderable.rotation).toEqual(90);
-    expect(renderable.origin).toEqual([-95, -190]);
+    expect(renderable.sortCenter).toEqual([5, 10]);
     expect(renderable.flipX).toEqual(true);
     expect(renderable.flipY).toEqual(false);
     expect(renderable.disabled).toEqual(true);
@@ -94,7 +94,7 @@ describe('Contrib -> components -> Renderable', () => {
       spacing: 5,
       extruding: 2,
       rotation: 45,
-      origin: [0, 0],
+      sortCenter: [0, 0],
       flipX: false,
       flipY: true,
       disabled: false,
@@ -104,6 +104,6 @@ describe('Contrib -> components -> Renderable', () => {
     const cloneRenderable = originalRenderable.clone();
 
     expect(originalRenderable).not.toBe(cloneRenderable);
-    expect(originalRenderable.origin).not.toBe(cloneRenderable.origin);
+    expect(originalRenderable.sortCenter).not.toBe(cloneRenderable.sortCenter);
   });
 });
