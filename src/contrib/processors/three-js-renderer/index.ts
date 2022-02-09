@@ -5,7 +5,10 @@ import {
   MeshBasicMaterial,
   PlaneGeometry,
   Mesh,
-  Color,
+  Texture,
+  NearestFilter,
+  RepeatWrapping,
+  ClampToEdgeWrapping,
 } from 'three';
 
 import type { GameObject, GameObjectObserver } from '../../../engine/gameObject';
@@ -13,6 +16,7 @@ import type { Store } from '../../../engine/scene/store';
 import type { Transform } from '../../components/transform';
 import type { Renderable } from '../../components/renderable';
 import type { Camera } from '../../components/camera';
+import { MathOps } from '../../../engine/mathLib';
 import {
   composeSort,
   SortFn,
@@ -35,6 +39,7 @@ interface RendererOptions {
   store: Store
   window: HTMLElement
   sortingLayers: Array<string>
+  textureMap: Record<string, Array<Texture>>
 }
 
 export class ThreeJSRenderer {
@@ -44,6 +49,7 @@ export class ThreeJSRenderer {
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
   private renderer: WebGLRenderer;
+  private textureMap: Record<string, Array<Texture>>;
   private gameObjectsMap: Record<string, number>;
   private sortFn: SortFn;
   private matrixTransformer: MatrixTransformer;
@@ -56,6 +62,7 @@ export class ThreeJSRenderer {
       store,
       window,
       sortingLayers,
+      textureMap,
     } = options;
 
     this.gameObjectObserver = gameObjectObserver;
@@ -78,13 +85,22 @@ export class ThreeJSRenderer {
     this.currentCamera = new OrthographicCamera();
     this.renderer = new WebGLRenderer();
 
-    this.currentCamera.position.set(0, 0, 1);
+    // TODO: Get offsetZ from camera game object
+    this.currentCamera.position.set(0, 0, 10);
     this.renderScene.matrixAutoUpdate = false;
 
     this.window.appendChild(this.renderer.domElement);
+
+    this.textureMap = textureMap;
+    Object.keys(this.textureMap).forEach((key) => {
+      this.textureMap[key].forEach((texture) => {
+        texture.magFilter = NearestFilter;
+        texture.flipY = false;
+      });
+    });
   }
 
-  processorDidMount() {
+  processorDidMount(): void {
     this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
 
@@ -92,18 +108,19 @@ export class ThreeJSRenderer {
     this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
   }
 
-  processorWillUnmount() {
+  processorWillUnmount(): void {
     window.removeEventListener('resize', this.handleWindowResize);
 
     this.gameObjectObserver.unsubscribe('onadd', this.handleGameObjectAdd);
     this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
   }
 
-  private handleGameObjectAdd = (gameObject: GameObject) => {
+  private handleGameObjectAdd = (gameObject: GameObject): void => {
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
     const material = new MeshBasicMaterial({
-      color: new Color(Math.random(), Math.random(), Math.random()),
+      transparent: true,
+      map: this.textureMap[renderable.src][renderable.currentFrame || 0],
     });
     const geometry = new PlaneGeometry(renderable.width, renderable.height);
     const object = new Mesh(geometry, material);
@@ -114,7 +131,7 @@ export class ThreeJSRenderer {
     this.renderScene.add(object);
   };
 
-  private handleGameObjectRemove = (gameObject: GameObject) => {
+  private handleGameObjectRemove = (gameObject: GameObject): void => {
     const gameObjectId = gameObject.getId();
     const object = this.renderScene.getObjectById(this.gameObjectsMap[gameObjectId]);
 
@@ -132,7 +149,7 @@ export class ThreeJSRenderer {
       }, {});
   };
 
-  private handleWindowResize = () => {
+  private handleWindowResize = (): void => {
     this.viewWidth = this.window.clientWidth;
     this.viewHeight = this.window.clientHeight;
 
@@ -144,7 +161,7 @@ export class ThreeJSRenderer {
     this.renderer.setSize(this.viewWidth, this.viewHeight);
   };
 
-  private updateViewMatrix() {
+  private updateViewMatrix(): void {
     const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
@@ -158,25 +175,61 @@ export class ThreeJSRenderer {
     this.renderScene.matrixWorld.fromArray(viewMatrix);
   }
 
-  private updateGameObjects() {
+  private updateGameObjects(): void {
     this.gameObjectObserver.getList().forEach((gameObject, index) => {
       const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
       const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
-      const object = this.renderScene.getObjectById(this.gameObjectsMap[gameObject.getId()]);
+      const object = this.renderScene.getObjectById(
+        this.gameObjectsMap[gameObject.getId()],
+      ) as Mesh;
 
       if (!object) {
         return;
       }
 
-      object.position.set(transform.offsetX, transform.offsetY, transform.offsetZ);
-
       object.visible = !renderable.disabled;
+      if (!object.visible) {
+        return;
+      }
+
+      object.position.set(transform.offsetX, transform.offsetY, transform.offsetZ);
+      object.scale.set(
+        renderable.flipX ? -1 : 1,
+        renderable.flipY ? -1 : 1,
+        1,
+      );
+      object.rotation.set(0, 0, MathOps.degToRad(transform.rotation + renderable.rotation));
+      // TODO: Need to add origin property support
       object.renderOrder = index;
+
+      if (!this.textureMap[renderable.src]) {
+        return;
+      }
+
+      const material = object.material as MeshBasicMaterial;
+      const texture = this.textureMap[renderable.src][renderable.currentFrame || 0];
+
+      material.map = texture;
+
+      if (renderable.fit === 'repeat') {
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+
+        texture.repeat.set(
+          renderable.width / (texture.image as HTMLImageElement).width,
+          renderable.height / (texture.image as HTMLImageElement).height,
+        );
+      } else {
+        texture.wrapS = ClampToEdgeWrapping;
+        texture.wrapT = ClampToEdgeWrapping;
+
+        texture.repeat.set(1, 1);
+      }
     });
   }
 
-  process() {
+  process(): void {
     this.gameObjectObserver.fireEvents();
 
     this.updateViewMatrix();
