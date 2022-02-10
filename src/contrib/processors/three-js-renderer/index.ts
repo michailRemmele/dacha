@@ -87,8 +87,7 @@ export class ThreeJSRenderer {
     this.currentCamera = new OrthographicCamera();
     this.renderer = new WebGLRenderer();
 
-    // TODO: Get offsetZ from camera game object
-    this.currentCamera.position.set(0, 0, 10);
+    this.currentCamera.position.set(0, 0, 1);
     this.renderScene.matrixAutoUpdate = false;
 
     this.window.appendChild(this.renderer.domElement);
@@ -201,7 +200,7 @@ export class ThreeJSRenderer {
         1,
       );
       object.rotation.set(0, 0, MathOps.degToRad(transform.rotation + renderable.rotation));
-      object.position.set(transform.offsetX, transform.offsetY, transform.offsetZ);
+      object.position.set(transform.offsetX, transform.offsetY, 0);
       object.renderOrder = index;
 
       if (!this.textureMap[renderable.src]) {
