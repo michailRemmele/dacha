@@ -9,6 +9,7 @@ import {
   NearestFilter,
   RepeatWrapping,
   ClampToEdgeWrapping,
+  Color,
 } from 'three';
 
 import type { GameObject, GameObjectObserver } from '../../../engine/gameObject';
@@ -40,6 +41,7 @@ interface RendererOptions {
   store: Store
   window: HTMLElement
   sortingLayers: Array<string>
+  backgroundColor: string
   textureMap: Record<string, Array<Texture>>
 }
 
@@ -63,6 +65,7 @@ export class ThreeJSRenderer {
       store,
       window,
       sortingLayers,
+      backgroundColor,
       textureMap,
     } = options;
 
@@ -86,6 +89,7 @@ export class ThreeJSRenderer {
     this.renderScene = new Scene();
     this.currentCamera = new OrthographicCamera();
     this.renderer = new WebGLRenderer();
+    this.renderer.setClearColor(new Color(backgroundColor));
 
     this.currentCamera.position.set(0, 0, 1);
     this.renderScene.matrixAutoUpdate = false;

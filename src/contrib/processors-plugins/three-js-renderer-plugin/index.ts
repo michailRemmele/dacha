@@ -13,6 +13,7 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 interface ThreeJSRendererPluginOptions extends ProcessorPluginOptions {
   windowNodeId: string
   sortingLayers: Array<string>
+  backgroundColor: string
 }
 
 export class ThreeJSRendererPlugin implements ProcessorPlugin {
@@ -22,6 +23,7 @@ export class ThreeJSRendererPlugin implements ProcessorPlugin {
       store,
       windowNodeId,
       sortingLayers,
+      backgroundColor,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -89,6 +91,7 @@ export class ThreeJSRendererPlugin implements ProcessorPlugin {
       store,
       window,
       sortingLayers,
+      backgroundColor,
       textureMap,
     });
   }
