@@ -96,6 +96,7 @@ export class ThreeJSRenderer {
     Object.keys(this.textureMap).forEach((key) => {
       this.textureMap[key].forEach((texture) => {
         texture.magFilter = NearestFilter;
+        texture.minFilter = NearestFilter;
         texture.flipY = false;
       });
     });
