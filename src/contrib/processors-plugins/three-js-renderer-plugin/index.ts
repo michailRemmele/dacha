@@ -14,6 +14,7 @@ interface ThreeJSRendererPluginOptions extends ProcessorPluginOptions {
   windowNodeId: string
   sortingLayers: Array<string>
   backgroundColor: string
+  scaleSensitivity: number
 }
 
 export class ThreeJSRendererPlugin implements ProcessorPlugin {
@@ -24,6 +25,7 @@ export class ThreeJSRendererPlugin implements ProcessorPlugin {
       windowNodeId,
       sortingLayers,
       backgroundColor,
+      scaleSensitivity,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -92,6 +94,7 @@ export class ThreeJSRendererPlugin implements ProcessorPlugin {
       window,
       sortingLayers,
       backgroundColor,
+      scaleSensitivity,
       textureMap,
     });
   }

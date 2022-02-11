@@ -34,6 +34,7 @@ import {
   CURRENT_CAMERA_NAME,
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
+  STD_SCREEN_SIZE,
 } from './consts';
 
 interface RendererOptions {
@@ -42,6 +43,7 @@ interface RendererOptions {
   window: HTMLElement
   sortingLayers: Array<string>
   backgroundColor: string
+  scaleSensitivity: number
   textureMap: Record<string, Array<Texture>>
 }
 
@@ -58,6 +60,8 @@ export class ThreeJSRenderer {
   private matrixTransformer: MatrixTransformer;
   private viewWidth: number;
   private viewHeight: number;
+  private scaleSensitivity: number;
+  private screenScale: number;
 
   constructor(options: RendererOptions) {
     const {
@@ -66,6 +70,7 @@ export class ThreeJSRenderer {
       window,
       sortingLayers,
       backgroundColor,
+      scaleSensitivity,
       textureMap,
     } = options;
 
@@ -84,6 +89,8 @@ export class ThreeJSRenderer {
     this.gameObjectsMap = {};
     this.viewWidth = 0;
     this.viewHeight = 0;
+    this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1) as number;
+    this.screenScale = 1;
 
     this.matrixTransformer = new MatrixTransformer();
     this.renderScene = new Scene();
@@ -165,13 +172,25 @@ export class ThreeJSRenderer {
     this.currentCamera.bottom = this.viewHeight / -2;
 
     this.renderer.setSize(this.viewWidth, this.viewHeight);
+    this.updateScreenScale();
   };
+
+  private updateScreenScale(): void {
+    const screenSize = Math.sqrt(
+      Math.pow(this.viewWidth, 2) + Math.pow(this.viewHeight, 2),
+    );
+    const avaragingValue = 1 - this.scaleSensitivity;
+    const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
+
+    this.screenScale = normalizedSize / STD_SCREEN_SIZE;
+  }
 
   private updateViewMatrix(): void {
     const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
-    const scale = zoom;
+
+    const scale = zoom * this.screenScale;
 
     const viewMatrix = this.matrixTransformer.getIdentityMatrix();
 
