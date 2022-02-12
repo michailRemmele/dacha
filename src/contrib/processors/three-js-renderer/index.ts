@@ -101,8 +101,6 @@ export class ThreeJSRenderer {
     this.currentCamera.position.set(0, 0, 1);
     this.renderScene.matrixAutoUpdate = false;
 
-    this.window.appendChild(this.renderer.domElement);
-
     this.textureMap = textureMap;
     Object.keys(this.textureMap).forEach((key) => {
       this.textureMap[key].forEach((texture) => {
@@ -119,6 +117,8 @@ export class ThreeJSRenderer {
 
     this.gameObjectObserver.subscribe('onadd', this.handleGameObjectAdd);
     this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+
+    this.window.appendChild(this.renderer.domElement);
   }
 
   processorWillUnmount(): void {
@@ -126,6 +126,8 @@ export class ThreeJSRenderer {
 
     this.gameObjectObserver.unsubscribe('onadd', this.handleGameObjectAdd);
     this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+
+    this.window.removeChild(this.renderer.domElement);
   }
 
   private handleGameObjectAdd = (gameObject: GameObject): void => {
