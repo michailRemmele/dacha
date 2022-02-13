@@ -1,7 +1,7 @@
 import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
 import IOC from '../../../engine/ioc/ioc';
 import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
-import { RenderProcessor, TextureDescriptor } from '../../processors/render-processor';
+import { RenderProcessor, TextureDescriptor } from '../../processors/webgl-render-processor';
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';

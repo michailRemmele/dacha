@@ -8,7 +8,7 @@ describe('Contrib -> RenderProcessor -> Sort -> sortByFit()', () => {
     src: 'some-path',
     width: 0,
     height: 0,
-    origin: [0, 0],
+    sortCenter: [0, 0],
     type: 'static',
     spacing: 0,
     extruding: 0,

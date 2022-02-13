@@ -11,8 +11,12 @@ export const sortByXAxis: SortFn = (a: GameObject, b: GameObject): number => {
   const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
   const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
 
-  const aOffsetX = aTransform.offsetX + ((aTransform.scaleX * aRenderable.width) / 2);
-  const bOffsetX = bTransform.offsetX + ((bTransform.scaleX * bRenderable.width) / 2);
+  const aOffsetX = aTransform.offsetX
+    + aRenderable.sortCenter[0]
+    + ((aTransform.scaleX * aRenderable.width) / 2);
+  const bOffsetX = bTransform.offsetX
+    + bRenderable.sortCenter[0]
+    + ((bTransform.scaleX * bRenderable.width) / 2);
 
   return aOffsetX - bOffsetX;
 };

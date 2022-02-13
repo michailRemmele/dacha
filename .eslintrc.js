@@ -14,6 +14,7 @@ const commonRules = {
   ],
   'no-param-reassign': 1,
   'no-restricted-properties': 1,
+  'prefer-destructuring': 'warn',
 };
 
 module.exports = {
@@ -54,6 +55,7 @@ module.exports = {
       rules: {
         ...commonRules,
         '@typescript-eslint/lines-between-class-members': 0,
+        '@typescript-eslint/explicit-function-return-type': 'warn',
       },
     },
   ],

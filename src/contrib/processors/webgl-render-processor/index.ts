@@ -22,7 +22,7 @@ import {
   sortByXAxis,
   sortByZAxis,
   sortByFit,
-} from './sort';
+} from '../three-js-renderer/sort';
 import { splitToBatch } from './utils';
 import {
   MAX_COLOR_NUMBER,
@@ -398,7 +398,7 @@ export class RenderProcessor {
 
     const matrix = matrixTransformer.getIdentityMatrix();
 
-    matrixTransformer.translate(matrix, renderable.origin[0], renderable.origin[1]);
+    matrixTransformer.translate(matrix, -renderable.width / 2, -renderable.height / 2);
     matrixTransformer.scale(matrix, scaleX, scaleY);
     if (renderable.flipX) {
       matrixTransformer.flipX(matrix);

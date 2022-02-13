@@ -23,21 +23,33 @@ class CameraProcessor {
     this._setCamera(currentCamera);
   }
 
-  _updateCameraWindowSize(camera) {
+  processorDidMount() {
+    this._updateCameraWindowSize();
+    window.addEventListener('resize', this._updateCameraWindowSize);
+  }
+
+  processorWillUnmount() {
+    window.removeEventListener('resize', this._updateCameraWindowSize);
+  }
+
+  _updateCameraWindowSize = () => {
+    const camera = this._store.get(CURRENT_CAMERA_NAME);
+
+    const width = this._window.innerWidth || this._window.clientWidth;
+    const height = this._window.innerHeight || this._window.clientHeight;
+
     const cameraComponent = camera.getComponent(CAMERA_COMPONENT_NAME);
     const { windowSizeX, windowSizeY } = cameraComponent;
-    const currentWindowSizeX = this._window.width / window.devicePixelRatio;
-    const currentWindowSizeY = this._window.height / window.devicePixelRatio;
 
-    if (currentWindowSizeX !== windowSizeX || currentWindowSizeY !== windowSizeY) {
-      cameraComponent.windowSizeX = currentWindowSizeX;
-      cameraComponent.windowSizeY = currentWindowSizeY;
+    if (width !== windowSizeX || height !== windowSizeY) {
+      cameraComponent.windowSizeX = width;
+      cameraComponent.windowSizeY = height;
     }
   }
 
   _setCamera(camera) {
-    this._updateCameraWindowSize(camera);
     this._store.set(CURRENT_CAMERA_NAME, camera);
+    this._updateCameraWindowSize();
   }
 
   process() {
@@ -52,8 +64,6 @@ class CameraProcessor {
 
       this._setCamera(newCamera);
     }
-
-    this._updateCameraWindowSize(this._store.get(CURRENT_CAMERA_NAME));
   }
 }
 
