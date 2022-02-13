@@ -12,7 +12,6 @@ import { MouseControlProcessorPlugin } from './mouse-control-processor-plugin';
 import { MouseInputProcessorPlugin } from './mouse-input-processor-plugin';
 import { MouseInputCoordinatesProjectorPlugin } from './mouse-input-coordinates-projector';
 import { PhysicsProcessorPlugin } from './physics-processor-plugin';
-import { RenderProcessorPlugin } from './render-processor-plugin';
 import { SceneLoadProcessorPlugin } from './scene-load-processor-plugin';
 import { ScriptProcessorPlugin } from './script-processor-plugin';
 import { ThreeJSRendererPlugin } from './three-js-renderer-plugin';
@@ -33,7 +32,6 @@ export const processorsPlugins = {
   mouseInputProcessor: MouseInputProcessorPlugin,
   mouseInputCoordinatesProjector: MouseInputCoordinatesProjectorPlugin,
   physicsProcessor: PhysicsProcessorPlugin,
-  renderProcessor: RenderProcessorPlugin,
   sceneLoadProcessor: SceneLoadProcessorPlugin,
   scriptProcessor: ScriptProcessorPlugin,
   threeJSRenderer: ThreeJSRendererPlugin,

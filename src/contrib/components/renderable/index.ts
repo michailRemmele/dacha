@@ -9,8 +9,8 @@ export interface RenderableConfig {
   height: number;
   type: RenderableType;
   slice?: number;
-  spacing: number;
-  extruding: number;
+  spacing: number; // deprecated
+  extruding: number; // deprecated
   rotation: number;
   flipX: boolean;
   flipY: boolean;

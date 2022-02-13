@@ -22,7 +22,7 @@ import {
   sortByXAxis,
   sortByZAxis,
   sortByFit,
-} from './sort';
+} from '../three-js-renderer/sort';
 import { splitToBatch } from './utils';
 import {
   MAX_COLOR_NUMBER,

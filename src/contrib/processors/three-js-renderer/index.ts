@@ -18,6 +18,7 @@ import type { Transform } from '../../components/transform';
 import type { Renderable } from '../../components/renderable';
 import type { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
+
 import {
   composeSort,
   SortFn,
@@ -26,8 +27,7 @@ import {
   sortByXAxis,
   sortByZAxis,
   sortByFit,
-} from '../render-processor/sort';
-
+} from './sort';
 import { MatrixTransformer } from './matrix-transformer';
 import {
   CAMERA_COMPONENT_NAME,
