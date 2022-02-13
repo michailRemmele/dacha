@@ -14,6 +14,7 @@ const commonRules = {
   ],
   'no-param-reassign': 1,
   'no-restricted-properties': 1,
+  'prefer-destructuring': 'warn',
 };
 
 module.exports = {
