@@ -14,6 +14,7 @@ import {
 
 import type { GameObject, GameObjectObserver } from '../../../engine/gameObject';
 import type { Store } from '../../../engine/scene/store';
+import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Transform } from '../../components/transform';
 import type { Renderable } from '../../components/renderable';
 import type { Camera } from '../../components/camera';
@@ -34,12 +35,23 @@ import {
   CURRENT_CAMERA_NAME,
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
+  UPDATE_FRAME_MSG,
   STD_SCREEN_SIZE,
 } from './consts';
+
+interface UpdateFrameMessage extends Message {
+  id: string
+  currentFrame?: number
+  rotation?: number
+  flipX?: boolean
+  flipY?: boolean
+  disabled?: boolean
+}
 
 interface RendererOptions {
   gameObjectObserver: GameObjectObserver
   store: Store
+  messageBus: MessageBus
   window: HTMLElement
   sortingLayers: Array<string>
   backgroundColor: string
@@ -50,6 +62,7 @@ interface RendererOptions {
 export class ThreeJSRenderer {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
+  private messageBus: MessageBus;
   private window: HTMLElement;
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
@@ -67,6 +80,7 @@ export class ThreeJSRenderer {
     const {
       gameObjectObserver,
       store,
+      messageBus,
       window,
       sortingLayers,
       backgroundColor,
@@ -76,6 +90,7 @@ export class ThreeJSRenderer {
 
     this.gameObjectObserver = gameObjectObserver;
     this.store = store;
+    this.messageBus = messageBus;
     this.window = window;
 
     this.sortFn = composeSort([
@@ -255,8 +270,32 @@ export class ThreeJSRenderer {
     });
   }
 
+  private updateFrames(): void {
+    const updateFrameMessages = (
+      this.messageBus.get(UPDATE_FRAME_MSG) || []
+    ) as Array<UpdateFrameMessage>;
+
+    updateFrameMessages.forEach((message) => {
+      const gameObject = this.gameObjectObserver.getById(message.id);
+
+      if (!gameObject) {
+        return;
+      }
+
+      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+
+      renderable.currentFrame = message.currentFrame;
+      renderable.rotation = message.rotation !== void 0 ? message.rotation : renderable.rotation;
+      renderable.flipX = message.flipX !== void 0 ? message.flipX : renderable.flipX;
+      renderable.flipY = message.flipY !== void 0 ? message.flipY : renderable.flipY;
+      renderable.disabled = Boolean(message.disabled);
+    });
+  }
+
   process(): void {
     this.gameObjectObserver.fireEvents();
+
+    this.updateFrames();
 
     this.updateViewMatrix();
 

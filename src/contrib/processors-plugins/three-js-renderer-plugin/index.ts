@@ -61,6 +61,7 @@ export class ThreeJSRendererPlugin implements ProcessorPlugin {
     const {
       createGameObjectObserver,
       store,
+      messageBus,
       windowNodeId,
       sortingLayers,
       backgroundColor,
@@ -108,6 +109,7 @@ export class ThreeJSRendererPlugin implements ProcessorPlugin {
     return new ThreeJSRenderer({
       gameObjectObserver,
       store,
+      messageBus,
       window,
       sortingLayers,
       backgroundColor,
