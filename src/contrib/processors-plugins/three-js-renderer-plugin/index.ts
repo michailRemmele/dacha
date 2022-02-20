@@ -12,6 +12,7 @@ import { SpriteCropper } from './sprite-cropper';
 
 const RENDERABLE_COMPONENT_NAME = 'renderable';
 const TRANSFORM_COMPONENT_NAME = 'transform';
+const LIGHT_COMPONENT_NAME = 'light';
 
 // TODO: Remove once resource loader will be moved to ts
 interface ResourceLoader {
@@ -108,6 +109,12 @@ export class ThreeJSRendererPlugin implements ProcessorPlugin {
 
     return new ThreeJSRenderer({
       gameObjectObserver,
+      lightsObserver: createGameObjectObserver({
+        components: [
+          LIGHT_COMPONENT_NAME,
+          TRANSFORM_COMPONENT_NAME,
+        ],
+      }),
       store,
       messageBus,
       window,

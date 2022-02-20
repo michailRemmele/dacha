@@ -7,6 +7,7 @@ import { Renderable } from './renderable';
 import { Transform } from './transform';
 import { MouseControl } from './mouse-control';
 import { Script } from './script';
+import { Light } from './light';
 
 export default {
   camera: Camera,
@@ -18,4 +19,5 @@ export default {
   transform: Transform,
   mouseControl: MouseControl,
   script: Script,
+  light: Light,
 };
