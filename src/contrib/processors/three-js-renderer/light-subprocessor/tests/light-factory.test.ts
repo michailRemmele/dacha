@@ -30,6 +30,7 @@ describe('Contrib -> RenderProcessor -> LightSubprocessor -> light factory', () 
 
       expect(light.color.getHexString()).toBe('112233');
       expect(light.intensity).toBe(2);
+      expect(light.position.z).toBe(1);
     });
 
     it('Updates point light correctly', () => {
@@ -37,14 +38,15 @@ describe('Contrib -> RenderProcessor -> LightSubprocessor -> light factory', () 
       const options = {
         color: '#aabbcc',
         intensity: 5,
-        distance: 10,
+        distance: 28,
       };
 
       updateLight('point', light, options);
 
       expect(light.color.getHexString()).toBe('aabbcc');
       expect(light.intensity).toBe(5);
-      expect(light.distance).toBe(10);
+      expect(light.distance).toBe(32);
+      expect(light.position.z).toBe(14);
     });
   });
 });
