@@ -1,10 +1,10 @@
 import { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
-import ScriptProcessor from '../../processors/scriptProcessor/scriptProcessor';
+import { ScriptProcessor, ScriptClass } from '../../processors/script-processor';
 
 const SCRIPT_COMPONENT_NAME = 'script';
 
 export class ScriptProcessorPlugin implements ProcessorPlugin {
-  async load(options: ProcessorPluginOptions) {
+  async load(options: ProcessorPluginOptions): Promise<ScriptProcessor> {
     const {
       helpers,
       createGameObjectObserver,
@@ -13,10 +13,11 @@ export class ScriptProcessorPlugin implements ProcessorPlugin {
       store,
       messageBus,
     } = options;
-    const { scripts } = await helpers.loadScripts();
+    const { scripts } = await helpers.loadScripts<Record<string, ScriptClass>>();
 
     return new ScriptProcessor({
-      gameObjectObserver: createGameObjectObserver({
+      gameObjectObserver: createGameObjectObserver({}),
+      scriptsObserver: createGameObjectObserver({
         components: [
           SCRIPT_COMPONENT_NAME,
         ],

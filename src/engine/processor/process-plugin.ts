@@ -4,14 +4,16 @@ import type { MessageBus } from '../message-bus';
 
 import type { Processor } from './processor';
 
-export type PluginHelper = () => Promise<Record<string, unknown>>;
+export interface PluginHelperFn {
+  <T = unknown>(): Promise<Record<string, T>>
+}
 
 export interface ProcessorPluginOptions {
   createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver;
   gameObjectSpawner: unknown,
   gameObjectDestroyer: unknown,
   sceneController: unknown,
-  helpers: Record<string, PluginHelper>,
+  helpers: Record<string, PluginHelperFn>,
   store: Store;
   messageBus: MessageBus;
 }

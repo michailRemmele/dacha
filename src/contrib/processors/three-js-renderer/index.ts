@@ -2,7 +2,7 @@ import {
   Scene,
   OrthographicCamera,
   WebGLRenderer,
-  MeshBasicMaterial,
+  MeshStandardMaterial,
   PlaneGeometry,
   Mesh,
   Texture,
@@ -12,6 +12,7 @@ import {
   Color,
 } from 'three';
 
+import type { Processor } from '../../../engine/processor';
 import type { GameObject, GameObjectObserver } from '../../../engine/gameObject';
 import type { Store } from '../../../engine/scene/store';
 import type { MessageBus, Message } from '../../../engine/message-bus';
@@ -29,7 +30,8 @@ import {
   sortByZAxis,
   sortByFit,
 } from './sort';
-import { MatrixTransformer } from './matrix-transformer';
+import { filterByKey } from './utils';
+import { LightSubprocessor } from './light-subprocessor';
 import {
   CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
@@ -50,6 +52,7 @@ interface UpdateFrameMessage extends Message {
 
 interface RendererOptions {
   gameObjectObserver: GameObjectObserver
+  lightsObserver: GameObjectObserver
   store: Store
   messageBus: MessageBus
   window: HTMLElement
@@ -59,7 +62,7 @@ interface RendererOptions {
   textureMap: Record<string, Array<Texture>>
 }
 
-export class ThreeJSRenderer {
+export class ThreeJSRenderer implements Processor {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private messageBus: MessageBus;
@@ -70,7 +73,7 @@ export class ThreeJSRenderer {
   private textureMap: Record<string, Array<Texture>>;
   private gameObjectsMap: Record<string, number>;
   private sortFn: SortFn;
-  private matrixTransformer: MatrixTransformer;
+  private lightSubprocessor: LightSubprocessor;
   private viewWidth: number;
   private viewHeight: number;
   private scaleSensitivity: number;
@@ -79,6 +82,7 @@ export class ThreeJSRenderer {
   constructor(options: RendererOptions) {
     const {
       gameObjectObserver,
+      lightsObserver,
       store,
       messageBus,
       window,
@@ -107,14 +111,15 @@ export class ThreeJSRenderer {
     this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1) as number;
     this.screenScale = 1;
 
-    this.matrixTransformer = new MatrixTransformer();
     this.renderScene = new Scene();
     this.currentCamera = new OrthographicCamera();
     this.renderer = new WebGLRenderer();
     this.renderer.setClearColor(new Color(backgroundColor));
 
-    this.currentCamera.position.set(0, 0, 1);
-    this.renderScene.matrixAutoUpdate = false;
+    this.lightSubprocessor = new LightSubprocessor(this.renderScene, lightsObserver);
+
+    // TODO: Figure out how to set up camera correctly to avoid scale usage
+    this.renderScene.scale.set(1, -1, 1);
 
     this.textureMap = textureMap;
     Object.keys(this.textureMap).forEach((key) => {
@@ -133,6 +138,8 @@ export class ThreeJSRenderer {
     this.gameObjectObserver.subscribe('onadd', this.handleGameObjectAdd);
     this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
 
+    this.lightSubprocessor.mount();
+
     this.window.appendChild(this.renderer.domElement);
   }
 
@@ -142,13 +149,15 @@ export class ThreeJSRenderer {
     this.gameObjectObserver.unsubscribe('onadd', this.handleGameObjectAdd);
     this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
 
+    this.lightSubprocessor.unmount();
+
     this.window.removeChild(this.renderer.domElement);
   }
 
   private handleGameObjectAdd = (gameObject: GameObject): void => {
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
-    const material = new MeshBasicMaterial({
+    const material = new MeshStandardMaterial({
       transparent: true,
       map: this.textureMap[renderable.src][renderable.currentFrame || 0],
     });
@@ -169,14 +178,7 @@ export class ThreeJSRenderer {
       this.renderScene.remove(object);
     }
 
-    this.gameObjectsMap = Object.keys(this.gameObjectsMap)
-      .reduce((acc: Record<string, number>, key) => {
-        if (key !== gameObjectId) {
-          acc[key] = this.gameObjectsMap[key];
-        }
-
-        return acc;
-      }, {});
+    this.gameObjectsMap = filterByKey(this.gameObjectsMap, gameObjectId);
   };
 
   private handleWindowResize = (): void => {
@@ -187,6 +189,8 @@ export class ThreeJSRenderer {
     this.currentCamera.top = this.viewHeight / 2;
     this.currentCamera.right = this.viewWidth / 2;
     this.currentCamera.bottom = this.viewHeight / -2;
+
+    this.currentCamera.updateProjectionMatrix();
 
     this.renderer.setSize(this.viewWidth, this.viewHeight);
     this.updateScreenScale();
@@ -202,19 +206,18 @@ export class ThreeJSRenderer {
     this.screenScale = normalizedSize / STD_SCREEN_SIZE;
   }
 
-  private updateViewMatrix(): void {
+  private updateCamera(): void {
     const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
 
     const scale = zoom * this.screenScale;
 
-    const viewMatrix = this.matrixTransformer.getIdentityMatrix();
+    this.currentCamera.zoom = scale;
+    // TODO: Figure out how to set up camera correctly to avoid negative transform by y axis
+    this.currentCamera.position.set(transform.offsetX, -transform.offsetY, 1);
 
-    this.matrixTransformer.translate(viewMatrix, -transform.offsetX, -transform.offsetY, 0);
-    this.matrixTransformer.scale(viewMatrix, scale, scale, 1);
-    this.matrixTransformer.project(viewMatrix, this.viewWidth, this.viewHeight, 1);
-    this.renderScene.matrixWorld.fromArray(viewMatrix);
+    this.currentCamera.updateProjectionMatrix();
   }
 
   private updateGameObjects(): void {
@@ -248,7 +251,7 @@ export class ThreeJSRenderer {
         return;
       }
 
-      const material = object.material as MeshBasicMaterial;
+      const material = object.material as MeshStandardMaterial;
       const texture = this.textureMap[renderable.src][renderable.currentFrame || 0];
 
       material.map = texture;
@@ -297,7 +300,9 @@ export class ThreeJSRenderer {
 
     this.updateFrames();
 
-    this.updateViewMatrix();
+    this.updateCamera();
+
+    this.lightSubprocessor.update();
 
     this.gameObjectObserver.getList().sort(this.sortFn);
     this.updateGameObjects();

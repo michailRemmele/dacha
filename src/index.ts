@@ -1,6 +1,5 @@
 import Engine from './engine/engine';
 import { Component } from './engine/component';
-import Script from './contrib/processors/scriptProcessor/script';
 import { processorsPlugins as contribProcessorsPlugins } from './contrib/processors-plugins';
 import contribComponents from './contrib/components';
 import IOC from './engine/ioc/ioc';
@@ -16,11 +15,11 @@ export {
   Processor,
   ProcessorOptions,
 } from './engine/processor';
+export { Script, ScriptOptions } from './contrib/processors/script-processor';
 
 export {
   Engine,
   Component,
-  Script,
   contribProcessorsPlugins,
   contribComponents,
   IOC,
