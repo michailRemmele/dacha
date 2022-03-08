@@ -70,7 +70,8 @@ export class LightSubprocessor {
         return;
       }
 
-      light.position.set(transform.offsetX, transform.offsetY, 1);
+      light.position.setX(transform.offsetX);
+      light.position.setY(transform.offsetY);
 
       updateLight(type, light, options);
     });

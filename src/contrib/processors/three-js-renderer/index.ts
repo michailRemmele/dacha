@@ -12,6 +12,7 @@ import {
   Color,
 } from 'three';
 
+import type { Processor } from '../../../engine/processor';
 import type { GameObject, GameObjectObserver } from '../../../engine/gameObject';
 import type { Store } from '../../../engine/scene/store';
 import type { MessageBus, Message } from '../../../engine/message-bus';
@@ -61,7 +62,7 @@ interface RendererOptions {
   textureMap: Record<string, Array<Texture>>
 }
 
-export class ThreeJSRenderer {
+export class ThreeJSRenderer implements Processor {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private messageBus: MessageBus;

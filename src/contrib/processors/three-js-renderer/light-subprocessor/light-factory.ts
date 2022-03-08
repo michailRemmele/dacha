@@ -14,16 +14,22 @@ import type {
 const updateAmbientLight = (light: ThreeJSLight, options: LightOptions): void => {
   const { color, intensity } = options as BaseLightOptions;
 
+  light.position.setZ(1);
+
   light.color = new Color(color);
   light.intensity = intensity;
 };
 
+const DISTANCE_FACTOR = 0.875;
+
 const updatePointLight = (light: ThreeJSLight, options: LightOptions): void => {
   const { color, intensity, distance } = options as PointLightOptions;
 
+  light.position.setZ(distance / 2);
+
   light.color = new Color(color);
   light.intensity = intensity;
-  (light as PointLight).distance = distance;
+  (light as PointLight).distance = distance / DISTANCE_FACTOR;
 };
 
 type UpdateLightFn = (light: ThreeJSLight, options: LightOptions) => void;
