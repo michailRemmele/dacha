@@ -1,5 +1,5 @@
 import IOC from '../ioc/ioc';
-import { ProcessorPlugin, PluginHelper } from '../processor';
+import { ProcessorPlugin, PluginHelperFn } from '../processor';
 
 import { Scene, SceneOptions } from './scene';
 import { SceneController } from './scene-controller';
@@ -24,14 +24,14 @@ export class SceneProvider {
   private _sceneChangeSubscribers: Array<(scene: Scene) => void>;
   private _availableScenes: Record<string, string>;
   private _processorsPlugins: Record<string, ProcessorPlugin>;
-  private _pluginHelpers: Record<string, PluginHelper>;
+  private _pluginHelpers: Record<string, PluginHelperFn>;
   private _loadedScene?: Scene;
   private _sceneController: SceneController;
 
   constructor(
     scenes: Record<string, string>,
     processorsPlugins: Record<string, { new(): ProcessorPlugin }>,
-    pluginHelpers: Record<string, PluginHelper>,
+    pluginHelpers: Record<string, PluginHelperFn>,
   ) {
     this._sceneContainer = {};
     this._currentSceneName = void 0;

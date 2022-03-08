@@ -1,7 +1,7 @@
 export {
   ProcessorPlugin,
   ProcessorPluginOptions,
-  PluginHelper,
+  PluginHelperFn,
 } from './process-plugin';
 export {
   Processor,
