@@ -1,23 +1,28 @@
 import { Component } from '../../../engine/component';
 
+import { Material, MaterialConfig } from './material';
+
 type RenderableType = 'sprite' | 'static';
 type FitType = 'stretch' | 'repeat';
 
+export { MaterialType, BasicMaterialOptions } from './material';
+
 export interface RenderableConfig {
-  src: string;
-  width: number;
-  height: number;
-  type: RenderableType;
-  slice?: number;
-  spacing: number; // deprecated
-  extruding: number; // deprecated
-  rotation: number;
-  flipX: boolean;
-  flipY: boolean;
-  disabled: boolean;
-  sortingLayer: string;
-  sortCenter: [number, number];
-  fit: FitType;
+  src: string
+  width: number
+  height: number
+  type: RenderableType
+  slice?: number
+  spacing: number // deprecated
+  extruding: number // deprecated
+  rotation: number
+  flipX: boolean
+  flipY: boolean
+  disabled: boolean
+  sortingLayer: string
+  sortCenter: [number, number]
+  fit: FitType
+  material: MaterialConfig
 }
 
 export class Renderable extends Component {
@@ -36,6 +41,7 @@ export class Renderable extends Component {
   sortCenter: [number, number];
   currentFrame?: number;
   fit: FitType;
+  material: Material;
 
   constructor(componentName: string, config: RenderableConfig) {
     super(componentName);
@@ -55,6 +61,7 @@ export class Renderable extends Component {
     this.sortingLayer = config.sortingLayer;
     this.sortCenter = config.sortCenter;
     this.fit = config.fit;
+    this.material = new Material(config.material);
   }
 
   clone() {
@@ -73,6 +80,7 @@ export class Renderable extends Component {
       sortingLayer: this.sortingLayer,
       sortCenter: this.sortCenter.slice(0) as [number, number],
       fit: this.fit,
+      material: this.material,
     });
   }
 }
