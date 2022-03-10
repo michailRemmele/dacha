@@ -32,6 +32,7 @@ import {
 } from './sort';
 import { filterByKey } from './utils';
 import { LightSubprocessor } from './light-subprocessor';
+import { createMaterial, updateMaterial } from './material-factory';
 import {
   CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
@@ -157,10 +158,7 @@ export class ThreeJSRenderer implements Processor {
   private handleGameObjectAdd = (gameObject: GameObject): void => {
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
-    const material = new MeshStandardMaterial({
-      transparent: true,
-      map: this.textureMap[renderable.src][renderable.currentFrame || 0],
-    });
+    const material = createMaterial(renderable.material.type);
     const geometry = new PlaneGeometry(renderable.width, renderable.height);
     const object = new Mesh(geometry, material);
 
@@ -254,7 +252,7 @@ export class ThreeJSRenderer implements Processor {
       const material = object.material as MeshStandardMaterial;
       const texture = this.textureMap[renderable.src][renderable.currentFrame || 0];
 
-      material.map = texture;
+      updateMaterial(renderable.material.type, material, renderable.material.options, texture);
 
       if (renderable.fit === 'repeat') {
         texture.wrapS = RepeatWrapping;
