@@ -19,6 +19,9 @@ describe('Contrib -> RenderProcessor -> Sort -> sortByXAxis()', () => {
     disabled: false,
     sortingLayer: 'some-layer',
     fit: 'stretch',
+    material: {
+      type: 'basic',
+    },
   };
   const baseTransformProps: TransformConfig = {
     offsetX: 0,
