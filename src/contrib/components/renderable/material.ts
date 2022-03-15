@@ -1,5 +1,8 @@
+export type BlendingMode = 'normal' | 'addition' | 'substract' | 'multiply';
+
 export interface BasicMaterialOptions {
   color?: string
+  blending?: BlendingMode
 }
 
 export type MaterialType = 'lightsensitive' | 'basic';

@@ -76,6 +76,7 @@ describe('Contrib -> components -> Renderable', () => {
     renderable.fit = 'repeat';
     renderable.material.type = 'lightsensitive';
     renderable.material.options.color = '#000';
+    renderable.material.options.blending = 'multiply';
 
     expect(renderable.src).toEqual('another-path-to-texture');
     expect(renderable.type).toEqual('static');
@@ -93,6 +94,7 @@ describe('Contrib -> components -> Renderable', () => {
     expect(renderable.fit).toEqual('repeat');
     expect(renderable.material.type).toEqual('lightsensitive');
     expect(renderable.material.options.color).toEqual('#000');
+    expect(renderable.material.options.blending).toEqual('multiply');
   });
 
   it('Clones return deep copy of original component', () => {

@@ -1,29 +1,44 @@
 import type {
   Material,
   Texture,
+  Blending,
 } from 'three';
 import {
   MeshBasicMaterial,
   MeshStandardMaterial,
   Color,
+  NormalBlending,
+  AdditiveBlending,
+  SubtractiveBlending,
+  MultiplyBlending,
 } from 'three';
 import type {
   MaterialType,
   BasicMaterialOptions,
+  BlendingMode,
 } from '../../../components/renderable';
 
 const DEFAULT_COLOR = '#ffffff';
+const DEFAULT_BLENDING = 'normal';
+
+const blendingMap: Record<BlendingMode, Blending> = {
+  normal: NormalBlending,
+  addition: AdditiveBlending,
+  substract: SubtractiveBlending,
+  multiply: MultiplyBlending,
+};
 
 const updateBasicMaterial = (
   material: Material,
   componentOptions: BasicMaterialOptions,
   texture: Texture,
 ): void => {
-  const { color = DEFAULT_COLOR } = componentOptions;
+  const { color = DEFAULT_COLOR, blending = DEFAULT_BLENDING } = componentOptions;
   const basicMaterial = material as MeshBasicMaterial;
 
   basicMaterial.transparent = true;
   basicMaterial.map = texture;
+  basicMaterial.blending = blendingMap[blending];
 
   const currentColor = `#${basicMaterial.color.getHexString()}`;
 
