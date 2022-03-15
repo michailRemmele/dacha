@@ -3,7 +3,7 @@ import { TextureLoader, Texture } from 'three';
 import IOC from '../../../engine/ioc/ioc';
 import { PREFAB_COLLECTION_KEY_NAME, RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
 import type { ProcessorPlugin, ProcessorPluginOptions } from '../../../engine/processor';
-import type { PrefabCollection } from '../../../engine/prefab';
+import type { PrefabCollection, Prefab } from '../../../engine/prefab';
 import type { GameObjectObserver } from '../../../engine/gameObject';
 import type { Renderable } from '../../components/renderable';
 import { ThreeJSRenderer } from '../../processors/three-js-renderer';
@@ -26,23 +26,26 @@ interface ThreeJSRendererPluginOptions extends ProcessorPluginOptions {
   scaleSensitivity: number
 }
 
+const getImagesFromPrefabs = (images: Record<string, Renderable>, prefab: Prefab): void => {
+  prefab.getChildren().forEach((childPrefab) => getImagesFromPrefabs(images, childPrefab));
+
+  const renderable = prefab.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined;
+
+  if (!renderable || images[renderable.src]) {
+    return;
+  }
+
+  images[renderable.src] = renderable;
+};
+
 export class ThreeJSRendererPlugin implements ProcessorPlugin {
   private getImagesToLoad(gameObjectObserver: GameObjectObserver): Record<string, Renderable> {
     const prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME) as PrefabCollection;
 
-    const imagesToLoad = prefabCollection.getAll().reduce(
-      (acc: Record<string, Renderable>, prefab) => {
-        const renderable = prefab.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined;
+    const imagesToLoad: Record<string, Renderable> = {};
 
-        if (!renderable || acc[renderable.src]) {
-          return acc;
-        }
+    prefabCollection.getAll().forEach((prefab) => getImagesFromPrefabs(imagesToLoad, prefab));
 
-        acc[renderable.src] = renderable;
-
-        return acc;
-      }, {},
-    );
     gameObjectObserver.getList().reduce(
       (acc: Record<string, Renderable>, gameObject) => {
         const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
