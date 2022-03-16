@@ -1,4 +1,4 @@
-import { AnimateProcessorPlugin } from './animate-processor-plugin';
+import { AnimatorPlugin } from './animator-plugin';
 import { CameraProcessorPlugin } from './camera-processor-plugin';
 import { CollisionBroadcastProcessorPlugin } from './collision-broadcast-processor-plugin';
 import { CollisionDetectionProcessorPlugin } from './collision-detection-processor-plugin';
@@ -18,7 +18,7 @@ import { ThreeJSRendererPlugin } from './three-js-renderer-plugin';
 import { UiBridgePlugin } from './ui-bridge-plugin';
 
 export const processorsPlugins = {
-  animateProcessor: AnimateProcessorPlugin,
+  animator: AnimatorPlugin,
   cameraProcessor: CameraProcessorPlugin,
   collisionBroadcastProcessor: CollisionBroadcastProcessorPlugin,
   collisionDetectionProcessor: CollisionDetectionProcessorPlugin,
