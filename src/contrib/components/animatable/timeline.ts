@@ -10,7 +10,7 @@ export class Timeline {
   looped: boolean;
 
   constructor(config: TimelineConfig) {
-    this.frames = config.frames.map((frame) => new Frame(frame));
+    this.frames = config.frames.map((frame) => ({ ...frame }));
     this.looped = config.looped;
   }
 }

@@ -1,7 +1,7 @@
 import type { GameObject } from '../../../../engine/gameObject';
 import type { Substate } from '../../../components/animatable/substate';
 import type { OneDimensionalProps } from '../../../components/animatable/one-dimensional-props';
-import { getComponentValue } from '../utils';
+import { getValue } from '../utils';
 
 import type { Picker } from './picker';
 
@@ -23,7 +23,7 @@ export class OneDimensionalPicker implements Picker {
       return substates[0];
     }
 
-    const x = getComponentValue(props.x, gameObject) as number;
+    const x = getValue(props.x, gameObject) as number;
 
     let pickedSubstate = substates[0];
     let minDistance = this.getDistance(x, pickedSubstate.x);

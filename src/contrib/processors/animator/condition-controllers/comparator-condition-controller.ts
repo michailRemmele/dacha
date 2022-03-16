@@ -2,7 +2,7 @@ import type { GameObject } from '../../../../engine/gameObject';
 import type { ComparatorConditionProps } from '../../../components/animatable/comparator-condition-props';
 import type { ComparatorConditionComponentValue } from '../../../components/animatable/comparator-condition-component-value';
 import type { ComparatorConditionNumberValue } from '../../../components/animatable/comparator-condition-number-value';
-import { getComponentValue } from '../utils';
+import { getValue } from '../utils';
 
 import { ConditionController } from './condition-controller';
 
@@ -21,7 +21,7 @@ export class ComparatorConditionController implements ConditionController {
         }
         return value;
       },
-      componentValue: getComponentValue as GetterFn,
+      componentValue: getValue as GetterFn,
     };
     this.operations = {
       equals: (arg1, arg2): boolean => arg1 === arg2,

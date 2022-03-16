@@ -1,6 +1,11 @@
 import type { GameObject } from '../../../engine/gameObject';
 
-export const getComponentValue = (
+// 'components.renderable.currentFrame'
+// 'components.light.options.intensity'
+// 'children.powerLight.components.light.options.intensity'
+// 'children.powerLight.children.powerLightBox.components.collider.options.size'
+
+export const getValue = (
   path: Array<string> | string,
   gameObject: GameObject,
 ): unknown => {
@@ -12,4 +17,8 @@ export const getComponentValue = (
   }
 
   return soughtValue;
+};
+
+export const setValue = (path: Array<string>, gameObject: GameObject): void => {
+
 };
