@@ -1,4 +1,4 @@
-import conditionControllers from './conditionControllers';
+import conditionControllers from './condition-controllers';
 import substatePickers from './substate-pickers';
 
 const FRAME_RATE = 100;
