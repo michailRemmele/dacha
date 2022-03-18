@@ -3,7 +3,7 @@ import type { Scene, Light as ThreeJSLight } from 'three';
 import type { GameObject, GameObjectObserver } from '../../../../engine/gameObject';
 import type { Light } from '../../../components/light';
 import type { Transform } from '../../../components/transform';
-import { filterByKey } from '../utils';
+import { filterByKey } from '../../../../engine/utils';
 import {
   LIGHT_COMPONENT_NAME,
   TRANSFORM_COMPONENT_NAME,

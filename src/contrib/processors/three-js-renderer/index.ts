@@ -20,6 +20,7 @@ import type { Transform } from '../../components/transform';
 import type { Renderable } from '../../components/renderable';
 import type { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
+import { filterByKey } from '../../../engine/utils';
 
 import {
   composeSort,
@@ -30,7 +31,6 @@ import {
   sortByZAxis,
   sortByFit,
 } from './sort';
-import { filterByKey } from './utils';
 import { LightSubprocessor } from './light-subprocessor';
 import { createMaterial, updateMaterial } from './material-factory';
 import {
@@ -38,7 +38,6 @@ import {
   CURRENT_CAMERA_NAME,
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
-  UPDATE_FRAME_MSG,
   STD_SCREEN_SIZE,
 } from './consts';
 
@@ -271,32 +270,8 @@ export class ThreeJSRenderer implements Processor {
     });
   }
 
-  private updateFrames(): void {
-    const updateFrameMessages = (
-      this.messageBus.get(UPDATE_FRAME_MSG) || []
-    ) as Array<UpdateFrameMessage>;
-
-    updateFrameMessages.forEach((message) => {
-      const gameObject = this.gameObjectObserver.getById(message.id);
-
-      if (!gameObject) {
-        return;
-      }
-
-      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-
-      renderable.currentFrame = message.currentFrame;
-      renderable.rotation = message.rotation !== void 0 ? message.rotation : renderable.rotation;
-      renderable.flipX = message.flipX !== void 0 ? message.flipX : renderable.flipX;
-      renderable.flipY = message.flipY !== void 0 ? message.flipY : renderable.flipY;
-      renderable.disabled = Boolean(message.disabled);
-    });
-  }
-
   process(): void {
     this.gameObjectObserver.fireEvents();
-
-    this.updateFrames();
 
     this.updateCamera();
 

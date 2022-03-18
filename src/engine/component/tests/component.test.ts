@@ -6,7 +6,7 @@ describe('Engine -> Component -> findParentComponent()', () => {
   it('Returns nothing for game object without parent', () => {
     const mockComponentName = 'mock-component';
 
-    const gameObject = new GameObject('mock-game-object');
+    const gameObject = new GameObject({ id: '0', name: 'mock-game-object' });
 
     gameObject.setComponent(mockComponentName, createMockComponent(mockComponentName));
 
@@ -16,11 +16,11 @@ describe('Engine -> Component -> findParentComponent()', () => {
   it('Returns parent component for game object with parent', () => {
     const mockComponentName = 'mock-component';
 
-    const gameObject = new GameObject('mock-game-object-1');
+    const gameObject = new GameObject({ id: '1', name: 'mock-game-object-1' });
     const mockComponent = createMockComponent(mockComponentName);
     gameObject.setComponent(mockComponentName, mockComponent);
 
-    const parentGameObject = new GameObject('mock-game-object-2');
+    const parentGameObject = new GameObject({ id: '2', name: 'mock-game-object-2' });
     const mockParentComponent = createMockComponent(mockComponentName);
     parentGameObject.setComponent(mockComponentName, mockParentComponent);
 
@@ -33,13 +33,13 @@ describe('Engine -> Component -> findParentComponent()', () => {
   it('Returns parent component for game object with grandparent which have this component', () => {
     const mockComponentName = 'mock-component';
 
-    const gameObject = new GameObject('mock-game-object-1');
+    const gameObject = new GameObject({ id: '1', name: 'mock-game-object-1' });
     const mockComponent = createMockComponent(mockComponentName);
     gameObject.setComponent(mockComponentName, mockComponent);
 
-    const parentGameObject = new GameObject('mock-game-object-2');
+    const parentGameObject = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    const grandparentGameObject = new GameObject('mock-game-object-3');
+    const grandparentGameObject = new GameObject({ id: '3', name: 'mock-game-object-3' });
     const mockGrandparentComponent = createMockComponent(mockComponentName);
     grandparentGameObject.setComponent(mockComponentName, mockGrandparentComponent);
 
@@ -53,15 +53,15 @@ describe('Engine -> Component -> findParentComponent()', () => {
   it('Returns parent component of first parent game object with that component', () => {
     const mockComponentName = 'mock-component';
 
-    const gameObject = new GameObject('mock-game-object-1');
+    const gameObject = new GameObject({ id: '1', name: 'mock-game-object-1' });
     const mockComponent = createMockComponent(mockComponentName);
     gameObject.setComponent(mockComponentName, mockComponent);
 
-    const parentGameObject = new GameObject('mock-game-object-2');
+    const parentGameObject = new GameObject({ id: '2', name: 'mock-game-object-2' });
     const mockParentComponent = createMockComponent(mockComponentName);
     parentGameObject.setComponent(mockComponentName, mockParentComponent);
 
-    const grandparentGameObject = new GameObject('mock-game-object-3');
+    const grandparentGameObject = new GameObject({ id: '3', name: 'mock-game-object-3' });
     const mockGrandparentComponent = createMockComponent(mockComponentName);
     grandparentGameObject.setComponent(mockComponentName, mockGrandparentComponent);
 

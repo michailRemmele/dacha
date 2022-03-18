@@ -1,2 +1,2 @@
 export { Prefab } from './prefab';
-export { PrefabCollection } from './prefab-collection';
+export { PrefabCollection, ComponentOptions, PrefabOptions } from './prefab-collection';

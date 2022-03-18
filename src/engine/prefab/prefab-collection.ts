@@ -2,16 +2,16 @@ import type { Component } from '../component';
 
 import { Prefab } from './prefab';
 
-interface ComponentOptions {
+export interface ComponentOptions {
   name: string
   config: Record<string, unknown>
 }
 
-interface PrefabOptions {
+export interface PrefabOptions {
   name: string
   type: string
-  components: Array<ComponentOptions>
-  children: Array<PrefabOptions>
+  components?: Array<ComponentOptions>
+  children?: Array<PrefabOptions>
 }
 
 export class PrefabCollection {
