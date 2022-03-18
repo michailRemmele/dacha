@@ -4,7 +4,6 @@ import type { Component } from '../component';
 import type {
   Prefab,
   PrefabCollection,
-  PrefabOptions,
   ComponentOptions,
 } from '../prefab';
 
@@ -17,12 +16,15 @@ interface ComponentConstructor {
   new(name: ComponentOptions['name'], options: ComponentOptions['config']): Component
 }
 
-export interface GameObjectOptions extends PrefabOptions {
+export interface GameObjectOptions {
   id?: string
+  name?: string
+  type?: string
   children?: Array<GameObjectOptions>
-  fromPrefab: boolean
-  prefabName: string
-  isNew: boolean
+  components?: Array<ComponentOptions>
+  fromPrefab?: boolean
+  prefabName?: string
+  isNew?: boolean
 }
 
 export class GameObjectCreator {
@@ -37,7 +39,7 @@ export class GameObjectCreator {
   private buildFromPrefab(options: GameObjectOptions, prefab: Prefab): GameObject {
     const {
       type,
-      prefabName,
+      prefabName = '',
       components = [],
       children = [],
       isNew = false,
@@ -84,7 +86,7 @@ export class GameObjectCreator {
       children.forEach((childOptions) => {
         const { prefabName: childPrefabName, fromPrefab } = childOptions;
 
-        const prefabChild = fromPrefab ? prefabChildrenMap[childPrefabName] : void 0;
+        const prefabChild = fromPrefab ? prefabChildrenMap[childPrefabName as string] : void 0;
         const gameObjectChild = this.build(childOptions, prefabChild);
         gameObject.appendChild(gameObjectChild);
       });
@@ -121,7 +123,7 @@ export class GameObjectCreator {
 
     const gameObject = new GameObject({
       id,
-      name,
+      name: name as string,
       type,
     });
 
@@ -145,7 +147,7 @@ export class GameObjectCreator {
     const { prefabName, fromPrefab } = options;
 
     if (fromPrefab) {
-      prefab = prefab || this.prefabCollection.get(prefabName);
+      prefab = prefab || this.prefabCollection.get(prefabName as string);
 
       return this.buildFromPrefab(options, prefab);
     }
