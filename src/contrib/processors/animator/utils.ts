@@ -1,24 +1,45 @@
-import type { GameObject } from '../../../engine/gameObject';
+import { GameObject } from '../../../engine/gameObject';
 
-// 'components.renderable.currentFrame'
-// 'components.light.options.intensity'
-// 'children.powerLight.components.light.options.intensity'
-// 'children.powerLight.children.powerLightBox.components.collider.options.size'
+const PATH_COMPONENTS = 'components';
+const PATH_CHILDREN = 'children';
 
-export const getValue = (
-  path: Array<string> | string,
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const _getValue = (
   gameObject: GameObject,
+  path: Array<string> | string,
+  pathDepth: number,
 ): unknown => {
-  const componentName = path[0];
-  let soughtValue: unknown = gameObject.getComponent(componentName);
+  let soughtValue: unknown = gameObject;
 
-  for (let i = 1; i < path.length && soughtValue !== undefined; i += 1) {
-    soughtValue = (soughtValue as Record<string, unknown>)[path[i]];
+  for (let i = 0; i < pathDepth && soughtValue !== undefined; i += 1) {
+    if (soughtValue instanceof GameObject && path[i] === PATH_CHILDREN) {
+      i += 1;
+      soughtValue = soughtValue.getChildByName(path[i]);
+    } else if (soughtValue instanceof GameObject && path[i] === PATH_COMPONENTS) {
+      i += 1;
+      soughtValue = soughtValue.getComponent(path[i]);
+    } else {
+      soughtValue = (soughtValue as Record<string, unknown>)[path[i]];
+    }
   }
 
   return soughtValue;
 };
 
-export const setValue = (path: Array<string>, gameObject: GameObject): void => {
+export const getValue = (
+  gameObject: GameObject,
+  path: Array<string> | string,
+): unknown => _getValue(gameObject, path, path.length);
 
+export const setValue = (gameObject: GameObject, path: Array<string>, value: unknown): void => {
+  const soughtValue: unknown = _getValue(gameObject, path, path.length - 1);
+
+  if (!soughtValue) {
+    throw new Error(`Can't set frame value for path: ${path.join('.')}. Make sure that path is correct`);
+  }
+  if (soughtValue instanceof GameObject) {
+    throw new Error(`Can't set frame value for path: ${path.join('.')}. Setting value as game object property is restricted`);
+  }
+
+  (soughtValue as Record<string, unknown>)[path[path.length - 1]] = value;
 };

@@ -23,7 +23,7 @@ export class OneDimensionalPicker implements Picker {
       return substates[0];
     }
 
-    const x = getValue(props.x, gameObject) as number;
+    const x = getValue(gameObject, props.x) as number;
 
     let pickedSubstate = substates[0];
     let minDistance = this.getDistance(x, pickedSubstate.x);

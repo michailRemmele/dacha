@@ -24,8 +24,8 @@ export class TwoDimensionalPicker implements Picker {
       return substates[0];
     }
 
-    const x = getValue(props.x, gameObject) as number;
-    const y = getValue(props.y, gameObject) as number;
+    const x = getValue(gameObject, props.x) as number;
+    const y = getValue(gameObject, props.y) as number;
 
     let pickedSubstate = substates[0];
     let minDistance = this.getDistance(x, pickedSubstate.x, y, pickedSubstate.y);

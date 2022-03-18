@@ -70,25 +70,25 @@
           "timeline": {
             "frames": [
               {
-                "index": 0,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 0,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 1,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 1,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 2,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 2,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -101,25 +101,25 @@
           "timeline": {
             "frames": [
               {
-                "index": 0,
-                "rotation": 0,
-                "flipX": true,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 0,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": true,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 1,
-                "rotation": 0,
-                "flipX": true,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 1,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": true,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 2,
-                "rotation": 0,
-                "flipX": true,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 2,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": true,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -132,25 +132,25 @@
           "timeline": {
             "frames": [
               {
-                "index": 6,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 6,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 7,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 7,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 8,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 8,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -163,25 +163,25 @@
           "timeline": {
             "frames": [
               {
-                "index": 3,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 3,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 4,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 4,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 5,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 5,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -254,32 +254,32 @@
           "timeline": {
             "frames": [
               {
-                "index": 9,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 9,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 10,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 10,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 11,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 11,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 10,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 10,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -292,32 +292,32 @@
           "timeline": {
             "frames": [
               {
-                "index": 9,
-                "rotation": 0,
-                "flipX": true,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 9,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": true,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 10,
-                "rotation": 0,
-                "flipX": true,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 10,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": true,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 11,
-                "rotation": 0,
-                "flipX": true,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 11,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": true,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 10,
-                "rotation": 0,
-                "flipX": true,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 10,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": true,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -330,32 +330,32 @@
           "timeline": {
             "frames": [
               {
-                "index": 15,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 15,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 16,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 16,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 17,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 17,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 16,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 16,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -368,32 +368,32 @@
           "timeline": {
             "frames": [
               {
-                "index": 12,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 12,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 13,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 13,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 14,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 14,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               },
               {
-                "index": 13,
-                "rotation": 0,
-                "flipX": false,
-                "flipY": false,
-                "disabled": false
+                "components.renderable.currentFrame": 13,
+                "components.renderable.rotation": 0,
+                "components.renderable.flipX": false,
+                "components.renderable.flipY": false,
+                "components.renderable.disabled": false
               }
             ],
             "looped": true
@@ -411,32 +411,32 @@
       "timeline": {
         "frames": [
           {
-            "index": 27,
-            "rotation": 0,
-            "flipX": false,
-            "flipY": false,
-            "disabled": false
+            "components.renderable.currentFrame": 27,
+            "components.renderable.rotation": 0,
+            "components.renderable.flipX": false,
+            "components.renderable.flipY": false,
+            "components.renderable.disabled": false
           },
           {
-            "index": 24,
-            "rotation": 0,
-            "flipX": false,
-            "flipY": false,
-            "disabled": false
+            "components.renderable.currentFrame": 24,
+            "components.renderable.rotation": 0,
+            "components.renderable.flipX": false,
+            "components.renderable.flipY": false,
+            "components.renderable.disabled": false
           },
           {
-            "index": 25,
-            "rotation": 0,
-            "flipX": false,
-            "flipY": false,
-            "disabled": false
+            "components.renderable.currentFrame": 25,
+            "components.renderable.rotation": 0,
+            "components.renderable.flipX": false,
+            "components.renderable.flipY": false,
+            "components.renderable.disabled": false
           },
           {
-            "index": 26,
-            "rotation": 0,
-            "flipX": false,
-            "flipY": false,
-            "disabled": false
+            "components.renderable.currentFrame": 26,
+            "components.renderable.rotation": 0,
+            "components.renderable.flipX": false,
+            "components.renderable.flipY": false,
+            "components.renderable.disabled": false
           }
         ],
         "looped": false

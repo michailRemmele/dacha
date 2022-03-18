@@ -2,7 +2,7 @@ import type { Processor, ProcessorOptions } from '../../../engine/processor';
 import type { GameObject, GameObjectObserver } from '../../../engine/gameObject';
 import type { MessageBus } from '../../../engine/message-bus';
 import type { Animatable } from '../../components/animatable';
-import type { Frame } from '../../components/animatable/frame';
+import type { Frame } from '../../components/animatable/timeline';
 import type { IndividualState } from '../../components/animatable/individual-state';
 import type { GroupState } from '../../components/animatable/group-state';
 import type { Substate } from '../../components/animatable/substate';
@@ -11,12 +11,11 @@ import type { ConditionController } from './condition-controllers/condition-cont
 import type { Picker } from './substate-pickers/picker';
 import { conditionControllers } from './condition-controllers';
 import { substatePickers } from './substate-pickers';
+import { setValue } from './utils';
 
 const FRAME_RATE = 100;
 
 const ANIMATABLE_COMPONENT_NAME = 'animatable';
-
-const UPDATE_FRAME_MSG = 'UPDATE_FRAME';
 
 interface AnimatorOptions {
   gameObjectObserver: GameObjectObserver
@@ -49,15 +48,9 @@ export class Animator implements Processor {
   }
 
   private updateFrame(gameObject: GameObject, frame: Frame): void {
-    this.messageBus.send({
-      type: UPDATE_FRAME_MSG,
-      id: gameObject.getId(),
-      currentFrame: frame.index,
-      rotation: frame.rotation,
-      flipX: frame.flipX,
-      flipY: frame.flipY,
-      disabled: frame.disabled,
-    });
+    Object.keys(frame).forEach((fieldName) => setValue(
+      gameObject, frame[fieldName].path, frame[fieldName].value,
+    ));
   }
 
   private pickSubstate(gameObject: GameObject, state: GroupState): Substate {
