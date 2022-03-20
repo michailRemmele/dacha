@@ -15,7 +15,7 @@ export class ComparatorConditionController implements ConditionController {
 
   constructor() {
     this.getters = {
-      number: (value): string | number => {
+      number: (arg1, value): string | number => {
         if (typeof value !== 'number') {
           throw new Error('The value must be a number');
         }
