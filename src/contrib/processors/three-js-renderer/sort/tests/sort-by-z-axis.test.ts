@@ -14,8 +14,8 @@ describe('Contrib -> RenderProcessor -> Sort -> sortByZAxis()', () => {
   };
 
   it('Returns correct order of objects', () => {
-    const gameObject1 = new GameObject('game-object-1');
-    const gameObject2 = new GameObject('game-object-2');
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
     gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
     gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));

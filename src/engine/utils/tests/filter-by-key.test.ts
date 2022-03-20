@@ -1,6 +1,6 @@
 import { filterByKey } from '../filter-by-key';
 
-describe('Contrib -> RenderProcessor -> utils -> filterByKey()', () => {
+describe('Engine -> utils -> filterByKey()', () => {
   it('Returns object without field which should be deleted', () => {
     const data = {
       key1: 12,

@@ -106,9 +106,7 @@ export class GameObjectObserver implements EventEmitter {
   }
 
   private _test(gameObject: GameObject) {
-    const type = gameObject.getType();
-
-    if (this._type && this._type !== type) {
+    if (this._type && this._type !== gameObject.type) {
       return false;
     }
 

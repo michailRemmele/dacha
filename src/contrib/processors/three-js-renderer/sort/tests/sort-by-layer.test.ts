@@ -24,8 +24,8 @@ describe('Contrib -> RenderProcessor -> Sort -> sortByLayer()', () => {
   };
 
   it('Returns correct order of objects', () => {
-    const gameObject1 = new GameObject('game-object-1');
-    const gameObject2 = new GameObject('game-object-2');
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
     const layers = ['layer-1', 'layer-2', 'layer-3'];
 

@@ -4,6 +4,4 @@ export const CAMERA_COMPONENT_NAME = 'camera';
 export const CURRENT_CAMERA_NAME = 'currentCamera';
 export const LIGHT_COMPONENT_NAME = 'light';
 
-export const UPDATE_FRAME_MSG = 'UPDATE_FRAME';
-
 export const STD_SCREEN_SIZE = 1080;

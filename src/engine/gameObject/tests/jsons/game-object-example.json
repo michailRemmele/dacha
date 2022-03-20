@@ -1,0 +1,42 @@
+
+{
+  "id": "001",
+  "name": "gameObjectExample",
+  "type": "example",
+  "children": [
+    {
+      "id": "002", 
+      "name": "childExample",
+      "type": "exampleChild",
+      "children": [],
+      "components": [
+        {
+          "name": "test2",
+          "config": {
+            "testField4": "testField4ValueChild",
+            "testField5": true,
+            "testField6": 450
+          }
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "test1",
+      "config": {
+        "testField1": "testField1Value",
+        "testField2": true,
+        "testField3": 100
+      }
+    },
+    {
+      "name": "test2",
+      "config": {
+        "testField4": "testField4Value",
+        "testField5": false,
+        "testField6": 300
+      }
+    }
+  ]
+}

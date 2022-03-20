@@ -17,17 +17,31 @@ describe('Engine -> GameObjectObserver', () => {
   beforeEach(() => {
     scene = new Scene({ name: 'test-scene', gameObjects: [] });
 
-    gameObject1 = new GameObject('game-object-1');
-    gameObject2 = new GameObject('game-object-2');
-    gameObject3 = new GameObject('game-object-3');
-    gameObject4 = new GameObject('game-object-4');
-    gameObject5 = new GameObject('game-object-5');
-
-    gameObject1.setType('correct-type');
-    gameObject2.setType('incorrect-type');
-    gameObject3.setType('correct-type');
-    gameObject4.setType('correct-type');
-    gameObject5.setType('correct-type');
+    gameObject1 = new GameObject({
+      id: '1',
+      name: 'game-object-1',
+      type: 'correct-type',
+    });
+    gameObject2 = new GameObject({
+      id: '2',
+      name: 'game-object-2',
+      type: 'incorrect-type',
+    });
+    gameObject3 = new GameObject({
+      id: '3',
+      name: 'game-object-3',
+      type: 'correct-type',
+    });
+    gameObject4 = new GameObject({
+      id: '4',
+      name: 'game-object-4',
+      type: 'correct-type',
+    });
+    gameObject5 = new GameObject({
+      id: '5',
+      name: 'game-object-5',
+      type: 'correct-type',
+    });
 
     gameObject1.setComponent('test-1', createMockComponent('test-1'));
 
@@ -58,10 +72,10 @@ describe('Engine -> GameObjectObserver', () => {
     expect(gameObjectObserver.size()).toEqual(2);
 
     const [id4, id5] = gameObjectObserver.map((gameObject) => gameObject.getId());
-    expect(id4).toEqual('game-object-4');
-    expect(id5).toEqual('game-object-5');
+    expect(id4).toEqual('4');
+    expect(id5).toEqual('5');
 
-    const expectedIds = ['game-object-4', 'game-object-5'];
+    const expectedIds = ['4', '5'];
     gameObjectObserver.forEach((gameObject, index) => {
       expect(gameObject.getId()).toEqual(expectedIds[index]);
     });
@@ -210,12 +224,12 @@ describe('Engine -> GameObjectObserver', () => {
     expect(gameObjectObserver.getByIndex(0)).toEqual(gameObject4);
     expect(gameObjectObserver.getByIndex(1)).toEqual(gameObject5);
 
-    expect(gameObjectObserver.getById('game-object-4')).toEqual(gameObject4);
-    expect(gameObjectObserver.getById('game-object-5')).toEqual(gameObject5);
+    expect(gameObjectObserver.getById('4')).toEqual(gameObject4);
+    expect(gameObjectObserver.getById('5')).toEqual(gameObject5);
 
-    expect(gameObjectObserver.getById('game-object-1')).toEqual(void 0);
-    expect(gameObjectObserver.getById('game-object-2')).toEqual(void 0);
-    expect(gameObjectObserver.getById('game-object-3')).toEqual(void 0);
+    expect(gameObjectObserver.getById('1')).toEqual(void 0);
+    expect(gameObjectObserver.getById('2')).toEqual(void 0);
+    expect(gameObjectObserver.getById('3')).toEqual(void 0);
   });
 
   it('Correct sorts game objects', () => {
@@ -229,7 +243,7 @@ describe('Engine -> GameObjectObserver', () => {
     scene.addGameObject(gameObject3);
     scene.addGameObject(gameObject1);
 
-    const unsortedIds = ['game-object-5', 'game-object-4', 'game-object-2', 'game-object-1'];
+    const unsortedIds = ['5', '4', '2', '1'];
     gameObjectObserver.forEach((gameObject, index) => {
       expect(gameObject.getId()).toEqual(unsortedIds[index]);
     });
@@ -240,7 +254,7 @@ describe('Engine -> GameObjectObserver', () => {
       return 0;
     });
 
-    const sortedIds = ['game-object-1', 'game-object-2', 'game-object-4', 'game-object-5'];
+    const sortedIds = ['1', '2', '4', '5'];
     gameObjectObserver.forEach((gameObject, index) => {
       expect(gameObject.getId()).toEqual(sortedIds[index]);
     });
