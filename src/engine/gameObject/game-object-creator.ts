@@ -47,7 +47,7 @@ export class GameObjectCreator {
     let { id, name } = options;
 
     id = id || uuid();
-    name = name || prefabName;
+    name = name || id;
 
     if (!prefab) {
       throw new Error(`Can't create game object ${name} from prefab. `

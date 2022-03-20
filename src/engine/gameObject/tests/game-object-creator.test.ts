@@ -145,12 +145,12 @@ describe('Engine -> GameObjectCreator', () => {
     expect(gameObjects.length).toBe(2);
 
     expect(gameObjects[0].id).toBeDefined();
-    expect(gameObjects[0].name).toBe('prefabExample');
+    expect(gameObjects[0].name).toBeDefined();
     expect(gameObjects[0].type).toBe('example');
     expect(gameObjects[0].prefabName).toBe('prefabExample');
 
     expect(gameObjects[1].id).toBeDefined();
-    expect(gameObjects[1].name).toBe('childPrefabExample');
+    expect(gameObjects[1].name).toBeDefined();
     expect(gameObjects[1].type).toBe('exampleChild');
     expect(gameObjects[1].prefabName).toBe('childPrefabExample');
 
