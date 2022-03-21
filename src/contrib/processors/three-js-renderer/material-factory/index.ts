@@ -20,6 +20,7 @@ import type {
 
 const DEFAULT_COLOR = '#ffffff';
 const DEFAULT_BLENDING = 'normal';
+const DEFAULT_OPACITY = 1;
 
 const blendingMap: Record<BlendingMode, Blending> = {
   normal: NormalBlending,
@@ -33,12 +34,17 @@ const updateBasicMaterial = (
   componentOptions: BasicMaterialOptions,
   texture: Texture,
 ): void => {
-  const { color = DEFAULT_COLOR, blending = DEFAULT_BLENDING } = componentOptions;
+  const {
+    color = DEFAULT_COLOR,
+    blending = DEFAULT_BLENDING,
+    opacity = DEFAULT_OPACITY,
+  } = componentOptions;
   const basicMaterial = material as MeshBasicMaterial;
 
   basicMaterial.transparent = true;
   basicMaterial.map = texture;
   basicMaterial.blending = blendingMap[blending];
+  basicMaterial.opacity = opacity;
 
   const currentColor = `#${basicMaterial.color.getHexString()}`;
 
