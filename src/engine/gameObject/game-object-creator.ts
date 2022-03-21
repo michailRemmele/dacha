@@ -64,6 +64,7 @@ export class GameObjectCreator {
     if (isNew) {
       prefab.getChildren().forEach((prefabChild) => {
         const childOptions = {
+          name: prefabChild.getName(),
           prefabName: prefabChild.getName(),
           type: prefabChild.getType(),
           fromPrefab: true,
