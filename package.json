@@ -1,7 +1,7 @@
 {
   "name": "@flyer-engine/core",
   "main": "./build/flyer-engine.js",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "dependencies": {
     "three": "0.137.5",
     "uuid-random": "1.0.9"
