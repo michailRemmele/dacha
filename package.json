@@ -1,6 +1,6 @@
 {
-  "name": "@flyer-engine/core",
-  "main": "./build/flyer-engine.js",
+  "name": "remiz",
+  "main": "./build/remiz.js",
   "version": "0.8.0",
   "dependencies": {
     "three": "0.137.5",
@@ -34,7 +34,7 @@
     "webpack-dev-server": "3.8.2"
   },
   "files": [
-    "build/flyer-engine.js",
+    "build/remiz.js",
     "src",
     "esm",
     "package.json",
@@ -49,15 +49,15 @@
     "prepare": "husky install",
     "prepublishOnly": "npm run build"
   },
-  "description": "Flyer Engine is a JavaScript game engine for building games in browser.",
+  "description": "Remiz is a JavaScript game engine for building games in browser.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/michailRemmele/flyer-engine.git"
+    "url": "git+https://github.com/michailRemmele/remiz.git"
   },
   "author": "Mikhail Remmele",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/michailRemmele/flyer-engine/issues"
+    "url": "https://github.com/michailRemmele/remiz/issues"
   },
-  "homepage": "https://github.com/michailRemmele/flyer-engine#readme"
+  "homepage": "https://github.com/michailRemmele/remiz#readme"
 }

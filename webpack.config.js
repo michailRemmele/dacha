@@ -17,8 +17,8 @@ module.exports = {
 
   output: {
     path: paths.build,
-    filename: 'flyer-engine.js',
-    library: 'flyerEngine',
+    filename: 'remiz.js',
+    library: 'remiz',
     libraryTarget: 'commonjs2',
   },
 
