@@ -1,5 +1,5 @@
 import { GAME_OBJECT_CREATOR_KEY_NAME } from '../consts/global';
-import { Processor } from '../processor';
+import { System } from '../system';
 import IOC from '../ioc/ioc';
 import { GameObjectObserver, GameObjectObserverFilter, GameObject } from '../gameObject';
 import GameObjectSpawner from '../gameObject/gameObjectSpawner';
@@ -32,7 +32,7 @@ export class Scene {
   private _gameObjectSpawner: unknown;
   private _gameObjectDestroyer: unknown;
   private messageBus: MessageBus;
-  private _processors: Array<Processor>;
+  private _systems: Array<System>;
   private _gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
 
   constructor(options: SceneOptions) {
@@ -46,7 +46,7 @@ export class Scene {
     this._gameObjectDestroyer = new GameObjectDestroyer(this);
     this.messageBus = new MessageBus();
 
-    this._processors = [];
+    this._systems = [];
 
     this._gameObjectsChangeSubscribers = [];
 
@@ -58,27 +58,27 @@ export class Scene {
   }
 
   mount() {
-    this._processors.forEach((processor) => {
-      if (processor.processorDidMount) {
-        processor.processorDidMount();
+    this._systems.forEach((system) => {
+      if (system.systemDidMount) {
+        system.systemDidMount();
       }
     });
   }
 
   unmount() {
-    this._processors.forEach((processor) => {
-      if (processor.processorWillUnmount) {
-        processor?.processorWillUnmount();
+    this._systems.forEach((system) => {
+      if (system.systemWillUnmount) {
+        system?.systemWillUnmount();
       }
     });
   }
 
-  addProcessor(proccessor: Processor) {
-    this._processors.push(proccessor);
+  addSystem(proccessor: System) {
+    this._systems.push(proccessor);
   }
 
-  getProcessors() {
-    return this._processors;
+  getSystems() {
+    return this._systems;
   }
 
   getStore() {

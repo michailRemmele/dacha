@@ -29,8 +29,8 @@ export class GameLoop {
       deltaTime: elapsed,
     };
 
-    currentScene.getProcessors().forEach((processor) => {
-      processor.process(options);
+    currentScene.getSystems().forEach((system) => {
+      system.update(options);
     });
 
     messageBus.clear();

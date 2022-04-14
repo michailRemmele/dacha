@@ -31,7 +31,7 @@ class Engine {
     } = global;
 
     const {
-      mainConfig, processorsPlugins, components, pluginHelpers,
+      mainConfig, systemsPlugins, components, pluginHelpers,
     } = this.options;
     const { projectSettings } = mainConfig;
 
@@ -46,7 +46,7 @@ class Engine {
     const gameObjectCreator = new GameObjectCreator(components);
     IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(gameObjectCreator));
 
-    const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins, pluginHelpers);
+    const sceneProvider = new SceneProvider(mainConfig.scenes, systemsPlugins, pluginHelpers);
 
     for (let i = 0; i < mainConfig.prefabs.length; i += 1) {
       // For pure async await syntax in method. Need to refactor later
