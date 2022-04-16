@@ -6,7 +6,7 @@ const COLLIDER_CONTAINER_COMPONENT_NAME = 'colliderContainer';
 export class CollisionBroadcastSystemPlugin implements SystemPlugin {
   load(options: SystemPluginOptions) {
     return new CollisionBroadcastSystem({
-      gameObjectObserver: options.createGameObjectObserver({
+      entityObserver: options.createEntityObserver({
         components: [
           COLLIDER_CONTAINER_COMPONENT_NAME,
         ],

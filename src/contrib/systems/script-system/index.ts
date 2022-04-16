@@ -1,5 +1,5 @@
 import type { System, SystemOptions } from '../../../engine/system';
-import type { GameObjectObserver, GameObject } from '../../../engine/gameObject';
+import type { EntityObserver, Entity } from '../../../engine/entity';
 import type { Store } from '../../../engine/scene/store';
 import type { MessageBus } from '../../../engine/message-bus';
 import type { Script as ScriptComponent } from '../../components/script';
@@ -15,20 +15,20 @@ export interface ScriptClass {
 }
 
 interface ScriptSystemOptions {
-  gameObjectObserver: GameObjectObserver
-  scriptsObserver: GameObjectObserver
-  gameObjectSpawner: unknown
-  gameObjectDestroyer: unknown
+  entityObserver: EntityObserver
+  scriptsObserver: EntityObserver
+  entitySpawner: unknown
+  entityDestroyer: unknown
   store: Store
   messageBus: MessageBus
   scripts: Record<string, ScriptClass>
 }
 
 export class ScriptSystem implements System {
-  private gameObjectObserver: GameObjectObserver;
-  private scriptsObserver: GameObjectObserver;
-  private gameObjectSpawner: unknown;
-  private gameObjectDestroyer: unknown;
+  private entityObserver: EntityObserver;
+  private scriptsObserver: EntityObserver;
+  private entitySpawner: unknown;
+  private entityDestroyer: unknown;
   private store: Store;
   private scripts: Record<string, ScriptClass>;
   private messageBus: MessageBus;
@@ -36,19 +36,19 @@ export class ScriptSystem implements System {
 
   constructor(options: ScriptSystemOptions) {
     const {
-      gameObjectObserver,
+      entityObserver,
       scriptsObserver,
-      gameObjectSpawner,
-      gameObjectDestroyer,
+      entitySpawner,
+      entityDestroyer,
       store,
       scripts,
       messageBus,
     } = options;
 
-    this.gameObjectObserver = gameObjectObserver;
+    this.entityObserver = entityObserver;
     this.scriptsObserver = scriptsObserver;
-    this.gameObjectSpawner = gameObjectSpawner;
-    this.gameObjectDestroyer = gameObjectDestroyer;
+    this.entitySpawner = entitySpawner;
+    this.entityDestroyer = entityDestroyer;
     this.store = store;
     this.scripts = scripts;
     this.messageBus = messageBus;
@@ -57,19 +57,19 @@ export class ScriptSystem implements System {
   }
 
   systemDidMount(): void {
-    this.scriptsObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this.scriptsObserver.subscribe('onremove', this.handleEntityRemove);
   }
 
   systemWillUnmount(): void {
-    this.scriptsObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this.scriptsObserver.unsubscribe('onremove', this.handleEntityRemove);
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    const gameObjectId = gameObject.getId();
+  private handleEntityRemove = (entity: Entity): void => {
+    const entityId = entity.getId();
 
     this.activeScripts = Object.keys(this.activeScripts)
       .reduce((acc: Record<string, Script>, key) => {
-        if (key !== gameObjectId) {
+        if (key !== entityId) {
           acc[key] = this.activeScripts[key];
         }
 
@@ -82,23 +82,23 @@ export class ScriptSystem implements System {
 
     this.scriptsObserver.fireEvents();
 
-    this.scriptsObserver.forEach((gameObject) => {
-      const id = gameObject.getId();
+    this.scriptsObserver.forEach((entity) => {
+      const id = entity.getId();
       const {
         name,
         options: scriptOptions,
-      } = gameObject.getComponent(SCRIPT_COMPONENT_NAME) as ScriptComponent;
+      } = entity.getComponent(SCRIPT_COMPONENT_NAME) as ScriptComponent;
 
       const Script = this.scripts[name];
 
       this.activeScripts[id] = this.activeScripts[id]
         || new Script({
-          gameObject,
-          gameObjectObserver: this.gameObjectObserver,
+          entity,
+          entityObserver: this.entityObserver,
           messageBus: this.messageBus,
           store: this.store,
-          spawner: this.gameObjectSpawner,
-          destroyer: this.gameObjectDestroyer,
+          spawner: this.entitySpawner,
+          destroyer: this.entityDestroyer,
           ...scriptOptions,
         });
 

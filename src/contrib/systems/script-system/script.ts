@@ -1,12 +1,12 @@
-import type { GameObject, GameObjectObserver } from '../../../engine/gameObject';
+import type { Entity, EntityObserver } from '../../../engine/entity';
 import type { MessageBus } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
 
 export interface ScriptOptions {
-  gameObject: GameObject
+  entity: Entity
   messageBus: MessageBus
   store: Store
-  gameObjectObserver: GameObjectObserver
+  entityObserver: EntityObserver
   spawner: unknown
   destroyer: unknown
 }

@@ -14,10 +14,10 @@ const REACTION_FORCE_VECTOR_Y = -1;
 
 export class CollisionSolver {
   constructor(options) {
-    const { gameObjectObserver, store, messageBus } = options;
+    const { entityObserver, store, messageBus } = options;
 
     this._store = store;
-    this._gameObjectObserver = gameObjectObserver;
+    this._entityObserver = entityObserver;
     this.messageBus = messageBus;
   }
 
@@ -25,8 +25,8 @@ export class CollisionSolver {
     this._gravitationalAcceleration = this._store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY);
   }
 
-  _addReactionForce(gameObject, mtv) {
-    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+  _addReactionForce(entity, mtv) {
+    const rigidBody = entity.getComponent(RIGID_BODY_COMPONENT_NAME);
     const { useGravity, mass } = rigidBody;
 
     if (useGravity && mtv.y && Math.sign(mtv.y) === -1 && !mtv.x) {
@@ -36,21 +36,21 @@ export class CollisionSolver {
       this.messageBus.send({
         type: ADD_FORCE_MSG,
         value: reactionForce,
-        gameObject,
-        id: gameObject.getId(),
+        entity,
+        id: entity.getId(),
       }, true);
 
       this.messageBus.send({
         type: STOP_MOVEMENT_MSG,
-        gameObject,
-        id: gameObject.getId(),
+        entity,
+        id: entity.getId(),
       }, true);
     }
   }
 
-  _validateCollision(gameObject1, gameObject2) {
-    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
-    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
+  _validateCollision(entity1, entity2) {
+    const rigidBody1 = entity1.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const rigidBody2 = entity2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
     return rigidBody1 && !rigidBody1.ghost && rigidBody2 && !rigidBody2.ghost;
   }
@@ -60,13 +60,13 @@ export class CollisionSolver {
     const stayMessages = this.messageBus.get(COLLISION_STAY_MSG) || [];
     [enterMessages, stayMessages].forEach((messages) => {
       messages.forEach((message) => {
-        const { gameObject1, gameObject2, mtv1 } = message;
+        const { entity1, entity2, mtv1 } = message;
 
-        if (!this._validateCollision(gameObject1, gameObject2)) {
+        if (!this._validateCollision(entity1, entity2)) {
           return;
         }
 
-        this._addReactionForce(gameObject1, mtv1);
+        this._addReactionForce(entity1, mtv1);
       });
     });
   }

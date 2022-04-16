@@ -6,15 +6,15 @@ const CAMERA_COMPONENT_NAME = 'camera';
 export class CameraSystem {
   constructor(options) {
     const {
-      store, gameObjectObserver, window, initialCamera, messageBus,
+      store, entityObserver, window, initialCamera, messageBus,
     } = options;
 
-    this._gameObjectObserver = gameObjectObserver;
+    this._entityObserver = entityObserver;
     this.messageBus = messageBus;
     this._store = store;
     this._window = window;
 
-    const currentCamera = this._gameObjectObserver.getById(initialCamera);
+    const currentCamera = this._entityObserver.getById(initialCamera);
 
     if (!currentCamera) {
       throw new Error(`Could not set camera with id ${initialCamera} for the scene`);
@@ -55,11 +55,11 @@ export class CameraSystem {
   update() {
     const messages = this.messageBus.get(SET_CAMERA_MESSAGE);
     if (messages) {
-      const { gameObjectId } = messages[messages.length - 1];
-      const newCamera = this._gameObjectObserver.getById(gameObjectId);
+      const { entityId } = messages[messages.length - 1];
+      const newCamera = this._entityObserver.getById(entityId);
 
       if (!newCamera) {
-        throw new Error(`Could not set camera with id ${gameObjectId} for the scene`);
+        throw new Error(`Could not set camera with id ${entityId} for the scene`);
       }
 
       this._setCamera(newCamera);

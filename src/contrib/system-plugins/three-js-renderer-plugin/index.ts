@@ -4,7 +4,7 @@ import IOC from '../../../engine/ioc/ioc';
 import { PREFAB_COLLECTION_KEY_NAME, RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
 import type { SystemPlugin, SystemPluginOptions } from '../../../engine/system';
 import type { PrefabCollection, Prefab } from '../../../engine/prefab';
-import type { GameObjectObserver } from '../../../engine/gameObject';
+import type { EntityObserver } from '../../../engine/entity';
 import type { Renderable } from '../../components/renderable';
 import { ThreeJSRenderer } from '../../systems/three-js-renderer';
 
@@ -39,16 +39,16 @@ const getImagesFromPrefabs = (images: Record<string, Renderable>, prefab: Prefab
 };
 
 export class ThreeJSRendererPlugin implements SystemPlugin {
-  private getImagesToLoad(gameObjectObserver: GameObjectObserver): Record<string, Renderable> {
+  private getImagesToLoad(entityObserver: EntityObserver): Record<string, Renderable> {
     const prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME) as PrefabCollection;
 
     const imagesToLoad: Record<string, Renderable> = {};
 
     prefabCollection.getAll().forEach((prefab) => getImagesFromPrefabs(imagesToLoad, prefab));
 
-    gameObjectObserver.getList().reduce(
-      (acc: Record<string, Renderable>, gameObject) => {
-        const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    entityObserver.getList().reduce(
+      (acc: Record<string, Renderable>, entity) => {
+        const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
         if (!acc[renderable.src]) {
           acc[renderable.src] = renderable;
@@ -63,7 +63,7 @@ export class ThreeJSRendererPlugin implements SystemPlugin {
 
   async load(options: ThreeJSRendererPluginOptions): Promise<ThreeJSRenderer> {
     const {
-      createGameObjectObserver,
+      createEntityObserver,
       store,
       messageBus,
       windowNodeId,
@@ -81,14 +81,14 @@ export class ThreeJSRendererPlugin implements SystemPlugin {
     const textureLoader = new TextureLoader();
     const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
 
-    const gameObjectObserver = createGameObjectObserver({
+    const entityObserver = createEntityObserver({
       components: [
         RENDERABLE_COMPONENT_NAME,
         TRANSFORM_COMPONENT_NAME,
       ],
     });
 
-    const imagesToLoad = this.getImagesToLoad(gameObjectObserver);
+    const imagesToLoad = this.getImagesToLoad(entityObserver);
 
     const textureMap: Record<string, Array<Texture>> = {};
 
@@ -111,8 +111,8 @@ export class ThreeJSRendererPlugin implements SystemPlugin {
     );
 
     return new ThreeJSRenderer({
-      gameObjectObserver,
-      lightsObserver: createGameObjectObserver({
+      entityObserver,
+      lightsObserver: createEntityObserver({
         components: [
           LIGHT_COMPONENT_NAME,
           TRANSFORM_COMPONENT_NAME,

@@ -15,7 +15,7 @@ const COLLISION_MESSAGE = 'COLLISION';
 
 export class CollisionDetectionSystem {
   constructor(options) {
-    this._gameObjectObserver = options.gameObjectObserver;
+    this._entityObserver = options.entityObserver;
     this.messageBus = options.messageBus;
     this._coordintatesCalculators = Object.keys(coordintatesCalculators).reduce((storage, key) => {
       const CoordinatesCalculator = coordintatesCalculators[key];
@@ -43,37 +43,37 @@ export class CollisionDetectionSystem {
         dispersionCalculator: new DispersionCalculator(),
       },
     };
-    this._lastProcessedGameObjects = {};
+    this._lastProcessedEntities = {};
   }
 
   systemDidMount() {
-    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.subscribe('onremove', this._handleEntityRemove);
   }
 
   systemWillUnmount() {
-    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.unsubscribe('onremove', this._handleEntityRemove);
   }
 
-  _handleGameObjectRemove = (gameObject) => {
-    const gameObjectId = gameObject.getId();
+  _handleEntityRemove = (entity) => {
+    const entityId = entity.getId();
 
     Object.values(AXIS).forEach((axis) => {
-      this._axis[axis].dispersionCalculator.removeFromSample(gameObjectId);
-      this._removeFromSortedList(gameObject, axis);
+      this._axis[axis].dispersionCalculator.removeFromSample(entityId);
+      this._removeFromSortedList(entity, axis);
     });
 
-    this._lastProcessedGameObjects[gameObjectId] = null;
+    this._lastProcessedEntities[entityId] = null;
   };
 
-  _checkOnReorientation(gameObject) {
-    const gameObjectId = gameObject.getId();
+  _checkOnReorientation(entity) {
+    const entityId = entity.getId();
 
-    if (!this._lastProcessedGameObjects[gameObjectId]) {
+    if (!this._lastProcessedEntities[entityId]) {
       return true;
     }
 
-    const previousTransform = this._lastProcessedGameObjects[gameObjectId];
-    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+    const previousTransform = this._lastProcessedEntities[entityId];
+    const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME);
 
     return transform.offsetX !== previousTransform.offsetX
       || transform.offsetY !== previousTransform.offsetY;
@@ -89,14 +89,14 @@ export class CollisionDetectionSystem {
   }
 
   _updateAxisSortedList(entry, axis) {
-    const { gameObject, aabb, coordinates } = entry;
+    const { entity, aabb, coordinates } = entry;
 
-    const gameObjectId = gameObject.getId();
+    const entityId = entity.getId();
     const sortedListCoordinates = [aabb.min[axis], aabb.max[axis]];
     const { sortedList } = this._axis[axis];
 
     for (let i = 0; i < sortedList.length; i += 1) {
-      if (gameObjectId === sortedList[i].entry.gameObject.getId()) {
+      if (entityId === sortedList[i].entry.entity.getId()) {
         sortedList[i][axis] = sortedListCoordinates.shift();
         sortedList[i].entry.aabb = aabb;
         sortedList[i].entry.coordinates = coordinates;
@@ -107,11 +107,11 @@ export class CollisionDetectionSystem {
     }
   }
 
-  _removeFromSortedList(gameObject, axis) {
-    const gameObjectId = gameObject.getId();
+  _removeFromSortedList(entity, axis) {
+    const entityId = entity.getId();
 
     this._axis[axis].sortedList = this._axis[axis].sortedList.filter(
-      (item) => gameObjectId !== item.entry.gameObject.getId(),
+      (item) => entityId !== item.entry.entity.getId(),
     );
   }
 
@@ -166,7 +166,7 @@ export class CollisionDetectionSystem {
 
   _checkOnIntersection(pair) {
     const getIntersectionEntry = (arg) => {
-      const colliderContainer = arg.gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+      const colliderContainer = arg.entity.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
 
       return {
         colliderType: colliderContainer.type,
@@ -183,21 +183,21 @@ export class CollisionDetectionSystem {
     return this._intersectionCheckers[intersectionType].check(arg1, arg2);
   }
 
-  _sendCollisionMessage(gameObject1, gameObject2, intersection) {
+  _sendCollisionMessage(entity1, entity2, intersection) {
     const { mtv1, mtv2 } = intersection;
 
     [
       {
-        gameObject1, gameObject2, mtv1, mtv2,
+        entity1, entity2, mtv1, mtv2,
       },
       {
-        gameObject1: gameObject2, gameObject2: gameObject1, mtv1: mtv2, mtv2: mtv1,
+        entity1: entity2, entity2: entity1, mtv1: mtv2, mtv2: mtv1,
       },
     ].forEach((entry) => {
       this.messageBus.send({
         type: COLLISION_MESSAGE,
-        gameObject1: entry.gameObject1,
-        gameObject2: entry.gameObject2,
+        entity1: entry.entity1,
+        entity2: entry.entity2,
         mtv1: entry.mtv1,
         mtv2: entry.mtv2,
       });
@@ -205,16 +205,16 @@ export class CollisionDetectionSystem {
   }
 
   update() {
-    this._gameObjectObserver.fireEvents();
+    this._entityObserver.fireEvents();
 
-    this._gameObjectObserver.forEach((gameObject) => {
-      if (!this._checkOnReorientation(gameObject)) {
+    this._entityObserver.forEach((entity) => {
+      if (!this._checkOnReorientation(entity)) {
         return;
       }
 
-      const gameObjectId = gameObject.getId();
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
-      const colliderContainer = gameObject.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
+      const entityId = entity.getId();
+      const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME);
+      const colliderContainer = entity.getComponent(COLLIDER_CONTAINER_COMPONENT_NAME);
 
       const coordinates = this._coordintatesCalculators[colliderContainer.type].calc(
         colliderContainer.collider,
@@ -227,29 +227,29 @@ export class CollisionDetectionSystem {
 
       Object.values(AXIS).forEach((axis) => {
         const average = (aabb.min[axis] + aabb.max[axis]) * 0.5;
-        this._axis[axis].dispersionCalculator.addToSample(gameObjectId, average);
+        this._axis[axis].dispersionCalculator.addToSample(entityId, average);
 
         const entry = {
-          gameObject,
+          entity,
           aabb,
           coordinates,
         };
 
-        if (!this._lastProcessedGameObjects[gameObjectId]) {
+        if (!this._lastProcessedEntities[entityId]) {
           this._addToAxisSortedList(entry, axis);
         } else {
           this._updateAxisSortedList(entry, axis);
         }
       });
 
-      this._lastProcessedGameObjects[gameObjectId] = transform.clone();
+      this._lastProcessedEntities[entityId] = transform.clone();
     });
 
     this._sweepAndPrune(this._getSortingAxis()).forEach((pair) => {
       const intersection = this._checkOnIntersection(pair);
       if (intersection) {
         this._sendCollisionMessage(
-          pair[0].gameObject, pair[1].gameObject, intersection,
+          pair[0].entity, pair[1].entity, intersection,
         );
       }
     });

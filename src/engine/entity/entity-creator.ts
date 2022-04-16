@@ -10,24 +10,24 @@ import type {
 import IOC from '../ioc/ioc';
 import { PREFAB_COLLECTION_KEY_NAME } from '../consts/global';
 
-import { GameObject } from './game-object';
+import { Entity } from './entity';
 
 interface ComponentConstructor {
   new(name: ComponentOptions['name'], options: ComponentOptions['config']): Component
 }
 
-export interface GameObjectOptions {
+export interface EntityOptions {
   id?: string
   name?: string
   type?: string
-  children?: Array<GameObjectOptions>
+  children?: Array<EntityOptions>
   components?: Array<ComponentOptions>
   fromPrefab?: boolean
   prefabName?: string
   isNew?: boolean
 }
 
-export class GameObjectCreator {
+export class EntityCreator {
   private components: Record<string, ComponentConstructor>;
   private prefabCollection: PrefabCollection;
 
@@ -36,7 +36,7 @@ export class GameObjectCreator {
     this.prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME) as PrefabCollection;
   }
 
-  private buildFromPrefab(options: GameObjectOptions, prefab: Prefab): GameObject {
+  private buildFromPrefab(options: EntityOptions, prefab: Prefab): Entity {
     const {
       type,
       prefabName = '',
@@ -54,7 +54,7 @@ export class GameObjectCreator {
         + `The prefab ${prefabName} is null.`);
     }
 
-    const gameObject = new GameObject({
+    const entity = new Entity({
       id,
       name,
       type: type || prefab.getType(),
@@ -71,8 +71,8 @@ export class GameObjectCreator {
           isNew,
         };
 
-        const gameObjectChild = this.build(childOptions, prefabChild);
-        gameObject.appendChild(gameObjectChild);
+        const entityChild = this.build(childOptions, prefabChild);
+        entity.appendChild(entityChild);
       });
     } else {
       const prefabChildrenMap = prefab.getChildren().reduce(
@@ -87,30 +87,30 @@ export class GameObjectCreator {
         const { prefabName: childPrefabName, fromPrefab } = childOptions;
 
         const prefabChild = fromPrefab ? prefabChildrenMap[childPrefabName as string] : void 0;
-        const gameObjectChild = this.build(childOptions, prefabChild);
-        gameObject.appendChild(gameObjectChild);
+        const entityChild = this.build(childOptions, prefabChild);
+        entity.appendChild(entityChild);
       });
     }
 
     prefab.getAvailableComponents().forEach((componentName) => {
       const component = prefab.getComponent(componentName);
       if (component) {
-        gameObject.setComponent(componentName, component);
+        entity.setComponent(componentName, component);
       }
     });
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      gameObject.setComponent(
+      entity.setComponent(
         componentOptions.name,
         new Component(componentOptions.name, componentOptions.config),
       );
     });
 
-    return gameObject;
+    return entity;
   }
 
-  private buildFromScratch(options: GameObjectOptions): GameObject {
+  private buildFromScratch(options: EntityOptions): Entity {
     const {
       name,
       type,
@@ -121,29 +121,29 @@ export class GameObjectCreator {
 
     id = id || uuid();
 
-    const gameObject = new GameObject({
+    const entity = new Entity({
       id,
       name: name as string,
       type,
     });
 
     children.forEach((child) => {
-      const gameObjectChild = this.build(child);
-      gameObject.appendChild(gameObjectChild);
+      const entityChild = this.build(child);
+      entity.appendChild(entityChild);
     });
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      gameObject.setComponent(
+      entity.setComponent(
         componentOptions.name,
         new Component(componentOptions.name, componentOptions.config),
       );
     });
 
-    return gameObject;
+    return entity;
   }
 
-  private build(options: GameObjectOptions, prefab?: Prefab): GameObject {
+  private build(options: EntityOptions, prefab?: Prefab): Entity {
     const { prefabName, fromPrefab } = options;
 
     if (fromPrefab) {
@@ -155,22 +155,22 @@ export class GameObjectCreator {
     return this.buildFromScratch(options);
   }
 
-  private expandGameObject(
-    gameObject: GameObject,
-    gameObjects?: Array<GameObject>,
-  ): Array<GameObject> {
-    gameObjects = gameObjects || [];
+  private expandEntity(
+    entity: Entity,
+    entities?: Array<Entity>,
+  ): Array<Entity> {
+    entities = entities || [];
 
-    gameObjects.push(gameObject);
+    entities.push(entity);
 
-    gameObject.getChildren().forEach((child) => {
-      this.expandGameObject(child, gameObjects);
+    entity.getChildren().forEach((child) => {
+      this.expandEntity(child, entities);
     });
 
-    return gameObjects;
+    return entities;
   }
 
-  create(options: GameObjectOptions): Array<GameObject> {
-    return this.expandGameObject(this.build(options));
+  create(options: EntityOptions): Array<Entity> {
+    return this.expandEntity(this.build(options));
   }
 }

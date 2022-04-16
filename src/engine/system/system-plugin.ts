@@ -1,4 +1,4 @@
-import type { GameObjectObserver, GameObjectObserverFilter } from '../gameObject';
+import type { EntityObserver, EntityObserverFilter } from '../entity';
 import type { Store } from '../scene';
 import type { MessageBus } from '../message-bus';
 
@@ -9,9 +9,9 @@ export interface PluginHelperFn {
 }
 
 export interface SystemPluginOptions {
-  createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver;
-  gameObjectSpawner: unknown,
-  gameObjectDestroyer: unknown,
+  createEntityObserver: (filter: EntityObserverFilter) => EntityObserver;
+  entitySpawner: unknown,
+  entityDestroyer: unknown,
   sceneController: unknown,
   helpers: Record<string, PluginHelperFn>,
   store: Store;

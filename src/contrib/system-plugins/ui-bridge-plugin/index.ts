@@ -10,9 +10,9 @@ export class UiBridgePlugin implements SystemPlugin {
     const {
       helpers,
       sceneController,
-      createGameObjectObserver,
-      gameObjectSpawner,
-      gameObjectDestroyer,
+      createEntityObserver,
+      entitySpawner,
+      entityDestroyer,
       store,
       filterComponents,
       messageBus,
@@ -23,11 +23,11 @@ export class UiBridgePlugin implements SystemPlugin {
       onInit,
       onDestroy,
       sceneController,
-      gameObjectObserver: createGameObjectObserver({
+      entityObserver: createEntityObserver({
         components: filterComponents,
       }),
-      gameObjectSpawner,
-      gameObjectDestroyer,
+      entitySpawner,
+      entityDestroyer,
       store,
       messageBus,
     });

@@ -1,4 +1,4 @@
-import type { GameObject } from '../../../../engine/gameObject';
+import type { Entity } from '../../../../engine/entity';
 import type { MessageBus } from '../../../../engine/message-bus';
 import type { ComparatorConditionProps } from '../../../components/animatable/comparator-condition-props';
 import type { MessageConditionProps } from '../../../components/animatable/message-condition-props';
@@ -6,7 +6,7 @@ import type { MessageConditionProps } from '../../../components/animatable/messa
 export interface ConditionController {
   check(
     props: ComparatorConditionProps | MessageConditionProps,
-    gameObject: GameObject,
+    entity: Entity,
     messageBus: MessageBus
   ): boolean
 }

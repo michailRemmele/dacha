@@ -1,5 +1,5 @@
 import { Transform, TransformConfig } from '../../../../components/transform';
-import { GameObject } from '../../../../../engine/gameObject/game-object';
+import { Entity } from '../../../../../engine/entity/entity';
 
 import { sortByZAxis } from '../sort-by-z-axis';
 
@@ -14,20 +14,20 @@ describe('Contrib -> RenderSystem -> Sort -> sortByZAxis()', () => {
   };
 
   it('Returns correct order of objects', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const entity1 = new Entity({ id: '1', name: 'mock-entity-1' });
+    const entity2 = new Entity({ id: '2', name: 'mock-entity-2' });
 
-    gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
-    gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));
+    entity1.setComponent('transform', new Transform('transform', baseTransformProps));
+    entity2.setComponent('transform', new Transform('transform', baseTransformProps));
 
-    expect(sortByZAxis(gameObject1, gameObject2)).toBe(0);
+    expect(sortByZAxis(entity1, entity2)).toBe(0);
 
-    (gameObject2.getComponent('transform') as Transform).offsetZ = 50;
+    (entity2.getComponent('transform') as Transform).offsetZ = 50;
 
-    expect(sortByZAxis(gameObject1, gameObject2)).toBeLessThan(0);
+    expect(sortByZAxis(entity1, entity2)).toBeLessThan(0);
 
-    (gameObject1.getComponent('transform') as Transform).offsetZ = 100;
+    (entity1.getComponent('transform') as Transform).offsetZ = 100;
 
-    expect(sortByZAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
+    expect(sortByZAxis(entity1, entity2)).toBeGreaterThan(0);
   });
 });

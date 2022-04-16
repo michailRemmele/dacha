@@ -14,7 +14,7 @@ export class CameraSystemPlugin implements SystemPlugin {
     const {
       initialCamera,
       windowNodeId,
-      createGameObjectObserver,
+      createEntityObserver,
       store,
       messageBus,
     } = options;
@@ -24,7 +24,7 @@ export class CameraSystemPlugin implements SystemPlugin {
     return new CameraSystem({
       initialCamera,
       window: windowNode,
-      gameObjectObserver: createGameObjectObserver({
+      entityObserver: createEntityObserver({
         components: [
           CAMERA_COMPONENT_NAME,
           TRANSFORM_COMPONENT_NAME,

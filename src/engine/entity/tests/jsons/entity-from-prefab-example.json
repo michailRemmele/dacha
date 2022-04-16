@@ -1,7 +1,7 @@
 
 {
   "id": "003",
-  "name": "gameObjectFromPrefabExample",
+  "name": "entityFromPrefabExample",
   "type": "example",
   "fromPrefab": true,
   "prefabName": "prefabExample",

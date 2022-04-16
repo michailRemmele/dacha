@@ -1,4 +1,4 @@
-import type { GameObject } from '../../../../engine/gameObject';
+import type { Entity } from '../../../../engine/entity';
 
 import { SortFn } from './types';
 
@@ -8,7 +8,7 @@ export { sortByYAxis } from './sort-by-y-axis';
 export { sortByZAxis } from './sort-by-z-axis';
 export { sortByFit } from './sort-by-fit';
 
-export const composeSort = (sortFns: Array<SortFn>): SortFn => (a: GameObject, b: GameObject) => {
+export const composeSort = (sortFns: Array<SortFn>): SortFn => (a: Entity, b: Entity) => {
   let result = 0;
 
   for (let i = 0; i < sortFns.length; i += 1) {

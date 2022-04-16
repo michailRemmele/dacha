@@ -7,7 +7,7 @@ const ANIMATABLE_COMPONENT_NAME = 'animatable';
 export class AnimatorPlugin implements SystemPlugin {
   load(options: SystemPluginOptions): Animator {
     return new Animator({
-      gameObjectObserver: options.createGameObjectObserver({
+      entityObserver: options.createEntityObserver({
         components: [
           ANIMATABLE_COMPONENT_NAME,
           RENDERABLE_COMPONENT_NAME,

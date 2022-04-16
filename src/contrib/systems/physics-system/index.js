@@ -19,34 +19,34 @@ const DIRECTION_VECTOR = {
 export class PhysicsSystem {
   constructor(options) {
     const {
-      gravitationalAcceleration, gameObjectObserver, store, messageBus,
+      gravitationalAcceleration, entityObserver, store, messageBus,
     } = options;
 
     this._gravitationalAcceleration = gravitationalAcceleration;
-    this._gameObjectObserver = gameObjectObserver;
+    this._entityObserver = entityObserver;
     this._store = store;
     this.messageBus = messageBus;
 
-    this._gameObjectsVelocity = {};
+    this._entitiesVelocity = {};
   }
 
   systemDidMount() {
     this._store.set(GRAVITATIONAL_ACCELERATION_STORE_KEY, this._gravitationalAcceleration);
-    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.subscribe('onremove', this._handleEntityRemove);
   }
 
   systemWillUnmount() {
-    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.unsubscribe('onremove', this._handleEntityRemove);
   }
 
-  _handleGameObjectRemove = (gameObject) => {
-    this._gameObjectsVelocity[gameObject.getId()] = null;
+  _handleEntityRemove = (entity) => {
+    this._entitiesVelocity[entity.getId()] = null;
   };
 
-  _applyDragForce(gameObject, deltaTime) {
-    const { mass, drag } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-    const gameObjectId = gameObject.getId();
-    const velocity = this._gameObjectsVelocity[gameObjectId];
+  _applyDragForce(entity, deltaTime) {
+    const { mass, drag } = entity.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const entityId = entity.getId();
+    const velocity = this._entitiesVelocity[entityId];
 
     if (!drag || !velocity || (!velocity.x && !velocity.y)) {
       return;
@@ -84,23 +84,23 @@ export class PhysicsSystem {
     return gravityVector;
   }
 
-  _getForceVector(gameObject) {
-    const gameObjectId = gameObject.getId();
-    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
+  _getForceVector(entity) {
+    const entityId = entity.getId();
+    const rigidBody = entity.getComponent(RIGID_BODY_COMPONENT_NAME);
 
     const forceVector = new Vector2(0, 0);
 
     forceVector.add(this._getGravityForce(rigidBody));
 
-    const addForceMessages = this.messageBus.getById(ADD_FORCE_MSG, gameObjectId) || [];
+    const addForceMessages = this.messageBus.getById(ADD_FORCE_MSG, entityId) || [];
     addForceMessages.forEach((message) => forceVector.add(message.value));
 
     return forceVector;
   }
 
-  _getImpulseVector(gameObject) {
-    const gameObjectId = gameObject.getId();
-    const addImpulseMessages = this.messageBus.getById(ADD_IMPULSE_MSG, gameObjectId) || [];
+  _getImpulseVector(entity) {
+    const entityId = entity.getId();
+    const addImpulseMessages = this.messageBus.getById(ADD_IMPULSE_MSG, entityId) || [];
 
     return addImpulseMessages.reduce((vector, message) => {
       vector.add(message.value);
@@ -113,11 +113,11 @@ export class PhysicsSystem {
     const stopMovementMessages = this.messageBus.get(STOP_MOVEMENT_MSG) || [];
 
     stopMovementMessages.forEach((message) => {
-      const { gameObject } = message;
-      const gameObjectId = gameObject.getId();
+      const { entity } = message;
+      const entityId = entity.getId();
 
-      if (this._gameObjectsVelocity[gameObjectId]) {
-        this._gameObjectsVelocity[gameObjectId].multiplyNumber(0);
+      if (this._entitiesVelocity[entityId]) {
+        this._entitiesVelocity[entityId].multiplyNumber(0);
       }
     });
   }
@@ -127,23 +127,23 @@ export class PhysicsSystem {
     const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
 
-    this._gameObjectObserver.fireEvents();
+    this._entityObserver.fireEvents();
 
     this._processConstraints();
 
-    this._gameObjectObserver.forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME);
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+    this._entityObserver.forEach((entity) => {
+      const entityId = entity.getId();
+      const rigidBody = entity.getComponent(RIGID_BODY_COMPONENT_NAME);
+      const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME);
       const { mass } = rigidBody;
 
-      const forceVector = this._getForceVector(gameObject);
-      const impulseVector = this._getImpulseVector(gameObject);
+      const forceVector = this._getForceVector(entity);
+      const impulseVector = this._getImpulseVector(entity);
 
-      this._gameObjectsVelocity[gameObjectId] = this._gameObjectsVelocity[gameObjectId]
+      this._entitiesVelocity[entityId] = this._entitiesVelocity[entityId]
         || new Vector2(0, 0);
 
-      const velocityVector = this._gameObjectsVelocity[gameObjectId];
+      const velocityVector = this._entitiesVelocity[entityId];
 
       if (forceVector.x || forceVector.y) {
         forceVector.multiplyNumber(deltaTimeInSeconds / mass);
@@ -155,7 +155,7 @@ export class PhysicsSystem {
         velocityVector.add(impulseVector);
       }
 
-      this._applyDragForce(gameObject, deltaTimeInSeconds);
+      this._applyDragForce(entity, deltaTimeInSeconds);
 
       transform.offsetX += velocityVector.x * deltaTimeInSeconds;
       transform.offsetY += velocityVector.y * deltaTimeInSeconds;

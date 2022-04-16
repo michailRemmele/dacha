@@ -7,7 +7,7 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 export class ConstraintSolverPlugin implements SystemPlugin {
   load(options: SystemPluginOptions) {
     return new ConstraintSolver({
-      gameObjectObserver: options.createGameObjectObserver({
+      entityObserver: options.createEntityObserver({
         components: [
           RIGID_BODY_COMPONENT_NAME,
           TRANSFORM_COMPONENT_NAME,

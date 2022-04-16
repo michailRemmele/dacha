@@ -7,9 +7,9 @@ export class UiBridge {
       onInit,
       onDestroy,
       sceneController,
-      gameObjectObserver,
-      gameObjectSpawner,
-      gameObjectDestroyer,
+      entityObserver,
+      entitySpawner,
+      entityDestroyer,
       store,
       messageBus,
     } = options;
@@ -17,15 +17,15 @@ export class UiBridge {
     this._onUiInit = onInit;
     this._onUiDestroy = onDestroy;
     this._sceneController = sceneController;
-    this._gameObjectObserver = gameObjectObserver;
-    this._gameObjectSpawner = gameObjectSpawner;
-    this._gameObjectDestroyer = gameObjectDestroyer;
+    this._entityObserver = entityObserver;
+    this._entitySpawner = entitySpawner;
+    this._entityDestroyer = entityDestroyer;
     this._store = store;
     this.messageBus = messageBus;
 
     this._messageBusObserver = new Observer();
     this._storeObserver = new Observer();
-    this._gameObjects = new MapObserver();
+    this._entities = new MapObserver();
 
     this._messageQueue = [];
     this._actionsQueue = [];
@@ -38,18 +38,18 @@ export class UiBridge {
       storeObserver: this._storeObserver,
       pushMessage: this._pushMessage.bind(this),
       pushAction: this._pushAction.bind(this),
-      gameObjects: this._gameObjects,
+      entities: this._entities,
     });
-    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.subscribe('onremove', this._handleEntityRemove);
   }
 
   systemWillUnmount() {
     this._onUiDestroy();
-    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.unsubscribe('onremove', this._handleEntityRemove);
   }
 
-  _handleGameObjectRemove = (gameObject) => {
-    this._gameObjects.next(null, gameObject.getId());
+  _handleEntityRemove = (entity) => {
+    this._entities.next(null, entity.getId());
   };
 
   _pushAction(action) {
@@ -63,10 +63,10 @@ export class UiBridge {
   update(options) {
     const { deltaTime } = options;
 
-    this._gameObjectObserver.fireEvents();
+    this._entityObserver.fireEvents();
 
-    this._gameObjectObserver.forEach((gameObject) => {
-      this._gameObjects.next(gameObject, gameObject.getId());
+    this._entityObserver.forEach((entity) => {
+      this._entities.next(entity, entity.getId());
     });
 
     this._messageBusObserver.next(this.messageBus);
@@ -83,8 +83,8 @@ export class UiBridge {
         messageBus: this.messageBus,
         deltaTime,
         store: this._store,
-        gameObjectSpawner: this._gameObjectSpawner,
-        gameObjectDestroyer: this._gameObjectDestroyer,
+        entitySpawner: this._entitySpawner,
+        entityDestroyer: this._entityDestroyer,
       });
     });
 

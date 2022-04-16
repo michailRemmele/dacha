@@ -7,23 +7,23 @@ export class ScriptSystemPlugin implements SystemPlugin {
   async load(options: SystemPluginOptions): Promise<ScriptSystem> {
     const {
       helpers,
-      createGameObjectObserver,
-      gameObjectSpawner,
-      gameObjectDestroyer,
+      createEntityObserver,
+      entitySpawner,
+      entityDestroyer,
       store,
       messageBus,
     } = options;
     const { scripts } = await helpers.loadScripts<Record<string, ScriptClass>>();
 
     return new ScriptSystem({
-      gameObjectObserver: createGameObjectObserver({}),
-      scriptsObserver: createGameObjectObserver({
+      entityObserver: createEntityObserver({}),
+      scriptsObserver: createEntityObserver({
         components: [
           SCRIPT_COMPONENT_NAME,
         ],
       }),
-      gameObjectSpawner,
-      gameObjectDestroyer,
+      entitySpawner,
+      entityDestroyer,
       store,
       scripts,
       messageBus,

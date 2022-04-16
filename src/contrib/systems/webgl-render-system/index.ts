@@ -1,4 +1,4 @@
-import { GameObject, GameObjectObserver } from '../../../engine/gameObject';
+import { Entity, EntityObserver } from '../../../engine/entity';
 import { Store } from '../../../engine/scene';
 import { Renderable } from '../../components/renderable';
 import { Transform } from '../../components/transform';
@@ -53,7 +53,7 @@ interface RendererOptions {
   textureAtlas: HTMLImageElement;
   textureAtlasDescriptor: Record<string, TextureDescriptor>;
   backgroundColor: string;
-  gameObjectObserver: GameObjectObserver;
+  entityObserver: EntityObserver;
   sortingLayers: Array<string>;
   store: Store;
   scaleSensitivity: number;
@@ -79,7 +79,7 @@ export class RenderSystem {
   private _shaders: Array<WebGLShader>;
   private shaderProvider: ShaderProvider;
   private _store: Store;
-  private _gameObjectObserver: GameObjectObserver;
+  private _entityObserver: EntityObserver;
   private _scaleSensitivity: number;
   private _screenScale: number;
   private _vaoExt: OES_vertex_array_object | null;
@@ -101,7 +101,7 @@ export class RenderSystem {
     const {
       window, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
-      gameObjectObserver, sortingLayers,
+      entityObserver, sortingLayers,
       store, scaleSensitivity,
     } = options;
 
@@ -123,7 +123,7 @@ export class RenderSystem {
 
     this._backgroundColor = new Color(backgroundColor);
 
-    this.shaderProvider = new ShaderProvider(gameObjectObserver);
+    this.shaderProvider = new ShaderProvider(entityObserver);
 
     this._view = window as HTMLCanvasElement;
     this._viewWidth = 0;
@@ -147,7 +147,7 @@ export class RenderSystem {
     ]);
 
     this._store = store;
-    this._gameObjectObserver = gameObjectObserver;
+    this._entityObserver = entityObserver;
 
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
@@ -165,7 +165,7 @@ export class RenderSystem {
 
   systemDidMount() {
     window.addEventListener('resize', this._onWindowResizeBind);
-    this._gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this._entityObserver.subscribe('onremove', this.handleEntityRemove);
     this.gl = this._initGraphicContext();
     this._initExtensions();
     this._initScreen();
@@ -176,7 +176,7 @@ export class RenderSystem {
 
   systemWillUnmount() {
     window.removeEventListener('resize', this._onWindowResizeBind);
-    this._gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this._entityObserver.unsubscribe('onremove', this.handleEntityRemove);
     this._shaders.forEach((shader) => {
       if (this.program) {
         this.gl?.detachShader(this.program, shader);
@@ -200,9 +200,9 @@ export class RenderSystem {
     this._viewMatrixStats = {};
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject) => {
-    const gameObjectId = gameObject.getId();
-    this._geometry[gameObjectId] = null;
+  private handleEntityRemove = (entity: Entity) => {
+    const entityId = entity.getId();
+    this._geometry[entityId] = null;
   };
 
   _onWindowResize() {
@@ -307,7 +307,7 @@ export class RenderSystem {
       uModelViewMatrix: this.gl.getUniformLocation(this.program, 'u_modelViewMatrix'),
       uTexSize: this.gl.getUniformLocation(this.program, 'u_texSize'),
       uTexTranslate: this.gl.getUniformLocation(this.program, 'u_texTranslate'),
-      uGameObjectSize: this.gl.getUniformLocation(this.program, 'u_gameObjectSize'),
+      uEntitySize: this.gl.getUniformLocation(this.program, 'u_entitySize'),
     };
 
     this._buffer = this.gl.createBuffer();
@@ -443,7 +443,7 @@ export class RenderSystem {
 
   private updateViewMatrix() {
     const gl = this.gl as WebGLRenderingContext;
-    const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as GameObject;
+    const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as Entity;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
     const scale = zoom * this._screenScale;
@@ -488,10 +488,10 @@ export class RenderSystem {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
   }
 
-  private setUpVertexData(gameObject: GameObject) {
+  private setUpVertexData(entity: Entity) {
     const vertexData = this._vertexData;
-    const gameObjectId = gameObject.getId();
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const entityId = entity.getId();
+    const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
     // TODO: Filter hidden object while frustum culling step and remove that
     if (renderable.disabled) {
@@ -504,11 +504,11 @@ export class RenderSystem {
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-    const geometry = this._geometry[gameObjectId] || {
+    const geometry = this._geometry[entityId] || {
       position: new Rectangle(renderable.width, renderable.height).toArray(),
       texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
     };
-    this._geometry[gameObjectId] = geometry;
+    this._geometry[entityId] = geometry;
 
     const { position, texCoord } = geometry;
 
@@ -520,11 +520,11 @@ export class RenderSystem {
     }
   }
 
-  private setUpUniforms(gameObject: GameObject) {
+  private setUpUniforms(entity: Entity) {
     const gl = this.gl as WebGLRenderingContext;
 
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+    const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
 
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
@@ -545,11 +545,11 @@ export class RenderSystem {
     );
     gl.uniform2fv(this._variables.uTexSize, [textureInfo.width, textureInfo.height]);
     gl.uniform2fv(this._variables.uTexTranslate, [textureInfo.x, textureInfo.y]);
-    gl.uniform2fv(this._variables.uGameObjectSize, [renderable.width, renderable.height]);
+    gl.uniform2fv(this._variables.uEntitySize, [renderable.width, renderable.height]);
   }
 
   update() {
-    this._gameObjectObserver.fireEvents();
+    this._entityObserver.fireEvents();
 
     const gl = this.gl as WebGLRenderingContext;
 
@@ -562,16 +562,16 @@ export class RenderSystem {
 
     this.updateViewMatrix();
 
-    this._gameObjectObserver.sort(this.sortFn);
+    this._entityObserver.sort(this.sortFn);
 
     const batches = splitToBatch(
-      this._gameObjectObserver.getList(), this.shaderProvider,
+      this._entityObserver.getList(), this.shaderProvider,
     );
 
     batches.forEach((batch) => {
-      batch.forEach((gameObject) => {
-        this.setUpUniforms(gameObject);
-        this.setUpVertexData(gameObject);
+      batch.forEach((entity) => {
+        this.setUpUniforms(entity);
+        this.setUpVertexData(entity);
         this.setUpBuffers();
         gl.drawArrays(gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
       });

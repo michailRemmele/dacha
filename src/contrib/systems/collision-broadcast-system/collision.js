@@ -5,28 +5,28 @@ const STATE = {
 };
 
 class Collision {
-  constructor(gameObject1, gameObject2, mtv1, mtv2) {
-    this._gameObject1 = gameObject1;
-    this._gameObject2 = gameObject2;
+  constructor(entity1, entity2, mtv1, mtv2) {
+    this._entity1 = entity1;
+    this._entity2 = entity2;
     this._lifetime = 2;
     this._mtv1 = mtv1;
     this._mtv2 = mtv2;
   }
 
-  set gameObject1(gameObject1) {
-    this._gameObject1 = gameObject1;
+  set entity1(entity1) {
+    this._entity1 = entity1;
   }
 
-  get gameObject1() {
-    return this._gameObject1;
+  get entity1() {
+    return this._entity1;
   }
 
-  set gameObject2(gameObject2) {
-    this._gameObject2 = gameObject2;
+  set entity2(entity2) {
+    this._entity2 = entity2;
   }
 
-  get gameObject2() {
-    return this._gameObject2;
+  get entity2() {
+    return this._entity2;
   }
 
   set mtv1(mtv1) {

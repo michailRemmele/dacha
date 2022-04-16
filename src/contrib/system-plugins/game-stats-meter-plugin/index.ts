@@ -9,13 +9,13 @@ export class GameStatsMeterPlugin implements SystemPlugin {
   load(options: GameStatsMeterPluginOptions) {
     const {
       frequency,
-      createGameObjectObserver,
+      createEntityObserver,
       messageBus,
     } = options;
 
     return new GameStatsMeter({
       frequency,
-      gameObjectObserver: createGameObjectObserver({}),
+      entityObserver: createEntityObserver({}),
       messageBus,
     });
   }

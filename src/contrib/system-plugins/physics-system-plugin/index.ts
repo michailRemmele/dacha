@@ -12,14 +12,14 @@ export class PhysicsSystemPlugin implements SystemPlugin {
   load(options: PhysicsSystemPluginOptions) {
     const {
       gravitationalAcceleration,
-      createGameObjectObserver,
+      createEntityObserver,
       store,
       messageBus,
     } = options;
 
     return new PhysicsSystem({
       gravitationalAcceleration,
-      gameObjectObserver: createGameObjectObserver({
+      entityObserver: createEntityObserver({
         components: [
           RIGID_BODY_COMPONENT_NAME,
           TRANSFORM_COMPONENT_NAME,

@@ -1,5 +1,5 @@
 import { Transform, TransformConfig } from '../../../../components/transform';
-import { GameObject } from '../../../../../engine/gameObject/game-object';
+import { Entity } from '../../../../../engine/entity/entity';
 
 import { composeSort } from '../index';
 
@@ -13,39 +13,39 @@ describe('Contrib -> RenderSystem -> Sort -> composeSort()', () => {
     scaleY: 1,
   };
 
-  const sortY = (a: GameObject, b: GameObject) => (
+  const sortY = (a: Entity, b: Entity) => (
     (a.getComponent('transform') as Transform).offsetY - (b.getComponent('transform') as Transform).offsetY
   );
-  const sortX = (a: GameObject, b: GameObject) => (
+  const sortX = (a: Entity, b: Entity) => (
     (a.getComponent('transform') as Transform).offsetX - (b.getComponent('transform') as Transform).offsetX
   );
-  const sortZ = (a: GameObject, b: GameObject) => (
+  const sortZ = (a: Entity, b: Entity) => (
     (a.getComponent('transform') as Transform).offsetZ - (b.getComponent('transform') as Transform).offsetZ
   );
 
   it('Correctly creates composed sort function which executes passing function in correct order', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const entity1 = new Entity({ id: '1', name: 'mock-entity-1' });
+    const entity2 = new Entity({ id: '2', name: 'mock-entity-2' });
 
-    gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
-    gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));
+    entity1.setComponent('transform', new Transform('transform', baseTransformProps));
+    entity2.setComponent('transform', new Transform('transform', baseTransformProps));
 
-    (gameObject1.getComponent('transform') as Transform).offsetY = 10;
-    (gameObject1.getComponent('transform') as Transform).offsetX = 20;
-    (gameObject1.getComponent('transform') as Transform).offsetZ = 40;
+    (entity1.getComponent('transform') as Transform).offsetY = 10;
+    (entity1.getComponent('transform') as Transform).offsetX = 20;
+    (entity1.getComponent('transform') as Transform).offsetZ = 40;
 
-    (gameObject2.getComponent('transform') as Transform).offsetY = 10;
-    (gameObject2.getComponent('transform') as Transform).offsetX = 20;
-    (gameObject2.getComponent('transform') as Transform).offsetZ = 30;
+    (entity2.getComponent('transform') as Transform).offsetY = 10;
+    (entity2.getComponent('transform') as Transform).offsetX = 20;
+    (entity2.getComponent('transform') as Transform).offsetZ = 30;
 
-    expect(composeSort([sortY, sortX, sortZ])(gameObject1, gameObject2)).toBeGreaterThan(0);
+    expect(composeSort([sortY, sortX, sortZ])(entity1, entity2)).toBeGreaterThan(0);
 
-    (gameObject2.getComponent('transform') as Transform).offsetX = 30;
+    (entity2.getComponent('transform') as Transform).offsetX = 30;
 
-    expect(composeSort([sortY, sortX, sortZ])(gameObject1, gameObject2)).toBeLessThan(0);
+    expect(composeSort([sortY, sortX, sortZ])(entity1, entity2)).toBeLessThan(0);
 
-    (gameObject1.getComponent('transform') as Transform).offsetY = 20;
+    (entity1.getComponent('transform') as Transform).offsetY = 20;
 
-    expect(composeSort([sortY, sortX, sortZ])(gameObject1, gameObject2)).toBeGreaterThan(0);
+    expect(composeSort([sortY, sortX, sortZ])(entity1, entity2)).toBeGreaterThan(0);
   });
 });

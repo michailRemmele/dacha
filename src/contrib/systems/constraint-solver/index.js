@@ -13,15 +13,15 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 
 export class ConstraintSolver {
   constructor(options) {
-    this._gameObjectObserver = options.gameObjectObserver;
+    this._entityObserver = options.entityObserver;
     this.messageBus = options.messageBus;
     this._processedPairs = {};
     this._mtvMap = {};
   }
 
-  _validateCollision(gameObject1, gameObject2) {
-    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
-    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
+  _validateCollision(entity1, entity2) {
+    const rigidBody1 = entity1.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const rigidBody2 = entity2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
     return rigidBody1 && !rigidBody1.ghost && !rigidBody1.isPermeable
       && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable
@@ -54,12 +54,12 @@ export class ConstraintSolver {
     settingStrategy[type]();
   }
 
-  _resolveCollision(gameObject1, gameObject2, mtv1, mtv2) {
-    const id1 = gameObject1.getId();
-    const id2 = gameObject2.getId();
+  _resolveCollision(entity1, entity2, mtv1, mtv2) {
+    const id1 = entity1.getId();
+    const id2 = entity2.getId();
 
-    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME);
-    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const rigidBody1 = entity1.getComponent(RIGID_BODY_COMPONENT_NAME);
+    const rigidBody2 = entity2.getComponent(RIGID_BODY_COMPONENT_NAME);
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
       this._setMtv(id2, mtv2.x, mtv2.y, rigidBody1.type);
@@ -80,11 +80,11 @@ export class ConstraintSolver {
     [enterMessages, stayMessages].forEach((messages) => {
       messages.forEach((message) => {
         const {
-          gameObject1, gameObject2, mtv1, mtv2,
+          entity1, entity2, mtv1, mtv2,
         } = message;
 
-        const id1 = gameObject1.getId();
-        const id2 = gameObject2.getId();
+        const id1 = entity1.getId();
+        const id2 = entity2.getId();
 
         if (this._processedPairs[id2] && this._processedPairs[id2][id1]) {
           return;
@@ -93,17 +93,17 @@ export class ConstraintSolver {
         this._processedPairs[id1] = this._processedPairs[id1] || {};
         this._processedPairs[id1][id2] = true;
 
-        if (!this._validateCollision(gameObject1, gameObject2)) {
+        if (!this._validateCollision(entity1, entity2)) {
           return;
         }
 
-        this._resolveCollision(gameObject1, gameObject2, mtv1, mtv2);
+        this._resolveCollision(entity1, entity2, mtv1, mtv2);
       });
     });
 
     Object.keys(this._mtvMap).forEach((id) => {
-      const gameObject = this._gameObjectObserver.getById(id);
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME);
+      const entity = this._entityObserver.getById(id);
+      const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME);
 
       const mtvs = Object.keys(this._mtvMap[id]);
 

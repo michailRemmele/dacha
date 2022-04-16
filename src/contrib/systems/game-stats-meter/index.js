@@ -4,7 +4,7 @@ const MS_IN_SEC = 1000;
 export class GameStatsMeter {
   constructor(options) {
     this._frequency = options.frequency || MS_IN_SEC;
-    this._gameObjectObserver = options.gameObjectObserver;
+    this._entityObserver = options.entityObserver;
     this.messageBus = options.messageBus;
 
     this._fps = 0;
@@ -34,7 +34,7 @@ export class GameStatsMeter {
       this.messageBus.send({
         type: GAME_STATS_UPDATE_MSG,
         fps: (this._fps * MS_IN_SEC) / this._time,
-        gameObjectsCount: this._gameObjectObserver.size(),
+        entitiesCount: this._entityObserver.size(),
         messagesCount: (this._messages * MS_IN_SEC) / this._time,
         skippedStateUpdate: (this._skippedStateUpdate * MS_IN_SEC) / this._time,
         executedStateUpdate: (this._executedStateUpdate * MS_IN_SEC) / this._time,

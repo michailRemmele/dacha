@@ -4,7 +4,7 @@ const COLLISION_MESSAGE = 'COLLISION';
 
 export class CollisionBroadcastSystem {
   constructor(options) {
-    this._gameObjectObserver = options.gameObjectObserver;
+    this._entityObserver = options.entityObserver;
     this.messageBus = options.messageBus;
 
     this._collisionMap = {};
@@ -12,23 +12,23 @@ export class CollisionBroadcastSystem {
   }
 
   systemDidMount() {
-    this._gameObjectObserver.subscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.subscribe('onremove', this._handleEntityRemove);
   }
 
   systemWillUnmount() {
-    this._gameObjectObserver.unsubscribe('onremove', this._handleGameObjectRemove);
+    this._entityObserver.unsubscribe('onremove', this._handleEntityRemove);
   }
 
-  _handleGameObjectRemove = (gameObject) => {
-    const id = gameObject.getId();
+  _handleEntityRemove = (entity) => {
+    const id = entity.getId();
 
     this._activeCollisions = this._activeCollisions.filter((collision) => {
-      if (collision.gameObject1.getId() !== id && collision.gameObject2.getId() !== id) {
+      if (collision.entity1.getId() !== id && collision.entity2.getId() !== id) {
         return true;
       }
 
-      if (collision.gameObject2.getId() === id) {
-        this._collisionMap[collision.gameObject1.getId()][id] = null;
+      if (collision.entity2.getId() === id) {
+        this._collisionMap[collision.entity1.getId()][id] = null;
       }
 
       this._publishMessage(collision);
@@ -43,13 +43,13 @@ export class CollisionBroadcastSystem {
 
   _publishMessage(collision) {
     const {
-      gameObject1, gameObject2, mtv1, mtv2,
+      entity1, entity2, mtv1, mtv2,
     } = collision;
     const message = {
       type: `${COLLISION_MESSAGE}_${collision.getState()}`,
-      id: gameObject1.getId(),
-      gameObject1,
-      gameObject2,
+      id: entity1.getId(),
+      entity1,
+      entity2,
       mtv1,
       mtv2,
     };
@@ -59,38 +59,38 @@ export class CollisionBroadcastSystem {
   }
 
   update() {
-    this._gameObjectObserver.fireEvents();
+    this._entityObserver.fireEvents();
 
     const collisionMessages = this.messageBus.get(COLLISION_MESSAGE) || [];
     collisionMessages.forEach((message) => {
       const {
-        gameObject1, gameObject2, mtv1, mtv2,
+        entity1, entity2, mtv1, mtv2,
       } = message;
-      const gameObject1Id = gameObject1.getId();
-      const gameObject2Id = gameObject2.getId();
+      const entity1Id = entity1.getId();
+      const entity2Id = entity2.getId();
 
-      this._collisionMap[gameObject1Id] = this._collisionMap[gameObject1Id] || {};
+      this._collisionMap[entity1Id] = this._collisionMap[entity1Id] || {};
 
-      if (!this._collisionMap[gameObject1Id][gameObject2Id]) {
-        const collision = new Collision(gameObject1, gameObject2, mtv1, mtv2);
-        this._collisionMap[gameObject1Id][gameObject2Id] = collision;
+      if (!this._collisionMap[entity1Id][entity2Id]) {
+        const collision = new Collision(entity1, entity2, mtv1, mtv2);
+        this._collisionMap[entity1Id][entity2Id] = collision;
         this._activeCollisions.push(collision);
       } else {
-        this._collisionMap[gameObject1Id][gameObject2Id].mtv1 = mtv1;
-        this._collisionMap[gameObject1Id][gameObject2Id].mtv2 = mtv2;
-        this._collisionMap[gameObject1Id][gameObject2Id].signal();
+        this._collisionMap[entity1Id][entity2Id].mtv1 = mtv1;
+        this._collisionMap[entity1Id][entity2Id].mtv2 = mtv2;
+        this._collisionMap[entity1Id][entity2Id].signal();
       }
     });
 
     this._activeCollisions = this._activeCollisions.filter((collision) => {
-      const { gameObject1, gameObject2 } = collision;
+      const { entity1, entity2 } = collision;
 
       this._publishMessage(collision);
 
       collision.tick();
 
       if (collision.isFinished()) {
-        this._collisionMap[gameObject1.getId()][gameObject2.getId()] = null;
+        this._collisionMap[entity1.getId()][entity2.getId()] = null;
       }
 
       return !collision.isFinished();

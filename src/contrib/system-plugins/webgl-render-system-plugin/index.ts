@@ -31,7 +31,7 @@ export class RenderSystemPlugin implements SystemPlugin {
       backgroundColor,
       sortingLayers,
       scaleSensitivity,
-      createGameObjectObserver,
+      createEntityObserver,
       store,
     } = options;
 
@@ -53,7 +53,7 @@ export class RenderSystemPlugin implements SystemPlugin {
       backgroundColor,
       sortingLayers,
       scaleSensitivity,
-      gameObjectObserver: createGameObjectObserver({
+      entityObserver: createEntityObserver({
         components: [
           RENDERABLE_COMPONENT_NAME,
           TRANSFORM_COMPONENT_NAME,

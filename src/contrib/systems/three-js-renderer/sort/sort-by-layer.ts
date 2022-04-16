@@ -1,4 +1,4 @@
-import type { GameObject } from '../../../../engine/gameObject';
+import type { Entity } from '../../../../engine/entity';
 import type { Renderable } from '../../../components/renderable';
 import { RENDERABLE_COMPONENT_NAME } from '../consts';
 
@@ -10,7 +10,7 @@ export const createSortByLayer = (sortingLayers: Array<string>): SortFn => {
     return storage;
   }, {});
 
-  return (a: GameObject, b: GameObject): number => {
+  return (a: Entity, b: Entity): number => {
     const aRenderable = a.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
     const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
     const aSortingLayerOrder = sortingLayer[aRenderable.sortingLayer];

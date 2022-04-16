@@ -6,7 +6,7 @@ const CONTROL_COMPONENT_NAME = 'keyboardControl';
 export class KeyboardControlSystemPlugin implements SystemPlugin {
   load(options: SystemPluginOptions) {
     return new KeyboardControlSystem({
-      gameObjectObserver: options.createGameObjectObserver({
+      entityObserver: options.createEntityObserver({
         components: [
           CONTROL_COMPONENT_NAME,
         ],

@@ -7,7 +7,7 @@ const TRANSFORM_COMPONENT_NAME = 'transform';
 export class CollisionDetectionSystemPlugin implements SystemPlugin {
   load(options: SystemPluginOptions) {
     return new CollisionDetectionSystem({
-      gameObjectObserver: options.createGameObjectObserver({
+      entityObserver: options.createEntityObserver({
         components: [
           COLLIDER_CONTAINER_COMPONENT_NAME,
           TRANSFORM_COMPONENT_NAME,

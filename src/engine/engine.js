@@ -4,7 +4,7 @@ import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
 
 import { SceneProvider } from './scene/scene-provider';
 import ResourceLoader from './resourceLoader/resourceLoader';
-import { GameObjectCreator } from './gameObject';
+import { EntityCreator } from './entity';
 import { PrefabCollection } from './prefab';
 import { GameLoop } from './game-loop';
 
@@ -43,8 +43,8 @@ class Engine {
     const prefabCollection = new PrefabCollection(components);
     IOC.register(PREFAB_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(prefabCollection));
 
-    const gameObjectCreator = new GameObjectCreator(components);
-    IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(gameObjectCreator));
+    const entityCreator = new EntityCreator(components);
+    IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(entityCreator));
 
     const sceneProvider = new SceneProvider(mainConfig.scenes, systemsPlugins, pluginHelpers);
 

@@ -61,7 +61,7 @@ export class SceneProvider {
 
     const scene = new Scene({
       name: sceneConfig.name,
-      gameObjects: sceneConfig.gameObjects,
+      entities: sceneConfig.entities,
     });
 
     for (let i = 0; i < sceneConfig.systems.length; i += 1) {
@@ -72,9 +72,9 @@ export class SceneProvider {
       const system = await this._systemsPlugins[systemName].load({
         ...options,
         store: scene.getStore(),
-        gameObjectSpawner: scene.getGameObjectSpawner(),
-        gameObjectDestroyer: scene.getGameObjectDestroyer(),
-        createGameObjectObserver: (filter) => scene.createGameObjectObserver(filter),
+        entitySpawner: scene.getEntitySpawner(),
+        entityDestroyer: scene.getEntityDestroyer(),
+        createEntityObserver: (filter) => scene.createEntityObserver(filter),
         messageBus: scene.getMessageBus(),
         sceneController: this._sceneController,
         helpers: this._pluginHelpers,

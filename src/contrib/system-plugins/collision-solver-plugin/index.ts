@@ -6,13 +6,13 @@ const RIGID_BODY_COMPONENT_NAME = 'rigidBody';
 export class CollisionSolverPlugin implements SystemPlugin {
   load(options: SystemPluginOptions) {
     const {
-      createGameObjectObserver,
+      createEntityObserver,
       store,
       messageBus,
     } = options;
 
     return new CollisionSolver({
-      gameObjectObserver: createGameObjectObserver({
+      entityObserver: createEntityObserver({
         components: [
           RIGID_BODY_COMPONENT_NAME,
         ],

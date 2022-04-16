@@ -8,13 +8,13 @@ const PREFIX_SEPARATOR = '_';
 
 export class KeyboardControlSystem {
   constructor(options) {
-    this._gameObjectObserver = options.gameObjectObserver;
+    this._entityObserver = options.entityObserver;
     this.messageBus = options.messageBus;
   }
 
   update() {
-    this._gameObjectObserver.forEach((gameObject) => {
-      const control = gameObject.getComponent(CONTROL_COMPONENT_NAME);
+    this._entityObserver.forEach((entity) => {
+      const control = entity.getComponent(CONTROL_COMPONENT_NAME);
 
       const messages = this.messageBus.get(INPUT_MESSAGE) || [];
       messages.forEach((message) => {
@@ -43,8 +43,8 @@ export class KeyboardControlSystem {
           this.messageBus.send({
             type: eventBinding.messageType,
             ...eventBinding.attrs,
-            gameObject,
-            id: gameObject.getId(),
+            entity,
+            id: entity.getId(),
           });
         }
         if (inputEventType === RELEASE_EVENT_TYPE) {

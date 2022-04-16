@@ -6,7 +6,7 @@ const CONTROL_COMPONENT_NAME = 'mouseControl';
 export class MouseControlSystemPlugin implements SystemPlugin {
   load(options: SystemPluginOptions) {
     return new MouseControlSystem({
-      gameObjectObserver: options.createGameObjectObserver({
+      entityObserver: options.createEntityObserver({
         components: [
           CONTROL_COMPONENT_NAME,
         ],

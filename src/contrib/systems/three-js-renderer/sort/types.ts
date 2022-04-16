@@ -1,3 +1,3 @@
-import type { GameObject } from '../../../../engine/gameObject';
+import type { Entity } from '../../../../engine/entity';
 
-export type SortFn = (a: GameObject, b: GameObject) => number;
+export type SortFn = (a: Entity, b: Entity) => number;

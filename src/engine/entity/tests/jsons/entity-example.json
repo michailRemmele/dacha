@@ -1,7 +1,7 @@
 
 {
   "id": "001",
-  "name": "gameObjectExample",
+  "name": "entityExample",
   "type": "example",
   "children": [
     {
