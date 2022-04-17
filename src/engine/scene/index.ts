@@ -1,6 +1,6 @@
 export {
-  GAME_OBJECT_ADDED,
-  GAME_OBJECT_REMOVED,
+  ENTITY_ADDED,
+  ENTITY_REMOVED,
 } from './consts';
 export { Scene, EntityChangeEvent } from './scene';
 export { Store } from './store';

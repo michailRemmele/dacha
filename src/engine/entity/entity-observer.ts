@@ -1,5 +1,5 @@
 import {
-  GAME_OBJECT_ADDED,
+  ENTITY_ADDED,
   Scene,
   EntityChangeEvent,
 } from '../scene';
@@ -64,7 +64,7 @@ export class EntityObserver implements EventEmitter {
     scene.subscribeOnEntitiesChange((event) => {
       const { entity } = event;
 
-      if (event.type === GAME_OBJECT_ADDED) {
+      if (event.type === ENTITY_ADDED) {
         entity.subscribe(this._subscribeEntity.bind(this));
         this._add(entity);
       } else {

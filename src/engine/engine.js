@@ -27,7 +27,7 @@ class Engine {
       RESOURCES_LOADER_KEY_NAME,
       PREFAB_COLLECTION_KEY_NAME,
       PROJECT_SETTINGS_KEY_NAME,
-      GAME_OBJECT_CREATOR_KEY_NAME,
+      ENTITY_CREATOR_KEY_NAME,
     } = global;
 
     const {
@@ -44,7 +44,7 @@ class Engine {
     IOC.register(PREFAB_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(prefabCollection));
 
     const entityCreator = new EntityCreator(components);
-    IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(entityCreator));
+    IOC.register(ENTITY_CREATOR_KEY_NAME, new ResolveSingletonStrategy(entityCreator));
 
     const sceneProvider = new SceneProvider(mainConfig.scenes, systemsPlugins, pluginHelpers);
 

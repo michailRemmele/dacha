@@ -1,4 +1,4 @@
-import { GAME_OBJECT_CREATOR_KEY_NAME } from '../consts/global';
+import { ENTITY_CREATOR_KEY_NAME } from '../consts/global';
 import { System } from '../system';
 import IOC from '../ioc/ioc';
 import {
@@ -11,7 +11,7 @@ import {
 import { MessageBus } from '../message-bus';
 
 import { Store } from './store';
-import { GAME_OBJECT_ADDED, GAME_OBJECT_REMOVED } from './consts';
+import { ENTITY_ADDED, ENTITY_REMOVED } from './consts';
 
 // TODO: Remove once game object creator will be moved to ts
 interface EntityCreator {
@@ -45,7 +45,7 @@ export class Scene {
     this._name = name;
     this._entities = {};
     this._store = new Store();
-    this._entityCreator = IOC.resolve(GAME_OBJECT_CREATOR_KEY_NAME) as EntityCreator;
+    this._entityCreator = IOC.resolve(ENTITY_CREATOR_KEY_NAME) as EntityCreator;
     this._entitySpawner = new EntitySpawner(this, this._entityCreator);
     this._entityDestroyer = new EntityDestroyer(this);
     this.messageBus = new MessageBus();
@@ -116,7 +116,7 @@ export class Scene {
 
     this._entitiesChangeSubscribers.forEach((callback) => {
       callback({
-        type: GAME_OBJECT_ADDED,
+        type: ENTITY_ADDED,
         entity,
       });
     });
@@ -135,7 +135,7 @@ export class Scene {
 
     this._entitiesChangeSubscribers.forEach((callback) => {
       callback({
-        type: GAME_OBJECT_REMOVED,
+        type: ENTITY_REMOVED,
         entity,
       });
     });
