@@ -1,5 +1,5 @@
 import IOC from '../ioc/ioc';
-import { ProcessorPlugin, PluginHelperFn } from '../processor';
+import { SystemPlugin, PluginHelperFn } from '../system';
 
 import { Scene, SceneOptions } from './scene';
 import { SceneController } from './scene-controller';
@@ -12,7 +12,7 @@ interface ResourceLoader {
 }
 
 interface SceneConfig extends SceneOptions {
-  processors: Array<{
+  systems: Array<{
     name: string;
     options: Record<string, unknown>;
   }>;
@@ -23,24 +23,24 @@ export class SceneProvider {
   private _currentSceneName?: string;
   private _sceneChangeSubscribers: Array<(scene: Scene) => void>;
   private _availableScenes: Record<string, string>;
-  private _processorsPlugins: Record<string, ProcessorPlugin>;
+  private _systemsPlugins: Record<string, SystemPlugin>;
   private _pluginHelpers: Record<string, PluginHelperFn>;
   private _loadedScene?: Scene;
   private _sceneController: SceneController;
 
   constructor(
     scenes: Record<string, string>,
-    processorsPlugins: Record<string, { new(): ProcessorPlugin }>,
+    systemsPlugins: Record<string, { new(): SystemPlugin }>,
     pluginHelpers: Record<string, PluginHelperFn>,
   ) {
     this._sceneContainer = {};
     this._currentSceneName = void 0;
     this._sceneChangeSubscribers = [];
     this._availableScenes = scenes;
-    this._processorsPlugins = Object
-      .keys(processorsPlugins)
-      .reduce((storage: Record<string, ProcessorPlugin>, name) => {
-        storage[name] = new processorsPlugins[name]();
+    this._systemsPlugins = Object
+      .keys(systemsPlugins)
+      .reduce((storage: Record<string, SystemPlugin>, name) => {
+        storage[name] = new systemsPlugins[name]();
         return storage;
       }, {});
     this._pluginHelpers = pluginHelpers;
@@ -61,26 +61,26 @@ export class SceneProvider {
 
     const scene = new Scene({
       name: sceneConfig.name,
-      gameObjects: sceneConfig.gameObjects,
+      entities: sceneConfig.entities,
     });
 
-    for (let i = 0; i < sceneConfig.processors.length; i += 1) {
-      const { name: processorName, options } = sceneConfig.processors[i];
+    for (let i = 0; i < sceneConfig.systems.length; i += 1) {
+      const { name: systemName, options } = sceneConfig.systems[i];
 
       // For pure async await syntax in method. Need to refactor later
       // eslint-disable-next-line no-await-in-loop
-      const processor = await this._processorsPlugins[processorName].load({
+      const system = await this._systemsPlugins[systemName].load({
         ...options,
         store: scene.getStore(),
-        gameObjectSpawner: scene.getGameObjectSpawner(),
-        gameObjectDestroyer: scene.getGameObjectDestroyer(),
-        createGameObjectObserver: (filter) => scene.createGameObjectObserver(filter),
+        entitySpawner: scene.getEntitySpawner(),
+        entityDestroyer: scene.getEntityDestroyer(),
+        createEntityObserver: (filter) => scene.createEntityObserver(filter),
         messageBus: scene.getMessageBus(),
         sceneController: this._sceneController,
         helpers: this._pluginHelpers,
       });
 
-      scene.addProcessor(processor);
+      scene.addSystem(system);
     }
 
     this._loadedScene = scene;

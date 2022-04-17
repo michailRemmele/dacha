@@ -1,6 +1,6 @@
 import Engine from './engine/engine';
 import { Component } from './engine/component';
-import { processorsPlugins as contribProcessorsPlugins } from './contrib/processors-plugins';
+import { systemsPlugins as contribSystemsPlugins } from './contrib/system-plugins';
 import contribComponents from './contrib/components';
 import IOC from './engine/ioc/ioc';
 import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
@@ -10,17 +10,17 @@ import {
 } from './engine/consts/global';
 
 export {
-  ProcessorPlugin,
-  ProcessorPluginOptions,
-  Processor,
-  ProcessorOptions,
-} from './engine/processor';
-export { Script, ScriptOptions } from './contrib/processors/script-processor';
+  SystemPlugin,
+  SystemPluginOptions,
+  System,
+  SystemOptions,
+} from './engine/system';
+export { Script, ScriptOptions } from './contrib/systems/script-system';
 
 export {
   Engine,
   Component,
-  contribProcessorsPlugins,
+  contribSystemsPlugins,
   contribComponents,
   IOC,
   VectorOps,

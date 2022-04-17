@@ -4,7 +4,7 @@ import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
 
 import { SceneProvider } from './scene/scene-provider';
 import ResourceLoader from './resourceLoader/resourceLoader';
-import { GameObjectCreator } from './gameObject';
+import { EntityCreator } from './entity';
 import { PrefabCollection } from './prefab';
 import { GameLoop } from './game-loop';
 
@@ -27,11 +27,11 @@ class Engine {
       RESOURCES_LOADER_KEY_NAME,
       PREFAB_COLLECTION_KEY_NAME,
       PROJECT_SETTINGS_KEY_NAME,
-      GAME_OBJECT_CREATOR_KEY_NAME,
+      ENTITY_CREATOR_KEY_NAME,
     } = global;
 
     const {
-      mainConfig, processorsPlugins, components, pluginHelpers,
+      mainConfig, systemsPlugins, components, pluginHelpers,
     } = this.options;
     const { projectSettings } = mainConfig;
 
@@ -43,10 +43,10 @@ class Engine {
     const prefabCollection = new PrefabCollection(components);
     IOC.register(PREFAB_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(prefabCollection));
 
-    const gameObjectCreator = new GameObjectCreator(components);
-    IOC.register(GAME_OBJECT_CREATOR_KEY_NAME, new ResolveSingletonStrategy(gameObjectCreator));
+    const entityCreator = new EntityCreator(components);
+    IOC.register(ENTITY_CREATOR_KEY_NAME, new ResolveSingletonStrategy(entityCreator));
 
-    const sceneProvider = new SceneProvider(mainConfig.scenes, processorsPlugins, pluginHelpers);
+    const sceneProvider = new SceneProvider(mainConfig.scenes, systemsPlugins, pluginHelpers);
 
     for (let i = 0; i < mainConfig.prefabs.length; i += 1) {
       // For pure async await syntax in method. Need to refactor later
