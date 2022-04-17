@@ -1,18 +1,7 @@
 import type { Component } from '../component';
+import type { PrefabConfig } from '../types';
 
 import { Prefab } from './prefab';
-
-export interface ComponentOptions {
-  name: string
-  config: Record<string, unknown>
-}
-
-export interface PrefabOptions {
-  name: string
-  type: string
-  components?: Array<ComponentOptions>
-  children?: Array<PrefabOptions>
-}
 
 export class PrefabCollection {
   private components: Record<string, new (...args: Array<unknown>) => Component>;
@@ -23,7 +12,7 @@ export class PrefabCollection {
     this.storage = {};
   }
 
-  private buildPrefab(options: PrefabOptions): Prefab {
+  private buildPrefab(options: PrefabConfig): Prefab {
     const {
       name,
       type,
@@ -53,7 +42,7 @@ export class PrefabCollection {
     return prefab;
   }
 
-  register(options: PrefabOptions): void {
+  register(options: PrefabConfig): void {
     this.storage[options.name] = this.buildPrefab(options);
   }
 

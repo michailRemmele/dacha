@@ -1,42 +1,31 @@
-import IOC from '../ioc/ioc';
+import type { SceneConfig } from '../types';
 import { SystemPlugin, PluginHelperFn } from '../system';
 
-import { Scene, SceneOptions } from './scene';
+import { Scene } from './scene';
 import { SceneController } from './scene-controller';
-
-import { RESOURCES_LOADER_KEY_NAME } from '../consts/global';
-
-// TODO: Remove once resource loader will be moved to ts
-interface ResourceLoader {
-  load: (resource: string) => unknown;
-}
-
-interface SceneConfig extends SceneOptions {
-  systems: Array<{
-    name: string;
-    options: Record<string, unknown>;
-  }>;
-}
 
 export class SceneProvider {
   private _sceneContainer: Record<string, Scene>;
   private _currentSceneName?: string;
   private _sceneChangeSubscribers: Array<(scene: Scene) => void>;
-  private _availableScenes: Record<string, string>;
+  private _availableScenes: Record<string, SceneConfig>;
   private _systemsPlugins: Record<string, SystemPlugin>;
   private _pluginHelpers: Record<string, PluginHelperFn>;
   private _loadedScene?: Scene;
   private _sceneController: SceneController;
 
   constructor(
-    scenes: Record<string, string>,
+    scenes: Array<SceneConfig>,
     systemsPlugins: Record<string, { new(): SystemPlugin }>,
     pluginHelpers: Record<string, PluginHelperFn>,
   ) {
     this._sceneContainer = {};
     this._currentSceneName = void 0;
     this._sceneChangeSubscribers = [];
-    this._availableScenes = scenes;
+    this._availableScenes = scenes.reduce((acc: Record<string, SceneConfig>, scene) => {
+      acc[scene.name] = scene;
+      return acc;
+    }, {});
     this._systemsPlugins = Object
       .keys(systemsPlugins)
       .reduce((storage: Record<string, SystemPlugin>, name) => {
@@ -55,9 +44,7 @@ export class SceneProvider {
 
     this._loadedScene = void 0;
 
-    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
-
-    const sceneConfig = await resourceLoader.load(this._availableScenes[name]) as SceneConfig;
+    const sceneConfig = this._availableScenes[name];
 
     const scene = new Scene({
       name: sceneConfig.name,

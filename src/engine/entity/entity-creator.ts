@@ -1,10 +1,10 @@
 import uuid from 'uuid-random';
 
+import type { ComponentConfig } from '../types';
 import type { Component } from '../component';
 import type {
   Prefab,
   PrefabCollection,
-  ComponentOptions,
 } from '../prefab';
 
 import IOC from '../ioc/ioc';
@@ -13,7 +13,7 @@ import { PREFAB_COLLECTION_KEY_NAME } from '../consts/global';
 import { Entity } from './entity';
 
 interface ComponentConstructor {
-  new(name: ComponentOptions['name'], options: ComponentOptions['config']): Component
+  new(name: ComponentConfig['name'], options: ComponentConfig['config']): Component
 }
 
 export interface EntityOptions {
@@ -21,7 +21,7 @@ export interface EntityOptions {
   name?: string
   type?: string
   children?: Array<EntityOptions>
-  components?: Array<ComponentOptions>
+  components?: Array<ComponentConfig>
   fromPrefab?: boolean
   prefabName?: string
   isNew?: boolean

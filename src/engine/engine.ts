@@ -1,7 +1,9 @@
+import type { SystemPlugin, PluginHelperFn } from './system';
+import type { Component } from './component';
+import type { Config } from './types';
 import ScopeProvider from './scope/scopeProvider';
 import IOC from './ioc/ioc';
 import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
-
 import { SceneProvider } from './scene/scene-provider';
 import ResourceLoader from './resourceLoader/resourceLoader';
 import { EntityCreator } from './entity';
@@ -10,8 +12,17 @@ import { GameLoop } from './game-loop';
 
 import * as global from './consts/global';
 
-class Engine {
-  constructor(options) {
+export interface EngineOptions {
+  config: Config
+  systemsPlugins: Record<string, { new(): SystemPlugin }>
+  components: Record<string, { new(): Component }>
+  pluginHelpers: Record<string, PluginHelperFn>
+}
+
+export class Engine {
+  private options: EngineOptions;
+
+  constructor(options: EngineOptions) {
     const {
       GENERAL_SCOPE_NAME,
     } = global;
@@ -22,20 +33,16 @@ class Engine {
     ScopeProvider.setCurrentScope(GENERAL_SCOPE_NAME);
   }
 
-  async start() {
+  async start(): Promise<void> {
     const {
       RESOURCES_LOADER_KEY_NAME,
       PREFAB_COLLECTION_KEY_NAME,
-      PROJECT_SETTINGS_KEY_NAME,
       ENTITY_CREATOR_KEY_NAME,
     } = global;
 
     const {
-      mainConfig, systemsPlugins, components, pluginHelpers,
+      config, systemsPlugins, components, pluginHelpers,
     } = this.options;
-    const { projectSettings } = mainConfig;
-
-    IOC.register(PROJECT_SETTINGS_KEY_NAME, new ResolveSingletonStrategy(projectSettings));
 
     const resourceLoader = new ResourceLoader();
     IOC.register(RESOURCES_LOADER_KEY_NAME, new ResolveSingletonStrategy(resourceLoader));
@@ -46,24 +53,19 @@ class Engine {
     const entityCreator = new EntityCreator(components);
     IOC.register(ENTITY_CREATOR_KEY_NAME, new ResolveSingletonStrategy(entityCreator));
 
-    const sceneProvider = new SceneProvider(mainConfig.scenes, systemsPlugins, pluginHelpers);
+    const sceneProvider = new SceneProvider(config.scenes, systemsPlugins, pluginHelpers);
 
-    for (let i = 0; i < mainConfig.prefabs.length; i += 1) {
-      // For pure async await syntax in method. Need to refactor later
-      // eslint-disable-next-line no-await-in-loop
-      const prefabConfig = await resourceLoader.load(mainConfig.prefabs[i].src);
-      prefabCollection.register(prefabConfig);
+    for (let i = 0; i < config.prefabs.length; i += 1) {
+      prefabCollection.register(config.prefabs[i]);
     }
 
-    await sceneProvider.loadScene(mainConfig.startScene);
+    await sceneProvider.loadScene(config.startScene);
     sceneProvider.moveToLoaded();
 
     const gameLoop = new GameLoop(sceneProvider);
     gameLoop.run();
 
-    window.onblur = () => gameLoop.stop();
-    window.onfocus = () => gameLoop.run();
+    window.onblur = (): void => gameLoop.stop();
+    window.onfocus = (): void => gameLoop.run();
   }
 }
-
-export default Engine;
