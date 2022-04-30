@@ -5,7 +5,7 @@ export type Matrix3x3 = [
 ];
 
 export class MatrixTransformer {
-  getIdgameObjectMatrix(): Matrix3x3 {
+  getIdentityMatrix(): Matrix3x3 {
     return [
       1, 0, 0,
       0, 1, 0,

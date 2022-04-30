@@ -24,8 +24,8 @@ describe('Contrib -> RenderSystem -> Sort -> composeSort()', () => {
   );
 
   it('Correctly creates composed sort function which executes passing function in correct order', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-gameObject-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-gameObject-2' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
     gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
     gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));

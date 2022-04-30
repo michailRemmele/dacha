@@ -12,7 +12,7 @@ describe('Contrib -> Animator -> utils', () => {
     it('Returns gameObject component value', () => {
       const gameObject = new GameObject({
         id: '1',
-        name: 'gameObject-1',
+        name: 'game-object-1',
       });
 
       const component = createMockComponent('test-1') as TestComponent;
@@ -26,11 +26,11 @@ describe('Contrib -> Animator -> utils', () => {
     it('Returns child component value', () => {
       const gameObject1 = new GameObject({
         id: '1',
-        name: 'gameObject-1',
+        name: 'game-object-1',
       });
       const gameObject2 = new GameObject({
         id: '2',
-        name: 'gameObject-2',
+        name: 'game-object-2',
       });
 
       gameObject1.appendChild(gameObject2);
@@ -42,13 +42,13 @@ describe('Contrib -> Animator -> utils', () => {
       expect(
         getValue(
           gameObject1,
-          ['children', 'gameObject-2', 'components', 'test-2', 'testField'],
+          ['children', 'game-object-2', 'components', 'test-2', 'testField'],
         ),
       ).toBe('testFieldValue2');
       expect(
         getValue(
           gameObject1,
-          ['children', 'gameObject-2', 'components', 'notExistComponent', 'testField'],
+          ['children', 'game-object-2', 'components', 'notExistComponent', 'testField'],
         ),
       ).toBeUndefined();
     });
@@ -56,15 +56,15 @@ describe('Contrib -> Animator -> utils', () => {
     it('Returns grandchild component value', () => {
       const gameObject1 = new GameObject({
         id: '1',
-        name: 'gameObject-1',
+        name: 'game-object-1',
       });
       const gameObject2 = new GameObject({
         id: '2',
-        name: 'gameObject-2',
+        name: 'game-object-2',
       });
       const gameObject3 = new GameObject({
         id: '3',
-        name: 'gameObject-3',
+        name: 'game-object-3',
       });
 
       gameObject1.appendChild(gameObject2);
@@ -77,13 +77,13 @@ describe('Contrib -> Animator -> utils', () => {
       expect(
         getValue(
           gameObject1,
-          ['children', 'gameObject-2', 'children', 'gameObject-3', 'components', 'test-3', 'testField'],
+          ['children', 'game-object-2', 'children', 'game-object-3', 'components', 'test-3', 'testField'],
         ),
       ).toBe('testFieldValue3');
       expect(
         getValue(
           gameObject1,
-          ['children', 'gameObject-2', 'children', 'notExistGameObject', 'components', 'test-3', 'testField'],
+          ['children', 'game-object-2', 'children', 'notExistGameObject', 'components', 'test-3', 'testField'],
         ),
       ).toBeUndefined();
     });
@@ -93,7 +93,7 @@ describe('Contrib -> Animator -> utils', () => {
     it('Updates gameObject component value', () => {
       const gameObject = new GameObject({
         id: '1',
-        name: 'gameObject-1',
+        name: 'game-object-1',
       });
 
       const component = createMockComponent('test-1') as TestComponent;
@@ -108,11 +108,11 @@ describe('Contrib -> Animator -> utils', () => {
     it('Updates child component value', () => {
       const gameObject1 = new GameObject({
         id: '1',
-        name: 'gameObject-1',
+        name: 'game-object-1',
       });
       const gameObject2 = new GameObject({
         id: '2',
-        name: 'gameObject-2',
+        name: 'game-object-2',
       });
 
       gameObject1.appendChild(gameObject2);
@@ -123,7 +123,7 @@ describe('Contrib -> Animator -> utils', () => {
 
       setValue(
         gameObject1,
-        ['children', 'gameObject-2', 'components', 'test-2', 'testField'],
+        ['children', 'game-object-2', 'components', 'test-2', 'testField'],
         'updatedValue2',
       );
 
@@ -133,15 +133,15 @@ describe('Contrib -> Animator -> utils', () => {
     it('Updates grandchild component value', () => {
       const gameObject1 = new GameObject({
         id: '1',
-        name: 'gameObject-1',
+        name: 'game-object-1',
       });
       const gameObject2 = new GameObject({
         id: '2',
-        name: 'gameObject-2',
+        name: 'game-object-2',
       });
       const gameObject3 = new GameObject({
         id: '3',
-        name: 'gameObject-3',
+        name: 'game-object-3',
       });
 
       gameObject1.appendChild(gameObject2);
@@ -153,7 +153,7 @@ describe('Contrib -> Animator -> utils', () => {
 
       setValue(
         gameObject1,
-        ['children', 'gameObject-2', 'children', 'gameObject-3', 'components', 'test-3', 'testField'],
+        ['children', 'game-object-2', 'children', 'game-object-3', 'components', 'test-3', 'testField'],
         'updatedValue3',
       );
 
@@ -163,15 +163,15 @@ describe('Contrib -> Animator -> utils', () => {
     it('Throws error if path is incorrect', () => {
       const gameObject1 = new GameObject({
         id: '1',
-        name: 'gameObject-1',
+        name: 'game-object-1',
       });
       const gameObject2 = new GameObject({
         id: '2',
-        name: 'gameObject-2',
+        name: 'game-object-2',
       });
       const gameObject3 = new GameObject({
         id: '3',
-        name: 'gameObject-3',
+        name: 'game-object-3',
       });
 
       gameObject1.appendChild(gameObject2);
@@ -184,21 +184,21 @@ describe('Contrib -> Animator -> utils', () => {
       expect(() => {
         setValue(
           gameObject1,
-          ['children', 'notExistGameObject', 'children', 'gameObject-3', 'components', 'test-3', 'testField'],
+          ['children', 'notExistGameObject', 'children', 'game-object-3', 'components', 'test-3', 'testField'],
           'updatedValue',
         );
       }).toThrowError();
       expect(() => {
         setValue(
           gameObject1,
-          ['children', 'gameObject-2', 'children', 'notExistGameObject', 'components', 'test-3', 'testField'],
+          ['children', 'game-object-2', 'children', 'notExistGameObject', 'components', 'test-3', 'testField'],
           'updatedValue',
         );
       }).toThrowError();
       expect(() => {
         setValue(
           gameObject1,
-          ['children', 'gameObject-2', 'children', 'gameObject-3', 'components', 'notExistComponent', 'testField'],
+          ['children', 'game-object-2', 'children', 'game-object-3', 'components', 'notExistComponent', 'testField'],
           'updatedValue',
         );
       }).toThrowError();

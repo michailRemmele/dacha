@@ -32,9 +32,9 @@ describe('Contrib -> components -> Transform', () => {
       scaleY: 12,
     }).clone();
 
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-gameObject-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-gameObject-2' });
-    const gameObject3 = new GameObject({ id: '3', name: 'mock-gameObject-3' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const gameObject3 = new GameObject({ id: '3', name: 'mock-game-object-3' });
 
     gameObject1.setComponent('transform', transform1);
     gameObject2.setComponent('transform', transform2);

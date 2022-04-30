@@ -3,8 +3,8 @@ import { MatrixTransformer, Matrix3x3 } from '../index';
 describe('Contrib -> RenderSystem -> MatrixTransformer', () => {
   const matrixTransformer = new MatrixTransformer();
 
-  it('Returns correct indgameObject matrix', () => {
-    expect(matrixTransformer.getIdgameObjectMatrix()).toEqual([
+  it('Returns correct identity matrix', () => {
+    expect(matrixTransformer.getIdentityMatrix()).toEqual([
       1, 0, 0,
       0, 1, 0,
       0, 0, 1,

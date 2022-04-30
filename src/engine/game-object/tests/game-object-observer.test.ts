@@ -27,27 +27,27 @@ describe('Engine -> GameObjectObserver', () => {
 
     gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
       type: 'correct-type',
     });
     gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
       type: 'incorrect-type',
     });
     gameObject3 = new GameObject({
       id: '3',
-      name: 'gameObject-3',
+      name: 'game-object-3',
       type: 'correct-type',
     });
     gameObject4 = new GameObject({
       id: '4',
-      name: 'gameObject-4',
+      name: 'game-object-4',
       type: 'correct-type',
     });
     gameObject5 = new GameObject({
       id: '5',
-      name: 'gameObject-5',
+      name: 'game-object-5',
       type: 'correct-type',
     });
 

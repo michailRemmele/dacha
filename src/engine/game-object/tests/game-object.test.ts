@@ -5,27 +5,27 @@ describe('Engine -> GameObject', () => {
   it('Returns correct id and name', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
 
     expect(gameObject1.getId()).toEqual('1');
     expect(gameObject2.getId()).toEqual('2');
-    expect(gameObject1.name).toEqual('gameObject-1');
-    expect(gameObject2.name).toEqual('gameObject-2');
+    expect(gameObject1.name).toEqual('game-object-1');
+    expect(gameObject2.name).toEqual('game-object-2');
   });
 
   it('Returns correct type', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
     gameObject1.type = 'some-type-1';
     gameObject2.type = 'some-type-2';
@@ -75,15 +75,15 @@ describe('Engine -> GameObject', () => {
   it('Returns correct ancestor', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
     const gameObject3 = new GameObject({
       id: '3',
-      name: 'gameObject-3',
+      name: 'game-object-3',
     });
 
     gameObject3.appendChild(gameObject2);
@@ -97,15 +97,15 @@ describe('Engine -> GameObject', () => {
   it('Returns correct ancestor after deletion relations', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
     const gameObject3 = new GameObject({
       id: '3',
-      name: 'gameObject-3',
+      name: 'game-object-3',
     });
 
     gameObject3.appendChild(gameObject2);
@@ -190,15 +190,15 @@ describe('Engine -> GameObject', () => {
   it('Returns added game object as child by id', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
     const gameObject3 = new GameObject({
       id: '3',
-      name: 'gameObject-3',
+      name: 'game-object-3',
     });
 
     gameObject3.appendChild(gameObject2);
@@ -216,41 +216,41 @@ describe('Engine -> GameObject', () => {
   it('Returns added game object as child by name', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
     const gameObject3 = new GameObject({
       id: '3',
-      name: 'gameObject-3',
+      name: 'game-object-3',
     });
 
     gameObject3.appendChild(gameObject2);
     gameObject2.appendChild(gameObject1);
 
-    expect(gameObject3.getChildByName('gameObject-2')).toEqual(gameObject2);
-    expect(gameObject3.getChildByName('gameObject-1')).toBeUndefined();
-    expect(gameObject2.getChildByName('gameObject-1')).toEqual(gameObject1);
+    expect(gameObject3.getChildByName('game-object-2')).toEqual(gameObject2);
+    expect(gameObject3.getChildByName('game-object-1')).toBeUndefined();
+    expect(gameObject2.getChildByName('game-object-1')).toEqual(gameObject1);
 
     gameObject3.removeChild(gameObject2);
 
-    expect(gameObject3.getChildByName('gameObject-2')).toBeUndefined();
+    expect(gameObject3.getChildByName('game-object-2')).toBeUndefined();
   });
 
   it('Throws error if child with same id already exists', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
     const gameObject3 = new GameObject({
       id: '2',
-      name: 'gameObject-3',
+      name: 'game-object-3',
     });
 
     gameObject1.appendChild(gameObject2);
@@ -263,21 +263,21 @@ describe('Engine -> GameObject', () => {
   it('Throws error if child with same name already exists', () => {
     const gameObject1 = new GameObject({
       id: '1',
-      name: 'gameObject-1',
+      name: 'game-object-1',
     });
     const gameObject2 = new GameObject({
       id: '2',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
     const gameObject3 = new GameObject({
       id: '3',
-      name: 'gameObject-2',
+      name: 'game-object-2',
     });
 
     gameObject1.appendChild(gameObject2);
 
     expect(() => {
       gameObject1.appendChild(gameObject3);
-    }).toThrowError('Can\'t add child with name: gameObject-2. Child with same name already exists');
+    }).toThrowError('Can\'t add child with name: game-object-2. Child with same name already exists');
   });
 });

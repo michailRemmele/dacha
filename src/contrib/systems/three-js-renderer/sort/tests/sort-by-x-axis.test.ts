@@ -33,8 +33,8 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
   };
 
   it('Returns correct order of objects while equals width', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-gameObject-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-gameObject-2' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
     gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
     gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
@@ -54,8 +54,8 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
   });
 
   it('Returns correct order of objects while different width', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-gameObject-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-gameObject-2' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
     gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
     gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));

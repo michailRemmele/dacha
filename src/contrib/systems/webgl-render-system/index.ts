@@ -433,7 +433,7 @@ export class RenderSystem implements System {
   ) {
     const matrixTransformer = this._matrixTransformer;
 
-    const matrix = matrixTransformer.getIdgameObjectMatrix();
+    const matrix = matrixTransformer.getIdentityMatrix();
 
     matrixTransformer.translate(matrix, -renderable.width / 2, -renderable.height / 2);
     matrixTransformer.scale(matrix, scaleX, scaleY);
@@ -498,7 +498,7 @@ export class RenderSystem implements System {
     }
 
     const matrixTransformer = this._matrixTransformer;
-    const viewMatrix = matrixTransformer.getIdgameObjectMatrix();
+    const viewMatrix = matrixTransformer.getIdentityMatrix();
     matrixTransformer.translate(viewMatrix, -transform.offsetX, -transform.offsetY);
     matrixTransformer.scale(viewMatrix, scale, scale);
     matrixTransformer.project(viewMatrix, this._viewWidth, this._viewHeight);
