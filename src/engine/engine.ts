@@ -6,8 +6,8 @@ import IOC from './ioc/ioc';
 import ResolveSingletonStrategy from './ioc/resolveSingletonStrategy';
 import { SceneProvider } from './scene/scene-provider';
 import ResourceLoader from './resourceLoader/resourceLoader';
-import { EntityCreator } from './entity';
-import { PrefabCollection } from './prefab';
+import { GameObjectCreator } from './game-object';
+import { TemplateCollection } from './template';
 import { GameLoop } from './game-loop';
 import { SceneController } from './controllers';
 
@@ -37,12 +37,12 @@ export class Engine {
   async start(): Promise<void> {
     const {
       RESOURCES_LOADER_KEY_NAME,
-      PREFAB_COLLECTION_KEY_NAME,
+      TEMPLATE_COLLECTION_KEY_NAME,
     } = global;
 
     const {
       config: {
-        prefabs,
+        templates,
         scenes,
         levels,
         loaders,
@@ -57,14 +57,14 @@ export class Engine {
     const resourceLoader = new ResourceLoader();
     IOC.register(RESOURCES_LOADER_KEY_NAME, new ResolveSingletonStrategy(resourceLoader));
 
-    const prefabCollection = new PrefabCollection(components);
-    IOC.register(PREFAB_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(prefabCollection));
+    const templateCollection = new TemplateCollection(components);
+    IOC.register(TEMPLATE_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(templateCollection));
 
-    for (let i = 0; i < prefabs.length; i += 1) {
-      prefabCollection.register(prefabs[i]);
+    for (let i = 0; i < templates.length; i += 1) {
+      templateCollection.register(templates[i]);
     }
 
-    const entityCreator = new EntityCreator(components);
+    const gameObjectCreator = new GameObjectCreator(components);
 
     const sceneProvider = new SceneProvider({
       scenes,
@@ -72,7 +72,7 @@ export class Engine {
       loaders,
       systems,
       helpers,
-      entityCreator,
+      gameObjectCreator,
     });
 
     await sceneProvider.prepareLoaders();

@@ -1,4 +1,4 @@
-import type { EntityObserver, EntityObserverFilter } from '../entity';
+import type { GameObjectObserver, GameObjectObserverFilter } from '../game-object';
 import type { Store, SceneContext } from '../scene';
 import type { MessageBus } from '../message-bus';
 
@@ -7,9 +7,9 @@ export interface HelperFn {
 }
 
 export interface SystemOptions {
-  createEntityObserver: (filter: EntityObserverFilter) => EntityObserver
-  entitySpawner: unknown
-  entityDestroyer: unknown
+  createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver
+  gameObjectSpawner: unknown
+  gameObjectDestroyer: unknown
   helpers: Record<string, HelperFn>
   store: Store
   messageBus: MessageBus

@@ -4,7 +4,7 @@ import type {
   UpdateOptions,
   HelperFn,
 } from '../../../engine/system';
-import type { Entity, EntityObserver } from '../../../engine/entity';
+import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
 
@@ -13,8 +13,8 @@ import { Observer, MapObserver } from './observer';
 interface ActionFnOptions {
   messageBus: MessageBus
   store: Store
-  entitySpawner: unknown
-  entityDestroyer: unknown
+  gameObjectSpawner: unknown
+  gameObjectDestroyer: unknown
   deltaTime: number
 }
 
@@ -24,7 +24,7 @@ interface InitFnOptions {
   sceneName: string
   messageBusObserver: Observer
   storeObserver: Observer
-  entities: MapObserver
+  gameObjects: MapObserver
   pushMessage: (message: Message) => void
   pushAction: (action: ActionFn) => void
 }
@@ -38,15 +38,15 @@ interface UiBridgeOptions extends SystemOptions {
 
 export class UiBridge implements System {
   private sceneName: string;
-  private entityObserver: EntityObserver;
-  private entitySpawner: unknown;
-  private entityDestroyer: unknown;
+  private gameObjectObserver: GameObjectObserver;
+  private gameObjectSpawner: unknown;
+  private gameObjectDestroyer: unknown;
   private store: Store;
   private messageBus: MessageBus;
   private helpers: Record<string, HelperFn>;
   private messageBusObserver: Observer;
   private storeObserver: Observer;
-  private entities: MapObserver;
+  private gameObjects: MapObserver;
   private messageQueue: Array<Message>;
   private actionsQueue: Array<ActionFn>;
   private onUiInit?: InitFn;
@@ -54,9 +54,9 @@ export class UiBridge implements System {
 
   constructor(options: UiBridgeOptions) {
     const {
-      createEntityObserver,
-      entitySpawner,
-      entityDestroyer,
+      createGameObjectObserver,
+      gameObjectSpawner,
+      gameObjectDestroyer,
       store,
       messageBus,
       helpers,
@@ -65,18 +65,18 @@ export class UiBridge implements System {
     } = options;
 
     this.sceneName = sceneContext.name;
-    this.entityObserver = createEntityObserver({
+    this.gameObjectObserver = createGameObjectObserver({
       components: filterComponents,
     });
-    this.entitySpawner = entitySpawner;
-    this.entityDestroyer = entityDestroyer;
+    this.gameObjectSpawner = gameObjectSpawner;
+    this.gameObjectDestroyer = gameObjectDestroyer;
     this.store = store;
     this.messageBus = messageBus;
     this.helpers = helpers;
 
     this.messageBusObserver = new Observer();
     this.storeObserver = new Observer();
-    this.entities = new MapObserver();
+    this.gameObjects = new MapObserver();
 
     this.messageQueue = [];
     this.actionsQueue = [];
@@ -97,21 +97,21 @@ export class UiBridge implements System {
         storeObserver: this.storeObserver,
         pushMessage: this.pushMessage.bind(this),
         pushAction: this.pushAction.bind(this),
-        entities: this.entities,
+        gameObjects: this.gameObjects,
       });
     }
-    this.entityObserver.subscribe('onremove', this.handleEntityRemove);
+    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
   }
 
   unmount(): void {
     if (this.onUiDestroy) {
       this.onUiDestroy();
     }
-    this.entityObserver.unsubscribe('onremove', this.handleEntityRemove);
+    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
   }
 
-  private handleEntityRemove = (entity: Entity): void => {
-    this.entities.next(null, entity.getId());
+  private handleGameObjectRemove = (gameObject: GameObject): void => {
+    this.gameObjects.next(null, gameObject.getId());
   };
 
   private pushAction(action: ActionFn): void {
@@ -125,10 +125,10 @@ export class UiBridge implements System {
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
-    this.entityObserver.fireEvents();
+    this.gameObjectObserver.fireEvents();
 
-    this.entityObserver.forEach((entity) => {
-      this.entities.next(entity, entity.getId());
+    this.gameObjectObserver.forEach((gameObject) => {
+      this.gameObjects.next(gameObject, gameObject.getId());
     });
 
     this.messageBusObserver.next(this.messageBus);
@@ -145,8 +145,8 @@ export class UiBridge implements System {
         messageBus: this.messageBus,
         deltaTime,
         store: this.store,
-        entitySpawner: this.entitySpawner,
-        entityDestroyer: this.entityDestroyer,
+        gameObjectSpawner: this.gameObjectSpawner,
+        gameObjectDestroyer: this.gameObjectDestroyer,
       });
     });
 

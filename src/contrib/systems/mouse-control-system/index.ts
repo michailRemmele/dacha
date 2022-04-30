@@ -1,5 +1,5 @@
 import type { System, SystemOptions } from '../../../engine/system';
-import type { EntityObserver } from '../../../engine/entity';
+import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { MouseControl } from '../../components/mouse-control';
 
@@ -20,11 +20,11 @@ interface InputEventQueryMessage extends Message {
 }
 
 export class MouseControlSystem implements System {
-  private entityObserver: EntityObserver;
+  private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
 
   constructor(options: SystemOptions) {
-    this.entityObserver = options.createEntityObserver({
+    this.gameObjectObserver = options.createGameObjectObserver({
       components: [
         CONTROL_COMPONENT_NAME,
       ],
@@ -36,8 +36,8 @@ export class MouseControlSystem implements System {
     const messages = (this.messageBus.get(INPUT_MESSAGE) || []) as Array<InputEventQueryMessage>;
     messages.forEach((message) => {
       message.query.forEach((inputEvent) => {
-        this.entityObserver.forEach((entity) => {
-          const control = entity.getComponent(CONTROL_COMPONENT_NAME) as MouseControl;
+        this.gameObjectObserver.forEach((gameObject) => {
+          const control = gameObject.getComponent(CONTROL_COMPONENT_NAME) as MouseControl;
           const eventBinding = control.inputEventBindings[inputEvent.type];
 
           if (eventBinding) {
@@ -48,8 +48,8 @@ export class MouseControlSystem implements System {
             this.messageBus.send({
               type: eventBinding.messageType,
               ...eventBinding.attrs,
-              entity,
-              id: entity.getId(),
+              gameObject,
+              id: gameObject.getId(),
               x: inputEvent.x,
               y: inputEvent.y,
               screenX: inputEvent.screenX,

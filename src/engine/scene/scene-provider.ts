@@ -1,5 +1,5 @@
 import type { SceneConfig, LevelConfig } from '../types';
-import type { EntityCreator } from '../entity';
+import type { GameObjectCreator } from '../game-object';
 import type { System, HelperFn } from '../system';
 
 import { Scene } from './scene';
@@ -11,7 +11,7 @@ interface SceneProviderOptions {
   levels: Array<LevelConfig>
   systems: Record<string, { new(): System }>
   helpers: Record<string, HelperFn>
-  entityCreator: EntityCreator
+  gameObjectCreator: GameObjectCreator
 }
 
 export interface SceneLoadOptions {
@@ -36,7 +36,7 @@ export class SceneProvider {
   private sceneContainer: Record<string, Scene>;
   private currentSceneName?: string;
   private loadedScene?: Scene;
-  private entityCreator: EntityCreator;
+  private gameObjectCreator: GameObjectCreator;
 
   constructor({
     scenes,
@@ -44,7 +44,7 @@ export class SceneProvider {
     systems,
     loaders,
     helpers,
-    entityCreator,
+    gameObjectCreator,
   }: SceneProviderOptions) {
     this.sceneContainer = {};
     this.currentSceneName = void '';
@@ -63,7 +63,7 @@ export class SceneProvider {
     this.systems = systems;
     this.helpers = helpers;
     this.loadedScene = void 0;
-    this.entityCreator = entityCreator;
+    this.gameObjectCreator = gameObjectCreator;
   }
 
   prepareLoaders(): Promise<Array<Array<void>>> {
@@ -72,10 +72,12 @@ export class SceneProvider {
         const loaderConfig = this.availableLoaders[name];
         acc[name] = new Scene({
           ...loaderConfig,
-          entities: loaderConfig.level ? this.availableLevels[loaderConfig.level].entities : [],
+          gameObjects: loaderConfig.level
+            ? this.availableLevels[loaderConfig.level].gameObjects
+            : [],
           availableSystems: this.systems,
           helpers: this.helpers,
-          entityCreator: this.entityCreator,
+          gameObjectCreator: this.gameObjectCreator,
         });
         return acc;
       }, this.sceneContainer);
@@ -126,10 +128,10 @@ export class SceneProvider {
 
       scene = new Scene({
         ...this.availableScenes[name],
-        entities: levelName ? this.availableLevels[levelName].entities : [],
+        gameObjects: levelName ? this.availableLevels[levelName].gameObjects : [],
         availableSystems: this.systems,
         helpers: this.helpers,
-        entityCreator: this.entityCreator,
+        gameObjectCreator: this.gameObjectCreator,
       });
 
       const asyncLoading = scene.load();

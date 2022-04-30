@@ -4,39 +4,39 @@ import { filterByKey } from '../utils';
 export interface ComponentsEditionEvent {
   type: 'COMPONENT_ADDED' | 'COMPONENT_REMOVED';
   componentName: string;
-  entity: Entity;
+  gameObject: GameObject;
 }
 
-export interface EntityOptions {
+export interface GameObjectOptions {
   id: string
   name: string
-  prefabName?: string
+  templateName?: string
   type?: string
 }
 
-export class Entity {
+export class GameObject {
   private components: Record<string, Component>;
-  private children: Array<Entity>;
+  private children: Array<GameObject>;
   private subscribers: Array<(event: ComponentsEditionEvent) => void>;
-  private childrenNames: Record<string, Entity>;
-  private childrenIds: Record<string, Entity>;
+  private childrenNames: Record<string, GameObject>;
+  private childrenIds: Record<string, GameObject>;
 
   public readonly id: string;
   public name: string;
   public type?: string;
-  public readonly prefabName?: string;
-  public parent?: Entity;
+  public readonly templateName?: string;
+  public parent?: GameObject;
 
   constructor({
     id,
     name,
-    prefabName,
+    templateName,
     type,
-  }: EntityOptions) {
+  }: GameObjectOptions) {
     this.id = id;
     this.name = name;
     this.type = type;
-    this.prefabName = prefabName;
+    this.templateName = templateName;
     this.components = {};
     this.parent = void 0;
     this.children = [];
@@ -46,19 +46,19 @@ export class Entity {
     this.subscribers = [];
   }
 
-  getAncestor(): Entity {
-    const findAncestor = (entity: Entity): Entity => {
-      if (entity.parent) {
-        return findAncestor(entity.parent);
+  getAncestor(): GameObject {
+    const findAncestor = (gameObject: GameObject): GameObject => {
+      if (gameObject.parent) {
+        return findAncestor(gameObject.parent);
       }
 
-      return entity;
+      return gameObject;
     };
 
     return findAncestor(this);
   }
 
-  appendChild(child: Entity): void {
+  appendChild(child: GameObject): void {
     this.children.push(child);
     child.parent = this;
 
@@ -73,23 +73,23 @@ export class Entity {
     this.childrenNames[child.name] = child;
   }
 
-  removeChild(child: Entity): void {
-    this.children = this.children.filter((entity) => entity.id !== child.id);
+  removeChild(child: GameObject): void {
+    this.children = this.children.filter((gameObject) => gameObject.id !== child.id);
     child.parent = void 0;
 
     this.childrenIds = filterByKey(this.childrenIds, child.id);
     this.childrenNames = filterByKey(this.childrenNames, child.name);
   }
 
-  getChildren(): Array<Entity> {
+  getChildren(): Array<GameObject> {
     return this.children;
   }
 
-  getChildById(id: string): Entity | undefined {
+  getChildById(id: string): GameObject | undefined {
     return this.childrenIds[id];
   }
 
-  getChildByName(name: string): Entity | undefined {
+  getChildByName(name: string): GameObject | undefined {
     return this.childrenNames[name];
   }
 
@@ -107,13 +107,13 @@ export class Entity {
 
   setComponent(name: string, component: Component): void {
     this.components[name] = component;
-    component.entity = this;
+    component.gameObject = this;
 
     this.subscribers.forEach((callback) => {
       callback({
         type: 'COMPONENT_ADDED',
         componentName: name,
-        entity: this,
+        gameObject: this,
       });
     });
   }
@@ -123,14 +123,14 @@ export class Entity {
       return;
     }
 
-    this.components[name].entity = void 0;
+    this.components[name].gameObject = void 0;
     this.components = filterByKey(this.components, name);
 
     this.subscribers.forEach((callback) => {
       callback({
         type: 'COMPONENT_REMOVED',
         componentName: name,
-        entity: this,
+        gameObject: this,
       });
     });
   }

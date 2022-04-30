@@ -1,6 +1,6 @@
 import type { Scene, Light as ThreeJSLight } from 'three';
 
-import type { Entity, EntityObserver } from '../../../../engine/entity';
+import type { GameObject, GameObjectObserver } from '../../../../engine/game-object';
 import type { Light } from '../../../components/light';
 import type { Transform } from '../../../components/transform';
 import { filterByKey } from '../../../../engine/utils';
@@ -13,10 +13,10 @@ import { createLight, updateLight } from './light-factory';
 
 export class LightSubsystem {
   private renderScene: Scene;
-  private lightsObserver: EntityObserver;
+  private lightsObserver: GameObjectObserver;
   private lightsMap: Record<string, number>;
 
-  constructor(renderScene: Scene, lightsObserver: EntityObserver) {
+  constructor(renderScene: Scene, lightsObserver: GameObjectObserver) {
     this.renderScene = renderScene;
     this.lightsObserver = lightsObserver;
 
@@ -33,37 +33,37 @@ export class LightSubsystem {
     this.lightsObserver.unsubscribe('onremove', this.handleLightRemove);
   }
 
-  private handleLightAdd = (entity: Entity): void => {
-    const { type } = entity.getComponent(LIGHT_COMPONENT_NAME) as Light;
+  private handleLightAdd = (gameObject: GameObject): void => {
+    const { type } = gameObject.getComponent(LIGHT_COMPONENT_NAME) as Light;
 
     const light = createLight(type);
 
-    light.userData.entity = entity;
-    this.lightsMap[entity.getId()] = light.id;
+    light.userData.gameObject = gameObject;
+    this.lightsMap[gameObject.getId()] = light.id;
 
     this.renderScene.add(light);
   };
 
-  private handleLightRemove = (entity: Entity): void => {
-    const entityId = entity.getId();
-    const object = this.renderScene.getObjectById(this.lightsMap[entityId]);
+  private handleLightRemove = (gameObject: GameObject): void => {
+    const gameObjectId = gameObject.getId();
+    const object = this.renderScene.getObjectById(this.lightsMap[gameObjectId]);
 
     if (object) {
       this.renderScene.remove(object);
     }
 
-    this.lightsMap = filterByKey(this.lightsMap, entityId);
+    this.lightsMap = filterByKey(this.lightsMap, gameObjectId);
   };
 
   update(): void {
     this.lightsObserver.fireEvents();
 
-    this.lightsObserver.getList().forEach((entity) => {
-      const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-      const { type, options } = entity.getComponent(LIGHT_COMPONENT_NAME) as Light;
+    this.lightsObserver.getList().forEach((gameObject) => {
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+      const { type, options } = gameObject.getComponent(LIGHT_COMPONENT_NAME) as Light;
 
       const light = this.renderScene.getObjectById(
-        this.lightsMap[entity.getId()],
+        this.lightsMap[gameObject.getId()],
       ) as ThreeJSLight;
 
       if (!light) {

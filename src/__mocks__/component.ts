@@ -4,6 +4,6 @@ export const createMockComponent = (name: string, config?: Record<string, unknow
   componentName: name,
   clone: () => createMockComponent(name, config),
   getParentComponent: () => {},
-  entity: void 0,
+  gameObject: void 0,
   ...config,
 });

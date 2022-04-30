@@ -1,9 +1,9 @@
 {
-  "name": "prefabExample",
+  "name": "templateExample",
   "type": "example",
   "children": [
     {
-      "name": "childPrefabExample",
+      "name": "childTemplateExample",
       "type": "exampleChild",
       "children": [],
       "components": [
@@ -22,7 +22,7 @@
     {
       "name": "test2",
       "config": {
-        "testField4": "testField4ValuePrefab",
+        "testField4": "testField4ValueTemplate",
         "testField5": true,
         "testField6": 200
       }

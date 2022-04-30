@@ -1,5 +1,5 @@
 import { Renderable, RenderableConfig } from '../../../../components/renderable';
-import { Entity } from '../../../../../engine/entity/entity';
+import { GameObject } from '../../../../../engine/game-object/game-object';
 
 import { sortByFit } from '../sort-by-fit';
 
@@ -24,21 +24,21 @@ describe('Contrib -> RenderSystem -> Sort -> sortByFit()', () => {
   };
 
   it('Returns correct order of objects', () => {
-    const entity1 = new Entity({ id: '1', name: 'mock-entity-1' });
-    const entity2 = new Entity({ id: '2', name: 'mock-entity-2' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    entity1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    entity2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
 
-    expect(sortByFit(entity1, entity2)).toBe(0);
+    expect(sortByFit(gameObject1, gameObject2)).toBe(0);
 
-    (entity2.getComponent('renderable') as Renderable).fit = 'repeat';
+    (gameObject2.getComponent('renderable') as Renderable).fit = 'repeat';
 
-    expect(sortByFit(entity1, entity2)).toBeGreaterThan(0);
+    expect(sortByFit(gameObject1, gameObject2)).toBeGreaterThan(0);
 
-    (entity2.getComponent('renderable') as Renderable).fit = 'stretch';
-    (entity1.getComponent('renderable') as Renderable).fit = 'repeat';
+    (gameObject2.getComponent('renderable') as Renderable).fit = 'stretch';
+    (gameObject1.getComponent('renderable') as Renderable).fit = 'repeat';
 
-    expect(sortByFit(entity1, entity2)).toBeLessThan(0);
+    expect(sortByFit(gameObject1, gameObject2)).toBeLessThan(0);
   });
 });

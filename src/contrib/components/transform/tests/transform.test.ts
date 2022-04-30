@@ -1,4 +1,4 @@
-import { Entity } from '../../../../engine/entity';
+import { GameObject } from '../../../../engine/game-object';
 import { Transform } from '../index';
 
 describe('Contrib -> components -> Transform', () => {
@@ -32,16 +32,16 @@ describe('Contrib -> components -> Transform', () => {
       scaleY: 12,
     }).clone();
 
-    const entity1 = new Entity({ id: '1', name: 'mock-entity-1' });
-    const entity2 = new Entity({ id: '2', name: 'mock-entity-2' });
-    const entity3 = new Entity({ id: '3', name: 'mock-entity-3' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const gameObject3 = new GameObject({ id: '3', name: 'mock-game-object-3' });
 
-    entity1.setComponent('transform', transform1);
-    entity2.setComponent('transform', transform2);
-    entity3.setComponent('transform', transform3);
+    gameObject1.setComponent('transform', transform1);
+    gameObject2.setComponent('transform', transform2);
+    gameObject3.setComponent('transform', transform3);
 
-    entity3.appendChild(entity2);
-    entity2.appendChild(entity1);
+    gameObject3.appendChild(gameObject2);
+    gameObject2.appendChild(gameObject1);
   });
 
   it('Returns correct absolute values ', () => {

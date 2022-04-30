@@ -1,33 +1,33 @@
-import { Entity } from '../entity';
+import { GameObject } from '../game-object';
 
 export const findParentComponent = (
-  entity: Entity,
+  gameObject: GameObject,
   componentName: string,
 ): Component | void => {
-  if (!entity.parent) {
+  if (!gameObject.parent) {
     return void 0;
   }
 
-  const parentComponent = entity.parent.getComponent(componentName);
+  const parentComponent = gameObject.parent.getComponent(componentName);
 
-  return parentComponent || findParentComponent(entity.parent, componentName);
+  return parentComponent || findParentComponent(gameObject.parent, componentName);
 };
 
 export abstract class Component {
   public componentName: string;
-  public entity?: Entity;
+  public gameObject?: GameObject;
 
   constructor(name: string) {
     this.componentName = name;
-    this.entity = void 0;
+    this.gameObject = void 0;
   }
 
   getParentComponent() {
-    if (!this.entity) {
+    if (!this.gameObject) {
       return void 0;
     }
 
-    return findParentComponent(this.entity, this.componentName);
+    return findParentComponent(this.gameObject, this.componentName);
   }
 
   abstract clone(): Component;

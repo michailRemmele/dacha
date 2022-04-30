@@ -1,6 +1,6 @@
 import { Renderable, RenderableConfig } from '../../../../components/renderable';
 import { Transform, TransformConfig } from '../../../../components/transform';
-import { Entity } from '../../../../../engine/entity/entity';
+import { GameObject } from '../../../../../engine/game-object/game-object';
 
 import { sortByYAxis } from '../sort-by-y-axis';
 
@@ -33,50 +33,50 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
   };
 
   it('Returns correct order of objects while equals height', () => {
-    const entity1 = new Entity({ id: '1', name: 'mock-entity-1' });
-    const entity2 = new Entity({ id: '2', name: 'mock-entity-2' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    entity1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    entity1.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
 
-    entity2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    entity2.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));
 
-    expect(sortByYAxis(entity1, entity2)).toBe(0);
+    expect(sortByYAxis(gameObject1, gameObject2)).toBe(0);
 
-    (entity2.getComponent('transform') as Transform).offsetY = 50;
+    (gameObject2.getComponent('transform') as Transform).offsetY = 50;
 
-    expect(sortByYAxis(entity1, entity2)).toBeLessThan(0);
+    expect(sortByYAxis(gameObject1, gameObject2)).toBeLessThan(0);
 
-    (entity1.getComponent('transform') as Transform).offsetY = 100;
+    (gameObject1.getComponent('transform') as Transform).offsetY = 100;
 
-    expect(sortByYAxis(entity1, entity2)).toBeGreaterThan(0);
+    expect(sortByYAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
   });
 
   it('Returns correct order of objects while different height', () => {
-    const entity1 = new Entity({ id: '1', name: 'mock-entity-1' });
-    const entity2 = new Entity({ id: '2', name: 'mock-entity-2' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    entity1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    entity1.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
 
-    entity2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    entity2.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));
 
-    (entity1.getComponent('transform') as Transform).offsetY = 100;
-    (entity2.getComponent('transform') as Transform).offsetY = 50;
+    (gameObject1.getComponent('transform') as Transform).offsetY = 100;
+    (gameObject2.getComponent('transform') as Transform).offsetY = 50;
 
-    (entity1.getComponent('renderable') as Renderable).height = 10;
-    (entity2.getComponent('renderable') as Renderable).height = 100;
+    (gameObject1.getComponent('renderable') as Renderable).height = 10;
+    (gameObject2.getComponent('renderable') as Renderable).height = 100;
 
-    expect(sortByYAxis(entity1, entity2)).toBeGreaterThan(0);
+    expect(sortByYAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
 
-    (entity2.getComponent('renderable') as Renderable).height = 110;
+    (gameObject2.getComponent('renderable') as Renderable).height = 110;
 
-    expect(sortByYAxis(entity1, entity2)).toBe(0);
+    expect(sortByYAxis(gameObject1, gameObject2)).toBe(0);
 
-    (entity2.getComponent('renderable') as Renderable).height = 130;
+    (gameObject2.getComponent('renderable') as Renderable).height = 130;
 
-    expect(sortByYAxis(entity1, entity2)).toBeLessThan(0);
+    expect(sortByYAxis(gameObject1, gameObject2)).toBeLessThan(0);
   });
 });

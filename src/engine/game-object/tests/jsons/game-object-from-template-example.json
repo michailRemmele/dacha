@@ -1,17 +1,17 @@
 
 {
   "id": "003",
-  "name": "entityFromPrefabExample",
+  "name": "gameObjectFromTemplateExample",
   "type": "example",
-  "fromPrefab": true,
-  "prefabName": "prefabExample",
+  "fromTemplate": true,
+  "templateName": "templateExample",
   "children": [
     {
       "id": "004",
-      "name": "childFromPrefabExample1",
+      "name": "childFromTemplateExample1",
       "type": "exampleChild",
-      "fromPrefab": true,
-      "prefabName": "childPrefabExample",
+      "fromTemplate": true,
+      "templateName": "childTemplateExample",
       "children": [],
       "components": [
         {
@@ -26,7 +26,7 @@
     },
     {
       "id": "005",
-      "name": "childFromPrefabExample2",
+      "name": "childFromTemplateExample2",
       "type": "exampleChild",
       "children": [],
       "components": [
@@ -45,7 +45,7 @@
     {
       "name": "test1",
       "config": {
-        "testField1": "testField1ValueFromPrefab",
+        "testField1": "testField1ValueFromTemplate",
         "testField2": false,
         "testField3": 100
       }

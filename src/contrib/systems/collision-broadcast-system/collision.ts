@@ -1,4 +1,4 @@
-import type { Entity } from '../../../engine/entity';
+import type { GameObject } from '../../../engine/game-object';
 
 const STATE: Record<number, 'ENTER' | 'STAY' | 'LEAVE'> = {
   2: 'ENTER',
@@ -9,14 +9,14 @@ const STATE: Record<number, 'ENTER' | 'STAY' | 'LEAVE'> = {
 export class Collision {
   private lifetime: number;
 
-  entity1: Entity;
-  entity2: Entity;
+  gameObject1: GameObject;
+  gameObject2: GameObject;
   mtv1: unknown;
   mtv2: unknown;
 
-  constructor(entity1: Entity, entity2: Entity, mtv1: unknown, mtv2: unknown) {
-    this.entity1 = entity1;
-    this.entity2 = entity2;
+  constructor(gameObject1: GameObject, gameObject2: GameObject, mtv1: unknown, mtv2: unknown) {
+    this.gameObject1 = gameObject1;
+    this.gameObject2 = gameObject2;
     this.lifetime = 2;
     this.mtv1 = mtv1;
     this.mtv2 = mtv2;

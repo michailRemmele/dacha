@@ -4,7 +4,7 @@ import type {
   UpdateOptions,
   HelperFn,
 } from '../../../engine/system';
-import type { EntityObserver, Entity } from '../../../engine/entity';
+import type { GameObjectObserver, GameObject } from '../../../engine/game-object';
 import type { Store } from '../../../engine/scene/store';
 import type { MessageBus } from '../../../engine/message-bus';
 import type { Script as ScriptComponent } from '../../components/script';
@@ -20,10 +20,10 @@ export interface ScriptClass {
 }
 
 export class ScriptSystem implements System {
-  private entityObserver: EntityObserver;
-  private scriptsObserver: EntityObserver;
-  private entitySpawner: unknown;
-  private entityDestroyer: unknown;
+  private gameObjectObserver: GameObjectObserver;
+  private scriptsObserver: GameObjectObserver;
+  private gameObjectSpawner: unknown;
+  private gameObjectDestroyer: unknown;
   private store: Store;
   private scripts: Record<string, ScriptClass>;
   private messageBus: MessageBus;
@@ -32,22 +32,22 @@ export class ScriptSystem implements System {
 
   constructor(options: SystemOptions) {
     const {
-      createEntityObserver,
-      entitySpawner,
-      entityDestroyer,
+      createGameObjectObserver,
+      gameObjectSpawner,
+      gameObjectDestroyer,
       store,
       messageBus,
       helpers,
     } = options;
 
-    this.entityObserver = createEntityObserver({});
-    this.scriptsObserver = createEntityObserver({
+    this.gameObjectObserver = createGameObjectObserver({});
+    this.scriptsObserver = createGameObjectObserver({
       components: [
         SCRIPT_COMPONENT_NAME,
       ],
     });
-    this.entitySpawner = entitySpawner;
-    this.entityDestroyer = entityDestroyer;
+    this.gameObjectSpawner = gameObjectSpawner;
+    this.gameObjectDestroyer = gameObjectDestroyer;
     this.store = store;
     this.scripts = {};
     this.messageBus = messageBus;
@@ -62,19 +62,19 @@ export class ScriptSystem implements System {
   }
 
   mount(): void {
-    this.scriptsObserver.subscribe('onremove', this.handleEntityRemove);
+    this.scriptsObserver.subscribe('onremove', this.handleGameObjectRemove);
   }
 
   unmount(): void {
-    this.scriptsObserver.unsubscribe('onremove', this.handleEntityRemove);
+    this.scriptsObserver.unsubscribe('onremove', this.handleGameObjectRemove);
   }
 
-  private handleEntityRemove = (entity: Entity): void => {
-    const entityId = entity.getId();
+  private handleGameObjectRemove = (gameObject: GameObject): void => {
+    const gameObjectId = gameObject.getId();
 
     this.activeScripts = Object.keys(this.activeScripts)
       .reduce((acc: Record<string, Script>, key) => {
-        if (key !== entityId) {
+        if (key !== gameObjectId) {
           acc[key] = this.activeScripts[key];
         }
 
@@ -87,23 +87,23 @@ export class ScriptSystem implements System {
 
     this.scriptsObserver.fireEvents();
 
-    this.scriptsObserver.forEach((entity) => {
-      const id = entity.getId();
+    this.scriptsObserver.forEach((gameObject) => {
+      const id = gameObject.getId();
       const {
         name,
         options: scriptOptions,
-      } = entity.getComponent(SCRIPT_COMPONENT_NAME) as ScriptComponent;
+      } = gameObject.getComponent(SCRIPT_COMPONENT_NAME) as ScriptComponent;
 
       const Script = this.scripts[name];
 
       this.activeScripts[id] = this.activeScripts[id]
         || new Script({
-          entity,
-          entityObserver: this.entityObserver,
+          gameObject,
+          gameObjectObserver: this.gameObjectObserver,
           messageBus: this.messageBus,
           store: this.store,
-          spawner: this.entitySpawner,
-          destroyer: this.entityDestroyer,
+          spawner: this.gameObjectSpawner,
+          destroyer: this.gameObjectDestroyer,
           ...scriptOptions,
         });
 
