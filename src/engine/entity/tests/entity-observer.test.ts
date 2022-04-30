@@ -1,6 +1,7 @@
 import { Scene } from '../../scene';
 import { createMockComponent } from '../../../__mocks__';
 import { EntityObserver } from '../entity-observer';
+import { EntityCreator } from '../entity-creator';
 import { Entity } from '../entity';
 
 jest.mock('../../ioc/ioc');
@@ -15,7 +16,14 @@ describe('Engine -> EntityObserver', () => {
   let entity5: Entity;
 
   beforeEach(() => {
-    scene = new Scene({ name: 'test-scene', entities: [] });
+    scene = new Scene({
+      name: 'test-scene',
+      entities: [],
+      availableSystems: {},
+      helpers: {},
+      systems: [],
+      entityCreator: new EntityCreator({}),
+    });
 
     entity1 = new Entity({
       id: '1',

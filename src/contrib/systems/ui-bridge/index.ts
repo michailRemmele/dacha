@@ -1,0 +1,155 @@
+import type {
+  System,
+  SystemOptions,
+  UpdateOptions,
+  HelperFn,
+} from '../../../engine/system';
+import type { Entity, EntityObserver } from '../../../engine/entity';
+import type { MessageBus, Message } from '../../../engine/message-bus';
+import type { Store } from '../../../engine/scene';
+
+import { Observer, MapObserver } from './observer';
+
+interface ActionFnOptions {
+  messageBus: MessageBus
+  store: Store
+  entitySpawner: unknown
+  entityDestroyer: unknown
+  deltaTime: number
+}
+
+type ActionFn = (options: ActionFnOptions) => void;
+
+interface InitFnOptions {
+  sceneName: string
+  messageBusObserver: Observer
+  storeObserver: Observer
+  entities: MapObserver
+  pushMessage: (message: Message) => void
+  pushAction: (action: ActionFn) => void
+}
+
+type InitFn = (options: InitFnOptions) => void;
+type DestroyFn = () => void;
+
+interface UiBridgeOptions extends SystemOptions {
+  filterComponents: Array<string>;
+}
+
+export class UiBridge implements System {
+  private sceneName: string;
+  private entityObserver: EntityObserver;
+  private entitySpawner: unknown;
+  private entityDestroyer: unknown;
+  private store: Store;
+  private messageBus: MessageBus;
+  private helpers: Record<string, HelperFn>;
+  private messageBusObserver: Observer;
+  private storeObserver: Observer;
+  private entities: MapObserver;
+  private messageQueue: Array<Message>;
+  private actionsQueue: Array<ActionFn>;
+  private onUiInit?: InitFn;
+  private onUiDestroy?: DestroyFn;
+
+  constructor(options: UiBridgeOptions) {
+    const {
+      createEntityObserver,
+      entitySpawner,
+      entityDestroyer,
+      store,
+      messageBus,
+      helpers,
+      sceneContext,
+      filterComponents,
+    } = options;
+
+    this.sceneName = sceneContext.name;
+    this.entityObserver = createEntityObserver({
+      components: filterComponents,
+    });
+    this.entitySpawner = entitySpawner;
+    this.entityDestroyer = entityDestroyer;
+    this.store = store;
+    this.messageBus = messageBus;
+    this.helpers = helpers;
+
+    this.messageBusObserver = new Observer();
+    this.storeObserver = new Observer();
+    this.entities = new MapObserver();
+
+    this.messageQueue = [];
+    this.actionsQueue = [];
+  }
+
+  async load(): Promise<void> {
+    const { onInit, onDestroy } = await this.helpers.loadUiApp();
+
+    this.onUiInit = onInit as InitFn;
+    this.onUiDestroy = onDestroy as DestroyFn;
+  }
+
+  mount(): void {
+    if (this.onUiInit) {
+      this.onUiInit({
+        sceneName: this.sceneName,
+        messageBusObserver: this.messageBusObserver,
+        storeObserver: this.storeObserver,
+        pushMessage: this.pushMessage.bind(this),
+        pushAction: this.pushAction.bind(this),
+        entities: this.entities,
+      });
+    }
+    this.entityObserver.subscribe('onremove', this.handleEntityRemove);
+  }
+
+  unmount(): void {
+    if (this.onUiDestroy) {
+      this.onUiDestroy();
+    }
+    this.entityObserver.unsubscribe('onremove', this.handleEntityRemove);
+  }
+
+  private handleEntityRemove = (entity: Entity): void => {
+    this.entities.next(null, entity.getId());
+  };
+
+  private pushAction(action: ActionFn): void {
+    this.actionsQueue.push(action);
+  }
+
+  private pushMessage(message: Message): void {
+    this.messageQueue.push(message);
+  }
+
+  update(options: UpdateOptions): void {
+    const { deltaTime } = options;
+
+    this.entityObserver.fireEvents();
+
+    this.entityObserver.forEach((entity) => {
+      this.entities.next(entity, entity.getId());
+    });
+
+    this.messageBusObserver.next(this.messageBus);
+    this.storeObserver.next(this.store);
+
+    this.messageQueue.forEach((message) => {
+      this.messageBus.send(message, true);
+    });
+
+    this.messageQueue = [];
+
+    this.actionsQueue.forEach((action) => {
+      action({
+        messageBus: this.messageBus,
+        deltaTime,
+        store: this.store,
+        entitySpawner: this.entitySpawner,
+        entityDestroyer: this.entityDestroyer,
+      });
+    });
+
+    this.actionsQueue = [];
+  }
+}

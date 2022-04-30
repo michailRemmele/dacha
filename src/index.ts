@@ -1,23 +1,23 @@
 import { Engine } from './engine';
 import { Component } from './engine/component';
-import { systemsPlugins as contribSystemsPlugins } from './contrib/system-plugins';
+import { systems as contribSystems } from './contrib/systems';
 import contribComponents from './contrib/components';
 import IOC from './engine/ioc/ioc';
 import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
 import { RESOURCES_LOADER_KEY_NAME } from './engine/consts/global';
 
-export {
-  SystemPlugin,
-  SystemPluginOptions,
+export type {
   System,
   SystemOptions,
+  UpdateOptions,
+  HelperFn,
 } from './engine/system';
-export { Script, ScriptOptions } from './contrib/systems/script-system';
+export type { Script, ScriptOptions } from './contrib/systems/script-system';
 
 export {
   Engine,
   Component,
-  contribSystemsPlugins,
+  contribSystems,
   contribComponents,
   IOC,
   VectorOps,

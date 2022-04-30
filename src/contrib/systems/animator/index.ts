@@ -1,4 +1,4 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import type { System, SystemOptions, UpdateOptions } from '../../../engine/system';
 import type { Entity, EntityObserver } from '../../../engine/entity';
 import type { MessageBus } from '../../../engine/message-bus';
 import type { Animatable } from '../../components/animatable';
@@ -17,19 +17,16 @@ const FRAME_RATE = 100;
 
 const ANIMATABLE_COMPONENT_NAME = 'animatable';
 
-interface AnimatorOptions {
-  entityObserver: EntityObserver
-  messageBus: MessageBus
-}
-
 export class Animator implements System {
   private entityObserver: EntityObserver;
   private messageBus: MessageBus;
   private conditionControllers: Record<string, ConditionController>;
   private substatePickers: Record<string, Picker>;
 
-  constructor(options: AnimatorOptions) {
-    this.entityObserver = options.entityObserver;
+  constructor(options: SystemOptions) {
+    this.entityObserver = options.createEntityObserver({
+      components: [ANIMATABLE_COMPONENT_NAME],
+    });
     this.messageBus = options.messageBus;
     this.conditionControllers = Object.keys(conditionControllers).reduce(
       (storage: Record<string, ConditionController>, key) => {
@@ -58,7 +55,7 @@ export class Animator implements System {
     return substatePicker.getSubstate(entity, state.substates, state.pickProps);
   }
 
-  update(options: SystemOptions): void {
+  update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
     this.entityObserver.forEach((entity) => {

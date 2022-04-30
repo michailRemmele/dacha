@@ -1,4 +1,9 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import type {
+  System,
+  SystemOptions,
+  UpdateOptions,
+  HelperFn,
+} from '../../../engine/system';
 import type { EntityObserver, Entity } from '../../../engine/entity';
 import type { Store } from '../../../engine/scene/store';
 import type { MessageBus } from '../../../engine/message-bus';
@@ -14,16 +19,6 @@ export interface ScriptClass {
   new(options: ScriptOptions): Script
 }
 
-interface ScriptSystemOptions {
-  entityObserver: EntityObserver
-  scriptsObserver: EntityObserver
-  entitySpawner: unknown
-  entityDestroyer: unknown
-  store: Store
-  messageBus: MessageBus
-  scripts: Record<string, ScriptClass>
-}
-
 export class ScriptSystem implements System {
   private entityObserver: EntityObserver;
   private scriptsObserver: EntityObserver;
@@ -33,34 +28,44 @@ export class ScriptSystem implements System {
   private scripts: Record<string, ScriptClass>;
   private messageBus: MessageBus;
   private activeScripts: Record<string, Script>;
+  private helpers: Record<string, HelperFn>;
 
-  constructor(options: ScriptSystemOptions) {
+  constructor(options: SystemOptions) {
     const {
-      entityObserver,
-      scriptsObserver,
+      createEntityObserver,
       entitySpawner,
       entityDestroyer,
       store,
-      scripts,
       messageBus,
+      helpers,
     } = options;
 
-    this.entityObserver = entityObserver;
-    this.scriptsObserver = scriptsObserver;
+    this.entityObserver = createEntityObserver({});
+    this.scriptsObserver = createEntityObserver({
+      components: [
+        SCRIPT_COMPONENT_NAME,
+      ],
+    });
     this.entitySpawner = entitySpawner;
     this.entityDestroyer = entityDestroyer;
     this.store = store;
-    this.scripts = scripts;
+    this.scripts = {};
     this.messageBus = messageBus;
+    this.helpers = helpers;
 
     this.activeScripts = {};
   }
 
-  systemDidMount(): void {
+  async load(): Promise<void> {
+    const { scripts } = await this.helpers.loadScripts<Record<string, ScriptClass>>();
+    this.scripts = scripts;
+  }
+
+  mount(): void {
     this.scriptsObserver.subscribe('onremove', this.handleEntityRemove);
   }
 
-  systemWillUnmount(): void {
+  unmount(): void {
     this.scriptsObserver.unsubscribe('onremove', this.handleEntityRemove);
   }
 
@@ -77,7 +82,7 @@ export class ScriptSystem implements System {
       }, {});
   };
 
-  update(options: SystemOptions): void {
+  update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
     this.scriptsObserver.fireEvents();

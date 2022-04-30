@@ -15,7 +15,12 @@ const COLLISION_MESSAGE = 'COLLISION';
 
 export class CollisionDetectionSystem {
   constructor(options) {
-    this._entityObserver = options.entityObserver;
+    this._entityObserver = options.createEntityObserver({
+      components: [
+        COLLIDER_CONTAINER_COMPONENT_NAME,
+        TRANSFORM_COMPONENT_NAME,
+      ],
+    });
     this.messageBus = options.messageBus;
     this._coordintatesCalculators = Object.keys(coordintatesCalculators).reduce((storage, key) => {
       const CoordinatesCalculator = coordintatesCalculators[key];
@@ -46,11 +51,11 @@ export class CollisionDetectionSystem {
     this._lastProcessedEntities = {};
   }
 
-  systemDidMount() {
+  mount() {
     this._entityObserver.subscribe('onremove', this._handleEntityRemove);
   }
 
-  systemWillUnmount() {
+  unmount() {
     this._entityObserver.unsubscribe('onremove', this._handleEntityRemove);
   }
 

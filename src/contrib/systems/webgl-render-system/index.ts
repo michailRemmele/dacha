@@ -1,8 +1,11 @@
+import type { System, SystemOptions } from '../../../engine/system';
 import { Entity, EntityObserver } from '../../../engine/entity';
 import { Store } from '../../../engine/scene';
 import { Renderable } from '../../components/renderable';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
+import IOC from '../../../engine/ioc/ioc';
+import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
 
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
@@ -48,21 +51,26 @@ interface ViewMatrixStats {
   scale?: number;
 }
 
-interface RendererOptions {
-  window: HTMLElement;
-  textureAtlas: HTMLImageElement;
-  textureAtlasDescriptor: Record<string, TextureDescriptor>;
+// TODO: Remove once resource loader will be moved to ts
+interface ResourceLoader {
+  load: (resource: string) => unknown;
+}
+
+interface WebGLRendererOptions extends SystemOptions {
+  windowNodeId: string;
+  textureAtlas: string;
+  textureAtlasDescriptor: string;
   backgroundColor: string;
-  entityObserver: EntityObserver;
   sortingLayers: Array<string>;
-  store: Store;
   scaleSensitivity: number;
 }
 
 export { TextureDescriptor } from './texture-handlers';
 
-export class RenderSystem {
-  private textureAtlas: HTMLImageElement;
+export class RenderSystem implements System {
+  private textureAtlasSrc: string;
+  private textureAtlasDescriptorSrc: string;
+  private textureAtlas?: HTMLImageElement;
   private textureAtlasSize: {
     width: number;
     height: number;
@@ -97,20 +105,27 @@ export class RenderSystem {
   private _variables: Record<string, number | WebGLUniformLocation | null>;
   private sortFn: SortFn;
 
-  constructor(options: RendererOptions) {
+  constructor(options: WebGLRendererOptions) {
     const {
-      window, textureAtlas,
+      windowNodeId, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
-      entityObserver, sortingLayers,
+      createEntityObserver, sortingLayers,
       store, scaleSensitivity,
     } = options;
 
-    this.textureAtlas = textureAtlas;
+    const window = document.getElementById(windowNodeId);
+
+    if (!window) {
+      throw new Error('Unable to load RenderSystem. Root canvas node not found');
+    }
+
+    this.textureAtlasSrc = textureAtlas;
+    this.textureAtlasDescriptorSrc = textureAtlasDescriptor;
+    this.textureAtlasDescriptor = {};
     this.textureAtlasSize = {
-      width: this.textureAtlas.width,
-      height: this.textureAtlas.height,
+      width: 0,
+      height: 0,
     };
-    this.textureAtlasDescriptor = textureAtlasDescriptor;
     this.textureHandlers = Object
       .keys(textureHandlers)
       .reduce((storage: Record<string, TextureHandler>, key) => {
@@ -122,8 +137,6 @@ export class RenderSystem {
     this._matrixTransformer = new MatrixTransformer();
 
     this._backgroundColor = new Color(backgroundColor);
-
-    this.shaderProvider = new ShaderProvider(entityObserver);
 
     this._view = window as HTMLCanvasElement;
     this._viewWidth = 0;
@@ -147,7 +160,14 @@ export class RenderSystem {
     ]);
 
     this._store = store;
-    this._entityObserver = entityObserver;
+    this._entityObserver = createEntityObserver({
+      components: [
+        RENDERABLE_COMPONENT_NAME,
+        TRANSFORM_COMPONENT_NAME,
+      ],
+    });
+
+    this.shaderProvider = new ShaderProvider(this._entityObserver);
 
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
@@ -163,7 +183,7 @@ export class RenderSystem {
     this._vertexData = new Float32Array(VERTEX_DATA_STRIDE);
   }
 
-  systemDidMount() {
+  mount(): void {
     window.addEventListener('resize', this._onWindowResizeBind);
     this._entityObserver.subscribe('onremove', this.handleEntityRemove);
     this.gl = this._initGraphicContext();
@@ -174,7 +194,7 @@ export class RenderSystem {
     this.textures = this._initTextures();
   }
 
-  systemWillUnmount() {
+  unmount(): void {
     window.removeEventListener('resize', this._onWindowResizeBind);
     this._entityObserver.unsubscribe('onremove', this.handleEntityRemove);
     this._shaders.forEach((shader) => {
@@ -198,6 +218,20 @@ export class RenderSystem {
     this._vaoExt = null;
     this._geometry = {};
     this._viewMatrixStats = {};
+  }
+
+  async load(): Promise<void> {
+    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
+
+    const resources = [this.textureAtlasSrc, this.textureAtlasDescriptorSrc];
+    const [textureAtlas, textureAtlasDescriptor] = await Promise.all(
+      resources.map((resource) => resourceLoader.load(resource)),
+    ) as [HTMLImageElement, Record<string, TextureDescriptor>];
+
+    this.textureAtlas = textureAtlas;
+    this.textureAtlasDescriptor = textureAtlasDescriptor;
+    this.textureAtlasSize.width = this.textureAtlas.width;
+    this.textureAtlasSize.height = this.textureAtlas.height;
   }
 
   private handleEntityRemove = (entity: Entity) => {
@@ -370,6 +404,9 @@ export class RenderSystem {
   _initTextures() {
     if (!this.gl) {
       throw new Error('Unable to initialize textures. The graphic context is not initialized');
+    }
+    if (!this.textureAtlas) {
+      throw new Error('Unable to initialize textures. The texture atlas is undefined');
     }
 
     const texture = this.gl.createTexture();
