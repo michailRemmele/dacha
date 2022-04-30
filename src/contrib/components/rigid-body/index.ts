@@ -1,6 +1,6 @@
 import { Component } from '../../../engine/component';
 
-type RigidBodyType = 'dynamic' | 'static';
+export type RigidBodyType = 'dynamic' | 'static';
 
 interface RigidBodyConfig {
   type: RigidBodyType;

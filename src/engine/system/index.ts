@@ -1,9 +1,6 @@
 export {
-  SystemPlugin,
-  SystemPluginOptions,
-  PluginHelperFn,
-} from './system-plugin';
-export {
   System,
   SystemOptions,
+  UpdateOptions,
+  HelperFn,
 } from './system';

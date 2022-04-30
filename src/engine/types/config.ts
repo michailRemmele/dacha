@@ -20,6 +20,11 @@ export interface EntityConfig {
   prefabName?: string
 }
 
+export interface LevelConfig {
+  name: string
+  entities: Array<EntityConfig>
+}
+
 export interface SystemConfig {
   name: string
   options: Record<string, unknown>
@@ -27,12 +32,15 @@ export interface SystemConfig {
 
 export interface SceneConfig {
   name: string
-  entities: Array<EntityConfig>
+  level?: string
   systems: Array<SystemConfig>
 }
 
 export interface Config {
   scenes: Array<SceneConfig>
+  levels: Array<LevelConfig>
   prefabs: Array<PrefabConfig>
+  loaders: Array<SceneConfig>
   startScene: string
+  startLoader?: string
 }

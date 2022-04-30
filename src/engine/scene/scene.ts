@@ -1,120 +1,143 @@
-import { ENTITY_CREATOR_KEY_NAME } from '../consts/global';
+import type { SceneConfig, EntityConfig } from '../types';
+import type { SystemOptions, HelperFn } from '../system';
 import { System } from '../system';
-import IOC from '../ioc/ioc';
 import {
   EntityObserver,
   EntityObserverFilter,
   Entity,
   EntitySpawner,
   EntityDestroyer,
+  EntityCreator,
 } from '../entity';
 import { MessageBus } from '../message-bus';
 
+import { SceneContext } from './context';
 import { Store } from './store';
 import { ENTITY_ADDED, ENTITY_REMOVED } from './consts';
 
-// TODO: Remove once game object creator will be moved to ts
-interface EntityCreator {
-  create(options: unknown): Array<Entity>;
-}
-
-export interface SceneOptions {
-  name: string;
-  entities: Array<unknown>;
-}
-
 export interface EntityChangeEvent {
-  type: string;
-  entity: Entity;
+  type: string
+  entity: Entity
+}
+
+interface SceneOptions extends SceneConfig {
+  entities: Array<EntityConfig>
+  availableSystems: Record<string, { new(options: SystemOptions): System }>
+  helpers: Record<string, HelperFn>
+  entityCreator: EntityCreator
 }
 
 export class Scene {
-  private _name: string;
-  private _entities: Record<string, Entity>;
-  private _store: Store;
-  private _entityCreator: EntityCreator;
-  private _entitySpawner: unknown;
-  private _entityDestroyer: unknown;
+  private name: string;
+  private entities: Record<string, Entity>;
+  private store: Store;
+  private context: SceneContext;
+  private entityCreator: EntityCreator;
+  private entitySpawner: EntitySpawner;
+  private entityDestroyer: EntityDestroyer;
   private messageBus: MessageBus;
-  private _systems: Array<System>;
-  private _entitiesChangeSubscribers: Array<(event: EntityChangeEvent) => void>;
+  private systems: Array<System>;
+  private entitiesChangeSubscribers: Array<(event: EntityChangeEvent) => void>;
 
-  constructor(options: SceneOptions) {
-    const { name, entities } = options;
-
-    this._name = name;
-    this._entities = {};
-    this._store = new Store();
-    this._entityCreator = IOC.resolve(ENTITY_CREATOR_KEY_NAME) as EntityCreator;
-    this._entitySpawner = new EntitySpawner(this, this._entityCreator);
-    this._entityDestroyer = new EntityDestroyer(this);
+  constructor({
+    name,
+    entities,
+    systems,
+    helpers,
+    entityCreator,
+    availableSystems,
+  }: SceneOptions) {
+    this.name = name;
+    this.entities = {};
+    this.entitiesChangeSubscribers = [];
+    this.store = new Store();
+    this.entityCreator = entityCreator;
+    this.entitySpawner = new EntitySpawner(this, this.entityCreator);
+    this.entityDestroyer = new EntityDestroyer(this);
     this.messageBus = new MessageBus();
-
-    this._systems = [];
-
-    this._entitiesChangeSubscribers = [];
+    this.context = new SceneContext(this.name);
 
     entities.forEach((entityOptions) => {
-      this._entityCreator.create(entityOptions).forEach((entity: Entity) => {
+      this.entityCreator.create(entityOptions).forEach((entity: Entity) => {
         this.addEntity(entity);
       });
     });
+
+    this.systems = systems.map((config) => new availableSystems[config.name]({
+      ...config.options,
+      store: this.getStore(),
+      entitySpawner: this.getEntitySpawner(),
+      entityDestroyer: this.getEntityDestroyer(),
+      createEntityObserver: (filter): EntityObserver => this.createEntityObserver(filter),
+      messageBus: this.getMessageBus(),
+      helpers,
+      sceneContext: this.context,
+    }));
   }
 
-  mount() {
-    this._systems.forEach((system) => {
-      if (system.systemDidMount) {
-        system.systemDidMount();
+  load(): Promise<Array<void>> | undefined {
+    if (this.systems.every((system) => !system.load)) {
+      return void 0;
+    }
+
+    return Promise.all(this.systems.map((system) => {
+      if (system.load) {
+        return system.load();
+      }
+      return Promise.resolve();
+    }));
+  }
+
+  mount(): void {
+    this.systems.forEach((system) => {
+      if (system.mount) {
+        system.mount();
       }
     });
   }
 
-  unmount() {
-    this._systems.forEach((system) => {
-      if (system.systemWillUnmount) {
-        system?.systemWillUnmount();
+  unmount(): void {
+    this.systems.forEach((system) => {
+      if (system.unmount) {
+        system.unmount();
       }
     });
   }
 
-  addSystem(proccessor: System) {
-    this._systems.push(proccessor);
+  getSystems(): Array<System> {
+    return this.systems;
   }
 
-  getSystems() {
-    return this._systems;
+  getStore(): Store {
+    return this.store;
   }
 
-  getStore() {
-    return this._store;
-  }
-
-  createEntityObserver(filter: EntityObserverFilter) {
+  createEntityObserver(filter: EntityObserverFilter): EntityObserver {
     return new EntityObserver(this, filter);
   }
 
-  getEntitySpawner() {
-    return this._entitySpawner;
+  getEntitySpawner(): EntitySpawner {
+    return this.entitySpawner;
   }
 
-  getEntityDestroyer() {
-    return this._entityDestroyer;
+  getEntityDestroyer(): EntityDestroyer {
+    return this.entityDestroyer;
   }
 
-  getMessageBus() {
+  getMessageBus(): MessageBus {
     return this.messageBus;
   }
 
-  addEntity(entity: Entity) {
+  addEntity(entity: Entity): void {
     const id = entity.getId();
 
-    if (this._entities[id]) {
+    if (this.entities[id]) {
       throw new Error(`The game object with same id already exists: ${id}`);
     }
 
-    this._entities[id] = entity;
+    this.entities[id] = entity;
 
-    this._entitiesChangeSubscribers.forEach((callback) => {
+    this.entitiesChangeSubscribers.forEach((callback) => {
       callback({
         type: ENTITY_ADDED,
         entity,
@@ -122,18 +145,18 @@ export class Scene {
     });
   }
 
-  removeEntity(entity: Entity) {
+  removeEntity(entity: Entity): void {
     entity.clearSubscriptions();
-    this._entities = Object.keys(this._entities)
+    this.entities = Object.keys(this.entities)
       .reduce((acc: Record<string, Entity>, key) => {
         if (key !== entity.getId()) {
-          acc[key] = this._entities[key];
+          acc[key] = this.entities[key];
         }
 
         return acc;
       }, {});
 
-    this._entitiesChangeSubscribers.forEach((callback) => {
+    this.entitiesChangeSubscribers.forEach((callback) => {
       callback({
         type: ENTITY_REMOVED,
         entity,
@@ -141,19 +164,19 @@ export class Scene {
     });
   }
 
-  getName() {
-    return this._name;
+  getName(): string {
+    return this.name;
   }
 
-  getEntities() {
-    return Object.values(this._entities);
+  getEntities(): Array<Entity> {
+    return Object.values(this.entities);
   }
 
-  subscribeOnEntitiesChange(callback: (event: EntityChangeEvent) => void) {
+  subscribeOnEntitiesChange(callback: (event: EntityChangeEvent) => void): void {
     if (!(callback instanceof Function)) {
       throw new Error('On subscribe callback should be a function');
     }
 
-    this._entitiesChangeSubscribers.push(callback);
+    this.entitiesChangeSubscribers.push(callback);
   }
 }

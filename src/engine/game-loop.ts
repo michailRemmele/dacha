@@ -1,52 +1,60 @@
-import { SceneProvider } from './scene';
+import type { SceneProvider } from './scene';
+import type { Controller } from './controllers';
 
 export class GameLoop {
+  private sceneProvider: SceneProvider;
+  private controllers: Array<Controller>;
   private gameLoopId: number;
   private previous: number;
-  private sceneProvider: SceneProvider;
   private bindedTick: () => void;
 
-  constructor(sceneProvider: SceneProvider) {
+  constructor(sceneProvider: SceneProvider, controllers: Array<Controller>) {
+    this.sceneProvider = sceneProvider;
+    this.controllers = controllers;
+
     this.gameLoopId = 0;
     this.previous = 0;
 
-    this.sceneProvider = sceneProvider;
-
-    this.bindedTick = this._tick.bind(this);
+    this.bindedTick = this.tick.bind(this);
   }
 
-  private _tick() {
+  private tick(): void {
     const current = performance.now();
 
     const elapsed = current - this.previous;
 
     const currentScene = this.sceneProvider.getCurrentScene();
-    const messageBus = currentScene.getMessageBus();
 
-    messageBus.sendDelayed();
+    const messageBus = currentScene?.getMessageBus();
+
+    messageBus?.sendDelayed();
 
     const options = {
       deltaTime: elapsed,
     };
 
-    currentScene.getSystems().forEach((system) => {
+    currentScene?.getSystems().forEach((system) => {
       system.update(options);
     });
 
-    messageBus.clear();
+    this.controllers.forEach((controller) => {
+      controller.update();
+    });
+
+    messageBus?.clear();
 
     this.previous = current;
 
     this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
 
-  run() {
+  run(): void {
     this.previous = performance.now();
 
     this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
 
-  stop() {
+  stop(): void {
     if (this.gameLoopId) {
       cancelAnimationFrame(this.gameLoopId);
     }

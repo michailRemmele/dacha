@@ -6,22 +6,26 @@ import {
   PlaneGeometry,
   Mesh,
   Texture,
+  TextureLoader,
   NearestFilter,
   RepeatWrapping,
   ClampToEdgeWrapping,
   Color,
 } from 'three';
 
-import type { System } from '../../../engine/system';
+import type { System, SystemOptions } from '../../../engine/system';
 import type { Entity, EntityObserver } from '../../../engine/entity';
+import type { PrefabCollection, Prefab } from '../../../engine/prefab';
 import type { Store } from '../../../engine/scene/store';
-import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Transform } from '../../components/transform';
 import type { Renderable } from '../../components/renderable';
 import type { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
+import IOC from '../../../engine/ioc/ioc';
+import { PREFAB_COLLECTION_KEY_NAME, RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
 
+import { SpriteCropper } from './sprite-cropper';
 import {
   composeSort,
   SortFn,
@@ -38,34 +42,37 @@ import {
   CURRENT_CAMERA_NAME,
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
+  LIGHT_COMPONENT_NAME,
   STD_SCREEN_SIZE,
 } from './consts';
 
-interface UpdateFrameMessage extends Message {
-  id: string
-  currentFrame?: number
-  rotation?: number
-  flipX?: boolean
-  flipY?: boolean
-  disabled?: boolean
+// TODO: Remove once resource loader will be moved to ts
+interface ResourceLoader {
+  load: (resource: string) => Promise<HTMLImageElement>;
 }
 
-interface RendererOptions {
-  entityObserver: EntityObserver
-  lightsObserver: EntityObserver
-  store: Store
-  messageBus: MessageBus
-  window: HTMLElement
+interface ThreeJSRendererOptions extends SystemOptions {
+  windowNodeId: string
   sortingLayers: Array<string>
   backgroundColor: string
   scaleSensitivity: number
-  textureMap: Record<string, Array<Texture>>
 }
+
+const getImagesFromPrefabs = (images: Record<string, Renderable>, prefab: Prefab): void => {
+  prefab.getChildren().forEach((childPrefab) => getImagesFromPrefabs(images, childPrefab));
+
+  const renderable = prefab.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined;
+
+  if (!renderable || images[renderable.src]) {
+    return;
+  }
+
+  images[renderable.src] = renderable;
+};
 
 export class ThreeJSRenderer implements System {
   private entityObserver: EntityObserver;
   private store: Store;
-  private messageBus: MessageBus;
   private window: HTMLElement;
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
@@ -79,22 +86,30 @@ export class ThreeJSRenderer implements System {
   private scaleSensitivity: number;
   private screenScale: number;
 
-  constructor(options: RendererOptions) {
+  constructor(options: ThreeJSRendererOptions) {
     const {
-      entityObserver,
-      lightsObserver,
+      createEntityObserver,
       store,
-      messageBus,
-      window,
+      windowNodeId,
       sortingLayers,
       backgroundColor,
       scaleSensitivity,
-      textureMap,
     } = options;
 
-    this.entityObserver = entityObserver;
+    this.entityObserver = createEntityObserver({
+      components: [
+        RENDERABLE_COMPONENT_NAME,
+        TRANSFORM_COMPONENT_NAME,
+      ],
+    });
     this.store = store;
-    this.messageBus = messageBus;
+
+    const window = document.getElementById(windowNodeId);
+
+    if (!window) {
+      throw new Error('Unable to load RenderSystem. Root canvas node not found');
+    }
+
     this.window = window;
 
     this.sortFn = composeSort([
@@ -116,12 +131,46 @@ export class ThreeJSRenderer implements System {
     this.renderer = new WebGLRenderer();
     this.renderer.setClearColor(new Color(backgroundColor));
 
-    this.lightSubsystem = new LightSubsystem(this.renderScene, lightsObserver);
+    this.lightSubsystem = new LightSubsystem(
+      this.renderScene,
+      createEntityObserver({
+        components: [
+          LIGHT_COMPONENT_NAME,
+          TRANSFORM_COMPONENT_NAME,
+        ],
+      }),
+    );
 
     // TODO: Figure out how to set up camera correctly to avoid scale usage
     this.renderScene.scale.set(1, -1, 1);
 
-    this.textureMap = textureMap;
+    this.textureMap = {};
+  }
+
+  async load(): Promise<void> {
+    const textureLoader = new TextureLoader();
+    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
+
+    const imagesToLoad = this.getImagesToLoad();
+
+    const spriteCropper = new SpriteCropper();
+
+    await Promise.all(
+      Object.keys(imagesToLoad).map((key) => {
+        const renderable = imagesToLoad[key];
+
+        if (renderable.type === 'static') {
+          return textureLoader.loadAsync(renderable.src)
+            .then((texture) => { this.textureMap[key] = [texture]; });
+        }
+
+        return resourceLoader.load(renderable.src)
+          .then((spriteImage) => {
+            this.textureMap[key] = spriteCropper.crop(spriteImage, renderable);
+          });
+      }),
+    );
+
     Object.keys(this.textureMap).forEach((key) => {
       this.textureMap[key].forEach((texture) => {
         texture.magFilter = NearestFilter;
@@ -131,7 +180,7 @@ export class ThreeJSRenderer implements System {
     });
   }
 
-  systemDidMount(): void {
+  mount(): void {
     this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
 
@@ -143,7 +192,7 @@ export class ThreeJSRenderer implements System {
     this.window.appendChild(this.renderer.domElement);
   }
 
-  systemWillUnmount(): void {
+  unmount(): void {
     window.removeEventListener('resize', this.handleWindowResize);
 
     this.entityObserver.unsubscribe('onadd', this.handleEntityAdd);
@@ -152,6 +201,28 @@ export class ThreeJSRenderer implements System {
     this.lightSubsystem.unmount();
 
     this.window.removeChild(this.renderer.domElement);
+  }
+
+  private getImagesToLoad(): Record<string, Renderable> {
+    const prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME) as PrefabCollection;
+
+    const imagesToLoad: Record<string, Renderable> = {};
+
+    prefabCollection.getAll().forEach((prefab) => getImagesFromPrefabs(imagesToLoad, prefab));
+
+    this.entityObserver.getList().reduce(
+      (acc: Record<string, Renderable>, entity) => {
+        const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+
+        if (!acc[renderable.src]) {
+          acc[renderable.src] = renderable;
+        }
+
+        return acc;
+      }, imagesToLoad,
+    );
+
+    return imagesToLoad;
   }
 
   private handleEntityAdd = (entity: Entity): void => {

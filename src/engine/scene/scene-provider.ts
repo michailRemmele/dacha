@@ -1,158 +1,207 @@
-import type { SceneConfig } from '../types';
-import { SystemPlugin, PluginHelperFn } from '../system';
+import type { SceneConfig, LevelConfig } from '../types';
+import type { EntityCreator } from '../entity';
+import type { System, HelperFn } from '../system';
 
 import { Scene } from './scene';
-import { SceneController } from './scene-controller';
+import { filterByKey } from '../utils';
+
+interface SceneProviderOptions {
+  scenes: Array<SceneConfig>
+  loaders: Array<SceneConfig>
+  levels: Array<LevelConfig>
+  systems: Record<string, { new(): System }>
+  helpers: Record<string, HelperFn>
+  entityCreator: EntityCreator
+}
+
+export interface SceneLoadOptions {
+  name: string
+  loader?: string
+  level?: string
+  clean?: boolean
+  unloadCurrent?: boolean
+}
+
+export interface LevelLoadOptions {
+  name: string
+  loader?: string
+}
 
 export class SceneProvider {
-  private _sceneContainer: Record<string, Scene>;
-  private _currentSceneName?: string;
-  private _sceneChangeSubscribers: Array<(scene: Scene) => void>;
-  private _availableScenes: Record<string, SceneConfig>;
-  private _systemsPlugins: Record<string, SystemPlugin>;
-  private _pluginHelpers: Record<string, PluginHelperFn>;
-  private _loadedScene?: Scene;
-  private _sceneController: SceneController;
+  private availableScenes: Record<string, SceneConfig>;
+  private availableLoaders: Record<string, SceneConfig>;
+  private availableLevels: Record<string, LevelConfig>;
+  private systems: Record<string, { new(): System }>;
+  private helpers: Record<string, HelperFn>;
+  private sceneContainer: Record<string, Scene>;
+  private currentSceneName?: string;
+  private loadedScene?: Scene;
+  private entityCreator: EntityCreator;
 
-  constructor(
-    scenes: Array<SceneConfig>,
-    systemsPlugins: Record<string, { new(): SystemPlugin }>,
-    pluginHelpers: Record<string, PluginHelperFn>,
-  ) {
-    this._sceneContainer = {};
-    this._currentSceneName = void 0;
-    this._sceneChangeSubscribers = [];
-    this._availableScenes = scenes.reduce((acc: Record<string, SceneConfig>, scene) => {
+  constructor({
+    scenes,
+    levels,
+    systems,
+    loaders,
+    helpers,
+    entityCreator,
+  }: SceneProviderOptions) {
+    this.sceneContainer = {};
+    this.currentSceneName = void '';
+    this.availableScenes = scenes.reduce((acc: Record<string, SceneConfig>, scene) => {
       acc[scene.name] = scene;
       return acc;
     }, {});
-    this._systemsPlugins = Object
-      .keys(systemsPlugins)
-      .reduce((storage: Record<string, SystemPlugin>, name) => {
-        storage[name] = new systemsPlugins[name]();
-        return storage;
-      }, {});
-    this._pluginHelpers = pluginHelpers;
-    this._loadedScene = void 0;
-    this._sceneController = new SceneController(this);
+    this.availableLoaders = loaders.reduce((acc: Record<string, SceneConfig>, scene) => {
+      acc[scene.name] = scene;
+      return acc;
+    }, {});
+    this.availableLevels = levels.reduce((acc: Record<string, LevelConfig>, level) => {
+      acc[level.name] = level;
+      return acc;
+    }, {});
+    this.systems = systems;
+    this.helpers = helpers;
+    this.loadedScene = void 0;
+    this.entityCreator = entityCreator;
   }
 
-  async loadScene(name: string) {
-    if (!this._availableScenes[name]) {
+  prepareLoaders(): Promise<Array<Array<void>>> {
+    this.sceneContainer = Object.keys(this.availableLoaders)
+      .reduce((acc: Record<string, Scene>, name) => {
+        const loaderConfig = this.availableLoaders[name];
+        acc[name] = new Scene({
+          ...loaderConfig,
+          entities: loaderConfig.level ? this.availableLevels[loaderConfig.level].entities : [],
+          availableSystems: this.systems,
+          helpers: this.helpers,
+          entityCreator: this.entityCreator,
+        });
+        return acc;
+      }, this.sceneContainer);
+
+    return Promise.all(
+      Object.keys(this.availableLoaders)
+        .reduce((acc: Array<Promise<Array<void>>>, name) => {
+          const asyncLoading = this.sceneContainer[name].load();
+          if (asyncLoading) {
+            acc.push(asyncLoading);
+          }
+          return acc;
+        }, []),
+    );
+  }
+
+  getCurrentScene(): Scene | undefined {
+    if (!this.currentSceneName) {
+      return void 0;
+    }
+
+    return this.sceneContainer[this.currentSceneName];
+  }
+
+  loadScene({
+    name,
+    loader,
+    clean = false,
+    unloadCurrent = false,
+    level,
+  }: SceneLoadOptions): Promise<void> | undefined {
+    if (!this.availableScenes[name]) {
       throw new Error(`Error while loading the scene. Not found scene with same name: ${name}`);
     }
 
-    this._loadedScene = void 0;
+    const currentSceneName = this.currentSceneName;
 
-    const sceneConfig = this._availableScenes[name];
+    this.leaveCurrentScene();
 
-    const scene = new Scene({
-      name: sceneConfig.name,
-      entities: sceneConfig.entities,
-    });
-
-    for (let i = 0; i < sceneConfig.systems.length; i += 1) {
-      const { name: systemName, options } = sceneConfig.systems[i];
-
-      // For pure async await syntax in method. Need to refactor later
-      // eslint-disable-next-line no-await-in-loop
-      const system = await this._systemsPlugins[systemName].load({
-        ...options,
-        store: scene.getStore(),
-        entitySpawner: scene.getEntitySpawner(),
-        entityDestroyer: scene.getEntityDestroyer(),
-        createEntityObserver: (filter) => scene.createEntityObserver(filter),
-        messageBus: scene.getMessageBus(),
-        sceneController: this._sceneController,
-        helpers: this._pluginHelpers,
-      });
-
-      scene.addSystem(system);
+    if (unloadCurrent && currentSceneName) {
+      this.removeScene(currentSceneName);
     }
 
-    this._loadedScene = scene;
+    let scene: Scene;
+
+    if (clean || !this.sceneContainer[name]) {
+      const levelName = level || this.availableScenes[name].level;
+
+      scene = new Scene({
+        ...this.availableScenes[name],
+        entities: levelName ? this.availableLevels[levelName].entities : [],
+        availableSystems: this.systems,
+        helpers: this.helpers,
+        entityCreator: this.entityCreator,
+      });
+
+      const asyncLoading = scene.load();
+
+      if (asyncLoading && loader) {
+        this.setCurrentScene(loader);
+      }
+
+      if (asyncLoading) {
+        return asyncLoading.then(() => {
+          this.loadedScene = scene;
+        });
+      }
+    } else {
+      scene = this.sceneContainer[name];
+    }
+
+    this.setCurrentScene(scene.getName());
+
+    return void 0;
   }
 
-  isLoaded() {
-    return !!this._loadedScene;
+  loadLevel({ name, loader }: LevelLoadOptions): Promise<void> | undefined {
+    if (!this.currentSceneName) {
+      throw new Error('Can\'t load the level. Current scene is null');
+    }
+
+    return this.loadScene({
+      name: this.currentSceneName,
+      level: name,
+      loader,
+      clean: true,
+      unloadCurrent: true,
+    });
   }
 
-  moveToLoaded() {
-    if (!this._loadedScene) {
+  isLoaded(): boolean {
+    return Boolean(this.loadedScene);
+  }
+
+  moveToLoaded(): void {
+    if (!this.loadedScene) {
       return;
     }
 
-    if (this._currentSceneName && this._sceneContainer[this._currentSceneName]) {
-      this.leaveCurrentScene();
-    }
+    this.leaveCurrentScene();
 
-    const name = this._loadedScene.getName();
-    this._sceneContainer[name] = this._loadedScene;
-    this._loadedScene = undefined;
+    const name = this.loadedScene.getName();
+    this.sceneContainer[name] = this.loadedScene;
+    this.loadedScene = void 0;
     this.setCurrentScene(name);
   }
 
-  leaveCurrentScene() {
-    if (!this._currentSceneName) {
-      throw new Error('Error while leaving current scene. Current scene is not specified');
-    }
-
-    if (!this._sceneContainer[this._currentSceneName]) {
-      throw new Error('Error while leaving current scene. Current scene is null');
-    }
-
-    this._sceneContainer[this._currentSceneName].unmount();
-    this._currentSceneName = undefined;
-  }
-
-  removeScene(name: string) {
-    if (name === this._currentSceneName) {
-      this.leaveCurrentScene();
-    }
-
-    this._sceneContainer = Object.keys(this._sceneContainer)
-      .reduce((acc: Record<string, Scene>, key) => {
-        if (key !== name) {
-          acc[key] = this._sceneContainer[key];
-        }
-
-        return acc;
-      }, {});
-  }
-
-  setCurrentScene(name: string) {
-    if (!this._sceneContainer[name]) {
+  private setCurrentScene(name: string): void {
+    if (!this.sceneContainer[name]) {
       throw new Error(`Error while setting new scene. Not found scene with same name: ${name}`);
     }
 
-    if (this._currentSceneName && this._sceneContainer[this._currentSceneName]) {
-      this._sceneContainer[this._currentSceneName].unmount();
-    }
-
-    this._currentSceneName = name;
-
-    const currentScene = this._sceneContainer[this._currentSceneName];
-
-    currentScene.mount();
-
-    this._sceneChangeSubscribers.forEach((callback) => {
-      callback(currentScene);
-    });
+    this.currentSceneName = name;
+    this.sceneContainer[this.currentSceneName].mount();
   }
 
-  getCurrentScene() {
-    if (!this._currentSceneName) {
-      throw new Error('Current scene is null');
+  private leaveCurrentScene(): void {
+    if (!this.currentSceneName || !this.sceneContainer[this.currentSceneName]) {
+      return;
     }
 
-    return this._sceneContainer[this._currentSceneName];
+    this.sceneContainer[this.currentSceneName].unmount();
+    this.currentSceneName = void '';
   }
 
-  subscribeOnSceneChange(callback: (scene: Scene) => void) {
-    if (!(callback instanceof Function)) {
-      throw new Error('On subscribe callback should be a function');
-    }
-
-    this._sceneChangeSubscribers.push(callback);
+  private removeScene(name: string): void {
+    this.sceneContainer = filterByKey(this.sceneContainer, name);
   }
 }
