@@ -14,8 +14,8 @@ import {
 } from 'three';
 
 import type { System, SystemOptions } from '../../../engine/system';
-import type { Entity, EntityObserver } from '../../../engine/entity';
-import type { PrefabCollection, Prefab } from '../../../engine/prefab';
+import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
+import type { TemplateCollection, Template } from '../../../engine/template';
 import type { Store } from '../../../engine/scene/store';
 import type { Transform } from '../../components/transform';
 import type { Renderable } from '../../components/renderable';
@@ -23,7 +23,7 @@ import type { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
 import IOC from '../../../engine/ioc/ioc';
-import { PREFAB_COLLECTION_KEY_NAME, RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
+import { TEMPLATE_COLLECTION_KEY_NAME, RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
 
 import { SpriteCropper } from './sprite-cropper';
 import {
@@ -58,10 +58,10 @@ interface ThreeJSRendererOptions extends SystemOptions {
   scaleSensitivity: number
 }
 
-const getImagesFromPrefabs = (images: Record<string, Renderable>, prefab: Prefab): void => {
-  prefab.getChildren().forEach((childPrefab) => getImagesFromPrefabs(images, childPrefab));
+const getImagesFromTemplates = (images: Record<string, Renderable>, template: Template): void => {
+  template.getChildren().forEach((childTemplate) => getImagesFromTemplates(images, childTemplate));
 
-  const renderable = prefab.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined;
+  const renderable = template.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined;
 
   if (!renderable || images[renderable.src]) {
     return;
@@ -71,14 +71,14 @@ const getImagesFromPrefabs = (images: Record<string, Renderable>, prefab: Prefab
 };
 
 export class ThreeJSRenderer implements System {
-  private entityObserver: EntityObserver;
+  private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private window: HTMLElement;
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
   private renderer: WebGLRenderer;
   private textureMap: Record<string, Array<Texture>>;
-  private entitiesMap: Record<string, number>;
+  private gameObjectsMap: Record<string, number>;
   private sortFn: SortFn;
   private lightSubsystem: LightSubsystem;
   private viewWidth: number;
@@ -88,7 +88,7 @@ export class ThreeJSRenderer implements System {
 
   constructor(options: ThreeJSRendererOptions) {
     const {
-      createEntityObserver,
+      createGameObjectObserver,
       store,
       windowNodeId,
       sortingLayers,
@@ -96,7 +96,7 @@ export class ThreeJSRenderer implements System {
       scaleSensitivity,
     } = options;
 
-    this.entityObserver = createEntityObserver({
+    this.gameObjectObserver = createGameObjectObserver({
       components: [
         RENDERABLE_COMPONENT_NAME,
         TRANSFORM_COMPONENT_NAME,
@@ -120,7 +120,7 @@ export class ThreeJSRenderer implements System {
       sortByFit,
     ]);
 
-    this.entitiesMap = {};
+    this.gameObjectsMap = {};
     this.viewWidth = 0;
     this.viewHeight = 0;
     this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1) as number;
@@ -133,7 +133,7 @@ export class ThreeJSRenderer implements System {
 
     this.lightSubsystem = new LightSubsystem(
       this.renderScene,
-      createEntityObserver({
+      createGameObjectObserver({
         components: [
           LIGHT_COMPONENT_NAME,
           TRANSFORM_COMPONENT_NAME,
@@ -184,8 +184,8 @@ export class ThreeJSRenderer implements System {
     this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
 
-    this.entityObserver.subscribe('onadd', this.handleEntityAdd);
-    this.entityObserver.subscribe('onremove', this.handleEntityRemove);
+    this.gameObjectObserver.subscribe('onadd', this.handleGameObjectAdd);
+    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
 
     this.lightSubsystem.mount();
 
@@ -195,8 +195,8 @@ export class ThreeJSRenderer implements System {
   unmount(): void {
     window.removeEventListener('resize', this.handleWindowResize);
 
-    this.entityObserver.unsubscribe('onadd', this.handleEntityAdd);
-    this.entityObserver.unsubscribe('onremove', this.handleEntityRemove);
+    this.gameObjectObserver.unsubscribe('onadd', this.handleGameObjectAdd);
+    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
 
     this.lightSubsystem.unmount();
 
@@ -204,15 +204,17 @@ export class ThreeJSRenderer implements System {
   }
 
   private getImagesToLoad(): Record<string, Renderable> {
-    const prefabCollection = IOC.resolve(PREFAB_COLLECTION_KEY_NAME) as PrefabCollection;
+    const templateCollection = IOC.resolve(TEMPLATE_COLLECTION_KEY_NAME) as TemplateCollection;
 
     const imagesToLoad: Record<string, Renderable> = {};
 
-    prefabCollection.getAll().forEach((prefab) => getImagesFromPrefabs(imagesToLoad, prefab));
+    templateCollection.getAll().forEach(
+      (template) => getImagesFromTemplates(imagesToLoad, template),
+    );
 
-    this.entityObserver.getList().reduce(
-      (acc: Record<string, Renderable>, entity) => {
-        const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    this.gameObjectObserver.getList().reduce(
+      (acc: Record<string, Renderable>, gameObject) => {
+        const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
         if (!acc[renderable.src]) {
           acc[renderable.src] = renderable;
@@ -225,28 +227,28 @@ export class ThreeJSRenderer implements System {
     return imagesToLoad;
   }
 
-  private handleEntityAdd = (entity: Entity): void => {
-    const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+  private handleGameObjectAdd = (gameObject: GameObject): void => {
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
     const material = createMaterial(renderable.material.type);
     const geometry = new PlaneGeometry(renderable.width, renderable.height);
     const object = new Mesh(geometry, material);
 
-    object.userData.entity = entity;
-    this.entitiesMap[entity.getId()] = object.id;
+    object.userData.gameObject = gameObject;
+    this.gameObjectsMap[gameObject.getId()] = object.id;
 
     this.renderScene.add(object);
   };
 
-  private handleEntityRemove = (entity: Entity): void => {
-    const entityId = entity.getId();
-    const object = this.renderScene.getObjectById(this.entitiesMap[entityId]);
+  private handleGameObjectRemove = (gameObject: GameObject): void => {
+    const gameObjectId = gameObject.getId();
+    const object = this.renderScene.getObjectById(this.gameObjectsMap[gameObjectId]);
 
     if (object) {
       this.renderScene.remove(object);
     }
 
-    this.entitiesMap = filterByKey(this.entitiesMap, entityId);
+    this.gameObjectsMap = filterByKey(this.gameObjectsMap, gameObjectId);
   };
 
   private handleWindowResize = (): void => {
@@ -275,7 +277,7 @@ export class ThreeJSRenderer implements System {
   }
 
   private updateCamera(): void {
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as Entity;
+    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
 
@@ -288,13 +290,13 @@ export class ThreeJSRenderer implements System {
     this.currentCamera.updateProjectionMatrix();
   }
 
-  private updateEntities(): void {
-    this.entityObserver.getList().forEach((entity, index) => {
-      const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-      const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+  private updateGameObjects(): void {
+    this.gameObjectObserver.getList().forEach((gameObject, index) => {
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
       const object = this.renderScene.getObjectById(
-        this.entitiesMap[entity.getId()],
+        this.gameObjectsMap[gameObject.getId()],
       ) as Mesh;
 
       if (!object) {
@@ -342,14 +344,14 @@ export class ThreeJSRenderer implements System {
   }
 
   update(): void {
-    this.entityObserver.fireEvents();
+    this.gameObjectObserver.fireEvents();
 
     this.updateCamera();
 
     this.lightSubsystem.update();
 
-    this.entityObserver.getList().sort(this.sortFn);
-    this.updateEntities();
+    this.gameObjectObserver.getList().sort(this.sortFn);
+    this.updateGameObjects();
 
     this.renderer.render(this.renderScene, this.currentCamera);
   }

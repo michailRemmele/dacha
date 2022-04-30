@@ -1,21 +1,21 @@
-import { Entity } from '../../../engine/entity';
+import { GameObject } from '../../../engine/game-object';
 
 const PATH_COMPONENTS = 'components';
 const PATH_CHILDREN = 'children';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const _getValue = (
-  entity: Entity,
+  gameObject: GameObject,
   path: Array<string> | string,
   pathDepth: number,
 ): unknown => {
-  let soughtValue: unknown = entity;
+  let soughtValue: unknown = gameObject;
 
   for (let i = 0; i < pathDepth && soughtValue !== undefined; i += 1) {
-    if (soughtValue instanceof Entity && path[i] === PATH_CHILDREN) {
+    if (soughtValue instanceof GameObject && path[i] === PATH_CHILDREN) {
       i += 1;
       soughtValue = soughtValue.getChildByName(path[i]);
-    } else if (soughtValue instanceof Entity && path[i] === PATH_COMPONENTS) {
+    } else if (soughtValue instanceof GameObject && path[i] === PATH_COMPONENTS) {
       i += 1;
       soughtValue = soughtValue.getComponent(path[i]);
     } else {
@@ -27,17 +27,17 @@ const _getValue = (
 };
 
 export const getValue = (
-  entity: Entity,
+  gameObject: GameObject,
   path: Array<string> | string,
-): unknown => _getValue(entity, path, path.length);
+): unknown => _getValue(gameObject, path, path.length);
 
-export const setValue = (entity: Entity, path: Array<string>, value: unknown): void => {
-  const soughtValue: unknown = _getValue(entity, path, path.length - 1);
+export const setValue = (gameObject: GameObject, path: Array<string>, value: unknown): void => {
+  const soughtValue: unknown = _getValue(gameObject, path, path.length - 1);
 
   if (!soughtValue) {
     throw new Error(`Can't set frame value for path: ${path.join('.')}. Make sure that path is correct`);
   }
-  if (soughtValue instanceof Entity) {
+  if (soughtValue instanceof GameObject) {
     throw new Error(`Can't set frame value for path: ${path.join('.')}. Setting value as game object property is restricted`);
   }
 

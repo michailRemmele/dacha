@@ -1,5 +1,5 @@
 import { Renderable, RenderableConfig } from '../../../../components/renderable';
-import { Entity } from '../../../../../engine/entity/entity';
+import { GameObject } from '../../../../../engine/game-object/game-object';
 
 import { createSortByLayer } from '../sort-by-layer';
 
@@ -24,25 +24,25 @@ describe('Contrib -> RenderSystem -> Sort -> sortByLayer()', () => {
   };
 
   it('Returns correct order of objects', () => {
-    const entity1 = new Entity({ id: '1', name: 'mock-entity-1' });
-    const entity2 = new Entity({ id: '2', name: 'mock-entity-2' });
+    const gameObject1 = new GameObject({ id: '1', name: 'mock-gameObject-1' });
+    const gameObject2 = new GameObject({ id: '2', name: 'mock-gameObject-2' });
 
     const layers = ['layer-1', 'layer-2', 'layer-3'];
 
-    entity1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    entity2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
 
-    (entity1.getComponent('renderable') as Renderable).sortingLayer = 'layer-1';
-    (entity2.getComponent('renderable') as Renderable).sortingLayer = 'layer-2';
+    (gameObject1.getComponent('renderable') as Renderable).sortingLayer = 'layer-1';
+    (gameObject2.getComponent('renderable') as Renderable).sortingLayer = 'layer-2';
 
-    expect(createSortByLayer(layers)(entity1, entity2)).toBe(-1);
+    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(-1);
 
-    (entity1.getComponent('renderable') as Renderable).sortingLayer = 'layer-3';
+    (gameObject1.getComponent('renderable') as Renderable).sortingLayer = 'layer-3';
 
-    expect(createSortByLayer(layers)(entity1, entity2)).toBe(1);
+    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(1);
 
-    (entity1.getComponent('renderable') as Renderable).sortingLayer = 'layer-2';
+    (gameObject1.getComponent('renderable') as Renderable).sortingLayer = 'layer-2';
 
-    expect(createSortByLayer(layers)(entity1, entity2)).toBe(0);
+    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(0);
   });
 });

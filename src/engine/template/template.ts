@@ -1,10 +1,10 @@
 import type { Component } from '../component';
 
-export class Prefab {
+export class Template {
   private name: string;
   private components: Record<string, Component>;
-  private parent?: Prefab;
-  private children: Array<Prefab>;
+  private parent?: Template;
+  private children: Array<Template>;
   private type: string;
 
   constructor() {
@@ -23,19 +23,19 @@ export class Prefab {
     return this.name;
   }
 
-  setParent(parent: Prefab): void {
+  setParent(parent: Template): void {
     this.parent = parent;
   }
 
-  getParent(): Prefab | undefined {
+  getParent(): Template | undefined {
     return this.parent;
   }
 
-  appendChild(child: Prefab): void {
+  appendChild(child: Template): void {
     this.children.push(child);
   }
 
-  getChildren(): Array<Prefab> {
+  getChildren(): Array<Template> {
     return this.children;
   }
 
@@ -59,22 +59,22 @@ export class Prefab {
     return this.type;
   }
 
-  clone(): Prefab {
-    const prefab = new Prefab();
+  clone(): Template {
+    const template = new Template();
 
-    prefab.setName(this.name);
-    prefab.setType(this.type);
+    template.setName(this.name);
+    template.setType(this.type);
 
     this.children.forEach((child) => {
-      const childPrefab = child.clone();
-      childPrefab.setParent(prefab);
-      prefab.appendChild(childPrefab);
+      const childTemplate = child.clone();
+      childTemplate.setParent(template);
+      template.appendChild(childTemplate);
     });
 
     Object.keys(this.components).forEach((name) => {
-      prefab.setComponent(name, this.components[name].clone());
+      template.setComponent(name, this.components[name].clone());
     });
 
-    return prefab;
+    return template;
   }
 }

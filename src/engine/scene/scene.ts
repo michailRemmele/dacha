@@ -1,74 +1,76 @@
-import type { SceneConfig, EntityConfig } from '../types';
+import type { SceneConfig, GameObjectConfig } from '../types';
 import type { SystemOptions, HelperFn } from '../system';
 import { System } from '../system';
 import {
-  EntityObserver,
-  EntityObserverFilter,
-  Entity,
-  EntitySpawner,
-  EntityDestroyer,
-  EntityCreator,
-} from '../entity';
+  GameObjectObserver,
+  GameObjectObserverFilter,
+  GameObject,
+  GameObjectSpawner,
+  GameObjectDestroyer,
+  GameObjectCreator,
+} from '../game-object';
 import { MessageBus } from '../message-bus';
 
 import { SceneContext } from './context';
 import { Store } from './store';
-import { ENTITY_ADDED, ENTITY_REMOVED } from './consts';
+import { GAME_OBJECT_ADDED, GAME_OBJECT_REMOVED } from './consts';
 
-export interface EntityChangeEvent {
+export interface GameObjectChangeEvent {
   type: string
-  entity: Entity
+  gameObject: GameObject
 }
 
 interface SceneOptions extends SceneConfig {
-  entities: Array<EntityConfig>
+  gameObjects: Array<GameObjectConfig>
   availableSystems: Record<string, { new(options: SystemOptions): System }>
   helpers: Record<string, HelperFn>
-  entityCreator: EntityCreator
+  gameObjectCreator: GameObjectCreator
 }
 
 export class Scene {
   private name: string;
-  private entities: Record<string, Entity>;
+  private gameObjects: Record<string, GameObject>;
   private store: Store;
   private context: SceneContext;
-  private entityCreator: EntityCreator;
-  private entitySpawner: EntitySpawner;
-  private entityDestroyer: EntityDestroyer;
+  private gameObjectCreator: GameObjectCreator;
+  private gameObjectSpawner: GameObjectSpawner;
+  private gameObjectDestroyer: GameObjectDestroyer;
   private messageBus: MessageBus;
   private systems: Array<System>;
-  private entitiesChangeSubscribers: Array<(event: EntityChangeEvent) => void>;
+  private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
 
   constructor({
     name,
-    entities,
+    gameObjects,
     systems,
     helpers,
-    entityCreator,
+    gameObjectCreator,
     availableSystems,
   }: SceneOptions) {
     this.name = name;
-    this.entities = {};
-    this.entitiesChangeSubscribers = [];
+    this.gameObjects = {};
+    this.gameObjectsChangeSubscribers = [];
     this.store = new Store();
-    this.entityCreator = entityCreator;
-    this.entitySpawner = new EntitySpawner(this, this.entityCreator);
-    this.entityDestroyer = new EntityDestroyer(this);
+    this.gameObjectCreator = gameObjectCreator;
+    this.gameObjectSpawner = new GameObjectSpawner(this, this.gameObjectCreator);
+    this.gameObjectDestroyer = new GameObjectDestroyer(this);
     this.messageBus = new MessageBus();
     this.context = new SceneContext(this.name);
 
-    entities.forEach((entityOptions) => {
-      this.entityCreator.create(entityOptions).forEach((entity: Entity) => {
-        this.addEntity(entity);
+    gameObjects.forEach((gameObjectOptions) => {
+      this.gameObjectCreator.create(gameObjectOptions).forEach((gameObject: GameObject) => {
+        this.addGameObject(gameObject);
       });
     });
 
     this.systems = systems.map((config) => new availableSystems[config.name]({
       ...config.options,
       store: this.getStore(),
-      entitySpawner: this.getEntitySpawner(),
-      entityDestroyer: this.getEntityDestroyer(),
-      createEntityObserver: (filter): EntityObserver => this.createEntityObserver(filter),
+      gameObjectSpawner: this.getGameObjectSpawner(),
+      gameObjectDestroyer: this.getGameObjectDestroyer(),
+      createGameObjectObserver: (filter): GameObjectObserver => this.createGameObjectObserver(
+        filter,
+      ),
       messageBus: this.getMessageBus(),
       helpers,
       sceneContext: this.context,
@@ -112,54 +114,54 @@ export class Scene {
     return this.store;
   }
 
-  createEntityObserver(filter: EntityObserverFilter): EntityObserver {
-    return new EntityObserver(this, filter);
+  createGameObjectObserver(filter: GameObjectObserverFilter): GameObjectObserver {
+    return new GameObjectObserver(this, filter);
   }
 
-  getEntitySpawner(): EntitySpawner {
-    return this.entitySpawner;
+  getGameObjectSpawner(): GameObjectSpawner {
+    return this.gameObjectSpawner;
   }
 
-  getEntityDestroyer(): EntityDestroyer {
-    return this.entityDestroyer;
+  getGameObjectDestroyer(): GameObjectDestroyer {
+    return this.gameObjectDestroyer;
   }
 
   getMessageBus(): MessageBus {
     return this.messageBus;
   }
 
-  addEntity(entity: Entity): void {
-    const id = entity.getId();
+  addGameObject(gameObject: GameObject): void {
+    const id = gameObject.getId();
 
-    if (this.entities[id]) {
+    if (this.gameObjects[id]) {
       throw new Error(`The game object with same id already exists: ${id}`);
     }
 
-    this.entities[id] = entity;
+    this.gameObjects[id] = gameObject;
 
-    this.entitiesChangeSubscribers.forEach((callback) => {
+    this.gameObjectsChangeSubscribers.forEach((callback) => {
       callback({
-        type: ENTITY_ADDED,
-        entity,
+        type: GAME_OBJECT_ADDED,
+        gameObject,
       });
     });
   }
 
-  removeEntity(entity: Entity): void {
-    entity.clearSubscriptions();
-    this.entities = Object.keys(this.entities)
-      .reduce((acc: Record<string, Entity>, key) => {
-        if (key !== entity.getId()) {
-          acc[key] = this.entities[key];
+  removeGameObject(gameObject: GameObject): void {
+    gameObject.clearSubscriptions();
+    this.gameObjects = Object.keys(this.gameObjects)
+      .reduce((acc: Record<string, GameObject>, key) => {
+        if (key !== gameObject.getId()) {
+          acc[key] = this.gameObjects[key];
         }
 
         return acc;
       }, {});
 
-    this.entitiesChangeSubscribers.forEach((callback) => {
+    this.gameObjectsChangeSubscribers.forEach((callback) => {
       callback({
-        type: ENTITY_REMOVED,
-        entity,
+        type: GAME_OBJECT_REMOVED,
+        gameObject,
       });
     });
   }
@@ -168,15 +170,15 @@ export class Scene {
     return this.name;
   }
 
-  getEntities(): Array<Entity> {
-    return Object.values(this.entities);
+  getGameObjects(): Array<GameObject> {
+    return Object.values(this.gameObjects);
   }
 
-  subscribeOnEntitiesChange(callback: (event: EntityChangeEvent) => void): void {
+  subscribeOnGameObjectsChange(callback: (event: GameObjectChangeEvent) => void): void {
     if (!(callback instanceof Function)) {
       throw new Error('On subscribe callback should be a function');
     }
 
-    this.entitiesChangeSubscribers.push(callback);
+    this.gameObjectsChangeSubscribers.push(callback);
   }
 }

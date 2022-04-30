@@ -1,5 +1,5 @@
 import type { System, SystemOptions } from '../../../engine/system';
-import type { Entity, EntityObserver } from '../../../engine/entity';
+import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { RigidBody, RigidBodyType } from '../../components/rigid-body';
 import type { Transform } from '../../components/transform';
@@ -22,20 +22,20 @@ interface Mtv {
 }
 
 interface CollisionEventMessage extends Message {
-  entity1: Entity
-  entity2: Entity
+  gameObject1: GameObject
+  gameObject2: GameObject
   mtv1: Mtv
   mtv2: Mtv
 }
 
 export class ConstraintSolver implements System {
-  private entityObserver: EntityObserver;
+  private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private processedPairs: Record<string, Record<string, boolean>>;
   private mtvMap: Record<string, Record<string, Mtv>>;
 
   constructor(options: SystemOptions) {
-    this.entityObserver = options.createEntityObserver({
+    this.gameObjectObserver = options.createGameObjectObserver({
       components: [
         RIGID_BODY_COMPONENT_NAME,
         TRANSFORM_COMPONENT_NAME,
@@ -46,9 +46,9 @@ export class ConstraintSolver implements System {
     this.mtvMap = {};
   }
 
-  private validateCollision(entity1: Entity, entity2: Entity): boolean {
-    const rigidBody1 = entity1.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
-    const rigidBody2 = entity2.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+  private validateCollision(gameObject1: GameObject, gameObject2: GameObject): boolean {
+    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
 
     return rigidBody1 && !rigidBody1.ghost && !rigidBody1.isPermeable
       && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable
@@ -81,12 +81,17 @@ export class ConstraintSolver implements System {
     settingStrategy[type]();
   }
 
-  private resolveCollision(entity1: Entity, entity2: Entity, mtv1: Mtv, mtv2: Mtv): void {
-    const id1 = entity1.getId();
-    const id2 = entity2.getId();
+  private resolveCollision(
+    gameObject1: GameObject,
+    gameObject2: GameObject,
+    mtv1: Mtv,
+    mtv2: Mtv,
+  ): void {
+    const id1 = gameObject1.getId();
+    const id2 = gameObject2.getId();
 
-    const rigidBody1 = entity1.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
-    const rigidBody2 = entity2.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
       this.setMtv(id2, mtv2.x, mtv2.y, rigidBody1.type);
@@ -107,11 +112,11 @@ export class ConstraintSolver implements System {
     [enterMessages, stayMessages].forEach((messages) => {
       messages.forEach((message) => {
         const {
-          entity1, entity2, mtv1, mtv2,
+          gameObject1, gameObject2, mtv1, mtv2,
         } = message as CollisionEventMessage;
 
-        const id1 = entity1.getId();
-        const id2 = entity2.getId();
+        const id1 = gameObject1.getId();
+        const id2 = gameObject2.getId();
 
         if (this.processedPairs[id2] && this.processedPairs[id2][id1]) {
           return;
@@ -120,17 +125,17 @@ export class ConstraintSolver implements System {
         this.processedPairs[id1] = this.processedPairs[id1] || {};
         this.processedPairs[id1][id2] = true;
 
-        if (!this.validateCollision(entity1, entity2)) {
+        if (!this.validateCollision(gameObject1, gameObject2)) {
           return;
         }
 
-        this.resolveCollision(entity1, entity2, mtv1, mtv2);
+        this.resolveCollision(gameObject1, gameObject2, mtv1, mtv2);
       });
     });
 
     Object.keys(this.mtvMap).forEach((id) => {
-      const entity = this.entityObserver.getById(id) as Entity;
-      const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+      const gameObject = this.gameObjectObserver.getById(id) as GameObject;
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
 
       const mtvs = Object.keys(this.mtvMap[id]);
 

@@ -1,76 +1,76 @@
 import { findParentComponent } from '../component';
-import { Entity } from '../../entity';
+import { GameObject } from '../../game-object';
 import { createMockComponent } from '../../../__mocks__';
 
 describe('Engine -> Component -> findParentComponent()', () => {
   it('Returns nothing for game object without parent', () => {
     const mockComponentName = 'mock-component';
 
-    const entity = new Entity({ id: '0', name: 'mock-entity' });
+    const gameObject = new GameObject({ id: '0', name: 'mock-gameObject' });
 
-    entity.setComponent(mockComponentName, createMockComponent(mockComponentName));
+    gameObject.setComponent(mockComponentName, createMockComponent(mockComponentName));
 
-    expect(findParentComponent(entity, mockComponentName)).toEqual(void 0);
+    expect(findParentComponent(gameObject, mockComponentName)).toEqual(void 0);
   });
 
   it('Returns parent component for game object with parent', () => {
     const mockComponentName = 'mock-component';
 
-    const entity = new Entity({ id: '1', name: 'mock-entity-1' });
+    const gameObject = new GameObject({ id: '1', name: 'mock-gameObject-1' });
     const mockComponent = createMockComponent(mockComponentName);
-    entity.setComponent(mockComponentName, mockComponent);
+    gameObject.setComponent(mockComponentName, mockComponent);
 
-    const parentEntity = new Entity({ id: '2', name: 'mock-entity-2' });
+    const parentGameObject = new GameObject({ id: '2', name: 'mock-gameObject-2' });
     const mockParentComponent = createMockComponent(mockComponentName);
-    parentEntity.setComponent(mockComponentName, mockParentComponent);
+    parentGameObject.setComponent(mockComponentName, mockParentComponent);
 
-    parentEntity.appendChild(entity);
+    parentGameObject.appendChild(gameObject);
 
-    expect(findParentComponent(entity, mockComponentName)).toEqual(mockParentComponent);
-    expect(findParentComponent(entity, mockComponentName)).not.toEqual(mockComponent);
+    expect(findParentComponent(gameObject, mockComponentName)).toEqual(mockParentComponent);
+    expect(findParentComponent(gameObject, mockComponentName)).not.toEqual(mockComponent);
   });
 
   it('Returns parent component for game object with grandparent which have this component', () => {
     const mockComponentName = 'mock-component';
 
-    const entity = new Entity({ id: '1', name: 'mock-entity-1' });
+    const gameObject = new GameObject({ id: '1', name: 'mock-gameObject-1' });
     const mockComponent = createMockComponent(mockComponentName);
-    entity.setComponent(mockComponentName, mockComponent);
+    gameObject.setComponent(mockComponentName, mockComponent);
 
-    const parentEntity = new Entity({ id: '2', name: 'mock-entity-2' });
+    const parentGameObject = new GameObject({ id: '2', name: 'mock-gameObject-2' });
 
-    const grandparentEntity = new Entity({ id: '3', name: 'mock-entity-3' });
+    const grandparentGameObject = new GameObject({ id: '3', name: 'mock-gameObject-3' });
     const mockGrandparentComponent = createMockComponent(mockComponentName);
-    grandparentEntity.setComponent(mockComponentName, mockGrandparentComponent);
+    grandparentGameObject.setComponent(mockComponentName, mockGrandparentComponent);
 
-    parentEntity.appendChild(entity);
-    grandparentEntity.appendChild(parentEntity);
+    parentGameObject.appendChild(gameObject);
+    grandparentGameObject.appendChild(parentGameObject);
 
-    expect(findParentComponent(entity, mockComponentName)).toEqual(mockGrandparentComponent);
-    expect(findParentComponent(entity, mockComponentName)).not.toEqual(mockComponent);
+    expect(findParentComponent(gameObject, mockComponentName)).toEqual(mockGrandparentComponent);
+    expect(findParentComponent(gameObject, mockComponentName)).not.toEqual(mockComponent);
   });
 
   it('Returns parent component of first parent game object with that component', () => {
     const mockComponentName = 'mock-component';
 
-    const entity = new Entity({ id: '1', name: 'mock-entity-1' });
+    const gameObject = new GameObject({ id: '1', name: 'mock-gameObject-1' });
     const mockComponent = createMockComponent(mockComponentName);
-    entity.setComponent(mockComponentName, mockComponent);
+    gameObject.setComponent(mockComponentName, mockComponent);
 
-    const parentEntity = new Entity({ id: '2', name: 'mock-entity-2' });
+    const parentGameObject = new GameObject({ id: '2', name: 'mock-gameObject-2' });
     const mockParentComponent = createMockComponent(mockComponentName);
-    parentEntity.setComponent(mockComponentName, mockParentComponent);
+    parentGameObject.setComponent(mockComponentName, mockParentComponent);
 
-    const grandparentEntity = new Entity({ id: '3', name: 'mock-entity-3' });
+    const grandparentGameObject = new GameObject({ id: '3', name: 'mock-gameObject-3' });
     const mockGrandparentComponent = createMockComponent(mockComponentName);
-    grandparentEntity.setComponent(mockComponentName, mockGrandparentComponent);
+    grandparentGameObject.setComponent(mockComponentName, mockGrandparentComponent);
 
-    parentEntity.appendChild(entity);
-    grandparentEntity.appendChild(parentEntity);
+    parentGameObject.appendChild(gameObject);
+    grandparentGameObject.appendChild(parentGameObject);
 
-    expect(findParentComponent(entity, mockComponentName)).toEqual(mockParentComponent);
-    expect(findParentComponent(entity, mockComponentName)).not.toEqual(mockComponent);
-    expect(findParentComponent(entity, mockComponentName)).not.toEqual(
+    expect(findParentComponent(gameObject, mockComponentName)).toEqual(mockParentComponent);
+    expect(findParentComponent(gameObject, mockComponentName)).not.toEqual(mockComponent);
+    expect(findParentComponent(gameObject, mockComponentName)).not.toEqual(
       mockGrandparentComponent,
     );
   });

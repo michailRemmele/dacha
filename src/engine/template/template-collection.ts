@@ -1,18 +1,18 @@
 import type { Component } from '../component';
-import type { PrefabConfig } from '../types';
+import type { TemplateConfig } from '../types';
 
-import { Prefab } from './prefab';
+import { Template } from './template';
 
-export class PrefabCollection {
+export class TemplateCollection {
   private components: Record<string, new (...args: Array<unknown>) => Component>;
-  private storage: Record<string, Prefab>;
+  private storage: Record<string, Template>;
 
   constructor(components: Record<string, new (...args: Array<unknown>) => Component>) {
     this.components = components;
     this.storage = {};
   }
 
-  private buildPrefab(options: PrefabConfig): Prefab {
+  private buildTemplate(options: TemplateConfig): Template {
     const {
       name,
       type,
@@ -20,41 +20,41 @@ export class PrefabCollection {
       children = [],
     } = options;
 
-    const prefab = new Prefab();
+    const template = new Template();
 
-    prefab.setName(name);
-    prefab.setType(type);
+    template.setName(name);
+    template.setType(type);
 
     children.forEach((child) => {
-      const childPrefab = this.buildPrefab(child);
-      childPrefab.setParent(prefab);
-      prefab.appendChild(childPrefab);
+      const childTemplate = this.buildTemplate(child);
+      childTemplate.setParent(template);
+      template.appendChild(childTemplate);
     });
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      prefab.setComponent(
+      template.setComponent(
         componentOptions.name,
         new Component(componentOptions.name, componentOptions.config),
       );
     });
 
-    return prefab;
+    return template;
   }
 
-  register(options: PrefabConfig): void {
-    this.storage[options.name] = this.buildPrefab(options);
+  register(options: TemplateConfig): void {
+    this.storage[options.name] = this.buildTemplate(options);
   }
 
-  get(name: string): Prefab {
+  get(name: string): Template {
     if (!this.storage[name]) {
-      throw new Error(`Can't find prefab with same name: ${name}`);
+      throw new Error(`Can't find template with same name: ${name}`);
     }
 
     return this.storage[name].clone();
   }
 
-  getAll(): Array<Prefab> {
+  getAll(): Array<Template> {
     return Object.values(this.storage);
   }
 }

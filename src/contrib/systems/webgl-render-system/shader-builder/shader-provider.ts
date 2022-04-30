@@ -1,35 +1,35 @@
 import type {
-  EntityObserver,
-  Entity,
-} from '../../../../engine/entity';
+  GameObjectObserver,
+  GameObject,
+} from '../../../../engine/game-object';
 import type { Renderable } from '../../../components/renderable';
 import { RENDERABLE_COMPONENT_NAME } from '../consts';
 
 export class ShaderProvider {
-  private entityObserver: EntityObserver;
+  private gameObjectObserver: GameObjectObserver;
   private shadingIdMap: Record<string, string>;
 
-  constructor(entityObserver: EntityObserver) {
-    this.entityObserver = entityObserver;
+  constructor(gameObjectObserver: GameObjectObserver) {
+    this.gameObjectObserver = gameObjectObserver;
 
     this.shadingIdMap = {};
 
-    this.entityObserver.subscribe('onadd', this.handleEntityAdd);
-    this.entityObserver.subscribe('onremove', this.handleEntityRemove);
+    this.gameObjectObserver.subscribe('onadd', this.handleGameObjectAdd);
+    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
   }
 
-  getShadingId(entityId: string): string {
-    return this.shadingIdMap[entityId];
+  getShadingId(gameObjectId: string): string {
+    return this.shadingIdMap[gameObjectId];
   }
 
-  private handleEntityAdd = (entity: Entity): void => {
-    this.shadingIdMap[entity.getId()] = this.calculateShadingId(entity);
+  private handleGameObjectAdd = (gameObject: GameObject): void => {
+    this.shadingIdMap[gameObject.getId()] = this.calculateShadingId(gameObject);
   };
 
-  private handleEntityRemove = (entity: Entity): void => {
+  private handleGameObjectRemove = (gameObject: GameObject): void => {
     this.shadingIdMap = Object.keys(this.shadingIdMap)
       .reduce((acc: Record<string, string>, key) => {
-        if (key !== entity.getId()) {
+        if (key !== gameObject.getId()) {
           acc[key] = this.shadingIdMap[key];
         }
 
@@ -37,8 +37,8 @@ export class ShaderProvider {
       }, {});
   };
 
-  private calculateShadingId(entity: Entity): string {
-    const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+  private calculateShadingId(gameObject: GameObject): string {
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
     return `${renderable.fit}`;
   }

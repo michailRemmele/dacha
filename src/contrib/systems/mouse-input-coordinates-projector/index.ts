@@ -1,5 +1,5 @@
 import type { System, SystemOptions } from '../../../engine/system';
-import type { Entity } from '../../../engine/entity';
+import type { GameObject } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
 import type { Camera } from '../../components/camera';
@@ -35,7 +35,7 @@ export class MouseInputCoordinatesProjector implements System {
   }
 
   update(): void {
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as Entity;
+    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
     const {
       windowSizeX,
       windowSizeY,

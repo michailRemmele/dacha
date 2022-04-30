@@ -1,5 +1,5 @@
 import type { System, SystemOptions } from '../../../engine/system';
-import { Entity, EntityObserver } from '../../../engine/entity';
+import { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import { Store } from '../../../engine/scene';
 import { Renderable } from '../../components/renderable';
 import { Transform } from '../../components/transform';
@@ -87,7 +87,7 @@ export class RenderSystem implements System {
   private _shaders: Array<WebGLShader>;
   private shaderProvider: ShaderProvider;
   private _store: Store;
-  private _entityObserver: EntityObserver;
+  private _gameObjectObserver: GameObjectObserver;
   private _scaleSensitivity: number;
   private _screenScale: number;
   private _vaoExt: OES_vertex_array_object | null;
@@ -109,7 +109,7 @@ export class RenderSystem implements System {
     const {
       windowNodeId, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
-      createEntityObserver, sortingLayers,
+      createGameObjectObserver, sortingLayers,
       store, scaleSensitivity,
     } = options;
 
@@ -160,14 +160,14 @@ export class RenderSystem implements System {
     ]);
 
     this._store = store;
-    this._entityObserver = createEntityObserver({
+    this._gameObjectObserver = createGameObjectObserver({
       components: [
         RENDERABLE_COMPONENT_NAME,
         TRANSFORM_COMPONENT_NAME,
       ],
     });
 
-    this.shaderProvider = new ShaderProvider(this._entityObserver);
+    this.shaderProvider = new ShaderProvider(this._gameObjectObserver);
 
     this._scaleSensitivity = Math.min(Math.max(scaleSensitivity, 0), 100) / 100;
     this._screenScale = 1;
@@ -185,7 +185,7 @@ export class RenderSystem implements System {
 
   mount(): void {
     window.addEventListener('resize', this._onWindowResizeBind);
-    this._entityObserver.subscribe('onremove', this.handleEntityRemove);
+    this._gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
     this.gl = this._initGraphicContext();
     this._initExtensions();
     this._initScreen();
@@ -196,7 +196,7 @@ export class RenderSystem implements System {
 
   unmount(): void {
     window.removeEventListener('resize', this._onWindowResizeBind);
-    this._entityObserver.unsubscribe('onremove', this.handleEntityRemove);
+    this._gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
     this._shaders.forEach((shader) => {
       if (this.program) {
         this.gl?.detachShader(this.program, shader);
@@ -234,9 +234,9 @@ export class RenderSystem implements System {
     this.textureAtlasSize.height = this.textureAtlas.height;
   }
 
-  private handleEntityRemove = (entity: Entity) => {
-    const entityId = entity.getId();
-    this._geometry[entityId] = null;
+  private handleGameObjectRemove = (gameObject: GameObject) => {
+    const gameObjectId = gameObject.getId();
+    this._geometry[gameObjectId] = null;
   };
 
   _onWindowResize() {
@@ -341,7 +341,7 @@ export class RenderSystem implements System {
       uModelViewMatrix: this.gl.getUniformLocation(this.program, 'u_modelViewMatrix'),
       uTexSize: this.gl.getUniformLocation(this.program, 'u_texSize'),
       uTexTranslate: this.gl.getUniformLocation(this.program, 'u_texTranslate'),
-      uEntitySize: this.gl.getUniformLocation(this.program, 'u_entitySize'),
+      uGameObjectSize: this.gl.getUniformLocation(this.program, 'u_gameObjectSize'),
     };
 
     this._buffer = this.gl.createBuffer();
@@ -433,7 +433,7 @@ export class RenderSystem implements System {
   ) {
     const matrixTransformer = this._matrixTransformer;
 
-    const matrix = matrixTransformer.getIdentityMatrix();
+    const matrix = matrixTransformer.getIdgameObjectMatrix();
 
     matrixTransformer.translate(matrix, -renderable.width / 2, -renderable.height / 2);
     matrixTransformer.scale(matrix, scaleX, scaleY);
@@ -480,7 +480,7 @@ export class RenderSystem implements System {
 
   private updateViewMatrix() {
     const gl = this.gl as WebGLRenderingContext;
-    const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as Entity;
+    const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as GameObject;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
     const scale = zoom * this._screenScale;
@@ -498,7 +498,7 @@ export class RenderSystem implements System {
     }
 
     const matrixTransformer = this._matrixTransformer;
-    const viewMatrix = matrixTransformer.getIdentityMatrix();
+    const viewMatrix = matrixTransformer.getIdgameObjectMatrix();
     matrixTransformer.translate(viewMatrix, -transform.offsetX, -transform.offsetY);
     matrixTransformer.scale(viewMatrix, scale, scale);
     matrixTransformer.project(viewMatrix, this._viewWidth, this._viewHeight);
@@ -525,10 +525,10 @@ export class RenderSystem implements System {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
   }
 
-  private setUpVertexData(entity: Entity) {
+  private setUpVertexData(gameObject: GameObject) {
     const vertexData = this._vertexData;
-    const entityId = entity.getId();
-    const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const gameObjectId = gameObject.getId();
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
     // TODO: Filter hidden object while frustum culling step and remove that
     if (renderable.disabled) {
@@ -541,11 +541,11 @@ export class RenderSystem implements System {
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-    const geometry = this._geometry[entityId] || {
+    const geometry = this._geometry[gameObjectId] || {
       position: new Rectangle(renderable.width, renderable.height).toArray(),
       texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
     };
-    this._geometry[entityId] = geometry;
+    this._geometry[gameObjectId] = geometry;
 
     const { position, texCoord } = geometry;
 
@@ -557,11 +557,11 @@ export class RenderSystem implements System {
     }
   }
 
-  private setUpUniforms(entity: Entity) {
+  private setUpUniforms(gameObject: GameObject) {
     const gl = this.gl as WebGLRenderingContext;
 
-    const renderable = entity.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-    const transform = entity.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
 
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
@@ -582,11 +582,11 @@ export class RenderSystem implements System {
     );
     gl.uniform2fv(this._variables.uTexSize, [textureInfo.width, textureInfo.height]);
     gl.uniform2fv(this._variables.uTexTranslate, [textureInfo.x, textureInfo.y]);
-    gl.uniform2fv(this._variables.uEntitySize, [renderable.width, renderable.height]);
+    gl.uniform2fv(this._variables.uGameObjectSize, [renderable.width, renderable.height]);
   }
 
   update() {
-    this._entityObserver.fireEvents();
+    this._gameObjectObserver.fireEvents();
 
     const gl = this.gl as WebGLRenderingContext;
 
@@ -599,16 +599,16 @@ export class RenderSystem implements System {
 
     this.updateViewMatrix();
 
-    this._entityObserver.sort(this.sortFn);
+    this._gameObjectObserver.sort(this.sortFn);
 
     const batches = splitToBatch(
-      this._entityObserver.getList(), this.shaderProvider,
+      this._gameObjectObserver.getList(), this.shaderProvider,
     );
 
     batches.forEach((batch) => {
-      batch.forEach((entity) => {
-        this.setUpUniforms(entity);
-        this.setUpVertexData(entity);
+      batch.forEach((gameObject) => {
+        this.setUpUniforms(gameObject);
+        this.setUpVertexData(gameObject);
         this.setUpBuffers();
         gl.drawArrays(gl.TRIANGLES, DRAW_OFFSET, DRAW_COUNT);
       });

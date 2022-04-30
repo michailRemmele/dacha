@@ -1,5 +1,5 @@
 import type { System, SystemOptions, UpdateOptions } from '../../../engine/system';
-import type { Entity, EntityObserver } from '../../../engine/entity';
+import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus } from '../../../engine/message-bus';
 import type { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
@@ -18,13 +18,13 @@ const FRAME_RATE = 100;
 const ANIMATABLE_COMPONENT_NAME = 'animatable';
 
 export class Animator implements System {
-  private entityObserver: EntityObserver;
+  private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private conditionControllers: Record<string, ConditionController>;
   private substatePickers: Record<string, Picker>;
 
   constructor(options: SystemOptions) {
-    this.entityObserver = options.createEntityObserver({
+    this.gameObjectObserver = options.createGameObjectObserver({
       components: [ANIMATABLE_COMPONENT_NAME],
     });
     this.messageBus = options.messageBus;
@@ -44,27 +44,27 @@ export class Animator implements System {
     );
   }
 
-  private updateFrame(entity: Entity, frame: Frame): void {
+  private updateFrame(gameObject: GameObject, frame: Frame): void {
     Object.keys(frame).forEach((fieldName) => setValue(
-      entity, frame[fieldName].path, frame[fieldName].value,
+      gameObject, frame[fieldName].path, frame[fieldName].value,
     ));
   }
 
-  private pickSubstate(entity: Entity, state: GroupState): Substate {
+  private pickSubstate(gameObject: GameObject, state: GroupState): Substate {
     const substatePicker = this.substatePickers[state.pickMode];
-    return substatePicker.getSubstate(entity, state.substates, state.pickProps);
+    return substatePicker.getSubstate(gameObject, state.substates, state.pickProps);
   }
 
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
-    this.entityObserver.forEach((entity) => {
-      const animatable = entity.getComponent(ANIMATABLE_COMPONENT_NAME) as Animatable;
+    this.gameObjectObserver.forEach((gameObject) => {
+      const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME) as Animatable;
 
       let { timeline } = animatable.currentState as IndividualState;
 
       if ((animatable.currentState as GroupState).substates) {
-        const substate = this.pickSubstate(entity, animatable.currentState as GroupState);
+        const substate = this.pickSubstate(gameObject, animatable.currentState as GroupState);
         timeline = substate.timeline;
       }
 
@@ -78,7 +78,7 @@ export class Animator implements System {
         ? Math.trunc((animatable.duration % 1) * framesCount)
         : framesCount - 1;
 
-      this.updateFrame(entity, timeline.frames[currentFrame]);
+      this.updateFrame(gameObject, timeline.frames[currentFrame]);
 
       const nextTransition = animatable.currentState.transitions.find((transition) => {
         if (transition.time && animatable.duration < transition.time) {
@@ -87,7 +87,7 @@ export class Animator implements System {
 
         return transition.conditions.every((condition) => {
           const conditionController = this.conditionControllers[condition.type];
-          return conditionController.check(condition.props, entity, this.messageBus);
+          return conditionController.check(condition.props, gameObject, this.messageBus);
         });
       });
 

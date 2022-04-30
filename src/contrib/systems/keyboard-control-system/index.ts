@@ -1,5 +1,5 @@
 import type { System, SystemOptions } from '../../../engine/system';
-import type { EntityObserver } from '../../../engine/entity';
+import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { KeyboardControl } from '../../components/keyboard-control';
 
@@ -16,11 +16,11 @@ interface InputEventQueryMessage extends Message {
 }
 
 export class KeyboardControlSystem implements System {
-  private entityObserver: EntityObserver;
+  private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
 
   constructor(options: SystemOptions) {
-    this.entityObserver = options.createEntityObserver({
+    this.gameObjectObserver = options.createGameObjectObserver({
       components: [
         CONTROL_COMPONENT_NAME,
       ],
@@ -29,8 +29,8 @@ export class KeyboardControlSystem implements System {
   }
 
   update(): void {
-    this.entityObserver.forEach((entity) => {
-      const control = entity.getComponent(CONTROL_COMPONENT_NAME) as KeyboardControl;
+    this.gameObjectObserver.forEach((gameObject) => {
+      const control = gameObject.getComponent(CONTROL_COMPONENT_NAME) as KeyboardControl;
 
       const messages = (this.messageBus.get(INPUT_MESSAGE) || []) as Array<InputEventQueryMessage>;
       messages.forEach((message) => {
@@ -59,8 +59,8 @@ export class KeyboardControlSystem implements System {
           this.messageBus.send({
             type: eventBinding.messageType,
             ...eventBinding.attrs,
-            entity,
-            id: entity.getId(),
+            gameObject,
+            id: gameObject.getId(),
           });
         }
         if (inputEventType === RELEASE_EVENT_TYPE) {

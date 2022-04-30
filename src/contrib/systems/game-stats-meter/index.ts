@@ -1,5 +1,5 @@
 import type { System, SystemOptions, UpdateOptions } from '../../../engine/system';
-import type { EntityObserver } from '../../../engine/entity';
+import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus } from '../../../engine/message-bus';
 
 const GAME_STATS_UPDATE_MSG = 'GAME_STATS_UPDATE';
@@ -10,7 +10,7 @@ interface GameStatsMeterOptions extends SystemOptions {
 }
 
 export class GameStatsMeter implements System {
-  private entityObserver: EntityObserver;
+  private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private frequency: number;
   private fps: number;
@@ -18,7 +18,7 @@ export class GameStatsMeter implements System {
   private messages: number;
 
   constructor(options: GameStatsMeterOptions) {
-    this.entityObserver = options.createEntityObserver({});
+    this.gameObjectObserver = options.createGameObjectObserver({});
     this.messageBus = options.messageBus;
     this.frequency = options.frequency || MS_IN_SEC;
 
@@ -38,7 +38,7 @@ export class GameStatsMeter implements System {
       this.messageBus.send({
         type: GAME_STATS_UPDATE_MSG,
         fps: (this.fps * MS_IN_SEC) / this.time,
-        entitiesCount: this.entityObserver.size(),
+        gameObjectsCount: this.gameObjectObserver.size(),
         messagesCount: (this.messages * MS_IN_SEC) / this.time,
       });
 

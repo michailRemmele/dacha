@@ -1,4 +1,4 @@
-import type { Entity } from '../../../../engine/entity';
+import type { GameObject } from '../../../../engine/game-object';
 import type { ComparatorConditionProps } from '../../../components/animatable/comparator-condition-props';
 import type { ComparatorConditionComponentValue } from '../../../components/animatable/comparator-condition-component-value';
 import type { ComparatorConditionNumberValue } from '../../../components/animatable/comparator-condition-number-value';
@@ -6,7 +6,7 @@ import { getValue } from '../utils';
 
 import { ConditionController } from './condition-controller';
 
-type GetterFn = (arg1: Entity, arg2: string | number | Array<string>) => string | number;
+type GetterFn = (arg1: GameObject, arg2: string | number | Array<string>) => string | number;
 type OperationFn = (arg1: string | number, arg2: string | number) => boolean;
 
 export class ComparatorConditionController implements ConditionController {
@@ -34,25 +34,25 @@ export class ComparatorConditionController implements ConditionController {
   }
 
   private getValue(
-    entity: Entity,
+    gameObject: GameObject,
     arg: ComparatorConditionComponentValue | ComparatorConditionNumberValue,
   ): string | number {
     if (!this.getters[arg.type]) {
       throw new Error(`Unknown value type: ${arg.type}`);
     }
 
-    return this.getters[arg.type](entity, arg.value);
+    return this.getters[arg.type](gameObject, arg.value);
   }
 
-  check(props: ComparatorConditionProps, entity: Entity): boolean {
+  check(props: ComparatorConditionProps, gameObject: GameObject): boolean {
     const { operation } = props;
 
     if (!this.operations[operation]) {
       throw new Error(`Unknown operation type: ${operation}`);
     }
 
-    const arg1 = this.getValue(entity, props.arg1);
-    const arg2 = this.getValue(entity, props.arg2);
+    const arg1 = this.getValue(gameObject, props.arg1);
+    const arg2 = this.getValue(gameObject, props.arg2);
 
     return this.operations[operation](arg1, arg2);
   }

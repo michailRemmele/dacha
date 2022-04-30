@@ -3,26 +3,26 @@ export interface ComponentConfig {
   config: Record<string, unknown>
 }
 
-export interface PrefabConfig {
+export interface TemplateConfig {
   name: string
   type: string
   components?: Array<ComponentConfig>
-  children?: Array<PrefabConfig>
+  children?: Array<TemplateConfig>
 }
 
-export interface EntityConfig {
+export interface GameObjectConfig {
   id: string
   name: string
   type?: string
-  children?: Array<EntityConfig>
+  children?: Array<GameObjectConfig>
   components?: Array<ComponentConfig>
-  fromPrefab?: boolean
-  prefabName?: string
+  fromTemplate?: boolean
+  templateName?: string
 }
 
 export interface LevelConfig {
   name: string
-  entities: Array<EntityConfig>
+  gameObjects: Array<GameObjectConfig>
 }
 
 export interface SystemConfig {
@@ -39,7 +39,7 @@ export interface SceneConfig {
 export interface Config {
   scenes: Array<SceneConfig>
   levels: Array<LevelConfig>
-  prefabs: Array<PrefabConfig>
+  templates: Array<TemplateConfig>
   loaders: Array<SceneConfig>
   startScene: string
   startLoader?: string
