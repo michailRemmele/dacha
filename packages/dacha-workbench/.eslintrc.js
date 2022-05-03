@@ -20,6 +20,11 @@ const commonRules = {
   'import/no-extraneous-dependencies': 0,
 }
 
+const reactRules = {
+  'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
+  'react/require-default-props': 'warn',
+}
+
 module.exports = {
   env: {
     browser: true,
@@ -58,6 +63,7 @@ module.exports = {
       ],
       rules: {
         ...commonRules,
+        ...reactRules,
         '@typescript-eslint/lines-between-class-members': 0,
         '@typescript-eslint/explicit-function-return-type': 'warn',
         '@typescript-eslint/semi': 0,
