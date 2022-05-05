@@ -1,7 +1,8 @@
 {
   "name": "remiz",
-  "main": "./build/remiz.js",
   "version": "0.9.0",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
   "dependencies": {
     "three": "0.137.5",
     "uuid-random": "1.0.9"
@@ -17,33 +18,27 @@
     "@types/jest": "27.0.2",
     "@types/three": "0.137.0",
     "@typescript-eslint/eslint-plugin": "5.2.0",
-    "@typescript-eslint/parser": "^5.2.0",
-    "babel-loader": "8.0.5",
-    "clean-webpack-plugin": "1.0.1",
+    "@typescript-eslint/parser": "5.2.0",
     "eslint": "7.32.0",
     "eslint-config-airbnb-typescript": "14.0.1",
     "eslint-import-resolver-typescript": "2.5.0",
     "eslint-plugin-import": "2.25.2",
     "husky": "7.0.4",
     "jest": "27.3.1",
-    "terser-webpack-plugin": "4.2.3",
     "ts-jest": "27.0.7",
-    "typescript": "4.4.4",
-    "webpack": "4.44.1",
-    "webpack-cli": "3.3.10",
-    "webpack-dev-server": "3.8.2"
+    "typescript": "4.4.4"
   },
   "files": [
-    "build/remiz.js",
-    "src",
-    "esm",
+    "build",
     "package.json",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "webpack",
-    "build:esm": "rm -rf esm && npx babel src --out-dir esm --extensions \".ts,.js\" --ignore \"src/**/*.test.ts\"",
+    "build": "npm run build:clean && npm run build:esm && npm run build:types",
+    "build:clean": "rm -rf build",
+    "build:esm": "npx babel src --out-dir build --extensions \".ts,.js\" --ignore \"src/**/*.test.ts,src/__mocks__\"",
+    "build:types": "tsc --project tsconfig.types.json",
     "lint": "eslint .",
     "test": "jest",
     "prepare": "husky install",

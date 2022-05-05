@@ -3,6 +3,8 @@
         "baseUrl": ".",
         "outDir": "./build/",
 
+        "declaration": true,
+
         "module": "esnext",
         "moduleResolution": "node",
 
@@ -15,6 +17,6 @@
         "resolveJsonModule": true
     },
     "include": [
-        "src"
+        "src/**/*"
     ]
 }
