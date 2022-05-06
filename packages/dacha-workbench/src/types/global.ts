@@ -1,5 +1,7 @@
+import { Config } from 'remiz'
+
 export interface ElectronAPI {
-  getProjectInfo: () => string,
+  getGameConfig: () => Config,
 }
 
 declare global {

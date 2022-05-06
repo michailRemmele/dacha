@@ -1,12 +1,14 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 
+import {
+  GameConfigInfo,
+  Layout,
+} from './components'
+
 const root = createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <div>
-    Hello world with React!
-    Project path:
-    {' '}
-    {window.electron.getProjectInfo()}
-  </div>,
+  <Layout>
+    <GameConfigInfo />
+  </Layout>,
 )

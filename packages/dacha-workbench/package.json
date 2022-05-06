@@ -1,6 +1,6 @@
 {
   "name": "remiz-editor",
-  "version": "0.0.7",
+  "version": "0.0.0",
   "description": "GUI editor for remiz game engine",
   "main": "index.js",
   "bin": {
@@ -49,6 +49,7 @@
     "@typescript-eslint/parser": "5.21.0",
     "babel-loader": "8.2.5",
     "clean-webpack-plugin": "4.0.0",
+    "css-loader": "6.7.1",
     "eslint": "8.14.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-airbnb-typescript": "17.0.0",
@@ -62,6 +63,8 @@
     "jest": "27.5.1",
     "react": "18.1.0",
     "react-dom": "18.1.0",
+    "remiz": "0.9.1",
+    "style-loader": "3.3.1",
     "ts-jest": "27.1.4",
     "typescript": "4.6.4",
     "webpack": "5.72.0",
@@ -70,5 +73,8 @@
   },
   "dependencies": {
     "electron": "18.2.0"
+  },
+  "peerDependencies": {
+    "remiz": "^0.9.1"
   }
 }
