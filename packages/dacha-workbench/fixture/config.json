@@ -1,0 +1,287 @@
+{
+  "scenes": [
+    {
+      "name": "menu",
+      "systems": [
+        {
+          "name": "uiBridge",
+          "options": {}
+        }
+      ]
+    },
+    {
+      "name": "game",
+      "level": "testLevel",
+      "systems": [
+        {
+          "name": "keyboardInputSystem",
+          "options": {}
+        },
+        {
+          "name": "keyboardControlSystem",
+          "options": {}
+        },
+        {
+          "name": "cameraSystem",
+          "options": {
+            "windowNodeId": "root",
+            "initialCamera": "1.2"
+          }
+        },
+        {
+          "name": "threeJSRenderer",
+          "options": {
+            "windowNodeId": "root",
+            "backgroundColor": "#000",
+            "sortingLayers": [
+              "background",
+              "terrain",
+              "units"
+            ],
+            "scaleSensitivity": 0.5
+          }
+        },
+        {
+          "name": "uiBridge",
+          "options": {
+            "filterComponents": [
+              "keyboardControl",
+              "mouseControl"
+            ]
+          }
+        }
+      ]
+    }    
+  ],
+  "levels": [
+    {
+      "name": "testLevel",
+      "gameObjects": [
+        {
+          "id": "1",
+          "name": "background",
+          "fromTemplate": true,
+          "templateName": "background",
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "offsetZ": 0,
+                "rotation": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "name": "terrain",
+          "fromTemplate": true,
+          "templateName": "terrain",
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "offsetZ": 0,
+                "rotation": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "name": "player",
+          "fromTemplate": true,
+          "templateName": "player",
+          "children": [
+            {
+              "id": "3.1",
+              "name": "mainCamera",
+              "fromTemplate": false,
+              "templateName": "",
+              "children": [],
+              "components": [
+                {
+                  "name": "transform",
+                  "config": {
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "offsetZ": 1,
+                    "rotation": 0
+                  }
+                },
+                {
+                  "name": "camera",
+                  "config": {
+                    "zoom": 4
+                  }
+                }
+              ]
+            }
+          ],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "offsetZ": 0,
+                "rotation": 0
+              }
+            },
+            {
+              "name": "keyboardControl",
+              "config": {
+                "inputEventBindings": {
+                  "W_PRESSED": {
+                    "messageType": "MOVEMENT",
+                    "attrs": {
+                      "angle": 270
+                    }
+                  },
+                  "A_PRESSED": {
+                    "messageType": "MOVEMENT",
+                    "attrs": {
+                      "angle": 180
+                    }
+                  },
+                  "S_PRESSED": {
+                    "messageType": "MOVEMENT",
+                    "attrs": {
+                      "angle": 90
+                    }
+                  },
+                  "D_PRESSED": {
+                    "messageType": "MOVEMENT",
+                    "attrs": {
+                      "angle": 0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "name": "player",
+      "type": "unit",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0,
+            "offsetZ": 0,
+            "rotation": 0
+          }
+        },
+        {
+          "name": "renderable",
+          "config": {
+            "type": "static",
+            "src": "assets/units/player.png",
+            "width": 25,
+            "height": 25,
+            "rotation": 0,
+            "sortCenter": [ 0, 0 ],
+            "flipX": false,
+            "flipY": false,
+            "sortingLayer": "units",
+            "fit": "stretch",
+            "material": {
+              "type": "basic"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "background",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0,
+            "offsetZ": 0,
+            "rotation": 0
+          }
+        },
+        {
+          "name": "renderable",
+          "config": {
+            "type": "static",
+            "src": "assets/terrain/background.png",
+            "width": 1000,
+            "height": 1000,
+            "rotation": 0,
+            "sortCenter": [ 0, 0 ],
+            "flipX": false,
+            "flipY": false,
+            "sortingLayer": "background",
+            "fit": "repeat",
+            "material": {
+              "type": "basic"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "terrain",
+      "children": [],
+      "components": [
+        {
+          "name": "transform",
+          "config": {
+            "offsetX": 0,
+            "offsetY": 0,
+            "offsetZ": 0,
+            "rotation": 0
+          }
+        },
+        {
+          "name": "renderable",
+          "config": {
+            "type": "static",
+            "src": "assets/terrain/terrain.png",
+            "width": 400,
+            "height": 400,
+            "rotation": 0,
+            "sortCenter": [ 0, 0 ],
+            "flipX": false,
+            "flipY": false,
+            "sortingLayer": "terrain",
+            "fit": "repeat",
+            "material": {
+              "type": "basic"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "loaders": [
+    {
+      "name": "loader",
+      "systems": [
+        {
+          "name": "uiBridge",
+          "options": {}
+        }
+      ]
+    }
+  ],
+  "startScene": "mainMenu"
+}

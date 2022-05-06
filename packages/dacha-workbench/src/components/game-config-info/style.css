@@ -1,0 +1,4 @@
+.game-config-info {
+  display: flex;
+  flex-direction: column;
+}
