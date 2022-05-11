@@ -5,7 +5,7 @@ import { Material, MaterialConfig } from './material';
 type RenderableType = 'sprite' | 'static';
 type FitType = 'stretch' | 'repeat';
 
-export { MaterialType, BasicMaterialOptions, BlendingMode } from './material';
+export type { MaterialType, BasicMaterialOptions, BlendingMode } from './material';
 
 export interface RenderableConfig {
   src: string

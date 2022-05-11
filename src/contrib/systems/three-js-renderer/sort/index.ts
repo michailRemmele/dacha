@@ -22,4 +22,4 @@ export const composeSort = (sortFns: Array<SortFn>): SortFn => (a: GameObject, b
   return result;
 };
 
-export { SortFn };
+export type { SortFn };
