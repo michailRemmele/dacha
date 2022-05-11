@@ -1,2 +1,2 @@
-export { EventEmitter } from './event-emitter';
+export type { EventEmitter } from './event-emitter';
 export * from './config';
