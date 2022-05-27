@@ -2,9 +2,7 @@ import type { GameObjectObserver, GameObjectObserverFilter } from '../game-objec
 import type { Store, SceneContext } from '../scene';
 import type { MessageBus } from '../message-bus';
 
-export interface HelperFn {
-  <T = unknown>(): Promise<Record<string, T>>
-}
+export type HelperFn = () => Promise<Record<string, unknown>>;
 
 export interface SystemOptions {
   createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver

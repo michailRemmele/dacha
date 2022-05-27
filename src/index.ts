@@ -23,6 +23,7 @@ export type {
 export type { MessageBus, Message } from './engine/message-bus';
 export type { Store, SceneContext } from './engine/scene';
 export type { Script, ScriptOptions } from './contrib/systems/script-system';
+export type { UiInitFnOptions, UiInitFn, UiDestroyFn } from './contrib/systems/ui-bridge';
 
 export {
   Engine,

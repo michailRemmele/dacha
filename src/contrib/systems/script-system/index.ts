@@ -57,8 +57,8 @@ export class ScriptSystem implements System {
   }
 
   async load(): Promise<void> {
-    const { scripts } = await this.helpers.loadScripts<Record<string, ScriptClass>>();
-    this.scripts = scripts;
+    const { scripts } = await this.helpers.loadScripts();
+    this.scripts = scripts as Record<string, ScriptClass>;
   }
 
   mount(): void {

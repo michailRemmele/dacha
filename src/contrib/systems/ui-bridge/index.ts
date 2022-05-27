@@ -20,7 +20,7 @@ interface ActionFnOptions {
 
 type ActionFn = (options: ActionFnOptions) => void;
 
-interface InitFnOptions {
+export interface UiInitFnOptions {
   sceneName: string
   messageBusObserver: Observer
   storeObserver: Observer
@@ -29,8 +29,8 @@ interface InitFnOptions {
   pushAction: (action: ActionFn) => void
 }
 
-type InitFn = (options: InitFnOptions) => void;
-type DestroyFn = () => void;
+export type UiInitFn = (options: UiInitFnOptions) => void;
+export type UiDestroyFn = () => void;
 
 interface UiBridgeOptions extends SystemOptions {
   filterComponents: Array<string>;
@@ -49,8 +49,8 @@ export class UiBridge implements System {
   private gameObjects: MapObserver;
   private messageQueue: Array<Message>;
   private actionsQueue: Array<ActionFn>;
-  private onUiInit?: InitFn;
-  private onUiDestroy?: DestroyFn;
+  private onUiInit?: UiInitFn;
+  private onUiDestroy?: UiDestroyFn;
 
   constructor(options: UiBridgeOptions) {
     const {
@@ -85,8 +85,8 @@ export class UiBridge implements System {
   async load(): Promise<void> {
     const { onInit, onDestroy } = await this.helpers.loadUiApp();
 
-    this.onUiInit = onInit as InitFn;
-    this.onUiDestroy = onDestroy as DestroyFn;
+    this.onUiInit = onInit as UiInitFn;
+    this.onUiDestroy = onDestroy as UiDestroyFn;
   }
 
   mount(): void {
