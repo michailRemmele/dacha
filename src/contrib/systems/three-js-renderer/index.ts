@@ -6,8 +6,6 @@ import {
   PlaneGeometry,
   Mesh,
   Texture,
-  TextureLoader,
-  NearestFilter,
   RepeatWrapping,
   ClampToEdgeWrapping,
   Color,
@@ -15,7 +13,7 @@ import {
 
 import type { System, SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { TemplateCollection, Template } from '../../../engine/template';
+import type { TemplateCollection } from '../../../engine/template';
 import type { Store } from '../../../engine/scene/store';
 import type { Transform } from '../../components/transform';
 import type { Renderable } from '../../components/renderable';
@@ -23,9 +21,8 @@ import type { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
 import IOC from '../../../engine/ioc/ioc';
-import { TEMPLATE_COLLECTION_KEY_NAME, RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
+import { TEMPLATE_COLLECTION_KEY_NAME } from '../../../engine/consts/global';
 
-import { SpriteCropper } from './sprite-cropper';
 import {
   composeSort,
   SortFn,
@@ -37,6 +34,7 @@ import {
 } from './sort';
 import { LightSubsystem } from './light-subsystem';
 import { createMaterial, updateMaterial } from './material-factory';
+import { loadTextures, getImagesFromTemplates } from './utils';
 import {
   CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
@@ -46,29 +44,12 @@ import {
   STD_SCREEN_SIZE,
 } from './consts';
 
-// TODO: Remove once resource loader will be moved to ts
-interface ResourceLoader {
-  load: (resource: string) => Promise<HTMLImageElement>;
-}
-
 interface ThreeJSRendererOptions extends SystemOptions {
   windowNodeId: string
   sortingLayers: Array<string>
   backgroundColor: string
   scaleSensitivity: number
 }
-
-const getImagesFromTemplates = (images: Record<string, Renderable>, template: Template): void => {
-  template.getChildren().forEach((childTemplate) => getImagesFromTemplates(images, childTemplate));
-
-  const renderable = template.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined;
-
-  if (!renderable || images[renderable.src]) {
-    return;
-  }
-
-  images[renderable.src] = renderable;
-};
 
 export class ThreeJSRenderer implements System {
   private gameObjectObserver: GameObjectObserver;
@@ -148,36 +129,18 @@ export class ThreeJSRenderer implements System {
   }
 
   async load(): Promise<void> {
-    const textureLoader = new TextureLoader();
-    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
-
     const imagesToLoad = this.getImagesToLoad();
-
-    const spriteCropper = new SpriteCropper();
 
     await Promise.all(
       Object.keys(imagesToLoad).map((key) => {
         const renderable = imagesToLoad[key];
 
-        if (renderable.type === 'static') {
-          return textureLoader.loadAsync(renderable.src)
-            .then((texture) => { this.textureMap[key] = [texture]; });
-        }
-
-        return resourceLoader.load(renderable.src)
-          .then((spriteImage) => {
-            this.textureMap[key] = spriteCropper.crop(spriteImage, renderable);
+        return loadTextures(renderable)
+          .then((textures) => {
+            this.textureMap[key] = textures;
           });
       }),
     );
-
-    Object.keys(this.textureMap).forEach((key) => {
-      this.textureMap[key].forEach((texture) => {
-        texture.magFilter = NearestFilter;
-        texture.minFilter = NearestFilter;
-        texture.flipY = false;
-      });
-    });
   }
 
   mount(): void {
@@ -229,6 +192,13 @@ export class ThreeJSRenderer implements System {
 
   private handleGameObjectAdd = (gameObject: GameObject): void => {
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+
+    if (!this.textureMap[renderable.src]) {
+      void loadTextures(renderable)
+        .then((textures) => {
+          this.textureMap[renderable.src] = textures;
+        });
+    }
 
     const material = createMaterial(renderable.material.type);
     const geometry = new PlaneGeometry(renderable.width, renderable.height);
@@ -317,14 +287,14 @@ export class ThreeJSRenderer implements System {
       object.position.set(transform.offsetX, transform.offsetY, 0);
       object.renderOrder = index;
 
-      if (!this.textureMap[renderable.src]) {
-        return;
-      }
-
       const material = object.material as MeshStandardMaterial;
-      const texture = this.textureMap[renderable.src][renderable.currentFrame || 0];
+      const texture = this.textureMap[renderable.src]?.[renderable.currentFrame || 0];
 
       updateMaterial(renderable.material.type, material, renderable.material.options, texture);
+
+      if (!texture) {
+        return;
+      }
 
       if (renderable.fit === 'repeat') {
         texture.wrapS = RepeatWrapping;
