@@ -11,6 +11,7 @@ import {
   AdditiveBlending,
   SubtractiveBlending,
   MultiplyBlending,
+  DataTexture,
 } from 'three';
 import type {
   MaterialType,
@@ -21,6 +22,7 @@ import type {
 const DEFAULT_COLOR = '#ffffff';
 const DEFAULT_BLENDING = 'normal';
 const DEFAULT_OPACITY = 1;
+const DEFAULT_TEXTURE = new DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1);
 
 const blendingMap: Record<BlendingMode, Blending> = {
   normal: NormalBlending,
@@ -32,7 +34,7 @@ const blendingMap: Record<BlendingMode, Blending> = {
 const updateBasicMaterial = (
   material: Material,
   componentOptions: BasicMaterialOptions,
-  texture: Texture,
+  texture: Texture = DEFAULT_TEXTURE,
 ): void => {
   const {
     color = DEFAULT_COLOR,
@@ -64,7 +66,7 @@ export const updateMaterial = (
   type: MaterialType,
   material: Material,
   options: BasicMaterialOptions,
-  texture: Texture,
+  texture?: Texture,
 ): void => {
   updateBasicMaterial(material, options, texture);
 };
