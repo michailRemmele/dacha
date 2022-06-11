@@ -31,9 +31,17 @@ export class GameObjectCreator {
   private components: Record<string, ComponentConstructor>;
   private templateCollection: TemplateCollection;
 
-  constructor(components: Record<string, ComponentConstructor>) {
+  constructor(
+    components: Record<string, ComponentConstructor>,
+    templateCollection?: TemplateCollection,
+  ) {
     this.components = components;
-    this.templateCollection = IOC.resolve(TEMPLATE_COLLECTION_KEY_NAME) as TemplateCollection;
+
+    if (templateCollection) {
+      this.templateCollection = templateCollection;
+    } else {
+      this.templateCollection = IOC.resolve(TEMPLATE_COLLECTION_KEY_NAME) as TemplateCollection;
+    }
   }
 
   private buildFromTemplate(options: GameObjectOptions, template: Template): GameObject {
@@ -157,22 +165,7 @@ export class GameObjectCreator {
     return this.buildFromScratch(options);
   }
 
-  private expandGameObject(
-    gameObject: GameObject,
-    gameObjects?: Array<GameObject>,
-  ): Array<GameObject> {
-    gameObjects = gameObjects || [];
-
-    gameObjects.push(gameObject);
-
-    gameObject.getChildren().forEach((child) => {
-      this.expandGameObject(child, gameObjects);
-    });
-
-    return gameObjects;
-  }
-
-  create(options: GameObjectOptions): Array<GameObject> {
-    return this.expandGameObject(this.build(options));
+  create(options: GameObjectOptions): GameObject {
+    return this.build(options);
   }
 }
