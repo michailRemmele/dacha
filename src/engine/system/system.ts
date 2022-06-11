@@ -9,7 +9,7 @@ import type { MessageBus } from '../message-bus';
 
 export type HelperFn = () => Promise<Record<string, unknown>>;
 
-export type SystemOptions = {
+export interface SystemOptions extends Record<string, unknown> {
   createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver
   gameObjectSpawner: GameObjectSpawner
   gameObjectDestroyer: GameObjectDestroyer
@@ -17,7 +17,7 @@ export type SystemOptions = {
   store: Store
   messageBus: MessageBus
   sceneContext: SceneContext
-};
+}
 
 export interface UpdateOptions {
   deltaTime: number;

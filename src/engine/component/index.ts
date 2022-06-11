@@ -1,1 +1,2 @@
-export { Component, ComponentsMap } from './component';
+export { Component } from './component';
+export type { ComponentsMap } from './component';
