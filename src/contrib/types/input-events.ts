@@ -5,6 +5,6 @@ export interface InputEventBindings {
   }
 }
 
-export interface InputEventsConfig {
+export type InputEventsConfig = {
   inputEventBindings: InputEventBindings
-}
+};

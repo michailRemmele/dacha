@@ -17,10 +17,16 @@ export class GameStatsMeter implements System {
   private time: number;
   private messages: number;
 
-  constructor(options: GameStatsMeterOptions) {
-    this.gameObjectObserver = options.createGameObjectObserver({});
-    this.messageBus = options.messageBus;
-    this.frequency = options.frequency || MS_IN_SEC;
+  constructor(options: SystemOptions) {
+    const {
+      createGameObjectObserver,
+      messageBus,
+      frequency,
+    } = options as GameStatsMeterOptions;
+
+    this.gameObjectObserver = createGameObjectObserver({});
+    this.messageBus = messageBus;
+    this.frequency = frequency || MS_IN_SEC;
 
     this.fps = 0;
     this.time = 0;

@@ -6,7 +6,7 @@ import type {
 } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
-import type { Store } from '../../../engine/scene';
+import type { Store, SceneContext } from '../../../engine/scene';
 
 import { Observer, MapObserver } from './observer';
 
@@ -21,7 +21,7 @@ interface ActionFnOptions {
 type ActionFn = (options: ActionFnOptions) => void;
 
 export interface UiInitFnOptions {
-  sceneName: string
+  sceneContext: SceneContext
   messageBusObserver: Observer
   storeObserver: Observer
   gameObjects: MapObserver
@@ -37,7 +37,7 @@ interface UiBridgeOptions extends SystemOptions {
 }
 
 export class UiBridge implements System {
-  private sceneName: string;
+  private sceneContext: SceneContext;
   private gameObjectObserver: GameObjectObserver;
   private gameObjectSpawner: unknown;
   private gameObjectDestroyer: unknown;
@@ -52,7 +52,7 @@ export class UiBridge implements System {
   private onUiInit?: UiInitFn;
   private onUiDestroy?: UiDestroyFn;
 
-  constructor(options: UiBridgeOptions) {
+  constructor(options: SystemOptions) {
     const {
       createGameObjectObserver,
       gameObjectSpawner,
@@ -62,9 +62,9 @@ export class UiBridge implements System {
       helpers,
       sceneContext,
       filterComponents,
-    } = options;
+    } = options as UiBridgeOptions;
 
-    this.sceneName = sceneContext.name;
+    this.sceneContext = sceneContext;
     this.gameObjectObserver = createGameObjectObserver({
       components: filterComponents,
     });
@@ -92,7 +92,7 @@ export class UiBridge implements System {
   mount(): void {
     if (this.onUiInit) {
       this.onUiInit({
-        sceneName: this.sceneName,
+        sceneContext: this.sceneContext,
         messageBusObserver: this.messageBusObserver,
         storeObserver: this.storeObserver,
         pushMessage: this.pushMessage.bind(this),
