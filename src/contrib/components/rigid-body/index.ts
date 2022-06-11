@@ -2,13 +2,13 @@ import { Component } from '../../../engine/component';
 
 export type RigidBodyType = 'dynamic' | 'static';
 
-interface RigidBodyConfig {
-  type: RigidBodyType;
-  mass: number;
-  useGravity: boolean;
-  drag: number;
-  isPermeable: boolean;
-  ghost: boolean;
+export interface RigidBodyConfig extends Record<string, unknown> {
+  type: RigidBodyType
+  mass: number
+  useGravity: boolean
+  drag: number
+  isPermeable: boolean
+  ghost: boolean
 }
 
 export class RigidBody extends Component {
@@ -19,18 +19,20 @@ export class RigidBody extends Component {
   ghost: boolean;
   drag: number;
 
-  constructor(componentName: string, config: RigidBodyConfig) {
+  constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    this.type = config.type;
-    this.mass = config.mass;
-    this.useGravity = config.useGravity;
-    this.isPermeable = config.isPermeable;
-    this.ghost = config.ghost;
-    this.drag = config.drag;
+    const rigidBodyConfig = config as RigidBodyConfig;
+
+    this.type = rigidBodyConfig.type;
+    this.mass = rigidBodyConfig.mass;
+    this.useGravity = rigidBodyConfig.useGravity;
+    this.isPermeable = rigidBodyConfig.isPermeable;
+    this.ghost = rigidBodyConfig.ghost;
+    this.drag = rigidBodyConfig.drag;
   }
 
-  clone() {
+  clone(): RigidBody {
     return new RigidBody(this.componentName, {
       mass: this.mass,
       useGravity: this.useGravity,

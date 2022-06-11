@@ -46,10 +46,10 @@ export class PhysicsSystem implements System {
   private gravitationalAcceleration: number;
   private gameObjectsVelocity: Record<string, Vector2>;
 
-  constructor(options: PhysicsSystemOptions) {
+  constructor(options: SystemOptions) {
     const {
       gravitationalAcceleration, createGameObjectObserver, store, messageBus,
-    } = options;
+    } = options as PhysicsSystemOptions;
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [

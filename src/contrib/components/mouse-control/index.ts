@@ -4,13 +4,15 @@ import { InputEventsConfig, InputEventBindings } from '../../types';
 export class MouseControl extends Component {
   inputEventBindings: InputEventBindings;
 
-  constructor(componentName: string, config: InputEventsConfig) {
+  constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    this.inputEventBindings = config.inputEventBindings;
+    const inputEventsConfig = config as InputEventsConfig;
+
+    this.inputEventBindings = inputEventsConfig.inputEventBindings;
   }
 
-  clone() {
+  clone(): MouseControl {
     return new MouseControl(this.componentName, {
       inputEventBindings: Object.keys(this.inputEventBindings).reduce(
         (acc: InputEventBindings, key) => {

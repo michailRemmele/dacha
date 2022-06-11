@@ -7,7 +7,7 @@ type FitType = 'stretch' | 'repeat';
 
 export type { MaterialType, BasicMaterialOptions, BlendingMode } from './material';
 
-export interface RenderableConfig {
+export interface RenderableConfig extends Record<string, unknown> {
   src: string
   width: number
   height: number
@@ -43,28 +43,30 @@ export class Renderable extends Component {
   fit: FitType;
   material: Material;
 
-  constructor(componentName: string, config: RenderableConfig) {
+  constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    this.src = config.src;
-    this.width = config.width;
-    this.height = config.height;
-    this.type = config.type;
-    this.slice = config.slice;
-    this.spacing = config.spacing || 0;
-    this.extruding = config.extruding || 0;
-    this.currentFrame = config.type === 'sprite' ? 0 : void 0;
-    this.rotation = config.rotation;
-    this.flipX = config.flipX;
-    this.flipY = config.flipY;
-    this.disabled = config.disabled;
-    this.sortingLayer = config.sortingLayer;
-    this.sortCenter = config.sortCenter;
-    this.fit = config.fit;
-    this.material = new Material(config.material);
+    const renderableConfig = config as RenderableConfig;
+
+    this.src = renderableConfig.src;
+    this.width = renderableConfig.width;
+    this.height = renderableConfig.height;
+    this.type = renderableConfig.type;
+    this.slice = renderableConfig.slice;
+    this.spacing = renderableConfig.spacing || 0;
+    this.extruding = renderableConfig.extruding || 0;
+    this.currentFrame = renderableConfig.type === 'sprite' ? 0 : void 0;
+    this.rotation = renderableConfig.rotation;
+    this.flipX = renderableConfig.flipX;
+    this.flipY = renderableConfig.flipY;
+    this.disabled = renderableConfig.disabled;
+    this.sortingLayer = renderableConfig.sortingLayer;
+    this.sortCenter = renderableConfig.sortCenter;
+    this.fit = renderableConfig.fit;
+    this.material = new Material(renderableConfig.material);
   }
 
-  clone() {
+  clone(): Renderable {
     return new Renderable(this.componentName, {
       src: this.src,
       width: this.width,

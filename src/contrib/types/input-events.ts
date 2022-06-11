@@ -5,6 +5,6 @@ export interface InputEventBindings {
   }
 }
 
-export interface InputEventsConfig {
+export interface InputEventsConfig extends Record<string, unknown> {
   inputEventBindings: InputEventBindings
 }

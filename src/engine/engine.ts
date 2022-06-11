@@ -1,5 +1,5 @@
-import type { System, HelperFn } from './system';
-import type { Component } from './component';
+import type { SystemsMap, HelperFn } from './system';
+import type { ComponentsMap } from './component';
 import type { Config } from './types';
 import ScopeProvider from './scope/scopeProvider';
 import IOC from './ioc/ioc';
@@ -15,8 +15,8 @@ import * as global from './consts/global';
 
 export interface EngineOptions {
   config: Config
-  systems: Record<string, { new(): System }>
-  components: Record<string, { new(): Component }>
+  systems: SystemsMap
+  components: ComponentsMap
   helpers: Record<string, HelperFn>
 }
 

@@ -1,13 +1,18 @@
-import type { GameObjectObserver, GameObjectObserverFilter } from '../game-object';
+import type {
+  GameObjectObserver,
+  GameObjectObserverFilter,
+  GameObjectSpawner,
+  GameObjectDestroyer,
+} from '../game-object';
 import type { Store, SceneContext } from '../scene';
 import type { MessageBus } from '../message-bus';
 
 export type HelperFn = () => Promise<Record<string, unknown>>;
 
-export interface SystemOptions {
+export interface SystemOptions extends Record<string, unknown> {
   createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver
-  gameObjectSpawner: unknown
-  gameObjectDestroyer: unknown
+  gameObjectSpawner: GameObjectSpawner
+  gameObjectDestroyer: GameObjectDestroyer
   helpers: Record<string, HelperFn>
   store: Store
   messageBus: MessageBus
@@ -24,3 +29,5 @@ export interface System {
   unmount?(): void;
   update(options: UpdateOptions): void;
 }
+
+export type SystemsMap = Record<string, new (options: SystemOptions) => System>;

@@ -24,14 +24,14 @@ export class CameraSystem implements System {
   private store: Store;
   private window: Window & HTMLElement;
 
-  constructor(options: CameraSystemOptions) {
+  constructor(options: SystemOptions) {
     const {
       initialCamera,
       windowNodeId,
       createGameObjectObserver,
       store,
       messageBus,
-    } = options;
+    } = options as CameraSystemOptions;
 
     const windowNode = document.getElementById(windowNodeId) || window;
 

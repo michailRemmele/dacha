@@ -9,9 +9,14 @@ export class Jammer implements System {
   private messageBus: MessageBus;
   private messages: Array<string>;
 
-  constructor(options: JammerOptions) {
-    this.messages = options.messages;
-    this.messageBus = options.messageBus;
+  constructor(options: SystemOptions) {
+    const {
+      messages,
+      messageBus,
+    } = options as JammerOptions;
+
+    this.messages = messages;
+    this.messageBus = messageBus;
   }
 
   update(): void {

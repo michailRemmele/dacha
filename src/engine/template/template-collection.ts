@@ -1,13 +1,13 @@
-import type { Component } from '../component';
+import type { ComponentsMap } from '../component';
 import type { TemplateConfig } from '../types';
 
 import { Template } from './template';
 
 export class TemplateCollection {
-  private components: Record<string, new (...args: Array<unknown>) => Component>;
+  private components: ComponentsMap;
   private storage: Record<string, Template>;
 
-  constructor(components: Record<string, new (...args: Array<unknown>) => Component>) {
+  constructor(components: ComponentsMap) {
     this.components = components;
     this.storage = {};
   }

@@ -1,6 +1,6 @@
 import type { SceneConfig, LevelConfig } from '../types';
 import type { GameObjectCreator } from '../game-object';
-import type { System, HelperFn } from '../system';
+import type { SystemsMap, HelperFn } from '../system';
 
 import { Scene } from './scene';
 import { filterByKey } from '../utils';
@@ -9,7 +9,7 @@ interface SceneProviderOptions {
   scenes: Array<SceneConfig>
   loaders: Array<SceneConfig>
   levels: Array<LevelConfig>
-  systems: Record<string, { new(): System }>
+  systems: SystemsMap
   helpers: Record<string, HelperFn>
   gameObjectCreator: GameObjectCreator
 }
@@ -31,7 +31,7 @@ export class SceneProvider {
   private availableScenes: Record<string, SceneConfig>;
   private availableLoaders: Record<string, SceneConfig>;
   private availableLevels: Record<string, LevelConfig>;
-  private systems: Record<string, { new(): System }>;
+  private systems: SystemsMap;
   private helpers: Record<string, HelperFn>;
   private sceneContainer: Record<string, Scene>;
   private currentSceneName?: string;

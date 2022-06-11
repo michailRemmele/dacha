@@ -1,5 +1,5 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
-import type { SystemOptions, HelperFn } from '../system';
+import type { SystemsMap, HelperFn } from '../system';
 import { System } from '../system';
 import {
   GameObjectObserver,
@@ -22,7 +22,7 @@ export interface GameObjectChangeEvent {
 
 interface SceneOptions extends SceneConfig {
   gameObjects: Array<GameObjectConfig>
-  availableSystems: Record<string, { new(options: SystemOptions): System }>
+  availableSystems: SystemsMap
   helpers: Record<string, HelperFn>
   gameObjectCreator: GameObjectCreator
 }
@@ -58,9 +58,7 @@ export class Scene {
     this.context = new SceneContext(this.name);
 
     gameObjects.forEach((gameObjectOptions) => {
-      this.gameObjectCreator.create(gameObjectOptions).forEach((gameObject: GameObject) => {
-        this.addGameObject(gameObject);
-      });
+      this.addGameObject(this.gameObjectCreator.create(gameObjectOptions));
     });
 
     this.systems = systems.map((config) => new availableSystems[config.name]({
@@ -144,6 +142,10 @@ export class Scene {
         type: GAME_OBJECT_ADDED,
         gameObject,
       });
+    });
+
+    gameObject.getChildren().forEach((child) => {
+      this.addGameObject(child);
     });
   }
 

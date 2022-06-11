@@ -67,7 +67,7 @@ export class ThreeJSRenderer implements System {
   private scaleSensitivity: number;
   private screenScale: number;
 
-  constructor(options: ThreeJSRendererOptions) {
+  constructor(options: SystemOptions) {
     const {
       createGameObjectObserver,
       store,
@@ -75,7 +75,7 @@ export class ThreeJSRenderer implements System {
       sortingLayers,
       backgroundColor,
       scaleSensitivity,
-    } = options;
+    } = options as ThreeJSRendererOptions;
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
