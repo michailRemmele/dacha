@@ -3,10 +3,10 @@ import { State } from './state';
 import { IndividualState, IndividualStateConfig } from './individual-state';
 import { GroupState, GroupStateConfig } from './group-state';
 
-interface AnimatableConfig {
+type AnimatableConfig = {
   states: Array<unknown>;
   initialState: string;
-}
+};
 
 export class Animatable extends Component {
   states: Array<IndividualState | GroupState>;
@@ -14,20 +14,23 @@ export class Animatable extends Component {
   currentState: IndividualState | GroupState;
   duration: number;
 
-  constructor(componentName: string, config: AnimatableConfig) {
+  constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    this.states = config.states.reduce((acc: Array<IndividualState | GroupState>, state) => {
-      const { type } = state as State;
-      if (type === 'individual') {
-        acc.push(new IndividualState(state as IndividualStateConfig));
-      }
-      if (type === 'group') {
-        acc.push(new GroupState(state as GroupStateConfig));
-      }
-      return acc;
-    }, []);
-    this.initialState = config.initialState;
+    const animatableConfig = config as AnimatableConfig;
+
+    this.states = animatableConfig.states
+      .reduce((acc: Array<IndividualState | GroupState>, state) => {
+        const { type } = state as State;
+        if (type === 'individual') {
+          acc.push(new IndividualState(state as IndividualStateConfig));
+        }
+        if (type === 'group') {
+          acc.push(new GroupState(state as GroupStateConfig));
+        }
+        return acc;
+      }, []);
+    this.initialState = animatableConfig.initialState;
     this.currentState = this.states[0];
 
     this.updateCurrentState(this.initialState);

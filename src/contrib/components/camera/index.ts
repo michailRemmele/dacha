@@ -1,23 +1,25 @@
 import { Component } from '../../../engine/component';
 
-interface CameraConfig {
+type CameraConfig = {
   zoom: number;
-}
+};
 
 export class Camera extends Component {
   zoom: number;
   windowSizeX: number;
   windowSizeY: number;
 
-  constructor(componentName: string, config: CameraConfig) {
+  constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    this.zoom = config.zoom;
+    const cameraConfig = config as CameraConfig;
+
+    this.zoom = cameraConfig.zoom;
     this.windowSizeX = 0;
     this.windowSizeY = 0;
   }
 
-  clone() {
+  clone(): Camera {
     return new Camera(this.componentName, {
       zoom: this.zoom,
     });

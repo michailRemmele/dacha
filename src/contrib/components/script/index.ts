@@ -1,19 +1,21 @@
 import { Component } from '../../../engine/component';
 
-interface ScriptConfig {
+export type ScriptConfig = {
   name: string;
   options: Record<string, unknown>
-}
+};
 
 export class Script extends Component {
   name: string;
   options: Record<string, unknown>;
 
-  constructor(componentName: string, config: ScriptConfig) {
+  constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    this.name = config.name;
-    this.options = { ...config.options };
+    const scriptConfig = config as ScriptConfig;
+
+    this.name = scriptConfig.name;
+    this.options = { ...scriptConfig.options };
   }
 
   clone(): Script {

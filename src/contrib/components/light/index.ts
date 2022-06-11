@@ -12,20 +12,22 @@ export interface PointLightOptions extends BaseLightOptions {
 export type LightType = 'ambient' | 'point';
 export type LightOptions = BaseLightOptions | PointLightOptions;
 
-export interface LightConfig {
+export type LightConfig = {
   type: LightType
   options: BaseLightOptions | PointLightOptions
-}
+};
 
 export class Light extends Component {
   type: LightType;
   options: BaseLightOptions | PointLightOptions;
 
-  constructor(componentName: string, config: LightConfig) {
+  constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    this.type = config.type;
-    this.options = { ...config.options };
+    const lightConfig = config as LightConfig;
+
+    this.type = lightConfig.type;
+    this.options = { ...lightConfig.options };
   }
 
   clone(): Light {
