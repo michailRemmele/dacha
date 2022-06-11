@@ -1,9 +1,9 @@
 import { Component } from '../../../engine/component';
 
-export type ScriptConfig = {
-  name: string;
+export interface ScriptConfig extends Record<string, unknown> {
+  name: string
   options: Record<string, unknown>
-};
+}
 
 export class Script extends Component {
   name: string;

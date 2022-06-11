@@ -12,10 +12,10 @@ export interface PointLightOptions extends BaseLightOptions {
 export type LightType = 'ambient' | 'point';
 export type LightOptions = BaseLightOptions | PointLightOptions;
 
-export type LightConfig = {
+export interface LightConfig extends Record<string, unknown> {
   type: LightType
   options: BaseLightOptions | PointLightOptions
-};
+}
 
 export class Light extends Component {
   type: LightType;

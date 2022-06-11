@@ -1,13 +1,13 @@
 import { Component } from '../../../engine/component';
 
-export type TransformConfig = {
-  offsetX: number;
-  offsetY: number;
-  offsetZ: number;
-  rotation: number;
-  scaleX: number;
-  scaleY: number;
-};
+export interface TransformConfig extends Record<string, unknown> {
+  offsetX: number
+  offsetY: number
+  offsetZ: number
+  rotation: number
+  scaleX: number
+  scaleY: number
+}
 
 export class Transform extends Component {
   relativeOffsetX: number;

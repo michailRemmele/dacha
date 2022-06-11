@@ -2,14 +2,14 @@ import { Component } from '../../../engine/component';
 
 export type RigidBodyType = 'dynamic' | 'static';
 
-export type RigidBodyConfig = {
-  type: RigidBodyType;
-  mass: number;
-  useGravity: boolean;
-  drag: number;
-  isPermeable: boolean;
-  ghost: boolean;
-};
+export interface RigidBodyConfig extends Record<string, unknown> {
+  type: RigidBodyType
+  mass: number
+  useGravity: boolean
+  drag: number
+  isPermeable: boolean
+  ghost: boolean
+}
 
 export class RigidBody extends Component {
   type: RigidBodyType;

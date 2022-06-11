@@ -3,10 +3,10 @@ import { State } from './state';
 import { IndividualState, IndividualStateConfig } from './individual-state';
 import { GroupState, GroupStateConfig } from './group-state';
 
-type AnimatableConfig = {
-  states: Array<unknown>;
-  initialState: string;
-};
+export interface AnimatableConfig extends Record<string, unknown> {
+  states: Array<unknown>
+  initialState: string
+}
 
 export class Animatable extends Component {
   states: Array<IndividualState | GroupState>;

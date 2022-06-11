@@ -4,8 +4,8 @@ import { BoxCollider } from './box-collider';
 import { CircleCollider } from './circle-collider';
 
 interface ColliderContainerConfig extends Record<string, unknown> {
-  type: 'boxCollider' | 'circleCollider';
-  collider: Record<string, number>;
+  type: 'boxCollider' | 'circleCollider'
+  collider: Record<string, number>
 }
 
 const COLLIDER_MAP = {

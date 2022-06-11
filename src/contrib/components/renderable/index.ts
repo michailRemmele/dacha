@@ -7,7 +7,7 @@ type FitType = 'stretch' | 'repeat';
 
 export type { MaterialType, BasicMaterialOptions, BlendingMode } from './material';
 
-export type RenderableConfig = {
+export interface RenderableConfig extends Record<string, unknown> {
   src: string
   width: number
   height: number
@@ -23,7 +23,7 @@ export type RenderableConfig = {
   sortCenter: [number, number]
   fit: FitType
   material: MaterialConfig
-};
+}
 
 export class Renderable extends Component {
   src: string;

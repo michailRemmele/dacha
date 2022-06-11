@@ -1,8 +1,8 @@
 import { Component } from '../../../engine/component';
 
-type CameraConfig = {
+interface CameraConfig extends Record<string, unknown> {
   zoom: number;
-};
+}
 
 export class Camera extends Component {
   zoom: number;
