@@ -1,6 +1,6 @@
 {
   "name": "remiz-editor",
-  "version": "0.0.34",
+  "version": "0.0.0",
   "description": "GUI editor for remiz game engine",
   "main": "index.js",
   "bin": {
