@@ -1,7 +1,15 @@
-import { Config } from 'remiz'
+import type { Config } from 'remiz'
+
+export interface EditorConfig {
+  projectConfig: string
+  assets: string
+  components?: string
+  systems?: string
+}
 
 export interface ElectronAPI {
-  getGameConfig: () => Config,
+  getProjectConfig: () => Config,
+  getEditorConfig: () => EditorConfig
 }
 
 declare global {

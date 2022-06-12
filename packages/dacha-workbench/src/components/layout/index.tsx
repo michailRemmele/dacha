@@ -3,7 +3,7 @@ import React, { FC } from 'react'
 import './style.css'
 
 interface LayoutProps {
-  children: JSX.Element
+  children: JSX.Element | Array<JSX.Element>
 }
 
 export const Layout: FC<LayoutProps> = ({ children }): JSX.Element => (

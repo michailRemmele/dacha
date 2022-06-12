@@ -18,11 +18,14 @@ const commonRules = {
   'prefer-destructuring': 'warn',
   semi: ['error', 'never'],
   'import/no-extraneous-dependencies': 0,
+  'import/no-dynamic-require': 0,
+  'global-require': 0,
 }
 
 const reactRules = {
   'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
   'react/require-default-props': 'warn',
+  'react/jsx-props-no-spreading': 0,
 }
 
 module.exports = {
@@ -40,6 +43,7 @@ module.exports = {
       impliedStrict: true,
     },
     sourceType: 'module',
+    requireConfigFile: false,
   },
   globals: {
     window: true,

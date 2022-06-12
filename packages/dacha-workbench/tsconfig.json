@@ -18,7 +18,12 @@
       "typeRoots": [
         "src/types",
         "node_modules/@types"
-      ]
+      ],
+
+      "paths": {
+        "project-components": ["src/alias-stubs/project-components"],
+        "project-systems": ["src/alias-stubs/project-systems"],
+      }
   },
   "include": [
       "src"

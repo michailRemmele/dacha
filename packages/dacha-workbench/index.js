@@ -1,7 +1,29 @@
 const { app, BrowserWindow } = require('electron')
+const express = require('express')
+const webpack = require('webpack')
+const middleware = require('webpack-dev-middleware')
 const path = require('path')
 
-const isDev = process.env.NODE_ENV === 'development'
+const getConfig = require('./webpack.config')
+
+const { components, systems, assets } = require(path.resolve(process.env.EDITOR_CONFIG))
+
+const UI_PORT = 8080
+
+const compiler = webpack(getConfig({
+  componentsPath: components,
+  systemsPath: systems,
+}))
+
+const expressApp = express()
+
+expressApp.use(
+  middleware(compiler),
+)
+
+expressApp.use(express.static(path.resolve(assets)))
+
+expressApp.listen(UI_PORT)
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -11,11 +33,7 @@ const createWindow = () => {
   })
   win.maximize()
 
-  if (isDev) {
-    win.loadURL('http://localhost:8080')
-  } else {
-    win.loadFile(path.join(__dirname, 'build/index.html'))
-  }
+  win.loadURL(`http://localhost:${UI_PORT}`)
 }
 
 app.whenReady().then(() => {
