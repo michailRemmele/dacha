@@ -190,8 +190,8 @@
           "config": {
             "type": "static",
             "src": "assets/units/player.png",
-            "width": 25,
-            "height": 25,
+            "width": 47,
+            "height": 52,
             "rotation": 0,
             "sortCenter": [ 0, 0 ],
             "flipX": false,
@@ -255,9 +255,9 @@
           "name": "renderable",
           "config": {
             "type": "static",
-            "src": "assets/terrain/terrain.png",
-            "width": 400,
-            "height": 400,
+            "src": "assets/terrain/floor.png",
+            "width": 408,
+            "height": 408,
             "rotation": 0,
             "sortCenter": [ 0, 0 ],
             "flipX": false,

@@ -1,32 +1,31 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
-const isDev = process.env.NODE_ENV === 'development'
-
-module.exports = {
+module.exports = ({ componentsPath, systemsPath }) => ({
   mode: 'none',
 
   entry: {
-    app: path.resolve('src/index.tsx'),
-  },
-
-  output: {
-    path: path.resolve('build'),
-    filename: '[name].[contenthash].js',
-    chunkFilename: '[name].[chunkhash].js',
+    app: path.resolve(__dirname, 'src/index.tsx'),
   },
 
   devServer: {
     hot: true,
   },
 
-  devtool: isDev ? 'eval' : false,
+  devtool: 'eval',
 
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
+    alias: {
+      'project-components': componentsPath
+        ? path.resolve(componentsPath)
+        : path.resolve(__dirname, 'src/alias-stubs/project-components'),
+      'project-systems': systemsPath
+        ? path.resolve(systemsPath)
+        : path.resolve(__dirname, 'src/alias-stubs/project-systems'),
+    },
   },
 
   optimization: {
@@ -39,10 +38,9 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
-    isDev ? null : new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
-      template: path.resolve('public/index.html'),
+      template: path.resolve(__dirname, 'public/index.html'),
     }),
   ].filter(Boolean),
 
@@ -50,10 +48,16 @@ module.exports = {
     rules: [
       {
         test: /\.ts(x?)$/,
-        exclude: /(node_modules)/,
+        exclude: /node_modules[\\/](?!remiz-editor)/,
         use: [
           {
             loader: 'babel-loader',
+            options: {
+              presets: [
+                '@babel/preset-typescript',
+                '@babel/preset-react',
+              ],
+            },
           },
         ],
       },
@@ -70,4 +74,4 @@ module.exports = {
       },
     ],
   },
-}
+})

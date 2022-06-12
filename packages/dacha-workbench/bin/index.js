@@ -1,19 +1,26 @@
 #!/usr/bin/env node
 
-const { exec } = require('child_process')
+const { spawn } = require('child_process')
 const path = require('path')
+const { program } = require('commander')
 
-process.env.NODE_ENV = 'production'
+program
+  .option('--config <string>', 'Path to configuration file for editor', 'remiz-editor.config.js')
 
-exec(`electron ${path.join(__dirname, '../')}`, (error, stdout, stderr) => {
-  if (error) {
-    console.error(`error: ${error.message}`)
-  }
+program.parse()
 
-  if (stderr) {
-    console.error(`stderr: ${stderr}`)
-    return
-  }
+process.env.EDITOR_CONFIG = program.opts().config
 
-  console.log(`stdout:\n${stdout}`)
+const electron = spawn('electron', [path.join(__dirname, '../')])
+
+electron.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`)
+})
+
+electron.stderr.on('data', (data) => {
+  console.error(`stderr: ${data}`)
+})
+
+electron.on('close', (data) => {
+  console.error(`child process exited with code: ${data}`)
 })

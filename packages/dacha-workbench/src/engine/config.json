@@ -1,0 +1,86 @@
+{
+  "scenes": [
+    {
+      "name": "editor",
+      "level": "level-viewer",
+      "systems": [
+        {
+          "name": "projectLoader",
+          "options": {}
+        },
+        {
+          "name": "levelViewer",
+          "options": {}
+        },
+        {
+          "name": "cameraSystem",
+          "options": {
+            "windowNodeId": "canvas",
+            "initialCamera": "main-camera-id"
+          }
+        },
+        {
+          "name": "uiBridge",
+          "options": {
+            "filterComponents": [
+              "keyboardControl",
+              "mouseControl"
+            ]
+          }
+        },
+        {
+          "name": "threeJSRenderer",
+          "options": {
+            "windowNodeId": "canvas",
+            "backgroundColor": "#444",
+            "sortingLayers": [
+              "default",
+              "background",
+              "space",
+              "terrain",
+              "decorations",
+              "lights",
+              "effectsBack",
+              "units"
+            ],
+            "scaleSensitivity": 0.5
+          }
+        }
+      ]
+    }    
+  ],
+  "levels": [
+    {
+      "name": "level-viewer",
+      "gameObjects": [
+        {
+          "id": "main-camera-id",
+          "name": "mainCamera",
+          "fromTemplate": false,
+          "templateName": "",
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "offsetZ": 1,
+                "rotation": 0
+              }
+            },
+            {
+              "name": "camera",
+              "config": {
+                "zoom": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "templates": [],
+  "loaders": [],
+  "startScene": "editor"
+}
