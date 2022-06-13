@@ -10,10 +10,12 @@ const { components, systems, assets } = require(path.resolve(process.env.EDITOR_
 
 const UI_PORT = 8080
 
-const compiler = webpack(getConfig({
+const webpackConfig = getConfig({
   componentsPath: components,
   systemsPath: systems,
-}))
+})
+
+const compiler = webpack(webpackConfig)
 
 const expressApp = express()
 
@@ -21,6 +23,7 @@ expressApp.use(
   middleware(compiler),
 )
 
+expressApp.use(express.static(webpackConfig.devServer.static.directory))
 expressApp.use(express.static(path.resolve(assets)))
 
 expressApp.listen(UI_PORT)
