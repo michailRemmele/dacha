@@ -15,7 +15,7 @@
         {
           "name": "cameraSystem",
           "options": {
-            "windowNodeId": "canvas",
+            "windowNodeId": "canvas-root",
             "initialCamera": "main-camera-id"
           }
         },
@@ -31,7 +31,7 @@
         {
           "name": "threeJSRenderer",
           "options": {
-            "windowNodeId": "canvas",
+            "windowNodeId": "canvas-root",
             "backgroundColor": "#444",
             "sortingLayers": [
               "default",

@@ -7,11 +7,14 @@ module.exports = ({ componentsPath, systemsPath }) => ({
   mode: 'none',
 
   entry: {
-    app: path.resolve(__dirname, 'src/index.tsx'),
+    app: path.resolve(__dirname, 'src/index.ts'),
   },
 
   devServer: {
     hot: true,
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
   },
 
   devtool: 'eval',
