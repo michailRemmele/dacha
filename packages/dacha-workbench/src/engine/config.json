@@ -32,7 +32,7 @@
           "name": "threeJSRenderer",
           "options": {
             "windowNodeId": "canvas-root",
-            "backgroundColor": "#444",
+            "backgroundColor": "#fafafa",
             "sortingLayers": [
               "default",
               "background",
