@@ -55,7 +55,7 @@
   ],
   "levels": [
     {
-      "name": "testLevel",
+      "name": "space-level",
       "gameObjects": [
         {
           "id": "1",
@@ -168,6 +168,116 @@
           ]
         }
       ]
+    },
+    {
+      "name": "island-level",
+      "gameObjects": [
+        {
+          "id": "4",
+          "name": "background",
+          "fromTemplate": false,
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "offsetZ": 0,
+                "rotation": 0
+              }
+            },
+            {
+              "name": "renderable",
+              "config": {
+                "type": "static",
+                "src": "assets/terrain/grass.png",
+                "width": 320,
+                "height": 320,
+                "rotation": 0,
+                "sortCenter": [ 0, 0 ],
+                "flipX": false,
+                "flipY": false,
+                "sortingLayer": "terrain",
+                "fit": "repeat",
+                "material": {
+                  "type": "basic"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "5",
+          "name": "terrain",
+          "fromTemplate": false,
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "offsetZ": 0,
+                "rotation": 0
+              }
+            },
+            {
+              "name": "renderable",
+              "config": {
+                "type": "static",
+                "src": "assets/terrain/sea.png",
+                "width": 640,
+                "height": 640,
+                "rotation": 0,
+                "sortCenter": [ 0, 0 ],
+                "flipX": false,
+                "flipY": false,
+                "sortingLayer": "background",
+                "fit": "repeat",
+                "material": {
+                  "type": "basic"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "6",
+          "name": "player",
+          "fromTemplate": false,
+          "children": [],
+          "components": [
+            {
+              "name": "transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "offsetZ": 0,
+                "rotation": 0
+              }
+            },
+            {
+              "name": "renderable",
+              "config": {
+                "type": "static",
+                "src": "assets/units/human.png",
+                "width": 26,
+                "height": 26,
+                "rotation": 0,
+                "sortCenter": [ 0, 0 ],
+                "flipX": false,
+                "flipY": false,
+                "sortingLayer": "units",
+                "fit": "stretch",
+                "material": {
+                  "type": "basic"
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "templates": [
@@ -189,7 +299,7 @@
           "name": "renderable",
           "config": {
             "type": "static",
-            "src": "assets/units/player.png",
+            "src": "assets/units/rooster.png",
             "width": 47,
             "height": 52,
             "rotation": 0,
@@ -222,7 +332,7 @@
           "name": "renderable",
           "config": {
             "type": "static",
-            "src": "assets/terrain/background.png",
+            "src": "assets/terrain/space.png",
             "width": 1000,
             "height": 1000,
             "rotation": 0,

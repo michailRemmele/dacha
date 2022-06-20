@@ -34,6 +34,7 @@ export class LevelViewer implements System {
   editorConfig: EditorConfig
   projectComponents: ComponentsMap
   gameObjectCreator?: GameObjectCreator
+  currentLevel?: string
 
   constructor(options: SystemOptions) {
     this.messageBus = options.messageBus
@@ -74,13 +75,17 @@ export class LevelViewer implements System {
       return
     }
 
+    const { name } = messages[messages.length - 1]
+
+    if (this.currentLevel === name) {
+      return
+    }
+
     this.gameObjectObserver.getList().forEach((gameObject) => {
       if (gameObject.id !== CAMERA_ID) {
         this.gameObjectDestroyer.destroy(gameObject)
       }
     })
-
-    const { name } = messages[messages.length - 1]
 
     const selectedLevel = this.projectConfig?.levels.find((level) => level.name === name)
 
@@ -93,5 +98,7 @@ export class LevelViewer implements System {
         this.gameObjectSpawner.spawn(gameObject)
       })
     }
+
+    this.currentLevel = name
   }
 }

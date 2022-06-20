@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const { getThemeVariables } = require('antd/dist/theme')
 
 module.exports = ({ componentsPath, systemsPath }) => ({
   mode: 'none',
@@ -45,7 +46,7 @@ module.exports = ({ componentsPath, systemsPath }) => ({
       inject: true,
       template: path.resolve(__dirname, 'public/index.html'),
     }),
-  ].filter(Boolean),
+  ],
 
   module: {
     rules: [
@@ -65,13 +66,24 @@ module.exports = ({ componentsPath, systemsPath }) => ({
         ],
       },
       {
-        test: /\.css$/,
+        test: /\.less$/i,
         use: [
           {
             loader: 'style-loader',
           },
           {
             loader: 'css-loader',
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                modifyVars: getThemeVariables({
+                  compact: true,
+                }),
+                javascriptEnabled: true,
+              },
+            },
           },
         ],
       },

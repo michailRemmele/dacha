@@ -1,56 +1,27 @@
-import React, { useCallback, useContext, FC } from 'react'
-import type { Config } from 'remiz'
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { Tabs } from 'antd'
 
-import { EngineContext } from '../../providers'
+import { LevelsTree } from './components'
 
-import './style.css'
-
-const SELECT_LEVEL_MSG = 'SELECT_LEVEL'
-
-interface LevelButtonProps {
-  onClick: (name: string) => void
-  name: string
-}
-
-const LevelButton: FC<LevelButtonProps> = ({ onClick, name }) => {
-  const handleClick = useCallback(
-    () => onClick(name),
-    [onClick, name],
-  )
-
-  return (
-    <button type="button" onClick={handleClick}>
-      {name}
-    </button>
-  )
-}
+import './style.less'
 
 export const Explorer = (): JSX.Element => {
-  const { sceneContext, pushMessage } = useContext(EngineContext)
-
-  const { levels } = sceneContext.data.projectConfig as Config
-
-  const handleSelect = useCallback((name: string) => pushMessage({
-    type: SELECT_LEVEL_MSG,
-    name,
-  }), [pushMessage])
+  const { t } = useTranslation()
 
   return (
     <div className="explorer">
-      <ul className="explorer__levels">
-        {levels.map((level) => (
-          <li key={level.name}>
-            <LevelButton onClick={handleSelect} name={level.name} />
-            <ul>
-              {level.gameObjects.map((gameObject) => (
-                <li key={`${level.name}-${gameObject.name}`}>
-                  {gameObject.name}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      <Tabs type="card">
+        <Tabs.TabPane tab={t('explorer.tab.levels')} key="levels">
+          <LevelsTree />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={t('explorer.tab.templates')} key="templates">
+          Hello Templates
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={t('explorer.tab.scenes')} key="scenes">
+          Hello Scenes
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   )
 }
