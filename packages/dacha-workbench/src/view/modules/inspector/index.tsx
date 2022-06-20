@@ -53,6 +53,8 @@ export const Inspector = (): JSX.Element => {
     }
 
     messageBusObserver.subscribe(handleMessageBusUpdate)
+
+    return () => messageBusObserver.unsubscribe(handleMessageBusUpdate)
   }, [messageBusObserver, projectConfig])
 
   return (
