@@ -16,7 +16,7 @@ const parseGameObject = (
   const gameObjectPath = path.concat(gameObject.name)
 
   const node: DataNodeWithPath = {
-    key: `${level}-${gameObject.name}`,
+    key: gameObject.id,
     title: gameObject.name,
     path: gameObjectPath,
     icon: <FileOutlined />,
