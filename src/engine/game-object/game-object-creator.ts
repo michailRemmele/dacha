@@ -7,9 +7,6 @@ import type {
   TemplateCollection,
 } from '../template';
 
-import IOC from '../ioc/ioc';
-import { TEMPLATE_COLLECTION_KEY_NAME } from '../consts/global';
-
 import { GameObject } from './game-object';
 
 interface ComponentConstructor {
@@ -33,15 +30,10 @@ export class GameObjectCreator {
 
   constructor(
     components: Record<string, ComponentConstructor>,
-    templateCollection?: TemplateCollection,
+    templateCollection: TemplateCollection,
   ) {
     this.components = components;
-
-    if (templateCollection) {
-      this.templateCollection = templateCollection;
-    } else {
-      this.templateCollection = IOC.resolve(TEMPLATE_COLLECTION_KEY_NAME) as TemplateCollection;
-    }
+    this.templateCollection = templateCollection;
   }
 
   private buildFromTemplate(options: GameObjectOptions, template: Template): GameObject {

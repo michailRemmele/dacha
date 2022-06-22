@@ -1,10 +1,8 @@
 import type { Component } from '../../component';
 import ScopeProvider from '../../scope/scopeProvider';
-import IOC from '../../ioc/ioc';
-import ResolveSingletonStrategy from '../../ioc/resolveSingletonStrategy';
 import { TemplateCollection } from '../../template';
 import { createMockComponent } from '../../../__mocks__';
-import { GENERAL_SCOPE_NAME, TEMPLATE_COLLECTION_KEY_NAME } from '../../consts/global';
+import { GENERAL_SCOPE_NAME } from '../../consts/global';
 import { GameObjectCreator } from '..';
 
 import gameObjectExample from './jsons/game-object-example.json';
@@ -36,18 +34,18 @@ describe('Engine -> GameObjectCreator', () => {
     test2: createTestComponent2 as unknown as { new(): Component },
   };
 
+  let templateCollection: TemplateCollection;
+
   beforeEach(() => {
     ScopeProvider.createScope(GENERAL_SCOPE_NAME);
     ScopeProvider.setCurrentScope(GENERAL_SCOPE_NAME);
 
-    const templateCollection = new TemplateCollection(components);
+    templateCollection = new TemplateCollection(components);
     templateCollection.register(templateExample);
-
-    IOC.register(TEMPLATE_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(templateCollection));
   });
 
   it('Creates game object from scratch', () => {
-    const gameObjectCreator = new GameObjectCreator(components);
+    const gameObjectCreator = new GameObjectCreator(components, templateCollection);
 
     const gameObject = gameObjectCreator.create(gameObjectExample);
 
@@ -80,7 +78,7 @@ describe('Engine -> GameObjectCreator', () => {
   });
 
   it('Creates game object from template', () => {
-    const gameObjectCreator = new GameObjectCreator(components);
+    const gameObjectCreator = new GameObjectCreator(components, templateCollection);
 
     const gameObject = gameObjectCreator.create(gameObjectFromTemplateExample);
 
@@ -127,7 +125,7 @@ describe('Engine -> GameObjectCreator', () => {
   });
 
   it('Creates game object from template without game object options', () => {
-    const gameObjectCreator = new GameObjectCreator(components);
+    const gameObjectCreator = new GameObjectCreator(components, templateCollection);
 
     const gameObject = gameObjectCreator.create({
       templateName: 'templateExample',

@@ -20,8 +20,6 @@ import type { Renderable } from '../../components/renderable';
 import type { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
-import IOC from '../../../engine/ioc/ioc';
-import { TEMPLATE_COLLECTION_KEY_NAME } from '../../../engine/consts/global';
 
 import {
   composeSort,
@@ -66,6 +64,7 @@ export class ThreeJSRenderer implements System {
   private viewHeight: number;
   private scaleSensitivity: number;
   private screenScale: number;
+  private templateCollection: TemplateCollection;
 
   constructor(options: SystemOptions) {
     const {
@@ -75,6 +74,7 @@ export class ThreeJSRenderer implements System {
       sortingLayers,
       backgroundColor,
       scaleSensitivity,
+      templateCollection,
     } = options as ThreeJSRendererOptions;
 
     this.gameObjectObserver = createGameObjectObserver({
@@ -84,6 +84,7 @@ export class ThreeJSRenderer implements System {
       ],
     });
     this.store = store;
+    this.templateCollection = templateCollection;
 
     const window = document.getElementById(windowNodeId);
 
@@ -167,11 +168,9 @@ export class ThreeJSRenderer implements System {
   }
 
   private getImagesToLoad(): Record<string, Renderable> {
-    const templateCollection = IOC.resolve(TEMPLATE_COLLECTION_KEY_NAME) as TemplateCollection;
-
     const imagesToLoad: Record<string, Renderable> = {};
 
-    templateCollection.getAll().forEach(
+    this.templateCollection.getAll().forEach(
       (template) => getImagesFromTemplates(imagesToLoad, template),
     );
 

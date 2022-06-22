@@ -1,5 +1,6 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
 import type { SystemsMap, HelperFn } from '../system';
+import type { TemplateCollection } from '../template';
 import { System } from '../system';
 import {
   GameObjectObserver,
@@ -25,6 +26,7 @@ interface SceneOptions extends SceneConfig {
   availableSystems: SystemsMap
   helpers: Record<string, HelperFn>
   gameObjectCreator: GameObjectCreator
+  templateCollection: TemplateCollection
 }
 
 export class Scene {
@@ -38,6 +40,7 @@ export class Scene {
   private messageBus: MessageBus;
   private systems: Array<System>;
   private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
+  private templateCollection: TemplateCollection;
 
   constructor({
     name,
@@ -46,6 +49,7 @@ export class Scene {
     helpers,
     gameObjectCreator,
     availableSystems,
+    templateCollection,
   }: SceneOptions) {
     this.name = name;
     this.gameObjects = {};
@@ -56,6 +60,7 @@ export class Scene {
     this.gameObjectDestroyer = new GameObjectDestroyer(this);
     this.messageBus = new MessageBus();
     this.context = new SceneContext(this.name);
+    this.templateCollection = templateCollection;
 
     gameObjects.forEach((gameObjectOptions) => {
       this.addGameObject(this.gameObjectCreator.create(gameObjectOptions));
@@ -72,6 +77,7 @@ export class Scene {
       messageBus: this.getMessageBus(),
       helpers,
       sceneContext: this.context,
+      templateCollection: this.templateCollection,
     }));
   }
 

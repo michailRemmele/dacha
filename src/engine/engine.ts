@@ -37,7 +37,6 @@ export class Engine {
   async start(): Promise<void> {
     const {
       RESOURCES_LOADER_KEY_NAME,
-      TEMPLATE_COLLECTION_KEY_NAME,
     } = global;
 
     const {
@@ -58,13 +57,12 @@ export class Engine {
     IOC.register(RESOURCES_LOADER_KEY_NAME, new ResolveSingletonStrategy(resourceLoader));
 
     const templateCollection = new TemplateCollection(components);
-    IOC.register(TEMPLATE_COLLECTION_KEY_NAME, new ResolveSingletonStrategy(templateCollection));
 
     for (let i = 0; i < templates.length; i += 1) {
       templateCollection.register(templates[i]);
     }
 
-    const gameObjectCreator = new GameObjectCreator(components);
+    const gameObjectCreator = new GameObjectCreator(components, templateCollection);
 
     const sceneProvider = new SceneProvider({
       scenes,
@@ -73,6 +71,7 @@ export class Engine {
       systems,
       helpers,
       gameObjectCreator,
+      templateCollection,
     });
 
     await sceneProvider.prepareLoaders();
