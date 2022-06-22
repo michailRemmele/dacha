@@ -1,6 +1,7 @@
 import type { SceneConfig, LevelConfig } from '../types';
 import type { GameObjectCreator } from '../game-object';
 import type { SystemsMap, HelperFn } from '../system';
+import type { TemplateCollection } from '../template';
 
 import { Scene } from './scene';
 import { filterByKey } from '../utils';
@@ -12,6 +13,7 @@ interface SceneProviderOptions {
   systems: SystemsMap
   helpers: Record<string, HelperFn>
   gameObjectCreator: GameObjectCreator
+  templateCollection: TemplateCollection
 }
 
 export interface SceneLoadOptions {
@@ -37,6 +39,7 @@ export class SceneProvider {
   private currentSceneName?: string;
   private loadedScene?: Scene;
   private gameObjectCreator: GameObjectCreator;
+  private templateCollection: TemplateCollection;
 
   constructor({
     scenes,
@@ -45,6 +48,7 @@ export class SceneProvider {
     loaders,
     helpers,
     gameObjectCreator,
+    templateCollection,
   }: SceneProviderOptions) {
     this.sceneContainer = {};
     this.currentSceneName = void '';
@@ -64,6 +68,7 @@ export class SceneProvider {
     this.helpers = helpers;
     this.loadedScene = void 0;
     this.gameObjectCreator = gameObjectCreator;
+    this.templateCollection = templateCollection;
   }
 
   prepareLoaders(): Promise<Array<Array<void>>> {
@@ -78,6 +83,7 @@ export class SceneProvider {
           availableSystems: this.systems,
           helpers: this.helpers,
           gameObjectCreator: this.gameObjectCreator,
+          templateCollection: this.templateCollection,
         });
         return acc;
       }, this.sceneContainer);
@@ -132,6 +138,7 @@ export class SceneProvider {
         availableSystems: this.systems,
         helpers: this.helpers,
         gameObjectCreator: this.gameObjectCreator,
+        templateCollection: this.templateCollection,
       });
 
       const asyncLoading = scene.load();

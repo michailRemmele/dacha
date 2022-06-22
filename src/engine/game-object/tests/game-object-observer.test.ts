@@ -3,6 +3,7 @@ import { createMockComponent } from '../../../__mocks__';
 import { GameObjectObserver } from '../game-object-observer';
 import { GameObjectCreator } from '../game-object-creator';
 import { GameObject } from '../game-object';
+import { TemplateCollection } from '../../template';
 
 jest.mock('../../ioc/ioc');
 
@@ -16,13 +17,15 @@ describe('Engine -> GameObjectObserver', () => {
   let gameObject5: GameObject;
 
   beforeEach(() => {
+    const templateCollection = new TemplateCollection({});
     scene = new Scene({
       name: 'test-scene',
       gameObjects: [],
       availableSystems: {},
       helpers: {},
       systems: [],
-      gameObjectCreator: new GameObjectCreator({}),
+      gameObjectCreator: new GameObjectCreator({}, templateCollection),
+      templateCollection,
     });
 
     gameObject1 = new GameObject({

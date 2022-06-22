@@ -4,6 +4,7 @@ import type {
   GameObjectSpawner,
   GameObjectDestroyer,
 } from '../game-object';
+import type { TemplateCollection } from '../template';
 import type { Store, SceneContext } from '../scene';
 import type { MessageBus } from '../message-bus';
 
@@ -17,6 +18,7 @@ export interface SystemOptions extends Record<string, unknown> {
   store: Store
   messageBus: MessageBus
   sceneContext: SceneContext
+  templateCollection: TemplateCollection
 }
 
 export interface UpdateOptions {
