@@ -7,6 +7,7 @@ import type {
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store, SceneContext } from '../../../engine/scene';
+import type { TemplateCollection } from '../../../engine/template';
 
 import { Observer, MapObserver } from './observer';
 
@@ -22,6 +23,7 @@ type ActionFn = (options: ActionFnOptions) => void;
 
 export interface UiInitFnOptions {
   sceneContext: SceneContext
+  templateCollection: TemplateCollection
   messageBusObserver: Observer
   storeObserver: Observer
   gameObjects: MapObserver
@@ -44,6 +46,7 @@ export class UiBridge implements System {
   private store: Store;
   private messageBus: MessageBus;
   private helpers: Record<string, HelperFn>;
+  private templateCollection: TemplateCollection;
   private messageBusObserver: Observer;
   private storeObserver: Observer;
   private gameObjects: MapObserver;
@@ -61,6 +64,7 @@ export class UiBridge implements System {
       messageBus,
       helpers,
       sceneContext,
+      templateCollection,
       filterComponents,
     } = options as UiBridgeOptions;
 
@@ -73,6 +77,7 @@ export class UiBridge implements System {
     this.store = store;
     this.messageBus = messageBus;
     this.helpers = helpers;
+    this.templateCollection = templateCollection;
 
     this.messageBusObserver = new Observer();
     this.storeObserver = new Observer();
@@ -93,6 +98,7 @@ export class UiBridge implements System {
     if (this.onUiInit) {
       this.onUiInit({
         sceneContext: this.sceneContext,
+        templateCollection: this.templateCollection,
         messageBusObserver: this.messageBusObserver,
         storeObserver: this.storeObserver,
         pushMessage: this.pushMessage.bind(this),
