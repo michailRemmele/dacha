@@ -16,12 +16,14 @@ import {
 
 import type { EditorConfig } from '../../../types/global'
 
-const CAMERA_ID = 'main-camera-id'
-
 const SELECT_LEVEL_MSG = 'SELECT_LEVEL'
 
 interface SelectLevelMessage extends Message {
   name: string
+}
+
+interface LevelViewerOptions extends SystemOptions {
+  mainObjectId: string;
 }
 
 export class LevelViewer implements System {
@@ -30,6 +32,7 @@ export class LevelViewer implements System {
   gameObjectSpawner: GameObjectSpawner
   gameObjectDestroyer: GameObjectDestroyer
   gameObjectObserver: GameObjectObserver
+  mainObjectId: string
   projectConfig: Config
   editorConfig: EditorConfig
   projectComponents: ComponentsMap
@@ -37,14 +40,32 @@ export class LevelViewer implements System {
   currentLevel?: string
 
   constructor(options: SystemOptions) {
-    this.messageBus = options.messageBus
-    this.sceneContext = options.sceneContext
-    this.gameObjectSpawner = options.gameObjectSpawner
-    this.gameObjectDestroyer = options.gameObjectDestroyer
-    this.gameObjectObserver = options.createGameObjectObserver({})
+    const {
+      messageBus,
+      sceneContext,
+      gameObjectSpawner,
+      gameObjectDestroyer,
+      createGameObjectObserver,
+      mainObjectId,
+    } = options as LevelViewerOptions
 
-    this.projectConfig = options.sceneContext.data.projectConfig as Config
-    this.editorConfig = options.sceneContext.data.editorConfig as EditorConfig
+    this.messageBus = messageBus
+    this.sceneContext = sceneContext
+    this.gameObjectSpawner = gameObjectSpawner
+    this.gameObjectDestroyer = gameObjectDestroyer
+    this.gameObjectObserver = createGameObjectObserver({})
+    this.mainObjectId = mainObjectId
+
+    this.projectConfig = sceneContext.data.projectConfig as Config
+    this.editorConfig = sceneContext.data.editorConfig as EditorConfig
+
+    const mainObject = this.gameObjectObserver.getById(this.mainObjectId)
+
+    if (!mainObject) {
+      throw new Error('Can\'t find the main object')
+    }
+
+    this.sceneContext.data.mainObject = mainObject
 
     this.projectComponents = {}
   }
@@ -82,7 +103,7 @@ export class LevelViewer implements System {
     }
 
     this.gameObjectObserver.getList().forEach((gameObject) => {
-      if (gameObject.id !== CAMERA_ID) {
+      if (gameObject.getAncestor().id !== this.mainObjectId) {
         this.gameObjectDestroyer.destroy(gameObject)
       }
     })

@@ -26,6 +26,7 @@ const reactRules = {
   'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
   'react/require-default-props': 'warn',
   'react/jsx-props-no-spreading': 0,
+  'react/no-unused-class-component-methods': 0,
 }
 
 module.exports = {
