@@ -20,13 +20,25 @@ const EVENT_TYPE: Record<string, (event: MouseEvent) => string> = {
   dblclick: (): string => 'MOUSE_DOUBLE_CLICK',
 };
 
+interface MouseInputSystemOptions extends SystemOptions {
+  windowNodeId?: string;
+}
+
 export class MouseInputSystem implements System {
   private messageBus: MessageBus;
   private inputListener: MouseInputListener;
 
   constructor(options: SystemOptions) {
-    this.messageBus = options.messageBus;
-    this.inputListener = new MouseInputListener(window);
+    const { messageBus, windowNodeId } = options as MouseInputSystemOptions;
+
+    this.messageBus = messageBus;
+
+    let windowNode: GlobalEventHandlers = window;
+    if (windowNodeId) {
+      windowNode = document.getElementById(windowNodeId) || windowNode;
+    }
+
+    this.inputListener = new MouseInputListener(windowNode);
   }
 
   mount(): void {
