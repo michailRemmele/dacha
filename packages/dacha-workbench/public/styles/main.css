@@ -13,8 +13,21 @@ body {
   width: 25%;
 }
 
-#canvas-root {
+.canvas {
   width: 50%;
+
+  display: flex;
+  flex-direction: column;
+
+  user-select: none;
+}
+
+#toolbar-root {
+  height: 35px;
+}
+
+#canvas-root {
+  flex: 1;
 }
 
 #inspector-root {

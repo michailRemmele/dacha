@@ -3,5 +3,11 @@
     "tab.levels": "Levels",
     "tab.templates": "Templates",
     "tab.scenes": "Scenes"
+  },
+  "toolbar": {
+    "hand.title": "Hand Tool",
+    "zoom.title": "Zoom Tool",
+    "zoom.features.direction.in.title": "Zoom In Mode",
+    "zoom.features.direction.out.title": "Zoom Out Mode"
   }
 }

@@ -5,7 +5,7 @@ import {
 } from 'remiz'
 
 import config from './engine/config.json'
-import { editorSystems, helpers } from './engine'
+import { editorSystems, editorComponents, helpers } from './engine'
 
 const editorEngine = new Engine({
   config,
@@ -15,6 +15,7 @@ const editorEngine = new Engine({
   },
   components: {
     ...contribComponents,
+    ...editorComponents,
   },
   helpers,
 })

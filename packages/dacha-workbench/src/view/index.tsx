@@ -5,8 +5,15 @@ import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
 import {
+  EXPLORER_ROOT,
+  INSPECTOR_ROOT,
+  TOOLBAR_ROOT,
+} from '../consts/root-nodes'
+
+import {
   Explorer,
   Inspector,
+  Toolbar,
 } from './modules'
 import { EngineProvider } from './providers'
 
@@ -24,8 +31,9 @@ void i18next
     },
   })
 
-const explorerRoot = createRoot(document.getElementById('explorer-root') as HTMLElement)
-const inspectorRoot = createRoot(document.getElementById('inspector-root') as HTMLElement)
+const explorerRoot = createRoot(document.getElementById(EXPLORER_ROOT) as HTMLElement)
+const inspectorRoot = createRoot(document.getElementById(INSPECTOR_ROOT) as HTMLElement)
+const toolbarRoot = createRoot(document.getElementById(TOOLBAR_ROOT) as HTMLElement)
 
 export const onInit: UiInitFn = (options) => {
   explorerRoot.render(
@@ -39,9 +47,16 @@ export const onInit: UiInitFn = (options) => {
       <Inspector />
     </EngineProvider>,
   )
+
+  toolbarRoot.render(
+    <EngineProvider {...options}>
+      <Toolbar />
+    </EngineProvider>,
+  )
 }
 
 export const onDestroy: UiDestroyFn = () => {
   explorerRoot.unmount()
   inspectorRoot.unmount()
+  toolbarRoot.unmount()
 }

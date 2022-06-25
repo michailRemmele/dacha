@@ -5,27 +5,56 @@
       "level": "level-viewer",
       "systems": [
         {
+          "name": "keyboardInputSystem",
+          "options": {}
+        },
+        {
+          "name": "mouseInputSystem",
+          "options": {
+            "windowNodeId": "canvas-root"
+          }
+        },
+        {
+          "name": "mouseInputCoordinatesProjector",
+          "options": {}
+        },
+        {
+          "name": "keyboardControlSystem",
+          "options": {}
+        },
+        {
+          "name": "mouseControlSystem",
+          "options": {}
+        },
+        {
           "name": "projectLoader",
           "options": {}
         },
         {
           "name": "levelViewer",
+          "options": {
+            "mainObjectId": "main-object"
+          }
+        },
+        {
+          "name": "toolManager",
+          "options": {}
+        },
+        {
+          "name": "zoomToolSystem",
           "options": {}
         },
         {
           "name": "cameraSystem",
           "options": {
             "windowNodeId": "canvas-root",
-            "initialCamera": "main-camera-id"
+            "initialCamera": "main-object"
           }
         },
         {
           "name": "uiBridge",
           "options": {
-            "filterComponents": [
-              "keyboardControl",
-              "mouseControl"
-            ]
+            "filterComponents": []
           }
         },
         {
@@ -54,7 +83,7 @@
       "name": "level-viewer",
       "gameObjects": [
         {
-          "id": "main-camera-id",
+          "id": "main-object",
           "name": "mainCamera",
           "fromTemplate": false,
           "templateName": "",
@@ -80,7 +109,70 @@
       ]
     }
   ],
-  "templates": [],
+  "templates": [
+    {
+      "name": "hand",
+      "type": "tool",
+      "children": [],
+      "components": [
+        {
+          "name": "tool",
+          "config": {
+            "name": "hand",
+            "features": {}
+          }
+        },
+        {
+          "name": "mouseControl",
+          "config": {
+            "inputEventBindings": {
+              "MOUSE_LEFT_BUTTON_PRESS": {
+                "messageType": "CAMERA_MOVE_START",
+                "attrs": {}
+              },
+              "MOUSE_LEFT_BUTTON_RELEASE": {
+                "messageType": "CAMERA_MOVE_END",
+                "attrs": {}
+              },
+              "MOUSE_MOVE": {
+                "messageType": "CAMERA_MOVE",
+                "attrs": {}
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "zoom",
+      "type": "tool",
+      "children": [],
+      "components": [
+        {
+          "name": "tool",
+          "config": {
+            "name": "zoom",
+            "features": {
+              "direction": {
+                "value": "in"
+              }
+            }
+          }
+        },
+        {
+          "name": "mouseControl",
+          "config": {
+            "inputEventBindings": {
+              "MOUSE_LEFT_BUTTON_PRESS": {
+                "messageType": "CAMERA_ZOOM",
+                "attrs": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
   "loaders": [],
   "startScene": "editor"
 }
