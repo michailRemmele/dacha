@@ -10,11 +10,11 @@ import { useTranslation } from 'react-i18next'
 import type { RadioChangeEvent } from 'antd'
 import { Radio } from 'antd'
 import { DragOutlined, SearchOutlined } from '@ant-design/icons'
-import type { GameObject } from 'remiz'
+import type { GameObject, MessageBus } from 'remiz'
 
 import type { Tool } from '../../../engine/components'
 import { EngineContext } from '../../providers'
-import { SELECT_TOOL_MSG } from '../../../consts/message-types'
+import { SELECT_TOOL_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types'
 
 import { features } from './components'
 import './style.less'
@@ -23,7 +23,9 @@ const TOOL_COMPONENT_NAME = 'tool'
 
 export const Toolbar: FC = () => {
   const { t } = useTranslation()
-  const { pushMessage, gameObjects, sceneContext } = useContext(EngineContext)
+  const {
+    pushMessage, gameObjects, sceneContext, messageBusObserver,
+  } = useContext(EngineContext)
 
   const mainObjectId = useMemo<string>(
     () => (sceneContext.data.mainObject as GameObject).id,
@@ -31,6 +33,7 @@ export const Toolbar: FC = () => {
   )
 
   const [selectedTool, setSelectedTool] = useState('')
+  const [disabled, setDisabled] = useState(true)
 
   const ToolFeatures = useMemo(() => features[selectedTool], [selectedTool])
 
@@ -57,6 +60,20 @@ export const Toolbar: FC = () => {
     return () => gameObjects.unsubscribe(handleUpdate, mainObjectId)
   }, [gameObjects, sceneContext, mainObjectId, selectedTool])
 
+  useEffect(() => {
+    const handleLevelSelect = (messageBus: unknown): void => {
+      const messages = (messageBus as MessageBus).get(SELECT_LEVEL_MSG) || []
+
+      if (messages.length) {
+        setDisabled(false)
+      }
+    }
+
+    messageBusObserver.subscribe(handleLevelSelect)
+
+    return () => messageBusObserver.unsubscribe(handleLevelSelect)
+  }, [messageBusObserver])
+
   const handleSelect = useCallback((event: RadioChangeEvent) => {
     pushMessage({
       type: SELECT_TOOL_MSG,
@@ -71,6 +88,7 @@ export const Toolbar: FC = () => {
         size="small"
         value={selectedTool}
         onChange={handleSelect}
+        disabled={disabled}
       >
         <Radio.Button value="hand">
           <DragOutlined title={t('toolbar.hand.title')} />
@@ -80,7 +98,7 @@ export const Toolbar: FC = () => {
         </Radio.Button>
       </Radio.Group>
 
-      {features[selectedTool] ? (<ToolFeatures />) : null}
+      {features[selectedTool] && !disabled ? (<ToolFeatures />) : null}
     </div>
   )
 }

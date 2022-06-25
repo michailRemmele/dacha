@@ -8,7 +8,6 @@ import {
   GameObjectCreator,
   TemplateCollection,
   Config,
-  Message,
   MessageBus,
   SceneContext,
   ComponentsMap,
