@@ -45,6 +45,10 @@
           "options": {}
         },
         {
+          "name": "handToolSystem",
+          "options": {}
+        },
+        {
           "name": "cameraSystem",
           "options": {
             "windowNodeId": "canvas-root",
