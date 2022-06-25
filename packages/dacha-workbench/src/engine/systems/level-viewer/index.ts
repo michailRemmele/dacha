@@ -15,12 +15,8 @@ import {
 } from 'remiz'
 
 import type { EditorConfig } from '../../../types/global'
-
-const SELECT_LEVEL_MSG = 'SELECT_LEVEL'
-
-interface SelectLevelMessage extends Message {
-  name: string
-}
+import type { SelectLevelMessage } from '../../../types/messages'
+import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 
 interface LevelViewerOptions extends SystemOptions {
   mainObjectId: string;
