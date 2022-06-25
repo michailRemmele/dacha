@@ -77,10 +77,10 @@ export const ZoomFeatures: FC = () => {
         onChange={handleSelect}
       >
         <Radio.Button value="in">
-          <ZoomInOutlined title={t('zoom.features.direction.in.title')} />
+          <ZoomInOutlined title={t('toolbar.zoom.features.direction.in.title')} />
         </Radio.Button>
         <Radio.Button value="out">
-          <ZoomOutOutlined title={t('zoom.features.direction.out.title')} />
+          <ZoomOutOutlined title={t('toolbar.zoom.features.direction.out.title')} />
         </Radio.Button>
       </Radio.Group>
     </div>
