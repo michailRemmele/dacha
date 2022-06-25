@@ -141,6 +141,10 @@
               "MOUSE_MOVE": {
                 "messageType": "CAMERA_MOVE",
                 "attrs": {}
+              },
+              "MOUSE_LEAVE": {
+                "messageType": "CAMERA_MOVE_END",
+                "attrs": {}
               }
             }
           }

@@ -104,8 +104,8 @@ export class HandToolSystem implements System {
     const transform = this.mainObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
     const { zoom } = this.mainObject.getComponent(CAMERA_COMPONENT_NAME) as Camera
 
-    transform.offsetX += Math.round(this.anchor.x - screenX) / zoom
-    transform.offsetY += Math.round(this.anchor.y - screenY) / zoom
+    transform.offsetX += (this.anchor.x - screenX) / zoom
+    transform.offsetY += (this.anchor.y - screenY) / zoom
 
     this.anchor.x = screenX
     this.anchor.y = screenY
