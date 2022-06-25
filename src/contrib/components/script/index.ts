@@ -5,7 +5,7 @@ export interface ScriptConfig extends Record<string, unknown> {
   options: Record<string, unknown>
 }
 
-export class Script extends Component {
+export class ScriptComponent extends Component {
   name: string;
   options: Record<string, unknown>;
 
@@ -18,8 +18,8 @@ export class Script extends Component {
     this.options = { ...scriptConfig.options };
   }
 
-  clone(): Script {
-    return new Script(this.componentName, {
+  clone(): ScriptComponent {
+    return new ScriptComponent(this.componentName, {
       name: this.name,
       options: this.options,
     });
