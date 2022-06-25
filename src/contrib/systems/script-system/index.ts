@@ -7,7 +7,7 @@ import type {
 import type { GameObjectObserver, GameObject } from '../../../engine/game-object';
 import type { Store } from '../../../engine/scene/store';
 import type { MessageBus } from '../../../engine/message-bus';
-import type { Script as ScriptComponent } from '../../components/script';
+import type { ScriptComponent } from '../../components/script';
 
 import type { Script, ScriptOptions } from './script';
 

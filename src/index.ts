@@ -1,7 +1,5 @@
 import { Engine } from './engine';
 import { Component } from './engine/component';
-import { systems as contribSystems } from './contrib/systems';
-import contribComponents from './contrib/components';
 import IOC from './engine/ioc/ioc';
 import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
 import { RESOURCES_LOADER_KEY_NAME } from './engine/consts/global';
@@ -29,11 +27,12 @@ export type { UiInitFnOptions, UiInitFn, UiDestroyFn } from './contrib/systems/u
 export { GameObject, GameObjectCreator } from './engine/game-object';
 export { TemplateCollection } from './engine/template';
 
+export { contribSystems } from './contrib/systems';
+export * from './contrib/components';
+
 export {
   Engine,
   Component,
-  contribSystems,
-  contribComponents,
   IOC,
   VectorOps,
   MathOps,

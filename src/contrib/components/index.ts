@@ -6,10 +6,10 @@ import { Animatable } from './animatable';
 import { Renderable } from './renderable';
 import { Transform } from './transform';
 import { MouseControl } from './mouse-control';
-import { Script } from './script';
+import { ScriptComponent } from './script';
 import { Light } from './light';
 
-export default {
+export const contribComponents = {
   camera: Camera,
   keyboardControl: KeyboardControl,
   colliderContainer: ColliderContainer,
@@ -18,6 +18,19 @@ export default {
   renderable: Renderable,
   transform: Transform,
   mouseControl: MouseControl,
-  script: Script,
+  script: ScriptComponent,
   light: Light,
+};
+
+export {
+  Camera,
+  KeyboardControl,
+  ColliderContainer,
+  RigidBody,
+  Animatable,
+  Renderable,
+  Transform,
+  MouseControl,
+  ScriptComponent,
+  Light,
 };

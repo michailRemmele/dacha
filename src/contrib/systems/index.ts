@@ -16,7 +16,7 @@ import { ScriptSystem } from './script-system';
 import { ThreeJSRenderer } from './three-js-renderer';
 import { UiBridge } from './ui-bridge';
 
-export const systems = {
+export const contribSystems = {
   animator: Animator,
   cameraSystem: CameraSystem,
   collisionBroadcastSystem: CollisionBroadcastSystem,
