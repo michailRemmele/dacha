@@ -3,6 +3,7 @@ import {
   LevelViewer,
   ToolManager,
   ZoomToolSystem,
+  HandToolSystem,
 } from './systems'
 
 import {
@@ -16,6 +17,7 @@ export const editorSystems = {
   levelViewer: LevelViewer,
   toolManager: ToolManager,
   zoomToolSystem: ZoomToolSystem,
+  handToolSystem: HandToolSystem,
 }
 
 export const editorComponents = {
