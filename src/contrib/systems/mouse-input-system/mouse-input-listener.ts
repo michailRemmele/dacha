@@ -5,10 +5,10 @@ const LISTENING_EVENTS = [
 type MouseEventType = 'onmousedown' | 'onmouseup' | 'onmousemove' | 'onclick' | 'oncontextmenu' | 'ondblclick';
 
 export class MouseInputListener {
-  private window: Window;
+  private window: GlobalEventHandlers;
   private firedEvents: Array<MouseEvent>;
 
-  constructor(window: Window) {
+  constructor(window: GlobalEventHandlers) {
     this.window = window;
     this.firedEvents = [];
   }
