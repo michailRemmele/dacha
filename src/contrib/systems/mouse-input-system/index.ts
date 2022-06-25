@@ -18,6 +18,8 @@ const EVENT_TYPE: Record<string, (event: MouseEvent) => string> = {
   click: (): string => 'MOUSE_LEFT_BUTTON_CLICK',
   contextmenu: (): string => 'MOUSE_RIGHT_BUTTON_CLICK',
   dblclick: (): string => 'MOUSE_DOUBLE_CLICK',
+  mouseenter: (): string => 'MOUSE_ENTER',
+  mouseleave: (): string => 'MOUSE_LEAVE',
 };
 
 interface MouseInputSystemOptions extends SystemOptions {

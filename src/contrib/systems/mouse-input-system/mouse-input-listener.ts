@@ -1,8 +1,23 @@
 const LISTENING_EVENTS = [
-  'onmousedown', 'onmouseup', 'onmousemove', 'onclick', 'oncontextmenu', 'ondblclick',
+  'onmousedown',
+  'onmouseup',
+  'onmousemove',
+  'onclick',
+  'oncontextmenu',
+  'ondblclick',
+  'onmouseenter',
+  'onmouseleave',
 ];
 
-type MouseEventType = 'onmousedown' | 'onmouseup' | 'onmousemove' | 'onclick' | 'oncontextmenu' | 'ondblclick';
+type MouseEventType =
+  'onmousedown' |
+  'onmouseup' |
+  'onmousemove' |
+  'onclick' |
+  'oncontextmenu' |
+  'ondblclick' |
+  'onmouseenter' |
+  'onmouseleave';
 
 export class MouseInputListener {
   private window: GlobalEventHandlers;
