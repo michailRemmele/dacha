@@ -54,7 +54,7 @@
     "jest": "27.5.1",
     "react": "18.1.0",
     "react-dom": "18.1.0",
-    "remiz": "^0.9.5",
+    "remiz": "0.9.5",
     "ts-jest": "27.1.4"
   },
   "dependencies": {
