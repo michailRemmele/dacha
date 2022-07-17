@@ -6,18 +6,15 @@ import React, {
   FC,
 } from 'react'
 import { Tree } from 'antd'
-import type { TreeProps, EventDataNode } from 'antd/lib/tree'
+import type { EventDataNode } from 'antd/lib/tree'
 import type { Config } from 'remiz'
 
 import { EngineContext } from '../../../../providers'
+import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
+import { useEntity } from '../../../../hooks'
+import type { DataNodeWithPath, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 
-import { parseLevels, DataNodeWithPath } from './utils'
-
-type ExpandFn = Required<TreeProps>['onExpand']
-type SelectFn = Required<TreeProps>['onSelect']
-
-const SELECT_LEVEL_MSG = 'SELECT_LEVEL'
-const INSPECT_ENTITY_MSG = 'INSPECT_ENTITY'
+import { parseLevels, getKey } from './utils'
 
 export const LevelsTree: FC = () => {
   const { sceneContext, pushMessage } = useContext(EngineContext)
@@ -28,6 +25,8 @@ export const LevelsTree: FC = () => {
   const { levels } = sceneContext.data.projectConfig as Config
 
   const treeData = useMemo(() => parseLevels(levels), [levels])
+
+  const [selectedEntity, selectedEntityPath] = useEntity()
 
   const handleExpand = useCallback<ExpandFn>((keys, { node }) => {
     const key = String(node.key)
@@ -65,9 +64,12 @@ export const LevelsTree: FC = () => {
     })
   }, [pushMessage])
 
+  const selectedKey = getKey(selectedEntity, selectedEntityPath)
+
   return (
     <Tree.DirectoryTree
       expandedKeys={expandedKeys}
+      selectedKeys={selectedKey ? [selectedKey] : []}
       onSelect={handleSelect}
       onExpand={handleExpand}
       treeData={treeData}
