@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tabs } from 'antd'
 
-import { LevelsTree } from './components'
+import { LevelsTree, TemplatesTree, ScenesList } from './components'
 
 import './style.less'
 
@@ -16,10 +16,10 @@ export const Explorer = (): JSX.Element => {
           <LevelsTree />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('explorer.tab.templates')} key="templates">
-          Hello Templates
+          <TemplatesTree />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('explorer.tab.scenes')} key="scenes">
-          Hello Scenes
+          <ScenesList />
         </Tabs.TabPane>
       </Tabs>
     </div>
