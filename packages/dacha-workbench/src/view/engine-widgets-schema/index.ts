@@ -1,0 +1,1 @@
+export { componentsSchema } from './components'
