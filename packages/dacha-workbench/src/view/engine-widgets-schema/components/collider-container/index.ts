@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../types/widget-schema'
 
 export const colliderContainer: WidgetSchema = {
+  title: 'components.colliderContainer.title',
   fields: [
     {
       name: 'type',

@@ -12,7 +12,7 @@ export interface Reference {
   items: Array<ReferenceItem>
 }
 
-export type FieldType = 'string' | 'number' | 'boolean' | 'select';
+export type FieldType = 'string' | 'number' | 'boolean' | 'select'
 
 export interface Field {
   name: string
@@ -23,6 +23,7 @@ export interface Field {
 }
 
 export interface WidgetSchema {
+  title: string
   fields: Array<Field>
   references?: Record<string, Reference | undefined>
 }

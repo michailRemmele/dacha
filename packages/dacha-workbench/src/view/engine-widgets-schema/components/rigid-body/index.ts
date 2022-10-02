@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../types/widget-schema'
 
 export const rigidBody: WidgetSchema = {
+  title: 'components.rigidBody.title',
   fields: [
     {
       name: 'type',
