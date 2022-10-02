@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../types/widget-schema'
 
 export const transform: WidgetSchema = {
+  title: 'components.transform.title',
   fields: [
     {
       name: 'offsetX',

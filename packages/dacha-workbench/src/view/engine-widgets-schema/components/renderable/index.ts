@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../types/widget-schema'
 
 export const renderable: WidgetSchema = {
+  title: 'components.renderable.title',
   fields: [
     {
       name: 'type',

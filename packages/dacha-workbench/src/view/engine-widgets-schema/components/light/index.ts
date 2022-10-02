@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../types/widget-schema'
 
 export const light: WidgetSchema = {
+  title: 'components.light.title',
   fields: [
     {
       name: 'type',
