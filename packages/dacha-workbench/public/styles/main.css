@@ -1,6 +1,4 @@
 body {
-  display: flex;
-
   margin: 0;
 
   width: 100vw;
@@ -9,27 +7,9 @@ body {
   font-family: sans-serif;
 }
 
-#explorer-root {
-  width: 25%;
-}
-
-.canvas {
-  width: 50%;
+#root {
+  width: 100%;
+  height: 100%;
 
   display: flex;
-  flex-direction: column;
-
-  user-select: none;
-}
-
-#toolbar-root {
-  height: 35px;
-}
-
-#canvas-root {
-  flex: 1;
-}
-
-#inspector-root {
-  width: 25%;
 }
