@@ -11,12 +11,12 @@ import { INSPECT_ENTITY_MSG } from '../../../consts/message-types'
 import { InspectEntityMessage } from '../../../types/messages'
 import { get, Data } from '../../utils/get'
 
-import { getEntityType } from './get-entity-type'
+import { getEntityType, EntityType } from './get-entity-type'
 
 interface SelectedEntityData {
   entity?: unknown
   path?: Array<string>
-  type?: string
+  type?: EntityType
 }
 
 interface SelectedEntityProviderProps {

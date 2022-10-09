@@ -11,7 +11,7 @@
     },
     {
       "name": "game",
-      "level": "testLevel",
+      "level": "island-level",
       "systems": [
         {
           "name": "keyboardInputSystem",
