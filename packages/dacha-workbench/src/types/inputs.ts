@@ -12,4 +12,5 @@ export interface SelectOption {
 
 export interface SelectProps extends InputProps {
   options: Array<SelectOption>
+  allowEmpty?: boolean
 }

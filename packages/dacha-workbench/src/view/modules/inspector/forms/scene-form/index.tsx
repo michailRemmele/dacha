@@ -34,6 +34,7 @@ export const SceneForm: FC = () => {
         component={LabelledSelect}
         label={t('inspector.sceneForm.field.level.label')}
         options={levelOptions}
+        allowEmpty
       />
     </div>
   )

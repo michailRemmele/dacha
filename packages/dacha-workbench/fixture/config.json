@@ -2,6 +2,7 @@
   "scenes": [
     {
       "name": "menu",
+      "level": null,
       "systems": [
         {
           "name": "uiBridge",

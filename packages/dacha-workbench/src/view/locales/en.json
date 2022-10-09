@@ -14,6 +14,8 @@
     "header.title": "Inspector",
 
     "sceneForm.field.name.label": "Scene name",
-    "sceneForm.field.level.label": "Level name"
+    "sceneForm.field.level.label": "Level name",
+
+    "components.select.option.none.title": "[none]"
   }
 }

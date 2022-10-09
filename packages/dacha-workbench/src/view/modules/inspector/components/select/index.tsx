@@ -1,5 +1,6 @@
 import React, { useCallback, FC } from 'react'
 import { Select as AntdSelect } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 import { Labelled, LabelledProps } from '../labelled'
 import type { SelectProps } from '../../../../../types/inputs'
@@ -8,11 +9,13 @@ import './style.less'
 
 export const Select: FC<SelectProps> = ({
   options = [],
+  allowEmpty,
   onChange,
   defaultValue,
   onSelect,
   ...props
 }) => {
+  const { t } = useTranslation()
   const handleChange = useCallback((value: string) => onChange(value), [onChange])
 
   return (
@@ -20,9 +23,13 @@ export const Select: FC<SelectProps> = ({
       className="select"
       size="small"
       onChange={handleChange}
-      defaultValue={options[0] ? options[0].value : void ''}
       {...props}
     >
+      {allowEmpty && (
+        <AntdSelect.Option key={0} value={null}>
+          {t('inspector.components.select.option.none.title')}
+        </AntdSelect.Option>
+      )}
       {options.map((option) => (
         <AntdSelect.Option key={option.value} value={option.value}>
           {option.title}
