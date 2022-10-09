@@ -15,8 +15,8 @@ export const Inspector = (): JSX.Element => {
 
   return (
     <div className="inspector">
-      <header className="header">
-        <h2 className="header__title">{t('inspector.header.title')}</h2>
+      <header className="inspector__header">
+        <h2 className="inspector__title">{t('inspector.header.title')}</h2>
       </header>
       <div className="inspector__content">
         {FormComponent && <FormComponent />}
