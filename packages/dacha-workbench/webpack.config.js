@@ -8,7 +8,7 @@ module.exports = ({ componentsPath, systemsPath }) => ({
   mode: 'none',
 
   entry: {
-    app: path.resolve(__dirname, 'src/index.ts'),
+    app: path.resolve(__dirname, 'src/app.tsx'),
   },
 
   devServer: {

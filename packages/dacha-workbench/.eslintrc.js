@@ -27,6 +27,7 @@ const reactRules = {
   'react/require-default-props': 'warn',
   'react/jsx-props-no-spreading': 0,
   'react/no-unused-class-component-methods': 0,
+  'react-hooks/exhaustive-deps': 0,
 }
 
 module.exports = {

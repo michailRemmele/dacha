@@ -1,11 +1,30 @@
 @import '../../themes/panel.less';
 
 .inspector {
-  padding: 5px;
-
   height: 100%;
 
   overflow: scroll;
 
   border-left: 1px solid @panel-border;
+}
+
+.inspector__header {
+  display: flex;
+  align-items: center;
+
+  height: 35px;
+  padding: 0 5px;
+
+  border-bottom: 1px solid @panel-border;
+}
+
+.inspector__title {
+  font-size: 16px;
+  font-weight: normal;
+
+  margin: 0;
+}
+
+.inspector__content {
+  padding: 5px;
 }

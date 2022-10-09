@@ -9,5 +9,13 @@
     "zoom.title": "Zoom Tool",
     "zoom.features.direction.in.title": "Zoom In Mode",
     "zoom.features.direction.out.title": "Zoom Out Mode"
+  },
+  "inspector": {
+    "header.title": "Inspector",
+
+    "sceneForm.field.name.label": "Scene name",
+    "sceneForm.field.level.label": "Level name",
+
+    "components.select.option.none.title": "[none]"
   }
 }
