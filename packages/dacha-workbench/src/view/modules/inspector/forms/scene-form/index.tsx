@@ -7,9 +7,8 @@ import {
   Field,
   LabelledTextInput,
   LabelledSelect,
+  Form,
 } from '../../components'
-
-import './style.less'
 
 export const SceneForm: FC = () => {
   const { sceneContext } = useContext(EngineContext)
@@ -23,7 +22,7 @@ export const SceneForm: FC = () => {
   })), [])
 
   return (
-    <div className="scene-form">
+    <Form>
       <Field
         name="name"
         component={LabelledTextInput}
@@ -36,6 +35,6 @@ export const SceneForm: FC = () => {
         options={levelOptions}
         allowEmpty
       />
-    </div>
+    </Form>
   )
 }
