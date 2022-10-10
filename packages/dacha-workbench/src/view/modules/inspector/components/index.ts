@@ -4,3 +4,5 @@ export { Labelled } from './labelled'
 
 export { TextInput, LabelledTextInput } from './text-input'
 export { Select, LabelledSelect } from './select'
+
+export { Form } from './form'

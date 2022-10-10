@@ -16,6 +16,8 @@
     "sceneForm.field.name.label": "Scene name",
     "sceneForm.field.level.label": "Level name",
 
+    "levelForm.field.name.label": "Level name",
+
     "components.select.option.none.title": "[none]"
   }
 }
