@@ -400,5 +400,6 @@
       ]
     }
   ],
-  "startScene": "mainMenu"
+  "startScene": "main",
+  "startLoader": "loader"
 }

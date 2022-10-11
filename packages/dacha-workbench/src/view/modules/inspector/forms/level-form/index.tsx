@@ -6,14 +6,15 @@ import {
   LabelledTextInput,
   Form,
 } from '../../components'
+import type { FormComponentProps } from '../types'
 
-export const LevelForm: FC = () => {
+export const LevelForm: FC<FormComponentProps> = ({ path }) => {
   const { t } = useTranslation()
 
   return (
     <Form>
       <Field
-        name="name"
+        name={path.concat('name').join('.')}
         component={LabelledTextInput}
         label={t('inspector.levelForm.field.name.label')}
       />

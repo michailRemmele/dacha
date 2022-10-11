@@ -11,12 +11,16 @@
     "zoom.features.direction.out.title": "Zoom Out Mode"
   },
   "inspector": {
-    "header.title": "Inspector",
+    "tab.entityInspector": "Inspector",
+    "tab.projectSettings": "Project settings",
 
     "sceneForm.field.name.label": "Scene name",
     "sceneForm.field.level.label": "Level name",
 
     "levelForm.field.name.label": "Level name",
+
+    "projectSettings.field.startScene.label": "Start scene name",
+    "projectSettings.field.startLoader.label": "Start loader name",
 
     "components.select.option.none.title": "[none]"
   }

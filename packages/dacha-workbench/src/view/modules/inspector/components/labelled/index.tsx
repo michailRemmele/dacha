@@ -14,6 +14,8 @@ export const Labelled: FC<LabelledProps> = ({ label, children }) => (
     <span className="labelled__label">
       {label}
     </span>
-    {children}
+    <span className="labelled__input">
+      {children}
+    </span>
   </label>
 )

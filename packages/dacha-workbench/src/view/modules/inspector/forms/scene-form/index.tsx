@@ -9,8 +9,9 @@ import {
   LabelledSelect,
   Form,
 } from '../../components'
+import type { FormComponentProps } from '../types'
 
-export const SceneForm: FC = () => {
+export const SceneForm: FC<FormComponentProps> = ({ path }) => {
   const { sceneContext } = useContext(EngineContext)
   const { t } = useTranslation()
 
@@ -24,12 +25,12 @@ export const SceneForm: FC = () => {
   return (
     <Form>
       <Field
-        name="name"
+        name={path.concat('name').join('.')}
         component={LabelledTextInput}
         label={t('inspector.sceneForm.field.name.label')}
       />
       <Field
-        name="level"
+        name={path.concat('level').join('.')}
         component={LabelledSelect}
         label={t('inspector.sceneForm.field.level.label')}
         options={levelOptions}
