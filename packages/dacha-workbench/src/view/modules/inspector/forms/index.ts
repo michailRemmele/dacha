@@ -1,9 +1,11 @@
-import type { FC } from 'react'
-
 import { SceneForm } from './scene-form'
 import { LevelForm } from './level-form'
 
-export const forms: Record<string, FC> = {
+import type { FormComponentProps, FormComponent } from './types'
+
+export type { FormComponentProps, FormComponent }
+
+export const forms: Record<string, FormComponent> = {
   scene: SceneForm,
   level: LevelForm,
 }
