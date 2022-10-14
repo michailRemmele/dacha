@@ -5,7 +5,7 @@ import { SelectedEntityContext } from '../../../../providers'
 import { forms } from '../../forms'
 
 export const EntityInspector = (): JSX.Element | null => {
-  const { type, path = [] } = useContext(SelectedEntityContext)
+  const { type, path = [], entity } = useContext(SelectedEntityContext)
 
   const FormComponent = type ? forms[type] : null
 
@@ -13,5 +13,5 @@ export const EntityInspector = (): JSX.Element | null => {
     return null
   }
 
-  return <FormComponent path={path} />
+  return <FormComponent path={path} entity={entity} />
 }

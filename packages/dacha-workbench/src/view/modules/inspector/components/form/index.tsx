@@ -3,7 +3,7 @@ import React, { FC } from 'react'
 import './style.less'
 
 export interface FormProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | Array<JSX.Element | null> | null
 }
 
 export const Form: FC<FormProps> = ({ children }) => (
