@@ -11,14 +11,14 @@ import { EngineContext } from '../../../../providers'
 import { get, Data } from '../../../../utils/get'
 
 interface FieldProps extends HTMLProps<HTMLElement> {
-  name: string
+  path: Array<string>
   // comment: Allow to pass any component to Field
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: FC<any>
   [key: string]: unknown
 }
 
-export const Field: FC<FieldProps> = ({ component, name, ...props }) => {
+export const Field: FC<FieldProps> = ({ component, path, ...props }) => {
   const InputComponent = component
 
   const { sceneContext } = useContext(EngineContext)
@@ -26,7 +26,7 @@ export const Field: FC<FieldProps> = ({ component, name, ...props }) => {
 
   const [value, setValue] = useState('')
 
-  useEffect(() => setValue(get(projectConfig, name.split('.')) as string), [name, projectConfig])
+  useEffect(() => setValue(get(projectConfig, path) as string), [path, projectConfig])
 
   const handleBlur = useCallback(() => {
     console.log(value)

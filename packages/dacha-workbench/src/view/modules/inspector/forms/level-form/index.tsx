@@ -14,7 +14,7 @@ export const LevelForm: FC<FormComponentProps> = ({ path }) => {
   return (
     <Form>
       <Field
-        name={path.concat('name').join('.')}
+        path={path.concat('name')}
         component={LabelledTextInput}
         label={t('inspector.levelForm.field.name.label')}
       />

@@ -22,6 +22,10 @@
     "templateForm.field.name.label": "Name",
     "templateForm.field.type.label": "Type",
 
+    "gameObjectForm.field.name.label": "Name",
+    "gameObjectForm.field.templateName.label": "Template",
+    "gameObjectForm.field.type.label": "Type",
+
     "projectSettings.field.startScene.label": "Start scene",
     "projectSettings.field.startLoader.label": "Start loader",
 

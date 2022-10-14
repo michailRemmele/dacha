@@ -28,14 +28,14 @@ export const ProjectSettings: FC = () => {
   return (
     <Form>
       <Field
-        name="startScene"
+        path={['startScene']}
         component={LabelledSelect}
         label={t('inspector.projectSettings.field.startScene.label')}
         options={sceneOptions}
         allowEmpty
       />
       <Field
-        name="startLoader"
+        path={['startLoader']}
         component={LabelledSelect}
         label={t('inspector.projectSettings.field.startLoader.label')}
         options={loaderOptions}

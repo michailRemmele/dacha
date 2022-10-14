@@ -14,12 +14,12 @@ export const TemplateForm: FC<FormComponentProps> = ({ path }) => {
   return (
     <Form>
       <Field
-        name={path.concat('name').join('.')}
+        path={path.concat('name')}
         component={LabelledTextInput}
         label={t('inspector.templateForm.field.name.label')}
       />
       <Field
-        name={path.concat('type').join('.')}
+        path={path.concat('type')}
         component={LabelledTextInput}
         label={t('inspector.templateForm.field.type.label')}
       />

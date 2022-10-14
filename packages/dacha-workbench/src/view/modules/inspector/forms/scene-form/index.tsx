@@ -25,12 +25,12 @@ export const SceneForm: FC<FormComponentProps> = ({ path }) => {
   return (
     <Form>
       <Field
-        name={path.concat('name').join('.')}
+        path={path.concat('name')}
         component={LabelledTextInput}
         label={t('inspector.sceneForm.field.name.label')}
       />
       <Field
-        name={path.concat('level').join('.')}
+        path={path.concat('level')}
         component={LabelledSelect}
         label={t('inspector.sceneForm.field.level.label')}
         options={levelOptions}

@@ -60,7 +60,7 @@
       "gameObjects": [
         {
           "id": "1",
-          "name": "background",
+          "name": "background_1",
           "fromTemplate": true,
           "templateName": "background",
           "children": [],
@@ -78,7 +78,7 @@
         },
         {
           "id": "2",
-          "name": "terrain",
+          "name": "terrain_1",
           "fromTemplate": true,
           "templateName": "terrain",
           "children": [],
@@ -96,7 +96,8 @@
         },
         {
           "id": "3",
-          "name": "player",
+          "name": "player_1",
+          "type": "unit",
           "fromTemplate": true,
           "templateName": "player",
           "children": [
