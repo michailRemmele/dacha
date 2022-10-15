@@ -2,7 +2,8 @@
   "explorer": {
     "tab.levels": "Levels",
     "tab.templates": "Templates",
-    "tab.scenes": "Scenes"
+    "tab.scenes": "Scenes",
+    "tab.loaders": "Loaders"
   },
   "toolbar": {
     "hand.title": "Hand Tool",

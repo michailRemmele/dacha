@@ -14,16 +14,21 @@ import type { DataNodeWithPath, SelectFn } from '../../../../../types/tree-node'
 
 import { parseScenes, getKey } from './utils'
 
-export const ScenesList: FC = () => {
+interface ScenesListProps {
+  isLoaders?: boolean
+}
+
+export const ScenesList: FC<ScenesListProps> = ({ isLoaders = false }) => {
   const { sceneContext, pushMessage } = useContext(EngineContext)
   const {
     entity: selectedEntity,
     path: selectedEntityPath,
   } = useContext(SelectedEntityContext)
 
-  const { scenes } = sceneContext.data.projectConfig as Config
+  const projectConfig = sceneContext.data.projectConfig as Config
+  const scenes = isLoaders ? projectConfig.loaders : projectConfig.scenes
 
-  const treeData = useMemo(() => parseScenes(scenes), [scenes])
+  const treeData = useMemo(() => parseScenes(scenes, isLoaders), [scenes])
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {
     if (node.selected) {
@@ -36,7 +41,7 @@ export const ScenesList: FC = () => {
     })
   }, [pushMessage])
 
-  const selectedKey = getKey(selectedEntity, selectedEntityPath)
+  const selectedKey = getKey(selectedEntity, selectedEntityPath, isLoaders)
 
   return (
     <Tree.DirectoryTree

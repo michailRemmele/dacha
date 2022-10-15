@@ -21,6 +21,9 @@ export const Explorer = (): JSX.Element => {
         <Tabs.TabPane tab={t('explorer.tab.scenes')} key="scenes">
           <ScenesList />
         </Tabs.TabPane>
+        <Tabs.TabPane tab={t('explorer.tab.loaders')} key="loaders">
+          <ScenesList isLoaders />
+        </Tabs.TabPane>
       </Tabs>
     </div>
   )
