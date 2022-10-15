@@ -4,19 +4,25 @@ import { DataNodeWithPath } from '../../../../../types/tree-node'
 
 export const parseScenes = (
   scenes: Array<SceneConfig>,
+  isLoaders?: boolean,
 ): Array<DataNodeWithPath> => scenes.map((scene) => ({
   key: scene.name,
   title: scene.name,
-  path: ['scenes', scene.name],
+  path: [isLoaders ? 'loaders' : 'scenes', scene.name],
   isLeaf: true,
 }))
 
-export const getKey = (entity?: unknown, path?: Array<string>): string | undefined => {
+export const getKey = (
+  entity?: unknown,
+  path?: Array<string>,
+  isLoaders?: boolean,
+): string | undefined => {
   if (!entity || !path) {
     return void ''
   }
 
-  if (path[0] !== 'scenes') {
+  const rootPath = isLoaders ? 'loaders' : 'scenes'
+  if (path[0] !== rootPath) {
     return void ''
   }
 

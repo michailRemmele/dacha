@@ -393,6 +393,7 @@
   "loaders": [
     {
       "name": "loader",
+      "level": null,
       "systems": [
         {
           "name": "uiBridge",

@@ -12,4 +12,5 @@ export const forms: Record<string, FormComponent> = {
   level: LevelForm,
   template: TemplateForm,
   gameObject: GameObjectForm,
+  loader: SceneForm,
 }
