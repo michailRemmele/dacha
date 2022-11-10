@@ -6,6 +6,7 @@ import {
   Field,
   LabelledTextInput,
   Form,
+  ComponentList,
 } from '../../components'
 import type { FormComponentProps } from '../types'
 
@@ -34,6 +35,8 @@ export const GameObjectForm: FC<FormComponentProps> = ({ path, entity }) => {
         component={LabelledTextInput}
         label={t('inspector.gameObjectForm.field.type.label')}
       />
+
+      <ComponentList />
     </Form>
   )
 }

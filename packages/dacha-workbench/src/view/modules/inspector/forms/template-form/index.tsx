@@ -5,6 +5,7 @@ import {
   Field,
   LabelledTextInput,
   Form,
+  ComponentList,
 } from '../../components'
 import type { FormComponentProps } from '../types'
 
@@ -23,6 +24,8 @@ export const TemplateForm: FC<FormComponentProps> = ({ path }) => {
         component={LabelledTextInput}
         label={t('inspector.templateForm.field.type.label')}
       />
+
+      <ComponentList />
     </Form>
   )
 }
