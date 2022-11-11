@@ -18,8 +18,6 @@ export const EntityPanel = <T extends Entity>({
     console.log(`Delete entity ${entity.name}`)
   }, [])
 
-  // TODO: Implement dropdown with button for adding new entity
-
   return (
     <CollapsePanel
       key={entity.name}
