@@ -5,3 +5,8 @@ export interface Entity {
 export interface ComponentProps<T extends Entity> {
   entity: T
 }
+
+export interface EntityOption {
+  label: string
+  value: string
+}
