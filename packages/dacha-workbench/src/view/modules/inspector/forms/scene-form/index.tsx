@@ -8,6 +8,7 @@ import {
   LabelledTextInput,
   LabelledSelect,
   Form,
+  SystemList,
 } from '../../components'
 import type { FormComponentProps } from '../types'
 
@@ -36,6 +37,8 @@ export const SceneForm: FC<FormComponentProps> = ({ path }) => {
         options={levelOptions}
         allowEmpty
       />
+
+      <SystemList />
     </Form>
   )
 }
