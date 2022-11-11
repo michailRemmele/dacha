@@ -30,6 +30,9 @@
     "projectSettings.field.startScene.label": "Start scene",
     "projectSettings.field.startLoader.label": "Start loader",
 
-    "components.select.option.none.title": "[none]"
+    "components.select.option.none.title": "[none]",
+
+    "componentList.addNew.button.title": "Add Component",
+    "systemList.addNew.button.title": "Add System"
   }
 }
