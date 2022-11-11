@@ -20,7 +20,6 @@ export const EntityPanel = <T extends Entity>({
 
   return (
     <CollapsePanel
-      key={entity.name}
       title={entity.name}
       onDelete={handleDelete}
     >
