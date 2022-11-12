@@ -71,7 +71,9 @@
                 "offsetX": 0,
                 "offsetY": 0,
                 "offsetZ": 0,
-                "rotation": 0
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
               }
             }
           ]
@@ -89,7 +91,9 @@
                 "offsetX": 0,
                 "offsetY": 0,
                 "offsetZ": 0,
-                "rotation": 0
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
               }
             }
           ]
@@ -114,7 +118,9 @@
                     "offsetX": 0,
                     "offsetY": 0,
                     "offsetZ": 1,
-                    "rotation": 0
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
                   }
                 },
                 {
@@ -130,10 +136,12 @@
             {
               "name": "transform",
               "config": {
-                "offsetX": 0,
-                "offsetY": 0,
+                "offsetX": 55,
+                "offsetY": 30,
                 "offsetZ": 0,
-                "rotation": 0
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
               }
             },
             {
@@ -186,7 +194,9 @@
                 "offsetX": 0,
                 "offsetY": 0,
                 "offsetZ": 0,
-                "rotation": 0
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
               }
             },
             {
@@ -221,7 +231,9 @@
                 "offsetX": 0,
                 "offsetY": 0,
                 "offsetZ": 0,
-                "rotation": 0
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
               }
             },
             {
@@ -256,7 +268,9 @@
                 "offsetX": 0,
                 "offsetY": 0,
                 "offsetZ": 0,
-                "rotation": 0
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
               }
             },
             {
@@ -300,7 +314,9 @@
             "offsetX": 0,
             "offsetY": 0,
             "offsetZ": 0,
-            "rotation": 0
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
           }
         },
         {
@@ -312,7 +328,7 @@
             "height": 52,
             "rotation": 0,
             "sortCenter": [ 0, 0 ],
-            "flipX": false,
+            "flipX": true,
             "flipY": false,
             "sortingLayer": "units",
             "fit": "stretch",
@@ -333,7 +349,9 @@
             "offsetX": 0,
             "offsetY": 0,
             "offsetZ": 0,
-            "rotation": 0
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
           }
         },
         {
@@ -366,7 +384,9 @@
             "offsetX": 0,
             "offsetY": 0,
             "offsetZ": 0,
-            "rotation": 0
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
           }
         },
         {

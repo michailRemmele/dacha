@@ -23,7 +23,7 @@ export const EntityList = <T extends Entity>({
   <div className="entity-list">
     {entities ? entities.map((entity) => (
       <EntityPanel
-        key={entity.name}
+        key={entity.id}
         entity={entity}
         component={component}
       />
