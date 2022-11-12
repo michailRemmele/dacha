@@ -6,6 +6,7 @@ export { Labelled } from './labelled'
 
 export { TextInput, LabelledTextInput } from './text-input'
 export { Select, LabelledSelect } from './select'
+export { NumberInput, LabelledNumberInput } from './number-input'
 
 export { Form } from './form'
 export { CollapsePanel } from './collapse-panel'

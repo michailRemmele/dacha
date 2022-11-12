@@ -5,7 +5,7 @@ export interface Dependency {
 
 export interface ReferenceItem {
   title: string
-  value: string | number
+  value: string
 }
 
 export interface Reference {

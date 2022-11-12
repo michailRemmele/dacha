@@ -17,10 +17,17 @@ export const SystemList: FC = () => {
   const projectConfig = sceneContext.data.projectConfig as Data
   const projectSystems = sceneContext.data.projectSystems as Record<string, unknown>
 
-  const { systems } = get(projectConfig, path) as SceneConfig
+  const entities = useMemo(() => {
+    const { systems } = get(projectConfig, path) as SceneConfig
+
+    return systems.map((system) => ({
+      name: system.name,
+      id: `${path.join('.')}.${system.name}`,
+    }))
+  }, [projectConfig, path])
 
   const availableSystems = useMemo(() => {
-    const addedSystemsMap = systems.reduce((acc, system) => {
+    const addedSystemsMap = entities.reduce((acc, system) => {
       acc[system.name] = true
       return acc
     }, {} as Record<string, boolean | undefined>)
@@ -28,11 +35,11 @@ export const SystemList: FC = () => {
     return Object.keys(projectSystems)
       .filter((key: string) => !addedSystemsMap[key])
       .map((key: string) => ({ label: key, value: key }))
-  }, [systems])
+  }, [entities])
 
   return (
     <EntityList
-      entities={systems}
+      entities={entities}
       component={SystemForm}
       options={availableSystems}
       placeholder={t('inspector.systemList.addNew.button.title')}
