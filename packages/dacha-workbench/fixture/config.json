@@ -274,6 +274,17 @@
               }
             },
             {
+              "name": "colliderContainer",
+              "config": {
+                "type": "circleCollider",
+                "collider": {
+                  "radius": 0,
+                  "centerX": 0,
+                  "centerY": 0
+                }
+              }
+            },
+            {
               "name": "renderable",
               "config": {
                 "type": "static",
@@ -317,6 +328,29 @@
             "rotation": 0,
             "scaleX": 1,
             "scaleY": 1
+          }
+        },
+        {
+          "name": "rigidBody",
+          "config": {
+            "type": "dynamic",
+            "mass": 2,
+            "useGravity": false,
+            "isPermeable": false,
+            "ghost": false,
+            "drag": 0.5
+          }
+        },
+        {
+          "name": "colliderContainer",
+          "config": {
+            "type": "boxCollider",
+            "collider": {
+              "sizeX": 12,
+              "sizeY": 16,
+              "centerX": 0,
+              "centerY": 0
+            }
           }
         },
         {
