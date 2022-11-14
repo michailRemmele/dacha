@@ -18,16 +18,39 @@ export class ProjectLoader implements System {
     this.sceneContext.data.editorConfig = this.editorCofig
   }
 
-  async load(): Promise<void> {
-    const { components, systems } = this.editorCofig
+  load(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const extension = window.electron.getExtension()
 
-    if (components) {
-      this.sceneContext.data.projectComponents = (await import('project-components')).default
-    }
+      if (!extension) {
+        resolve()
+        return
+      }
 
-    if (systems) {
-      this.sceneContext.data.projectSystems = (await import ('project-systems')).default
-    }
+      const blob = new Blob([extension], {
+        type: 'application/javascript',
+      })
+      const url = URL.createObjectURL(blob)
+
+      const script = document.createElement('script')
+      script.src = url
+
+      script.onload = (): void => {
+        if (window.editorExtension) {
+          const { components, systems } = window.editorExtension
+
+          this.sceneContext.data.projectComponents = components || {}
+          this.sceneContext.data.projectSystems = systems || {}
+        }
+
+        resolve()
+      }
+      script.onerror = (): void => {
+        reject(new Error(`Error while loading extension script: ${url}`))
+      }
+
+      document.body.appendChild(script)
+    })
   }
 
   update(): void {}

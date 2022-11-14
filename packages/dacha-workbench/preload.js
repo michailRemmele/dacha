@@ -11,4 +11,13 @@ contextBridge.exposeInMainWorld('electron', {
     return JSON.parse(configData)
   },
   getEditorConfig: () => editorConfig,
+  getExtension: () => {
+    const extensionPath = path.resolve(editorConfig.extension)
+
+    if (extensionPath) {
+      return fs.readFileSync(path.resolve(editorConfig.extension)).toString('utf8')
+    }
+
+    return undefined
+  },
 })

@@ -1,29 +1,32 @@
 const { app, BrowserWindow } = require('electron')
 const express = require('express')
-const webpack = require('webpack')
-const middleware = require('webpack-dev-middleware')
 const path = require('path')
 
-const getConfig = require('./webpack.config')
-
-const { components, systems, assets } = require(path.resolve(process.env.EDITOR_CONFIG))
+const { assets } = require(path.resolve(process.env.EDITOR_CONFIG))
 
 const UI_PORT = 8080
 
-const webpackConfig = getConfig({
-  componentsPath: components,
-  systemsPath: systems,
-})
-
-const compiler = webpack(webpackConfig)
+const isDev = process.env.NODE_ENV === 'development'
 
 const expressApp = express()
 
-expressApp.use(
-  middleware(compiler),
-)
+if (isDev) {
+  const webpack = require('webpack')
+  const middleware = require('webpack-dev-middleware')
 
-expressApp.use(express.static(webpackConfig.devServer.static.directory))
+  const webpackConfig = require('./webpack.config')
+
+  const compiler = webpack(webpackConfig)
+
+  expressApp.use(
+    middleware(compiler),
+  )
+  expressApp.use(express.static(webpackConfig.devServer.static.directory))
+}
+
+if (!isDev) {
+  expressApp.use(express.static(path.join(__dirname, 'build')))
+}
 expressApp.use(express.static(path.resolve(assets)))
 
 expressApp.listen(UI_PORT)

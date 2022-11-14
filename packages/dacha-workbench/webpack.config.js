@@ -1,14 +1,23 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const { getThemeVariables } = require('antd/dist/theme')
 
-module.exports = ({ componentsPath, systemsPath }) => ({
+const isDev = process.env.NODE_ENV === 'development'
+
+module.exports = {
   mode: 'none',
 
   entry: {
     app: path.resolve(__dirname, 'src/app.tsx'),
+  },
+
+  output: {
+    path: path.resolve(__dirname, 'build'),
+    filename: '[name].[contenthash].js',
   },
 
   devServer: {
@@ -18,18 +27,10 @@ module.exports = ({ componentsPath, systemsPath }) => ({
     },
   },
 
-  devtool: 'eval',
+  devtool: isDev ? 'eval' : false,
 
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
-    alias: {
-      'project-components': componentsPath
-        ? path.resolve(componentsPath)
-        : path.resolve(__dirname, 'src/alias-stubs/project-components'),
-      'project-systems': systemsPath
-        ? path.resolve(systemsPath)
-        : path.resolve(__dirname, 'src/alias-stubs/project-systems'),
-    },
   },
 
   optimization: {
@@ -42,17 +43,28 @@ module.exports = ({ componentsPath, systemsPath }) => ({
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
+    isDev ? null : new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
       template: path.resolve(__dirname, 'public/index.html'),
     }),
-  ],
+    isDev ? null : new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.join(__dirname, 'public'),
+          globOptions: {
+            ignore: [path.resolve(__dirname, 'public/index.html')],
+          },
+        },
+      ],
+    }),
+  ].filter(Boolean),
 
   module: {
     rules: [
       {
         test: /\.ts(x?)$/,
-        exclude: /node_modules[\\/](?!remiz-editor)/,
+        exclude: /(node_modules)/,
         use: [
           {
             loader: 'babel-loader',
@@ -89,4 +101,4 @@ module.exports = ({ componentsPath, systemsPath }) => ({
       },
     ],
   },
-})
+}
