@@ -1,29 +1,37 @@
 import React, { useContext, FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { SelectedEntityContext } from '../../../../providers'
-import { componentsSchema } from '../../../../engine-widgets-schema'
 import { Widget } from '../widget'
+import type { Entity } from '../entity-list/types'
+
+import './style.less'
 
 const COMPONENTS_KEY = 'components'
 const CONFIG_KEY = 'config'
 
-interface ComponentPanelProps {
-  entity: {
-    id: string
-    name: string
-  }
-}
+type ComponentFormProps = Entity
 
-export const ComponentForm: FC<ComponentPanelProps> = ({ entity }) => {
+export const ComponentForm: FC<ComponentFormProps> = ({ data }) => {
+  const { t } = useTranslation()
+
   const { path = [] } = useContext(SelectedEntityContext)
 
-  const schema = componentsSchema[entity.name]
+  const { schema, name } = data
 
-  if (!schema) {
-    return null
+  if (!schema.fields || schema.fields.length === 0) {
+    return (
+      <div className="component-form">
+        {t('inspector.entityList.content.empty.title')}
+      </div>
+    )
   }
 
   return (
-    <Widget schema={schema} path={path.concat(COMPONENTS_KEY, entity.name, CONFIG_KEY)} />
+    <Widget
+      fields={schema.fields}
+      references={schema.references}
+      path={path.concat(COMPONENTS_KEY, name, CONFIG_KEY)}
+    />
   )
 }

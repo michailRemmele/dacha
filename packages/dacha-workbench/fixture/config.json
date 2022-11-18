@@ -15,6 +15,18 @@
       "level": "island-level",
       "systems": [
         {
+          "name": "mouseInputSystem",
+          "options": {}
+        },
+        {
+          "name": "mouseInputCoordinatesProjector",
+          "options": {}
+        },
+        {
+          "name": "mouseControlSystem",
+          "options": {}
+        },
+        {
           "name": "keyboardInputSystem",
           "options": {}
         },

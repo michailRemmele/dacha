@@ -1,22 +1,23 @@
 import React, { FC } from 'react'
 
-import type { WidgetSchema } from '../../../../../types/widget-schema'
+import type { Field, References } from '../../../../../types/widget-schema'
 
 import { WidgetField } from './widget-field'
 
 interface WidgetProps {
-  schema: WidgetSchema
+  fields: Array<Field>
+  references?: References
   path: Array<string>
 }
 
-export const Widget: FC<WidgetProps> = ({ schema, path }) => (
+export const Widget: FC<WidgetProps> = ({ fields, references, path }) => (
   <div>
-    {schema.fields.map((field) => (
+    {fields?.map((field) => (
       <WidgetField
         key={field.name}
         field={field}
         path={path}
-        references={schema.references}
+        references={references}
       />
     ))}
   </div>
