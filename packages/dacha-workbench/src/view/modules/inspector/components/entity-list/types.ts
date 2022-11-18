@@ -1,10 +1,9 @@
-export interface Entity {
-  name: string
-  id: string
-}
+import type { SchemasDataEntry } from '../../../../providers'
 
-export interface ComponentProps<T extends Entity> {
-  entity: T
+export interface Entity {
+  id: string
+  label: string
+  data: SchemasDataEntry
 }
 
 export interface EntityOption {

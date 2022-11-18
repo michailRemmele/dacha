@@ -1,8 +1,12 @@
 import type { Config } from 'remiz'
 
+import type { WidgetSchema } from './widget-schema'
+
 export interface Extension {
   components?: Record<string, unknown>
   systems?: Record<string, unknown>
+  componentsSchema?: Record<string, WidgetSchema | undefined>
+  systemsSchema?: Record<string, WidgetSchema | undefined>
 }
 
 export interface EditorConfig {

@@ -1,14 +1,11 @@
 import React, { FC } from 'react'
 
-interface SystemPanelProps {
-  entity: {
-    id: string
-    name: string
-  }
-}
+import type { Entity } from '../entity-list/types'
 
-export const SystemForm: FC<SystemPanelProps> = ({ entity }) => (
+type SystemFormProps = Entity
+
+export const SystemForm: FC<SystemFormProps> = ({ data }) => (
   <div>
-    {JSON.stringify(entity)}
+    {JSON.stringify(data)}
   </div>
 )

@@ -3,13 +3,13 @@ import React, { FC } from 'react'
 import { EntityPanel } from './entity-panel'
 import { EntityPicker } from './entity-picker'
 
-import type { Entity, ComponentProps, EntityOption } from './types'
+import type { Entity, EntityOption } from './types'
 
 import './style.less'
 
 interface EntityListProps<T extends Entity> {
   entities: Array<T>
-  component: FC<ComponentProps<T>>
+  component: FC<T>
   options: Array<EntityOption>
   placeholder: string
 }

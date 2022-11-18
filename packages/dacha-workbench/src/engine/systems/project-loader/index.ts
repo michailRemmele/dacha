@@ -21,6 +21,8 @@ export class ProjectLoader implements System {
   private setUpData(extension?: Extension): void {
     this.sceneContext.data.projectComponents = extension?.components || {}
     this.sceneContext.data.projectSystems = extension?.systems || {}
+    this.sceneContext.data.extComponentsSchema = extension?.componentsSchema || {}
+    this.sceneContext.data.extSystemsSchema = extension?.systemsSchema || {}
   }
 
   load(): Promise<void> {

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { SceneConfig } from 'remiz'
 
 import { EntityList } from '../entity-list'
-import { EngineContext, SelectedEntityContext } from '../../../../providers'
+import { EngineContext, SelectedEntityContext, SchemasContext } from '../../../../providers'
 import { get, Data } from '../../../../utils/get'
 
 import { SystemForm } from './system-form'
@@ -13,35 +13,39 @@ export const SystemList: FC = () => {
 
   const { path = [] } = useContext(SelectedEntityContext)
   const { sceneContext } = useContext(EngineContext)
+  const { systems: availableSystems } = useContext(SchemasContext)
 
   const projectConfig = sceneContext.data.projectConfig as Data
-  const projectSystems = sceneContext.data.projectSystems as Record<string, unknown>
 
-  const entities = useMemo(() => {
+  const addedSystemsMap = useMemo(() => {
     const { systems } = get(projectConfig, path) as SceneConfig
 
-    return systems.map((system) => ({
-      name: system.name,
-      id: `${path.join('.')}.${system.name}`,
-    }))
-  }, [projectConfig, path])
-
-  const availableSystems = useMemo(() => {
-    const addedSystemsMap = entities.reduce((acc, system) => {
+    return systems.reduce((acc, system) => {
       acc[system.name] = true
       return acc
     }, {} as Record<string, boolean | undefined>)
+  }, [projectConfig, path])
 
-    return Object.keys(projectSystems)
-      .filter((key: string) => !addedSystemsMap[key])
-      .map((key: string) => ({ label: key, value: key }))
-  }, [entities])
+  const entities = useMemo(() => availableSystems
+    .filter((system) => addedSystemsMap[system.name])
+    .map((system) => ({
+      id: `${path.join('.')}.${system.name}`,
+      label: t(`${system.namespace}.${system.schema.title}`),
+      data: system,
+    })), [projectConfig, path, availableSystems, addedSystemsMap])
+
+  const options = useMemo(() => availableSystems
+    .filter((system) => !addedSystemsMap[system.name])
+    .map((system) => ({
+      label: t(`${system.namespace}.${system.schema.title}`),
+      value: system.name,
+    })), [availableSystems, addedSystemsMap])
 
   return (
     <EntityList
       entities={entities}
       component={SystemForm}
-      options={availableSystems}
+      options={options}
       placeholder={t('inspector.systemList.addNew.button.title')}
     />
   )
