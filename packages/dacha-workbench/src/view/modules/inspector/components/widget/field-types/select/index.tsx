@@ -21,7 +21,7 @@ export const SelectField: FC<SelectFieldProps> = ({
   const options = useMemo(() => references[referenceId]?.items.map(({ title, value }) => ({
     title: t(title),
     value,
-  })) || [], [])
+  })) || [], [references, referenceId])
 
   return (
     <LabelledSelect
