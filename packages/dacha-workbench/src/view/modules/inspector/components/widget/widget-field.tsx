@@ -7,6 +7,7 @@ import { get, Data } from '../../../../utils/get'
 import type { Field as FieldSchema, Reference } from '../../../../../types/widget-schema'
 
 import { fieldTypes } from './field-types'
+import { checkDependency } from './check-dependency'
 
 interface WidgetFieldProps {
   field: FieldSchema
@@ -24,7 +25,7 @@ export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) =
   if (field.dependency) {
     const value = get(projectConfig, path.concat(field.dependency.name.split('.')))
 
-    if (value !== field.dependency.value) {
+    if (!checkDependency(value, field.dependency.value)) {
       return null
     }
   }
