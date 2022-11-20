@@ -31,7 +31,7 @@ export const ComponentList: FC = () => {
       id: `${path.join('.')}.${component.name}`,
       label: t(component.schema.title, { ns: component.namespace }),
       data: component,
-    })), [projectConfig, path, availableComponents, addedComponentsMap])
+    })), [path, availableComponents, addedComponentsMap])
 
   const options = useMemo(() => availableComponents
     .filter((component) => !addedComponentsMap[component.name])
