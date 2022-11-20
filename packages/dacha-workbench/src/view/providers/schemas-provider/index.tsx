@@ -8,8 +8,8 @@ import { EngineContext } from '../engine-provider'
 import type { WidgetSchema } from '../../../types/widget-schema'
 import { componentsSchema, systemsSchema } from '../../engine-widgets-schema'
 
-const NAMESPACE_ROOT = 'widgetsSchema'
-const NAMESPACE_CUSTOM = 'customWidgetsSchema'
+export const NAMESPACE_EDITOR = 'translation'
+export const NAMESPACE_EXTENSION = 'extension'
 
 export interface SchemasDataEntry {
   name: string
@@ -43,12 +43,12 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
     Object.keys(componentsSchema).map((key) => ({
       name: key,
       schema: componentsSchema[key],
-      namespace: NAMESPACE_ROOT,
+      namespace: NAMESPACE_EDITOR,
     })),
     Object.keys(extComponentsSchema).map((key) => ({
       name: key,
       schema: extComponentsSchema[key],
-      namespace: NAMESPACE_CUSTOM,
+      namespace: NAMESPACE_EXTENSION,
     })),
   ), [extComponentsSchema])
 
@@ -56,12 +56,12 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
     Object.keys(systemsSchema).map((key) => ({
       name: key,
       schema: systemsSchema[key],
-      namespace: NAMESPACE_ROOT,
+      namespace: NAMESPACE_EDITOR,
     })),
     Object.keys(extSystemsSchema).map((key) => ({
       name: key,
       schema: extSystemsSchema[key],
-      namespace: NAMESPACE_CUSTOM,
+      namespace: NAMESPACE_EXTENSION,
     })),
   ), [extSystemsSchema])
 

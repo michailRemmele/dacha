@@ -19,7 +19,7 @@ export const SelectField: FC<SelectFieldProps> = ({
   const { t } = useTranslation()
 
   const options = useMemo(() => references[referenceId]?.items.map(({ title, value }) => ({
-    title: t(`widgetsSchema.${title}`),
+    title: t(title),
     value,
   })) || [], [])
 
