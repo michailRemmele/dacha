@@ -32,7 +32,7 @@ export const SystemList: FC = () => {
       id: `${path.join('.')}.${system.name}`,
       label: t(system.schema.title, { ns: system.namespace }),
       data: system,
-    })), [projectConfig, path, availableSystems, addedSystemsMap])
+    })), [path, availableSystems, addedSystemsMap])
 
   const options = useMemo(() => availableSystems
     .filter((system) => !addedSystemsMap[system.name])
