@@ -5,9 +5,11 @@ export interface CustomWidgetViewProps {
   path: Array<string>
 }
 
+export type DependencyValue = string | number | boolean
+
 export interface Dependency {
   name: string
-  value: string
+  value: DependencyValue
 }
 
 export interface ReferenceItem {
