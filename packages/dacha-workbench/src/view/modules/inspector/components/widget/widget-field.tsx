@@ -33,7 +33,7 @@ export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) =
   return (
     <Field
       path={path.concat(field.name.split('.'))}
-      label={t(`widgetsSchema.${field.title}`)}
+      label={t(field.title)}
       component={fieldTypes[field.type] ? fieldTypes[field.type] : fieldTypes.string}
       {...field.type === 'select' ? { referenceId: field.referenceId, references } : {}}
     />

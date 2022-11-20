@@ -29,14 +29,14 @@ export const ComponentList: FC = () => {
     .filter((component) => addedComponentsMap[component.name])
     .map((component) => ({
       id: `${path.join('.')}.${component.name}`,
-      label: t(`${component.namespace}.${component.schema.title}`),
+      label: t(component.schema.title, { ns: component.namespace }),
       data: component,
     })), [projectConfig, path, availableComponents, addedComponentsMap])
 
   const options = useMemo(() => availableComponents
     .filter((component) => !addedComponentsMap[component.name])
     .map((component) => ({
-      label: t(`${component.namespace}.${component.schema.title}`),
+      label: t(component.schema.title, { ns: component.namespace }),
       value: component.name,
     })), [availableComponents, addedComponentsMap])
 

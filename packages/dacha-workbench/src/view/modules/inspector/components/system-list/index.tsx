@@ -30,14 +30,14 @@ export const SystemList: FC = () => {
     .filter((system) => addedSystemsMap[system.name])
     .map((system) => ({
       id: `${path.join('.')}.${system.name}`,
-      label: t(`${system.namespace}.${system.schema.title}`),
+      label: t(system.schema.title, { ns: system.namespace }),
       data: system,
     })), [projectConfig, path, availableSystems, addedSystemsMap])
 
   const options = useMemo(() => availableSystems
     .filter((system) => !addedSystemsMap[system.name])
     .map((system) => ({
-      label: t(`${system.namespace}.${system.schema.title}`),
+      label: t(system.schema.title, { ns: system.namespace }),
       value: system.name,
     })), [availableSystems, addedSystemsMap])
 

@@ -23,6 +23,7 @@ export class ProjectLoader implements System {
     this.sceneContext.data.projectSystems = extension?.systems || {}
     this.sceneContext.data.extComponentsSchema = extension?.componentsSchema || {}
     this.sceneContext.data.extSystemsSchema = extension?.systemsSchema || {}
+    this.sceneContext.data.locales = extension?.locales || {}
   }
 
   load(): Promise<void> {
