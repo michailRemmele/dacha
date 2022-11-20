@@ -1,12 +1,39 @@
-import React, { FC } from 'react'
-import type { ComponentConfig } from 'remiz'
+import React, { useContext, FC } from 'react'
+import { useTranslation, I18nextProvider } from 'react-i18next'
 
-interface ComponentPanelProps {
-  entity: ComponentConfig
+import { SelectedEntityContext } from '../../../../providers'
+import { Widget } from '../widget'
+import type { Entity } from '../entity-list/types'
+
+import './style.less'
+
+const COMPONENTS_KEY = 'components'
+const CONFIG_KEY = 'config'
+
+type ComponentFormProps = Entity
+
+export const ComponentForm: FC<ComponentFormProps> = ({ data }) => {
+  const { t, i18n } = useTranslation()
+
+  const { path = [] } = useContext(SelectedEntityContext)
+
+  const { schema, name } = data
+
+  if (!schema.fields || schema.fields.length === 0) {
+    return (
+      <div className="component-form">
+        {t('inspector.entityList.content.empty.title')}
+      </div>
+    )
+  }
+
+  return (
+    <I18nextProvider i18n={i18n} defaultNS={data.namespace}>
+      <Widget
+        fields={schema.fields}
+        references={schema.references}
+        path={path.concat(COMPONENTS_KEY, name, CONFIG_KEY)}
+      />
+    </I18nextProvider>
+  )
 }
-
-export const ComponentForm: FC<ComponentPanelProps> = ({ entity }) => (
-  <div>
-    {JSON.stringify(entity.config)}
-  </div>
-)

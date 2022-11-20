@@ -1,12 +1,11 @@
 import React, { FC } from 'react'
-import type { SystemConfig } from 'remiz'
 
-interface SystemPanelProps {
-  entity: SystemConfig
-}
+import type { Entity } from '../entity-list/types'
 
-export const SystemForm: FC<SystemPanelProps> = ({ entity }) => (
+type SystemFormProps = Entity
+
+export const SystemForm: FC<SystemFormProps> = ({ data }) => (
   <div>
-    {JSON.stringify(entity.options)}
+    {JSON.stringify(data)}
   </div>
 )

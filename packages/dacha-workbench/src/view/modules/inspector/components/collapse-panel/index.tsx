@@ -7,6 +7,7 @@ import React, {
 import { Collapse } from 'antd'
 
 import { PanelExtra } from './panel-extra'
+import { PanelHeader } from './panel-header'
 
 import './style.less'
 
@@ -44,7 +45,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
       onChange={handleChange}
     >
       <Collapse.Panel
-        header={title}
+        header={<PanelHeader title={title} />}
         extra={<PanelExtra onDelete={handleDelete} />}
         key={title}
       >

@@ -2,11 +2,11 @@ import React, { useCallback, FC } from 'react'
 
 import { CollapsePanel } from '../collapse-panel'
 
-import type { Entity, ComponentProps } from './types'
+import type { Entity } from './types'
 
 interface EntityPanelProps<T extends Entity> {
   entity: T
-  component: FC<ComponentProps<T>>
+  component: FC<T>
 }
 
 export const EntityPanel = <T extends Entity>({
@@ -15,15 +15,15 @@ export const EntityPanel = <T extends Entity>({
 }: EntityPanelProps<T>): JSX.Element => {
   const handleDelete = useCallback(() => {
     // TODO: Implement entity deletion
-    console.log(`Delete entity ${entity.name}`)
+    console.log(`Delete entity ${entity.data.name}`)
   }, [])
 
   return (
     <CollapsePanel
-      title={entity.name}
+      title={entity.label}
       onDelete={handleDelete}
     >
-      <Component entity={entity} />
+      <Component {...entity} />
     </CollapsePanel>
   )
 }

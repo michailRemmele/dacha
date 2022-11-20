@@ -4,7 +4,7 @@ import type {
   SceneContext,
 } from 'remiz'
 
-import type { EditorConfig } from '../../../types/global'
+import type { EditorConfig, Extension } from '../../../types/global'
 
 export class ProjectLoader implements System {
   private sceneContext: SceneContext
@@ -18,11 +18,21 @@ export class ProjectLoader implements System {
     this.sceneContext.data.editorConfig = this.editorCofig
   }
 
+  private setUpData(extension?: Extension): void {
+    this.sceneContext.data.projectComponents = extension?.components || {}
+    this.sceneContext.data.projectSystems = extension?.systems || {}
+    this.sceneContext.data.extComponentsSchema = extension?.componentsSchema || {}
+    this.sceneContext.data.extSystemsSchema = extension?.systemsSchema || {}
+    this.sceneContext.data.locales = extension?.locales || {}
+  }
+
   load(): Promise<void> {
     return new Promise((resolve, reject) => {
       const extension = window.electron.getExtension()
 
       if (!extension) {
+        this.setUpData()
+
         resolve()
         return
       }
@@ -36,12 +46,7 @@ export class ProjectLoader implements System {
       script.src = url
 
       script.onload = (): void => {
-        if (window.editorExtension) {
-          const { components, systems } = window.editorExtension
-
-          this.sceneContext.data.projectComponents = components || {}
-          this.sceneContext.data.projectSystems = systems || {}
-        }
+        this.setUpData(window.editorExtension)
 
         resolve()
       }
