@@ -46,7 +46,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
         const { path } = messages[messages.length - 1]
 
         setEntityData({
-          entity: get(projectConfig, path.slice(0)),
+          entity: get(projectConfig, path),
           path,
           type: getEntityType(path),
         })
