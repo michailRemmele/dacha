@@ -19,6 +19,19 @@ export const ComponentForm: FC<ComponentFormProps> = ({ data }) => {
 
   const { schema, name } = data
 
+  if (schema.view) {
+    const CustomWidget = schema.view
+    return (
+      <I18nextProvider i18n={i18n} defaultNS={data.namespace}>
+        <CustomWidget
+          fields={schema.fields || []}
+          references={schema.references}
+          path={path.concat(COMPONENTS_KEY, name, CONFIG_KEY)}
+        />
+      </I18nextProvider>
+    )
+  }
+
   if (!schema.fields || schema.fields.length === 0) {
     return (
       <div className="component-form">

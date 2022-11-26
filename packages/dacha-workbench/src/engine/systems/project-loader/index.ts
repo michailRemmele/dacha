@@ -18,12 +18,26 @@ export class ProjectLoader implements System {
     this.sceneContext.data.editorConfig = this.editorCofig
   }
 
-  private setUpData(extension?: Extension): void {
-    this.sceneContext.data.projectComponents = extension?.components || {}
-    this.sceneContext.data.projectSystems = extension?.systems || {}
-    this.sceneContext.data.extComponentsSchema = extension?.componentsSchema || {}
-    this.sceneContext.data.extSystemsSchema = extension?.systemsSchema || {}
-    this.sceneContext.data.locales = extension?.locales || {}
+  private setUpData(extension: Extension = {}): void {
+    const {
+      components = {},
+      systems = {},
+      scripts = {},
+      componentsSchema = {},
+      systemsSchema = {},
+      scriptsSchema = {},
+      locales = {},
+    } = extension
+
+    this.sceneContext.data.extension = {
+      components,
+      systems,
+      componentsSchema,
+      systemsSchema,
+      scriptsSchema,
+      locales,
+      scripts,
+    }
   }
 
   load(): Promise<void> {

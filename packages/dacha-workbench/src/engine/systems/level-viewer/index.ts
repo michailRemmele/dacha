@@ -13,7 +13,7 @@ import {
   ComponentsMap,
 } from 'remiz'
 
-import type { EditorConfig } from '../../../types/global'
+import type { EditorConfig, Extension } from '../../../types/global'
 import type { SelectLevelMessage } from '../../../types/messages'
 import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 
@@ -66,8 +66,9 @@ export class LevelViewer implements System {
   }
 
   mount(): void {
-    if (this.sceneContext.data.projectComponents) {
-      this.projectComponents = this.sceneContext.data.projectComponents as ComponentsMap
+    if (this.sceneContext.data.extension) {
+      const extension = this.sceneContext.data.extension as Extension
+      this.projectComponents = extension.components as ComponentsMap
     }
 
     const components = {

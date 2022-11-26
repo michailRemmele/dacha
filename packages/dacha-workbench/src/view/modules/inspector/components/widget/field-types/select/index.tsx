@@ -7,21 +7,19 @@ import type { LabelledProps } from '../../../labelled'
 import type { Reference } from '../../../../../../../types/widget-schema'
 
 type SelectFieldProps = {
-  referenceId: string
-  references: Record<string, Reference | undefined>
+  reference?: Reference
 } & Omit<SelectProps, 'options'> & LabelledProps
 
 export const SelectField: FC<SelectFieldProps> = ({
-  referenceId,
-  references,
+  reference,
   ...props
 }) => {
   const { t } = useTranslation()
 
-  const options = useMemo(() => references[referenceId]?.items.map(({ title, value }) => ({
+  const options = useMemo(() => reference?.items.map(({ title, value }) => ({
     title: t(title),
     value,
-  })) || [], [references, referenceId])
+  })) || [], [reference])
 
   return (
     <LabelledSelect
