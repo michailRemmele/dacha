@@ -1,21 +1,20 @@
-import React, { useMemo, useContext } from 'react'
+import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18next from 'i18next'
-import type { Resource } from 'i18next'
 import { Tabs } from 'antd'
 
-import { SchemasProvider, EngineContext } from '../../providers'
-import { NAMESPACE_EXTENSION } from '../../providers/schemas-provider'
+import { SchemasProvider } from '../../providers'
+import { useExtension } from '../../hooks'
+import { NAMESPACE_EXTENSION } from '../../providers/schemas-provider/consts'
 
 import { EntityInspector, ProjectSettings } from './tabs'
 
 import './style.less'
 
 export const Inspector = (): JSX.Element => {
-  const { sceneContext } = useContext(EngineContext)
   const { t } = useTranslation()
 
-  const extLocales = sceneContext.data.locales as Resource
+  const { locales: extLocales } = useExtension()
 
   useMemo(() => Object.keys(extLocales).forEach((lng) => {
     i18next.addResourceBundle(lng, NAMESPACE_EXTENSION, extLocales[lng])

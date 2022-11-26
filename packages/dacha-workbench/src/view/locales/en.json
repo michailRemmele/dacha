@@ -104,6 +104,7 @@
   "components.rigidBody.types.static.title": "Static",
 
   "components.script.title": "Script",
+  "components.script.name.title": "Name",
 
   "components.transform.title": "Transform",
   "components.transform.offsetX.title": "Offset X",

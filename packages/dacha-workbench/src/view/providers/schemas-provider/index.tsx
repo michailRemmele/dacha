@@ -1,15 +1,10 @@
-import React, {
-  useContext,
-  useMemo,
-  FC,
-} from 'react'
+import React, { useMemo, FC } from 'react'
 
-import { EngineContext } from '../engine-provider'
 import type { WidgetSchema } from '../../../types/widget-schema'
 import { componentsSchema, systemsSchema } from '../../engine-widgets-schema'
+import { useExtension } from '../../hooks'
 
-export const NAMESPACE_EDITOR = 'translation'
-export const NAMESPACE_EXTENSION = 'extension'
+import { NAMESPACE_EDITOR, NAMESPACE_EXTENSION } from './consts'
 
 export interface SchemasDataEntry {
   name: string
@@ -34,10 +29,10 @@ export const SchemasContext = React.createContext<SchemasData>({
 export const SchemasProvider: FC<SchemasProviderProps> = ({
   children,
 }): JSX.Element => {
-  const { sceneContext } = useContext(EngineContext)
+  const extension = useExtension()
 
-  const extComponentsSchema = sceneContext?.data.extComponentsSchema as Record<string, WidgetSchema>
-  const extSystemsSchema = sceneContext?.data.extSystemsSchema as Record<string, WidgetSchema>
+  const extComponentsSchema = extension.componentsSchema as Record<string, WidgetSchema>
+  const extSystemsSchema = extension.systemsSchema as Record<string, WidgetSchema>
 
   const components = useMemo(() => ([] as Array<SchemasDataEntry>).concat(
     Object.keys(componentsSchema).map((key) => ({
