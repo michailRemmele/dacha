@@ -13,11 +13,17 @@ module.exports = {
 
   entry: {
     app: path.resolve(__dirname, 'src/app.tsx'),
+    // TODO: Add index entry build with types
   },
 
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: '[name].[contenthash].js',
+    filename: '[name].js',
+  },
+
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
   },
 
   devServer: {
@@ -47,6 +53,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: path.resolve(__dirname, 'public/index.html'),
+      chunks: ['app'],
     }),
     isDev ? null : new CopyWebpackPlugin({
       patterns: [

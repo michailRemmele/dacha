@@ -1,10 +1,10 @@
 import React, { FC } from 'react'
 
-import type { WidgetViewProps } from '../../../../../types/widget-schema'
+import type { WidgetProps } from '../../../../../types/widget-schema'
 
 import { WidgetField } from './widget-field'
 
-export const Widget: FC<WidgetViewProps> = ({ fields, references, path }) => (
+export const Widget: FC<WidgetProps> = ({ fields, references, path }) => (
   <div>
     {fields?.map((field) => (
       <WidgetField
