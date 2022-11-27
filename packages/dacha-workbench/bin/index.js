@@ -11,7 +11,7 @@ program.parse()
 
 process.env.EDITOR_CONFIG = program.opts().config
 
-const electron = spawn('electron', [path.join(__dirname, '../')])
+const electron = spawn('electron', [path.join(__dirname, '../index')])
 
 electron.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`)

@@ -1,1 +1,15 @@
-// TODO: Add export of some usefull things like widgets schema types
+export type { Data } from './view/utils/get'
+
+export type {
+  WidgetSchema,
+  WidgetPartSchema,
+  WidgetProps,
+  WidgetViewProps,
+  Field as WidgetField,
+  FieldType,
+  References,
+  Reference,
+  ReferenceItem,
+  Dependency,
+  DependencyValue,
+} from './types/widget-schema'
