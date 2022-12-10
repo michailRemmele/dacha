@@ -24,6 +24,8 @@ module.exports = {
   externals: {
     react: 'React',
     'react-dom': 'ReactDOM',
+    i18next: 'i18next',
+    'react-i18next': 'ReactI18next',
   },
 
   devServer: {
