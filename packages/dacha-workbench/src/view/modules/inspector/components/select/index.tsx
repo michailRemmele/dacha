@@ -31,7 +31,7 @@ export const Select: FC<SelectProps> = ({
         </AntdSelect.Option>
       )}
       {options.map((option) => (
-        <AntdSelect.Option key={option.value} value={option.value}>
+        <AntdSelect.Option key={option.value} value={option.value} disabled={option.disabled}>
           {option.title}
         </AntdSelect.Option>
       ))}
