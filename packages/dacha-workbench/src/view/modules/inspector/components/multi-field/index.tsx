@@ -6,6 +6,7 @@ import React, {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
 
 import { LabelledSelect } from '../select'
 import { LabelledTextInput } from '../text-input'
@@ -74,19 +75,21 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   }, [])
 
   const handleNameChange = useCallback(() => {
-
+    // TODO: Implement field name update
   }, [])
 
   const handleChangeValue = useCallback(() => {
-
+    // TODO: Implement field value update
   }, [])
 
   const handleAddField = useCallback(() => {
-
+    // TODO: Implement field addition
   }, [])
 
-  // Далее нужно поправить стили, добавить рамку и добавить кнопки добавления новой секции
-  // и удаления существующей
+  const handleDeleteField = useCallback(() => {
+    // TODO: Implement field deletion
+  }, [])
+
   // Изменение типа поля кажется в стейте будет делаться
   return (
     <div className="multifield">
@@ -97,28 +100,36 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
       )}
       {Boolean(entries.length) && (
         <ul className="multifield__fields">
-          {entries.map((entry) => {
+          {entries.map((entry, index) => {
             // comment: It's hard to merge different Input types in one component
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const InputField = TYPES_MAP[entry.type] as FC<any>
             return (
               <li key={entry.name} className="multifield__field">
-                <LabelledTextInput
-                  value={entry.name}
-                  onChange={handleNameChange}
-                  label={t('inspector.multifield.field.name.title')}
-                />
-                <LabelledSelect
-                  options={TYPES}
-                  value={entry.type}
-                  onChange={handleTypeChange}
-                  label={t('inspector.multifield.field.type.title')}
-                />
-                <InputField
-                  value={entry.value}
-                  onChange={handleChangeValue}
-                  label={t('inspector.multifield.field.value.title')}
-                />
+                <header className="multifield__field-header">
+                  <span>
+                    {t('inspector.multifield.field.title', { index: index + 1 })}
+                  </span>
+                  <Button icon={<DeleteOutlined />} size="small" onClick={handleDeleteField} />
+                </header>
+                <div className="multifield__field-content">
+                  <LabelledTextInput
+                    value={entry.name}
+                    onChange={handleNameChange}
+                    label={t('inspector.multifield.field.name.title')}
+                  />
+                  <LabelledSelect
+                    options={TYPES}
+                    value={entry.type}
+                    onChange={handleTypeChange}
+                    label={t('inspector.multifield.field.type.title')}
+                  />
+                  <InputField
+                    value={entry.value}
+                    onChange={handleChangeValue}
+                    label={t('inspector.multifield.field.value.title')}
+                  />
+                </div>
               </li>
             )
           })}

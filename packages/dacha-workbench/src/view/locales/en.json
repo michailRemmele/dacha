@@ -37,6 +37,7 @@
 
     "entityList.content.empty.title": "No params required",
 
+    "multifield.field.title": "Field {{index}}",
     "multifield.field.name.title": "Name",
     "multifield.field.type.title": "Type",
     "multifield.field.value.title": "Value",
