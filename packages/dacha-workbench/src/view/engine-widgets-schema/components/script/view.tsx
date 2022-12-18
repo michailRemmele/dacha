@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
-import type { References, WidgetViewProps } from '../../../../types/widget-schema'
+import type { References, WidgetProps } from '../../../../types/widget-schema'
 import type { Data } from '../../../utils/get'
 import { get } from '../../../utils/get'
 import { Widget } from '../../../modules/inspector/components/widget'
@@ -11,7 +11,7 @@ import { useExtension } from '../../../hooks'
 
 const SCRIPT_SYSTEM_NAME = 'scriptSystem'
 
-export const ScriptWidget: FC<WidgetViewProps> = ({ fields, path }) => {
+export const ScriptWidget: FC<WidgetProps> = ({ fields, path }) => {
   const { i18n } = useTranslation()
   const { sceneContext } = useContext(EngineContext)
 
