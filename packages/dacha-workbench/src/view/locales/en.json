@@ -35,7 +35,13 @@
     "componentList.addNew.button.title": "Add Component",
     "systemList.addNew.button.title": "Add System",
 
-    "entityList.content.empty.title": "No params required"
+    "entityList.content.empty.title": "No params required",
+
+    "multifield.field.name.title": "Name",
+    "multifield.field.type.title": "Type",
+    "multifield.field.value.title": "Value",
+    "multifield.addNew.value.title": "Add New Field",
+    "multifield.noFields.title": "No Fields"
   },
 
   "components.animatable.title": "Animatable",

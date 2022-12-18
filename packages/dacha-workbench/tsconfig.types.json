@@ -1,0 +1,15 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./esm/",
+
+        "skipLibCheck": true,
+
+        "declaration": true,
+        "emitDeclarationOnly": true
+    },
+    "exclude": [
+        "node_modules",
+        "**/*.test.ts"
+    ]
+}
