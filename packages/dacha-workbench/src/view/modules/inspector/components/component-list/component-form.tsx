@@ -27,6 +27,7 @@ export const ComponentForm: FC<ComponentFormProps> = ({ data }) => {
         references={schema.references}
         path={path.concat(COMPONENTS_KEY, name, CONFIG_KEY)}
         component={schema.view}
+        namespace={data.namespace}
       />
     )
   }
