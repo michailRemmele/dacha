@@ -8,6 +8,7 @@ import { NumberInput, LabelledNumberInput } from './view/modules/inspector/compo
 import { Select, LabelledSelect } from './view/modules/inspector/components/select'
 import { Checkbox, LabelledCheckbox } from './view/modules/inspector/components/checkbox'
 import { MultiField } from './view/modules/inspector/components/multi-field'
+import { Panel } from './view/modules/inspector/components/panel'
 
 window.RemizEditor = {
   EngineContext,
@@ -23,6 +24,7 @@ window.RemizEditor = {
   Checkbox,
   LabelledCheckbox,
   MultiField,
+  Panel,
 
   useExtension,
 

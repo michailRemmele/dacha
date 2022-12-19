@@ -8,6 +8,7 @@ export { NumberInput, LabelledNumberInput } from './view/modules/inspector/compo
 export { Select, LabelledSelect } from './view/modules/inspector/components/select'
 export { Checkbox, LabelledCheckbox } from './view/modules/inspector/components/checkbox'
 export { MultiField } from './view/modules/inspector/components/multi-field'
+export { Panel } from './view/modules/inspector/components/panel'
 
 export type { Data } from './view/utils/get'
 
