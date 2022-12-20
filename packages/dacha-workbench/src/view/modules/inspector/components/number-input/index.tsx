@@ -8,7 +8,7 @@ import './style.less'
 
 export const NumberInput: FC<NumberInputProps> = ({ onChange, ...props }) => {
   const handleChange = useCallback(
-    (value: number) => onChange(value),
+    (value: number | null) => onChange(value as number),
     [onChange],
   )
 
@@ -23,7 +23,7 @@ export const NumberInput: FC<NumberInputProps> = ({ onChange, ...props }) => {
   )
 }
 
-export const LabelledNumberInput: FC<NumberInputProps & LabelledProps> = ({ label, ...props }) => (
+export const LabelledNumberInput: FC<NumberInputProps & Omit<LabelledProps, 'children'>> = ({ label, ...props }) => (
   <Labelled label={label}>
     <NumberInput {...props} />
   </Labelled>

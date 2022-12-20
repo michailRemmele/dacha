@@ -20,7 +20,7 @@ export const Checkbox: FC<CheckboxProps> = ({ onChange, value, ...props }) => {
   )
 }
 
-export const LabelledCheckbox: FC<CheckboxProps & LabelledProps> = ({ label, ...props }) => (
+export const LabelledCheckbox: FC<CheckboxProps & Omit<LabelledProps, 'children'>> = ({ label, ...props }) => (
   <Labelled label={label}>
     <Checkbox {...props} />
   </Labelled>
