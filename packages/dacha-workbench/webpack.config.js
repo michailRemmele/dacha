@@ -13,7 +13,6 @@ module.exports = {
 
   entry: {
     app: path.resolve(__dirname, 'src/app.tsx'),
-    // TODO: Add index entry build with types
   },
 
   output: {
