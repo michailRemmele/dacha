@@ -3,6 +3,7 @@ import { useTranslation, I18nextProvider } from 'react-i18next'
 
 import { SelectedEntityContext } from '../../../../providers'
 import { Widget } from '../widget'
+import { CustomWidget } from '../custom-widget'
 import type { Entity } from '../entity-list/types'
 
 import './style.less'
@@ -18,6 +19,18 @@ export const ComponentForm: FC<ComponentFormProps> = ({ data }) => {
   const { path = [] } = useContext(SelectedEntityContext)
 
   const { schema, name } = data
+
+  if (schema.view) {
+    return (
+      <CustomWidget
+        fields={schema.fields || []}
+        references={schema.references}
+        path={path.concat(COMPONENTS_KEY, name, CONFIG_KEY)}
+        component={schema.view}
+        namespace={data.namespace}
+      />
+    )
+  }
 
   if (!schema.fields || schema.fields.length === 0) {
     return (

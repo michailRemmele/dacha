@@ -2,13 +2,18 @@
   "name": "remiz-editor",
   "version": "0.0.0",
   "description": "GUI editor for remiz game engine",
-  "main": "index.js",
+  "main": "./esm/index.js",
+  "types": "./esm/index.d.ts",
   "bin": {
     "remiz-editor": "./bin/index.js"
   },
   "scripts": {
     "start": "env NODE_ENV=development node './bin/index.js' --config 'fixture/remiz-editor.config.js'",
-    "build": "env NODE_ENV=production webpack --config webpack.config.js",
+    "build": "npm run build:clean && npm run build:app && npm run build:esm && npm run build:types",
+    "build:clean": "rm -rf build && rm -rf esm",
+    "build:app": "env NODE_ENV=production webpack --config webpack.config.js",
+    "build:esm": "npx babel src --out-dir esm --extensions \".ts,.js\" --ignore \"src/**/*.test.ts,src/**/*.test.tsx\"",
+    "build:types": "tsc --project tsconfig.types.json",
     "lint": "eslint .",
     "test": "jest",
     "prepare": "husky install"
@@ -16,6 +21,7 @@
   "files": [
     "bin",
     "build",
+    "esm",
     "LICENSE",
     "index.js",
     "preload.js",

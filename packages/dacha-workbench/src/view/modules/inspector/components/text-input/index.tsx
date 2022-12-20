@@ -19,7 +19,7 @@ export const TextInput: FC<InputProps> = ({ onChange, ...props }) => {
   )
 }
 
-export const LabelledTextInput: FC<InputProps & LabelledProps> = ({ label, ...props }) => (
+export const LabelledTextInput: FC<InputProps & Omit<LabelledProps, 'children'>> = ({ label, ...props }) => (
   <Labelled label={label}>
     <TextInput {...props} />
   </Labelled>

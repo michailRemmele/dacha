@@ -17,7 +17,15 @@ module.exports = {
 
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: '[name].[contenthash].js',
+    filename: '[name].js',
+  },
+
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    i18next: 'i18next',
+    'react-i18next': 'ReactI18next',
+    antd: 'antd',
   },
 
   devServer: {
@@ -47,6 +55,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: path.resolve(__dirname, 'public/index.html'),
+      chunks: ['app'],
     }),
     isDev ? null : new CopyWebpackPlugin({
       patterns: [

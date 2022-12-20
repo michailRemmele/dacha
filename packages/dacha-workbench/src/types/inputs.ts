@@ -8,6 +8,7 @@ export interface InputProps extends Omit<HTMLProps<HTMLInputElement>, 'size' | '
 export interface SelectOption {
   title: string
   value: string
+  disabled?: boolean
 }
 
 export interface SelectProps extends InputProps {

@@ -35,7 +35,14 @@
     "componentList.addNew.button.title": "Add Component",
     "systemList.addNew.button.title": "Add System",
 
-    "entityList.content.empty.title": "No params required"
+    "entityList.content.empty.title": "No params required",
+
+    "multifield.field.title": "Field {{index}}",
+    "multifield.field.name.title": "Name",
+    "multifield.field.type.title": "Type",
+    "multifield.field.value.title": "Value",
+    "multifield.addNew.value.title": "Add New Field",
+    "multifield.noFields.title": "No Fields"
   },
 
   "components.animatable.title": "Animatable",
@@ -54,6 +61,14 @@
   "components.colliderContainer.types.circleCollider.title": "Circle Collider",
 
   "components.keyboardControl.title": "Keyboard Control",
+  "components.keyboardControl.bind.title": "Event Bind {{index}}",
+  "components.keyboardControl.bind.key.title": "Key",
+  "components.keyboardControl.bind.event.title": "Event",
+  "components.keyboardControl.bind.messageType.title": "Message Type",
+  "components.keyboardControl.bind.attributes.title": "Attributes",
+  "components.keyboardControl.bind.addNew.title": "Add New Bind",
+  "components.keyboardControl.event.pressed.title": "Pressed",
+  "components.keyboardControl.event.released.title": "Released",
 
   "components.light.title": "Light",
   "components.light.type.title": "Type",
@@ -64,6 +79,23 @@
   "components.light.types.point.title": "Point",
 
   "components.mouseControl.title": "Mouse Control",
+  "components.mouseControl.bind.title": "Event Bind {{index}}",
+  "components.mouseControl.bind.event.title": "Event",
+  "components.mouseControl.bind.messageType.title": "Message Type",
+  "components.mouseControl.bind.attributes.title": "Attributes",
+  "components.mouseControl.bind.addNew.title": "Add New Bind",
+  "components.mouseControl.event.mouseLeftButtonClick.title": "Left Button Click",
+  "components.mouseControl.event.mouseRightButtonClick.title": "Left Right Click",
+  "components.mouseControl.event.mouseDoubleClick.title": "Double Click",
+  "components.mouseControl.event.mouseMove.title": "Mouse Move",
+  "components.mouseControl.event.mouseEnter.title": "Mouse Enter",
+  "components.mouseControl.event.mouseLeave.title": "Mouse Leave",
+  "components.mouseControl.event.mouseLeftButtonPress.title": "Left Button Press",
+  "components.mouseControl.event.mouseLeftButtonRelease.title": "Left Button Release",
+  "components.mouseControl.event.mouseRightButtonPress.title": "Right Button Press",
+  "components.mouseControl.event.mouseRightButtonRelease.title": "Right Button Release",
+  "components.mouseControl.event.mouseMiddleButtonPress.title": "Middle Button Press",
+  "components.mouseControl.event.mouseMiddleButtonRelease.title": "Middle Button Release",
 
   "components.renderable.title": "Renderable",
   "components.renderable.type.title": "Type",
@@ -104,6 +136,7 @@
   "components.rigidBody.types.static.title": "Static",
 
   "components.script.title": "Script",
+  "components.script.name.title": "Name",
 
   "components.transform.title": "Transform",
   "components.transform.offsetX.title": "Offset X",

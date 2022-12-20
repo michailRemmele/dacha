@@ -8,6 +8,7 @@ import { EngineProvider, SelectedEntityProvider } from './view/providers'
 import { APP_ROOT } from './consts/root-nodes'
 
 import en from './view/locales/en.json'
+import './export'
 
 void i18next
   .use(initReactI18next)

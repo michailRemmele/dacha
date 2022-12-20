@@ -1,10 +1,5 @@
 import type { FC } from 'react'
 
-export interface CustomWidgetViewProps {
-  schema: WidgetSchema
-  path: Array<string>
-}
-
 export type DependencyValue = string | number | boolean
 
 export interface Dependency {
@@ -33,9 +28,20 @@ export interface Field {
   dependency?: Dependency
 }
 
+export interface WidgetProps {
+  fields: Array<Field>
+  references?: References
+  path: Array<string>
+}
+
+export interface WidgetPartSchema {
+  fields: Array<Field>
+  references?: References
+}
+
 export interface WidgetSchema {
   title: string
   fields?: Array<Field>
   references?: References
-  view?: FC<CustomWidgetViewProps>
+  view?: FC<WidgetProps>
 }
