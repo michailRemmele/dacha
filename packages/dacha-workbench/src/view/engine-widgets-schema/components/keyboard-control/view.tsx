@@ -12,8 +12,9 @@ import type { Data } from '../../../utils/get'
 import { get } from '../../../utils/get'
 import { EngineContext } from '../../../providers'
 
-import { events } from './events'
+import { keys } from './keys'
 import { InputBind } from './input-bind'
+import { capitalize } from './utils'
 
 import './style.less'
 
@@ -24,28 +25,36 @@ export interface InputEventBindings {
   }
 }
 
-export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
+export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
 
   const { sceneContext } = useContext(EngineContext)
   const projectConfig = sceneContext.data.projectConfig as Data
 
-  const options = useMemo(() => events.map(({ title, value }) => ({
-    title: t(title),
-    value,
-  })), [])
+  const inputKeys = useMemo(() => keys.map((key) => ({
+    title: capitalize(key),
+    value: key,
+  }), []), [])
+
   const inputEventBindings = useMemo(
     () => get(projectConfig, path.concat('inputEventBindings')) as InputEventBindings,
     [projectConfig],
   )
-  const availableOptions = useMemo(
-    () => options.filter((event) => !inputEventBindings[event.value]),
-    [inputEventBindings, options],
+
+  const availableKeys = useMemo(
+    () => inputKeys.filter(
+      (event) => !inputEventBindings[`${event.value}_PRESSED`] || !inputEventBindings[`${event.value}_RELEASED`],
+    ),
+    [inputEventBindings, inputKeys],
   )
-  const addedOptions = useMemo(
-    () => options.filter((event) => inputEventBindings[event.value]),
-    [inputEventBindings, options],
-  )
+
+  const addedKeys = useMemo(() => Object.keys(inputEventBindings).map((bindKey) => {
+    const [key, event] = bindKey.split('_')
+    return {
+      key,
+      event,
+    }
+  }), [inputEventBindings])
 
   const handleAddNewBind = useCallback(() => {
     // TODO: Implement addition of new event bind
@@ -53,25 +62,26 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
 
   return (
     <div>
-      <ul className="mouse-control__events">
-        {addedOptions.map((event, index) => (
-          <li className="mouse-control__fieldset" key={event.value}>
+      <ul className="keyboard-control__events">
+        {addedKeys.map(({ key, event }, index) => (
+          <li className="keyboard-control__fieldset" key={`${key}_${event}`}>
             <InputBind
               path={path}
-              event={event}
+              inputKey={key}
+              inputEvent={event}
               order={index}
-              availableEvents={availableOptions}
+              availableKeys={availableKeys}
             />
           </li>
         ))}
       </ul>
       <Button
-        className="mouse-control__button"
+        className="keyboard-control__button"
         size="small"
         onClick={handleAddNewBind}
-        disabled={availableOptions.length === 0}
+        disabled={availableKeys.length === 0}
       >
-        {t('components.mouseControl.bind.addNew.title')}
+        {t('components.keyboardControl.bind.addNew.title')}
       </Button>
     </div>
   )

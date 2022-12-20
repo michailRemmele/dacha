@@ -61,6 +61,14 @@
   "components.colliderContainer.types.circleCollider.title": "Circle Collider",
 
   "components.keyboardControl.title": "Keyboard Control",
+  "components.keyboardControl.bind.title": "Event Bind {{index}}",
+  "components.keyboardControl.bind.key.title": "Key",
+  "components.keyboardControl.bind.event.title": "Event",
+  "components.keyboardControl.bind.messageType.title": "Message Type",
+  "components.keyboardControl.bind.attributes.title": "Attributes",
+  "components.keyboardControl.bind.addNew.title": "Add New Bind",
+  "components.keyboardControl.event.pressed.title": "Pressed",
+  "components.keyboardControl.event.released.title": "Released",
 
   "components.light.title": "Light",
   "components.light.type.title": "Type",
