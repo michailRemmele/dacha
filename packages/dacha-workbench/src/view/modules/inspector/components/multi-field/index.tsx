@@ -6,7 +6,6 @@ import React, {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
 
 import { LabelledSelect } from '../select'
 import { LabelledTextInput } from '../text-input'
@@ -14,6 +13,7 @@ import { LabelledNumberInput } from '../number-input'
 import { EngineContext } from '../../../../providers'
 import { get, Data } from '../../../../utils/get'
 import { LabelledCheckbox } from '../checkbox'
+import { Panel } from '../panel'
 import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 
 import './style.less'
@@ -106,13 +106,10 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
             const InputField = TYPES_MAP[entry.type] as FC<any>
             return (
               <li key={entry.name} className="multifield__field">
-                <header className="multifield__field-header">
-                  <span>
-                    {t('inspector.multifield.field.title', { index: index + 1 })}
-                  </span>
-                  <Button icon={<DeleteOutlined />} size="small" onClick={handleDeleteField} />
-                </header>
-                <div className="multifield__field-content">
+                <Panel
+                  title={t('inspector.multifield.field.title', { index: index + 1 })}
+                  onDelete={handleDeleteField}
+                >
                   <LabelledTextInput
                     value={entry.name}
                     onChange={handleNameChange}
@@ -129,7 +126,7 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
                     onChange={handleChangeValue}
                     label={t('inspector.multifield.field.value.title')}
                   />
-                </div>
+                </Panel>
               </li>
             )
           })}
