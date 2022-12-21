@@ -6,8 +6,6 @@ import { EntityList } from '../entity-list'
 import { EngineContext, SelectedEntityContext, SchemasContext } from '../../../../providers'
 import { get, Data } from '../../../../utils/get'
 
-import { ComponentForm } from './component-form'
-
 export const ComponentList: FC = () => {
   const { t } = useTranslation()
 
@@ -43,7 +41,7 @@ export const ComponentList: FC = () => {
   return (
     <EntityList
       entities={entities}
-      component={ComponentForm}
+      type="components"
       options={options}
       placeholder={t('inspector.componentList.addNew.button.title')}
     />

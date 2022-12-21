@@ -1,17 +1,18 @@
-import React, { useCallback, FC } from 'react'
+import React, { useCallback } from 'react'
 
 import { CollapsePanel } from '../collapse-panel'
 
-import type { Entity } from './types'
+import { EntityForm } from './entity-form'
+import type { Entity, EntityType } from './types'
 
 interface EntityPanelProps<T extends Entity> {
   entity: T
-  component: FC<T>
+  type: EntityType
 }
 
 export const EntityPanel = <T extends Entity>({
   entity,
-  component: Component,
+  type,
 }: EntityPanelProps<T>): JSX.Element => {
   const handleDelete = useCallback(() => {
     // TODO: Implement entity deletion
@@ -23,7 +24,7 @@ export const EntityPanel = <T extends Entity>({
       title={entity.label}
       onDelete={handleDelete}
     >
-      <Component {...entity} />
+      <EntityForm {...entity} type={type} />
     </CollapsePanel>
   )
 }

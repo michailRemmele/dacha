@@ -6,8 +6,6 @@ import { EntityList } from '../entity-list'
 import { EngineContext, SelectedEntityContext, SchemasContext } from '../../../../providers'
 import { get, Data } from '../../../../utils/get'
 
-import { SystemForm } from './system-form'
-
 export const SystemList: FC = () => {
   const { t } = useTranslation()
 
@@ -44,7 +42,7 @@ export const SystemList: FC = () => {
   return (
     <EntityList
       entities={entities}
-      component={SystemForm}
+      type="systems"
       options={options}
       placeholder={t('inspector.systemList.addNew.button.title')}
     />
