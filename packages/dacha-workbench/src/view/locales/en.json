@@ -148,7 +148,11 @@
 
 
   "systems.animator.title": "Animator",
+
   "systems.cameraSystem.title": "Camera System",
+  "systems.cameraSystem.windowNodeId.title": "Window Node Id",
+  "systems.cameraSystem.initialCamera.title": "Initial Camera",
+
   "systems.collisionBroadcastSystem.title": "Collision Broadcast System",
   "systems.collisionDetectionSystem.title": "Collision Detection System",
   "systems.collisionSolver.title": "Collision Solver",
