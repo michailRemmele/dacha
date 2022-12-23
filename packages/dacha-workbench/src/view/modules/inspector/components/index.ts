@@ -9,6 +9,7 @@ export { Select, LabelledSelect } from './select'
 export { NumberInput, LabelledNumberInput } from './number-input'
 export { Checkbox, LabelledCheckbox } from './checkbox'
 export { MultiTextInput, LabelledMultiTextInput } from './multi-text-input'
+export { MultiSelect, LabelledMultiSelect } from './multi-select'
 
 export { Form } from './form'
 export { CollapsePanel } from './collapse-panel'

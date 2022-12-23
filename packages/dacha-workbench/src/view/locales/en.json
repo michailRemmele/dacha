@@ -183,5 +183,6 @@
   "systems.threeJSRenderer.sortingLayers.title": "Sorting Layers",
   "systems.threeJSRenderer.scaleSensitivity.title": "Scale Sensitivity",
 
-  "systems.uiBridge.title": "UI Bridge"
+  "systems.uiBridge.title": "UI Bridge",
+  "systems.uiBridge.filterComponents.title": "Filtered Components"
 }

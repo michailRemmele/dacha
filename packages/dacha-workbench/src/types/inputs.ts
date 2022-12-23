@@ -21,6 +21,12 @@ export interface MultiTextInputProps extends Omit<InputProps, 'value' | 'onChang
   onChange: (values: Array<string>) => void
 }
 
+export interface MultiSelectProps extends Omit<InputProps, 'value' | 'onChange'> {
+  options: Array<SelectOption>
+  value: Array<string>
+  onChange: (values: Array<string>) => void
+}
+
 export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'onInput'> {
   value: number
   onChange: (value: number) => void
