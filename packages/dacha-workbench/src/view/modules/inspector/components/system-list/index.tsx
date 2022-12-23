@@ -4,9 +4,8 @@ import type { SceneConfig } from 'remiz'
 
 import { EntityList } from '../entity-list'
 import { EngineContext, SelectedEntityContext, SchemasContext } from '../../../../providers'
+import type { SchemasDataEntry } from '../../../../providers'
 import { get, Data } from '../../../../utils/get'
-
-import { SystemForm } from './system-form'
 
 export const SystemList: FC = () => {
   const { t } = useTranslation()
@@ -17,22 +16,30 @@ export const SystemList: FC = () => {
 
   const projectConfig = sceneContext.data.projectConfig as Data
 
-  const addedSystemsMap = useMemo(() => {
+  const addedSystems = useMemo(() => {
     const { systems } = get(projectConfig, path) as SceneConfig
-
-    return systems.reduce((acc, system) => {
-      acc[system.name] = true
-      return acc
-    }, {} as Record<string, boolean | undefined>)
+    return systems
   }, [projectConfig, path])
 
-  const entities = useMemo(() => availableSystems
-    .filter((system) => addedSystemsMap[system.name])
-    .map((system) => ({
-      id: `${path.join('.')}.${system.name}`,
-      label: t(system.schema.title, { ns: system.namespace }),
-      data: system,
-    })), [path, availableSystems, addedSystemsMap])
+  const availableSystemsMap = useMemo(() => availableSystems.reduce((acc, system) => {
+    acc[system.name] = system
+    return acc
+  }, {} as Record<string, SchemasDataEntry>), [availableSystems])
+  const addedSystemsMap = useMemo(() => addedSystems.reduce((acc, system) => {
+    acc[system.name] = true
+    return acc
+  }, {} as Record<string, boolean | undefined>), [addedSystems])
+
+  const entities = useMemo(() => addedSystems
+    .filter((system) => availableSystemsMap[system.name])
+    .map((system) => {
+      const systemEntry = availableSystemsMap[system.name]
+      return {
+        id: `${path.join('.')}.${systemEntry.name}`,
+        label: t(systemEntry.schema.title, { ns: systemEntry.namespace }),
+        data: systemEntry,
+      }
+    }), [path, addedSystems, availableSystemsMap])
 
   const options = useMemo(() => availableSystems
     .filter((system) => !addedSystemsMap[system.name])
@@ -44,7 +51,7 @@ export const SystemList: FC = () => {
   return (
     <EntityList
       entities={entities}
-      component={SystemForm}
+      type="systems"
       options={options}
       placeholder={t('inspector.systemList.addNew.button.title')}
     />

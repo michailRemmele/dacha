@@ -153,15 +153,31 @@
   "systems.collisionDetectionSystem.title": "Collision Detection System",
   "systems.collisionSolver.title": "Collision Solver",
   "systems.constraintSolver.title": "Constraint Solver",
+
   "systems.gameStatsMeter.title": "Game Stats Meter",
+  "systems.gameStatsMeter.frequency.title": "Frequency",
+
   "systems.jammer.title": "Jammer",
+  "systems.jammer.messages.title": "Messages",
+
   "systems.keyboardControlSystem.title": "Keyboard Control System",
   "systems.keyboardInputSystem.title": "Keyboard Input System",
   "systems.mouseControlSystem.title": "Mouse Control System",
   "systems.mouseInputCoordinatesProjector.title": "Mouse Input Coordinates Projector",
+
   "systems.mouseInputSystem.title": "Mouse Input System",
+  "systems.mouseInputSystem.windowNodeId.title": "Window Node Id",
+  
   "systems.physicsSystem.title": "Physics System",
+  "systems.physicsSystem.gravitationalAcceleration.title": "Gravity",
+
   "systems.scriptSystem.title": "Script System",
+
   "systems.threeJSRenderer.title": "ThreeJS Renderer",
+  "systems.threeJSRenderer.windowNodeId.title": "Window Node Id",
+  "systems.threeJSRenderer.backgroundColor.title": "Background Color",
+  "systems.threeJSRenderer.sortingLayers.title": "Sorting Layers",
+  "systems.threeJSRenderer.scaleSensitivity.title": "Scale Sensitivity",
+
   "systems.uiBridge.title": "UI Bridge"
 }
