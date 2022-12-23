@@ -1,4 +1,4 @@
-import { EngineContext } from './view/providers'
+import { EngineContext, SchemasContext } from './view/providers'
 import { useExtension } from './view/hooks'
 import { get } from './view/utils/get'
 import { Field } from './view/modules/inspector/components/field'
@@ -14,6 +14,7 @@ import { Panel } from './view/modules/inspector/components/panel'
 
 window.RemizEditor = {
   EngineContext,
+  SchemasContext,
 
   Field,
   Widget,

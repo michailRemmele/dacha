@@ -1,4 +1,4 @@
-export { EngineContext } from './view/providers'
+export { EngineContext, SchemasContext } from './view/providers'
 export { useExtension } from './view/hooks'
 export { get } from './view/utils/get'
 export { Field } from './view/modules/inspector/components/field'
