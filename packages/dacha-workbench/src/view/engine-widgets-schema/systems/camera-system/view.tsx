@@ -39,7 +39,7 @@ export const CameraSystemWidget: FC<WidgetProps> = ({ fields, path, references }
     const { gameObjects } = get(projectConfig, ['levels', scene.level]) as LevelConfig
 
     return getItems(gameObjects)
-  }, [projectConfig])
+  }, [projectConfig, path])
 
   const extReferences: References = useMemo(() => ({
     ...references,
