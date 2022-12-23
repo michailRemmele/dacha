@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useCallback,
   useState,
+  useRef,
   FC,
   HTMLProps,
 } from 'react'
@@ -19,20 +20,26 @@ interface FieldProps extends HTMLProps<HTMLElement> {
 }
 
 export const Field: FC<FieldProps> = ({ component, path, ...props }) => {
+  const valueRef = useRef<string>()
+  const [value, setValue] = useState('')
+
   const InputComponent = component
 
   const { sceneContext } = useContext(EngineContext)
   const projectConfig = sceneContext.data.projectConfig as Data
 
-  const [value, setValue] = useState('')
-
-  useEffect(() => setValue(get(projectConfig, path) as string), [path, projectConfig])
+  useEffect(() => {
+    const initialValue = get(projectConfig, path) as string
+    valueRef.current = initialValue
+    setValue(initialValue)
+  }, [path, projectConfig])
 
   const handleBlur = useCallback(() => {
-    console.log(value)
+    console.log(valueRef.current)
   }, [value])
 
   const handleChange = useCallback((newValue: string) => {
+    valueRef.current = newValue
     setValue(newValue)
   }, [])
 
