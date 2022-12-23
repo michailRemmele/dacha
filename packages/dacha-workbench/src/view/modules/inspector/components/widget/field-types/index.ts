@@ -5,6 +5,7 @@ import { NumberField } from './number'
 import { SelectField } from './select'
 import { BooleanField } from './checkbox'
 import { MultiTextField } from './multi-text'
+import { MultiSelectField } from './multi-select'
 
 export const fieldTypes: Record<string, FC<any>> = {
   string: StringField,
@@ -12,4 +13,5 @@ export const fieldTypes: Record<string, FC<any>> = {
   select: SelectField,
   boolean: BooleanField,
   multitext: MultiTextField,
+  multiselect: MultiSelectField,
 }
