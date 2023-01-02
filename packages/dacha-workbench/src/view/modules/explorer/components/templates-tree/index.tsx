@@ -6,23 +6,21 @@ import React, {
 } from 'react'
 import { Tree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
-import type { Config } from 'remiz'
+import type { TemplateConfig } from 'remiz'
 
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
+import { useMutator } from '../../../../hooks'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { DataNodeWithPath, SelectFn } from '../../../../../types/tree-node'
 
 import { parseTemplates, getKey } from './utils'
 
 export const TemplatesTree: FC = () => {
-  const { sceneContext, pushMessage } = useContext(EngineContext)
-  const {
-    entity: selectedEntity,
-    path: selectedEntityPath,
-  } = useContext(SelectedEntityContext)
+  const { pushMessage } = useContext(EngineContext)
+  const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
-  const { templates } = sceneContext.data.projectConfig as Config
-
+  const templates = useMutator('templates') as Array<TemplateConfig>
+  const selectedEntity = useMutator(selectedEntityPath)
   const treeData = useMemo(() => parseTemplates(templates), [templates])
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {

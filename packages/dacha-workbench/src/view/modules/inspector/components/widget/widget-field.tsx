@@ -1,9 +1,8 @@
-import React, { useContext, FC } from 'react'
+import React, { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { EngineContext } from '../../../../providers'
 import { Field } from '../field'
-import { get, Data } from '../../../../utils/get'
+import { useMutator } from '../../../../hooks'
 import type { Field as FieldSchema, Reference } from '../../../../../types/widget-schema'
 
 import { fieldTypes } from './field-types'
@@ -18,16 +17,10 @@ interface WidgetFieldProps {
 export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) => {
   const { t } = useTranslation()
 
-  const { sceneContext } = useContext(EngineContext)
+  const value = useMutator(field.dependency ? path.concat(field.dependency.name.split('.')) : void 0)
 
-  const projectConfig = sceneContext.data.projectConfig as Data
-
-  if (field.dependency) {
-    const value = get(projectConfig, path.concat(field.dependency.name.split('.')))
-
-    if (!checkDependency(value, field.dependency.value)) {
-      return null
-    }
+  if (field.dependency && !checkDependency(value, field.dependency.value)) {
+    return null
   }
 
   return (

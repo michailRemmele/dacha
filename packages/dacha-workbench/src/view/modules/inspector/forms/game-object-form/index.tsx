@@ -8,12 +8,13 @@ import {
   Form,
   ComponentList,
 } from '../../components'
+import { useMutator } from '../../../../hooks'
 import type { FormComponentProps } from '../types'
 
-export const GameObjectForm: FC<FormComponentProps> = ({ path, entity }) => {
+export const GameObjectForm: FC<FormComponentProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const { templateName } = (entity as GameObjectConfig)
+  const { templateName } = useMutator(path) as GameObjectConfig
 
   return (
     <Form>
