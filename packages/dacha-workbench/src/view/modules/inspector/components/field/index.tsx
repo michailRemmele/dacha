@@ -7,7 +7,7 @@ import React, {
   HTMLProps,
 } from 'react'
 
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 
 interface FieldProps extends HTMLProps<HTMLElement> {
   path: Array<string>
@@ -23,7 +23,7 @@ export const Field: FC<FieldProps> = ({ component, path, ...props }) => {
 
   const InputComponent = component
 
-  const initialValue = useMutator(path) as string
+  const initialValue = useConfig(path) as string
 
   useEffect(() => {
     valueRef.current = initialValue

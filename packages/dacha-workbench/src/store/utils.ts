@@ -1,4 +1,4 @@
-import type { Mutator } from '.'
+import type { Store } from '.'
 import type { Data, DataValue, DataObjectValue } from './types'
 
 export const next = (
@@ -28,7 +28,7 @@ export const next = (
 export const nextImmutable = (
   data: DataValue | Data,
   path: Array<string>,
-  parent: DataObjectValue | Array<DataValue> | Data | Mutator,
+  parent: DataObjectValue | Array<DataValue> | Data | Store,
   parentKey: string | number,
   index = 0,
 ): DataValue | Data | undefined => {

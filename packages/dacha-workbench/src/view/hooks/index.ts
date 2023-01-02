@@ -1,2 +1,2 @@
 export { useExtension } from './use-extension'
-export { useMutator } from './use-mutator'
+export { useConfig } from './use-config'

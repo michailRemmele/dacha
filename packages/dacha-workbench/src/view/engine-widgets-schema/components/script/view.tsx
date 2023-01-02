@@ -4,7 +4,7 @@ import { useTranslation, I18nextProvider } from 'react-i18next'
 import type { References, WidgetProps } from '../../../../types/widget-schema'
 import { Widget } from '../../../modules/inspector/components/widget'
 import { NAMESPACE_EXTENSION } from '../../../providers/schemas-provider/consts'
-import { useExtension, useMutator } from '../../../hooks'
+import { useExtension, useConfig } from '../../../hooks'
 
 const SCRIPT_SYSTEM_NAME = 'scriptSystem'
 
@@ -13,7 +13,7 @@ export const ScriptWidget: FC<WidgetProps> = ({ fields, path }) => {
 
   const { scripts, scriptsSchema } = useExtension()
 
-  const scriptName = useMutator(path.concat('name')) as string
+  const scriptName = useConfig(path.concat('name')) as string
 
   const references: References = useMemo(() => ({
     names: {

@@ -4,7 +4,7 @@ import type { GameObjectConfig } from 'remiz'
 
 import { EntityList } from '../entity-list'
 import { SelectedEntityContext, SchemasContext } from '../../../../providers'
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 
 export const ComponentList: FC = () => {
   const { t } = useTranslation()
@@ -12,7 +12,7 @@ export const ComponentList: FC = () => {
   const { path = [] } = useContext(SelectedEntityContext)
   const { components: availableComponents } = useContext(SchemasContext)
 
-  const { components = [] } = useMutator(path) as GameObjectConfig
+  const { components = [] } = useConfig(path) as GameObjectConfig
 
   const addedComponentsMap = useMemo(() => components.reduce((acc, component) => {
     acc[component.name] = true

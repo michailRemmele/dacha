@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 
 import type { WidgetProps } from '../../../../types/widget-schema'
-import { useMutator } from '../../../hooks'
+import { useConfig } from '../../../hooks'
 
 import { keys } from './keys'
 import { InputBind } from './input-bind'
@@ -25,7 +25,7 @@ export interface InputEventBindings {
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const inputEventBindings = useMutator(path.concat('inputEventBindings')) as InputEventBindings
+  const inputEventBindings = useConfig(path.concat('inputEventBindings')) as InputEventBindings
 
   const inputKeys = useMemo(() => keys.map((key) => ({
     title: capitalize(key),

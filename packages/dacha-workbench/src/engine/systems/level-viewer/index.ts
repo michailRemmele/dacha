@@ -15,7 +15,7 @@ import {
 } from 'remiz'
 
 import type { EditorConfig, Extension } from '../../../types/global'
-import type { Mutator } from '../../../mutator'
+import type { Store } from '../../../store'
 import type { SelectLevelMessage } from '../../../types/messages'
 import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 
@@ -30,7 +30,7 @@ export class LevelViewer implements System {
   gameObjectDestroyer: GameObjectDestroyer
   gameObjectObserver: GameObjectObserver
   mainObjectId: string
-  mutator: Mutator
+  configStore: Store
   editorConfig: EditorConfig
   projectComponents: ComponentsMap
   gameObjectCreator?: GameObjectCreator
@@ -53,7 +53,7 @@ export class LevelViewer implements System {
     this.gameObjectObserver = createGameObjectObserver({})
     this.mainObjectId = mainObjectId
 
-    this.mutator = this.sceneContext.data.mutator as Mutator
+    this.configStore = this.sceneContext.data.configStore as Store
     this.editorConfig = sceneContext.data.editorConfig as EditorConfig
 
     const mainObject = this.gameObjectObserver.getById(this.mainObjectId)
@@ -79,7 +79,7 @@ export class LevelViewer implements System {
     }
 
     const templateCollection = new TemplateCollection(components)
-    const templates = this.mutator.get(['templates']) as Array<TemplateConfig>
+    const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
 
     templates.forEach((template) => {
       templateCollection.register(template)
@@ -107,7 +107,7 @@ export class LevelViewer implements System {
       }
     })
 
-    const levels = this.mutator.get(['levels']) as Array<LevelConfig>
+    const levels = this.configStore.get(['levels']) as Array<LevelConfig>
     const selectedLevel = levels.find((level) => level.name === name)
 
     const gameObjectCreator = this.gameObjectCreator

@@ -1,7 +1,7 @@
 import { next, nextImmutable } from './utils'
 import type { Data, DataValue, ListenerFn } from './types'
 
-export class Mutator {
+export class Store {
   private data: Data
   private listeners: Array<ListenerFn>
 

@@ -3,7 +3,7 @@ import type { SceneConfig, LevelConfig, GameObjectConfig } from 'remiz'
 
 import type { References, WidgetProps } from '../../../../types/widget-schema'
 import { Widget } from '../../../modules/inspector/components/widget'
-import { useMutator } from '../../../hooks'
+import { useConfig } from '../../../hooks'
 
 const SCENE_PATH_LENGTH = 2
 
@@ -24,8 +24,8 @@ const getItems = (
 }, [] as Array<{ title: string, value: string }>)
 
 export const CameraSystemWidget: FC<WidgetProps> = ({ fields, path, references }) => {
-  const scene = useMutator(path.slice(0, SCENE_PATH_LENGTH)) as SceneConfig
-  const level = useMutator(typeof scene.level === 'string' ? ['levels', scene.level] : void 0) as LevelConfig
+  const scene = useConfig(path.slice(0, SCENE_PATH_LENGTH)) as SceneConfig
+  const level = useConfig(typeof scene.level === 'string' ? ['levels', scene.level] : void 0) as LevelConfig
   const gameObjects = level?.gameObjects || []
 
   const items = useMemo(() => getItems(gameObjects), [gameObjects])

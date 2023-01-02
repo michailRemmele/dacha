@@ -9,7 +9,7 @@ import type { EventDataNode } from 'antd/lib/tree'
 import type { TemplateConfig } from 'remiz'
 
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { DataNodeWithPath, SelectFn } from '../../../../../types/tree-node'
 
@@ -19,8 +19,8 @@ export const TemplatesTree: FC = () => {
   const { pushMessage } = useContext(EngineContext)
   const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
-  const templates = useMutator('templates') as Array<TemplateConfig>
-  const selectedEntity = useMutator(selectedEntityPath)
+  const templates = useConfig('templates') as Array<TemplateConfig>
+  const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseTemplates(templates), [templates])
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {

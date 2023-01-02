@@ -5,7 +5,7 @@ import type { SceneConfig } from 'remiz'
 import { EntityList } from '../entity-list'
 import { SelectedEntityContext, SchemasContext } from '../../../../providers'
 import type { SchemasDataEntry } from '../../../../providers'
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 
 export const SystemList: FC = () => {
   const { t } = useTranslation()
@@ -13,7 +13,7 @@ export const SystemList: FC = () => {
   const { path = [] } = useContext(SelectedEntityContext)
   const { systems: availableSystems } = useContext(SchemasContext)
 
-  const { systems: addedSystems } = useMutator(path) as SceneConfig
+  const { systems: addedSystems } = useConfig(path) as SceneConfig
 
   const availableSystemsMap = useMemo(() => availableSystems.reduce((acc, system) => {
     acc[system.name] = system

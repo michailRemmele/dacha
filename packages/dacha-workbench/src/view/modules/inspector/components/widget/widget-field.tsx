@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Field } from '../field'
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 import type { Field as FieldSchema, Reference } from '../../../../../types/widget-schema'
 
 import { fieldTypes } from './field-types'
@@ -17,7 +17,7 @@ interface WidgetFieldProps {
 export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) => {
   const { t } = useTranslation()
 
-  const value = useMutator(field.dependency ? path.concat(field.dependency.name.split('.')) : void 0)
+  const value = useConfig(field.dependency ? path.concat(field.dependency.name.split('.')) : void 0)
 
   if (field.dependency && !checkDependency(value, field.dependency.value)) {
     return null
