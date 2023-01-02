@@ -3,25 +3,21 @@ import { useTranslation } from 'react-i18next'
 import type { GameObjectConfig } from 'remiz'
 
 import { EntityList } from '../entity-list'
-import { EngineContext, SelectedEntityContext, SchemasContext } from '../../../../providers'
-import { get, Data } from '../../../../utils/get'
+import { SelectedEntityContext, SchemasContext } from '../../../../providers'
+import { useMutator } from '../../../../hooks'
 
 export const ComponentList: FC = () => {
   const { t } = useTranslation()
 
   const { path = [] } = useContext(SelectedEntityContext)
-  const { sceneContext } = useContext(EngineContext)
   const { components: availableComponents } = useContext(SchemasContext)
 
-  const projectConfig = sceneContext.data.projectConfig as Data
+  const { components = [] } = useMutator(path) as GameObjectConfig
 
-  const addedComponentsMap = useMemo(() => {
-    const { components = [] } = get(projectConfig, path) as GameObjectConfig
-    return components.reduce((acc, component) => {
-      acc[component.name] = true
-      return acc
-    }, {} as Record<string, boolean | undefined>)
-  }, [projectConfig, path])
+  const addedComponentsMap = useMemo(() => components.reduce((acc, component) => {
+    acc[component.name] = true
+    return acc
+  }, {} as Record<string, boolean | undefined>), [components])
 
   const entities = useMemo(() => availableComponents
     .filter((component) => addedComponentsMap[component.name])

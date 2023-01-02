@@ -1,5 +1,4 @@
 import React, {
-  useContext,
   useEffect,
   useCallback,
   useState,
@@ -8,8 +7,7 @@ import React, {
   HTMLProps,
 } from 'react'
 
-import { EngineContext } from '../../../../providers'
-import { get, Data } from '../../../../utils/get'
+import { useMutator } from '../../../../hooks'
 
 interface FieldProps extends HTMLProps<HTMLElement> {
   path: Array<string>
@@ -25,14 +23,12 @@ export const Field: FC<FieldProps> = ({ component, path, ...props }) => {
 
   const InputComponent = component
 
-  const { sceneContext } = useContext(EngineContext)
-  const projectConfig = sceneContext.data.projectConfig as Data
+  const initialValue = useMutator(path) as string
 
   useEffect(() => {
-    const initialValue = get(projectConfig, path) as string
     valueRef.current = initialValue
     setValue(initialValue)
-  }, [path, projectConfig])
+  }, [initialValue])
 
   const handleBlur = useCallback(() => {
     console.log(valueRef.current)

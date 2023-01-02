@@ -1,5 +1,4 @@
 import React, {
-  useContext,
   useMemo,
   useCallback,
   FC,
@@ -10,8 +9,7 @@ import { Button } from 'antd'
 import { LabelledSelect } from '../select'
 import { LabelledTextInput } from '../text-input'
 import { LabelledNumberInput } from '../number-input'
-import { EngineContext } from '../../../../providers'
-import { get, Data } from '../../../../utils/get'
+import { useMutator } from '../../../../hooks'
 import { LabelledCheckbox } from '../checkbox'
 import { Panel } from '../panel'
 import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
@@ -56,19 +54,13 @@ interface MultiFieldProps {
 export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   const { t } = useTranslation(NAMESPACE_EDITOR)
 
-  const { sceneContext } = useContext(EngineContext)
+  const values = useMutator(path) as MultiFieldValues
 
-  const projectConfig = sceneContext.data.projectConfig as Data
-
-  const entries = useMemo<Array<MultiFieldEntry>>(() => {
-    const values = get(projectConfig, path) as MultiFieldValues
-
-    return Object.keys(values).map((key) => ({
-      name: key,
-      type: typeof values[key] as MultiFieldEntryType,
-      value: values[key],
-    }))
-  }, [projectConfig])
+  const entries = useMemo<Array<MultiFieldEntry>>(() => Object.keys(values).map((key) => ({
+    name: key,
+    type: typeof values[key] as MultiFieldEntryType,
+    value: values[key],
+  })), [values])
 
   const handleTypeChange = useCallback(() => {
 

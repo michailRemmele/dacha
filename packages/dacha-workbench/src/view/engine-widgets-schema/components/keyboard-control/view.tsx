@@ -1,5 +1,4 @@
 import React, {
-  useContext,
   useMemo,
   useCallback,
   FC,
@@ -8,9 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 
 import type { WidgetProps } from '../../../../types/widget-schema'
-import type { Data } from '../../../utils/get'
-import { get } from '../../../utils/get'
-import { EngineContext } from '../../../providers'
+import { useMutator } from '../../../hooks'
 
 import { keys } from './keys'
 import { InputBind } from './input-bind'
@@ -28,18 +25,12 @@ export interface InputEventBindings {
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const { sceneContext } = useContext(EngineContext)
-  const projectConfig = sceneContext.data.projectConfig as Data
+  const inputEventBindings = useMutator(path.concat('inputEventBindings')) as InputEventBindings
 
   const inputKeys = useMemo(() => keys.map((key) => ({
     title: capitalize(key),
     value: key,
   }), []), [])
-
-  const inputEventBindings = useMemo(
-    () => get(projectConfig, path.concat('inputEventBindings')) as InputEventBindings,
-    [projectConfig],
-  )
 
   const availableKeys = useMemo(
     () => inputKeys.filter(

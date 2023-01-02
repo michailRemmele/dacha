@@ -3,23 +3,17 @@ import { useTranslation } from 'react-i18next'
 import type { SceneConfig } from 'remiz'
 
 import { EntityList } from '../entity-list'
-import { EngineContext, SelectedEntityContext, SchemasContext } from '../../../../providers'
+import { SelectedEntityContext, SchemasContext } from '../../../../providers'
 import type { SchemasDataEntry } from '../../../../providers'
-import { get, Data } from '../../../../utils/get'
+import { useMutator } from '../../../../hooks'
 
 export const SystemList: FC = () => {
   const { t } = useTranslation()
 
   const { path = [] } = useContext(SelectedEntityContext)
-  const { sceneContext } = useContext(EngineContext)
   const { systems: availableSystems } = useContext(SchemasContext)
 
-  const projectConfig = sceneContext.data.projectConfig as Data
-
-  const addedSystems = useMemo(() => {
-    const { systems } = get(projectConfig, path) as SceneConfig
-    return systems
-  }, [projectConfig, path])
+  const { systems: addedSystems } = useMutator(path) as SceneConfig
 
   const availableSystemsMap = useMemo(() => availableSystems.reduce((acc, system) => {
     acc[system.name] = system

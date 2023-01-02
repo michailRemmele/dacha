@@ -1,8 +1,8 @@
-import React, { useContext, useMemo, FC } from 'react'
+import React, { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Config } from 'remiz'
+import type { SceneConfig } from 'remiz'
 
-import { EngineContext } from '../../../../providers'
+import { useMutator } from '../../../../hooks'
 import {
   Field,
   LabelledSelect,
@@ -10,20 +10,20 @@ import {
 } from '../../components'
 
 export const ProjectSettings: FC = () => {
-  const { sceneContext } = useContext(EngineContext)
   const { t } = useTranslation()
 
-  const { loaders, scenes } = sceneContext.data.projectConfig as Config
+  const loaders = useMutator('loaders') as Array<SceneConfig>
+  const scenes = useMutator('scenes') as Array<SceneConfig>
 
   const sceneOptions = useMemo(() => scenes.map((scene) => ({
     title: scene.name,
     value: scene.name,
-  })), [])
+  })), [scenes])
 
   const loaderOptions = useMemo(() => loaders.map((loader) => ({
     title: loader.name,
     value: loader.name,
-  })), [])
+  })), [loaders])
 
   return (
     <Form>

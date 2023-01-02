@@ -1,25 +1,19 @@
-import React, { useContext, useMemo, FC } from 'react'
+import React, { useMemo, FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
 import type { References, WidgetProps } from '../../../../types/widget-schema'
-import type { Data } from '../../../utils/get'
-import { get } from '../../../utils/get'
 import { Widget } from '../../../modules/inspector/components/widget'
-import { EngineContext } from '../../../providers'
 import { NAMESPACE_EXTENSION } from '../../../providers/schemas-provider/consts'
-import { useExtension } from '../../../hooks'
+import { useExtension, useMutator } from '../../../hooks'
 
 const SCRIPT_SYSTEM_NAME = 'scriptSystem'
 
 export const ScriptWidget: FC<WidgetProps> = ({ fields, path }) => {
   const { i18n } = useTranslation()
-  const { sceneContext } = useContext(EngineContext)
 
   const { scripts, scriptsSchema } = useExtension()
 
-  const projectConfig = sceneContext.data.projectConfig as Data
-
-  const scriptName = useMemo(() => get(projectConfig, path.concat('name')) as string, [projectConfig])
+  const scriptName = useMutator(path.concat('name')) as string
 
   const references: References = useMemo(() => ({
     names: {

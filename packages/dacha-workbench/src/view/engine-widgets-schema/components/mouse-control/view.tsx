@@ -1,5 +1,4 @@
 import React, {
-  useContext,
   useMemo,
   useCallback,
   FC,
@@ -8,9 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 
 import type { WidgetProps } from '../../../../types/widget-schema'
-import type { Data } from '../../../utils/get'
-import { get } from '../../../utils/get'
-import { EngineContext } from '../../../providers'
+import { useMutator } from '../../../hooks'
 
 import { events } from './events'
 import { InputBind } from './input-bind'
@@ -27,17 +24,12 @@ export interface InputEventBindings {
 export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const { sceneContext } = useContext(EngineContext)
-  const projectConfig = sceneContext.data.projectConfig as Data
+  const inputEventBindings = useMutator(path.concat('inputEventBindings')) as InputEventBindings
 
   const options = useMemo(() => events.map(({ title, value }) => ({
     title: t(title),
     value,
   })), [])
-  const inputEventBindings = useMemo(
-    () => get(projectConfig, path.concat('inputEventBindings')) as InputEventBindings,
-    [projectConfig],
-  )
   const availableOptions = useMemo(
     () => options.filter((event) => !inputEventBindings[event.value]),
     [inputEventBindings, options],
