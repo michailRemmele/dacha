@@ -4,8 +4,8 @@ import type {
   SceneContext,
 } from 'remiz'
 
-import { Mutator } from '../../../mutator'
-import type { Data } from '../../../mutator'
+import { Store } from '../../../store'
+import type { Data } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
 
 export class ProjectLoader implements System {
@@ -17,7 +17,7 @@ export class ProjectLoader implements System {
     this.editorCofig = window.electron.getEditorConfig()
 
     const projectConfig = window.electron.getProjectConfig()
-    this.sceneContext.data.mutator = new Mutator(projectConfig as unknown as Data)
+    this.sceneContext.data.configStore = new Store(projectConfig as unknown as Data)
     this.sceneContext.data.editorConfig = this.editorCofig
   }
 

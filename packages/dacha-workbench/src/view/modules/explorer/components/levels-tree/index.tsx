@@ -10,7 +10,7 @@ import type { EventDataNode } from 'antd/lib/tree'
 import type { LevelConfig } from 'remiz'
 
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { DataNodeWithPath, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 
@@ -23,8 +23,8 @@ export const LevelsTree: FC = () => {
   const [expandedKeys, setExpandedKeys] = useState<Array<string | number>>([])
   const [expandedLevel, setExpandedLevel] = useState<string | undefined>()
 
-  const levels = useMutator('levels') as Array<LevelConfig>
-  const selectedEntity = useMutator(selectedEntityPath)
+  const levels = useConfig('levels') as Array<LevelConfig>
+  const selectedEntity = useConfig(selectedEntityPath)
 
   const treeData = useMemo(() => parseLevels(levels), [levels])
 

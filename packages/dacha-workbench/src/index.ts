@@ -1,5 +1,5 @@
 export { EngineContext, SchemasContext } from './view/providers'
-export { useExtension, useMutator } from './view/hooks'
+export { useExtension, useConfig } from './view/hooks'
 export { Field } from './view/modules/inspector/components/field'
 export { Widget } from './view/modules/inspector/components/widget'
 export { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
@@ -11,7 +11,7 @@ export { MultiSelect, LabelledMultiSelect } from './view/modules/inspector/compo
 export { MultiField } from './view/modules/inspector/components/multi-field'
 export { Panel } from './view/modules/inspector/components/panel'
 
-export type { Data } from './mutator'
+export type { Data } from './store'
 
 export type {
   WidgetSchema,

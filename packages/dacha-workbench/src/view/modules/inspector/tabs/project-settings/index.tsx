@@ -2,7 +2,7 @@ import React, { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SceneConfig } from 'remiz'
 
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 import {
   Field,
   LabelledSelect,
@@ -12,8 +12,8 @@ import {
 export const ProjectSettings: FC = () => {
   const { t } = useTranslation()
 
-  const loaders = useMutator('loaders') as Array<SceneConfig>
-  const scenes = useMutator('scenes') as Array<SceneConfig>
+  const loaders = useConfig('loaders') as Array<SceneConfig>
+  const scenes = useConfig('scenes') as Array<SceneConfig>
 
   const sceneOptions = useMemo(() => scenes.map((scene) => ({
     title: scene.name,

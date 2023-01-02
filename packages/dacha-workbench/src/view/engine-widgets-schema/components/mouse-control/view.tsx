@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 
 import type { WidgetProps } from '../../../../types/widget-schema'
-import { useMutator } from '../../../hooks'
+import { useConfig } from '../../../hooks'
 
 import { events } from './events'
 import { InputBind } from './input-bind'
@@ -24,7 +24,7 @@ export interface InputEventBindings {
 export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const inputEventBindings = useMutator(path.concat('inputEventBindings')) as InputEventBindings
+  const inputEventBindings = useConfig(path.concat('inputEventBindings')) as InputEventBindings
 
   const options = useMemo(() => events.map(({ title, value }) => ({
     title: t(title),

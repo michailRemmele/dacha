@@ -9,7 +9,7 @@ import { Button } from 'antd'
 import { LabelledSelect } from '../select'
 import { LabelledTextInput } from '../text-input'
 import { LabelledNumberInput } from '../number-input'
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 import { LabelledCheckbox } from '../checkbox'
 import { Panel } from '../panel'
 import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
@@ -54,7 +54,7 @@ interface MultiFieldProps {
 export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   const { t } = useTranslation(NAMESPACE_EDITOR)
 
-  const values = useMutator(path) as MultiFieldValues
+  const values = useConfig(path) as MultiFieldValues
 
   const entries = useMemo<Array<MultiFieldEntry>>(() => Object.keys(values).map((key) => ({
     name: key,

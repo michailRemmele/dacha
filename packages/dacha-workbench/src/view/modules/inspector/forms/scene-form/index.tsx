@@ -2,7 +2,7 @@ import React, { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LevelConfig } from 'remiz'
 
-import { useMutator } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
 import {
   Field,
   LabelledTextInput,
@@ -15,7 +15,7 @@ import type { FormComponentProps } from '../types'
 export const SceneForm: FC<FormComponentProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const levels = useMutator('levels') as Array<LevelConfig>
+  const levels = useConfig('levels') as Array<LevelConfig>
 
   const levelOptions = useMemo(() => levels.map((level) => ({
     title: level.name,

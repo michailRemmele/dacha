@@ -8,11 +8,11 @@ import {
 import isEqual from 'lodash.isequal'
 
 import { EngineContext } from '../../providers'
-import type { Mutator } from '../../../mutator'
+import type { Store } from '../../../store'
 
-export const useMutator = (path?: Array<string> | string): unknown => {
+export const useConfig = (path?: Array<string> | string): unknown => {
   const { sceneContext } = useContext(EngineContext)
-  const mutator = sceneContext.data.mutator as Mutator
+  const configStore = sceneContext.data.configStore as Store
 
   const parsedPath = useMemo(() => {
     if (!path) {
@@ -23,15 +23,15 @@ export const useMutator = (path?: Array<string> | string): unknown => {
   }, [path])
   const prevPath = useRef(parsedPath)
 
-  const [value, setValue] = useState(parsedPath ? mutator.get(parsedPath) : void 0)
+  const [value, setValue] = useState(parsedPath ? configStore.get(parsedPath) : void 0)
 
   useEffect(() => {
     if (parsedPath !== prevPath.current) {
       prevPath.current = parsedPath
-      setValue(parsedPath ? mutator.get(parsedPath) : void 0)
+      setValue(parsedPath ? configStore.get(parsedPath) : void 0)
     }
 
-    const unsubscribe = mutator.subscribe((updatePath, updateValue) => {
+    const unsubscribe = configStore.subscribe((updatePath, updateValue) => {
       if (isEqual(parsedPath, updatePath)) {
         setValue(updateValue)
       }

@@ -1,5 +1,5 @@
 import { EngineContext, SchemasContext } from './view/providers'
-import { useExtension, useMutator } from './view/hooks'
+import { useExtension, useConfig } from './view/hooks'
 import { Field } from './view/modules/inspector/components/field'
 import { Widget } from './view/modules/inspector/components/widget'
 import { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
@@ -33,5 +33,5 @@ window.RemizEditor = {
   Panel,
 
   useExtension,
-  useMutator,
+  useConfig,
 }
