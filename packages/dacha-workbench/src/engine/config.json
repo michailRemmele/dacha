@@ -37,6 +37,10 @@
           }
         },
         {
+          "name": "commander",
+          "options": {}
+        },
+        {
           "name": "toolManager",
           "options": {}
         },

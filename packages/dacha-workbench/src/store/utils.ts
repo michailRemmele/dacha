@@ -32,6 +32,7 @@ export const nextImmutable = (
   parentKey: string | number,
   index = 0,
 ): DataValue | Data | undefined => {
+  let copyData = data
   const key = path[index]
 
   if (Array.isArray(data)) {
@@ -44,18 +45,20 @@ export const nextImmutable = (
     (parent as Data)[parentKey] = { ...data as DataObjectValue }
   }
 
+  copyData = (parent as Data)[parentKey] as DataValue | Data
+
   if (!key) {
-    return (parent as Data)[parentKey]
+    return copyData
   }
 
-  if (Array.isArray(data)) {
-    const nodeIndex = data.findIndex((item) => typeof item === 'object' && !Array.isArray(item) && item.name === key)
+  if (Array.isArray(copyData)) {
+    const nodeIndex = copyData.findIndex((item) => typeof item === 'object' && !Array.isArray(item) && item.name === key)
 
     if (nodeIndex !== -1) {
-      return nextImmutable(data[nodeIndex], path, data, nodeIndex, index + 1)
+      return nextImmutable(copyData[nodeIndex], path, copyData, nodeIndex, index + 1)
     }
-  } else if (typeof data === 'object' && data !== null) {
-    return nextImmutable(data[key], path, data, key, index + 1)
+  } else if (typeof copyData === 'object' && copyData !== null) {
+    return nextImmutable(copyData[key], path, copyData, key, index + 1)
   }
 
   return void 0

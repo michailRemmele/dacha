@@ -7,6 +7,7 @@ import {
 } from 'react'
 import isEqual from 'lodash.isequal'
 
+import { includesArray } from '../../../utils/includes-array'
 import { EngineContext } from '../../providers'
 import type { Store } from '../../../store'
 
@@ -34,6 +35,8 @@ export const useConfig = (path?: Array<string> | string): unknown => {
     const unsubscribe = configStore.subscribe((updatePath, updateValue) => {
       if (isEqual(parsedPath, updatePath)) {
         setValue(updateValue)
+      } else if (includesArray(updatePath, parsedPath)) {
+        setValue(configStore.get(parsedPath as Array<string>))
       }
     })
 

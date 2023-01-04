@@ -4,6 +4,7 @@ import {
   ToolManager,
   ZoomToolSystem,
   HandToolSystem,
+  Commander,
 } from './systems'
 
 import {
@@ -11,6 +12,7 @@ import {
 } from './components'
 
 export const editorSystems = {
+  commander: Commander,
   projectLoader: ProjectLoader,
   levelViewer: LevelViewer,
   toolManager: ToolManager,

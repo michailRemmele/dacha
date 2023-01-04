@@ -9,3 +9,5 @@ export const CAMERA_MOVE_MSG = 'CAMERA_MOVE'
 export const SELECT_LEVEL_MSG = 'SELECT_LEVEL'
 
 export const INSPECT_ENTITY_MSG = 'INSPECT_ENTITY'
+
+export const COMMAND_MSG = 'COMMAND'
