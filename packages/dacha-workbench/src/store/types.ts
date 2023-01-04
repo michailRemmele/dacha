@@ -6,4 +6,4 @@ export type DataValue = DataSimpleValue | DataObjectValue | Array<DataValue>
 
 export type Data = Record<string, DataValue>
 
-export type ListenerFn = (path: Array<string>, value: DataValue) => void
+export type ListenerFn = (path: Array<string>, value?: DataValue) => void

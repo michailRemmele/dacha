@@ -1,6 +1,16 @@
 import type { Store } from '.'
 import type { Data, DataValue, DataObjectValue } from './types'
 
+export const findByName = (
+  data: Array<DataValue>,
+  name: string,
+): DataValue | undefined => data.find((item) => typeof item === 'object' && !Array.isArray(item) && item.name === name)
+
+export const findIndexByName = (
+  data: Array<DataValue>,
+  name: string,
+): number => data.findIndex((item) => typeof item === 'object' && !Array.isArray(item) && item.name === name)
+
 export const next = (
   data: DataValue | Data,
   path: Array<string>,
@@ -13,7 +23,7 @@ export const next = (
   }
 
   if (Array.isArray(data)) {
-    const node = data.find((item) => typeof item === 'object' && !Array.isArray(item) && item.name === key)
+    const node = findByName(data, key)
 
     if (node) {
       return next(node, path, index + 1)
@@ -52,7 +62,7 @@ export const nextImmutable = (
   }
 
   if (Array.isArray(copyData)) {
-    const nodeIndex = copyData.findIndex((item) => typeof item === 'object' && !Array.isArray(item) && item.name === key)
+    const nodeIndex = findIndexByName(copyData, key)
 
     if (nodeIndex !== -1) {
       return nextImmutable(copyData[nodeIndex], path, copyData, nodeIndex, index + 1)
