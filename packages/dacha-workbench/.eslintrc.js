@@ -24,7 +24,7 @@ const commonRules = {
 
 const reactRules = {
   'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
-  'react/require-default-props': 'warn',
+  'react/require-default-props': 0,
   'react/jsx-props-no-spreading': 0,
   'react/no-unused-class-component-methods': 0,
   'react-hooks/exhaustive-deps': 0,
