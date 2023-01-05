@@ -25,7 +25,8 @@ export interface InputEventBindings {
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const inputEventBindings = useConfig(path.concat('inputEventBindings')) as InputEventBindings
+  const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
+  const inputEventBindings = useConfig(bindingsPath) as InputEventBindings
 
   const inputKeys = useMemo(() => keys.map((key) => ({
     title: capitalize(key),

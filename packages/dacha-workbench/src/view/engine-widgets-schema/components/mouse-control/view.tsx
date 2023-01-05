@@ -24,7 +24,8 @@ export interface InputEventBindings {
 export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const inputEventBindings = useConfig(path.concat('inputEventBindings')) as InputEventBindings
+  const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
+  const inputEventBindings = useConfig(bindingsPath) as InputEventBindings
 
   const options = useMemo(() => events.map(({ title, value }) => ({
     title: t(title),

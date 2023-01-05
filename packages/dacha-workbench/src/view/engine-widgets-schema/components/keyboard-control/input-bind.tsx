@@ -41,6 +41,15 @@ export const InputBind: FC<InputBindProps> = ({
 }) => {
   const { t } = useTranslation()
 
+  const messageTypePath = useMemo(
+    () => path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'messageType'),
+    [path, inputKey, inputEvent],
+  )
+  const attrsPath = useMemo(
+    () => path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'attrs'),
+    [path, inputKey, inputEvent],
+  )
+
   const inputEvents = useMemo(() => events.map(({ title, value }) => ({
     title: t(title),
     value,
@@ -80,7 +89,7 @@ export const InputBind: FC<InputBindProps> = ({
         label={t('components.keyboardControl.bind.event.title')}
       />
       <Field
-        path={path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'messageType')}
+        path={messageTypePath}
         component={LabelledTextInput}
         label={t('components.keyboardControl.bind.messageType.title')}
       />
@@ -88,7 +97,7 @@ export const InputBind: FC<InputBindProps> = ({
         {t('components.keyboardControl.bind.attributes.title')}
       </span>
       <MultiField
-        path={path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'attrs')}
+        path={attrsPath}
       />
     </Panel>
   )
