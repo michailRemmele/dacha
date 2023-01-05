@@ -1,4 +1,4 @@
-import React, { useContext, FC } from 'react'
+import React, { useContext, useMemo, FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
 import { SelectedEntityContext } from '../../../../providers'
@@ -22,15 +22,19 @@ export const EntityForm: FC<EntityFormProps> = ({ data, type }) => {
   const { t, i18n } = useTranslation()
 
   const { path = [] } = useContext(SelectedEntityContext)
-
   const { schema, name } = data
+
+  const widgetPath = useMemo(
+    () => path.concat(type, name, CONFIG_KEY_MAP[type]),
+    [path, type, name],
+  )
 
   if (schema.view) {
     return (
       <CustomWidget
         fields={schema.fields || []}
         references={schema.references}
-        path={path.concat(type, name, CONFIG_KEY_MAP[type])}
+        path={widgetPath}
         component={schema.view}
         namespace={data.namespace}
       />
@@ -50,7 +54,7 @@ export const EntityForm: FC<EntityFormProps> = ({ data, type }) => {
       <Widget
         fields={schema.fields}
         references={schema.references}
-        path={path.concat(type, name, CONFIG_KEY_MAP[type])}
+        path={widgetPath}
       />
     </I18nextProvider>
   )

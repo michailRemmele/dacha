@@ -13,7 +13,8 @@ export const ScriptWidget: FC<WidgetProps> = ({ fields, path }) => {
 
   const { scripts, scriptsSchema } = useExtension()
 
-  const scriptName = useConfig(path.concat('name')) as string
+  const namePath = useMemo(() => path.concat('name'), [path])
+  const scriptName = useConfig(namePath) as string
 
   const references: References = useMemo(() => ({
     names: {

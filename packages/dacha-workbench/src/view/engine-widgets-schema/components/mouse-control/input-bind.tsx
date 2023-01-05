@@ -26,6 +26,15 @@ export const InputBind: FC<InputBindProps> = ({
 }) => {
   const { t } = useTranslation()
 
+  const messageTypePath = useMemo(
+    () => path.concat('inputEventBindings', event.value, 'messageType'),
+    [path, event],
+  )
+  const attrsPath = useMemo(
+    () => path.concat('inputEventBindings', event.value, 'attrs'),
+    [path, event],
+  )
+
   const inputEvents = useMemo(() => [event, ...availableEvents], [availableEvents])
 
   const handleChange = useCallback(() => {
@@ -48,7 +57,7 @@ export const InputBind: FC<InputBindProps> = ({
         label={t('components.mouseControl.bind.event.title')}
       />
       <Field
-        path={path.concat('inputEventBindings', event.value, 'messageType')}
+        path={messageTypePath}
         component={LabelledTextInput}
         label={t('components.mouseControl.bind.messageType.title')}
       />
@@ -56,7 +65,7 @@ export const InputBind: FC<InputBindProps> = ({
         {t('components.mouseControl.bind.attributes.title')}
       </span>
       <MultiField
-        path={path.concat('inputEventBindings', event.value, 'attrs')}
+        path={attrsPath}
       />
     </Panel>
   )

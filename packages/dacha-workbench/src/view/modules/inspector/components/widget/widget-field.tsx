@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Field } from '../field'
@@ -17,7 +17,13 @@ interface WidgetFieldProps {
 export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) => {
   const { t } = useTranslation()
 
-  const value = useConfig(field.dependency ? path.concat(field.dependency.name.split('.')) : void 0)
+  const dependencyPath = useMemo(
+    () => (field.dependency ? path.concat(field.dependency.name.split('.')) : void 0),
+    [path, field],
+  )
+  const fieldPath = useMemo(() => path.concat(field.name.split('.')), [path, field])
+
+  const value = useConfig(dependencyPath)
 
   if (field.dependency && !checkDependency(value, field.dependency.value)) {
     return null
@@ -25,7 +31,7 @@ export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) =
 
   return (
     <Field
-      path={path.concat(field.name.split('.'))}
+      path={fieldPath}
       label={t(field.title)}
       component={fieldTypes[field.type] ? fieldTypes[field.type] : fieldTypes.string}
       {...field.referenceId ? { reference: references?.[field.referenceId] } : {}}
