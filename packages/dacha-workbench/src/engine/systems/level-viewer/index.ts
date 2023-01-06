@@ -95,9 +95,9 @@ export class LevelViewer implements System {
       return
     }
 
-    const { name } = messages[messages.length - 1]
+    const { id } = messages[messages.length - 1]
 
-    if (this.currentLevel === name) {
+    if (this.currentLevel === id) {
       return
     }
 
@@ -108,7 +108,7 @@ export class LevelViewer implements System {
     })
 
     const levels = this.configStore.get(['levels']) as Array<LevelConfig>
-    const selectedLevel = levels.find((level) => level.name === name)
+    const selectedLevel = levels.find((level) => level.id === id)
 
     const gameObjectCreator = this.gameObjectCreator
 
@@ -120,6 +120,6 @@ export class LevelViewer implements System {
       })
     }
 
-    this.currentLevel = name
+    this.currentLevel = id
   }
 }

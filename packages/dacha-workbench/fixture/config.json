@@ -8,7 +8,8 @@
           "name": "uiBridge",
           "options": {}
         }
-      ]
+      ],
+      "id": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a"
     },
     {
       "name": "game",
@@ -63,8 +64,9 @@
             ]
           }
         }
-      ]
-    }    
+      ],
+      "id": "076c54c9-503e-48b5-a793-0ce33c9265c3"
+    }
   ],
   "levels": [
     {
@@ -189,7 +191,8 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "738d1d5d-19da-46ed-b1db-1792e9ce5cdd"
     },
     {
       "name": "island-level",
@@ -219,7 +222,10 @@
                 "width": 320,
                 "height": 320,
                 "rotation": 0,
-                "sortCenter": [ 0, 0 ],
+                "sortCenter": [
+                  0,
+                  0
+                ],
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "terrain",
@@ -256,7 +262,10 @@
                 "width": 640,
                 "height": 640,
                 "rotation": 0,
-                "sortCenter": [ 0, 0 ],
+                "sortCenter": [
+                  0,
+                  0
+                ],
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "background",
@@ -304,7 +313,10 @@
                 "width": 26,
                 "height": 26,
                 "rotation": 0,
-                "sortCenter": [ 0, 0 ],
+                "sortCenter": [
+                  0,
+                  0
+                ],
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "units",
@@ -316,7 +328,8 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "9e30cb58-130a-4732-a313-a459a2ad66b5"
     }
   ],
   "templates": [
@@ -327,7 +340,8 @@
         {
           "name": "playerHitBox",
           "children": [],
-          "components": []
+          "components": [],
+          "id": "2d5813ae-1d88-4582-b55e-608f67df1ddf"
         }
       ],
       "components": [
@@ -373,7 +387,10 @@
             "width": 47,
             "height": 52,
             "rotation": 0,
-            "sortCenter": [ 0, 0 ],
+            "sortCenter": [
+              0,
+              0
+            ],
             "flipX": true,
             "flipY": false,
             "sortingLayer": "units",
@@ -383,7 +400,8 @@
             }
           }
         }
-      ]
+      ],
+      "id": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
     },
     {
       "name": "background",
@@ -408,7 +426,10 @@
             "width": 1000,
             "height": 1000,
             "rotation": 0,
-            "sortCenter": [ 0, 0 ],
+            "sortCenter": [
+              0,
+              0
+            ],
             "flipX": false,
             "flipY": false,
             "sortingLayer": "background",
@@ -418,7 +439,8 @@
             }
           }
         }
-      ]
+      ],
+      "id": "b57c1df3-0145-49c8-b400-7fa06931f941"
     },
     {
       "name": "terrain",
@@ -443,7 +465,10 @@
             "width": 408,
             "height": 408,
             "rotation": 0,
-            "sortCenter": [ 0, 0 ],
+            "sortCenter": [
+              0,
+              0
+            ],
             "flipX": false,
             "flipY": false,
             "sortingLayer": "terrain",
@@ -453,7 +478,8 @@
             }
           }
         }
-      ]
+      ],
+      "id": "02980f67-2d31-4500-9e4f-9062807e4af1"
     }
   ],
   "loaders": [
@@ -465,7 +491,8 @@
           "name": "uiBridge",
           "options": {}
         }
-      ]
+      ],
+      "id": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
     }
   ],
   "startScene": "main",
