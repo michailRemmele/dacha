@@ -19,6 +19,7 @@ describe('Engine -> GameObjectObserver', () => {
   beforeEach(() => {
     const templateCollection = new TemplateCollection({});
     scene = new Scene({
+      id: '000',
       name: 'test-scene',
       gameObjects: [],
       availableSystems: {},
