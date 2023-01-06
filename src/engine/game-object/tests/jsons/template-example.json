@@ -1,8 +1,10 @@
 {
+  "id": "000",
   "name": "templateExample",
   "type": "example",
   "children": [
     {
+      "id": "001",
       "name": "childTemplateExample",
       "type": "exampleChild",
       "children": [],
