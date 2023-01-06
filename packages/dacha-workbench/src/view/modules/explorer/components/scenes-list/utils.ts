@@ -6,9 +6,9 @@ export const parseScenes = (
   scenes: Array<SceneConfig>,
   isLoaders?: boolean,
 ): Array<DataNodeWithPath> => scenes.map((scene) => ({
-  key: scene.name,
+  key: scene.id,
   title: scene.name,
-  path: [isLoaders ? 'loaders' : 'scenes', scene.name],
+  path: [isLoaders ? 'loaders' : 'scenes', scene.id],
   isLeaf: true,
 }))
 
@@ -26,5 +26,5 @@ export const getKey = (
     return void ''
   }
 
-  return (entity as SceneConfig).name
+  return (entity as SceneConfig).id
 }

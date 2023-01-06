@@ -1,15 +1,23 @@
 import type { Store } from '.'
 import type { Data, DataValue, DataObjectValue } from './types'
 
+const getId = (value: DataValue): string | undefined => {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return void ''
+  }
+
+  return (value.id as string) || (value.name as string)
+}
+
 export const findByName = (
   data: Array<DataValue>,
   name: string,
-): DataValue | undefined => data.find((item) => typeof item === 'object' && !Array.isArray(item) && item.name === name)
+): DataValue | undefined => data.find((item) => getId(item) === name)
 
 export const findIndexByName = (
   data: Array<DataValue>,
   name: string,
-): number => data.findIndex((item) => typeof item === 'object' && !Array.isArray(item) && item.name === name)
+): number => data.findIndex((item) => getId(item) === name)
 
 export const next = (
   data: DataValue | Data,

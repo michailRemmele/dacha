@@ -9,11 +9,11 @@ describe('Mutator -> Store', () => {
       a: {
         c: [
           {
-            name: 'item0',
+            id: 'item0',
             d: 123,
           },
           {
-            name: 'item1',
+            id: 'item1',
             d: 321,
           },
         ],
@@ -42,10 +42,10 @@ describe('Mutator -> Store', () => {
     const store = new Store(example)
     const object = store.get(['a']) as Record<string, unknown>
 
-    store.set(['a', 'c', 'item0'], { name: 'item2', d: 648 })
+    store.set(['a', 'c', 'item0'], { id: 'item2', d: 648 })
 
     expect(store.get(['a', 'c', 'item0'])).toBeUndefined()
-    expect(store.get(['a', 'c', 'item2', 'name'])).toBe('item2')
+    expect(store.get(['a', 'c', 'item2', 'id'])).toBe('item2')
     expect(store.get(['a', 'c', 'item2', 'd'])).toBe(648)
 
     expect(store.get(['a'])).not.toBe(object)
