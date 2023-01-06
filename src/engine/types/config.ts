@@ -4,6 +4,7 @@ export interface ComponentConfig {
 }
 
 export interface TemplateConfig {
+  id: string
   name: string
   type: string
   components?: Array<ComponentConfig>
@@ -21,6 +22,7 @@ export interface GameObjectConfig {
 }
 
 export interface LevelConfig {
+  id: string
   name: string
   gameObjects: Array<GameObjectConfig>
 }
@@ -31,6 +33,7 @@ export interface SystemConfig {
 }
 
 export interface SceneConfig {
+  id: string
   name: string
   level?: string
   systems: Array<SystemConfig>
