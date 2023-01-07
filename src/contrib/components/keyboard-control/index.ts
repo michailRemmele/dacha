@@ -10,9 +10,15 @@ export class KeyboardControl extends Component {
   constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    const inputEventsConfig = config as InputEventsConfig;
+    const { inputEventBindings } = config as InputEventsConfig;
 
-    this.inputEventBindings = inputEventsConfig.inputEventBindings;
+    this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
+      acc[bind.event] = {
+        messageType: bind.messageType,
+        attrs: bind.attrs,
+      };
+      return acc;
+    }, {});
     this.keyStates = Object
       .keys(this.inputEventBindings)
       .reduce((keyStates: Record<string, string | null>, inputEvent) => {
@@ -26,16 +32,14 @@ export class KeyboardControl extends Component {
 
   clone(): KeyboardControl {
     return new KeyboardControl(this.componentName, {
-      inputEventBindings: Object.keys(this.inputEventBindings).reduce(
-        (acc: InputEventBindings, key) => {
-          acc[key] = {
-            messageType: this.inputEventBindings[key].messageType,
-            attrs: {
-              ...this.inputEventBindings[key].attrs,
-            },
-          };
-          return acc;
-        }, {},
+      inputEventBindings: Object.keys(this.inputEventBindings).map(
+        (key) => ({
+          event: key,
+          messageType: this.inputEventBindings[key].messageType,
+          attrs: {
+            ...this.inputEventBindings[key].attrs,
+          },
+        }),
       ),
     });
   }

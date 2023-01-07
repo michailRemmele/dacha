@@ -1,10 +1,13 @@
+export interface InputEventBind {
+  event: string
+  messageType: string
+  attrs: Record<string, unknown>
+}
+
 export interface InputEventBindings {
-  [key: string]: {
-    messageType: string
-    attrs: Record<string, unknown>
-  }
+  [key: string]: Omit<InputEventBind, 'event'>
 }
 
 export interface InputEventsConfig extends Record<string, unknown> {
-  inputEventBindings: InputEventBindings
+  inputEventBindings: Array<InputEventBind>
 }
