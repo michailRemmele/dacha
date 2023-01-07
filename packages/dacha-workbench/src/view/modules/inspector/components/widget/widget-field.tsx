@@ -1,8 +1,14 @@
-import React, { useMemo, FC } from 'react'
+import React, {
+  useMemo,
+  useRef,
+  useEffect,
+  FC,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Field } from '../field'
-import { useConfig } from '../../../../hooks'
+import { useConfig, useCommander } from '../../../../hooks'
+import { deleteValue } from '../../../../commands'
 import type { Field as FieldSchema, Reference } from '../../../../../types/widget-schema'
 
 import { fieldTypes } from './field-types'
@@ -16,6 +22,7 @@ interface WidgetFieldProps {
 
 export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) => {
   const { t } = useTranslation()
+  const { dispatch } = useCommander()
 
   const dependencyPath = useMemo(
     () => (field.dependency ? path.concat(field.dependency.name.split('.')) : void 0),
@@ -25,7 +32,19 @@ export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) =
 
   const value = useConfig(dependencyPath)
 
-  if (field.dependency && !checkDependency(value, field.dependency.value)) {
+  const visible = !field.dependency || checkDependency(value, field.dependency.value)
+  const visibleRef = useRef(visible)
+
+  useEffect(() => {
+    if (visibleRef.current !== visible) {
+      if (!visible) {
+        dispatch(deleteValue(fieldPath))
+      }
+      visibleRef.current = visible
+    }
+  }, [visible])
+
+  if (!visible) {
     return null
   }
 
