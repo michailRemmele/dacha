@@ -3,20 +3,22 @@ import { MouseControl } from '../index';
 describe('Contrib -> components -> MouseControl', () => {
   it('Returns correct values ', () => {
     const mouseControl = new MouseControl('mouseControl', {
-      inputEventBindings: {
-        MOUSE_LEFT_BUTTON_PRESS: {
+      inputEventBindings: [
+        {
+          event: 'MOUSE_LEFT_BUTTON_PRESS',
           messageType: 'ATTACK',
           attrs: {
             someOption: 10,
           },
         },
-        MOUSE_RIGHT_BUTTON_PRESS: {
+        {
+          event: 'MOUSE_RIGHT_BUTTON_PRESS',
           messageType: 'BLOCK',
           attrs: {
             someOption: 20,
           },
         },
-      },
+      ],
     }).clone();
 
     expect(mouseControl.inputEventBindings.MOUSE_LEFT_BUTTON_PRESS).toStrictEqual({
@@ -35,14 +37,15 @@ describe('Contrib -> components -> MouseControl', () => {
 
   it('Correct updates values ', () => {
     const mouseControl = new MouseControl('mouseControl', {
-      inputEventBindings: {
-        MOUSE_LEFT_BUTTON_PRESS: {
+      inputEventBindings: [
+        {
+          event: 'MOUSE_LEFT_BUTTON_PRESS',
           messageType: 'ATTACK',
           attrs: {
             someOption: 10,
           },
         },
-      },
+      ],
     }).clone();
 
     mouseControl.inputEventBindings = {
@@ -64,14 +67,15 @@ describe('Contrib -> components -> MouseControl', () => {
 
   it('Clones return deep copy of original component', () => {
     const originalMouseControl = new MouseControl('mouseControl', {
-      inputEventBindings: {
-        MOUSE_LEFT_BUTTON_PRESS: {
+      inputEventBindings: [
+        {
+          event: 'MOUSE_LEFT_BUTTON_PRESS',
           messageType: 'ATTACK',
           attrs: {
             someOption: 10,
           },
         },
-      },
+      ],
     });
     const cloneMouseControl = originalMouseControl.clone();
 

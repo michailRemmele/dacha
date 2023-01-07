@@ -3,18 +3,20 @@ import { KeyboardControl } from '../index';
 describe('Contrib -> components -> KeyboardControl', () => {
   it('Returns correct values ', () => {
     const keyboardControl = new KeyboardControl('keyboardControl', {
-      inputEventBindings: {
-        W_PRESSED: {
+      inputEventBindings: [
+        {
+          event: 'W_PRESSED',
           messageType: 'RUN',
           attrs: {
             angle: 270,
           },
         },
-        I_RELEASED: {
+        {
+          event: 'I_RELEASED',
           messageType: 'INVENTORY_OPEN',
           attrs: {},
         },
-      },
+      ],
     }).clone();
 
     expect(keyboardControl.inputEventBindings.W_PRESSED).toStrictEqual({
@@ -35,14 +37,15 @@ describe('Contrib -> components -> KeyboardControl', () => {
 
   it('Correct updates values ', () => {
     const keyboardControl = new KeyboardControl('keyboardControl', {
-      inputEventBindings: {
-        W_PRESSED: {
+      inputEventBindings: [
+        {
+          event: 'W_PRESSED',
           messageType: 'WALK',
           attrs: {
             angle: 90,
           },
         },
-      },
+      ],
     }).clone();
 
     keyboardControl.inputEventBindings = {
@@ -68,14 +71,15 @@ describe('Contrib -> components -> KeyboardControl', () => {
 
   it('Clones return deep copy of original component', () => {
     const originalKeyboardControl = new KeyboardControl('keyboardControl', {
-      inputEventBindings: {
-        W_PRESSED: {
+      inputEventBindings: [
+        {
+          event: 'W_PRESSED',
           messageType: 'WALK',
           attrs: {
             angle: 90,
           },
         },
-      },
+      ],
     });
     const cloneKeyboardControl = originalKeyboardControl.clone();
 
