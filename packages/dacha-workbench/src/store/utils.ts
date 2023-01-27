@@ -1,23 +1,41 @@
 import type { Store } from '.'
 import type { Data, DataValue, DataObjectValue } from './types'
 
-const getId = (value: DataValue): string | undefined => {
+const KEY_DELIMETER = ':'
+
+const getFieldValue = (value: DataValue, name: string): DataValue | undefined => {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return void ''
   }
 
-  return (value.id as string) || (value.name as string)
+  return value[name]
 }
 
-export const findByName = (
+export const findByKey = (
   data: Array<DataValue>,
-  name: string,
-): DataValue | undefined => data.find((item) => getId(item) === name)
+  key: string,
+): DataValue | undefined => {
+  const [name, value] = key.split(KEY_DELIMETER)
 
-export const findIndexByName = (
+  if (value === void 0) {
+    return data[Number(name)]
+  }
+
+  return data.find((item) => getFieldValue(item, name) === value)
+}
+
+export const findIndexByKey = (
   data: Array<DataValue>,
-  name: string,
-): number => data.findIndex((item) => getId(item) === name)
+  key: string,
+): number => {
+  const [name, value] = key.split(KEY_DELIMETER)
+
+  if (value === void 0) {
+    return Number(name)
+  }
+
+  return data.findIndex((item) => getFieldValue(item, name) === value)
+}
 
 export const next = (
   data: DataValue | Data,
@@ -31,7 +49,7 @@ export const next = (
   }
 
   if (Array.isArray(data)) {
-    const node = findByName(data, key)
+    const node = findByKey(data, key)
 
     if (node) {
       return next(node, path, index + 1)
@@ -70,7 +88,7 @@ export const nextImmutable = (
   }
 
   if (Array.isArray(copyData)) {
-    const nodeIndex = findIndexByName(copyData, key)
+    const nodeIndex = findIndexByKey(copyData, key)
 
     if (nodeIndex !== -1) {
       return nextImmutable(copyData[nodeIndex], path, copyData, nodeIndex, index + 1)

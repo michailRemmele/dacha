@@ -1,11 +1,11 @@
-import { UPDATE_FIELD_VALUE } from '../../command-types'
+import { ADD } from '../../command-types'
 import type { Command } from '../hooks/use-commander'
 
-export const updateFieldValue = (
+export const addValue = (
   path: Array<string>,
   value: unknown,
 ): Command => ({
-  command: UPDATE_FIELD_VALUE,
+  command: ADD,
   options: {
     path,
     value,

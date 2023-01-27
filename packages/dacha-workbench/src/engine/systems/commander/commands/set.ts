@@ -1,16 +1,16 @@
 import { Command } from './command'
 
-interface UpdateFieldValueCommandOptions {
+interface SetCommandOptions {
   path: Array<string>
   value: string | number | boolean
 }
 
-export class UpdateFieldValueCmd extends Command {
+export class SetCmd extends Command {
   execute(options: unknown): void {
     const {
       path,
       value,
-    } = options as UpdateFieldValueCommandOptions
+    } = options as SetCommandOptions
 
     this.store.set(path, value)
   }

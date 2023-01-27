@@ -7,42 +7,62 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 
 import type { WidgetProps } from '../../../../types/widget-schema'
-import { useConfig } from '../../../hooks'
+import { useConfig, useCommander } from '../../../hooks'
+import { addValue } from '../../../commands'
 
 import { events } from './events'
 import { InputBind } from './input-bind'
 
 import './style.less'
 
-export interface InputEventBindings {
-  [key: string]: {
-    messageType: string
-    attrs: Record<string, unknown>
-  }
+export interface EventOption {
+  title: string
+  value: string
 }
+
+export interface InputEventBind {
+  event: string
+  messageType: string
+  attrs: Record<string, unknown>
+}
+
+export type InputEventBindings = Record<string, Omit<InputEventBind, 'event'>>
 
 export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
+  const { dispatch } = useCommander()
 
   const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
-  const inputEventBindings = useConfig(bindingsPath) as InputEventBindings
+  const inputEventBindings = useConfig(bindingsPath) as Array<InputEventBind>
 
   const options = useMemo(() => events.map(({ title, value }) => ({
     title: t(title),
     value,
   })), [])
+  const optionsMap = useMemo(() => options.reduce((acc: Record<string, EventOption>, option) => {
+    acc[option.value] = option
+    return acc
+  }, {}), [options])
+  const bindingsMap = useMemo(
+    () => inputEventBindings.reduce((acc: InputEventBindings, { event, ...bind }) => {
+      acc[event] = bind
+      return acc
+    }, {}),
+    [inputEventBindings],
+  )
   const availableOptions = useMemo(
-    () => options.filter((event) => !inputEventBindings[event.value]),
-    [inputEventBindings, options],
+    () => options.filter((event) => !bindingsMap[event.value]),
+    [bindingsMap, options],
   )
   const addedOptions = useMemo(
-    () => options.filter((event) => inputEventBindings[event.value]),
-    [inputEventBindings, options],
+    () => inputEventBindings.map((bind) => optionsMap[bind.event]),
+    [inputEventBindings, optionsMap],
   )
 
   const handleAddNewBind = useCallback(() => {
-    // TODO: Implement addition of new event bind
-  }, [])
+    const inputEvent = availableOptions[0].value
+    dispatch(addValue(bindingsPath, { event: inputEvent, messageType: '', attrs: {} }))
+  }, [dispatch, bindingsPath, availableOptions])
 
   return (
     <div>

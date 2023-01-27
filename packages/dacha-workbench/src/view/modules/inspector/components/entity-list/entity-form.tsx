@@ -25,7 +25,7 @@ export const EntityForm: FC<EntityFormProps> = ({ data, type }) => {
   const { schema, name } = data
 
   const widgetPath = useMemo(
-    () => path.concat(type, name, CONFIG_KEY_MAP[type]),
+    () => path.concat(type, `name:${name}`, CONFIG_KEY_MAP[type]),
     [path, type, name],
   )
 
