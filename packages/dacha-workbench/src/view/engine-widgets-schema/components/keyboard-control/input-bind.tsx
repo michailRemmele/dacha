@@ -10,17 +10,20 @@ import { LabelledTextInput } from '../../../modules/inspector/components/text-in
 import { MultiField } from '../../../modules/inspector/components/multi-field'
 import { Field } from '../../../modules/inspector/components/field'
 import { Panel } from '../../../modules/inspector/components/panel'
+import { useCommander } from '../../../hooks'
+import { deleteValue } from '../../../commands'
 
+import { RELEASED, PRESSED } from './events'
 import { capitalize } from './utils'
 
 const events = [
   {
     title: 'components.keyboardControl.event.pressed.title',
-    value: 'PRESSED',
+    value: PRESSED,
   },
   {
     title: 'components.keyboardControl.event.released.title',
-    value: 'RELEASED',
+    value: RELEASED,
   },
 ]
 
@@ -40,15 +43,14 @@ export const InputBind: FC<InputBindProps> = ({
   availableKeys,
 }) => {
   const { t } = useTranslation()
+  const { dispatch } = useCommander()
 
-  const messageTypePath = useMemo(
-    () => path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'messageType'),
+  const bindPath = useMemo(
+    () => path.concat('inputEventBindings', `event:${inputKey}_${inputEvent}`),
     [path, inputKey, inputEvent],
   )
-  const attrsPath = useMemo(
-    () => path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'attrs'),
-    [path, inputKey, inputEvent],
-  )
+  const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
+  const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
   const inputEvents = useMemo(() => events.map(({ title, value }) => ({
     title: t(title),
@@ -67,8 +69,8 @@ export const InputBind: FC<InputBindProps> = ({
     // TODO: Implement event change callback
   }, [])
   const handleDeleteBind = useCallback(() => {
-    // TODO: Implement deletion of event bind
-  }, [])
+    dispatch(deleteValue(bindPath))
+  }, [dispatch, bindPath])
 
   return (
     <Panel

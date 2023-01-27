@@ -1,7 +1,7 @@
 import {
   next,
   nextImmutable,
-  findIndexByName,
+  findIndexByKey,
 } from './utils'
 import type {
   Data,
@@ -32,7 +32,7 @@ export class Store {
     const key = path[path.length - 1]
 
     if (Array.isArray(item)) {
-      const index = findIndexByName(item, key)
+      const index = findIndexByKey(item, key)
       if (index !== -1) {
         item[index] = value
       }
@@ -53,7 +53,7 @@ export class Store {
     const key = path[path.length - 1]
 
     if (Array.isArray(item)) {
-      const index = findIndexByName(item, key)
+      const index = findIndexByKey(item, key)
       if (index !== -1) {
         item.splice(index, 1)
       }

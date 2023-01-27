@@ -9,7 +9,7 @@ const parseTemplate = (
   path: Array<string>,
 ): DataNodeWithPath => {
   const isLeaf = !template?.children?.length
-  const templatePath = path.concat(template.id)
+  const templatePath = path.concat(`id:${template.id}`)
 
   const node: DataNodeWithPath = {
     key: template.id,

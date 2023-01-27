@@ -161,32 +161,36 @@
             {
               "name": "keyboardControl",
               "config": {
-                "inputEventBindings": {
-                  "W_PRESSED": {
+                "inputEventBindings": [
+                  {
+                    "event": "W_PRESSED",
                     "messageType": "MOVEMENT",
                     "attrs": {
                       "angle": 270
                     }
                   },
-                  "A_PRESSED": {
+                  {
+                    "event": "A_PRESSED",
                     "messageType": "MOVEMENT",
                     "attrs": {
                       "angle": 180
                     }
                   },
-                  "S_PRESSED": {
+                  {
+                    "event": "S_PRESSED",
                     "messageType": "MOVEMENT",
                     "attrs": {
                       "angle": 90
                     }
                   },
-                  "D_PRESSED": {
+                  {
+                    "event": "D_PRESSED",
                     "messageType": "MOVEMENT",
                     "attrs": {
                       "angle": 0
                     }
                   }
-                }
+                ]
               }
             }
           ]

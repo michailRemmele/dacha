@@ -7,41 +7,57 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 
 import type { WidgetProps } from '../../../../types/widget-schema'
-import { useConfig } from '../../../hooks'
+import { useConfig, useCommander } from '../../../hooks'
+import { addValue } from '../../../commands'
 
 import { keys } from './keys'
+import { RELEASED, PRESSED } from './events'
 import { InputBind } from './input-bind'
 import { capitalize } from './utils'
 
 import './style.less'
 
-export interface InputEventBindings {
-  [key: string]: {
-    messageType: string
-    attrs: Record<string, unknown>
-  }
+export interface EventOption {
+  title: string
+  value: string
 }
+
+export interface InputEventBind {
+  event: string
+  messageType: string
+  attrs: Record<string, unknown>
+}
+
+export type InputEventBindings = Record<string, Omit<InputEventBind, 'event'>>
 
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
+  const { dispatch } = useCommander()
 
   const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
-  const inputEventBindings = useConfig(bindingsPath) as InputEventBindings
+  const inputEventBindings = useConfig(bindingsPath) as Array<InputEventBind>
 
   const inputKeys = useMemo(() => keys.map((key) => ({
     title: capitalize(key),
     value: key,
   }), []), [])
+  const bindingsMap = useMemo(
+    () => inputEventBindings.reduce((acc: InputEventBindings, { event, ...bind }) => {
+      acc[event] = bind
+      return acc
+    }, {}),
+    [inputEventBindings],
+  )
 
   const availableKeys = useMemo(
     () => inputKeys.filter(
-      (event) => !inputEventBindings[`${event.value}_PRESSED`] || !inputEventBindings[`${event.value}_RELEASED`],
+      (event) => !bindingsMap[`${event.value}_${PRESSED}`] || !bindingsMap[`${event.value}_${RELEASED}`],
     ),
-    [inputEventBindings, inputKeys],
+    [bindingsMap, inputKeys],
   )
 
-  const addedKeys = useMemo(() => Object.keys(inputEventBindings).map((bindKey) => {
-    const [key, event] = bindKey.split('_')
+  const addedKeys = useMemo(() => inputEventBindings.map((bindKey) => {
+    const [key, event] = bindKey.event.split('_')
     return {
       key,
       event,
@@ -49,8 +65,11 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   }), [inputEventBindings])
 
   const handleAddNewBind = useCallback(() => {
-    // TODO: Implement addition of new event bind
-  }, [])
+    const key = availableKeys[0].value
+    const event = !bindingsMap[`${key}_${PRESSED}`] ? PRESSED : RELEASED
+
+    dispatch(addValue(bindingsPath, { event: `${key}_${event}`, messageType: '', attrs: {} }))
+  }, [dispatch, bindingsPath, availableKeys, bindingsMap])
 
   return (
     <div>

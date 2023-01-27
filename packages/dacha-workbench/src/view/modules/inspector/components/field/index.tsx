@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 
 import { useConfig, useCommander } from '../../../../hooks'
-import { updateFieldValue } from '../../../../commands'
+import { setValue as setValueCmd } from '../../../../commands'
 
 interface FieldProps extends Omit<HTMLProps<HTMLElement>, 'onBlur' | 'onChange'> {
   path: Array<string>
@@ -41,7 +41,7 @@ export const Field: FC<FieldProps> = ({
   }, [initialValue])
 
   const handleBlur = useCallback(() => {
-    dispatch(updateFieldValue(path, valueRef.current))
+    dispatch(setValueCmd(path, valueRef.current))
     onBlur(valueRef.current)
   }, [path, dispatch, onBlur])
 

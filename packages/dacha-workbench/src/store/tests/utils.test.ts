@@ -4,11 +4,11 @@ const example = {
   a: {
     c: [
       {
-        name: '00',
+        name: 'dcba',
         d: 123,
       },
       {
-        name: '01',
+        name: 'abcd',
         d: 321,
       },
     ],
@@ -22,10 +22,10 @@ const example = {
 describe('Mutator -> utils -> nextImmutable()', () => {
   it('Returns object and creates copies of objects and arrays', () => {
     const exampleCopy = { ...example }
-    const object = nextImmutable(example.a, ['c', '01'], example, 'a')
+    const object = nextImmutable(example.a, ['c', 'name:abcd'], example, 'a')
 
     expect(object).toStrictEqual({
-      name: '01',
+      name: 'abcd',
       d: 321,
     })
 
@@ -39,7 +39,7 @@ describe('Mutator -> utils -> nextImmutable()', () => {
 
   it('Returns number and creates copies of objects and arrays', () => {
     const exampleCopy = { ...example }
-    const value = nextImmutable(example.a, ['c', '00', 'd'], example, 'a')
+    const value = nextImmutable(example.a, ['c', 'name:dcba', 'd'], example, 'a')
 
     expect(value).toBe(123)
 

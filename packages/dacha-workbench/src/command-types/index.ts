@@ -1,2 +1,3 @@
-export const UPDATE_FIELD_VALUE = 'UPDATE_FIELD_VALUE'
+export const SET = 'SET'
 export const DELETE = 'DELETE'
+export const ADD = 'ADD'

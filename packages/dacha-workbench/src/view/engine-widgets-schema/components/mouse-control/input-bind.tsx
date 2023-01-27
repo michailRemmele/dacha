@@ -10,6 +10,8 @@ import { LabelledTextInput } from '../../../modules/inspector/components/text-in
 import { MultiField } from '../../../modules/inspector/components/multi-field'
 import { Field } from '../../../modules/inspector/components/field'
 import { Panel } from '../../../modules/inspector/components/panel'
+import { useCommander } from '../../../hooks'
+import { deleteValue } from '../../../commands'
 
 export interface InputBindProps {
   path: Array<string>
@@ -25,24 +27,18 @@ export const InputBind: FC<InputBindProps> = ({
   availableEvents,
 }) => {
   const { t } = useTranslation()
+  const { dispatch } = useCommander()
 
-  const messageTypePath = useMemo(
-    () => path.concat('inputEventBindings', event.value, 'messageType'),
-    [path, event],
-  )
-  const attrsPath = useMemo(
-    () => path.concat('inputEventBindings', event.value, 'attrs'),
-    [path, event],
-  )
+  const bindPath = useMemo(() => path.concat('inputEventBindings', `event:${event.value}`), [path, event])
+  const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
+  const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
+  const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
   const inputEvents = useMemo(() => [event, ...availableEvents], [availableEvents])
 
-  const handleChange = useCallback(() => {
-    // TODO: Implement event change callback
-  }, [])
   const handleDeleteBind = useCallback(() => {
-    // TODO: Implement deletion of event bind
-  }, [])
+    dispatch(deleteValue(bindPath))
+  }, [dispatch, bindPath])
 
   return (
     <Panel
@@ -50,11 +46,11 @@ export const InputBind: FC<InputBindProps> = ({
       title={t('components.mouseControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
-      <LabelledSelect
-        options={inputEvents}
-        value={event.value}
-        onChange={handleChange}
+      <Field
+        path={eventPath}
+        component={LabelledSelect}
         label={t('components.mouseControl.bind.event.title')}
+        options={inputEvents}
       />
       <Field
         path={messageTypePath}
