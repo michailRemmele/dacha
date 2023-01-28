@@ -5,16 +5,22 @@ describe('Contrib -> components -> KeyboardControl', () => {
     const keyboardControl = new KeyboardControl('keyboardControl', {
       inputEventBindings: [
         {
-          event: 'W_PRESSED',
+          key: 'W',
+          event: 'PRESSED',
           messageType: 'RUN',
-          attrs: {
-            angle: 270,
-          },
+          attrs: [
+            {
+              name: 'angle',
+              type: 'number',
+              value: 270,
+            },
+          ],
         },
         {
-          event: 'I_RELEASED',
+          key: 'I',
+          event: 'RELEASED',
           messageType: 'INVENTORY_OPEN',
-          attrs: {},
+          attrs: [],
         },
       ],
     }).clone();
@@ -39,11 +45,16 @@ describe('Contrib -> components -> KeyboardControl', () => {
     const keyboardControl = new KeyboardControl('keyboardControl', {
       inputEventBindings: [
         {
-          event: 'W_PRESSED',
+          key: 'W',
+          event: 'PRESSED',
           messageType: 'WALK',
-          attrs: {
-            angle: 90,
-          },
+          attrs: [
+            {
+              name: 'angle',
+              type: 'number',
+              value: 90,
+            },
+          ],
         },
       ],
     }).clone();
@@ -73,11 +84,16 @@ describe('Contrib -> components -> KeyboardControl', () => {
     const originalKeyboardControl = new KeyboardControl('keyboardControl', {
       inputEventBindings: [
         {
-          event: 'W_PRESSED',
+          key: 'W',
+          event: 'PRESSED',
           messageType: 'WALK',
-          attrs: {
-            angle: 90,
-          },
+          attrs: [
+            {
+              name: 'angle',
+              type: 'number',
+              value: 90,
+            },
+          ],
         },
       ],
     });

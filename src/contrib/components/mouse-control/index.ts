@@ -1,5 +1,19 @@
 import { Component } from '../../../engine/component';
-import { InputEventsConfig, InputEventBindings } from '../../types';
+import type {
+  InputEventBindings,
+  InputEventAttributes,
+  InputEventAttributeConfig,
+} from '../../types';
+
+export interface MouseEventBindConfig {
+  event: string
+  messageType: string
+  attrs: Array<InputEventAttributeConfig>
+}
+
+export interface MouseControlConfig extends Record<string, unknown> {
+  inputEventBindings: Array<MouseEventBindConfig>
+}
 
 export class MouseControl extends Component {
   inputEventBindings: InputEventBindings;
@@ -7,12 +21,15 @@ export class MouseControl extends Component {
   constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    const { inputEventBindings } = config as InputEventsConfig;
+    const { inputEventBindings } = config as MouseControlConfig;
 
     this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
       acc[bind.event] = {
         messageType: bind.messageType,
-        attrs: bind.attrs,
+        attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
+          attrs[attr.name] = attr.value;
+          return attrs;
+        }, {}),
       };
       return acc;
     }, {});
@@ -24,9 +41,9 @@ export class MouseControl extends Component {
         (key) => ({
           event: key,
           messageType: this.inputEventBindings[key].messageType,
-          attrs: {
-            ...this.inputEventBindings[key].attrs,
-          },
+          attrs: Object.keys(this.inputEventBindings[key].attrs).map(
+            (name) => ({ name, value: this.inputEventBindings[key].attrs[name] }),
+          ),
         }),
       ),
     });

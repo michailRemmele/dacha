@@ -1,7 +1,22 @@
 import { Component } from '../../../engine/component';
-import { InputEventsConfig, InputEventBindings } from '../../types';
+import type {
+  InputEventBindings,
+  InputEventAttributes,
+  InputEventAttributeConfig,
+} from '../../types';
 
 const PREFIX_SEPARATOR = '_';
+
+export interface KeyboardEventBindConfig {
+  key: string
+  event: string
+  messageType: string
+  attrs: Array<InputEventAttributeConfig>
+}
+
+export interface KeyboardControlConfig extends Record<string, unknown> {
+  inputEventBindings: Array<KeyboardEventBindConfig>
+}
 
 export class KeyboardControl extends Component {
   inputEventBindings: InputEventBindings;
@@ -10,12 +25,15 @@ export class KeyboardControl extends Component {
   constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    const { inputEventBindings } = config as InputEventsConfig;
+    const { inputEventBindings } = config as KeyboardControlConfig;
 
     this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
-      acc[bind.event] = {
+      acc[`${bind.key}${PREFIX_SEPARATOR}${bind.event}`] = {
         messageType: bind.messageType,
-        attrs: bind.attrs,
+        attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
+          attrs[attr.name] = attr.value;
+          return attrs;
+        }, {}),
       };
       return acc;
     }, {});
@@ -33,13 +51,17 @@ export class KeyboardControl extends Component {
   clone(): KeyboardControl {
     return new KeyboardControl(this.componentName, {
       inputEventBindings: Object.keys(this.inputEventBindings).map(
-        (key) => ({
-          event: key,
-          messageType: this.inputEventBindings[key].messageType,
-          attrs: {
-            ...this.inputEventBindings[key].attrs,
-          },
-        }),
+        (inputEvent) => {
+          const [key, event] = inputEvent.split(PREFIX_SEPARATOR);
+          return {
+            key,
+            event,
+            messageType: this.inputEventBindings[inputEvent].messageType,
+            attrs: Object.keys(this.inputEventBindings[inputEvent].attrs).map(
+              (name) => ({ name, value: this.inputEventBindings[inputEvent].attrs[name] }),
+            ),
+          };
+        },
       ),
     });
   }
