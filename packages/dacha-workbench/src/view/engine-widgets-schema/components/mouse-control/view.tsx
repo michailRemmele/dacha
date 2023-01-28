@@ -22,8 +22,6 @@ export interface EventOption {
 
 export interface InputEventBind {
   event: string
-  messageType: string
-  attrs: Record<string, unknown>
 }
 
 export type InputEventBindings = Record<string, Omit<InputEventBind, 'event'>>
@@ -61,7 +59,7 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
 
   const handleAddNewBind = useCallback(() => {
     const inputEvent = availableOptions[0].value
-    dispatch(addValue(bindingsPath, { event: inputEvent, messageType: '', attrs: {} }))
+    dispatch(addValue(bindingsPath, { event: inputEvent, messageType: '', attrs: [] }))
   }, [dispatch, bindingsPath, availableOptions])
 
   return (

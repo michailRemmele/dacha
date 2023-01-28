@@ -29,16 +29,16 @@ const events = [
 
 export interface InputBindProps {
   path: Array<string>
+  id: string
   inputKey: string
-  inputEvent: string
   order: number
   availableKeys: Array<{ title: string, value: string }>
 }
 
 export const InputBind: FC<InputBindProps> = ({
   path,
+  id,
   inputKey,
-  inputEvent,
   order,
   availableKeys,
 }) => {
@@ -46,9 +46,11 @@ export const InputBind: FC<InputBindProps> = ({
   const { dispatch } = useCommander()
 
   const bindPath = useMemo(
-    () => path.concat('inputEventBindings', `event:${inputKey}_${inputEvent}`),
-    [path, inputKey, inputEvent],
+    () => path.concat('inputEventBindings', `id:${id}`),
+    [path],
   )
+  const keyPath = useMemo(() => bindPath.concat('key'), [bindPath])
+  const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
   const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
@@ -62,12 +64,6 @@ export const InputBind: FC<InputBindProps> = ({
     ...availableKeys.filter((availableKey) => availableKey.value !== inputKey),
   ], [availableKeys])
 
-  const handleKeyChange = useCallback(() => {
-    // TODO: Implement key change callback
-  }, [])
-  const handleEventChange = useCallback(() => {
-    // TODO: Implement event change callback
-  }, [])
   const handleDeleteBind = useCallback(() => {
     dispatch(deleteValue(bindPath))
   }, [dispatch, bindPath])
@@ -78,17 +74,17 @@ export const InputBind: FC<InputBindProps> = ({
       title={t('components.keyboardControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
-      <LabelledSelect
-        options={inputKeys}
-        value={inputKey}
-        onChange={handleKeyChange}
+      <Field
+        path={keyPath}
+        component={LabelledSelect}
         label={t('components.keyboardControl.bind.key.title')}
+        options={inputKeys}
       />
-      <LabelledSelect
-        options={inputEvents}
-        value={inputEvent}
-        onChange={handleEventChange}
+      <Field
+        path={eventPath}
+        component={LabelledSelect}
         label={t('components.keyboardControl.bind.event.title')}
+        options={inputEvents}
       />
       <Field
         path={messageTypePath}
