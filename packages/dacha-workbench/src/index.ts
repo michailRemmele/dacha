@@ -1,5 +1,7 @@
+import { addValue, setValue, deleteValue } from './view/commands'
+
 export { EngineContext, SchemasContext } from './view/providers'
-export { useExtension, useConfig } from './view/hooks'
+export { useExtension, useConfig, useCommander } from './view/hooks'
 export { Field } from './view/modules/inspector/components/field'
 export { Widget } from './view/modules/inspector/components/widget'
 export { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
@@ -10,6 +12,12 @@ export { MultiTextInput, LabelledMultiTextInput } from './view/modules/inspector
 export { MultiSelect, LabelledMultiSelect } from './view/modules/inspector/components/multi-select'
 export { MultiField } from './view/modules/inspector/components/multi-field'
 export { Panel } from './view/modules/inspector/components/panel'
+
+export const commands = {
+  setValue,
+  addValue,
+  deleteValue,
+}
 
 export type { Data } from './store'
 
