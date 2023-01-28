@@ -7,16 +7,24 @@ describe('Contrib -> components -> MouseControl', () => {
         {
           event: 'MOUSE_LEFT_BUTTON_PRESS',
           messageType: 'ATTACK',
-          attrs: {
-            someOption: 10,
-          },
+          attrs: [
+            {
+              name: 'someOption',
+              type: 'number',
+              value: 10,
+            },
+          ],
         },
         {
           event: 'MOUSE_RIGHT_BUTTON_PRESS',
           messageType: 'BLOCK',
-          attrs: {
-            someOption: 20,
-          },
+          attrs: [
+            {
+              name: 'someOption',
+              type: 'number',
+              value: 20,
+            },
+          ],
         },
       ],
     }).clone();
@@ -41,9 +49,13 @@ describe('Contrib -> components -> MouseControl', () => {
         {
           event: 'MOUSE_LEFT_BUTTON_PRESS',
           messageType: 'ATTACK',
-          attrs: {
-            someOption: 10,
-          },
+          attrs: [
+            {
+              name: 'someOption',
+              type: 'number',
+              value: 10,
+            },
+          ],
         },
       ],
     }).clone();
@@ -71,9 +83,13 @@ describe('Contrib -> components -> MouseControl', () => {
         {
           event: 'MOUSE_LEFT_BUTTON_PRESS',
           messageType: 'ATTACK',
-          attrs: {
-            someOption: 10,
-          },
+          attrs: [
+            {
+              name: 'someOption',
+              type: 'number',
+              value: 10,
+            },
+          ],
         },
       ],
     });

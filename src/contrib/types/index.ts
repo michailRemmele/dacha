@@ -1,4 +1,5 @@
 export {
+  InputEventAttributes,
   InputEventBindings,
-  InputEventsConfig,
+  InputEventAttributeConfig,
 } from './input-events';
