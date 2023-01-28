@@ -163,32 +163,60 @@
               "config": {
                 "inputEventBindings": [
                   {
-                    "event": "W_PRESSED",
+                    "id": "926f76fd-50e2-4783-a6ff-8cbede1c3fce",
+                    "key": "W",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 270
-                    }
+                    "attrs": [
+                      {
+                        "id": "996ba61b-507a-4030-aa89-009854b928e5",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 270
+                      }
+                    ]
                   },
                   {
-                    "event": "A_PRESSED",
+                    "id": "33cded5b-f3e8-41f2-9c0c-bc473e79e0e2",
+                    "key": "A",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 180
-                    }
+                    "attrs": [
+                      {
+                        "id": "46a78e5f-0872-4ae0-b7cd-bafe5938ed5d",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 180
+                      }
+                    ]
                   },
                   {
-                    "event": "S_PRESSED",
+                    "id": "de0cda01-8c99-493c-88ff-efac3c80c0e5",
+                    "key": "S",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 90
-                    }
+                    "attrs": [
+                      {
+                        "id": "c9508922-69c8-4fb5-8717-3a3eb7b799b3",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 90
+                      }
+                    ]
                   },
                   {
-                    "event": "D_PRESSED",
+                    "id": "e13331a9-59eb-4412-9292-bd743e3b14fd",
+                    "key": "D",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 0
-                    }
+                    "attrs": [
+                      {
+                        "id": "50539a91-0f39-436c-9efc-a5ac0f766e3d",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 0
+                      }
+                    ]
                   }
                 ]
               }

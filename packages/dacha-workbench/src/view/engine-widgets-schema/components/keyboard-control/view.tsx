@@ -5,6 +5,7 @@ import React, {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { WidgetProps } from '../../../../types/widget-schema'
 import { useConfig, useCommander } from '../../../hooks'
@@ -23,12 +24,12 @@ export interface EventOption {
 }
 
 export interface InputEventBind {
+  id: string
+  key: string
   event: string
-  messageType: string
-  attrs: Record<string, unknown>
 }
 
-export type InputEventBindings = Record<string, Omit<InputEventBind, 'event'>>
+export type InputEventBindings = Record<string, Omit<InputEventBind, 'event' | 'key'>>
 
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
@@ -42,8 +43,8 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
     value: key,
   }), []), [])
   const bindingsMap = useMemo(
-    () => inputEventBindings.reduce((acc: InputEventBindings, { event, ...bind }) => {
-      acc[event] = bind
+    () => inputEventBindings.reduce((acc: InputEventBindings, { event, key, ...bind }) => {
+      acc[`${event}_${key}`] = bind
       return acc
     }, {}),
     [inputEventBindings],
@@ -56,30 +57,33 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
     [bindingsMap, inputKeys],
   )
 
-  const addedKeys = useMemo(() => inputEventBindings.map((bindKey) => {
-    const [key, event] = bindKey.event.split('_')
-    return {
-      key,
-      event,
-    }
-  }), [inputEventBindings])
+  const addedKeys = useMemo(() => inputEventBindings.map((inputBind) => ({
+    id: inputBind.id,
+    key: inputBind.key,
+  })), [inputEventBindings])
 
   const handleAddNewBind = useCallback(() => {
     const key = availableKeys[0].value
     const event = !bindingsMap[`${key}_${PRESSED}`] ? PRESSED : RELEASED
 
-    dispatch(addValue(bindingsPath, { event: `${key}_${event}`, messageType: '', attrs: {} }))
+    dispatch(addValue(bindingsPath, {
+      id: uuidv4(),
+      key,
+      event,
+      messageType: '',
+      attrs: [],
+    }))
   }, [dispatch, bindingsPath, availableKeys, bindingsMap])
 
   return (
     <div>
       <ul className="keyboard-control__events">
-        {addedKeys.map(({ key, event }, index) => (
-          <li className="keyboard-control__fieldset" key={`${key}_${event}`}>
+        {addedKeys.map(({ id, key }, index) => (
+          <li className="keyboard-control__fieldset" key={id}>
             <InputBind
               path={path}
+              id={id}
               inputKey={key}
-              inputEvent={event}
               order={index}
               availableKeys={availableKeys}
             />

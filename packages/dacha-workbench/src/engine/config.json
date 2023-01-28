@@ -139,22 +139,22 @@
               {
                 "event": "MOUSE_LEFT_BUTTON_PRESS",
                 "messageType": "CAMERA_MOVE_START",
-                "attrs": {}
+                "attrs": []
               },
               {
                 "event": "MOUSE_LEFT_BUTTON_RELEASE",
                 "messageType": "CAMERA_MOVE_END",
-                "attrs": {}
+                "attrs": []
               },
               {
                 "event": "MOUSE_MOVE",
                 "messageType": "CAMERA_MOVE",
-                "attrs": {}
+                "attrs": []
               },
               {
                 "event": "MOUSE_LEAVE",
                 "messageType": "CAMERA_MOVE_END",
-                "attrs": {}
+                "attrs": []
               }
             ]
           }
@@ -185,7 +185,7 @@
               {
                 "event": "MOUSE_LEFT_BUTTON_PRESS",
                 "messageType": "CAMERA_ZOOM",
-                "attrs": {}
+                "attrs": []
               }
             ]
           }
