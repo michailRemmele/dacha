@@ -16,20 +16,9 @@ import { RELEASED, PRESSED } from './events'
 import { InputBind } from './input-bind'
 import { capitalize } from './utils'
 
+import type { InputEventBind, InputEventBindings } from './types'
+
 import './style.less'
-
-export interface EventOption {
-  title: string
-  value: string
-}
-
-export interface InputEventBind {
-  id: string
-  key: string
-  event: string
-}
-
-export type InputEventBindings = Record<string, Omit<InputEventBind, 'event' | 'key'>>
 
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
@@ -44,7 +33,7 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   }), []), [])
   const bindingsMap = useMemo(
     () => inputEventBindings.reduce((acc: InputEventBindings, { event, key, ...bind }) => {
-      acc[`${event}_${key}`] = bind
+      acc[`${key}_${event}`] = bind
       return acc
     }, {}),
     [inputEventBindings],
@@ -60,6 +49,7 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const addedKeys = useMemo(() => inputEventBindings.map((inputBind) => ({
     id: inputBind.id,
     key: inputBind.key,
+    event: inputBind.event,
   })), [inputEventBindings])
 
   const handleAddNewBind = useCallback(() => {
@@ -78,14 +68,16 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   return (
     <div>
       <ul className="keyboard-control__events">
-        {addedKeys.map(({ id, key }, index) => (
+        {addedKeys.map(({ id, key, event }, index) => (
           <li className="keyboard-control__fieldset" key={id}>
             <InputBind
               path={path}
               id={id}
               inputKey={key}
+              inputEvent={event}
               order={index}
               availableKeys={availableKeys}
+              bindingsMap={bindingsMap}
             />
           </li>
         ))}

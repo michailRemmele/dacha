@@ -11,10 +11,11 @@ import { MultiField } from '../../../modules/inspector/components/multi-field'
 import { Field } from '../../../modules/inspector/components/field'
 import { Panel } from '../../../modules/inspector/components/panel'
 import { useCommander } from '../../../hooks'
-import { deleteValue } from '../../../commands'
+import { deleteValue, setValue } from '../../../commands'
 
 import { RELEASED, PRESSED } from './events'
 import { capitalize } from './utils'
+import type { InputEventBindings } from './types'
 
 const events = [
   {
@@ -31,16 +32,20 @@ export interface InputBindProps {
   path: Array<string>
   id: string
   inputKey: string
+  inputEvent: string
   order: number
   availableKeys: Array<{ title: string, value: string }>
+  bindingsMap: InputEventBindings
 }
 
 export const InputBind: FC<InputBindProps> = ({
   path,
   id,
   inputKey,
+  inputEvent,
   order,
   availableKeys,
+  bindingsMap,
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
@@ -54,19 +59,28 @@ export const InputBind: FC<InputBindProps> = ({
   const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
-  const inputEvents = useMemo(() => events.map(({ title, value }) => ({
-    title: t(title),
-    value,
-  })), [])
+  const inputEvents = useMemo(
+    () => events
+      .map(({ title, value }) => ({
+        title: t(title),
+        value,
+      }))
+      .filter(({ value }) => !bindingsMap[`${inputKey}_${value}`] || value === inputEvent),
+    [bindingsMap, inputEvent, inputKey],
+  )
 
   const inputKeys = useMemo(() => [
     { title: capitalize(inputKey), value: inputKey },
     ...availableKeys.filter((availableKey) => availableKey.value !== inputKey),
-  ], [availableKeys])
+  ], [availableKeys, inputKey])
 
   const handleDeleteBind = useCallback(() => {
     dispatch(deleteValue(bindPath))
   }, [dispatch, bindPath])
+
+  const handleKeyChange = useCallback((newKey: unknown) => {
+    dispatch(setValue(eventPath, !bindingsMap[`${newKey as string}_${PRESSED}`] ? PRESSED : RELEASED))
+  }, [dispatch, eventPath, bindingsMap])
 
   return (
     <Panel
@@ -79,6 +93,7 @@ export const InputBind: FC<InputBindProps> = ({
         component={LabelledSelect}
         label={t('components.keyboardControl.bind.key.title')}
         options={inputKeys}
+        onChange={handleKeyChange}
       />
       <Field
         path={eventPath}
