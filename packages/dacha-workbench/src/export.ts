@@ -1,5 +1,6 @@
 import { EngineContext, SchemasContext } from './view/providers'
-import { useExtension, useConfig } from './view/hooks'
+import { useExtension, useConfig, useCommander } from './view/hooks'
+import { addValue, setValue, deleteValue } from './view/commands'
 import { Field } from './view/modules/inspector/components/field'
 import { Widget } from './view/modules/inspector/components/widget'
 import { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
@@ -10,6 +11,12 @@ import { MultiTextInput, LabelledMultiTextInput } from './view/modules/inspector
 import { MultiSelect, LabelledMultiSelect } from './view/modules/inspector/components/multi-select'
 import { MultiField } from './view/modules/inspector/components/multi-field'
 import { Panel } from './view/modules/inspector/components/panel'
+
+const commands = {
+  setValue,
+  addValue,
+  deleteValue,
+}
 
 window.RemizEditor = {
   EngineContext,
@@ -34,4 +41,7 @@ window.RemizEditor = {
 
   useExtension,
   useConfig,
+  useCommander,
+
+  commands,
 }
