@@ -6,6 +6,7 @@ import React, {
   FC,
   HTMLProps,
 } from 'react'
+import isEqual from 'lodash.isequal'
 
 import { useConfig, useCommander } from '../../../../hooks'
 import { setValue as setValueCmd } from '../../../../commands'
@@ -14,6 +15,7 @@ interface FieldProps extends Omit<HTMLProps<HTMLElement>, 'onBlur' | 'onChange'>
   path: Array<string>
   onBlur?: (value: unknown) => void
   onChange?: (value: unknown) => void
+  onAccept?: (value: unknown) => void
   // comment: Allow to pass any component to Field
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: FC<any>
@@ -25,6 +27,7 @@ export const Field: FC<FieldProps> = ({
   path,
   onBlur = (): void => void 0,
   onChange = (): void => void 0,
+  onAccept = (): void => void 0,
   ...props
 }) => {
   const valueRef = useRef<string>()
@@ -41,9 +44,8 @@ export const Field: FC<FieldProps> = ({
   }, [initialValue])
 
   const handleBlur = useCallback(() => {
-    dispatch(setValueCmd(path, valueRef.current))
     onBlur(valueRef.current)
-  }, [path, dispatch, onBlur])
+  }, [onBlur])
 
   const handleChange = useCallback((newValue: string) => {
     valueRef.current = newValue
@@ -51,11 +53,19 @@ export const Field: FC<FieldProps> = ({
     onChange(newValue)
   }, [onChange])
 
+  const handleAccept = useCallback(() => {
+    if (!isEqual(valueRef.current, initialValue)) {
+      dispatch(setValueCmd(path, valueRef.current))
+      onAccept(valueRef.current)
+    }
+  }, [onAccept, path, dispatch, initialValue])
+
   return (
     <InputComponent
       value={value}
       onBlur={handleBlur}
       onChange={handleChange}
+      onAccept={handleAccept}
       {...props}
     />
   )

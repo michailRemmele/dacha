@@ -6,11 +6,21 @@ import type { NumberInputProps } from '../../../../../types/inputs'
 
 import './style.less'
 
-export const NumberInput: FC<NumberInputProps> = ({ onChange, ...props }) => {
+export const NumberInput: FC<NumberInputProps> = ({
+  onChange,
+  onAccept = (): void => void 0,
+  onBlur = (): void => void 0,
+  ...props
+}) => {
   const handleChange = useCallback(
     (value: number | null) => onChange(value as number),
     [onChange],
   )
+
+  const handleBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
+    onAccept()
+    onBlur(event)
+  }, [onAccept, onBlur])
 
   return (
     <InputNumber
@@ -18,6 +28,8 @@ export const NumberInput: FC<NumberInputProps> = ({ onChange, ...props }) => {
       type="number"
       size="small"
       onChange={handleChange}
+      onBlur={handleBlur}
+      onPressEnter={onAccept}
       {...props}
     />
   )
