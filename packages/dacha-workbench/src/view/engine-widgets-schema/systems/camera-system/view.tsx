@@ -25,7 +25,7 @@ const getItems = (
 
 export const CameraSystemWidget: FC<WidgetProps> = ({ fields, path, references }) => {
   const scene = useConfig(path.slice(0, SCENE_PATH_LENGTH)) as SceneConfig
-  const level = useConfig(typeof scene.level === 'string' ? ['levels', scene.level] : void 0) as LevelConfig
+  const level = useConfig(typeof scene.level === 'string' ? ['levels', `name:${scene.level}`] : void 0) as LevelConfig
   const gameObjects = level?.gameObjects || []
 
   const items = useMemo(() => getItems(gameObjects), [gameObjects])
