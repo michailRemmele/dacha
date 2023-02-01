@@ -57,4 +57,8 @@ export class TemplateCollection {
   getAll(): Array<Template> {
     return Object.values(this.storage);
   }
+
+  delete(name: string): void {
+    delete this.storage[name];
+  }
 }
