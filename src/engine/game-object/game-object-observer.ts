@@ -12,6 +12,8 @@ interface ObserverEventMap {
   'onremove': GameObject
 }
 
+type GetObjectsToRemoveFn = (gameObjects: Array<GameObject>, id: string) => Array<GameObject>;
+
 interface ObserverSubscriptions {
   'onadd': Array<(event: ObserverEventMap['onadd']) => void>
   'onremove': Array<(event: ObserverEventMap['onremove']) => void>
@@ -73,7 +75,7 @@ export class GameObjectObserver implements EventEmitter {
     });
   }
 
-  private _subscribeGameObject(event: GameObjectChangeEvent) {
+  private _subscribeGameObject(event: GameObjectChangeEvent): void {
     const { gameObject } = event;
 
     if (this._test(gameObject)) {
@@ -83,7 +85,7 @@ export class GameObjectObserver implements EventEmitter {
     }
   }
 
-  private _add(gameObject: GameObject) {
+  private _add(gameObject: GameObject): void {
     this._observedGameObjects.push(gameObject);
 
     if (this._test(gameObject)) {
@@ -91,8 +93,8 @@ export class GameObjectObserver implements EventEmitter {
     }
   }
 
-  private _remove(gameObject: GameObject) {
-    const remove = (gameObjects: Array<GameObject>, id: string) => gameObjects.filter(
+  private _remove(gameObject: GameObject): void {
+    const remove: GetObjectsToRemoveFn = (gameObjects, id) => gameObjects.filter(
       (item) => id !== item.getId(),
     );
 
@@ -105,7 +107,7 @@ export class GameObjectObserver implements EventEmitter {
     this._removedFromAccepted.push(gameObject);
   }
 
-  private _test(gameObject: GameObject) {
+  private _test(gameObject: GameObject): boolean {
     if (this._type && this._type !== gameObject.type) {
       return false;
     }
@@ -113,7 +115,7 @@ export class GameObjectObserver implements EventEmitter {
     return this._components.every((component) => gameObject.getComponent(component));
   }
 
-  private _accept(gameObject: GameObject) {
+  private _accept(gameObject: GameObject): void {
     const gameObjectId = gameObject.getId();
 
     if (this._acceptedGameObjectsMap[gameObjectId]) {
@@ -126,7 +128,7 @@ export class GameObjectObserver implements EventEmitter {
     this._addedToAccepted.push(gameObject);
   }
 
-  private _decline(gameObject: GameObject) {
+  private _decline(gameObject: GameObject): void {
     const gameObjectId = gameObject.getId();
 
     if (!this._acceptedGameObjectsMap[gameObjectId]) {
@@ -141,27 +143,27 @@ export class GameObjectObserver implements EventEmitter {
     this._removedFromAccepted.push(gameObject);
   }
 
-  size() {
+  size(): number {
     return this._acceptedGameObjects.length;
   }
 
-  getById(id: string) {
+  getById(id: string): GameObject | undefined {
     return this._acceptedGameObjectsMap[id];
   }
 
-  getByIndex(index: number) {
+  getByIndex(index: number): GameObject | undefined {
     return this._acceptedGameObjects[index];
   }
 
-  forEach(callback: (gameObject: GameObject, index: number) => void) {
+  forEach(callback: (gameObject: GameObject, index: number) => void): void {
     this._acceptedGameObjects.forEach(callback);
   }
 
-  map(callback: (gameObject: GameObject, index: number) => unknown) {
+  map(callback: (gameObject: GameObject, index: number) => unknown): Array<unknown> {
     return this._acceptedGameObjects.map(callback);
   }
 
-  sort(compareFunction: (a: GameObject, b: GameObject) => number) {
+  sort(compareFunction: (a: GameObject, b: GameObject) => number): void {
     this._acceptedGameObjects = this._acceptedGameObjects.sort(compareFunction);
   }
 
@@ -172,7 +174,7 @@ export class GameObjectObserver implements EventEmitter {
   subscribe<K extends keyof ObserverEventMap>(
     type: K,
     callback: (event: ObserverEventMap[K]) => void,
-  ) {
+  ): void {
     if (!this.subscriptions[type]) {
       return;
     }
@@ -183,7 +185,7 @@ export class GameObjectObserver implements EventEmitter {
   unsubscribe<K extends keyof ObserverEventMap>(
     type: K,
     callback: (event: ObserverEventMap[K]) => void,
-  ) {
+  ): void {
     if (!this.subscriptions[type]) {
       return;
     }
@@ -193,15 +195,15 @@ export class GameObjectObserver implements EventEmitter {
     );
   }
 
-  fireEvents() {
-    this.subscriptions.onadd.forEach((callback: (gameObject: GameObject) => void) => {
-      this._addedToAccepted.forEach((gameObject: GameObject) => callback(gameObject));
-    });
-    this._addedToAccepted = [];
-
+  fireEvents(): void {
     this.subscriptions.onremove.forEach((callback: (gameObject: GameObject) => void) => {
       this._removedFromAccepted.forEach((gameObject: GameObject) => callback(gameObject));
     });
     this._removedFromAccepted = [];
+
+    this.subscriptions.onadd.forEach((callback: (gameObject: GameObject) => void) => {
+      this._addedToAccepted.forEach((gameObject: GameObject) => callback(gameObject));
+    });
+    this._addedToAccepted = [];
   }
 }
