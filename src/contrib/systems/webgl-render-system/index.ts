@@ -5,6 +5,7 @@ import { Renderable } from '../../components/renderable';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
 import IOC from '../../../engine/ioc/ioc';
+import type { ResourceLoader } from '../../../engine/resource-loader';
 import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
 
 import { Rectangle } from './geometry/rectangle';
@@ -49,11 +50,6 @@ interface ViewMatrixStats {
   x?: number;
   y?: number;
   scale?: number;
-}
-
-// TODO: Remove once resource loader will be moved to ts
-interface ResourceLoader {
-  load: (resource: string) => unknown;
 }
 
 interface WebGLRendererOptions extends SystemOptions {
@@ -592,7 +588,7 @@ export class RenderSystem implements System {
 
     const { canvas } = gl;
 
-    this.resizeCanvas(canvas);
+    this.resizeCanvas(canvas as unknown as HTMLCanvasElement);
 
     // eslint-disable-next-line no-bitwise
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

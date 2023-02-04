@@ -64,7 +64,7 @@ describe('Contrib -> components -> Renderable', () => {
     renderable.type = 'static';
     renderable.width = 200;
     renderable.height = 400;
-    renderable.slice = void 0;
+    renderable.slice = 55;
     renderable.spacing = 3;
     renderable.extruding = 2;
     renderable.rotation = 90;
@@ -82,7 +82,7 @@ describe('Contrib -> components -> Renderable', () => {
     expect(renderable.type).toEqual('static');
     expect(renderable.width).toEqual(200);
     expect(renderable.height).toEqual(400);
-    expect(renderable.slice).toEqual(void 0);
+    expect(renderable.slice).toEqual(1);
     expect(renderable.spacing).toEqual(3);
     expect(renderable.extruding).toEqual(2);
     expect(renderable.rotation).toEqual(90);

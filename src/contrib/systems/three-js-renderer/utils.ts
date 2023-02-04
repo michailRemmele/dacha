@@ -1,37 +1,30 @@
 import {
-  TextureLoader,
   Texture,
   NearestFilter,
+  RepeatWrapping,
+  ClampToEdgeWrapping,
 } from 'three';
 
 import type { Renderable } from '../../components/renderable';
 import type { Template } from '../../../engine/template';
+import type { ResourceLoader } from '../../../engine/resource-loader';
 import IOC from '../../../engine/ioc/ioc';
 import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
 
 import { SpriteCropper } from './sprite-cropper';
 import { RENDERABLE_COMPONENT_NAME } from './consts';
 
-// TODO: Remove once resource loader will be moved to ts
-interface ResourceLoader {
-  load: (resource: string) => Promise<HTMLImageElement>;
-}
-
-const textureLoader = new TextureLoader();
 const spriteCropper = new SpriteCropper();
 
-export const loadTextures = async (renderable: Renderable): Promise<Array<Texture>> => {
-  let textures: Array<Texture>;
+export const loadImage = (renderable: Renderable): Promise<HTMLImageElement> => {
+  const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
+  return resourceLoader.load(renderable.src) as Promise<HTMLImageElement>;
+};
 
-  if (renderable.type === 'static') {
-    textures = await textureLoader.loadAsync(renderable.src)
-      .then((texture) => [texture]);
-  } else {
-    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
-
-    textures = await resourceLoader.load(renderable.src)
-      .then((spriteImage) => spriteCropper.crop(spriteImage, renderable));
-  }
+export const prepareSprite = (image: HTMLImageElement, renderable: Renderable): Array<Texture> => {
+  const textures = renderable.type === 'static'
+    ? [new Texture(image)]
+    : spriteCropper.crop(image, renderable);
 
   textures.forEach((texture) => {
     texture.magFilter = NearestFilter;
@@ -55,4 +48,31 @@ export const getImagesFromTemplates = (
   }
 
   images[renderable.src] = renderable;
+};
+
+export const getTextureMapKey = ({
+  slice,
+  fit,
+  width = 0,
+  height = 0,
+  src,
+}: Renderable): string => `${slice}_${fit}_${width}_${height}_${src}`;
+
+export const cloneTexture = (renderable: Renderable, texture: Texture): Texture => {
+  const { fit, width = 0, height = 0 } = renderable;
+
+  const repeatX = fit === 'repeat' ? width / (texture.image as HTMLImageElement).width : 1;
+  const repeatY = fit === 'repeat' ? height / (texture.image as HTMLImageElement).height : 1;
+
+  const newTexture = texture.clone();
+  if (fit === 'repeat') {
+    newTexture.wrapS = RepeatWrapping;
+    newTexture.wrapT = RepeatWrapping;
+  } else {
+    newTexture.wrapS = ClampToEdgeWrapping;
+    newTexture.wrapT = ClampToEdgeWrapping;
+  }
+  newTexture.repeat.set(repeatX, repeatY);
+  newTexture.needsUpdate = true;
+  return newTexture;
 };
