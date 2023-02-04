@@ -58,24 +58,21 @@ export const getTextureMapKey = ({
   src,
 }: Renderable): string => `${slice}_${fit}_${width}_${height}_${src}`;
 
-export const updateTextureWrapping = (renderable: Renderable, texture: Texture): void => {
+export const cloneTexture = (renderable: Renderable, texture: Texture): Texture => {
   const { fit, width = 0, height = 0 } = renderable;
 
   const repeatX = fit === 'repeat' ? width / (texture.image as HTMLImageElement).width : 1;
   const repeatY = fit === 'repeat' ? height / (texture.image as HTMLImageElement).height : 1;
 
-  texture.repeat.set(repeatX, repeatY);
-};
-
-export const cloneTexture = (renderable: Renderable, texture: Texture): Texture => {
   const newTexture = texture.clone();
-  if (renderable.fit === 'repeat') {
+  if (fit === 'repeat') {
     newTexture.wrapS = RepeatWrapping;
     newTexture.wrapT = RepeatWrapping;
   } else {
     newTexture.wrapS = ClampToEdgeWrapping;
     newTexture.wrapT = ClampToEdgeWrapping;
   }
+  newTexture.repeat.set(repeatX, repeatY);
   newTexture.needsUpdate = true;
   return newTexture;
 };

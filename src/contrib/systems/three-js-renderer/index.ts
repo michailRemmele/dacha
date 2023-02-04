@@ -35,7 +35,6 @@ import {
   prepareSprite,
   getImagesFromTemplates,
   getTextureMapKey,
-  updateTextureWrapping,
   cloneTexture,
 } from './utils';
 import {
@@ -332,10 +331,6 @@ export class ThreeJSRenderer implements System {
       const texture = textureArray?.[renderable.currentFrame || 0];
 
       updateMaterial(renderable.material.type, material, renderable.material.options, texture);
-
-      if (texture) {
-        updateTextureWrapping(renderable, texture);
-      }
     });
   }
 
