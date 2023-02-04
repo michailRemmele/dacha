@@ -26,11 +26,12 @@ export interface RenderableConfig extends Record<string, unknown> {
 }
 
 export class Renderable extends Component {
+  private _slice?: number;
+
   src: string;
   width: number;
   height: number;
   type: RenderableType;
-  slice?: number;
   spacing: number;
   extruding: number;
   rotation: number;
@@ -52,7 +53,7 @@ export class Renderable extends Component {
     this.width = renderableConfig.width;
     this.height = renderableConfig.height;
     this.type = renderableConfig.type;
-    this.slice = renderableConfig.slice;
+    this._slice = renderableConfig.slice;
     this.spacing = renderableConfig.spacing || 0;
     this.extruding = renderableConfig.extruding || 0;
     this.currentFrame = renderableConfig.type === 'sprite' ? 0 : void 0;
@@ -64,6 +65,14 @@ export class Renderable extends Component {
     this.sortCenter = renderableConfig.sortCenter;
     this.fit = renderableConfig.fit;
     this.material = new Material(renderableConfig.material);
+  }
+
+  get slice(): number {
+    return this.type === 'sprite' ? (this._slice || 0) : 1;
+  }
+
+  set slice(value: number) {
+    this._slice = value;
   }
 
   clone(): Renderable {

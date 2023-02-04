@@ -6,8 +6,6 @@ import {
   PlaneGeometry,
   Mesh,
   Texture,
-  RepeatWrapping,
-  ClampToEdgeWrapping,
   Color,
 } from 'three';
 
@@ -32,7 +30,14 @@ import {
 } from './sort';
 import { LightSubsystem } from './light-subsystem';
 import { createMaterial, updateMaterial } from './material-factory';
-import { loadTextures, getImagesFromTemplates } from './utils';
+import {
+  loadImage,
+  prepareSprite,
+  getImagesFromTemplates,
+  getTextureMapKey,
+  updateTextureWrapping,
+  cloneTexture,
+} from './utils';
 import {
   CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
@@ -56,6 +61,8 @@ export class ThreeJSRenderer implements System {
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
   private renderer: WebGLRenderer;
+  private imageCache: Record<string, HTMLImageElement | undefined | null>;
+  private spriteCache: Record<string, Record<number, Array<Texture>>>;
   private textureMap: Record<string, Array<Texture>>;
   private gameObjectsMap: Record<string, number>;
   private sortFn: SortFn;
@@ -126,6 +133,8 @@ export class ThreeJSRenderer implements System {
     // TODO: Figure out how to set up camera correctly to avoid scale usage
     this.renderScene.scale.set(1, -1, 1);
 
+    this.imageCache = {};
+    this.spriteCache = {};
     this.textureMap = {};
   }
 
@@ -133,15 +142,53 @@ export class ThreeJSRenderer implements System {
     const imagesToLoad = this.getImagesToLoad();
 
     await Promise.all(
-      Object.keys(imagesToLoad).map((key) => {
-        const renderable = imagesToLoad[key];
-
-        return loadTextures(renderable)
-          .then((textures) => {
-            this.textureMap[key] = textures;
-          });
-      }),
+      Object.keys(imagesToLoad).map((key) => this.loadImage(imagesToLoad[key])),
     );
+  }
+
+  private async loadImage(renderable: Renderable): Promise<void> {
+    const { src, slice } = renderable;
+
+    this.imageCache[src] = null;
+    return loadImage(renderable)
+      .then((image) => {
+        this.imageCache[src] = image;
+
+        const sprite = prepareSprite(image, renderable);
+        this.spriteCache[src] ??= {};
+        this.spriteCache[src][slice] = sprite;
+        this.textureMap[getTextureMapKey(renderable)] = sprite.map(
+          (frame) => cloneTexture(renderable, frame),
+        );
+      })
+      .catch(() => {
+        console.warn(`Can't load image by the following url: ${src}`);
+      });
+  }
+
+  private getTextureArray(renderable: Renderable): Array<Texture> | undefined {
+    const { src, slice } = renderable;
+    const image = this.imageCache[src];
+
+    if (image === null) {
+      return void 0;
+    }
+    if (image === undefined) {
+      void this.loadImage(renderable);
+      return void 0;
+    }
+
+    if (image && !this.spriteCache[src][slice]) {
+      this.spriteCache[src][slice] = prepareSprite(image, renderable);
+    }
+    const textureKey = getTextureMapKey(renderable);
+    if (image && this.spriteCache[src][slice] && !this.textureMap[textureKey]) {
+      this.textureMap[textureKey] = this.spriteCache[src][slice].map(
+        (frame) => cloneTexture(renderable, frame),
+      );
+    }
+
+    return this.textureMap[textureKey];
   }
 
   mount(): void {
@@ -191,13 +238,6 @@ export class ThreeJSRenderer implements System {
 
   private handleGameObjectAdd = (gameObject: GameObject): void => {
     const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-
-    if (!this.textureMap[renderable.src]) {
-      void loadTextures(renderable)
-        .then((textures) => {
-          this.textureMap[renderable.src] = textures;
-        });
-    }
 
     const material = createMaterial(renderable.material.type);
     const geometry = new PlaneGeometry(renderable.width, renderable.height);
@@ -287,27 +327,14 @@ export class ThreeJSRenderer implements System {
       object.renderOrder = index;
 
       const material = object.material as MeshStandardMaterial;
-      const texture = this.textureMap[renderable.src]?.[renderable.currentFrame || 0];
+
+      const textureArray = this.getTextureArray(renderable);
+      const texture = textureArray?.[renderable.currentFrame || 0];
 
       updateMaterial(renderable.material.type, material, renderable.material.options, texture);
 
-      if (!texture) {
-        return;
-      }
-
-      if (renderable.fit === 'repeat') {
-        texture.wrapS = RepeatWrapping;
-        texture.wrapT = RepeatWrapping;
-
-        texture.repeat.set(
-          renderable.width / (texture.image as HTMLImageElement).width,
-          renderable.height / (texture.image as HTMLImageElement).height,
-        );
-      } else {
-        texture.wrapS = ClampToEdgeWrapping;
-        texture.wrapT = ClampToEdgeWrapping;
-
-        texture.repeat.set(1, 1);
+      if (texture) {
+        updateTextureWrapping(renderable, texture);
       }
     });
   }

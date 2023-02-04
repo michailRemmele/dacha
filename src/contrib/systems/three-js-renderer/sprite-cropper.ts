@@ -12,9 +12,14 @@ export class SpriteCropper {
   }
 
   crop(sprite: HTMLImageElement, renderable: Renderable): Array<Texture> {
-    const frames = renderable.slice as number;
-    const width = sprite.width / frames;
-    const height = sprite.height;
+    const frames = renderable.slice;
+
+    if (frames === 0) {
+      return [];
+    }
+
+    const width = Math.max(sprite.width / frames, 1);
+    const height = Math.max(sprite.height, 1);
 
     this.canvas.width = width;
     this.canvas.height = height;
@@ -37,7 +42,6 @@ export class SpriteCropper {
       // Some issue with three.js d.ts probably,
       // cause it should take ImageData as first argument
       const texture = new Texture(frameImageData as unknown as HTMLImageElement);
-      texture.needsUpdate = true;
 
       textures[i] = texture;
     }
