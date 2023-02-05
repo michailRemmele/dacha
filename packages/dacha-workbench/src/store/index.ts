@@ -1,2 +1,2 @@
 export { Store } from './store'
-export type { Data } from './types'
+export type { Data, ListenerFn } from './types'

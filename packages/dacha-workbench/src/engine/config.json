@@ -160,7 +160,7 @@
           }
         }
       ],
-      "id": "e660d53b-ba3f-4975-87bb-7dce1466dc6e"
+      "id": "hand"
     },
     {
       "name": "zoom",
@@ -191,7 +191,7 @@
           }
         }
       ],
-      "id": "5dcc225b-46c2-4646-bf0f-7317fef4a5a5"
+      "id": "zoom"
     }
   ],
   "loaders": [],

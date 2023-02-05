@@ -5,7 +5,7 @@ import { Labelled, LabelledProps } from '../labelled'
 import type { InputProps } from '../../../../../types/inputs'
 
 export const TextInput: FC<InputProps> = ({
-  onChange,
+  onChange = (): void => void 0,
   onAccept = (): void => void 0,
   onBlur = (): void => void 0,
   ...props
