@@ -21,6 +21,9 @@ import type { SelectLevelMessage } from '../../../types/messages'
 import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { includesArray } from '../../../utils/includes-array'
 
+const TEMPLATE_PATH_LENGTH = 2
+const GAME_OBJECT_PATH_LENGTH = 4
+
 interface LevelViewerOptions extends SystemOptions {
   mainObjectId: string;
 }
@@ -100,28 +103,24 @@ export class LevelViewer implements System {
   }
 
   private watchStore(): void {
-    const templatesPath = ['templates']
-
     const listener: ListenerFn = (path) => {
-      const { templateCollection, gameObjectCreator } = this
-      if (includesArray(path, templatesPath) && templateCollection && gameObjectCreator) {
-        this.watchTemplates(path, templateCollection, gameObjectCreator)
+      if (includesArray(path, ['templates'])) {
+        this.watchTemplates(path)
+      }
+      if (this.currentLevel && includesArray(path, ['levels', `id:${this.currentLevel}`, 'gameObjects'])) {
+        this.watchGameObjects(path)
       }
     }
 
     this.subscription = this.configStore.subscribe(listener)
   }
 
-  private watchTemplates(
-    path: Array<string>,
-    templateCollection: TemplateCollection,
-    gameObjectCreator: GameObjectCreator,
-  ): void {
-    const templatePath = path.slice(0, 2)
+  private watchTemplates(path: Array<string>): void {
+    const templatePath = path.slice(0, TEMPLATE_PATH_LENGTH)
     const template = this.configStore.get(templatePath) as TemplateConfig
 
-    templateCollection.delete(template.id)
-    templateCollection.register(template)
+    this.templateCollection?.delete(template.id)
+    this.templateCollection?.register(template)
 
     if (!this.currentLevel) {
       return
@@ -130,21 +129,30 @@ export class LevelViewer implements System {
     const levelPath = ['levels', `id:${this.currentLevel}`]
     const { gameObjects } = this.configStore.get(levelPath) as LevelConfig
 
-    const gameObjectsMap = gameObjects.reduce((acc, gameObjectConfig) => {
-      if (template.id === gameObjectConfig.templateId) {
-        acc[gameObjectConfig.id] = gameObjectConfig
+    gameObjects.forEach((gameObjectConfig) => {
+      if (template.id !== gameObjectConfig.templateId) {
+        return
       }
-      return acc
-    }, {} as Record<string, GameObjectConfig>)
 
-    this.gameObjectObserver.getList().forEach((gameObject) => {
-      if (template.id === gameObject.templateId) {
+      const gameObject = this.gameObjectObserver.getById(gameObjectConfig.id)
+
+      if (gameObject) {
         this.gameObjectDestroyer.destroy(gameObject)
-
-        const newGameObject = gameObjectCreator.create(gameObjectsMap[gameObject.id])
-        this.gameObjectSpawner.spawn(newGameObject)
+        this.gameObjectSpawner.spawn(this.gameObjectCreator!.create(gameObjectConfig))
       }
     })
+  }
+
+  private watchGameObjects(path: Array<string>): void {
+    const gameObjectPath = path.slice(0, GAME_OBJECT_PATH_LENGTH)
+    const gameObjectConfig = this.configStore.get(gameObjectPath) as GameObjectConfig
+
+    const gameObject = this.gameObjectObserver.getById(gameObjectConfig.id)
+
+    if (gameObject) {
+      this.gameObjectDestroyer.destroy(gameObject)
+      this.gameObjectSpawner.spawn(this.gameObjectCreator!.create(gameObjectConfig))
+    }
   }
 
   private updateLevels(): void {
