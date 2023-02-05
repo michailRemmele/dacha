@@ -18,7 +18,7 @@ export interface GameObjectConfig {
   children?: Array<GameObjectConfig>
   components?: Array<ComponentConfig>
   fromTemplate?: boolean
-  templateName?: string
+  templateId?: string
 }
 
 export interface LevelConfig {

@@ -14,16 +14,14 @@ export class TemplateCollection {
 
   private buildTemplate(options: TemplateConfig): Template {
     const {
+      id,
       name,
       type,
       components = [],
       children = [],
     } = options;
 
-    const template = new Template();
-
-    template.setName(name);
-    template.setType(type);
+    const template = new Template({ id, name, type });
 
     children.forEach((child) => {
       const childTemplate = this.buildTemplate(child);
@@ -43,22 +41,22 @@ export class TemplateCollection {
   }
 
   register(options: TemplateConfig): void {
-    this.storage[options.name] = this.buildTemplate(options);
+    this.storage[options.id] = this.buildTemplate(options);
   }
 
-  get(name: string): Template {
-    if (!this.storage[name]) {
-      throw new Error(`Can't find template with same name: ${name}`);
+  get(id: string): Template {
+    if (!this.storage[id]) {
+      throw new Error(`Can't find template with the following id: ${id}`);
     }
 
-    return this.storage[name].clone();
+    return this.storage[id].clone();
   }
 
   getAll(): Array<Template> {
     return Object.values(this.storage);
   }
 
-  delete(name: string): void {
-    delete this.storage[name];
+  delete(id: string): void {
+    delete this.storage[id];
   }
 }
