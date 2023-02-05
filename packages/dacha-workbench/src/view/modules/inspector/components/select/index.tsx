@@ -10,7 +10,7 @@ import './style.less'
 export const Select: FC<SelectProps> = ({
   options = [],
   allowEmpty,
-  onChange,
+  onChange = (): void => void 0,
   onAccept = (): void => void 0,
   defaultValue,
   onSelect,

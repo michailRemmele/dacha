@@ -76,7 +76,6 @@
           "id": "1",
           "name": "background_1",
           "fromTemplate": true,
-          "templateName": "background",
           "children": [],
           "components": [
             {
@@ -90,13 +89,13 @@
                 "scaleY": 1
               }
             }
-          ]
+          ],
+          "templateId": "b57c1df3-0145-49c8-b400-7fa06931f941"
         },
         {
           "id": "2",
           "name": "terrain_1",
           "fromTemplate": true,
-          "templateName": "terrain",
           "children": [],
           "components": [
             {
@@ -110,14 +109,14 @@
                 "scaleY": 1
               }
             }
-          ]
+          ],
+          "templateId": "02980f67-2d31-4500-9e4f-9062807e4af1"
         },
         {
           "id": "3",
           "name": "player_1",
           "type": "unit",
           "fromTemplate": true,
-          "templateName": "player",
           "children": [
             {
               "id": "3.1",
@@ -221,7 +220,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
         }
       ],
       "id": "738d1d5d-19da-46ed-b1db-1792e9ce5cdd"

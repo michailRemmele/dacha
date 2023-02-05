@@ -8,7 +8,7 @@ import './style.less'
 
 export const MultiSelect: FC<MultiSelectProps> = ({
   options = [],
-  onChange,
+  onChange = (): void => void 0,
   onBlur = (): void => void 0,
   onAccept = (): void => void 0,
   defaultValue,

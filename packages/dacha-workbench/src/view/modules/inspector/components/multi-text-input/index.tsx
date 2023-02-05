@@ -7,7 +7,7 @@ import type { MultiTextInputProps } from '../../../../../types/inputs'
 import './style.less'
 
 export const MultiTextInput: FC<MultiTextInputProps> = ({
-  onChange,
+  onChange = (): void => void 0,
   onBlur = (): void => void 0,
   onAccept = (): void => void 0,
   defaultValue,
