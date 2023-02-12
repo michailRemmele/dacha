@@ -16,7 +16,7 @@ export class GameObjectSpawner {
 
     if (typeof arg === 'string') {
       newGameObject = this.gameObjectCreator.create({
-        templateName: arg,
+        templateId: arg,
         fromTemplate: true,
         isNew: true,
       });

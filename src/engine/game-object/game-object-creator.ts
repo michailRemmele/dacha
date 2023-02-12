@@ -20,7 +20,7 @@ export interface GameObjectOptions {
   children?: Array<GameObjectOptions>
   components?: Array<ComponentConfig>
   fromTemplate?: boolean
-  templateName?: string
+  templateId?: string
   isNew?: boolean
 }
 
@@ -39,7 +39,7 @@ export class GameObjectCreator {
   private buildFromTemplate(options: GameObjectOptions, template: Template): GameObject {
     const {
       type,
-      templateName = '',
+      templateId = void '',
       components = [],
       children = [],
       isNew = false,
@@ -51,22 +51,22 @@ export class GameObjectCreator {
 
     if (!template) {
       throw new Error(`Can't create game object ${name} from template. `
-        + `The template ${templateName} is null.`);
+        + `The template with id ${String(templateId)} is null.`);
     }
 
     const gameObject = new GameObject({
       id,
       name,
-      type: type || template.getType(),
-      templateName,
+      type: type || template.type,
+      templateId,
     });
 
     if (isNew) {
       template.getChildren().forEach((templateChild) => {
         const childOptions = {
-          name: templateChild.getName(),
-          templateName: templateChild.getName(),
-          type: templateChild.getType(),
+          name: templateChild.name,
+          templateId: templateChild.id,
+          type: templateChild.type,
           fromTemplate: true,
           isNew,
         };
@@ -77,17 +77,17 @@ export class GameObjectCreator {
     } else {
       const templateChildrenMap = template.getChildren().reduce(
         (storage: Record<string, Template>, templateChild) => {
-          storage[templateChild.getName()] = templateChild;
+          storage[templateChild.id] = templateChild;
 
           return storage;
         }, {},
       );
 
       children.forEach((childOptions) => {
-        const { templateName: childTemplateName, fromTemplate } = childOptions;
+        const { templateId: childTemplateId, fromTemplate } = childOptions;
 
         const templateChild = fromTemplate
-          ? templateChildrenMap[childTemplateName as string]
+          ? templateChildrenMap[childTemplateId as string]
           : void 0;
         const gameObjectChild = this.build(childOptions, templateChild);
         gameObject.appendChild(gameObjectChild);
@@ -146,10 +146,10 @@ export class GameObjectCreator {
   }
 
   private build(options: GameObjectOptions, template?: Template): GameObject {
-    const { templateName, fromTemplate } = options;
+    const { templateId, fromTemplate } = options;
 
     if (fromTemplate) {
-      template = template || this.templateCollection.get(templateName as string);
+      template = template || this.templateCollection.get(templateId as string);
 
       return this.buildFromTemplate(options, template);
     }

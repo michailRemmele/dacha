@@ -17,16 +17,16 @@ interface SceneProviderOptions {
 }
 
 export interface SceneLoadOptions {
-  name: string
-  loader?: string
-  level?: string
+  sceneId: string
+  loaderId?: string
+  levelId?: string
   clean?: boolean
   unloadCurrent?: boolean
 }
 
 export interface LevelLoadOptions {
-  name: string
-  loader?: string
+  levelId: string
+  loaderId?: string
 }
 
 export class SceneProvider {
@@ -36,7 +36,7 @@ export class SceneProvider {
   private systems: SystemsMap;
   private helpers: Record<string, HelperFn>;
   private sceneContainer: Record<string, Scene>;
-  private currentSceneName?: string;
+  private currentSceneId?: string;
   private loadedScene?: Scene;
   private gameObjectCreator: GameObjectCreator;
   private templateCollection: TemplateCollection;
@@ -51,17 +51,17 @@ export class SceneProvider {
     templateCollection,
   }: SceneProviderOptions) {
     this.sceneContainer = {};
-    this.currentSceneName = void '';
+    this.currentSceneId = void '';
     this.availableScenes = scenes.reduce((acc: Record<string, SceneConfig>, scene) => {
-      acc[scene.name] = scene;
+      acc[scene.id] = scene;
       return acc;
     }, {});
     this.availableLoaders = loaders.reduce((acc: Record<string, SceneConfig>, scene) => {
-      acc[scene.name] = scene;
+      acc[scene.id] = scene;
       return acc;
     }, {});
     this.availableLevels = levels.reduce((acc: Record<string, LevelConfig>, level) => {
-      acc[level.name] = level;
+      acc[level.id] = level;
       return acc;
     }, {});
     this.systems = systems;
@@ -73,12 +73,12 @@ export class SceneProvider {
 
   prepareLoaders(): Promise<Array<Array<void>>> {
     this.sceneContainer = Object.keys(this.availableLoaders)
-      .reduce((acc: Record<string, Scene>, name) => {
-        const loaderConfig = this.availableLoaders[name];
-        acc[name] = new Scene({
+      .reduce((acc: Record<string, Scene>, id) => {
+        const loaderConfig = this.availableLoaders[id];
+        acc[id] = new Scene({
           ...loaderConfig,
-          gameObjects: loaderConfig.level
-            ? this.availableLevels[loaderConfig.level].gameObjects
+          gameObjects: loaderConfig.levelId
+            ? this.availableLevels[loaderConfig.levelId].gameObjects
             : [],
           availableSystems: this.systems,
           helpers: this.helpers,
@@ -90,8 +90,8 @@ export class SceneProvider {
 
     return Promise.all(
       Object.keys(this.availableLoaders)
-        .reduce((acc: Array<Promise<Array<void>>>, name) => {
-          const asyncLoading = this.sceneContainer[name].load();
+        .reduce((acc: Array<Promise<Array<void>>>, id) => {
+          const asyncLoading = this.sceneContainer[id].load();
           if (asyncLoading) {
             acc.push(asyncLoading);
           }
@@ -101,40 +101,40 @@ export class SceneProvider {
   }
 
   getCurrentScene(): Scene | undefined {
-    if (!this.currentSceneName) {
+    if (!this.currentSceneId) {
       return void 0;
     }
 
-    return this.sceneContainer[this.currentSceneName];
+    return this.sceneContainer[this.currentSceneId];
   }
 
   loadScene({
-    name,
-    loader,
+    sceneId,
+    loaderId,
+    levelId,
     clean = false,
     unloadCurrent = false,
-    level,
   }: SceneLoadOptions): Promise<void> | undefined {
-    if (!this.availableScenes[name]) {
-      throw new Error(`Error while loading the scene. Not found scene with same name: ${name}`);
+    if (!this.availableScenes[sceneId]) {
+      throw new Error(`Error while loading the scene. Not found scene with same id: ${sceneId}`);
     }
 
-    const currentSceneName = this.currentSceneName;
+    const { currentSceneId } = this;
 
     this.leaveCurrentScene();
 
-    if (unloadCurrent && currentSceneName) {
-      this.removeScene(currentSceneName);
+    if (unloadCurrent && currentSceneId) {
+      this.removeScene(currentSceneId);
     }
 
     let scene: Scene;
 
-    if (clean || !this.sceneContainer[name]) {
-      const levelName = level || this.availableScenes[name].level;
+    if (clean || !this.sceneContainer[sceneId]) {
+      const selectedLevelId = levelId || this.availableScenes[sceneId].levelId;
 
       scene = new Scene({
-        ...this.availableScenes[name],
-        gameObjects: levelName ? this.availableLevels[levelName].gameObjects : [],
+        ...this.availableScenes[sceneId],
+        gameObjects: selectedLevelId ? this.availableLevels[selectedLevelId].gameObjects : [],
         availableSystems: this.systems,
         helpers: this.helpers,
         gameObjectCreator: this.gameObjectCreator,
@@ -143,8 +143,8 @@ export class SceneProvider {
 
       const asyncLoading = scene.load();
 
-      if (asyncLoading && loader) {
-        this.setCurrentScene(loader);
+      if (asyncLoading && loaderId) {
+        this.setCurrentScene(loaderId);
       }
 
       if (asyncLoading) {
@@ -153,23 +153,23 @@ export class SceneProvider {
         });
       }
     } else {
-      scene = this.sceneContainer[name];
+      scene = this.sceneContainer[sceneId];
     }
 
-    this.setCurrentScene(scene.getName());
+    this.setCurrentScene(scene.id);
 
     return void 0;
   }
 
-  loadLevel({ name, loader }: LevelLoadOptions): Promise<void> | undefined {
-    if (!this.currentSceneName) {
+  loadLevel({ levelId, loaderId }: LevelLoadOptions): Promise<void> | undefined {
+    if (!this.currentSceneId) {
       throw new Error('Can\'t load the level. Current scene is null');
     }
 
     return this.loadScene({
-      name: this.currentSceneName,
-      level: name,
-      loader,
+      sceneId: this.currentSceneId,
+      levelId,
+      loaderId,
       clean: true,
       unloadCurrent: true,
     });
@@ -186,31 +186,31 @@ export class SceneProvider {
 
     this.leaveCurrentScene();
 
-    const name = this.loadedScene.getName();
-    this.sceneContainer[name] = this.loadedScene;
+    const { id } = this.loadedScene;
+    this.sceneContainer[id] = this.loadedScene;
     this.loadedScene = void 0;
-    this.setCurrentScene(name);
+    this.setCurrentScene(id);
   }
 
-  private setCurrentScene(name: string): void {
-    if (!this.sceneContainer[name]) {
-      throw new Error(`Error while setting new scene. Not found scene with same name: ${name}`);
+  private setCurrentScene(id: string): void {
+    if (!this.sceneContainer[id]) {
+      throw new Error(`Error while setting new scene. Not found scene with same id: ${id}`);
     }
 
-    this.currentSceneName = name;
-    this.sceneContainer[this.currentSceneName].mount();
+    this.currentSceneId = id;
+    this.sceneContainer[this.currentSceneId].mount();
   }
 
   private leaveCurrentScene(): void {
-    if (!this.currentSceneName || !this.sceneContainer[this.currentSceneName]) {
+    if (!this.currentSceneId || !this.sceneContainer[this.currentSceneId]) {
       return;
     }
 
-    this.sceneContainer[this.currentSceneName].unmount();
-    this.currentSceneName = void '';
+    this.sceneContainer[this.currentSceneId].unmount();
+    this.currentSceneId = void '';
   }
 
-  private removeScene(name: string): void {
-    this.sceneContainer = filterByKey(this.sceneContainer, name);
+  private removeScene(id: string): void {
+    this.sceneContainer = filterByKey(this.sceneContainer, id);
   }
 }

@@ -1,26 +1,30 @@
 import type { Component } from '../component';
 
+interface TemplateOptions {
+  id: string
+  name: string
+  type: string
+}
+
 export class Template {
-  private name: string;
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+
   private components: Record<string, Component>;
   private parent?: Template;
   private children: Array<Template>;
-  private type: string;
 
-  constructor() {
-    this.name = '';
+  constructor(options: TemplateOptions) {
+    const { id, name, type } = options;
+
+    this.id = id;
+    this.name = name;
+    this.type = type;
+
     this.components = {};
     this.parent = void 0;
     this.children = [];
-    this.type = '';
-  }
-
-  setName(name: string): void {
-    this.name = name;
-  }
-
-  getName(): string {
-    return this.name;
   }
 
   setParent(parent: Template): void {
@@ -51,19 +55,12 @@ export class Template {
     return Object.keys(this.components);
   }
 
-  setType(type: string): void {
-    this.type = type;
-  }
-
-  getType(): string {
-    return this.type;
-  }
-
   clone(): Template {
-    const template = new Template();
-
-    template.setName(this.name);
-    template.setType(this.type);
+    const template = new Template({
+      id: this.id,
+      name: this.name,
+      type: this.type,
+    });
 
     this.children.forEach((child) => {
       const childTemplate = child.clone();

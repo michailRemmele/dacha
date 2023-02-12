@@ -4,14 +4,14 @@
   "name": "gameObjectFromTemplateExample",
   "type": "example",
   "fromTemplate": true,
-  "templateName": "templateExample",
+  "templateId": "000",
   "children": [
     {
       "id": "004",
       "name": "childFromTemplateExample1",
       "type": "exampleChild",
       "fromTemplate": true,
-      "templateName": "childTemplateExample",
+      "templateId": "001",
       "children": [],
       "components": [
         {
