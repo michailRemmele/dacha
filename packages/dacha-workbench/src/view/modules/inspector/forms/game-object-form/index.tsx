@@ -29,7 +29,7 @@ export const GameObjectForm: FC<FormComponentProps> = ({ path }) => {
         label={t('inspector.gameObjectForm.field.name.label')}
       />
       {templateId ? (
-        <TemplateField id={templateId} />
+        <TemplateField path={path} />
       ) : null}
       <Field
         path={typePath}
