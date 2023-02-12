@@ -2,7 +2,7 @@
   "scenes": [
     {
       "name": "menu",
-      "level": null,
+      "levelId": null,
       "systems": [
         {
           "name": "uiBridge",
@@ -13,7 +13,7 @@
     },
     {
       "name": "game",
-      "level": "island-level",
+      "levelId": "9e30cb58-130a-4732-a313-a459a2ad66b5",
       "systems": [
         {
           "name": "mouseInputSystem",
@@ -517,7 +517,7 @@
   "loaders": [
     {
       "name": "loader",
-      "level": null,
+      "levelId": null,
       "systems": [
         {
           "name": "uiBridge",
@@ -527,6 +527,6 @@
       "id": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
     }
   ],
-  "startScene": "main",
-  "startLoader": "loader"
+  "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",
+  "startLoaderId": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
 }
