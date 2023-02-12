@@ -42,7 +42,10 @@ export class Scene {
   private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
   private templateCollection: TemplateCollection;
 
+  readonly id: string;
+
   constructor({
+    id,
     name,
     gameObjects,
     systems,
@@ -51,6 +54,7 @@ export class Scene {
     availableSystems,
     templateCollection,
   }: SceneOptions) {
+    this.id = id;
     this.name = name;
     this.gameObjects = {};
     this.gameObjectsChangeSubscribers = [];

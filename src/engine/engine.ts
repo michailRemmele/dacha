@@ -45,8 +45,8 @@ export class Engine {
         scenes,
         levels,
         loaders,
-        startScene,
-        startLoader,
+        startSceneId,
+        startLoaderId,
       },
       systems,
       components,
@@ -77,11 +77,11 @@ export class Engine {
     await sceneProvider.prepareLoaders();
 
     const asyncLoading = sceneProvider.loadScene({
-      name: startScene,
-      loader: startLoader,
+      sceneId: startSceneId,
+      loaderId: startLoaderId,
     });
 
-    if (asyncLoading && !startLoader) {
+    if (asyncLoading && !startLoaderId) {
       await asyncLoading;
       sceneProvider.moveToLoaded();
     }

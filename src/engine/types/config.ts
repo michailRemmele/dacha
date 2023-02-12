@@ -35,7 +35,7 @@ export interface SystemConfig {
 export interface SceneConfig {
   id: string
   name: string
-  level?: string
+  levelId?: string
   systems: Array<SystemConfig>
 }
 
@@ -44,6 +44,6 @@ export interface Config {
   levels: Array<LevelConfig>
   templates: Array<TemplateConfig>
   loaders: Array<SceneConfig>
-  startScene: string
-  startLoader?: string
+  startSceneId: string
+  startLoaderId?: string
 }

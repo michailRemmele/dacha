@@ -25,17 +25,17 @@ export class SceneController implements Controller {
     const loadSceneMessages = messageBus?.get(LOAD_SCENE_MSG) || [];
     if (loadSceneMessages.length) {
       const {
-        name,
-        loader,
-        level,
+        sceneId,
+        loaderId,
+        levelId,
         clean,
         unloadCurrent,
       } = loadSceneMessages[loadSceneMessages.length - 1] as LoadSceneMessage;
 
       void this.sceneProvider.loadScene({
-        name,
-        loader,
-        level,
+        sceneId,
+        loaderId,
+        levelId,
         clean,
         unloadCurrent,
       });
@@ -44,13 +44,13 @@ export class SceneController implements Controller {
     const loadLevelMessages = messageBus?.get(LOAD_LEVEL_MSG) || [];
     if (loadLevelMessages.length) {
       const {
-        name,
-        loader,
+        levelId,
+        loaderId,
       } = loadLevelMessages[loadLevelMessages.length - 1] as LoadLevelMessage;
 
       void this.sceneProvider.loadLevel({
-        name,
-        loader,
+        levelId,
+        loaderId,
       });
     }
 
