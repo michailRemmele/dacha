@@ -17,25 +17,25 @@ export const ProjectSettings: FC = () => {
 
   const sceneOptions = useMemo(() => scenes.map((scene) => ({
     title: scene.name,
-    value: scene.name,
+    value: scene.id,
   })), [scenes])
 
   const loaderOptions = useMemo(() => loaders.map((loader) => ({
     title: loader.name,
-    value: loader.name,
+    value: loader.id,
   })), [loaders])
 
   return (
     <Form>
       <Field
-        path={['startScene']}
+        path={['startSceneId']}
         component={LabelledSelect}
         label={t('inspector.projectSettings.field.startScene.label')}
         options={sceneOptions}
         allowEmpty
       />
       <Field
-        path={['startLoader']}
+        path={['startLoaderId']}
         component={LabelledSelect}
         label={t('inspector.projectSettings.field.startLoader.label')}
         options={loaderOptions}

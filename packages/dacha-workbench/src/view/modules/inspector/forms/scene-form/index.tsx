@@ -16,13 +16,13 @@ export const SceneForm: FC<FormComponentProps> = ({ path }) => {
   const { t } = useTranslation()
 
   const namePath = useMemo(() => path.concat('name'), [path])
-  const levelPath = useMemo(() => path.concat('level'), [path])
+  const levelPath = useMemo(() => path.concat('levelId'), [path])
 
   const levels = useConfig('levels') as Array<LevelConfig>
 
   const levelOptions = useMemo(() => levels.map((level) => ({
     title: level.name,
-    value: level.name,
+    value: level.id,
   })), [levels])
 
   return (
