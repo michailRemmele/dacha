@@ -2,18 +2,15 @@ import {
   useState,
   useEffect,
   useMemo,
-  useContext,
   useRef,
 } from 'react'
 import isEqual from 'lodash.isequal'
 
 import { includesArray } from '../../../utils/includes-array'
-import { EngineContext } from '../../providers'
-import type { Store } from '../../../store'
+import { useStore } from '../use-store'
 
 export const useConfig = (path?: Array<string> | string): unknown => {
-  const { sceneContext } = useContext(EngineContext)
-  const configStore = sceneContext.data.configStore as Store
+  const configStore = useStore()
 
   const parsedPath = useMemo(() => {
     if (!path) {
