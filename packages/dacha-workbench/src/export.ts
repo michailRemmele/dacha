@@ -1,5 +1,10 @@
 import { EngineContext, SchemasContext } from './view/providers'
-import { useExtension, useConfig, useCommander } from './view/hooks'
+import {
+  useExtension,
+  useConfig,
+  useCommander,
+  useStore,
+} from './view/hooks'
 import { addValue, setValue, deleteValue } from './view/commands'
 import { Field } from './view/modules/inspector/components/field'
 import { Widget } from './view/modules/inspector/components/widget'
@@ -42,6 +47,7 @@ window.RemizEditor = {
   useExtension,
   useConfig,
   useCommander,
+  useStore,
 
   commands,
 }
