@@ -17,27 +17,23 @@ export interface SelectProps extends InputProps {
   allowEmpty?: boolean
 }
 
-export interface MultiTextInputProps extends Omit<InputProps, 'value' | 'onChange' | 'onAccept'> {
+export interface MultiTextInputProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: Array<string>
   onChange?: (values: Array<string>) => void
-  onAccept?: () => void
 }
 
-export interface MultiSelectProps extends Omit<InputProps, 'value' | 'onChange' | 'onAccept'> {
+export interface MultiSelectProps extends Omit<InputProps, 'value' | 'onChange'> {
   options: Array<SelectOption>
   value: Array<string>
   onChange?: (values: Array<string>) => void
-  onAccept?: () => void
 }
 
-export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'onAccept' | 'max' | 'min' | 'defaultValue' | 'onInput'> {
+export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'onInput'> {
   value: number
   onChange?: (value: number) => void
-  onAccept?: () => void
 }
 
-export interface CheckboxProps extends Omit<InputProps, 'value' | 'onChange' | 'onAccept'> {
+export interface CheckboxProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: boolean
   onChange?: (value: boolean) => void
-  onAccept?: () => void
 }
