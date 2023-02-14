@@ -10,56 +10,77 @@ import { LabelledTextInput } from '../../../modules/inspector/components/text-in
 import { MultiField } from '../../../modules/inspector/components/multi-field'
 import { Field } from '../../../modules/inspector/components/field'
 import { Panel } from '../../../modules/inspector/components/panel'
+import { useCommander } from '../../../hooks'
+import { deleteValue, setValue } from '../../../commands'
 
+import { RELEASED, PRESSED } from './events'
 import { capitalize } from './utils'
+import type { InputEventBindings } from './types'
 
 const events = [
   {
     title: 'components.keyboardControl.event.pressed.title',
-    value: 'PRESSED',
+    value: PRESSED,
   },
   {
     title: 'components.keyboardControl.event.released.title',
-    value: 'RELEASED',
+    value: RELEASED,
   },
 ]
 
 export interface InputBindProps {
   path: Array<string>
+  id: string
   inputKey: string
   inputEvent: string
   order: number
   availableKeys: Array<{ title: string, value: string }>
+  bindingsMap: InputEventBindings
 }
 
 export const InputBind: FC<InputBindProps> = ({
   path,
+  id,
   inputKey,
   inputEvent,
   order,
   availableKeys,
+  bindingsMap,
 }) => {
   const { t } = useTranslation()
+  const { dispatch } = useCommander()
 
-  const inputEvents = useMemo(() => events.map(({ title, value }) => ({
-    title: t(title),
-    value,
-  })), [])
+  const bindPath = useMemo(
+    () => path.concat('inputEventBindings', `id:${id}`),
+    [path],
+  )
+  const keyPath = useMemo(() => bindPath.concat('key'), [bindPath])
+  const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
+  const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
+  const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
+
+  const inputEvents = useMemo(
+    () => events
+      .map(({ title, value }) => ({
+        title: t(title),
+        value,
+      }))
+      .filter(({ value }) => !bindingsMap[`${inputKey}_${value}`] || value === inputEvent),
+    [bindingsMap, inputEvent, inputKey],
+  )
 
   const inputKeys = useMemo(() => [
     { title: capitalize(inputKey), value: inputKey },
     ...availableKeys.filter((availableKey) => availableKey.value !== inputKey),
-  ], [availableKeys])
+  ], [availableKeys, inputKey])
 
-  const handleKeyChange = useCallback(() => {
-    // TODO: Implement key change callback
-  }, [])
-  const handleEventChange = useCallback(() => {
-    // TODO: Implement event change callback
-  }, [])
   const handleDeleteBind = useCallback(() => {
-    // TODO: Implement deletion of event bind
-  }, [])
+    dispatch(deleteValue(bindPath))
+  }, [dispatch, bindPath])
+
+  const handleKeyChange = useCallback((newKey: unknown) => {
+    dispatch(setValue(eventPath, !bindingsMap[`${newKey as string}_${PRESSED}`] ? PRESSED : RELEASED))
+  }, [dispatch, eventPath, bindingsMap])
 
   return (
     <Panel
@@ -67,20 +88,21 @@ export const InputBind: FC<InputBindProps> = ({
       title={t('components.keyboardControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
-      <LabelledSelect
-        options={inputKeys}
-        value={inputKey}
-        onChange={handleKeyChange}
+      <Field
+        path={keyPath}
+        component={LabelledSelect}
         label={t('components.keyboardControl.bind.key.title')}
-      />
-      <LabelledSelect
-        options={inputEvents}
-        value={inputEvent}
-        onChange={handleEventChange}
-        label={t('components.keyboardControl.bind.event.title')}
+        options={inputKeys}
+        onChange={handleKeyChange}
       />
       <Field
-        path={path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'messageType')}
+        path={eventPath}
+        component={LabelledSelect}
+        label={t('components.keyboardControl.bind.event.title')}
+        options={inputEvents}
+      />
+      <Field
+        path={messageTypePath}
         component={LabelledTextInput}
         label={t('components.keyboardControl.bind.messageType.title')}
       />
@@ -88,7 +110,7 @@ export const InputBind: FC<InputBindProps> = ({
         {t('components.keyboardControl.bind.attributes.title')}
       </span>
       <MultiField
-        path={path.concat('inputEventBindings', `${inputKey}_${inputEvent}`, 'attrs')}
+        path={attrsPath}
       />
     </Panel>
   )

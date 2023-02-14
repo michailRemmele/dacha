@@ -6,9 +6,10 @@ import React, {
 } from 'react'
 import { Tree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
-import type { Config } from 'remiz'
+import type { SceneConfig } from 'remiz'
 
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
+import { useConfig } from '../../../../hooks'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { DataNodeWithPath, SelectFn } from '../../../../../types/tree-node'
 
@@ -19,15 +20,11 @@ interface ScenesListProps {
 }
 
 export const ScenesList: FC<ScenesListProps> = ({ isLoaders = false }) => {
-  const { sceneContext, pushMessage } = useContext(EngineContext)
-  const {
-    entity: selectedEntity,
-    path: selectedEntityPath,
-  } = useContext(SelectedEntityContext)
+  const { pushMessage } = useContext(EngineContext)
+  const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
-  const projectConfig = sceneContext.data.projectConfig as Config
-  const scenes = isLoaders ? projectConfig.loaders : projectConfig.scenes
-
+  const scenes = useConfig(isLoaders ? 'loaders' : 'scenes') as Array<SceneConfig>
+  const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseScenes(scenes, isLoaders), [scenes])
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {

@@ -1,53 +1,19 @@
 import React, {
-  useContext,
-  useMemo,
   useCallback,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
+import { v4 as uuidv4 } from 'uuid'
 
-import { LabelledSelect } from '../select'
-import { LabelledTextInput } from '../text-input'
-import { LabelledNumberInput } from '../number-input'
-import { EngineContext } from '../../../../providers'
-import { get, Data } from '../../../../utils/get'
-import { LabelledCheckbox } from '../checkbox'
-import { Panel } from '../panel'
+import { useConfig, useCommander } from '../../../../hooks'
+import { addValue } from '../../../../commands'
 import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 
+import { Entry } from './entry'
+import type { MultiFieldEntry } from './types'
+
 import './style.less'
-
-const TYPES = [
-  {
-    title: 'string',
-    value: 'string',
-  },
-  {
-    title: 'number',
-    value: 'number',
-  },
-  {
-    title: 'boolean',
-    value: 'boolean',
-  },
-]
-
-const TYPES_MAP = {
-  string: LabelledTextInput,
-  number: LabelledNumberInput,
-  boolean: LabelledCheckbox,
-}
-
-type MultiFieldValues = Record<string, string | number | boolean>
-
-type MultiFieldEntryType = 'string' | 'number' | 'boolean'
-
-interface MultiFieldEntry {
-  name: string
-  type: MultiFieldEntryType
-  value: string | number | boolean
-}
 
 interface MultiFieldProps {
   path: Array<string>
@@ -55,81 +21,38 @@ interface MultiFieldProps {
 
 export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   const { t } = useTranslation(NAMESPACE_EDITOR)
+  const { dispatch } = useCommander()
 
-  const { sceneContext } = useContext(EngineContext)
-
-  const projectConfig = sceneContext.data.projectConfig as Data
-
-  const entries = useMemo<Array<MultiFieldEntry>>(() => {
-    const values = get(projectConfig, path) as MultiFieldValues
-
-    return Object.keys(values).map((key) => ({
-      name: key,
-      type: typeof values[key] as MultiFieldEntryType,
-      value: values[key],
-    }))
-  }, [projectConfig])
-
-  const handleTypeChange = useCallback(() => {
-
-  }, [])
-
-  const handleNameChange = useCallback(() => {
-    // TODO: Implement field name update
-  }, [])
-
-  const handleChangeValue = useCallback(() => {
-    // TODO: Implement field value update
-  }, [])
+  const values = useConfig(path) as Array<MultiFieldEntry>
 
   const handleAddField = useCallback(() => {
-    // TODO: Implement field addition
-  }, [])
+    dispatch(addValue(path, {
+      id: uuidv4(),
+      name: '',
+      type: 'string',
+      value: '',
+    }))
+  }, [dispatch, path])
 
-  const handleDeleteField = useCallback(() => {
-    // TODO: Implement field deletion
-  }, [])
-
-  // Изменение типа поля кажется в стейте будет делаться
   return (
     <div className="multifield">
-      {!entries.length && (
+      {!values.length && (
         <div className="multifield__no-fields">
           {t('inspector.multifield.noFields.title')}
         </div>
       )}
-      {Boolean(entries.length) && (
+      {Boolean(values.length) && (
         <ul className="multifield__fields">
-          {entries.map((entry, index) => {
-            // comment: It's hard to merge different Input types in one component
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const InputField = TYPES_MAP[entry.type] as FC<any>
-            return (
-              <li key={entry.name} className="multifield__field">
-                <Panel
-                  title={t('inspector.multifield.field.title', { index: index + 1 })}
-                  onDelete={handleDeleteField}
-                >
-                  <LabelledTextInput
-                    value={entry.name}
-                    onChange={handleNameChange}
-                    label={t('inspector.multifield.field.name.title')}
-                  />
-                  <LabelledSelect
-                    options={TYPES}
-                    value={entry.type}
-                    onChange={handleTypeChange}
-                    label={t('inspector.multifield.field.type.title')}
-                  />
-                  <InputField
-                    value={entry.value}
-                    onChange={handleChangeValue}
-                    label={t('inspector.multifield.field.value.title')}
-                  />
-                </Panel>
-              </li>
-            )
-          })}
+          {values.map((entry, index) => (
+            <li key={entry.id} className="multifield__field">
+              <Entry
+                path={path}
+                id={entry.id}
+                type={entry.type}
+                order={index}
+              />
+            </li>
+          ))}
         </ul>
       )}
       <Button

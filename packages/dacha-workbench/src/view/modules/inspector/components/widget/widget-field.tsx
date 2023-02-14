@@ -1,9 +1,14 @@
-import React, { useContext, FC } from 'react'
+import React, {
+  useMemo,
+  useRef,
+  useEffect,
+  FC,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { EngineContext } from '../../../../providers'
 import { Field } from '../field'
-import { get, Data } from '../../../../utils/get'
+import { useConfig, useCommander } from '../../../../hooks'
+import { deleteValue } from '../../../../commands'
 import type { Field as FieldSchema, Reference } from '../../../../../types/widget-schema'
 
 import { fieldTypes } from './field-types'
@@ -17,22 +22,35 @@ interface WidgetFieldProps {
 
 export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) => {
   const { t } = useTranslation()
+  const { dispatch } = useCommander()
 
-  const { sceneContext } = useContext(EngineContext)
+  const dependencyPath = useMemo(
+    () => (field.dependency ? path.concat(field.dependency.name.split('.')) : void 0),
+    [path, field],
+  )
+  const fieldPath = useMemo(() => path.concat(field.name.split('.')), [path, field])
 
-  const projectConfig = sceneContext.data.projectConfig as Data
+  const value = useConfig(dependencyPath)
 
-  if (field.dependency) {
-    const value = get(projectConfig, path.concat(field.dependency.name.split('.')))
+  const visible = !field.dependency || checkDependency(value, field.dependency.value)
+  const visibleRef = useRef(visible)
 
-    if (!checkDependency(value, field.dependency.value)) {
-      return null
+  useEffect(() => {
+    if (visibleRef.current !== visible) {
+      if (!visible) {
+        dispatch(deleteValue(fieldPath))
+      }
+      visibleRef.current = visible
     }
+  }, [visible])
+
+  if (!visible) {
+    return null
   }
 
   return (
     <Field
-      path={path.concat(field.name.split('.'))}
+      path={fieldPath}
       label={t(field.title)}
       component={fieldTypes[field.type] ? fieldTypes[field.type] : fieldTypes.string}
       {...field.referenceId ? { reference: references?.[field.referenceId] } : {}}

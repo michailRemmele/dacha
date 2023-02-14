@@ -1,11 +1,9 @@
-import React, { useContext, useMemo, FC } from 'react'
+import React, { useMemo, FC } from 'react'
 import type { SceneConfig, LevelConfig, GameObjectConfig } from 'remiz'
 
 import type { References, WidgetProps } from '../../../../types/widget-schema'
-import type { Data } from '../../../utils/get'
-import { get } from '../../../utils/get'
 import { Widget } from '../../../modules/inspector/components/widget'
-import { EngineContext } from '../../../providers'
+import { useConfig } from '../../../hooks'
 
 const SCENE_PATH_LENGTH = 2
 
@@ -26,20 +24,11 @@ const getItems = (
 }, [] as Array<{ title: string, value: string }>)
 
 export const CameraSystemWidget: FC<WidgetProps> = ({ fields, path, references }) => {
-  const { sceneContext } = useContext(EngineContext)
-  const projectConfig = sceneContext.data.projectConfig as Data
+  const scene = useConfig(path.slice(0, SCENE_PATH_LENGTH)) as SceneConfig
+  const level = useConfig(typeof scene.levelId === 'string' ? ['levels', `id:${scene.levelId}`] : void 0) as LevelConfig
+  const gameObjects = level?.gameObjects || []
 
-  const items = useMemo(() => {
-    const scene = get(projectConfig, path.slice(0, SCENE_PATH_LENGTH)) as SceneConfig
-
-    if (typeof scene.level !== 'string') {
-      return []
-    }
-
-    const { gameObjects } = get(projectConfig, ['levels', scene.level]) as LevelConfig
-
-    return getItems(gameObjects)
-  }, [projectConfig, path])
+  const items = useMemo(() => getItems(gameObjects), [gameObjects])
 
   const extReferences: References = useMemo(() => ({
     ...references,

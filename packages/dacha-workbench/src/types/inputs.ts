@@ -2,7 +2,8 @@ import type { HTMLProps } from 'react'
 
 export interface InputProps extends Omit<HTMLProps<HTMLInputElement>, 'size' | 'ref' | 'onChange'> {
   value: string
-  onChange: (value: string) => void
+  onChange?: (value: string) => void
+  onAccept?: () => void
 }
 
 export interface SelectOption {
@@ -18,21 +19,21 @@ export interface SelectProps extends InputProps {
 
 export interface MultiTextInputProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: Array<string>
-  onChange: (values: Array<string>) => void
+  onChange?: (values: Array<string>) => void
 }
 
 export interface MultiSelectProps extends Omit<InputProps, 'value' | 'onChange'> {
   options: Array<SelectOption>
   value: Array<string>
-  onChange: (values: Array<string>) => void
+  onChange?: (values: Array<string>) => void
 }
 
 export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'onInput'> {
   value: number
-  onChange: (value: number) => void
+  onChange?: (value: number) => void
 }
 
 export interface CheckboxProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: boolean
-  onChange: (value: boolean) => void
+  onChange?: (value: boolean) => void
 }

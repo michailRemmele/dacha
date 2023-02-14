@@ -9,12 +9,10 @@ import type { MessageBus } from 'remiz'
 import { EngineContext } from '../engine-provider'
 import { INSPECT_ENTITY_MSG } from '../../../consts/message-types'
 import { InspectEntityMessage } from '../../../types/messages'
-import { get, Data } from '../../utils/get'
 
 import { getEntityType, EntityType } from './get-entity-type'
 
 interface SelectedEntityData {
-  entity?: unknown
   path?: Array<string>
   type?: EntityType
 }
@@ -30,11 +28,10 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
 }): JSX.Element => {
   const [entityData, setEntityData] = useState<SelectedEntityData>({})
 
-  const { sceneContext, messageBusObserver } = useContext(EngineContext) || {}
-  const projectConfig = sceneContext?.data.projectConfig as Data || undefined
+  const { messageBusObserver } = useContext(EngineContext) || {}
 
   useEffect(() => {
-    if (!projectConfig) {
+    if (!messageBusObserver) {
       return () => void 0
     }
 
@@ -46,7 +43,6 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
         const { path } = messages[messages.length - 1]
 
         setEntityData({
-          entity: get(projectConfig, path),
           path,
           type: getEntityType(path),
         })
@@ -59,7 +55,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
       setEntityData({})
       messageBusObserver.unsubscribe(handleMessageBusUpdate)
     }
-  }, [messageBusObserver, projectConfig])
+  }, [messageBusObserver])
 
   return (
     <SelectedEntityContext.Provider value={entityData}>
