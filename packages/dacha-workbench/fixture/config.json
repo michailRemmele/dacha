@@ -263,7 +263,8 @@
                 "sortingLayer": "terrain",
                 "fit": "repeat",
                 "material": {
-                  "type": "basic"
+                  "type": "basic",
+                  "options": {}
                 }
               }
             }
@@ -303,7 +304,8 @@
                 "sortingLayer": "background",
                 "fit": "repeat",
                 "material": {
-                  "type": "basic"
+                  "type": "basic",
+                  "options": {}
                 }
               }
             }
@@ -354,7 +356,8 @@
                 "sortingLayer": "units",
                 "fit": "stretch",
                 "material": {
-                  "type": "basic"
+                  "type": "basic",
+                  "options": {}
                 }
               }
             }
@@ -428,7 +431,8 @@
             "sortingLayer": "units",
             "fit": "stretch",
             "material": {
-              "type": "basic"
+              "type": "basic",
+              "options": {}
             }
           }
         }
@@ -467,7 +471,8 @@
             "sortingLayer": "background",
             "fit": "repeat",
             "material": {
-              "type": "basic"
+              "type": "basic",
+              "options": {}
             }
           }
         }
@@ -506,7 +511,8 @@
             "sortingLayer": "terrain",
             "fit": "repeat",
             "material": {
-              "type": "basic"
+              "type": "basic",
+              "options": {}
             }
           }
         }
