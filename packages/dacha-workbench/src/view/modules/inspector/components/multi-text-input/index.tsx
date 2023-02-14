@@ -7,12 +7,19 @@ import type { MultiTextInputProps } from '../../../../../types/inputs'
 import './style.less'
 
 export const MultiTextInput: FC<MultiTextInputProps> = ({
-  onChange,
+  onChange = (): void => void 0,
+  onBlur = (): void => void 0,
+  onAccept = (): void => void 0,
   defaultValue,
   onSelect,
   ...props
 }) => {
   const handleChange = useCallback((values: Array<string>) => onChange(values), [onChange])
+
+  const handleBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
+    onAccept()
+    onBlur(event)
+  }, [onBlur, onAccept])
 
   const dropdownRender = useCallback(() => null as unknown as ReactElement, [])
 
@@ -24,6 +31,7 @@ export const MultiTextInput: FC<MultiTextInputProps> = ({
       size="small"
       mode="tags"
       onChange={handleChange}
+      onBlur={handleBlur}
       dropdownRender={dropdownRender}
       {...props}
     />

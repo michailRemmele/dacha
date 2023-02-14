@@ -5,10 +5,18 @@ import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import { Labelled, LabelledProps } from '../labelled'
 import type { CheckboxProps } from '../../../../../types/inputs'
 
-export const Checkbox: FC<CheckboxProps> = ({ onChange, value, ...props }) => {
+export const Checkbox: FC<CheckboxProps> = ({
+  onChange = (): void => void 0,
+  onAccept = (): void => void 0,
+  value,
+  ...props
+}) => {
   const handleChange = useCallback(
-    (event: CheckboxChangeEvent) => onChange(event.target.checked),
-    [onChange],
+    (event: CheckboxChangeEvent) => {
+      onChange(event.target.checked)
+      onAccept()
+    },
+    [onChange, onAccept],
   )
 
   return (

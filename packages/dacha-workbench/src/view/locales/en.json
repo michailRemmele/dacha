@@ -15,6 +15,14 @@
     "tab.entityInspector": "Inspector",
     "tab.projectSettings": "Project settings",
 
+    "entityInspector.level.title": "Level",
+    "entityInspector.gameObject.title": "Game Object",
+    "entityInspector.template.title": "Template",
+    "entityInspector.scene.title": "Scene",
+    "entityInspector.loader.title": "Loader",
+
+    "entityInspector.copyIdButton.title": "Copy id to clipboard",
+
     "sceneForm.field.name.label": "Name",
     "sceneForm.field.level.label": "Level",
 

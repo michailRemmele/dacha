@@ -11,7 +11,7 @@ import {
   contribSystems,
 } from 'remiz'
 
-import config from '../../../engine/config.json'
+import { editorConfig } from '../../../engine/config'
 import { editorSystems, editorComponents } from '../../../engine'
 
 interface EngineProviderProps {
@@ -24,7 +24,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
   const [context, setContext] = useState<UiInitFnOptions>()
 
   const editorEngine = useMemo(() => new Engine({
-    config,
+    config: editorConfig,
     systems: {
       ...contribSystems,
       ...editorSystems,

@@ -8,12 +8,19 @@ import './style.less'
 
 export const MultiSelect: FC<MultiSelectProps> = ({
   options = [],
-  onChange,
+  onChange = (): void => void 0,
+  onBlur = (): void => void 0,
+  onAccept = (): void => void 0,
   defaultValue,
   onSelect,
   ...props
 }) => {
   const handleChange = useCallback((values: Array<string>) => onChange(values), [onChange])
+
+  const handleBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
+    onAccept()
+    onBlur(event)
+  }, [onBlur, onAccept])
 
   return (
     <AntdSelect
@@ -21,6 +28,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
       size="small"
       mode="multiple"
       onChange={handleChange}
+      onBlur={handleBlur}
       {...props}
     >
       {options.map((option) => (

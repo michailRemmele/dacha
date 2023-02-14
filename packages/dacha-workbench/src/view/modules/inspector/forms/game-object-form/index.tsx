@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { GameObjectConfig } from 'remiz'
 
@@ -8,30 +8,31 @@ import {
   Form,
   ComponentList,
 } from '../../components'
+import { useConfig } from '../../../../hooks'
 import type { FormComponentProps } from '../types'
 
-export const GameObjectForm: FC<FormComponentProps> = ({ path, entity }) => {
+import { TemplateField } from './template-field'
+
+export const GameObjectForm: FC<FormComponentProps> = ({ path }) => {
   const { t } = useTranslation()
 
-  const { templateName } = (entity as GameObjectConfig)
+  const namePath = useMemo(() => path.concat('name'), [path])
+  const typePath = useMemo(() => path.concat('type'), [path])
+
+  const { templateId } = useConfig(path) as GameObjectConfig
 
   return (
     <Form>
       <Field
-        path={path.concat('name')}
+        path={namePath}
         component={LabelledTextInput}
         label={t('inspector.gameObjectForm.field.name.label')}
       />
-      {templateName ? (
-        <Field
-          path={path.concat('templateName')}
-          component={LabelledTextInput}
-          label={t('inspector.gameObjectForm.field.templateName.label')}
-          disabled
-        />
+      {templateId ? (
+        <TemplateField path={path} />
       ) : null}
       <Field
-        path={path.concat('type')}
+        path={typePath}
         component={LabelledTextInput}
         label={t('inspector.gameObjectForm.field.type.label')}
       />

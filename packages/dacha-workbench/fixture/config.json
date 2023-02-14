@@ -2,17 +2,18 @@
   "scenes": [
     {
       "name": "menu",
-      "level": null,
+      "levelId": null,
       "systems": [
         {
           "name": "uiBridge",
           "options": {}
         }
-      ]
+      ],
+      "id": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a"
     },
     {
       "name": "game",
-      "level": "island-level",
+      "levelId": "9e30cb58-130a-4732-a313-a459a2ad66b5",
       "systems": [
         {
           "name": "mouseInputSystem",
@@ -63,8 +64,9 @@
             ]
           }
         }
-      ]
-    }    
+      ],
+      "id": "076c54c9-503e-48b5-a793-0ce33c9265c3"
+    }
   ],
   "levels": [
     {
@@ -74,7 +76,6 @@
           "id": "1",
           "name": "background_1",
           "fromTemplate": true,
-          "templateName": "background",
           "children": [],
           "components": [
             {
@@ -88,13 +89,13 @@
                 "scaleY": 1
               }
             }
-          ]
+          ],
+          "templateId": "b57c1df3-0145-49c8-b400-7fa06931f941"
         },
         {
           "id": "2",
           "name": "terrain_1",
           "fromTemplate": true,
-          "templateName": "terrain",
           "children": [],
           "components": [
             {
@@ -108,14 +109,14 @@
                 "scaleY": 1
               }
             }
-          ]
+          ],
+          "templateId": "02980f67-2d31-4500-9e4f-9062807e4af1"
         },
         {
           "id": "3",
           "name": "player_1",
           "type": "unit",
           "fromTemplate": true,
-          "templateName": "player",
           "children": [
             {
               "id": "3.1",
@@ -159,37 +160,71 @@
             {
               "name": "keyboardControl",
               "config": {
-                "inputEventBindings": {
-                  "W_PRESSED": {
+                "inputEventBindings": [
+                  {
+                    "id": "926f76fd-50e2-4783-a6ff-8cbede1c3fce",
+                    "key": "W",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 270
-                    }
+                    "attrs": [
+                      {
+                        "id": "996ba61b-507a-4030-aa89-009854b928e5",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 270
+                      }
+                    ]
                   },
-                  "A_PRESSED": {
+                  {
+                    "id": "33cded5b-f3e8-41f2-9c0c-bc473e79e0e2",
+                    "key": "A",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 180
-                    }
+                    "attrs": [
+                      {
+                        "id": "46a78e5f-0872-4ae0-b7cd-bafe5938ed5d",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 180
+                      }
+                    ]
                   },
-                  "S_PRESSED": {
+                  {
+                    "id": "de0cda01-8c99-493c-88ff-efac3c80c0e5",
+                    "key": "S",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 90
-                    }
+                    "attrs": [
+                      {
+                        "id": "c9508922-69c8-4fb5-8717-3a3eb7b799b3",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 90
+                      }
+                    ]
                   },
-                  "D_PRESSED": {
+                  {
+                    "id": "e13331a9-59eb-4412-9292-bd743e3b14fd",
+                    "key": "D",
+                    "event": "PRESSED",
                     "messageType": "MOVEMENT",
-                    "attrs": {
-                      "angle": 0
-                    }
+                    "attrs": [
+                      {
+                        "id": "50539a91-0f39-436c-9efc-a5ac0f766e3d",
+                        "name": "angle",
+                        "type": "number",
+                        "value": 0
+                      }
+                    ]
                   }
-                }
+                ]
               }
             }
-          ]
+          ],
+          "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
         }
-      ]
+      ],
+      "id": "738d1d5d-19da-46ed-b1db-1792e9ce5cdd"
     },
     {
       "name": "island-level",
@@ -219,7 +254,10 @@
                 "width": 320,
                 "height": 320,
                 "rotation": 0,
-                "sortCenter": [ 0, 0 ],
+                "sortCenter": [
+                  0,
+                  0
+                ],
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "terrain",
@@ -256,7 +294,10 @@
                 "width": 640,
                 "height": 640,
                 "rotation": 0,
-                "sortCenter": [ 0, 0 ],
+                "sortCenter": [
+                  0,
+                  0
+                ],
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "background",
@@ -304,7 +345,10 @@
                 "width": 26,
                 "height": 26,
                 "rotation": 0,
-                "sortCenter": [ 0, 0 ],
+                "sortCenter": [
+                  0,
+                  0
+                ],
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "units",
@@ -316,7 +360,8 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "9e30cb58-130a-4732-a313-a459a2ad66b5"
     }
   ],
   "templates": [
@@ -327,7 +372,8 @@
         {
           "name": "playerHitBox",
           "children": [],
-          "components": []
+          "components": [],
+          "id": "2d5813ae-1d88-4582-b55e-608f67df1ddf"
         }
       ],
       "components": [
@@ -373,7 +419,10 @@
             "width": 47,
             "height": 52,
             "rotation": 0,
-            "sortCenter": [ 0, 0 ],
+            "sortCenter": [
+              0,
+              0
+            ],
             "flipX": true,
             "flipY": false,
             "sortingLayer": "units",
@@ -383,7 +432,8 @@
             }
           }
         }
-      ]
+      ],
+      "id": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
     },
     {
       "name": "background",
@@ -408,7 +458,10 @@
             "width": 1000,
             "height": 1000,
             "rotation": 0,
-            "sortCenter": [ 0, 0 ],
+            "sortCenter": [
+              0,
+              0
+            ],
             "flipX": false,
             "flipY": false,
             "sortingLayer": "background",
@@ -418,7 +471,8 @@
             }
           }
         }
-      ]
+      ],
+      "id": "b57c1df3-0145-49c8-b400-7fa06931f941"
     },
     {
       "name": "terrain",
@@ -443,7 +497,10 @@
             "width": 408,
             "height": 408,
             "rotation": 0,
-            "sortCenter": [ 0, 0 ],
+            "sortCenter": [
+              0,
+              0
+            ],
             "flipX": false,
             "flipY": false,
             "sortingLayer": "terrain",
@@ -453,21 +510,23 @@
             }
           }
         }
-      ]
+      ],
+      "id": "02980f67-2d31-4500-9e4f-9062807e4af1"
     }
   ],
   "loaders": [
     {
       "name": "loader",
-      "level": null,
+      "levelId": null,
       "systems": [
         {
           "name": "uiBridge",
           "options": {}
         }
-      ]
+      ],
+      "id": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
     }
   ],
-  "startScene": "main",
-  "startLoader": "loader"
+  "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",
+  "startLoaderId": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
 }

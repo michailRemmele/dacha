@@ -10,13 +10,17 @@ import './style.less'
 export const Select: FC<SelectProps> = ({
   options = [],
   allowEmpty,
-  onChange,
+  onChange = (): void => void 0,
+  onAccept = (): void => void 0,
   defaultValue,
   onSelect,
   ...props
 }) => {
   const { t } = useTranslation()
-  const handleChange = useCallback((value: string) => onChange(value), [onChange])
+  const handleChange = useCallback((value: string) => {
+    onChange(value)
+    onAccept()
+  }, [onChange, onAccept])
 
   return (
     <AntdSelect

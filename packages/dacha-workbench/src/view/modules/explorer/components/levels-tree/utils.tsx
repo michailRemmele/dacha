@@ -9,7 +9,7 @@ const parseGameObject = (
   path: Array<string>,
 ): DataNodeWithPath => {
   const isLeaf = !gameObject?.children?.length
-  const gameObjectPath = path.concat(gameObject.name)
+  const gameObjectPath = path.concat(`id:${gameObject.id}`)
 
   const node: DataNodeWithPath = {
     key: gameObject.id,
@@ -32,11 +32,11 @@ const parseGameObject = (
 export const parseLevels = (
   levels: Array<LevelConfig>,
 ): Array<DataNodeWithPath> => levels.map((level) => ({
-  key: level.name,
+  key: level.id,
   title: level.name,
-  path: ['levels', level.name],
+  path: ['levels', `id:${level.id}`],
   children: level.gameObjects.map(
-    (gameObject) => parseGameObject(gameObject, ['levels', level.name, 'gameObjects']),
+    (gameObject) => parseGameObject(gameObject, ['levels', `id:${level.id}`, 'gameObjects']),
   ),
 }))
 
@@ -49,9 +49,5 @@ export const getKey = (entity?: unknown, path?: Array<string>): string | undefin
     return void ''
   }
 
-  if (path.length === 2) {
-    return (entity as LevelConfig).name
-  }
-
-  return (entity as GameObjectConfig).id
+  return (entity as GameObjectConfig | LevelConfig).id
 }

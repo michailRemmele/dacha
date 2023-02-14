@@ -4,17 +4,15 @@ import { FileOutlined } from '@ant-design/icons'
 
 import { DataNodeWithPath } from '../../../../../types/tree-node'
 
-const getHash = (path: Array<string>): string => `${path.length}-${path.join('')}`
-
 const parseTemplate = (
   template: TemplateConfig,
   path: Array<string>,
 ): DataNodeWithPath => {
   const isLeaf = !template?.children?.length
-  const templatePath = path.concat(template.name)
+  const templatePath = path.concat(`id:${template.id}`)
 
   const node: DataNodeWithPath = {
-    key: getHash(templatePath),
+    key: template.id,
     title: template.name,
     path: templatePath,
     icon: <FileOutlined />,
@@ -44,5 +42,5 @@ export const getKey = (entity?: unknown, path?: Array<string>): string | undefin
     return void ''
   }
 
-  return getHash(path)
+  return (entity as TemplateConfig).id
 }

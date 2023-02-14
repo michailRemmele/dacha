@@ -1,8 +1,8 @@
-import React, { useContext, useMemo, FC } from 'react'
+import React, { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Config } from 'remiz'
+import type { LevelConfig } from 'remiz'
 
-import { EngineContext } from '../../../../providers'
+import { useConfig } from '../../../../hooks'
 import {
   Field,
   LabelledTextInput,
@@ -13,25 +13,27 @@ import {
 import type { FormComponentProps } from '../types'
 
 export const SceneForm: FC<FormComponentProps> = ({ path }) => {
-  const { sceneContext } = useContext(EngineContext)
   const { t } = useTranslation()
 
-  const { levels } = sceneContext.data.projectConfig as Config
+  const namePath = useMemo(() => path.concat('name'), [path])
+  const levelPath = useMemo(() => path.concat('levelId'), [path])
+
+  const levels = useConfig('levels') as Array<LevelConfig>
 
   const levelOptions = useMemo(() => levels.map((level) => ({
     title: level.name,
-    value: level.name,
-  })), [])
+    value: level.id,
+  })), [levels])
 
   return (
     <Form>
       <Field
-        path={path.concat('name')}
+        path={namePath}
         component={LabelledTextInput}
         label={t('inspector.sceneForm.field.name.label')}
       />
       <Field
-        path={path.concat('level')}
+        path={levelPath}
         component={LabelledSelect}
         label={t('inspector.sceneForm.field.level.label')}
         options={levelOptions}
