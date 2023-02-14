@@ -1,7 +1,12 @@
 import { addValue, setValue, deleteValue } from './view/commands'
 
 export { EngineContext, SchemasContext } from './view/providers'
-export { useExtension, useConfig, useCommander } from './view/hooks'
+export {
+  useExtension,
+  useConfig,
+  useCommander,
+  useStore,
+} from './view/hooks'
 export { Field } from './view/modules/inspector/components/field'
 export { Widget } from './view/modules/inspector/components/widget'
 export { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
