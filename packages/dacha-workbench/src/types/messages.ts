@@ -1,7 +1,7 @@
 import type { Message } from 'remiz'
 
 export interface SelectLevelMessage extends Message {
-  id: string
+  levelId: string
 }
 
 export interface InspectEntityMessage extends Message {
