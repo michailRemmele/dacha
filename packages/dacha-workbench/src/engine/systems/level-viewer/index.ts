@@ -162,9 +162,9 @@ export class LevelViewer implements System {
       return
     }
 
-    const { id } = messages[messages.length - 1]
+    const { levelId } = messages[messages.length - 1]
 
-    if (this.currentLevel === id) {
+    if (this.currentLevel === levelId) {
       return
     }
 
@@ -175,7 +175,7 @@ export class LevelViewer implements System {
     })
 
     const levels = this.configStore.get(['levels']) as Array<LevelConfig>
-    const selectedLevel = levels.find((level) => level.id === id)
+    const selectedLevel = levels.find((level) => level.id === levelId)
 
     const { gameObjectCreator } = this
 
@@ -187,7 +187,7 @@ export class LevelViewer implements System {
       })
     }
 
-    this.currentLevel = id
+    this.currentLevel = levelId
   }
 
   update(): void {

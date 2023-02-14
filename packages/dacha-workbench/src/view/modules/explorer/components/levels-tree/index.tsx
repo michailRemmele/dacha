@@ -48,7 +48,7 @@ export const LevelsTree: FC = () => {
       setExpandedLevel(key)
       pushMessage({
         type: SELECT_LEVEL_MSG,
-        id: key,
+        levelId: key,
       })
     }
   }, [pushMessage, expandedLevel])
