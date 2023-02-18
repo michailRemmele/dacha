@@ -14,32 +14,18 @@ export const ComponentList: FC = () => {
 
   const { components = [] } = useConfig(path) as GameObjectConfig
 
-  const addedComponentsMap = useMemo(() => components.reduce((acc, component) => {
-    acc[component.name] = true
-    return acc
-  }, {} as Record<string, boolean | undefined>), [components])
-
-  const entities = useMemo(() => availableComponents
-    .filter((component) => addedComponentsMap[component.name])
-    .map((component) => ({
-      id: `${path.join('.')}.${component.name}`,
-      label: t(component.schema.title, { ns: component.namespace }),
-      data: component,
-    })), [path, availableComponents, addedComponentsMap])
-
-  const options = useMemo(() => availableComponents
-    .filter((component) => !addedComponentsMap[component.name])
-    .map((component) => ({
-      label: t(component.schema.title, { ns: component.namespace }),
-      value: component.name,
-    })), [availableComponents, addedComponentsMap])
+  const addedComponents = useMemo(() => components.reduce(
+    (acc, component) => acc.add(component.name),
+    new Set<string>(),
+  ), [components])
 
   return (
     <EntityList
-      entities={entities}
+      entities={availableComponents}
+      addedEntities={addedComponents}
       type="components"
-      options={options}
       placeholder={t('inspector.componentList.addNew.button.title')}
+      sortByAddition={false}
     />
   )
 }

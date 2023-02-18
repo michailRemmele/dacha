@@ -150,4 +150,24 @@ export const renderable: WidgetSchema = {
       ],
     },
   },
+  getInitial: () => ({
+    type: 'static',
+    src: '',
+    width: 0,
+    height: 0,
+    rotation: 0,
+    sortCenter: [0, 0],
+    flipX: false,
+    flipY: false,
+    sortingLayer: '',
+    fit: 'stretch',
+    material: {
+      type: 'basic',
+      options: {
+        blending: 'normal',
+        color: '#fff',
+        opacity: 1,
+      },
+    },
+  }),
 }

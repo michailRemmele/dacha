@@ -18,4 +18,8 @@ export const cameraSystem: WidgetSchema = {
     },
   ],
   view: CameraSystemWidget,
+  getInitial: () => ({
+    windowNodeId: '',
+    initialCamera: '',
+  }),
 }

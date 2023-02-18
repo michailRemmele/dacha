@@ -8,19 +8,19 @@ import { deleteValue } from '../../../../commands'
 import { EntityForm } from './entity-form'
 import type { Entity, EntityType } from './types'
 
-interface EntityPanelProps<T extends Entity> {
-  entity: T
+interface EntityPanelProps {
+  entity: Entity
   type: EntityType
 }
 
-export const EntityPanel = <T extends Entity>({
+export const EntityPanel = ({
   entity,
   type,
-}: EntityPanelProps<T>): JSX.Element => {
+}: EntityPanelProps): JSX.Element => {
   const { dispatch } = useCommander()
   const { path = [] } = useContext(SelectedEntityContext)
 
-  const entityPath = useMemo(() => path.concat(type, `name:${entity.data.name}`), [entity])
+  const entityPath = useMemo(() => path.concat(type, `name:${entity.data.name}`), [entity, path, type])
 
   const handleDelete = useCallback(() => {
     dispatch(deleteValue(entityPath))
