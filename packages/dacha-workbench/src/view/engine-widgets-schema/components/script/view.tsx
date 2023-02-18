@@ -1,19 +1,27 @@
-import React, { useMemo, FC } from 'react'
+import React, {
+  useMemo,
+  useEffect,
+  useRef,
+  FC,
+} from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
 import type { References, WidgetProps } from '../../../../types/widget-schema'
 import { Widget } from '../../../modules/inspector/components/widget'
 import { NAMESPACE_EXTENSION } from '../../../providers/schemas-provider/consts'
-import { useExtension, useConfig } from '../../../hooks'
+import { useExtension, useConfig, useCommander } from '../../../hooks'
+import { setValue } from '../../../commands'
 
 const SCRIPT_SYSTEM_NAME = 'scriptSystem'
 
 export const ScriptWidget: FC<WidgetProps> = ({ fields, path }) => {
   const { i18n } = useTranslation()
+  const { dispatch } = useCommander()
 
   const { scripts, scriptsSchema } = useExtension()
 
   const namePath = useMemo(() => path.concat('name'), [path])
+  const optionsPath = useMemo(() => path.concat('options'), [path])
   const scriptName = useConfig(namePath) as string
 
   const references: References = useMemo(() => ({
@@ -25,8 +33,17 @@ export const ScriptWidget: FC<WidgetProps> = ({ fields, path }) => {
     },
   }), [])
 
-  const partFields = scriptsSchema[SCRIPT_SYSTEM_NAME]?.[scriptName]?.fields
-  const partReferences = scriptsSchema[SCRIPT_SYSTEM_NAME]?.[scriptName]?.references
+  const partSchema = scriptsSchema[SCRIPT_SYSTEM_NAME]?.[scriptName]
+  const partFields = partSchema?.fields
+  const partReferences = partSchema?.references
+
+  const scriptNameRef = useRef(scriptName)
+  useEffect(() => {
+    if (scriptName !== scriptNameRef.current && partSchema !== void 0) {
+      dispatch(setValue(optionsPath, partSchema.getInitial?.() ?? {}))
+      scriptNameRef.current = scriptName
+    }
+  }, [scriptName])
 
   return (
     <>

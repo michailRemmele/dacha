@@ -34,14 +34,14 @@ export interface WidgetProps {
   path: Array<string>
 }
 
-export interface WidgetPartSchema {
-  fields: Array<Field>
-  references?: References
-}
-
 export interface WidgetSchema {
   title: string
   fields?: Array<Field>
   references?: References
   view?: FC<WidgetProps>
+  getInitial?: () => Record<string, unknown>
+}
+
+export interface WidgetPartSchema extends Omit<WidgetSchema, 'title' | 'fields' | 'view'> {
+  fields: Array<Field>
 }
