@@ -242,7 +242,7 @@ describe('Contrib -> components -> Animatable', () => {
       ...animationExample,
     }).clone();
 
-    animatable.updateCurrentState('death');
+    animatable.setCurrentState('death');
 
     expect(animatable.currentState).toEqual(animatable.states[2]);
   });

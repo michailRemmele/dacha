@@ -61,6 +61,10 @@ export class Animator implements System {
     this.gameObjectObserver.forEach((gameObject) => {
       const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME) as Animatable;
 
+      if (animatable.currentState === void 0) {
+        return;
+      }
+
       let { timeline } = animatable.currentState as IndividualState;
 
       if ((animatable.currentState as GroupState).substates) {
@@ -92,7 +96,7 @@ export class Animator implements System {
       });
 
       if (nextTransition) {
-        animatable.updateCurrentState(nextTransition.state);
+        animatable.setCurrentState(nextTransition.state);
         animatable.duration = 0;
       }
     });
