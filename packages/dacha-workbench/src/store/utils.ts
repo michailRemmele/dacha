@@ -51,7 +51,7 @@ export const next = (
   if (Array.isArray(data)) {
     const node = findByKey(data, key)
 
-    if (node) {
+    if (node !== void 0) {
       return next(node, path, index + 1)
     }
   } else if (typeof data === 'object') {
