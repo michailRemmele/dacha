@@ -1,4 +1,4 @@
-import { nextImmutable } from '../utils'
+import { getImmutable } from '../utils'
 
 const example = {
   a: {
@@ -19,10 +19,10 @@ const example = {
   },
 }
 
-describe('Mutator -> utils -> nextImmutable()', () => {
+describe('Mutator -> utils -> getImmutable()', () => {
   it('Returns object and creates copies of objects and arrays', () => {
     const exampleCopy = { ...example }
-    const object = nextImmutable(example.a, ['c', 'name:abcd'], example, 'a')
+    const object = getImmutable(example.a, ['c', 'name:abcd'], example, 'a')
 
     expect(object).toStrictEqual({
       name: 'abcd',
@@ -39,7 +39,7 @@ describe('Mutator -> utils -> nextImmutable()', () => {
 
   it('Returns number and creates copies of objects and arrays', () => {
     const exampleCopy = { ...example }
-    const value = nextImmutable(example.a, ['c', 'name:dcba', 'd'], example, 'a')
+    const value = getImmutable(example.a, ['c', 'name:dcba', 'd'], example, 'a')
 
     expect(value).toBe(123)
 

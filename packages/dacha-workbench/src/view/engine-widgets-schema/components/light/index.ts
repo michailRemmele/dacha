@@ -43,4 +43,12 @@ export const light: WidgetSchema = {
       ],
     },
   },
+  getInitialState: () => ({
+    type: 'point',
+    options: {
+      color: '#fff',
+      intensity: 1,
+      distance: 10,
+    },
+  }),
 }

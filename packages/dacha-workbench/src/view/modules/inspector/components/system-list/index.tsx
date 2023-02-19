@@ -4,7 +4,6 @@ import type { SceneConfig } from 'remiz'
 
 import { EntityList } from '../entity-list'
 import { SelectedEntityContext, SchemasContext } from '../../../../providers'
-import type { SchemasDataEntry } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 
 export const SystemList: FC = () => {
@@ -13,40 +12,18 @@ export const SystemList: FC = () => {
   const { path = [] } = useContext(SelectedEntityContext)
   const { systems: availableSystems } = useContext(SchemasContext)
 
-  const { systems: addedSystems } = useConfig(path) as SceneConfig
+  const { systems } = useConfig(path) as SceneConfig
 
-  const availableSystemsMap = useMemo(() => availableSystems.reduce((acc, system) => {
-    acc[system.name] = system
-    return acc
-  }, {} as Record<string, SchemasDataEntry>), [availableSystems])
-  const addedSystemsMap = useMemo(() => addedSystems.reduce((acc, system) => {
-    acc[system.name] = true
-    return acc
-  }, {} as Record<string, boolean | undefined>), [addedSystems])
-
-  const entities = useMemo(() => addedSystems
-    .filter((system) => availableSystemsMap[system.name])
-    .map((system) => {
-      const systemEntry = availableSystemsMap[system.name]
-      return {
-        id: `${path.join('.')}.${systemEntry.name}`,
-        label: t(systemEntry.schema.title, { ns: systemEntry.namespace }),
-        data: systemEntry,
-      }
-    }), [path, addedSystems, availableSystemsMap])
-
-  const options = useMemo(() => availableSystems
-    .filter((system) => !addedSystemsMap[system.name])
-    .map((system) => ({
-      label: t(system.schema.title, { ns: system.namespace }),
-      value: system.name,
-    })), [availableSystems, addedSystemsMap])
+  const addedSystems = useMemo(() => systems.reduce(
+    (acc, system) => acc.add(system.name),
+    new Set<string>(),
+  ), [systems])
 
   return (
     <EntityList
-      entities={entities}
+      entities={availableSystems}
+      addedEntities={addedSystems}
       type="systems"
-      options={options}
       placeholder={t('inspector.systemList.addNew.button.title')}
     />
   )

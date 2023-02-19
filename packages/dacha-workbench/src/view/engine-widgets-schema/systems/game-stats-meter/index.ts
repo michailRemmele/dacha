@@ -9,4 +9,7 @@ export const gameStatsMeter: WidgetSchema = {
       type: 'number',
     },
   ],
+  getInitialState: () => ({
+    frequency: 1000,
+  }),
 }

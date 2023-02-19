@@ -5,14 +5,10 @@ import { SelectedEntityContext } from '../../../../providers'
 import { Widget } from '../widget'
 import { CustomWidget } from '../custom-widget'
 
+import { CONFIG_KEY_MAP } from './consts'
 import type { Entity, EntityType } from './types'
 
 import './style.less'
-
-const CONFIG_KEY_MAP: Record<EntityType, string> = {
-  components: 'config',
-  systems: 'options',
-}
 
 interface EntityFormProps extends Entity {
   type: EntityType
