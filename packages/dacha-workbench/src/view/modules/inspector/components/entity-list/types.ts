@@ -6,9 +6,4 @@ export interface Entity {
   data: SchemasDataEntry
 }
 
-export interface EntityOption {
-  label: string
-  value: string
-}
-
 export type EntityType = 'components' | 'systems'

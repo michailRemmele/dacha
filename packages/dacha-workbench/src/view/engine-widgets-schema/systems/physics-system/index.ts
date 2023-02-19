@@ -9,4 +9,7 @@ export const physicsSystem: WidgetSchema = {
       type: 'number',
     },
   ],
+  getInitialState: () => ({
+    gravitationalAcceleration: 100,
+  }),
 }

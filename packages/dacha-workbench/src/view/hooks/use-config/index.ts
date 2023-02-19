@@ -32,7 +32,7 @@ export const useConfig = (path?: Array<string> | string): unknown => {
     const unsubscribe = configStore.subscribe((updatePath, updateValue) => {
       if (isEqual(parsedPath, updatePath)) {
         setValue(updateValue)
-      } else if (includesArray(updatePath, parsedPath)) {
+      } else if (includesArray(updatePath, parsedPath) || includesArray(parsedPath, updatePath)) {
         setValue(configStore.get(parsedPath as Array<string>))
       }
     })
