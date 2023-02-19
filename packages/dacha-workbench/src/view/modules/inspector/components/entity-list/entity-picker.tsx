@@ -61,7 +61,7 @@ export const EntityPicker: FC<EntityPickerProps> = ({
 
     dispatch(addValue(rootPath, {
       name: value,
-      [CONFIG_KEY_MAP[type]]: schemasMap[value].getInitial?.() ?? {},
+      [CONFIG_KEY_MAP[type]]: schemasMap[value].getInitialState?.() ?? {},
     }))
 
     setValue(undefined)

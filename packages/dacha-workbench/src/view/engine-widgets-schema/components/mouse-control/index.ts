@@ -5,7 +5,7 @@ import { MouseControlWidget } from './view'
 export const mouseControl: WidgetSchema = {
   title: 'components.mouseControl.title',
   view: MouseControlWidget,
-  getInitial: () => ({
+  getInitialState: () => ({
     inputEventBindings: [],
   }),
 }

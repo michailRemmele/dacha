@@ -37,7 +37,7 @@ export const findIndexByKey = (
   return data.findIndex((item) => getFieldValue(item, name) === value)
 }
 
-export const next = (
+export const get = (
   data: DataValue | Data,
   path: Array<string>,
   index = 0,
@@ -52,16 +52,16 @@ export const next = (
     const node = findByKey(data, key)
 
     if (node !== void 0) {
-      return next(node, path, index + 1)
+      return get(node, path, index + 1)
     }
   } else if (typeof data === 'object') {
-    return next(data[key], path, index + 1)
+    return get(data[key], path, index + 1)
   }
 
   return void 0
 }
 
-export const nextImmutable = (
+export const getImmutable = (
   data: DataValue | Data,
   path: Array<string>,
   parent: DataObjectValue | Array<DataValue> | Data | Store,
@@ -91,10 +91,10 @@ export const nextImmutable = (
     const nodeIndex = findIndexByKey(copyData, key)
 
     if (nodeIndex !== -1) {
-      return nextImmutable(copyData[nodeIndex], path, copyData, nodeIndex, index + 1)
+      return getImmutable(copyData[nodeIndex], path, copyData, nodeIndex, index + 1)
     }
   } else if (typeof copyData === 'object' && copyData !== null) {
-    return nextImmutable(copyData[key], path, copyData, key, index + 1)
+    return getImmutable(copyData[key], path, copyData, key, index + 1)
   }
 
   return void 0

@@ -40,7 +40,7 @@ export const ScriptWidget: FC<WidgetProps> = ({ fields, path }) => {
   const scriptNameRef = useRef(scriptName)
   useEffect(() => {
     if (scriptName !== scriptNameRef.current && partSchema !== void 0) {
-      dispatch(setValue(optionsPath, partSchema.getInitial?.() ?? {}))
+      dispatch(setValue(optionsPath, partSchema.getInitialState?.() ?? {}))
       scriptNameRef.current = scriptName
     }
   }, [scriptName])

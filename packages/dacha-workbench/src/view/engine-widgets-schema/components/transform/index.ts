@@ -34,7 +34,7 @@ export const transform: WidgetSchema = {
       type: 'number',
     },
   ],
-  getInitial: () => ({
+  getInitialState: () => ({
     offsetX: 0,
     offsetY: 0,
     offsetZ: 0,

@@ -39,7 +39,7 @@ export interface WidgetSchema {
   fields?: Array<Field>
   references?: References
   view?: FC<WidgetProps>
-  getInitial?: () => Record<string, unknown>
+  getInitialState?: () => Record<string, unknown>
 }
 
 export interface WidgetPartSchema extends Omit<WidgetSchema, 'title' | 'fields' | 'view'> {
