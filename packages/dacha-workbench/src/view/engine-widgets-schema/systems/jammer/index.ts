@@ -9,7 +9,7 @@ export const jammer: WidgetSchema = {
       type: 'multitext',
     },
   ],
-  getInitial: () => ({
+  getInitialState: () => ({
     messages: [],
   }),
 }

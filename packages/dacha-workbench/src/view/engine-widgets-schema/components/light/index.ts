@@ -43,7 +43,7 @@ export const light: WidgetSchema = {
       ],
     },
   },
-  getInitial: () => ({
+  getInitialState: () => ({
     type: 'point',
     options: {
       color: '#fff',

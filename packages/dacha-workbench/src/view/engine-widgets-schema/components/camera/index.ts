@@ -9,7 +9,7 @@ export const camera: WidgetSchema = {
       type: 'number',
     },
   ],
-  getInitial: () => ({
+  getInitialState: () => ({
     zoom: 1,
   }),
 }

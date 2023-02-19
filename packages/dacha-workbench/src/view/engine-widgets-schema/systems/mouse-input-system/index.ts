@@ -9,7 +9,7 @@ export const mouseInputSystem: WidgetSchema = {
       type: 'string',
     },
   ],
-  getInitial: () => ({
+  getInitialState: () => ({
     windowNodeId: '',
   }),
 }

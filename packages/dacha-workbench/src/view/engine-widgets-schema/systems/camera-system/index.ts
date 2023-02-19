@@ -18,7 +18,7 @@ export const cameraSystem: WidgetSchema = {
     },
   ],
   view: CameraSystemWidget,
-  getInitial: () => ({
+  getInitialState: () => ({
     windowNodeId: '',
     initialCamera: '',
   }),

@@ -24,7 +24,7 @@ export const threeJSRenderer: WidgetSchema = {
       type: 'number',
     },
   ],
-  getInitial: () => ({
+  getInitialState: () => ({
     windowNodeId: '',
     backgroundColor: '#000',
     sortingLayers: [],

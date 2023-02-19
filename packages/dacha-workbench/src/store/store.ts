@@ -1,6 +1,6 @@
 import {
-  next,
-  nextImmutable,
+  get,
+  getImmutable,
   findIndexByKey,
 } from './utils'
 import type {
@@ -19,11 +19,11 @@ export class Store {
   }
 
   get(path: Array<string>): unknown {
-    return next(this.data, path)
+    return get(this.data, path)
   }
 
   set(path: Array<string>, value: DataValue): void {
-    const item = nextImmutable(this.data, path.slice(0, -1), this, 'data')
+    const item = getImmutable(this.data, path.slice(0, -1), this, 'data')
 
     if (typeof item !== 'object' || item === null) {
       return
@@ -44,7 +44,7 @@ export class Store {
   }
 
   delete(path: Array<string>): void {
-    const item = nextImmutable(this.data, path.slice(0, -1), this, 'data')
+    const item = getImmutable(this.data, path.slice(0, -1), this, 'data')
 
     if (typeof item !== 'object' || item === null) {
       return

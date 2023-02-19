@@ -61,7 +61,7 @@ export const colliderContainer: WidgetSchema = {
       ],
     },
   },
-  getInitial: () => ({
+  getInitialState: () => ({
     type: 'boxCollider',
     collider: {
       sizeX: 1,

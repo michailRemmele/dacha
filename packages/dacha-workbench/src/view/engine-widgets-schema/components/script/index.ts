@@ -13,7 +13,7 @@ export const script: WidgetSchema = {
     },
   ],
   view: ScriptWidget,
-  getInitial: () => ({
+  getInitialState: () => ({
     name: '',
     options: {},
   }),

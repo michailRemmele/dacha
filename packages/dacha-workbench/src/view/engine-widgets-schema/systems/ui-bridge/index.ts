@@ -13,7 +13,7 @@ export const uiBridge: WidgetSchema = {
     },
   ],
   view: UIBridgeWidget,
-  getInitial: () => ({
+  getInitialState: () => ({
     filterComponents: [],
   }),
 }

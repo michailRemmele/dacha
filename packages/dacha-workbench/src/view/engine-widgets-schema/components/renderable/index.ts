@@ -150,7 +150,7 @@ export const renderable: WidgetSchema = {
       ],
     },
   },
-  getInitial: () => ({
+  getInitialState: () => ({
     type: 'static',
     src: '',
     width: 0,

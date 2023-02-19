@@ -49,7 +49,7 @@ export const rigidBody: WidgetSchema = {
       ],
     },
   },
-  getInitial: () => ({
+  getInitialState: () => ({
     type: 'static',
     mass: 1,
     useGravity: false,
