@@ -1,0 +1,35 @@
+.transition-list {
+  list-style: none;
+
+  padding: 0;
+  margin: 0;
+}
+
+.transition-list__transition {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  border: none;
+
+  padding: 3px 0 3px 25px;
+
+  background-color: white;
+  border-bottom: 1px solid lightgray;
+
+  cursor: pointer;
+}
+
+.transition-list__item:last-child .transition-list__transition {
+  border-bottom: none;
+}
+
+.transition-list__transition_selected {
+  background-color: cornflowerblue;
+  color: white;
+}
+
+.transition-list__transition_add {
+  opacity: 0.5;
+}
+  

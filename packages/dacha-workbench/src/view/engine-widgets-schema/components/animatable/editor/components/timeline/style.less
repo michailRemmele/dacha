@@ -1,0 +1,36 @@
+.timeline {
+  display: flex;
+
+  list-style: none;
+
+  padding: 0;
+  margin: 15px;
+}
+
+.timeline__item + .timeline__item {
+  margin-left: 15px;
+}
+
+.timeline__frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  border: none;
+
+  padding: 30px;
+
+  background-color: white;
+
+  cursor: pointer;
+}
+
+.timeline__frame_selected {
+  background-color: cornflowerblue;
+  color: white;
+}
+
+.timeline__frame_add {
+  opacity: 0.5;
+}
