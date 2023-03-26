@@ -1,6 +1,6 @@
 {
   "name": "remiz",
-  "version": "0.9.12",
+  "version": "0.9.13",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "dependencies": {
