@@ -11,7 +11,7 @@ import isEqual from 'lodash.isequal'
 import { useConfig, useCommander } from '../../../../hooks'
 import { setValue as setValueCmd } from '../../../../commands'
 
-interface FieldProps extends Omit<HTMLProps<HTMLElement>, 'onBlur' | 'onChange'> {
+export interface FieldProps extends Omit<HTMLProps<HTMLElement>, 'onBlur' | 'onChange'> {
   path: Array<string>
   onBlur?: (value: unknown) => void
   onChange?: (value: unknown) => void

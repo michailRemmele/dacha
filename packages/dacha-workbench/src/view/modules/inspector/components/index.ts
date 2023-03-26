@@ -1,4 +1,5 @@
 export { Field } from './field'
+export { DependencyField } from './dependency-field'
 export { ComponentList } from './component-list'
 export { SystemList } from './system-list'
 
@@ -13,3 +14,4 @@ export { MultiSelect, LabelledMultiSelect } from './multi-select'
 
 export { Form } from './form'
 export { CollapsePanel } from './collapse-panel'
+export { Panel } from './panel'
