@@ -1,22 +1,26 @@
-import { Transition, TransitionConfig } from './transition';
-
-export interface StateConfig {
-  name: string;
-  speed: number;
-  type: 'individual' | 'group';
-  transitions: Array<TransitionConfig>;
-}
+import { Transition } from './transition';
+import type { StateConfig } from './types';
 
 export class State {
+  id: string;
   name: string;
   speed: number;
   type: 'individual' | 'group';
   transitions: Array<Transition>;
 
   constructor(config: StateConfig) {
-    this.name = config.name;
-    this.speed = config.speed;
-    this.type = config.type;
-    this.transitions = config.transitions.map((transition) => new Transition(transition));
+    const {
+      id,
+      name,
+      speed,
+      type,
+      transitions = [],
+    } = config;
+
+    this.id = id;
+    this.name = name;
+    this.speed = speed;
+    this.type = type;
+    this.transitions = transitions.map((transition) => new Transition(transition));
   }
 }

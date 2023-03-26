@@ -1,11 +1,5 @@
 import { Timeline } from './timeline';
-
-interface SubstateConfig {
-  name: string;
-  timeline: Timeline;
-  x: number;
-  y: number;
-}
+import type { SubstateConfig } from './types';
 
 export class Substate {
   name: string;

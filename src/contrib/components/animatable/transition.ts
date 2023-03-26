@@ -1,10 +1,5 @@
-import { Condition, ConditionConfig } from './condition';
-
-export interface TransitionConfig {
-  state: string;
-  time: number;
-  conditions: Array<ConditionConfig>;
-}
+import { Condition } from './condition';
+import type { TransitionConfig } from './types';
 
 export class Transition {
   state: string;
@@ -12,8 +7,14 @@ export class Transition {
   conditions: Array<Condition>;
 
   constructor(config: TransitionConfig) {
-    this.state = config.state;
-    this.time = config.time;
-    this.conditions = config.conditions.map((condition) => new Condition(condition));
+    const {
+      state,
+      time,
+      conditions = [],
+    } = config;
+
+    this.state = state;
+    this.time = time;
+    this.conditions = conditions.map((condition) => new Condition(condition));
   }
 }

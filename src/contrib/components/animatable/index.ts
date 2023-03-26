@@ -1,12 +1,8 @@
 import { Component } from '../../../engine/component';
 import { State } from './state';
-import { IndividualState, IndividualStateConfig } from './individual-state';
-import { GroupState, GroupStateConfig } from './group-state';
-
-export interface AnimatableConfig extends Record<string, unknown> {
-  states: Array<unknown>
-  initialState: string
-}
+import { IndividualState } from './individual-state';
+import { GroupState } from './group-state';
+import type { AnimatableConfig, GroupStateConfig, IndividualStateConfig } from './types';
 
 export class Animatable extends Component {
   states: Array<IndividualState | GroupState>;
@@ -17,9 +13,12 @@ export class Animatable extends Component {
   constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
-    const animatableConfig = config as AnimatableConfig;
+    const {
+      initialState,
+      states = [],
+    } = config as AnimatableConfig;
 
-    this.states = animatableConfig.states
+    this.states = states
       .reduce((acc: Array<IndividualState | GroupState>, state) => {
         const { type } = state as State;
         if (type === 'individual') {
@@ -30,14 +29,14 @@ export class Animatable extends Component {
         }
         return acc;
       }, []);
-    this.initialState = animatableConfig.initialState;
-    this.currentState = this.states.find((state) => state.name === this.initialState);
+    this.initialState = initialState;
+    this.currentState = this.states.find((state) => state.id === this.initialState);
 
     this.duration = 0;
   }
 
   setCurrentState(currentState: string): void {
-    const newState = this.states.find((state) => state.name === currentState);
+    const newState = this.states.find((state) => state.id === currentState);
 
     if (!newState) {
       throw new Error(`Can't find state with same name: ${currentState}`);

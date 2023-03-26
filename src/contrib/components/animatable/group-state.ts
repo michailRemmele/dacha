@@ -1,14 +1,9 @@
-import { State, StateConfig } from './state';
+import { State } from './state';
 import { Substate } from './substate';
 import { pickProps as defaultPickProps } from './pick-props';
 import { OneDimensionalProps } from './one-dimensional-props';
 import { TwoDimensionalProps } from './two-dimensional-props';
-
-export interface GroupStateConfig extends StateConfig {
-  substates: Array<Substate>;
-  pickMode: '1D' | '2D';
-  pickProps: OneDimensionalProps | TwoDimensionalProps;
-}
+import type { GroupStateConfig } from './types';
 
 export class GroupState extends State {
   substates: Array<Substate>;
@@ -18,8 +13,16 @@ export class GroupState extends State {
   constructor(config: GroupStateConfig) {
     super(config);
 
-    this.substates = config.substates.map((substate) => new Substate(substate));
-    this.pickMode = config.pickMode;
-    this.pickProps = new defaultPickProps[config.pickMode](config.pickProps);
+    const {
+      substates = [],
+      pickMode = '1D',
+      pickProps = {},
+    } = config;
+
+    this.substates = substates.map((substate) => new Substate(substate));
+    this.pickMode = pickMode;
+
+    const PickProps = defaultPickProps[pickMode];
+    this.pickProps = new PickProps(pickProps);
   }
 }

@@ -1,7 +1,4 @@
-interface ComparatorConditionComponentValueConfig {
-  type: string;
-  value: string | Array<string>;
-}
+import type { ComparatorConditionComponentValueConfig } from './types';
 
 const SEPARATOR = '.';
 
@@ -15,6 +12,6 @@ export class ComparatorConditionComponentValue {
     this.type = type;
     this.value = Array.isArray(value)
       ? value.slice(0)
-      : value.split(SEPARATOR);
+      : String(value).split(SEPARATOR);
   }
 }

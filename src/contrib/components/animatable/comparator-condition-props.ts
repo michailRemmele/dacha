@@ -1,19 +1,7 @@
 import { conditionValues } from './comparator-condition-values';
 import { ComparatorConditionComponentValue } from './comparator-condition-component-value';
 import { ComparatorConditionNumberValue } from './comparator-condition-number-value';
-
-type OperationType = 'equals' | 'notEquals' | 'greater' | 'less' | 'greaterOrEqual' | 'lessOrEqual';
-
-interface ComparatorConditionArg {
-  type: 'number' | 'componentValue';
-  [key: string]: unknown;
-}
-
-interface ComparatorConditionPropsConfig {
-  operation: OperationType;
-  arg1: ComparatorConditionArg;
-  arg2: ComparatorConditionArg;
-}
+import type { OperationType, ComparatorConditionPropsConfig } from './types';
 
 export class ComparatorConditionProps {
   operation: OperationType;
