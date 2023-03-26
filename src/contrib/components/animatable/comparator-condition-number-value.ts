@@ -1,7 +1,4 @@
-interface ComparatorConditionNumberValueConfig {
-  type: string;
-  value: number;
-}
+import type { ComparatorConditionNumberValueConfig } from './types';
 
 export class ComparatorConditionNumberValue {
   type: string;

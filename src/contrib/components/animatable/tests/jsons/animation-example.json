@@ -1,12 +1,13 @@
 {
-  "initialState": "idle",
+  "initialState": "0",
   "states": [
     {
+      "id": "0",
       "name": "idle",
       "speed": 0.5,
       "transitions": [
         {
-          "state": "death",
+          "state": "2",
           "conditions": [
             {
               "type": "message",
@@ -18,7 +19,7 @@
           "time": 0
         },
         {
-          "state": "run",
+          "state": "1",
           "conditions": [
             {
               "type": "comparator",
@@ -38,7 +39,7 @@
           "time": 0
         },
         {
-          "state": "run",
+          "state": "1",
           "conditions": [
             {
               "type": "comparator",
@@ -70,25 +71,91 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 0,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 1,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 1
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 2,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 2
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -101,25 +168,91 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 0,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": true,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": true
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 1,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": true,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 1
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": true
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 2,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": true,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 2
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": true
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -132,25 +265,91 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 6,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 6
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 7,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 7
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 8,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 8
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -163,25 +362,91 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 3,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 3
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 4,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 4
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 5,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 5
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -192,11 +457,12 @@
       ]
     },
     {
+      "id": "1",
       "name": "run",
       "speed": 1,
       "transitions": [
         {
-          "state": "death",
+          "state": "2",
           "conditions": [
             {
               "type": "message",
@@ -208,7 +474,7 @@
           "time": 0
         },
         {
-          "state": "idle",
+          "state": "0",
           "conditions": [
             {
               "type": "comparator",
@@ -254,32 +520,120 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 9,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 9
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 10,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 10
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 11,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 11
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 10,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 10
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -292,32 +646,120 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 9,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": true,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 9
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": true
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 10,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": true,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 10
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": true
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 11,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": true,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 11
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": true
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 10,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": true,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 10
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": true
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -330,32 +772,120 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 15,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 15
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 16,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 16
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 17,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 17
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 16,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 16
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -368,32 +898,120 @@
           "timeline": {
             "frames": [
               {
-                "components.renderable.currentFrame": 12,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 12
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 13,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 13
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 14,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 14
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               },
               {
-                "components.renderable.currentFrame": 13,
-                "components.renderable.rotation": 0,
-                "components.renderable.flipX": false,
-                "components.renderable.flipY": false,
-                "components.renderable.disabled": false
+                "fields": [
+                  {
+                    "name": "components.renderable.currentFrame",
+                    "type": "number",
+                    "value": 13
+                  },
+                  {
+                    "name": "components.renderable.rotation",
+                    "type": "number",
+                    "value": 0
+                  },
+                  {
+                    "name": "components.renderable.flipX",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.flipY",
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "name": "components.renderable.disabled",
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
               }
             ],
             "looped": true
@@ -404,6 +1022,7 @@
       ]
     },
     {
+      "id": "2",
       "name": "death",
       "speed": 1,
       "transitions": [],
@@ -411,32 +1030,120 @@
       "timeline": {
         "frames": [
           {
-            "components.renderable.currentFrame": 27,
-            "components.renderable.rotation": 0,
-            "components.renderable.flipX": false,
-            "components.renderable.flipY": false,
-            "components.renderable.disabled": false
+            "fields": [
+              {
+                "name": "components.renderable.currentFrame",
+                "type": "number",
+                "value": 27
+              },
+              {
+                "name": "components.renderable.rotation",
+                "type": "number",
+                "value": 0
+              },
+              {
+                "name": "components.renderable.flipX",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.flipY",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.disabled",
+                "type": "boolean",
+                "value": false
+              }
+            ]
           },
           {
-            "components.renderable.currentFrame": 24,
-            "components.renderable.rotation": 0,
-            "components.renderable.flipX": false,
-            "components.renderable.flipY": false,
-            "components.renderable.disabled": false
+            "fields": [
+              {
+                "name": "components.renderable.currentFrame",
+                "type": "number",
+                "value": 24
+              },
+              {
+                "name": "components.renderable.rotation",
+                "type": "number",
+                "value": 0
+              },
+              {
+                "name": "components.renderable.flipX",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.flipY",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.disabled",
+                "type": "boolean",
+                "value": false
+              }
+            ]
           },
           {
-            "components.renderable.currentFrame": 25,
-            "components.renderable.rotation": 0,
-            "components.renderable.flipX": false,
-            "components.renderable.flipY": false,
-            "components.renderable.disabled": false
+            "fields": [
+              {
+                "name": "components.renderable.currentFrame",
+                "type": "number",
+                "value": 25
+              },
+              {
+                "name": "components.renderable.rotation",
+                "type": "number",
+                "value": 0
+              },
+              {
+                "name": "components.renderable.flipX",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.flipY",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.disabled",
+                "type": "boolean",
+                "value": false
+              }
+            ]
           },
           {
-            "components.renderable.currentFrame": 26,
-            "components.renderable.rotation": 0,
-            "components.renderable.flipX": false,
-            "components.renderable.flipY": false,
-            "components.renderable.disabled": false
+            "fields": [
+              {
+                "name": "components.renderable.currentFrame",
+                "type": "number",
+                "value": 26
+              },
+              {
+                "name": "components.renderable.rotation",
+                "type": "number",
+                "value": 0
+              },
+              {
+                "name": "components.renderable.flipX",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.flipY",
+                "type": "boolean",
+                "value": false
+              },
+              {
+                "name": "components.renderable.disabled",
+                "type": "boolean",
+                "value": false
+              }
+            ]
           }
         ],
         "looped": false

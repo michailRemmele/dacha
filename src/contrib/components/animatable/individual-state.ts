@@ -1,9 +1,6 @@
-import { State, StateConfig } from './state';
+import { State } from './state';
 import { Timeline } from './timeline';
-
-export interface IndividualStateConfig extends StateConfig {
-  timeline: Timeline;
-}
+import type { IndividualStateConfig } from './types';
 
 export class IndividualState extends State {
   timeline: Timeline;
@@ -11,6 +8,8 @@ export class IndividualState extends State {
   constructor(config: IndividualStateConfig) {
     super(config);
 
-    this.timeline = new Timeline(config.timeline);
+    const { timeline = { frames: [], looped: false } } = config;
+
+    this.timeline = new Timeline(timeline);
   }
 }

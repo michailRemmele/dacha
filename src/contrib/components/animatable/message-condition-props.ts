@@ -1,11 +1,9 @@
-interface ComparatorConditionPropsConfig {
-  message: string;
-}
+import type { MessageConditionPropsConfig } from './types';
 
 export class MessageConditionProps {
   message: string;
 
   constructor(config: unknown) {
-    this.message = (config as ComparatorConditionPropsConfig).message;
+    this.message = (config as MessageConditionPropsConfig).message;
   }
 }

@@ -73,11 +73,11 @@ describe('Contrib -> components -> Animatable', () => {
     const currentState = animatable.currentState as GroupState;
 
     const transition1 = currentState.transitions?.[0];
-    expect(transition1.state).toEqual('death');
+    expect(transition1.state).toEqual('2');
     expect(transition1.time).toEqual(0);
 
     const transition2 = currentState.transitions?.[1];
-    expect(transition2.state).toEqual('run');
+    expect(transition2.state).toEqual('1');
     expect(transition2.time).toEqual(0);
   });
 
@@ -242,7 +242,7 @@ describe('Contrib -> components -> Animatable', () => {
       ...animationExample,
     }).clone();
 
-    animatable.setCurrentState('death');
+    animatable.setCurrentState('2');
 
     expect(animatable.currentState).toEqual(animatable.states[2]);
   });

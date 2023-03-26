@@ -1,4 +1,6 @@
-export type FrameConfig = Record<string, string | number | boolean>;
+import type { TimelineConfig } from './types';
+
+const SEPARATOR = '.';
 
 export interface FrameField {
   path: Array<string>
@@ -6,36 +8,32 @@ export interface FrameField {
 }
 export type Frame = Record<string, FrameField>;
 
-interface TimelineConfig {
-  frames: Array<FrameConfig | Frame>;
-  looped: boolean;
-}
-
-const SEPARATOR = '.';
-
 export class Timeline {
   frames: Array<Frame>;
   looped: boolean;
 
   constructor(config: TimelineConfig) {
-    this.frames = config.frames.map((frame) => (
-      Object.keys(frame).reduce((acc: Record<string, FrameField>, fieldName) => {
-        const field = frame[fieldName];
+    this.frames = config.frames.map((frame) => {
+      if (!Array.isArray(frame.fields)) {
+        // Frame fields already been parsed and we just need to copy it
+        const parsedFrame = frame as unknown as Frame;
+        return Object.keys(parsedFrame).reduce((acc, fieldName) => {
+          acc[fieldName] = {
+            path: parsedFrame[fieldName].path.slice(0),
+            value: parsedFrame[fieldName].value,
+          };
+          return acc;
+        }, {} as Record<string, FrameField>);
+      }
 
-        if (field instanceof Object) {
-          acc[fieldName] = {
-            path: field.path.slice(0),
-            value: field.value,
-          };
-        } else {
-          acc[fieldName] = {
-            path: fieldName.split(SEPARATOR),
-            value: field,
-          };
-        }
+      return frame.fields.reduce((acc, field) => {
+        acc[field.name] = {
+          path: field.name.split(SEPARATOR),
+          value: field.value,
+        };
         return acc;
-      }, {})
-    ));
+      }, {} as Record<string, FrameField>);
+    });
     this.looped = config.looped;
   }
 }
