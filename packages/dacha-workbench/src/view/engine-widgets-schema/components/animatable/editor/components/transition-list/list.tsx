@@ -13,17 +13,12 @@ import type { SelectFn } from '../../../../../../../types/tree-node'
 
 import { parseTransitions } from './utils'
 
-interface ListProps {
-  onSelect: (id: string) => void
-}
-
-export const List: FC<ListProps> = ({
-  onSelect,
-}) => {
+export const List: FC = () => {
   const {
     path,
     selectedState,
     selectedTransition,
+    selectTransition,
   } = useContext(AnimationEditorContext)
 
   const statesPath = useMemo(() => path.concat('states'), [path])
@@ -45,8 +40,8 @@ export const List: FC<ListProps> = ({
   )
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {
-    onSelect(node.key as string)
-  }, [onSelect])
+    selectTransition(node.key as string)
+  }, [selectTransition])
 
   return (
     <Tree.DirectoryTree

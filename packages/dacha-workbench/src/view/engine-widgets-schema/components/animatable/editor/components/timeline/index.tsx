@@ -12,12 +12,10 @@ import './style.less'
 
 interface TimelineProps {
   className?: string
-  onSelect?: (id: string) => void
 }
 
 export const Timeline: FC<TimelineProps> = ({
   className = '',
-  onSelect = (): void => void 0,
 }) => {
   const { selectedState } = useContext(AnimationEditorContext)
 
@@ -25,7 +23,7 @@ export const Timeline: FC<TimelineProps> = ({
     <div className={className}>
       <ActionBar />
       <div className="timeline__wrapper">
-        {selectedState && <List onSelect={onSelect} />}
+        {selectedState && <List />}
       </div>
     </div>
   )
