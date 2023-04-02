@@ -16,20 +16,14 @@ import type { SelectFn } from '../../../../../../../types/tree-node'
 import { parseStates } from './utils'
 import type { DataNodeWithParent } from './utils'
 
-interface ListProps {
-  onSelect: (id: string) => void
-  onChildSelect: (id: string) => void
-}
-
-export const List: FC<ListProps> = ({
-  onSelect,
-  onChildSelect,
-}) => {
+export const List: FC = () => {
   const {
     path,
     selectedState,
     selectedSubstate,
     selectedEntity,
+    selectState,
+    selectSubstate,
   } = useContext(AnimationEditorContext)
 
   const initialStatePath = useMemo(() => path.concat('initialState'), [path])
@@ -42,12 +36,12 @@ export const List: FC<ListProps> = ({
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {
     if (node.isLeaf) {
-      onSelect((node as EventDataNode<DataNodeWithParent>).parentKey)
-      onChildSelect(node.key as string)
+      selectState((node as EventDataNode<DataNodeWithParent>).parentKey)
+      selectSubstate(node.key as string)
     } else {
-      onSelect(node.key as string)
+      selectState(node.key as string)
     }
-  }, [onSelect, onChildSelect])
+  }, [selectState, selectSubstate])
 
   const selectedKey = selectedSubstate ?? selectedState
   const isInactive = selectedKey !== selectedEntity?.id

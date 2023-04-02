@@ -23,8 +23,7 @@ export const ActionBar: FC = () => {
     selectedState,
     selectedSubstate,
     selectedFrame,
-    setFrame,
-    selectEntity,
+    selectFrame,
   } = useContext(AnimationEditorContext)
 
   const statesPath = useMemo(() => path.concat('states'), [path])
@@ -48,7 +47,7 @@ export const ActionBar: FC = () => {
 
       return statesPath.concat(`id:${selectedState as string}`, 'substates', `id:${selectedSubstate}`, 'timeline', 'frames')
     },
-    [selectedState, statesPath, selectedSubstate],
+    [states, selectedState, statesPath, selectedSubstate],
   )
   const framePath = useMemo(
     () => framesPath && framesPath.concat(`id:${selectedFrame as string}`),
@@ -63,10 +62,9 @@ export const ActionBar: FC = () => {
   }, [dispatch, framesPath])
 
   const handleDelete = useCallback(() => {
-    selectEntity()
-    setFrame()
+    selectFrame()
     dispatch(deleteValue(framePath as Array<string>))
-  }, [dispatch, framePath, setFrame, selectEntity])
+  }, [dispatch, framePath, selectFrame])
 
   return (
     <header className="animation-editor__action-bar">

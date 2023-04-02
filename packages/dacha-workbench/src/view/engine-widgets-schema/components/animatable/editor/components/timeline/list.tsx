@@ -12,18 +12,13 @@ import { STATE_TYPE } from '../../const'
 
 import { Frame } from './frame'
 
-interface ListProps {
-  onSelect: (id: string) => void
-}
-
-export const List: FC<ListProps> = ({
-  onSelect,
-}) => {
+export const List: FC = () => {
   const {
     path,
     selectedFrame,
     selectedState,
     selectedSubstate,
+    selectFrame,
   } = useContext(AnimationEditorContext)
 
   const statePath = useMemo(
@@ -49,8 +44,8 @@ export const List: FC<ListProps> = ({
   }, [state, selectedSubstate])
 
   const handleSelect = useCallback((id: string) => {
-    onSelect(id)
-  }, [onSelect])
+    selectFrame(id)
+  }, [selectFrame])
 
   if (frames === undefined) {
     return null
