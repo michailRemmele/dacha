@@ -5,7 +5,6 @@ import React, {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from 'antd'
 import type { Animation } from 'remiz'
 
 import {
@@ -17,7 +16,7 @@ import {
   LabelledSelect,
 } from '../../../../../../../modules/inspector/components'
 import { useConfig, useCommander } from '../../../../../../../hooks'
-import { deleteValue, setValue } from '../../../../../../../commands'
+import { setValue } from '../../../../../../../commands'
 import { AnimationEditorContext } from '../../../providers'
 import { PICK_MODE, STATE_TYPE } from '../../../const'
 
@@ -29,8 +28,6 @@ export const StateInspector: FC = () => {
   const { dispatch } = useCommander()
   const {
     path,
-    selectEntity,
-    setState,
     selectedState,
   } = useContext(AnimationEditorContext)
 
@@ -38,7 +35,6 @@ export const StateInspector: FC = () => {
     () => path.concat('states', `id:${selectedState as string}`),
     [path, selectedState],
   )
-  const initialStatePath = useMemo(() => path.concat('initialState'), [path])
   const state = useConfig(statePath) as Animation.StateConfig
 
   const namePath = useMemo(() => statePath.concat('name'), [statePath])
@@ -94,16 +90,6 @@ export const StateInspector: FC = () => {
     }
   }, [dispatch, state, substatesPath])
 
-  const handleInitialSet = useCallback(() => {
-    dispatch(setValue(initialStatePath, state.id))
-  }, [dispatch, state, initialStatePath])
-
-  const handleDelete = useCallback(() => {
-    selectEntity()
-    setState()
-    dispatch(deleteValue(statePath))
-  }, [dispatch, statePath, selectEntity])
-
   return (
     <form className="animation-inspector__form">
       <Field
@@ -157,23 +143,6 @@ export const StateInspector: FC = () => {
         dependencyPath={pickModePath}
         dependencyValue={PICK_MODE.TWO_DIMENSIONAL}
       />
-
-      <footer className="animation-inspector__footer">
-        <Button
-          className="animation-inspector__button"
-          size="small"
-          onClick={handleInitialSet}
-        >
-          {t('components.animatable.editor.state.setInitial.button.title')}
-        </Button>
-        <Button
-          className="animation-inspector__button"
-          size="small"
-          onClick={handleDelete}
-        >
-          {t('components.animatable.editor.state.delete.button.title')}
-        </Button>
-      </footer>
     </form>
   )
 }

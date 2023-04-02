@@ -1,11 +1,9 @@
 import React, {
-  useCallback,
   useMemo,
   useContext,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from 'antd'
 
 import {
   Field,
@@ -14,19 +12,14 @@ import {
   LabelledCheckbox,
   LabelledNumberInput,
 } from '../../../../../../../modules/inspector/components'
-import { useCommander } from '../../../../../../../hooks'
-import { deleteValue } from '../../../../../../../commands'
 import { AnimationEditorContext } from '../../../providers'
 
 export const SubstateInspector: FC = () => {
   const { t } = useTranslation()
-  const { dispatch } = useCommander()
   const {
     path,
     selectedState,
     selectedSubstate,
-    selectEntity,
-    setSubstate,
   } = useContext(AnimationEditorContext)
   const id = selectedSubstate as string
 
@@ -45,12 +38,6 @@ export const SubstateInspector: FC = () => {
   const yPath = useMemo(() => substatePath.concat('y'), [substatePath])
 
   const pickModePath = useMemo(() => statePath.concat('pickMode'), [statePath])
-
-  const handleDelete = useCallback(() => {
-    selectEntity()
-    setSubstate()
-    dispatch(deleteValue(substatePath))
-  }, [dispatch, selectEntity, setSubstate, substatePath])
 
   return (
     <form className="animation-inspector__form">
@@ -76,16 +63,6 @@ export const SubstateInspector: FC = () => {
         dependencyPath={pickModePath}
         dependencyValue="2D"
       />
-
-      <footer className="animation-inspector__footer">
-        <Button
-          className="animation-inspector__button"
-          size="small"
-          onClick={handleDelete}
-        >
-          {t('components.animatable.editor.substate.delete.button.title')}
-        </Button>
-      </footer>
     </form>
   )
 }

@@ -21,8 +21,6 @@ export const Editor: FC = () => {
     setTransition,
     setFrame,
     setSubstate,
-    selectedEntity,
-    selectedState,
   } = useContext(AnimationEditorContext)
 
   const handleStateSelect = useCallback((id: string) => {
@@ -62,24 +60,20 @@ export const Editor: FC = () => {
             onSelect={handleStateSelect}
             onChildSelect={handleSubstateSelect}
           />
-          {selectedState && (
-            <TransitionList
-              className="animation-editor__transition-list"
-              onSelect={handleTransitionSelect}
-            />
-          )}
+          <TransitionList
+            className="animation-editor__transition-list"
+            onSelect={handleTransitionSelect}
+          />
         </section>
-        {selectedState && (
-          <footer className="animation-editor__footer">
-            <Timeline
-              className="animation-editor__timeline"
-              onSelect={handleFrameSelect}
-            />
-          </footer>
-        )}
+        <footer className="animation-editor__footer">
+          <Timeline
+            className="animation-editor__timeline"
+            onSelect={handleFrameSelect}
+          />
+        </footer>
       </section>
       <aside className="animation-editor__aside">
-        {selectedEntity && <Inspector entityType={selectedEntity.type} />}
+        <Inspector />
       </aside>
     </div>
   )

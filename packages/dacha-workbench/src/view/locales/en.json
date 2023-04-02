@@ -57,6 +57,11 @@
   "components.animatable.openEditorButton.title": "Open Animation Editor",
   "components.animatable.editor.title": "Animation Editor",
 
+  "components.animatable.editor.inspector.state.title": "State",
+  "components.animatable.editor.inspector.transition.title": "Transition",
+  "components.animatable.editor.inspector.frame.title": "Frame",
+  "components.animatable.editor.inspector.substate.title": "Substate",
+
   "components.animatable.editor.state.name.title": "Name",
   "components.animatable.editor.state.speed.title": "Speed",
   "components.animatable.editor.state.type.title": "Type",
@@ -69,18 +74,22 @@
   "components.animatable.editor.state.pickProps.x.title": "X",
   "components.animatable.editor.state.pickProps.y.title": "Y",
   "components.animatable.editor.state.setInitial.button.title": "Set as initial",
+  "components.animatable.editor.state.add.button.title": "Add New State",
   "components.animatable.editor.state.delete.button.title": "Delete State",
   "components.animatable.editor.state.new.title": "New State {{index}}",
 
+  "components.animatable.editor.frame.add.button.title": "Add New Frame",
   "components.animatable.editor.frame.delete.button.title": "Delete Frame",
 
   "components.animatable.editor.substate.x.title": "X",
   "components.animatable.editor.substate.y.title": "Y",
+  "components.animatable.editor.substate.add.button.title": "Add New Substate",
   "components.animatable.editor.substate.delete.button.title": "Delete Substate",
   "components.animatable.editor.substate.new.title": "New Substate {{index}}",
 
   "components.animatable.editor.transition.state.title": "State",
   "components.animatable.editor.transition.time.title": "Time",
+  "components.animatable.editor.transition.add.button.title": "Add New Transition",
   "components.animatable.editor.transition.delete.button.title": "Delete Transition",
 
   "components.animatable.editor.condition.title": "Condition {{index}}",
