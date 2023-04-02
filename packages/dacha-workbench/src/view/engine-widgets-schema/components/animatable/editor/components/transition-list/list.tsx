@@ -4,6 +4,7 @@ import React, {
   useMemo,
   FC,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Tree } from 'antd'
 import type { Animation } from 'remiz'
 
@@ -14,6 +15,7 @@ import type { SelectFn } from '../../../../../../../types/tree-node'
 import { parseTransitions } from './utils'
 
 export const List: FC = () => {
+  const { t } = useTranslation()
   const {
     path,
     selectedState,
@@ -35,7 +37,12 @@ export const List: FC = () => {
   }, {} as Record<string, string>), [statesConfigs])
 
   const treeData = useMemo(
-    () => parseTransitions(transitions, stateConfig.name, statesNames),
+    () => parseTransitions(
+      transitions,
+      stateConfig.name,
+      statesNames,
+      t('components.animatable.editor.transition.unknown.state.title'),
+    ),
     [transitions, stateConfig, statesNames],
   )
 
