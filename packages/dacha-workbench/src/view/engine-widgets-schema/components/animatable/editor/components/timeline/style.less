@@ -1,10 +1,21 @@
-.timeline {
+@import '../../../../../../themes/index.less';
+
+.timeline__wrapper {
+  // timeline padding + frame padding + frame border + line height
+  height: calc(15px * 2 + 31px * 2 + 20px);
+}
+
+.timeline__list {
   display: flex;
 
   list-style: none;
 
-  padding: 0;
-  margin: 15px;
+  padding: 15px;
+  margin: 0px;
+}
+
+.timeline__item {
+  flex-shrink: 0;
 }
 
 .timeline__item + .timeline__item {
@@ -21,14 +32,17 @@
 
   padding: 30px;
 
-  background-color: white;
+  border: 1px solid @fieldset-border;
+  background: transparent;
 
   cursor: pointer;
 }
 
 .timeline__frame_selected {
-  background-color: cornflowerblue;
-  color: white;
+  border: 1px solid @active-bg;
+  background-color: @active-bg;
+
+  color: @primary-text-inverse;
 }
 
 .timeline__frame_add {

@@ -1,76 +1,14 @@
-.state-list {
-  list-style: none;
+@import '../../../../../../themes/index.less';
 
-  padding: 0;
-  margin: 0;
+.animation-editor__list_inactive.ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before,
+.animation-editor__list_inactive.ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
+  background: @inactive-bg;
 }
 
-.state-list__state {
-  display: flex;
-  align-items: center;
-
-  width: 100%;
-  border: none;
-
-  padding: 3px 0 3px 25px;
-
-  background-color: white;
-  border-bottom: 1px solid lightgray;
-
-  cursor: pointer;
+.animation-editor__list_inactive.ant-tree.ant-tree-directory .ant-tree-treenode .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  color: inherit;
 }
 
-.state-list__item:last-child .state-list__state {
-  border-bottom: none;
-}
-
-.state-list__state_initial {
-  background-color: whitesmoke;
-}
-
-.state-list__state_selected {
-  background-color: gray;
-  color: white;
-}
-
-.state-list__state_inspected {
-  background-color: cornflowerblue;
-}
-
-.state-list__state_add {
-  opacity: 0.5;
-}
-
-.state-list__state-label {
-  margin-left: 5px;
-}
-
-.state-list__state_initial .state-list__state-label {
-  color: gray;
-}
-
-.state-list__state_selected .state-list__state-label {
-  color: white;
-}
-
-.state-list__state_group {
-  position: relative;
-}
-
-.state-list__state_group::before {
-  position: absolute;
-  left: 10px;
-
-  content: '';
-
-  border-left: 6px solid black;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-}
-
-.state-list__state_selected.state-list__state_group::before {
-  border-top: 6px solid white;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: none;
+.animation-editor__list_inactive.ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-switcher {
+  color: inherit;
 }

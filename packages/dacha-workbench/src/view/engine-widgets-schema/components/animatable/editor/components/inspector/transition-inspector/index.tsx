@@ -15,7 +15,7 @@ import {
   LabelledSelect,
 } from '../../../../../../../modules/inspector/components'
 import { useConfig, useCommander } from '../../../../../../../hooks'
-import { deleteValue, addValue } from '../../../../../../../commands'
+import { addValue } from '../../../../../../../commands'
 import { AnimationEditorContext } from '../../../providers'
 import { CONDITION_TYPE } from '../../../const'
 
@@ -30,8 +30,6 @@ export const TransitionInspector: FC = () => {
     path,
     selectedState,
     selectedTransition,
-    selectEntity,
-    setTransition,
   } = useContext(AnimationEditorContext)
   const id = selectedTransition as string
 
@@ -67,12 +65,6 @@ export const TransitionInspector: FC = () => {
     }))
   }, [dispatch, conditionsPath])
 
-  const handleDelete = useCallback(() => {
-    selectEntity()
-    setTransition()
-    dispatch(deleteValue(transitionPath))
-  }, [dispatch, selectEntity, setTransition, transitionPath])
-
   return (
     <form className="animation-inspector__form">
       <Field
@@ -106,14 +98,6 @@ export const TransitionInspector: FC = () => {
           onClick={handleAddCondition}
         >
           {t('components.animatable.editor.condition.add.button.title')}
-        </Button>
-
-        <Button
-          className="animation-inspector__button"
-          size="small"
-          onClick={handleDelete}
-        >
-          {t('components.animatable.editor.transition.delete.button.title')}
         </Button>
       </footer>
     </form>
