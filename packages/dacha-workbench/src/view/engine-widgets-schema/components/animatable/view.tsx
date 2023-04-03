@@ -22,10 +22,11 @@ export const AnimatableWidget: FC<WidgetProps> = ({ path }) => {
   const handleEditorClose = useCallback(() => setOpen(false), [])
 
   return (
-    <div className="animatable-widget">
+    <div>
       <Button
         size="small"
         onClick={handleEditorOpen}
+        block
       >
         {t('components.animatable.openEditorButton.title')}
       </Button>
