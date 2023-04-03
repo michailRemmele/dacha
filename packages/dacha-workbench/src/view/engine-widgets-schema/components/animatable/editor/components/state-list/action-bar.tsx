@@ -18,7 +18,7 @@ import type { Animation } from 'remiz'
 import { useConfig, useCommander } from '../../../../../../hooks'
 import { addValue, deleteValue, setValue } from '../../../../../../commands'
 import { AnimationEditorContext } from '../../providers'
-import { STATE_TYPE } from '../../const'
+import { PICK_MODE, STATE_TYPE } from '../../const'
 
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
@@ -47,6 +47,7 @@ export const ActionBar: FC = () => {
     [substatesPath, selectedSubstate],
   )
 
+  const initialState = useConfig(initialStatePath) as string
   const states = useConfig(statesPath) as Array<Animation.StateConfig>
   const selectedStateConfig = useMemo(
     () => states.find((item) => item.id === selectedState),
@@ -54,7 +55,7 @@ export const ActionBar: FC = () => {
   )
 
   const handleAddSubstate = useCallback(() => {
-    const { substates } = selectedStateConfig as Animation.GroupStateConfig
+    const { substates, pickMode } = selectedStateConfig as Animation.GroupStateConfig
 
     dispatch(addValue(substatesPath as Array<string>, {
       id: uuidv4(),
@@ -64,7 +65,7 @@ export const ActionBar: FC = () => {
         looped: false,
       },
       x: 0,
-      y: 0,
+      y: pickMode === PICK_MODE.TWO_DIMENSIONAL ? 0 : undefined,
     }))
   }, [dispatch, substatesPath, selectedStateConfig])
 
@@ -120,7 +121,7 @@ export const ActionBar: FC = () => {
         size="small"
         onClick={handleInitialSet}
         title={t('components.animatable.editor.state.setInitial.button.title')}
-        disabled={selectedEntity?.type !== 'state'}
+        disabled={selectedEntity?.type !== 'state' || selectedStateConfig?.id === initialState}
       />
       <Button
         className="animation-editor__action"
