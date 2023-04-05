@@ -20,7 +20,12 @@ import { addValue, deleteValue, setValue } from '../../../../../../commands'
 import { AnimationEditorContext } from '../../providers'
 import { PICK_MODE, STATE_TYPE } from '../../const'
 
-export const ActionBar: FC = () => {
+interface ActionBarProps {
+  expandedKeys: Array<string>
+  setExpandedKeys: (keys: Array<string>) => void
+}
+
+export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
   const {
@@ -55,7 +60,7 @@ export const ActionBar: FC = () => {
   )
 
   const handleAddSubstate = useCallback(() => {
-    const { substates, pickMode } = selectedStateConfig as Animation.GroupStateConfig
+    const { id, substates, pickMode } = selectedStateConfig as Animation.GroupStateConfig
 
     dispatch(addValue(substatesPath as Array<string>, {
       id: uuidv4(),
@@ -67,7 +72,11 @@ export const ActionBar: FC = () => {
       x: 0,
       y: pickMode === PICK_MODE.TWO_DIMENSIONAL ? 0 : undefined,
     }))
-  }, [dispatch, substatesPath, selectedStateConfig])
+
+    if (!expandedKeys.includes(id)) {
+      setExpandedKeys([...expandedKeys, id])
+    }
+  }, [dispatch, substatesPath, selectedStateConfig, expandedKeys])
 
   const handleAddState = useCallback(() => {
     dispatch(addValue(statesPath, {
@@ -89,14 +98,22 @@ export const ActionBar: FC = () => {
 
   const handleDelete = useCallback(() => {
     if (selectedEntity?.type === 'state') {
+      if (expandedKeys.includes(selectedEntity.id)) {
+        setExpandedKeys(expandedKeys.filter((key) => key !== selectedEntity.id))
+      }
+
       selectState()
       dispatch(deleteValue(statePath as Array<string>))
     }
     if (selectedEntity?.type === 'substate') {
+      if ((selectedStateConfig as Animation.GroupStateConfig).substates.length === 1) {
+        setExpandedKeys(expandedKeys.filter((key) => key !== selectedStateConfig?.id))
+      }
+
       selectSubstate()
       dispatch(deleteValue(substatePath as Array<string>))
     }
-  }, [dispatch, statePath, substatePath, selectState, selectSubstate, selectedEntity])
+  }, [dispatch, statePath, substatePath, selectedEntity, expandedKeys, selectedStateConfig])
 
   return (
     <header className="animation-editor__action-bar">
