@@ -50,27 +50,27 @@ export const AnimationEditorProvider: FC<AnimationEditorProviderProps> = ({
     setTransition(undefined)
     setFrame(undefined)
     setSubstate(undefined)
-  }, [setEntity, setState, setTransition, setFrame, setSubstate])
+  }, [])
 
   const selectSubstate = useCallback((id?: string) => {
     setEntity(id ? { id, type: 'substate' } : undefined)
     setSubstate(id)
     setTransition(undefined)
     setFrame(undefined)
-  }, [setEntity, setSubstate, setTransition, setFrame])
+  }, [])
 
   const selectTransition = useCallback((id?: string) => {
     setEntity(id ? { id, type: 'transition' } : undefined)
     setTransition(id)
     setFrame(undefined)
     setSubstate(undefined)
-  }, [setEntity, setTransition, setFrame, setSubstate])
+  }, [])
 
   const selectFrame = useCallback((id?: string) => {
     setEntity(id ? { id, type: 'frame' } : undefined)
     setFrame(id)
     setTransition(undefined)
-  }, [setEntity, setFrame, setTransition])
+  }, [])
 
   const entityData = useMemo(() => ({
     path,

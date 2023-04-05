@@ -1,9 +1,6 @@
 import React, {
-  useState,
   useCallback,
   useContext,
-  useEffect,
-  useRef,
   useMemo,
   FC,
 } from 'react'
@@ -20,7 +17,12 @@ import type { SelectFn, ExpandFn } from '../../../../../../../types/tree-node'
 import { parseStates } from './utils'
 import type { DataNodeWithParent } from './utils'
 
-export const List: FC = () => {
+interface ListProps {
+  expandedKeys: Array<string>
+  setExpandedKeys: (keys: Array<string>) => void
+}
+
+export const List: FC<ListProps> = ({ expandedKeys, setExpandedKeys }) => {
   const { t } = useTranslation()
   const {
     path,
@@ -31,35 +33,12 @@ export const List: FC = () => {
     selectSubstate,
   } = useContext(AnimationEditorContext)
 
-  const [expandedKeys, setExpandedKeys] = useState<Array<string>>([])
-
   const initialStatePath = useMemo(() => path.concat('initialState'), [path])
   const statesPath = useMemo(() => path.concat('states'), [path])
 
   const initialState = useConfig(initialStatePath) as string
 
   const states = useConfig(statesPath) as Array<Animation.StateConfig>
-  const prevStates = useRef<Array<Animation.StateConfig>>(states)
-
-  useEffect(() => {
-    if (!selectedState) {
-      return
-    }
-
-    const { substates = [] } = states
-      .find((state) => state.id === selectedState) as Animation.GroupStateConfig
-    const { substates: prevSubstates = [] } = prevStates.current
-      .find((state) => state.id === selectedState) as Animation.GroupStateConfig
-
-    if (substates.length > prevSubstates.length && !expandedKeys.includes(selectedState)) {
-      setExpandedKeys(expandedKeys.concat(selectedState))
-    }
-    if (substates.length === 0 && expandedKeys.includes(selectedState)) {
-      setExpandedKeys(expandedKeys.filter((key) => key !== selectedState))
-    }
-
-    prevStates.current = states
-  }, [states])
 
   const treeData = useMemo(() => parseStates(
     states,
