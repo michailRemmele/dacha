@@ -48,7 +48,7 @@ export const List: FC = () => {
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {
     selectTransition(node.key as string)
-  }, [selectTransition])
+  }, [])
 
   return (
     <Tree.DirectoryTree
