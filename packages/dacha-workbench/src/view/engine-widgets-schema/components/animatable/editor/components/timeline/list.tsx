@@ -45,7 +45,7 @@ export const List: FC = () => {
 
   const handleSelect = useCallback((id: string) => {
     selectFrame(id)
-  }, [selectFrame])
+  }, [])
 
   if (frames === undefined) {
     return null

@@ -64,7 +64,7 @@ export const ActionBar: FC = () => {
   const handleDelete = useCallback(() => {
     selectFrame()
     dispatch(deleteValue(framePath as Array<string>))
-  }, [dispatch, framePath, selectFrame])
+  }, [dispatch, framePath])
 
   return (
     <header className="animation-editor__action-bar">

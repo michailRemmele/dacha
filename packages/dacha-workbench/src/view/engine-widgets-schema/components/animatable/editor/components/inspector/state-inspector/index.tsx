@@ -88,6 +88,9 @@ export const StateInspector: FC = () => {
     if (value === PICK_MODE.ONE_DIMENSIONAL) {
       dispatch(setValue(substatesPath, substates.map(({ y, ...substate }) => substate)))
     }
+    if (value === PICK_MODE.TWO_DIMENSIONAL) {
+      dispatch(setValue(substatesPath, substates.map((substate) => ({ ...substate, y: 0 }))))
+    }
   }, [dispatch, state, substatesPath])
 
   return (

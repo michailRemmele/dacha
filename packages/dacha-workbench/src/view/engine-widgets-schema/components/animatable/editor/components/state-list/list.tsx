@@ -53,7 +53,7 @@ export const List: FC<ListProps> = ({ expandedKeys, setExpandedKeys }) => {
     } else {
       selectState(node.key as string)
     }
-  }, [selectState, selectSubstate])
+  }, [])
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)

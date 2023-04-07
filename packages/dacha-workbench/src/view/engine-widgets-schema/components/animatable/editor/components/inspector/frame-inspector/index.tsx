@@ -19,7 +19,7 @@ export const FrameInspector: FC = () => {
 
   const statePath = useMemo(
     () => path.concat('states', `id:${selectedState as string}`),
-    [path, selectedFrame],
+    [path, selectedState],
   )
   const state = useConfig(statePath) as Animation.StateConfig
 

@@ -50,7 +50,7 @@ export const ActionBar: FC = () => {
   const handleDelete = useCallback(() => {
     selectTransition()
     dispatch(deleteValue(transitionPath as Array<string>))
-  }, [dispatch, selectTransition, transitionPath])
+  }, [dispatch, transitionPath])
 
   return (
     <header className="animation-editor__action-bar">
