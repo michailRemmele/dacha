@@ -8,6 +8,7 @@ export {
   useStore,
 } from './view/hooks'
 export { Field } from './view/modules/inspector/components/field'
+export { DependencyField } from './view/modules/inspector/components/dependency-field'
 export { Widget } from './view/modules/inspector/components/widget'
 export { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
 export { NumberInput, LabelledNumberInput } from './view/modules/inspector/components/number-input'

@@ -7,6 +7,7 @@ import {
 } from './view/hooks'
 import { addValue, setValue, deleteValue } from './view/commands'
 import { Field } from './view/modules/inspector/components/field'
+import { DependencyField } from './view/modules/inspector/components/dependency-field'
 import { Widget } from './view/modules/inspector/components/widget'
 import { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
 import { NumberInput, LabelledNumberInput } from './view/modules/inspector/components/number-input'
@@ -28,6 +29,7 @@ window.RemizEditor = {
   SchemasContext,
 
   Field,
+  DependencyField,
   Widget,
   TextInput,
   LabelledTextInput,
