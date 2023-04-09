@@ -1,4 +1,5 @@
 import type {
+  Config,
   System,
   SystemOptions,
   SceneContext,
@@ -72,6 +73,13 @@ export class ProjectLoader implements System {
       }
 
       document.body.appendChild(script)
+    })
+  }
+
+  mount(): void {
+    window.electron.onSave(() => {
+      const projectConfig = (this.sceneContext.data.configStore as Store).get([]) as Config
+      window.electron.saveProjectConfig(projectConfig)
     })
   }
 
