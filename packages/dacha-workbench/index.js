@@ -1,6 +1,12 @@
-const { app, BrowserWindow } = require('electron')
+const {
+  app,
+  BrowserWindow,
+  Menu,
+} = require('electron')
 const express = require('express')
 const path = require('path')
+
+const getMenu = require('./electron/get-menu')
 
 const { assets } = require(path.resolve(process.env.EDITOR_CONFIG))
 
@@ -38,6 +44,8 @@ const createWindow = () => {
     },
   })
   win.maximize()
+
+  Menu.setApplicationMenu(getMenu(win))
 
   win.loadURL(`http://localhost:${UI_PORT}`)
 }
