@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { SelectedEntityContext } from '../../../../providers'
 import type { SchemasDataEntry } from '../../../../providers'
 
-import { EntityPanel } from './entity-panel'
 import { EntityPicker } from './entity-picker'
+import { Panels } from './panels'
+import { DraggablePanels } from './draggable-panels'
 
 import type { EntityType } from './types'
 
@@ -17,6 +18,8 @@ interface EntityListProps {
   placeholder: string
   type: EntityType
   sortByAddition?: boolean
+  onDragEntity?: (from: number, to: number) => void
+  draggable?: boolean
 }
 
 export const EntityList = ({
@@ -25,6 +28,8 @@ export const EntityList = ({
   placeholder,
   type,
   sortByAddition = true,
+  onDragEntity,
+  draggable,
 }: EntityListProps): JSX.Element => {
   const { t } = useTranslation()
   const { path = [] } = useContext(SelectedEntityContext)
@@ -51,13 +56,15 @@ export const EntityList = ({
 
   return (
     <div className="entity-list">
-      {panels ? panels.map((entity) => (
-        <EntityPanel
-          key={entity.id}
-          entity={entity}
+      {draggable && panels ? (
+        <DraggablePanels
+          panels={panels}
           type={type}
+          onDragEntity={onDragEntity}
         />
-      )) : null}
+      ) : null}
+
+      {!draggable && panels ? <Panels panels={panels} type={type} /> : null}
 
       <EntityPicker
         key={pathKey}

@@ -8,14 +8,16 @@ import { deleteValue } from '../../../../commands'
 import { EntityForm } from './entity-form'
 import type { Entity, EntityType } from './types'
 
-interface EntityPanelProps {
+export interface EntityPanelProps {
   entity: Entity
   type: EntityType
+  expandExtra?: JSX.Element | Array<JSX.Element>
 }
 
 export const EntityPanel = ({
   entity,
   type,
+  expandExtra,
 }: EntityPanelProps): JSX.Element => {
   const { dispatch } = useCommander()
   const { path = [] } = useContext(SelectedEntityContext)
@@ -30,6 +32,7 @@ export const EntityPanel = ({
     <CollapsePanel
       title={entity.label}
       onDelete={handleDelete}
+      expandExtra={expandExtra}
     >
       <EntityForm {...entity} type={type} />
     </CollapsePanel>
