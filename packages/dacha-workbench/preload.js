@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('electron', {
     return undefined
   },
   saveProjectConfig: (config) => {
+    // TODO: Remove json beautify before production
     fs.writeFileSync(path.resolve(editorConfig.projectConfig), JSON.stringify(config, null, 2))
   },
   onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
