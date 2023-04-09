@@ -1,25 +1,29 @@
 import React, {
   useMemo,
   useCallback,
+  useState,
   FC,
+  useEffect,
 } from 'react'
 import {
   DndContext,
-  closestCenter,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import type { DragEndEvent } from '@dnd-kit/core'
+import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core'
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  arrayMove,
 } from '@dnd-kit/sortable'
 
 import { DraggableEntityPanel } from './draggable-entity-panel'
-import type { PanelsProps } from './panels'
+import { DragOverlayEntity } from './drag-overlay-entity'
+import type { Panel, PanelsProps } from './panels'
 
 interface DraggablePanelsProps extends PanelsProps {
   onDragEntity?: (from: number, to: number) => void
@@ -33,29 +37,41 @@ export const DraggablePanels: FC<DraggablePanelsProps> = ({ panels, type, onDrag
     }),
   )
 
-  const panelsIds = useMemo(() => panels.map((panel) => panel.id), [panels])
+  const [draggablePanels, setDraggablePanels] = useState<Array<Panel>>(panels)
+  useEffect(() => setDraggablePanels(panels), [panels])
+
+  const [activePanel, setActivePanel] = useState<Panel | null>()
+
+  const panelsIds = useMemo(() => draggablePanels.map((panel) => panel.id), [draggablePanels])
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActivePanel(draggablePanels.find((panel) => panel.id === event.active.id))
+  }, [draggablePanels])
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
+
+    setActivePanel(null)
 
     if (!over || active.id === over?.id) {
       return
     }
 
-    const activePanelIndex = panels.findIndex((panel) => panel.id === active.id)
-    const overPanelIndex = panels.findIndex((panel) => panel.id === over.id)
+    const activePanelIndex = draggablePanels.findIndex((panel) => panel.id === active.id)
+    const overPanelIndex = draggablePanels.findIndex((panel) => panel.id === over.id)
 
+    setDraggablePanels(arrayMove(draggablePanels, activePanelIndex, overPanelIndex))
     onDragEntity?.(activePanelIndex, overPanelIndex)
-  }, [panels, onDragEntity])
+  }, [draggablePanels, onDragEntity])
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={panelsIds} strategy={verticalListSortingStrategy}>
-        {panels.map((entity) => (
+        {draggablePanels.map((entity) => (
           <DraggableEntityPanel
             key={entity.id}
             entity={entity}
@@ -63,6 +79,9 @@ export const DraggablePanels: FC<DraggablePanelsProps> = ({ panels, type, onDrag
           />
         ))}
       </SortableContext>
+      <DragOverlay>
+        {activePanel ? <DragOverlayEntity entity={activePanel} type={type} /> : null}
+      </DragOverlay>
     </DndContext>
   )
 }
