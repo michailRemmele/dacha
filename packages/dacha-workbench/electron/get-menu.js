@@ -3,6 +3,8 @@ const {
   Menu,
 } = require('electron')
 
+const MESSAGES = require('./messages')
+
 module.exports = (window) => Menu.buildFromTemplate([
   {
     label: app.name,
@@ -18,7 +20,7 @@ module.exports = (window) => Menu.buildFromTemplate([
       {
         label: 'Save',
         accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S',
-        click: () => window.webContents.send('SAVE', 1),
+        click: () => window.webContents.send(MESSAGES.SAVE),
       },
     ],
   },
