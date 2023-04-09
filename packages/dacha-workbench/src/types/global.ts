@@ -23,6 +23,8 @@ export interface ElectronAPI {
   getProjectConfig: () => Config,
   getEditorConfig: () => EditorConfig
   getExtension: () => string | undefined
+  saveProjectConfig: (config: Config) => void
+  onSave: (callback: () => void) => void
 }
 
 declare global {
