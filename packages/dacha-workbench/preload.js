@@ -2,6 +2,8 @@ const { contextBridge, ipcRenderer } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
+const MESSAGES = require('./electron/messages')
+
 const editorConfig = require(path.resolve(process.env.EDITOR_CONFIG))
 
 contextBridge.exposeInMainWorld('electron', {
@@ -21,5 +23,5 @@ contextBridge.exposeInMainWorld('electron', {
   saveProjectConfig: (config) => {
     fs.writeFileSync(path.resolve(editorConfig.projectConfig), JSON.stringify(config, null, 2))
   },
-  onSave: (callback) => ipcRenderer.on('SAVE', callback),
+  onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
 })
