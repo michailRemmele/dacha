@@ -3,7 +3,15 @@
     "tab.levels": "Levels",
     "tab.templates": "Templates",
     "tab.scenes": "Scenes",
-    "tab.loaders": "Loaders"
+    "tab.loaders": "Loaders",
+
+    "levels.actionBar.addGameObject.button.title": "Add New Game Object",
+    "levels.actionBar.addLevel.button.title": "Add New Level",
+    "levels.actionBar.deleteGameObject.button.title": "Delete Game Object",
+    "levels.actionBar.deleteLevel.button.title": "Delete Level",
+
+    "levels.actionBar.gameObject.new.title": "New Game Object {{index}}",
+    "levels.actionBar.level.new.title": "New Level {{index}}"
   },
   "toolbar": {
     "hand.title": "Hand Tool",
