@@ -9,7 +9,6 @@ import {
   TemplateCollection,
   TemplateConfig,
   LevelConfig,
-  GameObjectConfig,
   MessageBus,
   SceneContext,
   ComponentsMap,
@@ -21,8 +20,11 @@ import type { SelectLevelMessage } from '../../../types/messages'
 import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { includesArray } from '../../../utils/includes-array'
 
-const TEMPLATE_PATH_LENGTH = 2
-const GAME_OBJECT_PATH_LENGTH = 4
+import {
+  watchTemplates,
+  watchGameObjects,
+} from './watchers'
+import type { WatcherOptions } from './watchers'
 
 interface LevelViewerOptions extends SystemOptions {
   mainObjectId: string;
@@ -42,6 +44,7 @@ export class LevelViewer implements System {
   currentLevel?: string
   templateCollection?: TemplateCollection
   subscription?: () => void
+  prevLevel?: LevelConfig
 
   constructor(options: SystemOptions) {
     const {
@@ -104,55 +107,32 @@ export class LevelViewer implements System {
 
   private watchStore(): void {
     const listener: ListenerFn = (path) => {
+      const levelPath = this.currentLevel && ['levels', `id:${this.currentLevel}`]
+      const level = levelPath ? this.configStore.get(levelPath) as LevelConfig : undefined
+
+      const options: WatcherOptions = {
+        path,
+        store: this.configStore,
+        gameObjectObserver: this.gameObjectObserver,
+        gameObjectDestroyer: this.gameObjectDestroyer,
+        gameObjectCreator: this.gameObjectCreator as GameObjectCreator,
+        gameObjectSpawner: this.gameObjectSpawner,
+        templateCollection: this.templateCollection as TemplateCollection,
+        level,
+        prevLevel: this.prevLevel,
+      }
+
       if (includesArray(path, ['templates'])) {
-        this.watchTemplates(path)
+        watchTemplates(options)
       }
       if (this.currentLevel && includesArray(path, ['levels', `id:${this.currentLevel}`, 'gameObjects'])) {
-        this.watchGameObjects(path)
+        watchGameObjects(options)
       }
+
+      this.prevLevel = level
     }
 
     this.subscription = this.configStore.subscribe(listener)
-  }
-
-  private watchTemplates(path: Array<string>): void {
-    const templatePath = path.slice(0, TEMPLATE_PATH_LENGTH)
-    const template = this.configStore.get(templatePath) as TemplateConfig
-
-    this.templateCollection?.delete(template.id)
-    this.templateCollection?.register(template)
-
-    if (!this.currentLevel) {
-      return
-    }
-
-    const levelPath = ['levels', `id:${this.currentLevel}`]
-    const { gameObjects } = this.configStore.get(levelPath) as LevelConfig
-
-    gameObjects.forEach((gameObjectConfig) => {
-      if (template.id !== gameObjectConfig.templateId) {
-        return
-      }
-
-      const gameObject = this.gameObjectObserver.getById(gameObjectConfig.id)
-
-      if (gameObject) {
-        this.gameObjectDestroyer.destroy(gameObject)
-        this.gameObjectSpawner.spawn(this.gameObjectCreator!.create(gameObjectConfig))
-      }
-    })
-  }
-
-  private watchGameObjects(path: Array<string>): void {
-    const gameObjectPath = path.slice(0, GAME_OBJECT_PATH_LENGTH)
-    const gameObjectConfig = this.configStore.get(gameObjectPath) as GameObjectConfig
-
-    const gameObject = this.gameObjectObserver.getById(gameObjectConfig.id)
-
-    if (gameObject) {
-      this.gameObjectDestroyer.destroy(gameObject)
-      this.gameObjectSpawner.spawn(this.gameObjectCreator!.create(gameObjectConfig))
-    }
   }
 
   private updateLevels(): void {
@@ -187,6 +167,7 @@ export class LevelViewer implements System {
       })
     }
 
+    this.prevLevel = selectedLevel
     this.currentLevel = levelId
   }
 
