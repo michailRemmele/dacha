@@ -1,0 +1,37 @@
+@import '../../../../../../../../themes/index.less';
+
+.animation-inspector {
+  height: 100%;
+}
+
+.animation-inspector__header {
+  display: flex;
+  align-items: center;
+
+  height: 34px;
+
+  padding: 5px 10px;
+  border-bottom: 1px solid @panel-border;
+}
+
+.animation-inspector__content {
+  overflow: auto;
+
+  height: calc(100% - 34px);
+}
+
+.animation-inspector__form {
+  display: flex;
+  flex-direction: column;
+
+  margin: 10px;
+}
+
+.animation-inspector__footer {
+  display: flex;
+  flex-direction: column;
+}
+
+.animation-inspector__button {
+  margin-top: 5px;
+}
