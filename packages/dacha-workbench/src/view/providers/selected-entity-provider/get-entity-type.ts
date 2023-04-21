@@ -1,6 +1,9 @@
 export type EntityType = 'level' | 'gameObject' | 'template' | 'scene' | 'loader'
 
-export const getEntityType = (path: Array<string>): EntityType | undefined => {
+export const getEntityType = (path: Array<string> | undefined): EntityType | undefined => {
+  if (path === undefined) {
+    return undefined
+  }
   if (path.length === 2 && path[0] === 'levels') {
     return 'level'
   }
@@ -17,5 +20,5 @@ export const getEntityType = (path: Array<string>): EntityType | undefined => {
     return 'loader'
   }
 
-  return void ''
+  return undefined
 }

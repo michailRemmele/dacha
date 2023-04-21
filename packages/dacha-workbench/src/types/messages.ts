@@ -5,5 +5,5 @@ export interface SelectLevelMessage extends Message {
 }
 
 export interface InspectEntityMessage extends Message {
-  path: Array<string>
+  path: Array<string> | undefined
 }

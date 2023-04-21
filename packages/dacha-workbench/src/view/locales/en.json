@@ -3,7 +3,19 @@
     "tab.levels": "Levels",
     "tab.templates": "Templates",
     "tab.scenes": "Scenes",
-    "tab.loaders": "Loaders"
+    "tab.loaders": "Loaders",
+
+    "levels.actionBar.addGameObject.button.title": "Add New Game Object",
+    "levels.actionBar.addLevel.button.title": "Add New Level",
+    "levels.actionBar.duplicateGameObject.button.title": "Duplicate Game Object",
+    "levels.actionBar.duplicateLevel.button.title": "Duplicate Level",
+    "levels.actionBar.deleteGameObject.button.title": "Delete Game Object",
+    "levels.actionBar.deleteLevel.button.title": "Delete Level",
+
+    "levels.actionBar.gameObject.new.title": "New Game Object {{index}}",
+    "levels.actionBar.level.new.title": "New Level {{index}}",
+
+    "duplicate.appendix.title": "copy"
   },
   "toolbar": {
     "hand.title": "Hand Tool",
