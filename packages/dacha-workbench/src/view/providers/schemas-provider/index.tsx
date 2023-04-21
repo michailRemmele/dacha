@@ -1,7 +1,7 @@
 import React, { useMemo, FC } from 'react'
 
 import type { WidgetSchema } from '../../../types/widget-schema'
-import { componentsSchema, systemsSchema } from '../../engine-widgets-schema'
+import { componentsSchema, systemsSchema } from '../../modules/inspector/widgets'
 import { useExtension } from '../../hooks'
 
 import { NAMESPACE_EDITOR, NAMESPACE_EXTENSION } from './consts'

@@ -11,7 +11,7 @@ export const Explorer = (): JSX.Element => {
 
   return (
     <div className="explorer">
-      <Tabs type="card">
+      <Tabs className="explorer__tabs" type="card">
         <Tabs.TabPane tab={t('explorer.tab.levels')} key="levels">
           <LevelsTree />
         </Tabs.TabPane>
