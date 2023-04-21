@@ -9,6 +9,7 @@ import {
   FileAddOutlined,
   FolderAddOutlined,
   DeleteOutlined,
+  CopyOutlined,
 } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { GameObjectConfig, LevelConfig } from 'remiz'
@@ -17,6 +18,10 @@ import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue } from '../../../../commands'
 import { SelectedEntityContext, EngineContext } from '../../../../providers'
 import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
+import {
+  duplicateGameObject,
+  duplicateLevel,
+} from '../../utils'
 
 import { getKeysToDelete } from './utils'
 
@@ -90,6 +95,21 @@ export const ActionBar: FC<ActionBarProps> = ({
     setExpandedKeys(expandedKeys.filter((key) => !keys.has(key)))
   }, [dispatch, selectedEntityPath, expandedKeys, selectedEntity, type])
 
+  const handleDuplicate = useCallback(() => {
+    let duplicate: GameObjectConfig | LevelConfig | undefined
+
+    if (type === 'gameObject') {
+      duplicate = duplicateGameObject(selectedEntity as GameObjectConfig)
+    }
+    if (type === 'level') {
+      duplicate = duplicateLevel(selectedEntity as LevelConfig)
+    }
+
+    if (duplicate !== undefined && selectedEntityPath !== undefined) {
+      dispatch(addValue(selectedEntityPath.slice(0, -1), duplicate))
+    }
+  }, [dispatch, selectedEntityPath, selectedEntity, type])
+
   return (
     <header className="levels-tree__action-bar">
       <Button
@@ -106,6 +126,18 @@ export const ActionBar: FC<ActionBarProps> = ({
         size="small"
         onClick={handleAddLevel}
         title={t('explorer.levels.actionBar.addLevel.button.title')}
+      />
+      <Button
+        className="levels-tree__action"
+        icon={<CopyOutlined />}
+        size="small"
+        onClick={handleDuplicate}
+        title={
+          type === 'level'
+            ? t('explorer.levels.actionBar.duplicateLevel.button.title')
+            : t('explorer.levels.actionBar.duplicateGameObject.button.title')
+        }
+        disabled={type !== 'gameObject' && type !== 'level'}
       />
       <Button
         className="levels-tree__action"
