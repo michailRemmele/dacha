@@ -21,9 +21,8 @@ import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/mess
 import {
   duplicateGameObject,
   duplicateLevel,
+  getKeysToDelete,
 } from '../../utils'
-
-import { getKeysToDelete } from './utils'
 
 interface ActionBarProps {
   expandedKeys: Array<string>
@@ -111,9 +110,9 @@ export const ActionBar: FC<ActionBarProps> = ({
   }, [dispatch, selectedEntityPath, selectedEntity, type])
 
   return (
-    <header className="levels-tree__action-bar">
+    <header className="explorer__action-bar">
       <Button
-        className="levels-tree__action"
+        className="explorer__action"
         icon={<FileAddOutlined />}
         size="small"
         onClick={handleAddGameObject}
@@ -121,14 +120,14 @@ export const ActionBar: FC<ActionBarProps> = ({
         disabled={type !== 'gameObject' && type !== 'level'}
       />
       <Button
-        className="levels-tree__action"
+        className="explorer__action"
         icon={<FolderAddOutlined />}
         size="small"
         onClick={handleAddLevel}
         title={t('explorer.levels.actionBar.addLevel.button.title')}
       />
       <Button
-        className="levels-tree__action"
+        className="explorer__action"
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -140,7 +139,7 @@ export const ActionBar: FC<ActionBarProps> = ({
         disabled={type !== 'gameObject' && type !== 'level'}
       />
       <Button
-        className="levels-tree__action"
+        className="explorer__action"
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}

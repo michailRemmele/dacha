@@ -6,44 +6,31 @@ import React, {
 } from 'react'
 import { Tree as AntdTree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
-import type { LevelConfig } from 'remiz'
+import type { TemplateConfig } from 'remiz'
 
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
-import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
+import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { DataNodeWithPath, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 
-import { parseLevels, getKey } from './utils'
+import { parseTemplates, getKey } from './utils'
 
 interface TreeProps {
   expandedKeys: Array<string>
   setExpandedKeys: (keys: Array<string>) => void
-  selectedLevel: string | undefined
-  setSelectedLevel: (id: string | undefined) => void
 }
 
 export const Tree: FC<TreeProps> = ({
   expandedKeys,
   setExpandedKeys,
-  selectedLevel,
-  setSelectedLevel,
 }) => {
   const { pushMessage } = useContext(EngineContext)
   const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
-  const levels = useConfig('levels') as Array<LevelConfig>
+  const templates = useConfig('templates') as Array<TemplateConfig>
   const selectedEntity = useConfig(selectedEntityPath)
-
-  const currentEntityId = (selectedEntity as { id: string } | undefined)?.id
-  const inactiveSelectedLevelId = selectedLevel && selectedLevel !== currentEntityId
-    ? selectedLevel
-    : undefined
-
-  const treeData = useMemo(
-    () => parseLevels(levels, inactiveSelectedLevelId),
-    [levels, inactiveSelectedLevelId],
-  )
+  const treeData = useMemo(() => parseTemplates(templates), [templates])
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
@@ -54,22 +41,11 @@ export const Tree: FC<TreeProps> = ({
       return
     }
 
-    const entityPath = (node as EventDataNode<DataNodeWithPath>).path.slice(0)
-    const levelId = entityPath[0] === 'levels' ? entityPath[1].split(':')[1] : undefined
-
-    if (levelId !== undefined && levelId !== selectedLevel) {
-      pushMessage({
-        type: SELECT_LEVEL_MSG,
-        levelId,
-      })
-      setSelectedLevel(levelId)
-    }
-
     pushMessage({
       type: INSPECT_ENTITY_MSG,
-      path: entityPath,
+      path: (node as EventDataNode<DataNodeWithPath>).path.slice(0),
     })
-  }, [pushMessage, selectedLevel])
+  }, [pushMessage])
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath)
 

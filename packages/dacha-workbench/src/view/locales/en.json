@@ -15,6 +15,12 @@
     "levels.actionBar.gameObject.new.title": "New Game Object {{index}}",
     "levels.actionBar.level.new.title": "New Level {{index}}",
 
+    "levels.actionBar.addTemplate.button.title": "Add New Template",
+    "levels.actionBar.duplicateTemplate.button.title": "Duplicate Template",
+    "levels.actionBar.deleteTemplate.button.title": "Delete Template",
+
+    "levels.actionBar.template.new.title": "New Template {{index}}",
+
     "duplicate.appendix.title": "copy"
   },
   "toolbar": {
