@@ -87,6 +87,8 @@
   "components.animatable.openEditorButton.title": "Open Animation Editor",
   "components.animatable.editor.title": "Animation Editor",
 
+  "components.animatable.editor.duplicate.appendix.title": "copy",
+
   "components.animatable.editor.inspector.state.title": "State",
   "components.animatable.editor.inspector.transition.title": "Transition",
   "components.animatable.editor.inspector.frame.title": "Frame",
@@ -107,6 +109,7 @@
   "components.animatable.editor.state.setInitial.button.title": "Set as initial",
   "components.animatable.editor.state.add.button.title": "Add New State",
   "components.animatable.editor.state.delete.button.title": "Delete State",
+  "components.animatable.editor.state.duplicate.button.title": "Duplicate State",
   "components.animatable.editor.state.new.title": "New State {{index}}",
 
   "components.animatable.editor.frame.add.button.title": "Add New Frame",
@@ -117,6 +120,7 @@
   "components.animatable.editor.substate.y.title": "Y",
   "components.animatable.editor.substate.add.button.title": "Add New Substate",
   "components.animatable.editor.substate.delete.button.title": "Delete Substate",
+  "components.animatable.editor.substate.duplicate.button.title": "Duplicate Substate",
   "components.animatable.editor.substate.new.title": "New Substate {{index}}",
 
   "components.animatable.editor.transition.state.title": "State",
