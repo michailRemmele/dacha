@@ -90,16 +90,16 @@ export const ActionBar: FC<ActionBarProps> = ({
   }, [dispatch, selectedEntityPath, selectedEntity])
 
   return (
-    <header className="levels-tree__action-bar">
+    <header className="explorer__action-bar">
       <Button
-        className="levels-tree__action"
+        className="explorer__action"
         icon={<FileAddOutlined />}
         size="small"
         onClick={handleAdd}
         title={t('explorer.levels.actionBar.addTemplate.button.title')}
       />
       <Button
-        className="levels-tree__action"
+        className="explorer__action"
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -107,7 +107,7 @@ export const ActionBar: FC<ActionBarProps> = ({
         disabled={type !== 'template'}
       />
       <Button
-        className="levels-tree__action"
+        className="explorer__action"
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}
