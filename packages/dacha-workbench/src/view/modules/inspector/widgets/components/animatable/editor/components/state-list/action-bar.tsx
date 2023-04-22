@@ -11,10 +11,12 @@ import {
   PlusOutlined,
   PlusCircleOutlined,
   RightCircleOutlined,
+  CopyOutlined,
 } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'remiz'
 
+import { duplicateState, duplicateSubstate } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { addValue, deleteValue, setValue } from '../../../../../../../../commands'
 import { AnimationEditorContext } from '../../providers'
@@ -58,6 +60,17 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
     () => states.find((item) => item.id === selectedState),
     [states, selectedState],
   )
+  const selectedSubstateConfig = useMemo(
+    () => {
+      if (selectedStateConfig === undefined || selectedStateConfig.type === STATE_TYPE.INDIVIDUAL) {
+        return undefined
+      }
+
+      return (selectedStateConfig as Animation.GroupStateConfig)
+        .substates.find((item) => item.id === selectedSubstate)
+    },
+    [selectedStateConfig, selectedSubstate],
+  )
 
   const handleAddSubstate = useCallback(() => {
     const { id, substates, pickMode } = selectedStateConfig as Animation.GroupStateConfig
@@ -95,6 +108,27 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
   const handleInitialSet = useCallback(() => {
     dispatch(setValue(initialStatePath, (selectedStateConfig as Animation.GroupStateConfig).id))
   }, [dispatch, selectedStateConfig, initialStatePath])
+
+  const handleDuplicate = useCallback(
+    () => {
+      if (selectedEntity?.type === 'state') {
+        dispatch(addValue(
+          statesPath,
+          duplicateState(selectedStateConfig as Animation.StateConfig),
+        ))
+      }
+      if (selectedEntity?.type === 'substate') {
+        dispatch(addValue(
+          substatesPath as Array<string>,
+          duplicateSubstate(selectedSubstateConfig as Animation.SubstateConfig),
+        ))
+      }
+    },
+    [
+      dispatch, selectedEntity, statesPath,
+      substatesPath, selectedStateConfig, selectedSubstateConfig,
+    ],
+  )
 
   const handleDelete = useCallback(() => {
     if (selectedEntity?.type === 'state') {
@@ -139,6 +173,18 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
         onClick={handleInitialSet}
         title={t('components.animatable.editor.state.setInitial.button.title')}
         disabled={selectedEntity?.type !== 'state' || selectedStateConfig?.id === initialState}
+      />
+      <Button
+        className="animation-editor__action"
+        icon={<CopyOutlined />}
+        size="small"
+        onClick={handleDuplicate}
+        title={
+          selectedEntity?.type === 'substate'
+            ? t('components.animatable.editor.substate.duplicate.button.title')
+            : t('components.animatable.editor.state.duplicate.button.title')
+        }
+        disabled={selectedEntity?.type !== 'state' && selectedEntity?.type !== 'substate'}
       />
       <Button
         className="animation-editor__action"

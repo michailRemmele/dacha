@@ -6,10 +6,11 @@ import React, {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, CopyOutlined } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'remiz'
 
+import { duplicateFrame } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { addValue, deleteValue } from '../../../../../../../../commands'
 import { AnimationEditorContext } from '../../providers'
@@ -53,6 +54,7 @@ export const ActionBar: FC = () => {
     () => framesPath && framesPath.concat(`id:${selectedFrame as string}`),
     [framesPath, selectedFrame],
   )
+  const frame = useConfig(framePath) as Animation.FrameConfig | undefined
 
   const handleAdd = useCallback(() => {
     dispatch(addValue(framesPath as Array<string>, {
@@ -60,6 +62,14 @@ export const ActionBar: FC = () => {
       fields: [],
     }))
   }, [dispatch, framesPath])
+
+  const handleDuplicate = useCallback(() => {
+    if (framesPath === undefined || frame === undefined) {
+      return
+    }
+
+    dispatch(addValue(framesPath, duplicateFrame(frame)))
+  }, [dispatch, framesPath, frame])
 
   const handleDelete = useCallback(() => {
     selectFrame()
@@ -75,6 +85,14 @@ export const ActionBar: FC = () => {
         onClick={handleAdd}
         title={t('components.animatable.editor.frame.add.button.title')}
         disabled={framesPath === undefined}
+      />
+      <Button
+        className="animation-editor__action"
+        icon={<CopyOutlined />}
+        size="small"
+        onClick={handleDuplicate}
+        title={t('components.animatable.editor.frame.duplicate.button.title')}
+        disabled={selectedFrame === undefined}
       />
       <Button
         className="animation-editor__action"
