@@ -123,6 +123,7 @@
   "components.animatable.editor.transition.time.title": "Time",
   "components.animatable.editor.transition.add.button.title": "Add New Transition",
   "components.animatable.editor.transition.delete.button.title": "Delete Transition",
+  "components.animatable.editor.transition.duplicate.button.title": "Duplicate Transition",
   "components.animatable.editor.transition.unknown.state.title": "DELETED",
 
   "components.animatable.editor.condition.title": "Condition {{index}}",
