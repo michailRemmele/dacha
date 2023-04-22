@@ -111,6 +111,7 @@
 
   "components.animatable.editor.frame.add.button.title": "Add New Frame",
   "components.animatable.editor.frame.delete.button.title": "Delete Frame",
+  "components.animatable.editor.frame.duplicate.button.title": "Duplicate Frame",
 
   "components.animatable.editor.substate.x.title": "X",
   "components.animatable.editor.substate.y.title": "Y",
