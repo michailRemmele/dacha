@@ -21,9 +21,8 @@ import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/mess
 import {
   duplicateGameObject,
   duplicateLevel,
+  getKeysToDelete,
 } from '../../utils'
-
-import { getKeysToDelete } from './utils'
 
 interface ActionBarProps {
   expandedKeys: Array<string>
