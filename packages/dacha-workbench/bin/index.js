@@ -2,25 +2,44 @@
 
 const { spawn } = require('child_process')
 const path = require('path')
-const { program } = require('commander')
+const fs = require('fs')
+const { Command } = require('commander')
+
+const init = require('./init')
+
+const program = new Command()
+
+program
+  .description('CLI to GUI editor for remiz game engine')
+
+program
+  .command('init')
+  .description('Create initial project structure to run editor')
+  .action(init)
 
 program
   .option('--config <string>', 'Path to configuration file for editor', 'remiz-editor.config.js')
+  .action((options) => {
+    if (options.config === undefined || !fs.existsSync(options.config)) {
+      console.error('Cannot find configuration file. Use --config option to specify path to configuration file.')
+      process.exit(1)
+    }
 
-program.parse()
+    process.env.EDITOR_CONFIG = options.config
 
-process.env.EDITOR_CONFIG = program.opts().config
+    const electron = spawn('electron', [path.join(__dirname, '../index')])
 
-const electron = spawn('electron', [path.join(__dirname, '../index')])
+    electron.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`)
+    })
 
-electron.stdout.on('data', (data) => {
-  console.log(`stdout: ${data}`)
-})
+    electron.stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`)
+    })
 
-electron.stderr.on('data', (data) => {
-  console.error(`stderr: ${data}`)
-})
+    electron.on('close', (data) => {
+      console.error(`child process exited with code: ${data}`)
+    })
+  })
 
-electron.on('close', (data) => {
-  console.error(`child process exited with code: ${data}`)
-})
+program.parse(process.argv)
