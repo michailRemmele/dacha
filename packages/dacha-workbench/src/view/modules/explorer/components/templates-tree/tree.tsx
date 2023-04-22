@@ -8,6 +8,7 @@ import { Tree as AntdTree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
 import type { TemplateConfig } from 'remiz'
 
+import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
@@ -48,15 +49,16 @@ export const Tree: FC<TreeProps> = ({
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath)
 
-  // TODO: Добавить отмену выделения при клике на пустое место в рамках панели проводника
   return (
-    <AntdTree.DirectoryTree
-      expandedKeys={expandedKeys}
-      selectedKeys={selectedKey ? [selectedKey] : []}
-      onSelect={handleSelect}
-      onExpand={handleExpand}
-      treeData={treeData}
-      expandAction="doubleClick"
-    />
+    <ListWrapper>
+      <AntdTree.DirectoryTree
+        expandedKeys={expandedKeys}
+        selectedKeys={selectedKey ? [selectedKey] : []}
+        onSelect={handleSelect}
+        onExpand={handleExpand}
+        treeData={treeData}
+        expandAction="doubleClick"
+      />
+    </ListWrapper>
   )
 }
