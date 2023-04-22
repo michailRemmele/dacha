@@ -41,10 +41,10 @@ export const ActionBar: FC<ActionBarProps> = ({
   const selectedEntity = useConfig(selectedEntityPath) as TemplateConfig | undefined
 
   const handleAdd = useCallback(() => {
-    const pathToAdd = !selectedEntity || !selectedEntityPath
+    const pathToAdd = !selectedEntityPath || type !== 'template'
       ? ['templates']
       : selectedEntityPath.concat('children')
-    const index = !selectedEntity || !selectedEntityPath
+    const index = !selectedEntity || type !== 'template'
       ? templates.length
       : selectedEntity.children?.length
 
@@ -59,7 +59,7 @@ export const ActionBar: FC<ActionBarProps> = ({
     if (selectedEntity && !expandedKeys.includes(selectedEntity.id)) {
       setExpandedKeys([...expandedKeys, selectedEntity.id])
     }
-  }, [dispatch, selectedEntityPath, selectedEntity, expandedKeys, templates])
+  }, [dispatch, selectedEntityPath, selectedEntity, expandedKeys, templates, type])
 
   const handleDelete = useCallback(() => {
     if (!selectedEntity || !selectedEntityPath) {
