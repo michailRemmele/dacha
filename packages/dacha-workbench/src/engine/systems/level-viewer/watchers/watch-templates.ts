@@ -26,6 +26,10 @@ export const watchTemplates: WatcherFn = ({
     )
 
     const templates = templateCollection.getAll()
+    const templatesMap = templates.reduce(
+      (acc, template) => acc.add(template.id),
+      new Set<string>(),
+    )
 
     templates.forEach((template) => {
       if (!templatesConfigsMap.has(template.id)) {
@@ -33,7 +37,7 @@ export const watchTemplates: WatcherFn = ({
       }
     })
     templatesConfigs.forEach((templateConfig) => {
-      if (templateCollection.get(templateConfig.id) === undefined) {
+      if (!templatesMap.has(templateConfig.id)) {
         templatesToAdd.set(templateConfig.id, templateConfig)
       }
     })
