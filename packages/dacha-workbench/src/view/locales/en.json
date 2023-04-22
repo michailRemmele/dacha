@@ -21,6 +21,18 @@
 
     "levels.actionBar.template.new.title": "New Template {{index}}",
 
+    "levels.actionBar.addScene.button.title": "Add New Scene",
+    "levels.actionBar.duplicateScene.button.title": "Duplicate Scene",
+    "levels.actionBar.deleteScene.button.title": "Delete Scene",
+
+    "levels.actionBar.scene.new.title": "New Scene {{index}}",
+
+    "levels.actionBar.addLoader.button.title": "Add New Loader",
+    "levels.actionBar.duplicateLoader.button.title": "Duplicate Loader",
+    "levels.actionBar.deleteLoader.button.title": "Delete Loader",
+
+    "levels.actionBar.loader.new.title": "New Loader {{index}}",
+
     "duplicate.appendix.title": "copy"
   },
   "toolbar": {

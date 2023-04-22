@@ -1,15 +1,26 @@
 @import '../../themes/index.less';
 
 .inspector {
-  padding: 5px 0;
+  padding-top: 5px;
 
   height: 100%;
-
-  overflow: scroll;
 
   border-left: 1px solid @panel-border;
 }
 
 .inspector__tab-content {
-  padding: 0 5px 5px 10px;
+  height: 100%;
+  padding: 5px 5px 5px 10px;
+
+  overflow: scroll;
+}
+
+.inspector__tabs,
+.inspector__tabs .ant-tabs-content,
+.inspector__tabs .ant-tabs-tabpane {
+  height: 100%;
+}
+
+.inspector__tabs.ant-tabs-top .ant-tabs-nav {
+  margin: 0;
 }
