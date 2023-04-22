@@ -23,7 +23,7 @@ export const Inspector = (): JSX.Element => {
   return (
     <SchemasProvider>
       <div className="inspector">
-        <Tabs type="card">
+        <Tabs className="inspector__tabs" type="card">
           <Tabs.TabPane tab={t('inspector.tab.entityInspector')} key="entityInspector">
             <div className="inspector__tab-content">
               <EntityInspector />
