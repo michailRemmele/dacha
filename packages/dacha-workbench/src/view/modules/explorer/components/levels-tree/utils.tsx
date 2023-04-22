@@ -3,7 +3,6 @@ import type { LevelConfig, GameObjectConfig } from 'remiz'
 import { FileOutlined } from '@ant-design/icons'
 
 import type { DataNodeWithPath } from '../../../../../types/tree-node'
-import type { EntityType } from '../../../../providers/selected-entity-provider/get-entity-type'
 
 const parseGameObject = (
   gameObject: GameObjectConfig,
@@ -53,30 +52,4 @@ export const getKey = (entity?: unknown, path?: Array<string>): string | undefin
   }
 
   return (entity as GameObjectConfig | LevelConfig).id
-}
-
-export const getKeysToDelete = (
-  entity?: GameObjectConfig | LevelConfig,
-  type?: EntityType,
-  keys: Set<string> = new Set(),
-): Set<string> => {
-  if (entity === undefined) {
-    return keys
-  }
-
-  keys.add(entity.id)
-
-  if (type === 'level') {
-    (entity as LevelConfig).gameObjects.forEach((gameObject) => {
-      getKeysToDelete(gameObject, 'gameObject', keys)
-    })
-  }
-
-  if (type === 'gameObject') {
-    (entity as GameObjectConfig).children?.forEach((child) => {
-      getKeysToDelete(child, 'gameObject', keys)
-    })
-  }
-
-  return keys
 }

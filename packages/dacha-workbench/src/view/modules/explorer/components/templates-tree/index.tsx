@@ -1,47 +1,21 @@
-import React, {
-  useContext,
-  useMemo,
-  useCallback,
-  FC,
-} from 'react'
-import { Tree } from 'antd'
-import type { EventDataNode } from 'antd/lib/tree'
-import type { TemplateConfig } from 'remiz'
+import React, { useState, FC } from 'react'
 
-import { EngineContext, SelectedEntityContext } from '../../../../providers'
-import { useConfig } from '../../../../hooks'
-import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
-import type { DataNodeWithPath, SelectFn } from '../../../../../types/tree-node'
-
-import { parseTemplates, getKey } from './utils'
+import { ActionBar } from './action-bar'
+import { Tree } from './tree'
 
 export const TemplatesTree: FC = () => {
-  const { pushMessage } = useContext(EngineContext)
-  const { path: selectedEntityPath } = useContext(SelectedEntityContext)
-
-  const templates = useConfig('templates') as Array<TemplateConfig>
-  const selectedEntity = useConfig(selectedEntityPath)
-  const treeData = useMemo(() => parseTemplates(templates), [templates])
-
-  const handleSelect = useCallback<SelectFn>((keys, { node }) => {
-    if (node.selected) {
-      return
-    }
-
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
-      path: (node as EventDataNode<DataNodeWithPath>).path.slice(0),
-    })
-  }, [pushMessage])
-
-  const selectedKey = getKey(selectedEntity, selectedEntityPath)
+  const [expandedKeys, setExpandedKeys] = useState<Array<string>>([])
 
   return (
-    <Tree.DirectoryTree
-      selectedKeys={selectedKey ? [selectedKey] : []}
-      onSelect={handleSelect}
-      treeData={treeData}
-      expandAction="doubleClick"
-    />
+    <>
+      <ActionBar
+        expandedKeys={expandedKeys}
+        setExpandedKeys={setExpandedKeys}
+      />
+      <Tree
+        expandedKeys={expandedKeys}
+        setExpandedKeys={setExpandedKeys}
+      />
+    </>
   )
 }
