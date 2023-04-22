@@ -6,10 +6,11 @@ import React, {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, CopyOutlined } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'remiz'
 
+import { duplicateTransition } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { addValue, deleteValue } from '../../../../../../../../commands'
 import { AnimationEditorContext } from '../../providers'
@@ -35,6 +36,7 @@ export const ActionBar: FC = () => {
     },
     [transitionsPath, selectedTransition],
   )
+  const transition = useConfig(transitionPath) as Animation.TransitionConfig | undefined
 
   const stateConfig = useConfig(statePath) as Animation.StateConfig
 
@@ -46,6 +48,14 @@ export const ActionBar: FC = () => {
       conditions: [],
     }))
   }, [dispatch, transitionsPath, stateConfig])
+
+  const handleDuplicate = useCallback(() => {
+    if (transitionsPath === undefined || transition === undefined) {
+      return
+    }
+
+    dispatch(addValue(transitionsPath, duplicateTransition(transition)))
+  }, [dispatch, transitionsPath, transition])
 
   const handleDelete = useCallback(() => {
     selectTransition()
@@ -61,6 +71,14 @@ export const ActionBar: FC = () => {
         onClick={handleAdd}
         title={t('components.animatable.editor.transition.add.button.title')}
         disabled={selectedState === undefined}
+      />
+      <Button
+        className="animation-editor__action"
+        icon={<CopyOutlined />}
+        size="small"
+        onClick={handleDuplicate}
+        title={t('components.animatable.editor.transition.duplicate.button.title')}
+        disabled={selectedTransition === undefined}
       />
       <Button
         className="animation-editor__action"
