@@ -254,7 +254,9 @@ export class CollisionDetectionSystem {
       const intersection = this._checkOnIntersection(pair);
       if (intersection) {
         this._sendCollisionMessage(
-          pair[0].gameObject, pair[1].gameObject, intersection,
+          pair[0].gameObject,
+          pair[1].gameObject,
+          intersection,
         );
       }
     });

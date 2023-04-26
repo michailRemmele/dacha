@@ -413,7 +413,12 @@ export class RenderSystem implements System {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
 
     this.gl.texImage2D(
-      this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.textureAtlas,
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.RGBA,
+      this.gl.RGBA,
+      this.gl.UNSIGNED_BYTE,
+      this.textureAtlas,
     );
 
     return texture;
@@ -598,7 +603,8 @@ export class RenderSystem implements System {
     this._gameObjectObserver.sort(this.sortFn);
 
     const batches = splitToBatch(
-      this._gameObjectObserver.getList(), this.shaderProvider,
+      this._gameObjectObserver.getList(),
+      this.shaderProvider,
     );
 
     batches.forEach((batch) => {

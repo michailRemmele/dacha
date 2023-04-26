@@ -1,8 +1,5 @@
-import {
-  GAME_OBJECT_ADDED,
-  Scene,
-  GameObjectChangeEvent,
-} from '../scene';
+import { GAME_OBJECT_ADDED } from '../scene/consts';
+import type { Scene, GameObjectChangeEvent } from '../scene';
 import type { EventEmitter } from '../types';
 
 import { GameObject } from './game-object';

@@ -31,10 +31,14 @@ export class SpriteCropper {
 
       this.canvasContext.drawImage(
         sprite,
-        width * i, 0,
-        width, height,
-        0, 0,
-        width, height,
+        width * i,
+        0,
+        width,
+        height,
+        0,
+        0,
+        width,
+        height,
       );
 
       const frameImageData = this.canvasContext.getImageData(0, 0, width, height);

@@ -8,8 +8,6 @@ class ScopeProvider {
       this.currentScopeName = undefined;
       this.scopeChangeSubscribers = [];
     }
-
-    return this.instance;
   }
 
   createScope(name) {

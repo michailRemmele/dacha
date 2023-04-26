@@ -220,8 +220,8 @@ export class ThreeJSRenderer implements System {
       (template) => getImagesFromTemplates(imagesToLoad, template),
     );
 
-    this.gameObjectObserver.getList().reduce(
-      (acc: Record<string, Renderable>, gameObject) => {
+    this.gameObjectObserver.getList()
+      .reduce((acc: Record<string, Renderable>, gameObject) => {
         const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
         if (!acc[renderable.src]) {
@@ -229,8 +229,7 @@ export class ThreeJSRenderer implements System {
         }
 
         return acc;
-      }, imagesToLoad,
-    );
+      }, imagesToLoad);
 
     return imagesToLoad;
   }

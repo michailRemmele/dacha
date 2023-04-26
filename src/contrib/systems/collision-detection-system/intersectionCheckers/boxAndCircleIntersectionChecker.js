@@ -93,7 +93,10 @@ class BoxAndCircleIntersectionChecker extends IntersectionChecker {
       }
 
       const distance = MathOps.getDistanceBetweenTwoPoints(
-        circleX, nearestBoxX, circleY, nearestBoxY,
+        circleX,
+        nearestBoxX,
+        circleY,
+        nearestBoxY,
       );
       const axis = new Vector2(nearestBoxX - circleX, nearestBoxY - circleY);
 
@@ -104,7 +107,10 @@ class BoxAndCircleIntersectionChecker extends IntersectionChecker {
     nearestBoxY = MathOps.clamp(circleY, boxMinY, boxMaxY);
 
     const distance = MathOps.getDistanceBetweenTwoPoints(
-      circleX, nearestBoxX, circleY, nearestBoxY,
+      circleX,
+      nearestBoxX,
+      circleY,
+      nearestBoxY,
     );
 
     if (distance >= circleRadius) {

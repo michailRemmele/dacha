@@ -6,8 +6,6 @@ class IOC {
     if (!this.instance) {
       this.instance = this;
     }
-
-    return this.instance;
   }
 
   resolve(key, ...args) {
