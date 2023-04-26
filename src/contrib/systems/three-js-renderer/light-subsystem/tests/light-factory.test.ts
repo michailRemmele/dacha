@@ -1,4 +1,4 @@
-import { AmbientLight, PointLight } from 'three';
+import { AmbientLight, PointLight } from 'three/src/Three';
 
 import { createLight, updateLight } from '../light-factory';
 

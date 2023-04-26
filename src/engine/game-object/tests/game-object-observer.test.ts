@@ -5,8 +5,6 @@ import { GameObjectCreator } from '../game-object-creator';
 import { GameObject } from '../game-object';
 import { TemplateCollection } from '../../template';
 
-jest.mock('../../ioc/ioc');
-
 describe('Engine -> GameObjectObserver', () => {
   let scene: Scene;
 

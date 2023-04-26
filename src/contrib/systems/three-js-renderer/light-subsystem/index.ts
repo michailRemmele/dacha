@@ -1,4 +1,4 @@
-import type { Scene, Light as ThreeJSLight } from 'three';
+import type { Scene, Light as ThreeJSLight } from 'three/src/Three';
 
 import type { GameObject, GameObjectObserver } from '../../../../engine/game-object';
 import type { Light } from '../../../components/light';

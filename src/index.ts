@@ -1,8 +1,6 @@
 import { Engine } from './engine';
 import { Component } from './engine/component';
-import IOC from './engine/ioc/ioc';
 import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
-import { RESOURCES_LOADER_KEY_NAME } from './engine/consts/global';
 
 export * from './engine/types';
 export type { ComponentsMap } from './engine/component';
@@ -34,9 +32,7 @@ export * from './contrib/components';
 export {
   Engine,
   Component,
-  IOC,
   VectorOps,
   MathOps,
   Vector2,
-  RESOURCES_LOADER_KEY_NAME,
 };

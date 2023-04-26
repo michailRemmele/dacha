@@ -28,25 +28,25 @@ export class Animator implements System {
       components: [ANIMATABLE_COMPONENT_NAME],
     });
     this.messageBus = options.messageBus;
-    this.conditionControllers = Object.keys(conditionControllers).reduce(
-      (storage: Record<string, ConditionController>, key) => {
+    this.conditionControllers = Object.keys(conditionControllers)
+      .reduce((storage: Record<string, ConditionController>, key) => {
         const ConditionController = conditionControllers[key];
         storage[key] = new ConditionController();
         return storage;
-      }, {},
-    );
-    this.substatePickers = Object.keys(substatePickers).reduce(
-      (storage: Record<string, Picker>, key) => {
+      }, {});
+    this.substatePickers = Object.keys(substatePickers)
+      .reduce((storage: Record<string, Picker>, key) => {
         const SubstatePicker = substatePickers[key];
         storage[key] = new SubstatePicker();
         return storage;
-      }, {},
-    );
+      }, {});
   }
 
   private updateFrame(gameObject: GameObject, frame: Frame): void {
     Object.keys(frame).forEach((fieldName) => setValue(
-      gameObject, frame[fieldName].path, frame[fieldName].value,
+      gameObject,
+      frame[fieldName].path,
+      frame[fieldName].value,
     ));
   }
 

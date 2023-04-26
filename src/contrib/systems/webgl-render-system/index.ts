@@ -4,9 +4,7 @@ import { Store } from '../../../engine/scene';
 import { Renderable } from '../../components/renderable';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
-import IOC from '../../../engine/ioc/ioc';
-import type { ResourceLoader } from '../../../engine/resource-loader';
-import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
+import { ResourceLoader } from '../../../engine/resource-loader';
 
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
@@ -100,6 +98,7 @@ export class RenderSystem implements System {
   private textures: WebGLTexture | null;
   private _variables: Record<string, number | WebGLUniformLocation | null>;
   private sortFn: SortFn;
+  private resourceLoader: ResourceLoader;
 
   constructor(options: WebGLRendererOptions) {
     const {
@@ -177,6 +176,8 @@ export class RenderSystem implements System {
     this._viewMatrixStats = {};
 
     this._vertexData = new Float32Array(VERTEX_DATA_STRIDE);
+
+    this.resourceLoader = new ResourceLoader();
   }
 
   mount(): void {
@@ -217,11 +218,9 @@ export class RenderSystem implements System {
   }
 
   async load(): Promise<void> {
-    const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
-
     const resources = [this.textureAtlasSrc, this.textureAtlasDescriptorSrc];
     const [textureAtlas, textureAtlasDescriptor] = await Promise.all(
-      resources.map((resource) => resourceLoader.load(resource)),
+      resources.map((resource) => this.resourceLoader.load(resource)),
     ) as [HTMLImageElement, Record<string, TextureDescriptor>];
 
     this.textureAtlas = textureAtlas;
@@ -413,7 +412,12 @@ export class RenderSystem implements System {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
 
     this.gl.texImage2D(
-      this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.textureAtlas,
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.RGBA,
+      this.gl.RGBA,
+      this.gl.UNSIGNED_BYTE,
+      this.textureAtlas,
     );
 
     return texture;
@@ -598,7 +602,8 @@ export class RenderSystem implements System {
     this._gameObjectObserver.sort(this.sortFn);
 
     const batches = splitToBatch(
-      this._gameObjectObserver.getList(), this.shaderProvider,
+      this._gameObjectObserver.getList(),
+      this.shaderProvider,
     );
 
     batches.forEach((batch) => {

@@ -1,9 +1,9 @@
-import type { Light as ThreeJSLight } from 'three';
+import type { Light as ThreeJSLight } from 'three/src/Three';
 import {
   AmbientLight,
   PointLight,
   Color,
-} from 'three';
+} from 'three/src/Three';
 import type {
   LightType,
   LightOptions,

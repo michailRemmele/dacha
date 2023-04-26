@@ -3,23 +3,21 @@ import {
   NearestFilter,
   RepeatWrapping,
   ClampToEdgeWrapping,
-} from 'three';
+} from 'three/src/Three';
 
 import type { Renderable } from '../../components/renderable';
 import type { Template } from '../../../engine/template';
-import type { ResourceLoader } from '../../../engine/resource-loader';
-import IOC from '../../../engine/ioc/ioc';
-import { RESOURCES_LOADER_KEY_NAME } from '../../../engine/consts/global';
+import { ResourceLoader } from '../../../engine/resource-loader';
 
 import { SpriteCropper } from './sprite-cropper';
 import { RENDERABLE_COMPONENT_NAME } from './consts';
 
 const spriteCropper = new SpriteCropper();
+const resourceLoader = new ResourceLoader();
 
-export const loadImage = (renderable: Renderable): Promise<HTMLImageElement> => {
-  const resourceLoader = IOC.resolve(RESOURCES_LOADER_KEY_NAME) as ResourceLoader;
-  return resourceLoader.load(renderable.src) as Promise<HTMLImageElement>;
-};
+export const loadImage = (
+  renderable: Renderable,
+): Promise<HTMLImageElement> => resourceLoader.load(renderable.src) as Promise<HTMLImageElement>;
 
 export const prepareSprite = (image: HTMLImageElement, renderable: Renderable): Array<Texture> => {
   const textures = renderable.type === 'static'

@@ -7,7 +7,7 @@ import {
   Mesh,
   Texture,
   Color,
-} from 'three';
+} from 'three/src/Three';
 
 import type { System, SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
@@ -220,8 +220,8 @@ export class ThreeJSRenderer implements System {
       (template) => getImagesFromTemplates(imagesToLoad, template),
     );
 
-    this.gameObjectObserver.getList().reduce(
-      (acc: Record<string, Renderable>, gameObject) => {
+    this.gameObjectObserver.getList()
+      .reduce((acc: Record<string, Renderable>, gameObject) => {
         const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
 
         if (!acc[renderable.src]) {
@@ -229,8 +229,7 @@ export class ThreeJSRenderer implements System {
         }
 
         return acc;
-      }, imagesToLoad,
-    );
+      }, imagesToLoad);
 
     return imagesToLoad;
   }
