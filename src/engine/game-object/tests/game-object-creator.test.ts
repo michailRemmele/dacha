@@ -1,8 +1,6 @@
 import type { Component } from '../../component';
-import ScopeProvider from '../../scope/scopeProvider';
 import { TemplateCollection } from '../../template';
 import { createMockComponent } from '../../../__mocks__';
-import { GENERAL_SCOPE_NAME } from '../../consts/global';
 import { GameObjectCreator } from '..';
 
 import gameObjectExample from './jsons/game-object-example.json';
@@ -37,9 +35,6 @@ describe('Engine -> GameObjectCreator', () => {
   let templateCollection: TemplateCollection;
 
   beforeEach(() => {
-    ScopeProvider.createScope(GENERAL_SCOPE_NAME);
-    ScopeProvider.setCurrentScope(GENERAL_SCOPE_NAME);
-
     templateCollection = new TemplateCollection(components);
     templateCollection.register(templateExample);
   });
