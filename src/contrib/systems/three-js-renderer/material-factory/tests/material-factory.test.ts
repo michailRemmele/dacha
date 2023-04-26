@@ -1,4 +1,4 @@
-import { MeshBasicMaterial, MeshStandardMaterial, Texture } from 'three';
+import { MeshBasicMaterial, MeshStandardMaterial, Texture } from 'three/src/Three';
 
 import { createMaterial, updateMaterial } from '../index';
 

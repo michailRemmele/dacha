@@ -7,7 +7,7 @@ import {
   Mesh,
   Texture,
   Color,
-} from 'three';
+} from 'three/src/Three';
 
 import type { System, SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';

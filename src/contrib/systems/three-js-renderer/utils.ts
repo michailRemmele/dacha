@@ -3,7 +3,7 @@ import {
   NearestFilter,
   RepeatWrapping,
   ClampToEdgeWrapping,
-} from 'three';
+} from 'three/src/Three';
 
 import type { Renderable } from '../../components/renderable';
 import type { Template } from '../../../engine/template';

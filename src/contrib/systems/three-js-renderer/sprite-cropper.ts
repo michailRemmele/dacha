@@ -1,4 +1,4 @@
-import { Texture } from 'three';
+import { Texture } from 'three/src/Three';
 
 import type { Renderable } from '../../components/renderable';
 

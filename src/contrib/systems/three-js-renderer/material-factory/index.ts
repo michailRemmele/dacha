@@ -2,7 +2,7 @@ import type {
   Material,
   Texture,
   Blending,
-} from 'three';
+} from 'three/src/Three';
 import {
   MeshBasicMaterial,
   MeshStandardMaterial,
@@ -12,7 +12,7 @@ import {
   SubtractiveBlending,
   MultiplyBlending,
   DataTexture,
-} from 'three';
+} from 'three/src/Three';
 import type {
   MaterialType,
   BasicMaterialOptions,
