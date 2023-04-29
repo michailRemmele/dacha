@@ -5,18 +5,30 @@ interface CameraConfig extends Record<string, unknown> {
 }
 
 export class Camera extends Component {
-  zoom: number;
   windowSizeX: number;
   windowSizeY: number;
+  screenScale: number;
+
+  private _zoom: number;
 
   constructor(componentName: string, config: Record<string, unknown>) {
     super(componentName);
 
     const cameraConfig = config as CameraConfig;
 
-    this.zoom = cameraConfig.zoom;
+    this._zoom = cameraConfig.zoom;
     this.windowSizeX = 0;
     this.windowSizeY = 0;
+
+    this.screenScale = 1;
+  }
+
+  set zoom(zoom: number) {
+    this._zoom = zoom;
+  }
+
+  get zoom(): number {
+    return this._zoom * this.screenScale;
   }
 
   clone(): Camera {

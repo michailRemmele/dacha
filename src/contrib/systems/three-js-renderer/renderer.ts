@@ -44,14 +44,12 @@ import {
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
   LIGHT_COMPONENT_NAME,
-  STD_SCREEN_SIZE,
 } from './consts';
 
 interface ThreeJSRendererOptions extends SystemOptions {
   windowNodeId: string
   sortingLayers: Array<string>
   backgroundColor: string
-  scaleSensitivity: number
 }
 
 export class ThreeJSRenderer implements System {
@@ -69,8 +67,6 @@ export class ThreeJSRenderer implements System {
   private lightSubsystem: LightSubsystem;
   private viewWidth: number;
   private viewHeight: number;
-  private scaleSensitivity: number;
-  private screenScale: number;
   private templateCollection: TemplateCollection;
 
   constructor(options: SystemOptions) {
@@ -80,7 +76,6 @@ export class ThreeJSRenderer implements System {
       windowNodeId,
       sortingLayers,
       backgroundColor,
-      scaleSensitivity,
       templateCollection,
       sceneContext,
     } = options as ThreeJSRendererOptions;
@@ -113,8 +108,6 @@ export class ThreeJSRenderer implements System {
     this.gameObjectsMap = {};
     this.viewWidth = 0;
     this.viewHeight = 0;
-    this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1) as number;
-    this.screenScale = 1;
 
     this.renderScene = new Scene();
     this.currentCamera = new OrthographicCamera();
@@ -141,6 +134,8 @@ export class ThreeJSRenderer implements System {
     sceneContext.registerService(new RendererService({
       scene: this.renderScene,
       camera: this.currentCamera,
+      window: this.window,
+      sortFn: this.sortFn,
     }));
   }
 
@@ -277,27 +272,14 @@ export class ThreeJSRenderer implements System {
     this.currentCamera.updateProjectionMatrix();
 
     this.renderer.setSize(this.viewWidth, this.viewHeight);
-    this.updateScreenScale();
   };
-
-  private updateScreenScale(): void {
-    const screenSize = Math.sqrt(
-      Math.pow(this.viewWidth, 2) + Math.pow(this.viewHeight, 2),
-    );
-    const avaragingValue = 1 - this.scaleSensitivity;
-    const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
-
-    this.screenScale = normalizedSize / STD_SCREEN_SIZE;
-  }
 
   private updateCamera(): void {
     const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
     const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
     const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
 
-    const scale = zoom * this.screenScale;
-
-    this.currentCamera.zoom = scale;
+    this.currentCamera.zoom = zoom;
     // TODO: Figure out how to set up camera correctly to avoid negative transform by y axis
     this.currentCamera.position.set(transform.offsetX, -transform.offsetY, 1);
 
