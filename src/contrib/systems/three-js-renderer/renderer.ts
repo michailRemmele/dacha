@@ -46,13 +46,13 @@ import {
   LIGHT_COMPONENT_NAME,
 } from './consts';
 
-interface ThreeJSRendererOptions extends SystemOptions {
+interface RendererOptions extends SystemOptions {
   windowNodeId: string
   sortingLayers: Array<string>
   backgroundColor: string
 }
 
-export class ThreeJSRenderer implements System {
+export class Renderer implements System {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private window: HTMLElement;
@@ -78,7 +78,7 @@ export class ThreeJSRenderer implements System {
       backgroundColor,
       templateCollection,
       sceneContext,
-    } = options as ThreeJSRendererOptions;
+    } = options as RendererOptions;
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
