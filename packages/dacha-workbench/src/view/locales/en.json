@@ -36,6 +36,7 @@
     "duplicate.appendix.title": "copy"
   },
   "toolbar": {
+    "pointer.title": "Pointer Tool",
     "hand.title": "Hand Tool",
     "zoom.title": "Zoom Tool",
     "zoom.features.direction.in.title": "Zoom In Mode",
@@ -246,6 +247,7 @@
   "systems.cameraSystem.title": "Camera System",
   "systems.cameraSystem.windowNodeId.title": "Window Node Id",
   "systems.cameraSystem.initialCamera.title": "Initial Camera",
+  "systems.cameraSystem.scaleSensitivity.title": "Scale Sensitivity",
 
   "systems.collisionBroadcastSystem.title": "Collision Broadcast System",
   "systems.collisionDetectionSystem.title": "Collision Detection System",
@@ -271,11 +273,10 @@
 
   "systems.scriptSystem.title": "Script System",
 
-  "systems.threeJSRenderer.title": "ThreeJS Renderer",
-  "systems.threeJSRenderer.windowNodeId.title": "Window Node Id",
-  "systems.threeJSRenderer.backgroundColor.title": "Background Color",
-  "systems.threeJSRenderer.sortingLayers.title": "Sorting Layers",
-  "systems.threeJSRenderer.scaleSensitivity.title": "Scale Sensitivity",
+  "systems.renderer.title": "Renderer",
+  "systems.renderer.windowNodeId.title": "Window Node Id",
+  "systems.renderer.backgroundColor.title": "Background Color",
+  "systems.renderer.sortingLayers.title": "Sorting Layers",
 
   "systems.uiBridge.title": "UI Bridge",
   "systems.uiBridge.filterComponents.title": "Filtered Components"

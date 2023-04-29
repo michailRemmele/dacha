@@ -56,10 +56,15 @@ export const editorConfig: Config = {
           options: {},
         },
         {
+          name: 'pointerToolSystem',
+          options: {},
+        },
+        {
           name: 'cameraSystem',
           options: {
             windowNodeId: 'canvas-root',
             initialCamera: 'main-object',
+            scaleSensitivity: 0.5,
           },
         },
         {
@@ -69,7 +74,7 @@ export const editorConfig: Config = {
           },
         },
         {
-          name: 'threeJSRenderer',
+          name: 'renderer',
           options: {
             windowNodeId: 'canvas-root',
             backgroundColor: '#fafafa',
@@ -83,7 +88,6 @@ export const editorConfig: Config = {
               'effectsBack',
               'units',
             ],
-            scaleSensitivity: 0.5,
           },
         },
       ],
@@ -186,6 +190,33 @@ export const editorConfig: Config = {
               {
                 event: 'MOUSE_LEFT_BUTTON_PRESS',
                 messageType: 'CAMERA_ZOOM',
+                attrs: [],
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'pointer',
+      name: 'pointer',
+      type: 'tool',
+      children: [],
+      components: [
+        {
+          name: 'tool',
+          config: {
+            name: 'pointer',
+            features: {},
+          },
+        },
+        {
+          name: 'mouseControl',
+          config: {
+            inputEventBindings: [
+              {
+                event: 'MOUSE_LEFT_BUTTON_CLICK',
+                messageType: 'SELECT_GAME_OBJECT',
                 attrs: [],
               },
             ],

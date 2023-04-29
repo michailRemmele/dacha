@@ -4,6 +4,7 @@ import {
   ToolManager,
   ZoomToolSystem,
   HandToolSystem,
+  PointerToolSystem,
   Commander,
 } from './systems'
 
@@ -18,6 +19,7 @@ export const editorSystems = {
   toolManager: ToolManager,
   zoomToolSystem: ZoomToolSystem,
   handToolSystem: HandToolSystem,
+  pointerToolSystem: PointerToolSystem,
 }
 
 export const editorComponents = {
