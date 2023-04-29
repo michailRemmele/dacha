@@ -9,6 +9,7 @@ describe('Contrib -> components -> Camera', () => {
     expect(camera.zoom).toEqual(100);
     expect(camera.windowSizeX).toEqual(0);
     expect(camera.windowSizeY).toEqual(0);
+    expect(camera.screenScale).toEqual(1);
   });
 
   it('Correct updates values ', () => {
@@ -19,10 +20,12 @@ describe('Contrib -> components -> Camera', () => {
     camera.zoom = 50;
     camera.windowSizeX = 1920;
     camera.windowSizeY = 1080;
+    camera.screenScale = 0.5;
 
-    expect(camera.zoom).toEqual(50);
+    expect(camera.zoom).toEqual(25);
     expect(camera.windowSizeX).toEqual(1920);
     expect(camera.windowSizeY).toEqual(1080);
+    expect(camera.screenScale).toEqual(0.5);
   });
 
   it('Clones return deep copy of original component', () => {

@@ -13,7 +13,7 @@ import { MouseInputSystem } from './mouse-input-system';
 import { MouseInputCoordinatesProjector } from './mouse-input-coordinates-projector';
 import { PhysicsSystem } from './physics-system';
 import { ScriptSystem } from './script-system';
-import { ThreeJSRenderer } from './three-js-renderer';
+import { Renderer } from './three-js-renderer';
 import { UiBridge } from './ui-bridge';
 
 export const contribSystems = {
@@ -32,6 +32,6 @@ export const contribSystems = {
   mouseInputCoordinatesProjector: MouseInputCoordinatesProjector,
   physicsSystem: PhysicsSystem,
   scriptSystem: ScriptSystem,
-  threeJSRenderer: ThreeJSRenderer,
+  renderer: Renderer,
   uiBridge: UiBridge,
 };
