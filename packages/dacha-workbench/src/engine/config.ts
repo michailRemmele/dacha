@@ -87,6 +87,7 @@ export const editorConfig: Config = {
               'lights',
               'effectsBack',
               'units',
+              'editor',
             ],
           },
         },
@@ -220,6 +221,49 @@ export const editorConfig: Config = {
                 attrs: [],
               },
             ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'frame',
+      name: 'frame',
+      type: 'tool',
+      children: [],
+      components: [
+        {
+          name: 'transform',
+          config: {
+            offsetX: 0,
+            offsetY: 0,
+            offsetZ: 0,
+            rotation: 0,
+          },
+        },
+        {
+          name: 'renderable',
+          config: {
+            type: 'static',
+            src: '',
+            width: 1,
+            height: 1,
+            rotation: 0,
+            sortCenter: [
+              0,
+              0,
+            ],
+            flipX: false,
+            flipY: false,
+            sortingLayer: 'editor',
+            fit: 'stretch',
+            material: {
+              type: 'basic',
+              options: {
+                blending: 'addition',
+                color: '#222',
+                opacity: 1,
+              },
+            },
           },
         },
       ],

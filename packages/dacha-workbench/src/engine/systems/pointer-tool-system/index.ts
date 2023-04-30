@@ -4,6 +4,12 @@ import type {
   MessageBus,
   Message,
   SceneContext,
+  GameObject,
+  GameObjectSpawner,
+  GameObjectDestroyer,
+  GameObjectObserver,
+  Transform,
+  Renderable,
 } from 'remiz'
 import { RendererService } from 'remiz'
 
@@ -12,9 +18,14 @@ import {
   INSPECT_ENTITY_MSG,
   SELECT_LEVEL_MSG,
 } from '../../../consts/message-types'
-import type { SelectLevelMessage } from '../../../types/messages'
+import type {
+  SelectLevelMessage,
+  InspectEntityMessage,
+} from '../../../types/messages'
 
 import { buildGameObjectPath } from './utils'
+
+const LEVEL_PATH_LEGTH = 2
 
 interface MouseInputMessage extends Message {
   screenX: number
@@ -24,13 +35,34 @@ interface MouseInputMessage extends Message {
 export class PointerToolSystem implements System {
   private messageBus: MessageBus
   private sceneContext: SceneContext
+  private gameObjectSpawner: GameObjectSpawner
+  private gameObjectDestroyer: GameObjectDestroyer
+  private gameObjectObserver: GameObjectObserver
   private selectedLevelId?: string
 
+  private mainObject: GameObject
+
+  private selectedObjectId?: string
+  private frame?: GameObject
+
   constructor(options: SystemOptions) {
-    const { messageBus, sceneContext } = options
+    const {
+      messageBus,
+      sceneContext,
+      gameObjectSpawner,
+      gameObjectDestroyer,
+      createGameObjectObserver,
+    } = options
 
     this.messageBus = messageBus
     this.sceneContext = sceneContext
+    this.gameObjectSpawner = gameObjectSpawner
+    this.gameObjectDestroyer = gameObjectDestroyer
+    this.gameObjectObserver = createGameObjectObserver({
+      components: ['transform', 'renderable'],
+    })
+
+    this.mainObject = sceneContext.data.mainObject as GameObject
   }
 
   private handleLevelChange(): void {
@@ -45,40 +77,90 @@ export class PointerToolSystem implements System {
     this.selectedLevelId = levelId
   }
 
-  update(): void {
-    this.handleLevelChange()
+  private handleInspectEntityMessages(): void {
+    const inspectMessages = (this.messageBus.get(INSPECT_ENTITY_MSG) || [])
+    if (!inspectMessages.length) {
+      return
+    }
 
+    const { path } = inspectMessages.at(-1) as InspectEntityMessage
+
+    if (path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH) {
+      this.selectedObjectId = path.at(-1)?.split(':').at(-1)
+    } else {
+      this.selectedObjectId = undefined
+    }
+  }
+
+  private handleSelectionMessages(): void {
     if (this.selectedLevelId === undefined) {
       return
     }
 
-    // TODO: Watch selection cancel using message bus
-
-    const moveMessages = (this.messageBus.get(SELECT_GAME_OBJECT) || [])
-
-    if (!moveMessages.length) {
+    const selectionMessages = (this.messageBus.get(SELECT_GAME_OBJECT) || [])
+    if (!selectionMessages.length) {
       return
     }
+
+    const {
+      screenX,
+      screenY,
+    } = selectionMessages.at(-1) as MouseInputMessage
 
     const rendererService = this.sceneContext.getService(RendererService)
 
-    const { screenX, screenY } = moveMessages[moveMessages.length - 1] as MouseInputMessage
-
-    const selectedGameObject = rendererService.intersectsWithPoint(screenX, screenY)[0]
-
-    if (selectedGameObject === undefined) {
-      this.messageBus.send({
-        type: INSPECT_ENTITY_MSG,
-        path: undefined,
-      })
-      return
-    }
+    const selectedObject = rendererService
+      .intersectsWithPoint(screenX, screenY)
+      .find((gameObject) => gameObject.getAncestor().id !== this.mainObject.id)
 
     this.messageBus.send({
       type: INSPECT_ENTITY_MSG,
-      path: buildGameObjectPath(selectedGameObject, this.selectedLevelId),
+      path: selectedObject !== undefined
+        ? buildGameObjectPath(selectedObject, this.selectedLevelId)
+        : undefined,
     })
 
-    // TODO: Draw outline inside mainObject and track position of selected game object
+    this.selectedObjectId = selectedObject?.id
+  }
+
+  private updateFrame(): void {
+    if (this.frame === undefined && this.selectedObjectId !== undefined) {
+      this.frame = this.gameObjectSpawner.spawn('frame')
+      this.mainObject.appendChild(this.frame)
+    }
+
+    if (this.frame !== undefined && this.selectedObjectId === undefined) {
+      this.gameObjectDestroyer.destroy(this.frame)
+      this.frame = undefined
+      return
+    }
+
+    if (this.frame === undefined || this.selectedObjectId === undefined) {
+      return
+    }
+
+    const selectedObject = this.gameObjectObserver.getById(this.selectedObjectId)
+
+    if (selectedObject === undefined) {
+      return
+    }
+
+    const { width, height } = selectedObject.getComponent('renderable') as Renderable
+    const { offsetX, offsetY } = selectedObject.getComponent('transform') as Transform
+
+    const frameTransform = this.frame.getComponent('transform') as Transform
+
+    frameTransform.offsetX = offsetX
+    frameTransform.offsetY = offsetY
+    frameTransform.scaleX = width
+    frameTransform.scaleY = height
+  }
+
+  update(): void {
+    this.handleLevelChange()
+    this.handleInspectEntityMessages()
+    this.handleSelectionMessages()
+
+    this.updateFrame()
   }
 }
