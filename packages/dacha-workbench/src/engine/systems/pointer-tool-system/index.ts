@@ -58,9 +58,7 @@ export class PointerToolSystem implements System {
     this.sceneContext = sceneContext
     this.gameObjectSpawner = gameObjectSpawner
     this.gameObjectDestroyer = gameObjectDestroyer
-    this.gameObjectObserver = createGameObjectObserver({
-      components: ['transform', 'renderable'],
-    })
+    this.gameObjectObserver = createGameObjectObserver({})
 
     this.mainObject = sceneContext.data.mainObject as GameObject
   }
@@ -123,15 +121,23 @@ export class PointerToolSystem implements System {
     this.selectedObjectId = selectedObject?.id
   }
 
+  private deleteFrame(): void {
+    if (this.frame === undefined) {
+      return
+    }
+
+    this.gameObjectDestroyer.destroy(this.frame)
+    this.frame = undefined
+  }
+
   private updateFrame(): void {
     if (this.frame === undefined && this.selectedObjectId !== undefined) {
       this.frame = this.gameObjectSpawner.spawn('frame')
       this.mainObject.appendChild(this.frame)
     }
 
-    if (this.frame !== undefined && this.selectedObjectId === undefined) {
-      this.gameObjectDestroyer.destroy(this.frame)
-      this.frame = undefined
+    if (this.selectedObjectId === undefined) {
+      this.deleteFrame()
       return
     }
 
@@ -140,13 +146,23 @@ export class PointerToolSystem implements System {
     }
 
     const selectedObject = this.gameObjectObserver.getById(this.selectedObjectId)
-
     if (selectedObject === undefined) {
       return
     }
 
-    const { width, height } = selectedObject.getComponent('renderable') as Renderable
-    const { offsetX, offsetY } = selectedObject.getComponent('transform') as Transform
+    const renderable = selectedObject.getComponent('renderable') as Renderable | undefined
+    const transform = selectedObject.getComponent('transform') as Transform | undefined
+
+    let offsetX = 0
+    let offsetY = 0
+    let width = 0
+    let height = 0
+    if (renderable !== undefined && transform !== undefined) {
+      offsetX = transform.offsetX
+      offsetY = transform.offsetY
+      width = renderable.width
+      height = renderable.height
+    }
 
     const frameTransform = this.frame.getComponent('transform') as Transform
 
