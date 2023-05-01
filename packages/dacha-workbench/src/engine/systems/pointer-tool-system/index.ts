@@ -22,6 +22,7 @@ import type {
   SelectLevelMessage,
   InspectEntityMessage,
 } from '../../../types/messages'
+import type { Shape, RectangleShape } from '../../components/shape'
 
 import { buildGameObjectPath } from './utils'
 
@@ -165,11 +166,13 @@ export class PointerToolSystem implements System {
     }
 
     const frameTransform = this.frame.getComponent('transform') as Transform
+    const frameShape = this.frame.getComponent('shape') as Shape
+    const properties = frameShape.properties as RectangleShape
 
     frameTransform.offsetX = offsetX
     frameTransform.offsetY = offsetY
-    frameTransform.scaleX = width
-    frameTransform.scaleY = height
+    properties.width = width
+    properties.height = height
   }
 
   update(): void {
