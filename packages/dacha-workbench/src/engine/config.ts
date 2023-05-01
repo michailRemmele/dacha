@@ -1,5 +1,7 @@
 import type { Config } from 'remiz'
 
+import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
+
 export const editorConfig: Config = {
   scenes: [
     {
@@ -89,6 +91,12 @@ export const editorConfig: Config = {
               'units',
               'editor',
             ],
+          },
+        },
+        {
+          name: 'shapesRenderer',
+          options: {
+            windowNodeId: SHAPE_CANVAS_ROOT,
           },
         },
       ],
@@ -241,28 +249,15 @@ export const editorConfig: Config = {
           },
         },
         {
-          name: 'renderable',
+          name: 'shape',
           config: {
-            type: 'static',
-            src: '',
-            width: 1,
-            height: 1,
-            rotation: 0,
-            sortCenter: [
-              0,
-              0,
-            ],
-            flipX: false,
-            flipY: false,
-            sortingLayer: 'editor',
-            fit: 'stretch',
-            material: {
-              type: 'basic',
-              options: {
-                blending: 'addition',
-                color: '#222',
-                opacity: 1,
-              },
+            type: 'rectangle',
+            properties: {
+              width: 0,
+              height: 0,
+              color: 'rgba(0, 0, 0, 0)',
+              strokeWidth: 2,
+              strokeColor: '#fff',
             },
           },
         },
