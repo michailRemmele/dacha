@@ -11,16 +11,30 @@ export const paintCircle = (
   shape: BaseShape,
   transform: Transform,
 ): void => {
-  const { offsetX, offsetY } = transform
+  const {
+    offsetX,
+    offsetY,
+    scaleX,
+    scaleY,
+  } = transform
   const { radius } = shape as CircleShape
 
   paintBase(context, shape)
 
-  const projectedRadius = transformer.projectSize(radius)
-  const projectedX = transformer.projectX(offsetX)
-  const projectedY = transformer.projectY(offsetY)
+  const projectedRadiusX = transformer.projectSize(radius, scaleX)
+  const projectedRadiusY = transformer.projectSize(radius, scaleY)
+  const projectedX = transformer.projectX(offsetX, 0, scaleX)
+  const projectedY = transformer.projectY(offsetY, 0, scaleY)
 
   context.beginPath()
-  context.arc(projectedX, projectedY, projectedRadius, 0, 2 * Math.PI)
+  context.ellipse(
+    projectedX,
+    projectedY,
+    projectedRadiusX,
+    projectedRadiusY,
+    0,
+    0,
+    2 * Math.PI,
+  )
   context.stroke()
 }

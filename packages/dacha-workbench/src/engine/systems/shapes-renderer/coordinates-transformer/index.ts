@@ -43,15 +43,15 @@ export class CoordinatesTransformer {
     this.viewportHeight = height
   }
 
-  projectSize(value: number): number {
-    return value * this.cameraScale
+  projectSize(value: number, scale = 1): number {
+    return value * this.cameraScale * scale
   }
 
-  projectX(value: number): number {
-    return this.cameraScale * (value - this.cameraOffsetX) + this.viewportWidth / 2
+  projectX(x: number, centerX = 0, scale = 1): number {
+    return this.cameraScale * (x - scale * centerX - this.cameraOffsetX) + this.viewportWidth / 2
   }
 
-  projectY(value: number): number {
-    return this.cameraScale * (value - this.cameraOffsetY) + this.viewportHeight / 2
+  projectY(y: number, centerY = 0, scale = 1): number {
+    return this.cameraScale * (y - scale * centerY - this.cameraOffsetY) + this.viewportHeight / 2
   }
 }
