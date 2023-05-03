@@ -163,8 +163,10 @@ export class PointerToolSystem implements System {
       offsetX = transform.offsetX
       offsetY = transform.offsetY
       rotation = getAngle(transform.rotation)
-      width = renderable.width
-      height = renderable.height
+
+      // Need to perform scale before rotation since main renderer has the same order
+      width = renderable.width * transform.scaleX
+      height = renderable.height * transform.scaleY
     }
 
     const frameTransform = this.frame.getComponent('transform') as Transform

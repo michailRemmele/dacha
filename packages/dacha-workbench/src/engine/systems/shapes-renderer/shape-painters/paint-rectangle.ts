@@ -11,15 +11,20 @@ export const paintRectangle = (
   shape: BaseShape,
   transform: Transform,
 ): void => {
-  const { offsetX, offsetY } = transform
+  const {
+    offsetX,
+    offsetY,
+    scaleX,
+    scaleY,
+  } = transform
   const { width, height } = shape as RectangleShape
 
   paintBase(context, shape)
 
-  const projectedWidth = transformer.projectSize(width)
-  const projectedHeight = transformer.projectSize(height)
-  const projectedX = transformer.projectX(offsetX - width / 2)
-  const projectedY = transformer.projectY(offsetY - height / 2)
+  const projectedWidth = transformer.projectSize(scaleX * width)
+  const projectedHeight = transformer.projectSize(scaleY * height)
+  const projectedX = transformer.projectX(offsetX, width / 2, scaleX)
+  const projectedY = transformer.projectY(offsetY, height / 2, scaleY)
 
   context.strokeRect(projectedX, projectedY, projectedWidth, projectedHeight)
   context.fillRect(projectedX, projectedY, projectedWidth, projectedHeight)
