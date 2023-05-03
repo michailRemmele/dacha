@@ -24,7 +24,7 @@ import type {
 } from '../../../types/messages'
 import type { Shape, RectangleShape } from '../../components/shape'
 
-import { buildGameObjectPath } from './utils'
+import { buildGameObjectPath, getAngle } from './utils'
 
 const LEVEL_PATH_LEGTH = 2
 
@@ -156,11 +156,13 @@ export class PointerToolSystem implements System {
 
     let offsetX = 0
     let offsetY = 0
+    let rotation = 0
     let width = 0
     let height = 0
     if (renderable !== undefined && transform !== undefined) {
       offsetX = transform.offsetX
       offsetY = transform.offsetY
+      rotation = getAngle(transform.rotation)
       width = renderable.width
       height = renderable.height
     }
@@ -171,8 +173,8 @@ export class PointerToolSystem implements System {
 
     frameTransform.offsetX = offsetX
     frameTransform.offsetY = offsetY
-    properties.width = width
-    properties.height = height
+    properties.width = Math.cos(rotation) * width + Math.sin(rotation) * height
+    properties.height = Math.sin(rotation) * width + Math.cos(rotation) * height
   }
 
   update(): void {
