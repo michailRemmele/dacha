@@ -1,3 +1,4 @@
+import { MathOps } from 'remiz'
 import type { GameObject } from 'remiz'
 
 const accumulatePath = (gameObject: GameObject, path: Array<string>): void => {
@@ -16,4 +17,11 @@ export const buildGameObjectPath = (gameObject: GameObject, levelId: string): Ar
   path.unshift('levels', `id:${levelId}`, 'gameObjects')
 
   return path
+}
+
+export const getAngle = (rotation: number): number => {
+  const normalizedAngle = Math.abs(rotation) % 180
+  const acuteAngle = Math.min(normalizedAngle, 180 - normalizedAngle)
+
+  return MathOps.degToRad(acuteAngle)
 }
