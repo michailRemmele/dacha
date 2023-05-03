@@ -2,6 +2,7 @@ import { Component } from 'remiz'
 
 import { RectangleShape } from './rectangle'
 import { CircleShape } from './circle'
+import { BaseShape } from './base-shape'
 import type { BaseShapeConfig } from './base-shape'
 
 const shapes = {
@@ -9,7 +10,7 @@ const shapes = {
   circle: CircleShape,
 }
 
-type ShapeType = keyof typeof shapes
+export type ShapeType = keyof typeof shapes
 
 interface ShapeConfig extends Record<string, unknown> {
   type: ShapeType
@@ -37,5 +38,8 @@ export class Shape extends Component {
   }
 }
 
-export type { RectangleShape }
-export type { CircleShape }
+export type {
+  BaseShape,
+  RectangleShape,
+  CircleShape,
+}
