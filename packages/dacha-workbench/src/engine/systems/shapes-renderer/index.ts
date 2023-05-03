@@ -5,20 +5,17 @@ import type {
   GameObject,
   Store,
   Transform,
-  Camera,
 } from 'remiz'
 
-import type {
-  Shape,
-  RectangleShape,
-} from '../../components/shape'
+import type { Shape } from '../../components/shape'
 
 import {
   SHAPE_COMPONENT_NAME,
   TRANSFORM_COMPONENT_NAME,
-  CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
 } from './conts'
+import { CoordinatesTransformer } from './coordinates-transformer'
+import { painters } from './shape-painters'
 
 interface ShapesRendererOptions extends SystemOptions {
   windowNodeId: string
@@ -28,9 +25,11 @@ export class ShapesRenderer implements System {
   private gameObjectObserver: GameObjectObserver
   private store: Store
   private window: HTMLCanvasElement
-  private canvasContext: CanvasRenderingContext2D
+  private context: CanvasRenderingContext2D
   private canvasWidth: number
   private canvasHeight: number
+
+  private transformer: CoordinatesTransformer
 
   constructor(options: SystemOptions) {
     const {
@@ -58,9 +57,11 @@ export class ShapesRenderer implements System {
 
     this.window = window
 
-    this.canvasContext = this.window.getContext('2d') as CanvasRenderingContext2D
+    this.context = this.window.getContext('2d') as CanvasRenderingContext2D
     this.canvasWidth = this.window.clientWidth
     this.canvasHeight = this.window.clientHeight
+
+    this.transformer = new CoordinatesTransformer()
   }
 
   mount(): void {
@@ -78,48 +79,23 @@ export class ShapesRenderer implements System {
 
     this.window.width = this.canvasWidth
     this.window.height = this.canvasHeight
+
+    this.transformer.setViewport(this.canvasWidth, this.canvasHeight)
   }
 
   update(): void {
-    this.canvasContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
 
     const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject
-    const {
-      offsetX: cameraOffsetX,
-      offsetY: cameraOffsetY,
-    } = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
-    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera
+
+    this.transformer.setCamera(currentCamera)
 
     this.gameObjectObserver.forEach((gameObject) => {
-      const { offsetX, offsetY } = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
+      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
       const shape = gameObject.getComponent(SHAPE_COMPONENT_NAME) as Shape
 
-      if (shape.type === 'rectangle') {
-        const {
-          width,
-          height,
-          strokeWidth,
-          strokeColor,
-          color,
-        } = shape.properties as RectangleShape
-
-        this.canvasContext.fillStyle = color
-        this.canvasContext.strokeStyle = strokeColor
-        this.canvasContext.lineWidth = strokeWidth
-
-        this.canvasContext.strokeRect(
-          zoom * (offsetX - cameraOffsetX - width / 2) + this.canvasWidth / 2,
-          zoom * (offsetY - cameraOffsetY - height / 2) + this.canvasHeight / 2,
-          zoom * width,
-          zoom * height,
-        )
-        this.canvasContext.fillRect(
-          zoom * (offsetX - cameraOffsetX - width / 2) + this.canvasWidth / 2,
-          zoom * (offsetY - cameraOffsetY - height / 2) + this.canvasHeight / 2,
-          zoom * width,
-          zoom * height,
-        )
-      }
+      const paintShape = painters[shape.type]
+      paintShape(this.context, this.transformer, shape.properties, transform)
     })
   }
 }
