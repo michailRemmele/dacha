@@ -159,7 +159,12 @@ export class PointerToolSystem implements System {
     let rotation = 0
     let width = 0
     let height = 0
-    if (renderable !== undefined && transform !== undefined) {
+    if (
+      renderable !== undefined
+      && renderable.width !== 0
+      && renderable.height !== 0
+      && transform !== undefined
+    ) {
       offsetX = transform.offsetX
       offsetY = transform.offsetY
       rotation = getAngle(transform.rotation)
