@@ -89,7 +89,6 @@ export const editorConfig: Config = {
               'lights',
               'effectsBack',
               'units',
-              'editor',
             ],
           },
         },
