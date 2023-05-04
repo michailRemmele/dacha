@@ -39,11 +39,12 @@
           "name": "cameraSystem",
           "options": {
             "windowNodeId": "root",
-            "initialCamera": "1.2"
+            "initialCamera": "1.2",
+            "scaleSensitivity": 0.5
           }
         },
         {
-          "name": "threeJSRenderer",
+          "name": "renderer",
           "options": {
             "windowNodeId": "root",
             "backgroundColor": "#000",
@@ -51,8 +52,7 @@
               "background",
               "terrain",
               "units"
-            ],
-            "scaleSensitivity": 0.5
+            ]
           }
         },
         {

@@ -16,10 +16,16 @@ export const cameraSystem: WidgetSchema = {
       type: 'select',
       referenceId: 'gameObjects',
     },
+    {
+      name: 'scaleSensitivity',
+      title: 'systems.cameraSystem.scaleSensitivity.title',
+      type: 'number',
+    },
   ],
   view: CameraSystemWidget,
   getInitialState: () => ({
     windowNodeId: '',
     initialCamera: '',
+    scaleSensitivity: 1,
   }),
 }

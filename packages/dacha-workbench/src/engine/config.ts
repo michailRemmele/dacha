@@ -1,5 +1,7 @@
 import type { Config } from 'remiz'
 
+import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
+
 export const editorConfig: Config = {
   scenes: [
     {
@@ -56,10 +58,15 @@ export const editorConfig: Config = {
           options: {},
         },
         {
+          name: 'pointerToolSystem',
+          options: {},
+        },
+        {
           name: 'cameraSystem',
           options: {
             windowNodeId: 'canvas-root',
             initialCamera: 'main-object',
+            scaleSensitivity: 0.5,
           },
         },
         {
@@ -69,7 +76,7 @@ export const editorConfig: Config = {
           },
         },
         {
-          name: 'threeJSRenderer',
+          name: 'renderer',
           options: {
             windowNodeId: 'canvas-root',
             backgroundColor: '#fafafa',
@@ -83,7 +90,12 @@ export const editorConfig: Config = {
               'effectsBack',
               'units',
             ],
-            scaleSensitivity: 0.5,
+          },
+        },
+        {
+          name: 'shapesRenderer',
+          options: {
+            windowNodeId: SHAPE_CANVAS_ROOT,
           },
         },
       ],
@@ -189,6 +201,63 @@ export const editorConfig: Config = {
                 attrs: [],
               },
             ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'pointer',
+      name: 'pointer',
+      type: 'tool',
+      children: [],
+      components: [
+        {
+          name: 'tool',
+          config: {
+            name: 'pointer',
+            features: {},
+          },
+        },
+        {
+          name: 'mouseControl',
+          config: {
+            inputEventBindings: [
+              {
+                event: 'MOUSE_LEFT_BUTTON_CLICK',
+                messageType: 'SELECT_GAME_OBJECT',
+                attrs: [],
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'frame',
+      name: 'frame',
+      type: 'tool',
+      children: [],
+      components: [
+        {
+          name: 'transform',
+          config: {
+            offsetX: 0,
+            offsetY: 0,
+            offsetZ: 0,
+            rotation: 0,
+          },
+        },
+        {
+          name: 'shape',
+          config: {
+            type: 'rectangle',
+            properties: {
+              width: 0,
+              height: 0,
+              color: 'rgba(0, 0, 0, 0)',
+              strokeWidth: 2,
+              strokeColor: '#fff',
+            },
           },
         },
       ],
