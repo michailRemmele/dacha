@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { CANVAS_ROOT } from '../consts/root-nodes'
+import { CANVAS_ROOT, SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
 
 import {
   Explorer,
@@ -24,6 +24,7 @@ export const App = (): JSX.Element => {
           {context && <Toolbar />}
         </div>
         <div id={CANVAS_ROOT} />
+        <canvas id={SHAPE_CANVAS_ROOT} />
       </div>
       <div className="editor__inspector">
         {context && <Inspector />}

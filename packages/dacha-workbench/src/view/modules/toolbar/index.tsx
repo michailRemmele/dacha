@@ -9,7 +9,7 @@ import React, {
 import { useTranslation } from 'react-i18next'
 import type { RadioChangeEvent } from 'antd'
 import { Radio } from 'antd'
-import { DragOutlined, SearchOutlined } from '@ant-design/icons'
+import { DragOutlined, SearchOutlined, AimOutlined } from '@ant-design/icons'
 import type { GameObject, MessageBus } from 'remiz'
 
 import type { Tool } from '../../../engine/components'
@@ -92,6 +92,9 @@ export const Toolbar: FC = () => {
       >
         <Radio.Button value="hand">
           <DragOutlined title={t('toolbar.hand.title')} />
+        </Radio.Button>
+        <Radio.Button value="pointer">
+          <AimOutlined title={t('toolbar.pointer.title')} />
         </Radio.Button>
         <Radio.Button value="zoom">
           <SearchOutlined title={t('toolbar.zoom.title')} />

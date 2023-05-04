@@ -11,6 +11,8 @@
   flex-direction: column;
 
   user-select: none;
+
+  position: relative;
 }
 
 .editor__toolbar {
@@ -25,8 +27,22 @@
   flex: 1;
 }
 
+#shape-canvas-root {
+  width: 100%;
+  height: calc(100% - 35px);
+
+  position: absolute;
+  top: 35px;
+
+  pointer-events: none;
+}
+
 .canvas-root_tool_hand {
   cursor: grab;
+}
+
+.canvas-root_tool_pointer {
+  cursor: pointer;
 }
 
 .canvas-root_tool_zoom.canvas-root_feature-direction_in {

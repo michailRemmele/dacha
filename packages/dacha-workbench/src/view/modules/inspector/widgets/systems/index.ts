@@ -15,7 +15,7 @@ import { mouseInputCoordinatesProjector } from './mouse-input-coordinates-projec
 import { mouseInputSystem } from './mouse-input-system'
 import { physicsSystem } from './physics-system'
 import { scriptSystem } from './script-system'
-import { threeJSRenderer } from './three-js-renderer'
+import { renderer } from './renderer'
 import { uiBridge } from './ui-bridge'
 
 export const systemsSchema: Record<string, WidgetSchema> = {
@@ -34,6 +34,6 @@ export const systemsSchema: Record<string, WidgetSchema> = {
   mouseInputSystem,
   physicsSystem,
   scriptSystem,
-  threeJSRenderer,
+  renderer,
   uiBridge,
 }
