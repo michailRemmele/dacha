@@ -67,6 +67,10 @@ export class SelectionMovementSubsytem {
   }
 
   private handleMoveEndMessages(selectionId: string, levelId: string): void {
+    if (!this.isMoving) {
+      return
+    }
+
     const endMoveMessages = this.messageBus.get(SELECTION_MOVE_END_MSG)
     if (!endMoveMessages?.length) {
       return
@@ -82,7 +86,10 @@ export class SelectionMovementSubsytem {
     const objectPath = buildGameObjectPath(selectedObject, levelId)
     const transformPath = objectPath.concat('components', 'name:transform', 'config')
 
-    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
+    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    if (transform === undefined) {
+      return
+    }
 
     const transformConfig = this.configStore.get(transformPath) as Record<string, unknown>
 
@@ -99,8 +106,8 @@ export class SelectionMovementSubsytem {
         path: transformPath,
         value: {
           ...transformConfig,
-          offsetX: Math.round(transform.offsetX),
-          offsetY: Math.round(transform.offsetY),
+          offsetX: Math.round(transform.relativeOffsetX),
+          offsetY: Math.round(transform.relativeOffsetY),
         },
       },
     })
@@ -123,7 +130,10 @@ export class SelectionMovementSubsytem {
       return
     }
 
-    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
+    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    if (transform === undefined) {
+      return
+    }
 
     transform.offsetX -= this.pointer.x - x
     transform.offsetY -= this.pointer.y - y
