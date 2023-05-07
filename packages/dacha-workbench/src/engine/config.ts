@@ -1,6 +1,11 @@
 import type { Config } from 'remiz'
 
 import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
+import {
+  SELECTION_MOVE_MSG,
+  SELECTION_MOVE_START_MSG,
+  SELECTION_MOVE_END_MSG,
+} from '../consts/message-types'
 
 export const editorConfig: Config = {
   scenes: [
@@ -42,10 +47,6 @@ export const editorConfig: Config = {
           },
         },
         {
-          name: 'commander',
-          options: {},
-        },
-        {
           name: 'toolManager',
           options: {},
         },
@@ -59,6 +60,10 @@ export const editorConfig: Config = {
         },
         {
           name: 'pointerToolSystem',
+          options: {},
+        },
+        {
+          name: 'commander',
           options: {},
         },
         {
@@ -223,8 +228,23 @@ export const editorConfig: Config = {
           config: {
             inputEventBindings: [
               {
-                event: 'MOUSE_LEFT_BUTTON_CLICK',
-                messageType: 'SELECT_GAME_OBJECT',
+                event: 'MOUSE_LEFT_BUTTON_PRESS',
+                messageType: SELECTION_MOVE_START_MSG,
+                attrs: [],
+              },
+              {
+                event: 'MOUSE_MOVE',
+                messageType: SELECTION_MOVE_MSG,
+                attrs: [],
+              },
+              {
+                event: 'MOUSE_LEFT_BUTTON_RELEASE',
+                messageType: SELECTION_MOVE_END_MSG,
+                attrs: [],
+              },
+              {
+                event: 'MOUSE_LEAVE',
+                messageType: SELECTION_MOVE_END_MSG,
                 attrs: [],
               },
             ],

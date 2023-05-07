@@ -2,19 +2,16 @@ import type {
   System,
   SystemOptions,
   MessageBus,
-  Message,
   SceneContext,
   GameObject,
   GameObjectSpawner,
   GameObjectDestroyer,
   GameObjectObserver,
-  Transform,
-  Renderable,
 } from 'remiz'
 import { RendererService } from 'remiz'
 
 import {
-  SELECT_GAME_OBJECT,
+  SELECTION_MOVE_START_MSG,
   INSPECT_ENTITY_MSG,
   SELECT_LEVEL_MSG,
 } from '../../../consts/message-types'
@@ -22,16 +19,12 @@ import type {
   SelectLevelMessage,
   InspectEntityMessage,
 } from '../../../types/messages'
-import type { Shape, RectangleShape } from '../../components/shape'
+import type { Store } from '../../../store'
 
-import { buildGameObjectPath, getAngle } from './utils'
-
-const LEVEL_PATH_LEGTH = 2
-
-interface MouseInputMessage extends Message {
-  screenX: number
-  screenY: number
-}
+import { SelectionMovementSubsytem } from './selection-movement'
+import { buildGameObjectPath, updateFrameSize } from './utils'
+import { LEVEL_PATH_LEGTH } from './conts'
+import type { MouseInputMessage } from './types'
 
 export class PointerToolSystem implements System {
   private messageBus: MessageBus
@@ -45,6 +38,8 @@ export class PointerToolSystem implements System {
 
   private selectedObjectId?: string
   private frame?: GameObject
+
+  private selectionMovementSubsytem: SelectionMovementSubsytem
 
   constructor(options: SystemOptions) {
     const {
@@ -62,6 +57,12 @@ export class PointerToolSystem implements System {
     this.gameObjectObserver = createGameObjectObserver({})
 
     this.mainObject = sceneContext.data.mainObject as GameObject
+
+    this.selectionMovementSubsytem = new SelectionMovementSubsytem({
+      messageBus,
+      gameObjectObserver: this.gameObjectObserver,
+      configStore: this.sceneContext.data.configStore as Store,
+    })
   }
 
   private handleLevelChange(): void {
@@ -96,15 +97,12 @@ export class PointerToolSystem implements System {
       return
     }
 
-    const selectionMessages = (this.messageBus.get(SELECT_GAME_OBJECT) || [])
+    const selectionMessages = this.messageBus.get(SELECTION_MOVE_START_MSG) || []
     if (!selectionMessages.length) {
       return
     }
 
-    const {
-      screenX,
-      screenY,
-    } = selectionMessages.at(-1) as MouseInputMessage
+    const { screenX, screenY } = selectionMessages.at(-1) as MouseInputMessage
 
     const rendererService = this.sceneContext.getService(RendererService)
 
@@ -151,43 +149,17 @@ export class PointerToolSystem implements System {
       return
     }
 
-    const renderable = selectedObject.getComponent('renderable') as Renderable | undefined
-    const transform = selectedObject.getComponent('transform') as Transform | undefined
-
-    let offsetX = 0
-    let offsetY = 0
-    let rotation = 0
-    let width = 0
-    let height = 0
-    if (
-      renderable !== undefined
-      && renderable.width !== 0
-      && renderable.height !== 0
-      && transform !== undefined
-    ) {
-      offsetX = transform.offsetX
-      offsetY = transform.offsetY
-      rotation = getAngle(transform.rotation)
-
-      // Need to perform scale before rotation since main renderer has the same order
-      width = renderable.width * transform.scaleX
-      height = renderable.height * transform.scaleY
-    }
-
-    const frameTransform = this.frame.getComponent('transform') as Transform
-    const frameShape = this.frame.getComponent('shape') as Shape
-    const properties = frameShape.properties as RectangleShape
-
-    frameTransform.offsetX = offsetX
-    frameTransform.offsetY = offsetY
-    properties.width = Math.cos(rotation) * width + Math.sin(rotation) * height
-    properties.height = Math.sin(rotation) * width + Math.cos(rotation) * height
+    updateFrameSize(this.frame, selectedObject)
   }
 
   update(): void {
     this.handleLevelChange()
     this.handleInspectEntityMessages()
     this.handleSelectionMessages()
+
+    if (this.selectedLevelId !== undefined && this.selectedObjectId !== undefined) {
+      this.selectionMovementSubsytem.update(this.selectedObjectId, this.selectedLevelId)
+    }
 
     this.updateFrame()
   }
