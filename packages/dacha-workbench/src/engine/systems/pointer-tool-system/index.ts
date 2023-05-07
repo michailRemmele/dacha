@@ -67,7 +67,6 @@ export class PointerToolSystem implements System {
 
   private handleLevelChange(): void {
     const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
-
     if (!messages) {
       return
     }
@@ -78,8 +77,8 @@ export class PointerToolSystem implements System {
   }
 
   private handleInspectEntityMessages(): void {
-    const inspectMessages = (this.messageBus.get(INSPECT_ENTITY_MSG) || [])
-    if (!inspectMessages.length) {
+    const inspectMessages = this.messageBus.get(INSPECT_ENTITY_MSG)
+    if (!inspectMessages?.length) {
       return
     }
 
@@ -97,8 +96,8 @@ export class PointerToolSystem implements System {
       return
     }
 
-    const selectionMessages = this.messageBus.get(SELECTION_MOVE_START_MSG) || []
-    if (!selectionMessages.length) {
+    const selectionMessages = this.messageBus.get(SELECTION_MOVE_START_MSG)
+    if (!selectionMessages?.length) {
       return
     }
 
