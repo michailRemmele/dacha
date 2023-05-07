@@ -22,7 +22,9 @@ import type {
 const DEFAULT_COLOR = '#ffffff';
 const DEFAULT_BLENDING = 'normal';
 const DEFAULT_OPACITY = 1;
-const DEFAULT_TEXTURE = new DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1);
+
+const DEFAULT_TEXTURE = new DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1);
+DEFAULT_TEXTURE.needsUpdate = true;
 
 const blendingMap: Record<BlendingMode, Blending> = {
   normal: NormalBlending,
