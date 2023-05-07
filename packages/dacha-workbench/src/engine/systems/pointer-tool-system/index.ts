@@ -21,7 +21,7 @@ import type {
 } from '../../../types/messages'
 import type { Store } from '../../../store'
 
-import { SelectionMovementSubsytem } from './selection-movement'
+import { SelectionMovementSubsystem } from './selection-movement'
 import { buildGameObjectPath, updateFrameSize } from './utils'
 import { LEVEL_PATH_LEGTH } from './conts'
 import type { MouseInputMessage } from './types'
@@ -39,7 +39,7 @@ export class PointerToolSystem implements System {
   private selectedObjectId?: string
   private frame?: GameObject
 
-  private selectionMovementSubsytem: SelectionMovementSubsytem
+  private selectionMovementSubsystem: SelectionMovementSubsystem
 
   constructor(options: SystemOptions) {
     const {
@@ -58,7 +58,7 @@ export class PointerToolSystem implements System {
 
     this.mainObject = sceneContext.data.mainObject as GameObject
 
-    this.selectionMovementSubsytem = new SelectionMovementSubsytem({
+    this.selectionMovementSubsystem = new SelectionMovementSubsystem({
       messageBus,
       gameObjectObserver: this.gameObjectObserver,
       configStore: this.sceneContext.data.configStore as Store,
@@ -158,7 +158,7 @@ export class PointerToolSystem implements System {
     this.handleSelectionMessages()
 
     if (this.selectedLevelId !== undefined && this.selectedObjectId !== undefined) {
-      this.selectionMovementSubsytem.update(this.selectedObjectId, this.selectedLevelId)
+      this.selectionMovementSubsystem.update(this.selectedObjectId, this.selectedLevelId)
     }
 
     this.updateFrame()

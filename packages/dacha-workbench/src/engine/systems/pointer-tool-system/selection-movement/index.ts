@@ -21,13 +21,13 @@ import type { Store } from '../../../../store'
 
 import { isFloatEqual } from './utils'
 
-interface SelectionMovementSubsytemOptions {
+interface SelectionMovementSubsystemOptions {
   messageBus: MessageBus
   gameObjectObserver: GameObjectObserver
   configStore: Store
 }
 
-export class SelectionMovementSubsytem {
+export class SelectionMovementSubsystem {
   private messageBus: MessageBus
   private gameObjectObserver: GameObjectObserver
   private configStore: Store
@@ -40,7 +40,7 @@ export class SelectionMovementSubsytem {
     messageBus,
     gameObjectObserver,
     configStore,
-  }: SelectionMovementSubsytemOptions) {
+  }: SelectionMovementSubsystemOptions) {
     this.messageBus = messageBus
     this.gameObjectObserver = gameObjectObserver
     this.configStore = configStore
