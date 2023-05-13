@@ -5,6 +5,7 @@ import {
   ZoomToolSystem,
   HandToolSystem,
   PointerToolSystem,
+  TemplateToolSystem,
   Commander,
   ShapesRenderer,
 } from './systems'
@@ -22,6 +23,7 @@ export const editorSystems = {
   zoomToolSystem: ZoomToolSystem,
   handToolSystem: HandToolSystem,
   pointerToolSystem: PointerToolSystem,
+  templateToolSystem: TemplateToolSystem,
   shapesRenderer: ShapesRenderer,
 }
 

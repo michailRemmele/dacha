@@ -5,6 +5,7 @@ import {
   SELECTION_MOVE_MSG,
   SELECTION_MOVE_START_MSG,
   SELECTION_MOVE_END_MSG,
+  ADD_FROM_TEMPLATE_MSG,
 } from '../consts/message-types'
 
 export const editorConfig: Config = {
@@ -60,6 +61,10 @@ export const editorConfig: Config = {
         },
         {
           name: 'pointerToolSystem',
+          options: {},
+        },
+        {
+          name: 'templateToolSystem',
           options: {},
         },
         {
@@ -192,6 +197,7 @@ export const editorConfig: Config = {
             features: {
               direction: {
                 value: 'in',
+                withClassName: true,
               },
             },
           },
@@ -253,9 +259,41 @@ export const editorConfig: Config = {
       ],
     },
     {
+      id: 'template',
+      name: 'template',
+      type: 'tool',
+      children: [],
+      components: [
+        {
+          name: 'tool',
+          config: {
+            name: 'template',
+            features: {
+              templateId: {
+                value: undefined,
+                withClassName: false,
+              },
+            },
+          },
+        },
+        {
+          name: 'mouseControl',
+          config: {
+            inputEventBindings: [
+              {
+                event: 'MOUSE_LEFT_BUTTON_CLICK',
+                messageType: ADD_FROM_TEMPLATE_MSG,
+                attrs: [],
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
       id: 'frame',
       name: 'frame',
-      type: 'tool',
+      type: '',
       children: [],
       components: [
         {

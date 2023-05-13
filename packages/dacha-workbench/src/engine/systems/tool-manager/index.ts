@@ -73,7 +73,10 @@ export class ToolManager implements System {
     this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${name}`)
 
     Object.keys(features).forEach((key) => {
-      this.rootNode.classList.toggle(getFeatureClassName(key, features[key].value))
+      const { value, withClassName } = features[key]
+      if (withClassName) {
+        this.rootNode.classList.toggle(getFeatureClassName(key, value))
+      }
     })
   }
 
@@ -89,7 +92,10 @@ export class ToolManager implements System {
       this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${name}`)
 
       Object.keys(features).forEach((key) => {
-        this.rootNode.classList.toggle(getFeatureClassName(key, features[key].value))
+        const { value, withClassName } = features[key]
+        if (withClassName) {
+          this.rootNode.classList.toggle(getFeatureClassName(key, value))
+        }
       })
     }
   }
@@ -101,11 +107,14 @@ export class ToolManager implements System {
 
     if (toolObject) {
       const { features } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+      const feature = features[name]
 
-      this.rootNode.classList.toggle(getFeatureClassName(name, features[name].value))
-      this.rootNode.classList.toggle(getFeatureClassName(name, value))
+      if (feature.withClassName) {
+        this.rootNode.classList.toggle(getFeatureClassName(name, feature.value))
+        this.rootNode.classList.toggle(getFeatureClassName(name, value))
+      }
 
-      features[name].value = value
+      feature.value = value
     }
   }
 
