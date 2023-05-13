@@ -40,7 +40,10 @@
     "hand.title": "Hand Tool",
     "zoom.title": "Zoom Tool",
     "zoom.features.direction.in.title": "Zoom In Mode",
-    "zoom.features.direction.out.title": "Zoom Out Mode"
+    "zoom.features.direction.out.title": "Zoom Out Mode",
+    "template.title": "Template Tool",
+    "template.features.template.title": "Template:",
+    "template.features.step.title": "Step:"
   },
   "inspector": {
     "tab.entityInspector": "Inspector",
