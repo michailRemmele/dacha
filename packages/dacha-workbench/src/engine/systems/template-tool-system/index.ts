@@ -22,7 +22,6 @@ import type { Store } from '../../../store'
 import { createFromTemplate } from './utils'
 
 const TOOL_COMPONENT_NAME = 'tool'
-const TRANSFORM_COMPONENT_NAME = 'transform'
 
 interface MouseInputMessage extends Message {
   screenX: number
@@ -81,16 +80,7 @@ export class TemplateToolSystem implements System {
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
     const level = this.configStore.get(['levels', `id:${this.selectedLevelId}`]) as LevelConfig
 
-    const gameObject = createFromTemplate(template, level)
-
-    const transform = gameObject.components?.find(
-      (component) => component.name === TRANSFORM_COMPONENT_NAME,
-    )
-
-    if (transform !== undefined) {
-      transform.config.offsetX = Math.round(x)
-      transform.config.offsetY = Math.round(y)
-    }
+    const gameObject = createFromTemplate(template, level, x, y)
 
     this.messageBus.send({
       type: COMMAND_MSG,
