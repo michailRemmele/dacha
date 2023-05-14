@@ -17,6 +17,11 @@ import { FeatureLabel } from '../feature-label'
 
 import './style.less'
 
+interface SelectOption {
+  label: string
+  value: string
+}
+
 export const TemplatesFeatures: FC = () => {
   const { t } = useTranslation()
   const { pushMessage } = useContext(EngineContext)
@@ -39,6 +44,12 @@ export const TemplatesFeatures: FC = () => {
     })
   }, [pushMessage])
 
+  const handleFilter = useCallback(
+    (input: string, option?: SelectOption) => option !== undefined
+      && option.label.toLowerCase().includes(input.toLowerCase()),
+    [],
+  )
+
   useEffect(() => {
     if (value !== undefined && templates.every((template) => template.id !== value)) {
       handleChange(templates[0]?.id)
@@ -58,6 +69,7 @@ export const TemplatesFeatures: FC = () => {
           value={value}
           disabled={templates.length === 0}
           showSearch
+          filterOption={handleFilter}
         />
       </FeatureLabel>
     </div>
