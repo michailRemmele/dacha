@@ -75,7 +75,7 @@ export class TemplateToolSystem implements System {
     const toolObject = this.mainObject.getChildById(toolObjectId) as GameObject
     const toolComponent = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
 
-    const templateId = toolComponent.features.templateId.value
+    const templateId = toolComponent.features.templateId.value as string
 
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
     const level = this.configStore.get(['levels', `id:${this.selectedLevelId}`]) as LevelConfig

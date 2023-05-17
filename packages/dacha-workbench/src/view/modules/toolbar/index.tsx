@@ -7,6 +7,7 @@ import React, {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import isEqual from 'lodash.isequal'
 import type { RadioChangeEvent } from 'antd'
 import { Radio } from 'antd'
 import {
@@ -17,9 +18,10 @@ import {
 } from '@ant-design/icons'
 import type { GameObject, MessageBus } from 'remiz'
 
-import type { Tool } from '../../../engine/components'
 import { EngineContext } from '../../providers'
 import { SELECT_TOOL_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types'
+import type { Tool } from '../../../engine/components'
+import type { FeatureValue } from '../../../engine/components/tool'
 
 import { features } from './components'
 import './style.less'
@@ -38,6 +40,7 @@ export const Toolbar: FC = () => {
   )
 
   const [selectedTool, setSelectedTool] = useState('')
+  const [toolFeatures, setToolFeatures] = useState<Record<string, FeatureValue>>({})
   const [disabled, setDisabled] = useState(true)
 
   const ToolFeatures = useMemo(() => features[selectedTool], [selectedTool])
@@ -53,17 +56,29 @@ export const Toolbar: FC = () => {
         return
       }
 
-      const { name } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+      const {
+        name,
+        features: currentFeatures,
+      } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
 
       if (name !== selectedTool) {
         setSelectedTool(name)
+      }
+
+      const featuresValues = Object.keys(currentFeatures).reduce((acc, key) => {
+        acc[key] = currentFeatures[key].value
+        return acc
+      }, {} as Record<string, FeatureValue>)
+
+      if (!isEqual(featuresValues, toolFeatures)) {
+        setToolFeatures(featuresValues)
       }
     }
 
     gameObjects.subscribe(handleUpdate, mainObjectId)
 
     return () => gameObjects.unsubscribe(handleUpdate, mainObjectId)
-  }, [gameObjects, sceneContext, mainObjectId, selectedTool])
+  }, [gameObjects, sceneContext, mainObjectId, selectedTool, toolFeatures])
 
   useEffect(() => {
     const handleLevelSelect = (messageBus: unknown): void => {
@@ -110,7 +125,7 @@ export const Toolbar: FC = () => {
         </Radio.Button>
       </Radio.Group>
 
-      {features[selectedTool] && !disabled ? (<ToolFeatures />) : null}
+      {features[selectedTool] && !disabled ? (<ToolFeatures features={toolFeatures} />) : null}
     </div>
   )
 }

@@ -1,10 +1,12 @@
+export type FeatureValue = string | number | boolean
+
 export interface FeatureConfig {
-  value: string
+  value: FeatureValue
   withClassName: boolean
 }
 
 export class Feature {
-  value: string
+  value: FeatureValue
   withClassName: boolean
 
   constructor(config: FeatureConfig) {
