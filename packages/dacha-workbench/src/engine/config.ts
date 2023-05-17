@@ -269,6 +269,14 @@ export const editorConfig: Config = {
           config: {
             name: 'template',
             features: {
+              preview: {
+                value: true,
+                withClassName: false,
+              },
+              step: {
+                value: 1,
+                withClassName: false,
+              },
               templateId: {
                 value: undefined,
                 withClassName: false,

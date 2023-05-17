@@ -1,8 +1,11 @@
 import { Component } from 'remiz'
 
-import { Feature, FeatureConfig } from './feature'
+import { Feature } from './feature'
+import type { FeatureValue, FeatureConfig } from './feature'
 
-interface ToolConfig extends Record<string, unknown> {
+export type { FeatureValue, FeatureConfig }
+
+export interface ToolConfig extends Record<string, unknown> {
   name: string;
   features: Record<string, FeatureConfig>
 }
