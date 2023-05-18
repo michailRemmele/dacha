@@ -6,6 +6,8 @@ import {
   SELECTION_MOVE_START_MSG,
   SELECTION_MOVE_END_MSG,
   ADD_FROM_TEMPLATE_MSG,
+  TEMPLATE_PREVIEW_MOVE_MSG,
+  TEMPLATE_PREVIEW_HIDE_MSG,
 } from '../consts/message-types'
 
 export const editorConfig: Config = {
@@ -291,6 +293,16 @@ export const editorConfig: Config = {
               {
                 event: 'MOUSE_LEFT_BUTTON_CLICK',
                 messageType: ADD_FROM_TEMPLATE_MSG,
+                attrs: [],
+              },
+              {
+                event: 'MOUSE_MOVE',
+                messageType: TEMPLATE_PREVIEW_MOVE_MSG,
+                attrs: [],
+              },
+              {
+                event: 'MOUSE_LEAVE',
+                messageType: TEMPLATE_PREVIEW_HIDE_MSG,
                 attrs: [],
               },
             ],
