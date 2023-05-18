@@ -98,6 +98,8 @@ export class LevelViewer implements System {
     this.templateCollection = templateCollection
     this.gameObjectCreator = new GameObjectCreator(components, templateCollection)
 
+    this.sceneContext.data.gameObjectCreator = this.gameObjectCreator
+
     this.watchStore()
   }
 
