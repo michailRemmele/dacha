@@ -12,9 +12,7 @@ import {
   COMMAND_MSG,
 } from '../../../../consts/message-types'
 import { SET } from '../../../../command-types'
-import {
-  TRANSFORM_COMPONENT_NAME,
-} from '../conts'
+import { TRANSFORM_COMPONENT_NAME } from '../consts'
 import { buildGameObjectPath } from '../utils'
 import type { MouseInputMessage } from '../types'
 import type { Store } from '../../../../store'

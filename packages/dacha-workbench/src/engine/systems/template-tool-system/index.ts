@@ -3,41 +3,30 @@ import type {
   SystemOptions,
   GameObject,
   MessageBus,
-  Message,
   SceneContext,
   TemplateConfig,
   LevelConfig,
   GameObjectSpawner,
   GameObjectDestroyer,
   GameObjectCreator,
-  Transform,
 } from 'remiz'
 
 import {
   SELECT_LEVEL_MSG,
   ADD_FROM_TEMPLATE_MSG,
-  TEMPLATE_PREVIEW_MOVE_MSG,
-  TEMPLATE_PREVIEW_HIDE_MSG,
   COMMAND_MSG,
+  TOOL_CURSOR_MOVE_MSG,
+  TOOL_CURSOR_LEAVE_MSG,
 } from '../../../consts/message-types'
 import { ADD } from '../../../command-types'
 import type { SelectLevelMessage } from '../../../types/messages'
 import type { Tool } from '../../components'
 import type { Store } from '../../../store'
 
+import { PreviewSubsystem } from './preview'
 import { createFromTemplate } from './utils'
-import {
-  TOOL_COMPONENT_NAME,
-  TOOL_NAME,
-  TRANSFORM_COMPONENT_NAME,
-} from './consts'
-
-interface MouseInputMessage extends Message {
-  screenX: number
-  screenY: number
-  x: number
-  y: number
-}
+import { TOOL_COMPONENT_NAME } from './consts'
+import type { MouseInputMessage } from './types'
 
 export class TemplateToolSystem implements System {
   private messageBus: MessageBus
@@ -46,11 +35,12 @@ export class TemplateToolSystem implements System {
   private configStore: Store
   private gameObjectSpawner: GameObjectSpawner
   private gameObjectDestroyer: GameObjectDestroyer
-  private gameObjectCreator?: GameObjectCreator
+  private previewSubsystem?: PreviewSubsystem
 
   private selectedLevelId?: string
 
-  private preview?: GameObject
+  private x: number | null
+  private y: number | null
 
   constructor(options: SystemOptions) {
     const {
@@ -67,10 +57,23 @@ export class TemplateToolSystem implements System {
     this.gameObjectDestroyer = gameObjectDestroyer
 
     this.mainObject = sceneContext.data.mainObject as GameObject
+
+    this.x = 0
+    this.y = 0
   }
 
   mount(): void {
-    this.gameObjectCreator = this.sceneContext.data.gameObjectCreator as GameObjectCreator
+    this.previewSubsystem = new PreviewSubsystem({
+      gameObjectCreator: this.sceneContext.data.gameObjectCreator as GameObjectCreator,
+      gameObjectDestroyer: this.gameObjectDestroyer,
+      gameObjectSpawner: this.gameObjectSpawner,
+      mainObject: this.mainObject,
+      configStore: this.configStore,
+    })
+  }
+
+  unmount(): void {
+    this.previewSubsystem?.unmount()
   }
 
   private handleLevelChange(): void {
@@ -84,66 +87,25 @@ export class TemplateToolSystem implements System {
     this.selectedLevelId = levelId
   }
 
-  private deletePreview(): void {
-    if (this.preview === undefined) {
-      return
-    }
-
-    this.gameObjectDestroyer.destroy(this.preview)
-    this.preview = undefined
-  }
-
-  // TODO: Simplify after gameObject/template creation refactoring
-  private spawnPreview(templateId: string): GameObject {
-    const gameObjectCreator = this.gameObjectCreator as GameObjectCreator
-
-    const preview = gameObjectCreator.create({
-      templateId,
-      fromTemplate: true,
-      isNew: true,
-    })
-    this.gameObjectSpawner.spawn(preview)
-    this.mainObject.appendChild(preview)
-
-    return preview
-  }
-
-  private updatePreview(tool: Tool, x: number, y: number): void {
-    const templateId = tool.features.templateId.value as string
-
-    if (this.preview !== undefined && this.preview.templateId !== templateId) {
-      this.deletePreview()
-    }
-    // TODO: Recreate preview if template was changed
-    if (this.preview === undefined) {
-      this.preview = this.spawnPreview(templateId)
-    }
-
-    const transform = this.preview.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
-    if (transform !== undefined) {
-      transform.offsetX = Math.round(x)
-      transform.offsetY = Math.round(y)
-    }
-  }
-
-  private handleMoveMessages(tool: Tool): void {
-    const messages = this.messageBus.get(TEMPLATE_PREVIEW_MOVE_MSG)
+  private handleCursorMoveMessages(): void {
+    const messages = this.messageBus.get(TOOL_CURSOR_MOVE_MSG)
     if (!messages?.length) {
       return
     }
 
     const { x, y } = messages.at(-1) as MouseInputMessage
-
-    this.updatePreview(tool, x, y)
+    this.x = x
+    this.y = y
   }
 
-  private handleHideMessages(): void {
-    const messages = this.messageBus.get(TEMPLATE_PREVIEW_HIDE_MSG)
+  private handleCursorLeaveMessages(): void {
+    const messages = this.messageBus.get(TOOL_CURSOR_LEAVE_MSG)
     if (!messages?.length) {
       return
     }
 
-    this.deletePreview()
+    this.x = null
+    this.y = null
   }
 
   private handleAddMessages(levelId: string, tool: Tool): void {
@@ -152,9 +114,12 @@ export class TemplateToolSystem implements System {
       return
     }
 
-    const { x, y } = messages.at(-1) as MouseInputMessage
+    const templateId = tool.features.templateId.value as string | undefined
+    if (templateId === undefined) {
+      return
+    }
 
-    const templateId = tool.features.templateId.value as string
+    const { x, y } = messages.at(-1) as MouseInputMessage
 
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
     const level = this.configStore.get(['levels', `id:${levelId}`]) as LevelConfig
@@ -173,6 +138,8 @@ export class TemplateToolSystem implements System {
 
   update(): void {
     this.handleLevelChange()
+    this.handleCursorMoveMessages()
+    this.handleCursorLeaveMessages()
 
     const levelId = this.selectedLevelId
     if (levelId === undefined) {
@@ -183,25 +150,7 @@ export class TemplateToolSystem implements System {
     const toolObject = this.mainObject.getChildById(toolObjectId) as GameObject
     const toolComponent = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
 
-    // TODO: Probably it is required to add some message about tool switching
-    // to add preview by mouse coordinates
-    // ?Can you check mouse coordinates at any time
-    // or you need to track it manually by listening mouse event?
-    // Probably this system should always listen mouse move event directly and track x,y coordinates
-
-    // TODO: Move preview management to subsystem
-    if (toolComponent.name !== TOOL_NAME) {
-      this.deletePreview()
-      return
-    }
-
-    const preview = toolComponent.features.preview.value as boolean
-    if (preview) {
-      this.handleMoveMessages(toolComponent)
-      this.handleHideMessages()
-    } else {
-      this.deletePreview()
-    }
+    this.previewSubsystem?.update(toolComponent, this.x, this.y)
 
     this.handleAddMessages(levelId, toolComponent)
   }
