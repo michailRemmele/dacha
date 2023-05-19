@@ -12,6 +12,7 @@ import type {
 import { SELECT_TOOL_MSG, SET_TOOL_FEATURE_VALUE_MSG } from '../../../consts/message-types'
 import { CANVAS_ROOT } from '../../../consts/root-nodes'
 import { Tool } from '../../components'
+import type { FeatureValue } from '../../components/tool'
 
 const TOOL_COMPONENT_NAME = 'tool'
 const DEFAULT_TOOL_NAME = 'hand'
@@ -29,8 +30,8 @@ interface SelectToolMessage extends Message {
 
 const getFeatureClassName = (
   name: string,
-  value: string,
-): string => `${FEATURE_CLASS_NAME_PREFIX}${name}_${value}`
+  value: FeatureValue,
+): string => `${FEATURE_CLASS_NAME_PREFIX}${name}_${String(value)}`
 
 export class ToolManager implements System {
   private gameObjectSpawner: GameObjectSpawner
