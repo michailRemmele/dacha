@@ -2,12 +2,12 @@ import type { Config } from 'remiz'
 
 import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
 import {
+  TOOL_CURSOR_MOVE_MSG,
+  TOOL_CURSOR_LEAVE_MSG,
   SELECTION_MOVE_MSG,
   SELECTION_MOVE_START_MSG,
   SELECTION_MOVE_END_MSG,
   ADD_FROM_TEMPLATE_MSG,
-  TEMPLATE_PREVIEW_MOVE_MSG,
-  TEMPLATE_PREVIEW_HIDE_MSG,
 } from '../consts/message-types'
 
 export const editorConfig: Config = {
@@ -136,6 +136,23 @@ export const editorConfig: Config = {
               name: 'camera',
               config: {
                 zoom: 1,
+              },
+            },
+            {
+              name: 'mouseControl',
+              config: {
+                inputEventBindings: [
+                  {
+                    event: 'MOUSE_MOVE',
+                    messageType: TOOL_CURSOR_MOVE_MSG,
+                    attrs: [],
+                  },
+                  {
+                    event: 'MOUSE_LEAVE',
+                    messageType: TOOL_CURSOR_LEAVE_MSG,
+                    attrs: [],
+                  },
+                ],
               },
             },
           ],
@@ -293,16 +310,6 @@ export const editorConfig: Config = {
               {
                 event: 'MOUSE_LEFT_BUTTON_CLICK',
                 messageType: ADD_FROM_TEMPLATE_MSG,
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_MOVE',
-                messageType: TEMPLATE_PREVIEW_MOVE_MSG,
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_LEAVE',
-                messageType: TEMPLATE_PREVIEW_HIDE_MSG,
                 attrs: [],
               },
             ],
