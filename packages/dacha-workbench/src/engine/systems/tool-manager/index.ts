@@ -13,6 +13,7 @@ import { SELECT_TOOL_MSG, SET_TOOL_FEATURE_VALUE_MSG } from '../../../consts/mes
 import { CANVAS_ROOT } from '../../../consts/root-nodes'
 import { Tool } from '../../components'
 import type { FeatureValue } from '../../components/tool'
+import type { SelectToolMessage } from '../../../types/messages'
 
 const TOOL_COMPONENT_NAME = 'tool'
 const DEFAULT_TOOL_NAME = 'hand'
@@ -22,10 +23,6 @@ const FEATURE_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_feature-`
 interface SetToolFeatureValueMessage extends Message {
   name: string
   value: string
-}
-
-interface SelectToolMessage extends Message {
-  name: string
 }
 
 const getFeatureClassName = (

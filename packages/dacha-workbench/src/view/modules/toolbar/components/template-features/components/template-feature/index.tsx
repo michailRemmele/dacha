@@ -2,7 +2,6 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  useEffect,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -51,14 +50,6 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
       && option.label.toLowerCase().includes(input.toLowerCase()),
     [],
   )
-
-  useEffect(() => {
-    if (value !== undefined && templates.every((template) => template.id !== value)) {
-      handleChange(templates[0]?.id)
-    } else if (value === undefined && templates.length > 0) {
-      handleChange(templates[0].id)
-    }
-  }, [templates])
 
   return (
     <ToolFeature>

@@ -2,24 +2,30 @@ import type {
   GameObjectCreator,
   GameObjectDestroyer,
   GameObjectSpawner,
+  MessageBus,
   GameObject,
   Transform,
+  SceneContext,
+  TemplateConfig,
 } from 'remiz'
 
 import {
   TOOL_NAME,
   TRANSFORM_COMPONENT_NAME,
 } from '../consts'
+import { SELECT_TOOL_MSG } from '../../../../consts/message-types'
+import { getTool } from '../utils'
 import { includesArray } from '../../../../utils/includes-array'
 import type { Tool } from '../../../components'
 import type { Store } from '../../../../store'
+import type { SelectToolMessage } from '../../../../types/messages'
 
 interface PreviewSubsystemOptions {
   gameObjectCreator: GameObjectCreator
   gameObjectDestroyer: GameObjectDestroyer
   gameObjectSpawner: GameObjectSpawner
-  mainObject: GameObject
-  configStore: Store
+  sceneContext: SceneContext
+  messageBus: MessageBus
 }
 
 export class PreviewSubsystem {
@@ -28,6 +34,8 @@ export class PreviewSubsystem {
   private gameObjectSpawner: GameObjectSpawner
   private mainObject: GameObject
   private configStore: Store
+  private sceneContext: SceneContext
+  private messageBus: MessageBus
 
   private preview?: GameObject
 
@@ -37,14 +45,17 @@ export class PreviewSubsystem {
     gameObjectCreator,
     gameObjectDestroyer,
     gameObjectSpawner,
-    mainObject,
-    configStore,
+    sceneContext,
+    messageBus,
   }: PreviewSubsystemOptions) {
     this.gameObjectCreator = gameObjectCreator
     this.gameObjectDestroyer = gameObjectDestroyer
     this.gameObjectSpawner = gameObjectSpawner
-    this.mainObject = mainObject
-    this.configStore = configStore
+    this.messageBus = messageBus
+    this.sceneContext = sceneContext
+
+    this.mainObject = this.sceneContext.data.mainObject as GameObject
+    this.configStore = this.sceneContext.data.configStore as Store
 
     this.unsubscribe = this.configStore.subscribe(this.handleTemplatesUpdate)
   }
@@ -71,7 +82,26 @@ export class PreviewSubsystem {
     return preview
   }
 
+  /**
+   * Listens template update to sync template feature value and reset preview
+   * if selected template was changed
+   */
   private handleTemplatesUpdate = (path: Array<string>): void => {
+    const tool = getTool(this.sceneContext)
+    if (tool.name !== TOOL_NAME || !includesArray(path, ['templates'])) {
+      return
+    }
+
+    const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
+    const templateId = tool.features.templateId.value as string | undefined
+
+    if (templateId !== undefined && templates.every((template) => template.id !== templateId)) {
+      tool.features.templateId.value = templates[0]?.id
+    }
+    if (tool.features.templateId.value === undefined && templates.length > 0) {
+      tool.features.templateId.value = templates[0].id
+    }
+
     if (this.preview === undefined) {
       return
     }
@@ -80,6 +110,28 @@ export class PreviewSubsystem {
     }
 
     this.deletePreview()
+  }
+
+  /**
+   * Tries to pick an initial value for template feature once template tool is selected
+   */
+  private handleToolSelectMessages(): void {
+    const messages = this.messageBus.get(SELECT_TOOL_MSG)
+    if (!messages?.length) {
+      return
+    }
+
+    const { name } = messages.at(-1) as SelectToolMessage
+    if (name !== TOOL_NAME) {
+      return
+    }
+
+    const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
+    const tool = getTool(this.sceneContext)
+
+    if (tool.features.templateId.value === undefined && templates.length > 0) {
+      tool.features.templateId.value = templates[0].id
+    }
   }
 
   private updatePreview(tool: Tool, x: number, y: number): void {
@@ -106,7 +158,11 @@ export class PreviewSubsystem {
     this.unsubscribe()
   }
 
-  update(tool: Tool, x: number | null, y: number | null): void {
+  update(x: number | null, y: number | null): void {
+    this.handleToolSelectMessages()
+
+    const tool = getTool(this.sceneContext)
+
     if (tool.name !== TOOL_NAME || x === null || y === null) {
       this.deletePreview()
       return
