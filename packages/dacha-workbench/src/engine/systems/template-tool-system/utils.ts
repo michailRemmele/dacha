@@ -2,8 +2,14 @@ import type {
   GameObjectConfig,
   TemplateConfig,
   LevelConfig,
+  SceneContext,
+  GameObject,
 } from 'remiz'
 import { v4 as uuidv4 } from 'uuid'
+
+import type { Tool } from '../../components'
+
+import { TOOL_COMPONENT_NAME } from './consts'
 
 const TRANSFORM_COMPONENT_NAME = 'transform'
 
@@ -43,4 +49,13 @@ export const createFromTemplate = (
   }
 
   return gameObject
+}
+
+export const getTool = (sceneContext: SceneContext): Tool => {
+  const toolObjectId = sceneContext.data.currentToolObjectId as string
+  const mainObject = sceneContext.data.mainObject as GameObject
+
+  const toolObject = mainObject.getChildById(toolObjectId) as GameObject
+
+  return toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
 }

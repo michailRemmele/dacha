@@ -1,7 +1,6 @@
 import type {
   System,
   SystemOptions,
-  GameObject,
   MessageBus,
   SceneContext,
   TemplateConfig,
@@ -20,18 +19,15 @@ import {
 } from '../../../consts/message-types'
 import { ADD } from '../../../command-types'
 import type { SelectLevelMessage } from '../../../types/messages'
-import type { Tool } from '../../components'
 import type { Store } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
-import { createFromTemplate } from './utils'
-import { TOOL_COMPONENT_NAME } from './consts'
+import { createFromTemplate, getTool } from './utils'
 import type { MouseInputMessage } from './types'
 
 export class TemplateToolSystem implements System {
   private messageBus: MessageBus
   private sceneContext: SceneContext
-  private mainObject: GameObject
   private configStore: Store
   private gameObjectSpawner: GameObjectSpawner
   private gameObjectDestroyer: GameObjectDestroyer
@@ -56,8 +52,6 @@ export class TemplateToolSystem implements System {
     this.gameObjectSpawner = gameObjectSpawner
     this.gameObjectDestroyer = gameObjectDestroyer
 
-    this.mainObject = sceneContext.data.mainObject as GameObject
-
     this.x = 0
     this.y = 0
   }
@@ -67,8 +61,8 @@ export class TemplateToolSystem implements System {
       gameObjectCreator: this.sceneContext.data.gameObjectCreator as GameObjectCreator,
       gameObjectDestroyer: this.gameObjectDestroyer,
       gameObjectSpawner: this.gameObjectSpawner,
-      mainObject: this.mainObject,
-      configStore: this.configStore,
+      sceneContext: this.sceneContext,
+      messageBus: this.messageBus,
     })
   }
 
@@ -108,11 +102,13 @@ export class TemplateToolSystem implements System {
     this.y = null
   }
 
-  private handleAddMessages(levelId: string, tool: Tool): void {
+  private handleAddMessages(levelId: string): void {
     const messages = this.messageBus.get(ADD_FROM_TEMPLATE_MSG)
     if (!messages?.length) {
       return
     }
+
+    const tool = getTool(this.sceneContext)
 
     const templateId = tool.features.templateId.value as string | undefined
     if (templateId === undefined) {
@@ -146,12 +142,8 @@ export class TemplateToolSystem implements System {
       return
     }
 
-    const toolObjectId = this.sceneContext.data.currentToolObjectId as string
-    const toolObject = this.mainObject.getChildById(toolObjectId) as GameObject
-    const toolComponent = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+    this.previewSubsystem?.update(this.x, this.y)
 
-    this.previewSubsystem?.update(toolComponent, this.x, this.y)
-
-    this.handleAddMessages(levelId, toolComponent)
+    this.handleAddMessages(levelId)
   }
 }
