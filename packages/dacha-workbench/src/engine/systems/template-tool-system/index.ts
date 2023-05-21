@@ -22,8 +22,13 @@ import type { SelectLevelMessage } from '../../../types/messages'
 import type { Store } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
-import { createFromTemplate, getTool } from './utils'
+import { createFromTemplate, getTool, updateGridPosition } from './utils'
 import type { MouseInputMessage } from './types'
+
+interface CursorPosition {
+  x: number | null
+  y: number | null
+}
 
 export class TemplateToolSystem implements System {
   private messageBus: MessageBus
@@ -35,8 +40,8 @@ export class TemplateToolSystem implements System {
 
   private selectedLevelId?: string
 
-  private x: number | null
-  private y: number | null
+  private cursor: CursorPosition
+  private gridPosition: CursorPosition
 
   constructor(options: SystemOptions) {
     const {
@@ -52,8 +57,8 @@ export class TemplateToolSystem implements System {
     this.gameObjectSpawner = gameObjectSpawner
     this.gameObjectDestroyer = gameObjectDestroyer
 
-    this.x = 0
-    this.y = 0
+    this.cursor = { x: 0, y: 0 }
+    this.gridPosition = { x: 0, y: 0 }
   }
 
   mount(): void {
@@ -88,8 +93,8 @@ export class TemplateToolSystem implements System {
     }
 
     const { x, y } = messages.at(-1) as MouseInputMessage
-    this.x = x
-    this.y = y
+    this.cursor.x = x
+    this.cursor.y = y
   }
 
   private handleCursorLeaveMessages(): void {
@@ -98,8 +103,8 @@ export class TemplateToolSystem implements System {
       return
     }
 
-    this.x = null
-    this.y = null
+    this.cursor.x = null
+    this.cursor.y = null
   }
 
   private handleAddMessages(levelId: string): void {
@@ -111,17 +116,19 @@ export class TemplateToolSystem implements System {
     const tool = getTool(this.sceneContext)
 
     const templateId = tool.features.templateId.value as string | undefined
-    const step = tool.features.step.value as number
     if (templateId === undefined) {
       return
     }
 
-    const { x, y } = messages.at(-1) as MouseInputMessage
-
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
     const level = this.configStore.get(['levels', `id:${levelId}`]) as LevelConfig
 
-    const gameObject = createFromTemplate(template, level, x, y, step)
+    const gameObject = createFromTemplate(
+      template,
+      level,
+      this.gridPosition.x || 0,
+      this.gridPosition.y || 0,
+    )
 
     this.messageBus.send({
       type: COMMAND_MSG,
@@ -143,7 +150,9 @@ export class TemplateToolSystem implements System {
       return
     }
 
-    this.previewSubsystem?.update(this.x, this.y)
+    updateGridPosition(this.cursor, this.gridPosition, this.configStore, getTool(this.sceneContext))
+
+    this.previewSubsystem?.update(this.gridPosition.x, this.gridPosition.y)
 
     this.handleAddMessages(levelId)
   }
