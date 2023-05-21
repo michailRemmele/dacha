@@ -6,3 +6,8 @@ export interface MouseInputMessage extends Message {
   x: number
   y: number
 }
+
+export interface Position {
+  x: number | null
+  y: number | null
+}
