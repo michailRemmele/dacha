@@ -5,6 +5,7 @@ import type {
   MessageBus,
   GameObject,
   Transform,
+  Renderable,
   SceneContext,
   TemplateConfig,
 } from 'remiz'
@@ -12,10 +13,12 @@ import type {
 import {
   TOOL_NAME,
   TRANSFORM_COMPONENT_NAME,
+  RENDERABLE_COMPONENT_NAME,
 } from '../consts'
 import { SELECT_TOOL_MSG } from '../../../../consts/message-types'
 import { getTool } from '../utils'
 import { includesArray } from '../../../../utils/includes-array'
+import { getGridValue } from '../../../../utils/get-grid-value'
 import type { Tool } from '../../../components'
 import type { Store } from '../../../../store'
 import type { SelectToolMessage } from '../../../../types/messages'
@@ -136,6 +139,7 @@ export class PreviewSubsystem {
 
   private updatePreview(tool: Tool, x: number, y: number): void {
     const templateId = tool.features.templateId.value as string | undefined
+    const step = tool.features.step.value as number
 
     if (templateId === undefined) {
       return
@@ -147,10 +151,17 @@ export class PreviewSubsystem {
       this.preview = this.spawnPreview(templateId)
     }
 
-    const transform = this.preview.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    const transform = this.preview
+      .getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    const renderable = this.preview
+      .getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined
+
     if (transform !== undefined) {
-      transform.offsetX = Math.round(x)
-      transform.offsetY = Math.round(y)
+      const sizeX = (transform.scaleX || 1) * (renderable?.width || 0)
+      const sizeY = (transform.scaleY || 1) * (renderable?.height || 0)
+
+      transform.offsetX = getGridValue(x, sizeX, step)
+      transform.offsetY = getGridValue(y, sizeY, step)
     }
   }
 

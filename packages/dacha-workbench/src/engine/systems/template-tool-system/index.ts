@@ -111,6 +111,7 @@ export class TemplateToolSystem implements System {
     const tool = getTool(this.sceneContext)
 
     const templateId = tool.features.templateId.value as string | undefined
+    const step = tool.features.step.value as number
     if (templateId === undefined) {
       return
     }
@@ -120,7 +121,7 @@ export class TemplateToolSystem implements System {
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
     const level = this.configStore.get(['levels', `id:${levelId}`]) as LevelConfig
 
-    const gameObject = createFromTemplate(template, level, x, y)
+    const gameObject = createFromTemplate(template, level, x, y, step)
 
     this.messageBus.send({
       type: COMMAND_MSG,
