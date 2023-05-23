@@ -13,7 +13,7 @@ import {
   PREVIEW_FEATURE_NAME,
 } from './consts'
 
-export const TemplatesFeatures: FC<ToolFeaturesProps> = ({ features }) => (
+export const TemplateFeatures: FC<ToolFeaturesProps> = ({ features }) => (
   <div className="tool-features">
     <PreviewFeature value={features[PREVIEW_FEATURE_NAME] as boolean} />
     <StepFeature value={features[STEP_FEATURE_NAME] as number} />
