@@ -3,61 +3,37 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { RadioChangeEvent } from 'antd'
 import { Radio } from 'antd'
 import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
-import type { GameObject } from 'remiz'
 
-import type { Tool } from '../../../../../engine/components'
 import { EngineContext } from '../../../../providers'
 import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../consts/message-types'
+import type { FeatureValue } from '../../../../../engine/components/tool'
 
-const TOOL_COMPONENT_NAME = 'tool'
+import type { ToolFeaturesProps } from '../types'
 
-export const ZoomFeatures: FC = () => {
+export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
   const { t } = useTranslation()
-  const { pushMessage, gameObjects, sceneContext } = useContext(EngineContext)
+  const { pushMessage } = useContext(EngineContext)
 
-  const mainObjectId = useMemo<string>(
-    () => (sceneContext.data.mainObject as GameObject).id,
-    [sceneContext],
-  )
-
-  const [values, setValues] = useState<Record<string, string>>({
+  const [values, setValues] = useState<Record<string, FeatureValue>>({
     direction: '',
   })
 
   useEffect(() => {
-    const handleUpdate = (gameObject: unknown): void => {
-      const mainObject = gameObject as GameObject
-      const toolObjectId = sceneContext.data.currentToolObjectId as string
-
-      const toolObject = mainObject.getChildById(toolObjectId)
-
-      if (!toolObject) {
-        return
+    Object.keys(features).forEach((name) => {
+      if (values[name] !== features[name]) {
+        setValues({
+          ...values,
+          [name]: features[name],
+        })
       }
-
-      const { features } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
-
-      Object.keys(features).forEach((name) => {
-        if (values[name] !== features[name].value) {
-          setValues({
-            ...values,
-            [name]: features[name].value,
-          })
-        }
-      })
-    }
-
-    gameObjects.subscribe(handleUpdate, mainObjectId)
-
-    return () => gameObjects.unsubscribe(handleUpdate, mainObjectId)
-  }, [gameObjects, sceneContext, mainObjectId, values])
+    })
+  }, [features])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
     pushMessage({
