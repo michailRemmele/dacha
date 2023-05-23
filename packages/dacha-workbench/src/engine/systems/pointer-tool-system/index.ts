@@ -18,13 +18,13 @@ import {
 import type {
   SelectLevelMessage,
   InspectEntityMessage,
+  MouseInputMessage,
 } from '../../../types/messages'
 import type { Store } from '../../../store'
 
 import { SelectionMovementSubsystem } from './selection-movement'
 import { buildGameObjectPath, updateFrameSize } from './utils'
 import { LEVEL_PATH_LEGTH } from './consts'
-import type { MouseInputMessage } from './types'
 
 export class PointerToolSystem implements System {
   private messageBus: MessageBus

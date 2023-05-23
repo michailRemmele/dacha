@@ -18,17 +18,15 @@ import {
   TOOL_CURSOR_LEAVE_MSG,
 } from '../../../consts/message-types'
 import { ADD } from '../../../command-types'
-import type { SelectLevelMessage } from '../../../types/messages'
+import type {
+  SelectLevelMessage,
+  MouseInputMessage,
+} from '../../../types/messages'
 import type { Store } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
 import { createFromTemplate, getTool, updateGridPosition } from './utils'
-import type { MouseInputMessage } from './types'
-
-interface CursorPosition {
-  x: number | null
-  y: number | null
-}
+import type { Position } from './types'
 
 export class TemplateToolSystem implements System {
   private messageBus: MessageBus
@@ -40,8 +38,8 @@ export class TemplateToolSystem implements System {
 
   private selectedLevelId?: string
 
-  private cursor: CursorPosition
-  private gridPosition: CursorPosition
+  private cursor: Position
+  private gridPosition: Position
 
   constructor(options: SystemOptions) {
     const {
