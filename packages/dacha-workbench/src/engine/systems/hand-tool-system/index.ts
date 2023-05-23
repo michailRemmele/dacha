@@ -3,7 +3,6 @@ import {
   SystemOptions,
   GameObject,
   MessageBus,
-  Message,
   Transform,
   Camera,
   Vector2,
@@ -15,18 +14,16 @@ import {
   CAMERA_MOVE_MSG,
   SELECT_LEVEL_MSG,
 } from '../../../consts/message-types'
-import type { SelectLevelMessage } from '../../../types/messages'
+import type {
+  SelectLevelMessage,
+  MouseInputMessage,
+} from '../../../types/messages'
 
 const TRANSFORM_COMPONENT_NAME = 'transform'
 const CAMERA_COMPONENT_NAME = 'camera'
 
 const DEFAULT_POS_X = 0
 const DEFAULT_POS_Y = 0
-
-interface MouseInputMessage extends Message {
-  screenX: number
-  screenY: number
-}
 
 export class HandToolSystem implements System {
   private messageBus: MessageBus

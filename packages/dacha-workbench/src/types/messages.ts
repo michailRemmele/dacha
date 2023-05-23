@@ -11,3 +11,10 @@ export interface InspectEntityMessage extends Message {
 export interface SelectToolMessage extends Message {
   name: string
 }
+
+export interface MouseInputMessage extends Message {
+  screenX: number
+  screenY: number
+  x: number
+  y: number
+}

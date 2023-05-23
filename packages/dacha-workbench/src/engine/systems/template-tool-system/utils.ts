@@ -86,7 +86,9 @@ export const updateGridPosition = (
   tool: Tool,
 ): void => {
   if (cursor.x === null || cursor.y === null) {
+    // eslint-disable-next-line no-param-reassign
     gridPosition.x = null
+    // eslint-disable-next-line no-param-reassign
     gridPosition.y = null
     return
   }
@@ -109,7 +111,9 @@ export const updateGridPosition = (
     ?.find((component) => component.name === RENDERABLE_COMPONENT_NAME)
 
   if (transform !== undefined) {
+    // eslint-disable-next-line no-param-reassign
     gridPosition.x = getGridValue(cursor.x, getSizeX(transform, renderable), step)
+    // eslint-disable-next-line no-param-reassign
     gridPosition.y = getGridValue(cursor.y, getSizeY(transform, renderable), step)
   }
 }
