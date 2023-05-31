@@ -8,11 +8,14 @@ import {
   TemplateToolSystem,
   Commander,
   ShapesRenderer,
+  GridSystem,
+  SettingsSystem,
 } from './systems'
 
 import {
   Tool,
   Shape,
+  Settings,
 } from './components'
 
 export const editorSystems = {
@@ -25,9 +28,12 @@ export const editorSystems = {
   pointerToolSystem: PointerToolSystem,
   templateToolSystem: TemplateToolSystem,
   shapesRenderer: ShapesRenderer,
+  gridSystem: GridSystem,
+  settingsSystem: SettingsSystem,
 }
 
 export const editorComponents = {
   tool: Tool,
   shape: Shape,
+  settings: Settings,
 }

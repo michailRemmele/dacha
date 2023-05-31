@@ -25,4 +25,5 @@ contextBridge.exposeInMainWorld('electron', {
     fs.writeFileSync(path.resolve(editorConfig.projectConfig), JSON.stringify(config, null, 2))
   },
   onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
+  onSettings: (callback) => ipcRenderer.on(MESSAGES.SETTINGS, (_, ...args) => callback(...args)),
 })

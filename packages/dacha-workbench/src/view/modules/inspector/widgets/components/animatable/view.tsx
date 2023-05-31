@@ -4,14 +4,13 @@ import React, {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Modal } from 'antd'
+import { Button } from 'antd'
 
+import { Modal } from '../../../../../components'
 import type { WidgetProps } from '../../../../../../types/widget-schema'
 
 import { Editor } from './editor'
 import { AnimationEditorProvider } from './editor/providers'
-
-import './style.less'
 
 export const AnimatableWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
@@ -31,12 +30,10 @@ export const AnimatableWidget: FC<WidgetProps> = ({ path }) => {
         {t('components.animatable.openEditorButton.title')}
       </Button>
       <Modal
-        wrapClassName="animatable-widget__modal"
-        width=""
         title={t('components.animatable.editor.title')}
         open={open}
         onCancel={handleEditorClose}
-        footer={null}
+        width="90%"
       >
         <AnimationEditorProvider path={path}>
           <Editor />

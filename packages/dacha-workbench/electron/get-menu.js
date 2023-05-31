@@ -46,6 +46,13 @@ module.exports = (window) => Menu.buildFromTemplate([
 
       { type: 'separator' },
 
+      {
+        label: 'Grid Settings',
+        click: () => window.webContents.send(MESSAGES.SETTINGS, 'grid'),
+      },
+
+      { type: 'separator' },
+
       { role: 'resetZoom' },
       { role: 'zoomIn' },
       { role: 'zoomOut' },
