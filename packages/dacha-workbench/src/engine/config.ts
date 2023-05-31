@@ -50,6 +50,10 @@ export const editorConfig: Config = {
           },
         },
         {
+          name: 'settingsSystem',
+          options: {},
+        },
+        {
           name: 'toolManager',
           options: {},
         },
@@ -110,6 +114,10 @@ export const editorConfig: Config = {
             windowNodeId: SHAPE_CANVAS_ROOT,
           },
         },
+        {
+          name: 'gridSystem',
+          options: {},
+        },
       ],
     },
   ],
@@ -153,6 +161,14 @@ export const editorConfig: Config = {
                     attrs: [],
                   },
                 ],
+              },
+            },
+            {
+              name: 'settings',
+              config: {
+                showGrid: false,
+                gridStep: 16,
+                gridColor: '#1890FF',
               },
             },
           ],

@@ -1,5 +1,7 @@
 import type { Message } from 'remiz'
 
+import type { SettingsConfig } from '../engine/components/settings'
+
 export interface SelectLevelMessage extends Message {
   levelId: string
 }
@@ -17,4 +19,9 @@ export interface MouseInputMessage extends Message {
   screenY: number
   x: number
   y: number
+}
+
+export interface SetSettingsValueMessage extends Message {
+  name: keyof SettingsConfig
+  value: string | boolean | number
 }

@@ -87,6 +87,12 @@
     "multifield.addNew.value.title": "Add New Field",
     "multifield.noFields.title": "No Fields"
   },
+  "settings": {
+    "grid.modal.title": "Grid Settings",
+    "grid.modal.field.step.label": "Step",
+    "grid.modal.field.showGrid.label": "Show Grid",
+    "grid.modal.field.color.label": "Color"
+  },
 
   "components.animatable.title": "Animatable",
   "components.animatable.openEditorButton.title": "Open Animation Editor",
