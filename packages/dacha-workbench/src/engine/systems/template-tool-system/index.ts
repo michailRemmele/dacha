@@ -25,7 +25,7 @@ import type {
 import type { Store } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
-import { createFromTemplate, getTool, updateGridPosition } from './utils'
+import { createFromTemplate, getTool, updatePlacementPosition } from './utils'
 import type { Position } from './types'
 
 export class TemplateToolSystem implements System {
@@ -39,7 +39,7 @@ export class TemplateToolSystem implements System {
   private selectedLevelId?: string
 
   private cursor: Position
-  private gridPosition: Position
+  private placementPosition: Position
 
   constructor(options: SystemOptions) {
     const {
@@ -56,7 +56,7 @@ export class TemplateToolSystem implements System {
     this.gameObjectDestroyer = gameObjectDestroyer
 
     this.cursor = { x: 0, y: 0 }
-    this.gridPosition = { x: 0, y: 0 }
+    this.placementPosition = { x: 0, y: 0 }
   }
 
   mount(): void {
@@ -111,6 +111,16 @@ export class TemplateToolSystem implements System {
       return
     }
 
+    const { x, y } = messages.at(-1) as MouseInputMessage
+    this.cursor.x = x
+    this.cursor.y = y
+    updatePlacementPosition(
+      this.cursor,
+      this.placementPosition,
+      this.configStore,
+      this.sceneContext,
+    )
+
     const tool = getTool(this.sceneContext)
 
     const templateId = tool.features.templateId.value as string | undefined
@@ -124,8 +134,8 @@ export class TemplateToolSystem implements System {
     const gameObject = createFromTemplate(
       template,
       level,
-      this.gridPosition.x || 0,
-      this.gridPosition.y || 0,
+      this.placementPosition.x || 0,
+      this.placementPosition.y || 0,
     )
 
     this.messageBus.send({
@@ -148,9 +158,14 @@ export class TemplateToolSystem implements System {
       return
     }
 
-    updateGridPosition(this.cursor, this.gridPosition, this.configStore, getTool(this.sceneContext))
+    updatePlacementPosition(
+      this.cursor,
+      this.placementPosition,
+      this.configStore,
+      this.sceneContext,
+    )
 
-    this.previewSubsystem?.update(this.gridPosition.x, this.gridPosition.y)
+    this.previewSubsystem?.update(this.placementPosition.x, this.placementPosition.y)
 
     this.handleAddMessages(levelId)
   }
