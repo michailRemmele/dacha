@@ -43,8 +43,8 @@
     "zoom.features.direction.out.title": "Zoom Out Mode",
     "template.title": "Template Tool",
     "template.features.template.title": "Template:",
-    "template.features.step.title": "Step:",
-    "template.features.preview.title": "Preview"
+    "template.features.preview.title": "Preview",
+    "template.features.grid.title": "Snap to Grid"
   },
   "inspector": {
     "tab.entityInspector": "Inspector",

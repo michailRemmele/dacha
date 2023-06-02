@@ -308,8 +308,8 @@ export const editorConfig: Config = {
                 value: true,
                 withClassName: false,
               },
-              step: {
-                value: 1,
+              grid: {
+                value: true,
                 withClassName: false,
               },
               templateId: {
