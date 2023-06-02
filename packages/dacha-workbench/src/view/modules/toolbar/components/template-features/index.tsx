@@ -3,20 +3,22 @@ import React, { FC } from 'react'
 import type { ToolFeaturesProps } from '../types'
 
 import {
-  StepFeature,
+  GridFeature,
   TemplateFeature,
   PreviewFeature,
 } from './components'
 import {
-  STEP_FEATURE_NAME,
+  GRID_FEATURE_NAME,
   TEMPLATE_FEATURE_NAME,
   PREVIEW_FEATURE_NAME,
 } from './consts'
 
+import './style.less'
+
 export const TemplateFeatures: FC<ToolFeaturesProps> = ({ features }) => (
   <div className="tool-features">
     <PreviewFeature value={features[PREVIEW_FEATURE_NAME] as boolean} />
-    <StepFeature value={features[STEP_FEATURE_NAME] as number} />
+    <GridFeature value={features[GRID_FEATURE_NAME] as boolean} />
     <TemplateFeature value={features[TEMPLATE_FEATURE_NAME] as string} />
   </div>
 )

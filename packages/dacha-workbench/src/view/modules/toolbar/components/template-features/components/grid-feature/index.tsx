@@ -10,20 +10,20 @@ import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import { ToolFeature } from '../../../tool-feature'
 import { EngineContext } from '../../../../../../providers'
 import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../../../consts/message-types'
-import { PREVIEW_FEATURE_NAME } from '../../consts'
+import { GRID_FEATURE_NAME } from '../../consts'
 
-interface PreviewFeatureProps {
+interface GridFeatureProps {
   value: boolean
 }
 
-export const PreviewFeature: FC<PreviewFeatureProps> = ({ value }) => {
+export const GridFeature: FC<GridFeatureProps> = ({ value }) => {
   const { t } = useTranslation()
   const { pushMessage } = useContext(EngineContext)
 
   const handleChange = useCallback((event: CheckboxChangeEvent): void => {
     pushMessage({
       type: SET_TOOL_FEATURE_VALUE_MSG,
-      name: PREVIEW_FEATURE_NAME,
+      name: GRID_FEATURE_NAME,
       value: event.target.checked,
     })
   }, [])
@@ -35,7 +35,7 @@ export const PreviewFeature: FC<PreviewFeatureProps> = ({ value }) => {
         checked={value}
         onChange={handleChange}
       >
-        {t('toolbar.template.features.preview.title')}
+        {t('toolbar.template.features.grid.title')}
       </Checkbox>
     </ToolFeature>
   )

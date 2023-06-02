@@ -29,6 +29,7 @@ const reactRules = {
   'react/no-unused-class-component-methods': 0,
   'react-hooks/exhaustive-deps': 0,
   'react/prop-types': 0,
+  'jsx-a11y/label-has-associated-control': 0,
 }
 
 module.exports = {

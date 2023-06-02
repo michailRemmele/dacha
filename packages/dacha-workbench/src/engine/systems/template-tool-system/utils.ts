@@ -9,12 +9,13 @@ import type {
 import { v4 as uuidv4 } from 'uuid'
 
 import { getGridValue } from '../../../utils/get-grid-value'
-import type { Tool } from '../../components'
+import type { Tool, Settings } from '../../components'
 import type { Store } from '../../../store'
 
 import {
   TOOL_NAME,
   TOOL_COMPONENT_NAME,
+  SETTINGS_COMPONENT_NAME,
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
 } from './consts'
@@ -66,6 +67,13 @@ export const getTool = (sceneContext: SceneContext): Tool => {
   return toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
 }
 
+const getGridStep = (sceneContext: SceneContext): number => {
+  const mainObject = sceneContext.data.mainObject as GameObject
+  const settings = mainObject.getComponent(SETTINGS_COMPONENT_NAME) as Settings
+
+  return settings.data.gridStep as number
+}
+
 const getSizeX = (transform: ComponentConfig, renderable?: ComponentConfig): number => {
   const scaleX = (transform.config.scaleX as number | undefined) || 1
   const width = (renderable?.config.width as number | undefined) || 0
@@ -79,27 +87,38 @@ const getSizeY = (transform: ComponentConfig, renderable?: ComponentConfig): num
   return scaleY * height
 }
 
-export const updateGridPosition = (
+export const updatePlacementPosition = (
   cursor: Position,
-  gridPosition: Position,
+  placementPosition: Position,
   store: Store,
-  tool: Tool,
+  sceneContext: SceneContext,
 ): void => {
   if (cursor.x === null || cursor.y === null) {
     // eslint-disable-next-line no-param-reassign
-    gridPosition.x = null
+    placementPosition.x = null
     // eslint-disable-next-line no-param-reassign
-    gridPosition.y = null
+    placementPosition.y = null
     return
   }
+
+  const tool = getTool(sceneContext)
+  const gridStep = getGridStep(sceneContext)
 
   if (tool.name !== TOOL_NAME) {
     return
   }
 
   const templateId = tool.features.templateId.value as string | undefined
-  const step = tool.features.step.value as number
+  const snapToGrid = tool.features.grid.value as boolean
   if (templateId === undefined) {
+    return
+  }
+
+  if (!snapToGrid) {
+    // eslint-disable-next-line no-param-reassign
+    placementPosition.x = Math.round(cursor.x)
+    // eslint-disable-next-line no-param-reassign
+    placementPosition.y = Math.round(cursor.y)
     return
   }
 
@@ -112,8 +131,8 @@ export const updateGridPosition = (
 
   if (transform !== undefined) {
     // eslint-disable-next-line no-param-reassign
-    gridPosition.x = getGridValue(cursor.x, getSizeX(transform, renderable), step)
+    placementPosition.x = getGridValue(cursor.x, getSizeX(transform, renderable), gridStep)
     // eslint-disable-next-line no-param-reassign
-    gridPosition.y = getGridValue(cursor.y, getSizeY(transform, renderable), step)
+    placementPosition.y = getGridValue(cursor.y, getSizeY(transform, renderable), gridStep)
   }
 }

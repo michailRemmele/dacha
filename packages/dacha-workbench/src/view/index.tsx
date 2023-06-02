@@ -1,11 +1,16 @@
 import React, { useContext } from 'react'
 
-import { CANVAS_ROOT, SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
+import {
+  CANVAS_ROOT,
+  SHAPE_CANVAS_ROOT,
+  GRID_ROOT,
+} from '../consts/root-nodes'
 
 import {
   Explorer,
   Inspector,
   Toolbar,
+  SettingsModal,
 } from './modules'
 import { EngineContext } from './providers'
 
@@ -24,11 +29,14 @@ export const App = (): JSX.Element => {
           {context && <Toolbar />}
         </div>
         <div id={CANVAS_ROOT} />
+        <div id={GRID_ROOT} />
         <canvas id={SHAPE_CANVAS_ROOT} />
       </div>
       <div className="editor__inspector">
         {context && <Inspector />}
       </div>
+
+      {context && <SettingsModal />}
     </>
   )
 }

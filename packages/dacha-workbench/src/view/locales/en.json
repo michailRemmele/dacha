@@ -43,8 +43,8 @@
     "zoom.features.direction.out.title": "Zoom Out Mode",
     "template.title": "Template Tool",
     "template.features.template.title": "Template:",
-    "template.features.step.title": "Step:",
-    "template.features.preview.title": "Preview"
+    "template.features.preview.title": "Preview",
+    "template.features.grid.title": "Snap to Grid"
   },
   "inspector": {
     "tab.entityInspector": "Inspector",
@@ -86,6 +86,12 @@
     "multifield.field.value.title": "Value",
     "multifield.addNew.value.title": "Add New Field",
     "multifield.noFields.title": "No Fields"
+  },
+  "settings": {
+    "grid.modal.title": "Grid Settings",
+    "grid.modal.field.step.label": "Step",
+    "grid.modal.field.showGrid.label": "Show Grid",
+    "grid.modal.field.color.label": "Color"
   },
 
   "components.animatable.title": "Animatable",
