@@ -261,7 +261,12 @@ export const editorConfig: Config = {
           name: 'tool',
           config: {
             name: 'pointer',
-            features: {},
+            features: {
+              grid: {
+                value: false,
+                withClassName: false,
+              },
+            },
           },
         },
         {
@@ -309,7 +314,7 @@ export const editorConfig: Config = {
                 withClassName: false,
               },
               grid: {
-                value: true,
+                value: false,
                 withClassName: false,
               },
               templateId: {

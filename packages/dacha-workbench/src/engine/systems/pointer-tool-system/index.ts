@@ -61,7 +61,7 @@ export class PointerToolSystem implements System {
     this.selectionMovementSubsystem = new SelectionMovementSubsystem({
       messageBus,
       gameObjectObserver: this.gameObjectObserver,
-      configStore: this.sceneContext.data.configStore as Store,
+      sceneContext: this.sceneContext,
     })
   }
 
