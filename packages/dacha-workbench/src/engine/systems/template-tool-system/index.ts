@@ -25,7 +25,8 @@ import type {
 import type { Store } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
-import { createFromTemplate, getTool, updatePlacementPosition } from './utils'
+import { createFromTemplate, updatePlacementPosition } from './utils'
+import { getTool } from '../../../utils/get-tool'
 import type { Position } from './types'
 
 export class TemplateToolSystem implements System {

@@ -3,19 +3,19 @@ import type {
   TemplateConfig,
   LevelConfig,
   SceneContext,
-  GameObject,
   ComponentConfig,
 } from 'remiz'
 import { v4 as uuidv4 } from 'uuid'
 
-import { getGridValue } from '../../../utils/get-grid-value'
-import type { Tool, Settings } from '../../components'
+import {
+  getGridValue,
+  getGridStep,
+} from '../../../utils/grid'
+import { getTool } from '../../../utils/get-tool'
 import type { Store } from '../../../store'
 
 import {
   TOOL_NAME,
-  TOOL_COMPONENT_NAME,
-  SETTINGS_COMPONENT_NAME,
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
 } from './consts'
@@ -56,22 +56,6 @@ export const createFromTemplate = (
   }
 
   return gameObject
-}
-
-export const getTool = (sceneContext: SceneContext): Tool => {
-  const toolObjectId = sceneContext.data.currentToolObjectId as string
-  const mainObject = sceneContext.data.mainObject as GameObject
-
-  const toolObject = mainObject.getChildById(toolObjectId) as GameObject
-
-  return toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
-}
-
-const getGridStep = (sceneContext: SceneContext): number => {
-  const mainObject = sceneContext.data.mainObject as GameObject
-  const settings = mainObject.getComponent(SETTINGS_COMPONENT_NAME) as Settings
-
-  return settings.data.gridStep as number
 }
 
 const getSizeX = (transform: ComponentConfig, renderable?: ComponentConfig): number => {
