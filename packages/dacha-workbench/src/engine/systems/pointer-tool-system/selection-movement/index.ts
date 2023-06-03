@@ -1,8 +1,9 @@
-import { Vector2 } from 'remiz'
 import type {
   GameObjectObserver,
   MessageBus,
+  SceneContext,
   Transform,
+  Renderable,
 } from 'remiz'
 
 import {
@@ -12,43 +13,59 @@ import {
   COMMAND_MSG,
 } from '../../../../consts/message-types'
 import { SET } from '../../../../command-types'
-import { TRANSFORM_COMPONENT_NAME } from '../consts'
+import {
+  TRANSFORM_COMPONENT_NAME,
+  RENDERABLE_COMPONENT_NAME,
+} from '../consts'
 import { buildGameObjectPath } from '../utils'
+import { getTool } from '../../../../utils/get-tool'
+import { getGridValue, getGridStep } from '../../../../utils/grid'
 import type { MouseInputMessage } from '../../../../types/messages'
 import type { Store } from '../../../../store'
 
-import { isFloatEqual } from './utils'
+import {
+  isFloatEqual,
+  getSizeX,
+  getSizeY,
+} from './utils'
+
+export interface Position {
+  x: number
+  y: number
+}
 
 interface SelectionMovementSubsystemOptions {
   messageBus: MessageBus
   gameObjectObserver: GameObjectObserver
-  configStore: Store
+  sceneContext: SceneContext
 }
 
 export class SelectionMovementSubsystem {
   private messageBus: MessageBus
   private gameObjectObserver: GameObjectObserver
   private configStore: Store
+  private sceneContext: SceneContext
 
   private isMoving: boolean
-  private pointer: Vector2
-  private pointerStart: Vector2
+  private selectionStart: Position
+  private pointerStart: Position
 
   constructor({
     messageBus,
     gameObjectObserver,
-    configStore,
+    sceneContext,
   }: SelectionMovementSubsystemOptions) {
     this.messageBus = messageBus
     this.gameObjectObserver = gameObjectObserver
-    this.configStore = configStore
+    this.configStore = sceneContext.data.configStore as Store
+    this.sceneContext = sceneContext
 
     this.isMoving = false
-    this.pointer = new Vector2(0, 0)
-    this.pointerStart = new Vector2(0, 0)
+    this.selectionStart = { x: 0, y: 0 }
+    this.pointerStart = { x: 0, y: 0 }
   }
 
-  private handleMoveStartMessages(): void {
+  private handleMoveStartMessages(selectionId: string): void {
     const startMoveMessages = this.messageBus.get(SELECTION_MOVE_START_MSG)
     if (!startMoveMessages?.length) {
       return
@@ -56,12 +73,23 @@ export class SelectionMovementSubsystem {
 
     const { x, y } = startMoveMessages.at(-1) as MouseInputMessage
 
+    const selectedObject = this.gameObjectObserver.getById(selectionId)
+    if (selectedObject === undefined) {
+      return
+    }
+
+    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    if (transform === undefined) {
+      return
+    }
+
     this.isMoving = true
-    this.pointer.x = x
-    this.pointer.y = y
 
     this.pointerStart.x = x
     this.pointerStart.y = y
+
+    this.selectionStart.x = transform.offsetX
+    this.selectionStart.y = transform.offsetY
   }
 
   private handleMoveEndMessages(selectionId: string, levelId: string): void {
@@ -73,6 +101,8 @@ export class SelectionMovementSubsystem {
     if (!endMoveMessages?.length) {
       return
     }
+
+    const { x, y } = endMoveMessages.at(-1) as MouseInputMessage
 
     this.isMoving = false
 
@@ -91,9 +121,7 @@ export class SelectionMovementSubsystem {
 
     const transformConfig = this.configStore.get(transformPath) as Record<string, unknown>
 
-    if (isFloatEqual(this.pointer.x, this.pointerStart.x)
-      && isFloatEqual(this.pointer.y, this.pointerStart.y)
-    ) {
+    if (isFloatEqual(x, this.pointerStart.x) && isFloatEqual(y, this.pointerStart.y)) {
       return
     }
 
@@ -104,8 +132,8 @@ export class SelectionMovementSubsystem {
         path: transformPath,
         value: {
           ...transformConfig,
-          offsetX: Math.round(transform.relativeOffsetX),
-          offsetY: Math.round(transform.relativeOffsetY),
+          offsetX: transform.relativeOffsetX,
+          offsetY: transform.relativeOffsetY,
         },
       },
     })
@@ -133,15 +161,28 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    transform.offsetX -= this.pointer.x - x
-    transform.offsetY -= this.pointer.y - y
+    const tool = getTool(this.sceneContext)
+    const snapToGrid = tool.features.grid.value as boolean
 
-    this.pointer.x = x
-    this.pointer.y = y
+    const offsetX = this.selectionStart.x - this.pointerStart.x + x
+    const offsetY = this.selectionStart.y - this.pointerStart.y + y
+
+    if (snapToGrid) {
+      const renderable = selectedObject
+        .getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined
+
+      const gridStep = getGridStep(this.sceneContext)
+
+      transform.offsetX = getGridValue(offsetX, getSizeX(transform, renderable), gridStep)
+      transform.offsetY = getGridValue(offsetY, getSizeY(transform, renderable), gridStep)
+    } else {
+      transform.offsetX = Math.round(offsetX)
+      transform.offsetY = Math.round(offsetY)
+    }
   }
 
   update(selectionId: string, levelId: string): void {
-    this.handleMoveStartMessages()
+    this.handleMoveStartMessages(selectionId)
     this.handleMoveEndMessages(selectionId, levelId)
     this.handleMoveMessages(selectionId)
   }

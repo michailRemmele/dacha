@@ -44,7 +44,8 @@
     "template.title": "Template Tool",
     "template.features.template.title": "Template:",
     "template.features.preview.title": "Preview",
-    "template.features.grid.title": "Snap to Grid"
+
+    "common.features.grid.title": "Snap to Grid"
   },
   "inspector": {
     "tab.entityInspector": "Inspector",
