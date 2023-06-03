@@ -14,7 +14,7 @@ import {
   TRANSFORM_COMPONENT_NAME,
 } from '../consts'
 import { SELECT_TOOL_MSG } from '../../../../consts/message-types'
-import { getTool } from '../utils'
+import { getTool } from '../../../../utils/get-tool'
 import { includesArray } from '../../../../utils/includes-array'
 import type { Tool } from '../../../components'
 import type { Store } from '../../../../store'

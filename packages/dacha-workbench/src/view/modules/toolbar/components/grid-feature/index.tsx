@@ -7,10 +7,11 @@ import { useTranslation } from 'react-i18next'
 import { Checkbox } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
-import { ToolFeature } from '../../../tool-feature'
-import { EngineContext } from '../../../../../../providers'
-import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../../../consts/message-types'
-import { GRID_FEATURE_NAME } from '../../consts'
+import { ToolFeature } from '../tool-feature'
+import { EngineContext } from '../../../../providers'
+import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../consts/message-types'
+
+export const GRID_FEATURE_NAME = 'grid'
 
 interface GridFeatureProps {
   value: boolean
@@ -35,7 +36,7 @@ export const GridFeature: FC<GridFeatureProps> = ({ value }) => {
         checked={value}
         onChange={handleChange}
       >
-        {t('toolbar.template.features.grid.title')}
+        {t('toolbar.common.features.grid.title')}
       </Checkbox>
     </ToolFeature>
   )
