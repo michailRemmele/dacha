@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 
 import {
   CANVAS_ROOT,
@@ -13,30 +13,37 @@ import {
   SettingsModal,
 } from './modules'
 import { EngineContext } from './providers'
-
-import './style.less'
+import {
+  EditorStyled,
+  ExplorerStyled,
+  CanvasStyled,
+  ToolbarStyled,
+  InspectorStyled,
+  CanvasRootStyled,
+  HelperCanvasRootStyled,
+} from './app.style'
 
 export const App = (): JSX.Element => {
   const context = useContext(EngineContext)
 
   return (
-    <>
-      <div className="editor__explorer">
+    <EditorStyled>
+      <ExplorerStyled>
         {context && <Explorer />}
-      </div>
-      <div className="editor__canvas">
-        <div className="editor__toolbar">
+      </ExplorerStyled>
+      <CanvasStyled>
+        <ToolbarStyled>
           {context && <Toolbar />}
-        </div>
-        <div id={CANVAS_ROOT} />
-        <div id={GRID_ROOT} />
-        <canvas id={SHAPE_CANVAS_ROOT} />
-      </div>
-      <div className="editor__inspector">
+        </ToolbarStyled>
+        <CanvasRootStyled id={CANVAS_ROOT} />
+        <HelperCanvasRootStyled id={GRID_ROOT} />
+        <HelperCanvasRootStyled as="canvas" id={SHAPE_CANVAS_ROOT} />
+      </CanvasStyled>
+      <InspectorStyled>
         {context && <Inspector />}
-      </div>
+      </InspectorStyled>
 
       {context && <SettingsModal />}
-    </>
+    </EditorStyled>
   )
 }

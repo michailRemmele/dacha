@@ -1,5 +1,6 @@
 import type { Config } from 'remiz'
 import type { Resource } from 'i18next'
+import type { GlobalToken } from 'antd'
 
 import type { WidgetSchema, WidgetPartSchema } from './widget-schema'
 
@@ -34,4 +35,9 @@ declare global {
     editorExtension?: Extension
     RemizEditor: Record<string, unknown>
   }
+}
+
+declare module '@emotion/react' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface Theme extends GlobalToken {}
 }

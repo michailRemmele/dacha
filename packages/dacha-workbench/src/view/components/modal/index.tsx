@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
-import { Modal as AntdModal } from 'antd'
 
-import './style.less'
+import { ModalStyled } from './modal.style'
 
 interface ModalProps {
   title: string
@@ -18,7 +17,7 @@ export const Modal: FC<ModalProps> = ({
   width,
   children,
 }) => (
-  <AntdModal
+  <ModalStyled
     wrapClassName="modal"
     width={width}
     title={title}
@@ -28,5 +27,5 @@ export const Modal: FC<ModalProps> = ({
     centered
   >
     {children}
-  </AntdModal>
+  </ModalStyled>
 )
