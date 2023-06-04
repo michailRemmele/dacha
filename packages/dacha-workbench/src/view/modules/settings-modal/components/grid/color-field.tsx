@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useState,
   useEffect,
@@ -6,7 +6,13 @@ import React, {
   ChangeEvent,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Input } from 'antd'
+import { Input, Typography } from 'antd'
+
+import {
+  SettingsFieldStyled,
+  SettingsLabelCSS,
+  SettingsInputCSS,
+} from './grid.style'
 
 interface ColorFieldProps {
   value: string
@@ -33,16 +39,16 @@ export const ColorField: FC<ColorFieldProps> = ({
   }, [onChange])
 
   return (
-    <label className="grid-settings__field">
-      <span className="grid-settings__label">
+    <SettingsFieldStyled>
+      <Typography.Text css={SettingsLabelCSS}>
         {t('settings.grid.modal.field.color.label')}
-      </span>
+      </Typography.Text>
       <Input
-        className="grid-settings__input"
+        css={SettingsInputCSS}
         size="small"
         value={inputValue}
         onChange={handleChange}
       />
-    </label>
+    </SettingsFieldStyled>
   )
 }

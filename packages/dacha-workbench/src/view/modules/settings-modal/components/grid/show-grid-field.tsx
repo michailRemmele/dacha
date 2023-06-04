@@ -1,10 +1,15 @@
-import React, {
+import {
   useCallback,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Checkbox } from 'antd'
+import { Checkbox, Typography } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
+
+import {
+  SettingsFieldStyled,
+  SettingsLabelCSS,
+} from './grid.style'
 
 interface ShowGridFieldProps {
   value: boolean
@@ -22,14 +27,14 @@ export const ShowGridField: FC<ShowGridFieldProps> = ({
   }, [onChange])
 
   return (
-    <label className="grid-settings__field">
-      <span className="grid-settings__label">
+    <SettingsFieldStyled>
+      <Typography.Text css={SettingsLabelCSS}>
         {t('settings.grid.modal.field.showGrid.label')}
-      </span>
+      </Typography.Text>
       <Checkbox
         checked={value}
         onChange={handleChange}
       />
-    </label>
+    </SettingsFieldStyled>
   )
 }
