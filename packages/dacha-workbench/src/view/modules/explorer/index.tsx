@@ -1,17 +1,18 @@
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tabs } from 'antd'
 
 import { LevelsTree, TemplatesTree, ScenesList } from './components'
-
-import './style.less'
+import {
+  ExplorerStyled,
+  TabsCSS,
+} from './explorer.style'
 
 export const Explorer = (): JSX.Element => {
   const { t } = useTranslation()
 
   return (
-    <div className="explorer">
-      <Tabs className="explorer__tabs" type="card">
+    <ExplorerStyled>
+      <Tabs css={TabsCSS} type="card">
         <Tabs.TabPane tab={t('explorer.tab.levels')} key="levels">
           <LevelsTree />
         </Tabs.TabPane>
@@ -25,6 +26,6 @@ export const Explorer = (): JSX.Element => {
           <ScenesList isLoaders />
         </Tabs.TabPane>
       </Tabs>
-    </div>
+    </ExplorerStyled>
   )
 }

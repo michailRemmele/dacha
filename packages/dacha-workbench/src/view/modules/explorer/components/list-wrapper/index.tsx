@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   FC,
@@ -7,7 +7,7 @@ import React, {
 import { EngineContext } from '../../../../providers'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 
-import './style.less'
+import { ListWrapperStyled } from './list-wrapper.style'
 
 interface ListWrapperProps {
   children: JSX.Element | Array<JSX.Element>
@@ -26,12 +26,11 @@ export const ListWrapper: FC<ListWrapperProps> = ({ children }) => {
   }, [pushMessage])
 
   return (
-    <div
+    <ListWrapperStyled
       role="presentation"
-      className="list-wrapper"
       onClick={handleClick}
     >
       {children}
-    </div>
+    </ListWrapperStyled>
   )
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import type { LevelConfig, GameObjectConfig } from 'remiz'
 import { FileOutlined } from '@ant-design/icons'
 

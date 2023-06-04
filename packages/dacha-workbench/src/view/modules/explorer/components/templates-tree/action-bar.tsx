@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   FC,
@@ -13,6 +13,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import type { TemplateConfig, LevelConfig } from 'remiz'
 
+import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue, setValue } from '../../../../commands'
 import { SelectedEntityContext, EngineContext } from '../../../../providers'
@@ -90,16 +91,16 @@ export const ActionBar: FC<ActionBarProps> = ({
   }, [dispatch, selectedEntityPath, selectedEntity])
 
   return (
-    <header className="explorer__action-bar">
+    <ActionBarStyled>
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<FileAddOutlined />}
         size="small"
         onClick={handleAdd}
         title={t('explorer.levels.actionBar.addTemplate.button.title')}
       />
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -107,13 +108,13 @@ export const ActionBar: FC<ActionBarProps> = ({
         disabled={type !== 'template'}
       />
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}
         title={t('explorer.levels.actionBar.deleteTemplate.button.title')}
         disabled={type !== 'template'}
       />
-    </header>
+    </ActionBarStyled>
   )
 }

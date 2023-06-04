@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { ActionBar } from './action-bar'
 import { List } from './list'
