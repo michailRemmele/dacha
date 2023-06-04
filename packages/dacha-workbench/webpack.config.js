@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const { getThemeVariables } = require('antd/dist/theme')
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -25,7 +24,10 @@ module.exports = {
     'react-dom': 'ReactDOM',
     i18next: 'i18next',
     'react-i18next': 'ReactI18next',
+    dayjs: 'dayjs',
     antd: 'antd',
+    '@emotion/react': 'emotionReact',
+    '@emotion/styled': 'emotionStyled',
   },
 
   devServer: {
@@ -77,17 +79,11 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-            options: {
-              presets: [
-                '@babel/preset-typescript',
-                '@babel/preset-react',
-              ],
-            },
           },
         ],
       },
       {
-        test: /\.less$/i,
+        test: /\.css|.less$/i,
         use: [
           {
             loader: 'style-loader',
@@ -99,9 +95,6 @@ module.exports = {
             loader: 'less-loader',
             options: {
               lessOptions: {
-                modifyVars: getThemeVariables({
-                  compact: true,
-                }),
                 javascriptEnabled: true,
               },
             },
