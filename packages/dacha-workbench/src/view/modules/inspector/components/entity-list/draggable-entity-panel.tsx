@@ -1,8 +1,9 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { HolderOutlined } from '@ant-design/icons'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
+import { HolderOutlinedCSS } from './entity-list.style'
 import { EntityPanel } from './entity-panel'
 import type { EntityPanelProps } from './entity-panel'
 
@@ -36,7 +37,7 @@ const withDraggable: WithDraggableFn = (Component) => {
       >
         <Component
           expandExtra={(
-            <HolderOutlined className="entity-list__holder" {...attributes} {...listeners} />
+            <HolderOutlined css={HolderOutlinedCSS} {...attributes} {...listeners} />
           )}
           {...props}
         />

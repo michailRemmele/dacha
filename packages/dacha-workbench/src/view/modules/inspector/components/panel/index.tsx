@@ -1,8 +1,12 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Button } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 
-import './style.less'
+import {
+  PanelStyled,
+  HeadingStyled,
+  PanelContentStyled,
+} from './panel.style'
 
 export interface PanelProps {
   children: JSX.Element | Array<JSX.Element | null> | null
@@ -17,15 +21,15 @@ export const Panel: FC<PanelProps> = ({
   onDelete,
   className,
 }) => (
-  <div className={['panel', className].filter(Boolean).join(' ')}>
-    <header className="panel__heading">
+  <PanelStyled className={className}>
+    <HeadingStyled>
       <span>
         {title}
       </span>
       <Button icon={<DeleteOutlined />} size="small" onClick={onDelete} />
-    </header>
-    <div className="panel__content">
+    </HeadingStyled>
+    <PanelContentStyled>
       {children}
-    </div>
-  </div>
+    </PanelContentStyled>
+  </PanelStyled>
 )

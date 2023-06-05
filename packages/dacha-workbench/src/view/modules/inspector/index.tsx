@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18next from 'i18next'
 import { Tabs } from 'antd'
@@ -8,8 +8,11 @@ import { useExtension } from '../../hooks'
 import { NAMESPACE_EXTENSION } from '../../providers/schemas-provider/consts'
 
 import { EntityInspector, ProjectSettings } from './tabs'
-
-import './style.less'
+import {
+  InspectorStyled,
+  TabContentStyled,
+  TabsCSS,
+} from './inspector.style'
 
 export const Inspector = (): JSX.Element => {
   const { t } = useTranslation()
@@ -22,20 +25,20 @@ export const Inspector = (): JSX.Element => {
 
   return (
     <SchemasProvider>
-      <div className="inspector">
-        <Tabs className="inspector__tabs" type="card">
+      <InspectorStyled>
+        <Tabs css={TabsCSS} type="card">
           <Tabs.TabPane tab={t('inspector.tab.entityInspector')} key="entityInspector">
-            <div className="inspector__tab-content">
+            <TabContentStyled>
               <EntityInspector />
-            </div>
+            </TabContentStyled>
           </Tabs.TabPane>
           <Tabs.TabPane tab={t('inspector.tab.projectSettings')} key="projectSettings">
-            <div className="inspector__tab-content">
+            <TabContentStyled>
               <ProjectSettings />
-            </div>
+            </TabContentStyled>
           </Tabs.TabPane>
         </Tabs>
-      </div>
+      </InspectorStyled>
     </SchemasProvider>
   )
 }

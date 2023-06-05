@@ -1,11 +1,11 @@
-import React, { useCallback, FC } from 'react'
+import { useCallback, FC } from 'react'
 import { Select as AntdSelect } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import { Labelled, LabelledProps } from '../labelled'
 import type { SelectProps } from '../../../../../types/inputs'
 
-import './style.less'
+import { SelectCSS } from './select.style'
 
 export const Select: FC<SelectProps> = ({
   options = [],
@@ -24,7 +24,7 @@ export const Select: FC<SelectProps> = ({
 
   return (
     <AntdSelect
-      className="select"
+      css={SelectCSS}
       size="small"
       onChange={handleChange}
       {...props}

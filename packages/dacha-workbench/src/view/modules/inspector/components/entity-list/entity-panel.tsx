@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 
 import { CollapsePanel } from '../collapse-panel'
 import { SelectedEntityContext } from '../../../../providers'

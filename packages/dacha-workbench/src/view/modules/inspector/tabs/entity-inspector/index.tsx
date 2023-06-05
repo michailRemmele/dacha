@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react'
+import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Typography } from 'antd'
 import { CopyOutlined } from '@ant-design/icons'
@@ -7,7 +7,7 @@ import { SelectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { forms } from '../../forms'
 
-import './style.less'
+import { HeaderStyled } from './entity-inspector.style'
 
 export const EntityInspector = (): JSX.Element | null => {
   const { t } = useTranslation()
@@ -26,7 +26,7 @@ export const EntityInspector = (): JSX.Element | null => {
 
   return (
     <>
-      <header className="entity-inspector__header">
+      <HeaderStyled>
         <Typography.Text strong>
           {t(`inspector.entityInspector.${type as string}.title`)}
         </Typography.Text>
@@ -36,7 +36,7 @@ export const EntityInspector = (): JSX.Element | null => {
           onClick={handleCopyId}
           title={t('inspector.entityInspector.copyIdButton.title')}
         />
-      </header>
+      </HeaderStyled>
       <FormComponent path={path} />
     </>
   )

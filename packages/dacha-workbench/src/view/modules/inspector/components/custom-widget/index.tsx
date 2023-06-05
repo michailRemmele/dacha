@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
 import type { WidgetProps } from '../../../../../types/widget-schema'
