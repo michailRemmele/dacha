@@ -1,4 +1,4 @@
-import React, { useCallback, FC, ChangeEvent } from 'react'
+import { useCallback, FC, ChangeEvent } from 'react'
 import { Input } from 'antd'
 
 import { Labelled, LabelledProps } from '../labelled'

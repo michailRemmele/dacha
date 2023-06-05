@@ -1,10 +1,10 @@
-import React, { useCallback, FC, ReactElement } from 'react'
+import { useCallback, FC, ReactElement } from 'react'
 import { Select as AntdSelect } from 'antd'
 
 import { Labelled, LabelledProps } from '../labelled'
 import type { MultiTextInputProps } from '../../../../../types/inputs'
 
-import './style.less'
+import { SelectCSS } from './multi-text-input.style'
 
 export const MultiTextInput: FC<MultiTextInputProps> = ({
   onChange = (): void => void 0,
@@ -25,14 +25,15 @@ export const MultiTextInput: FC<MultiTextInputProps> = ({
 
   return (
     <AntdSelect
-      className="multi-text-input"
-      popupClassName="multi-text-input__popup multi-text-input__popup_hidden"
+      css={SelectCSS}
       tokenSeparators={[' ', ',']}
       size="small"
       mode="tags"
       onChange={handleChange}
       onBlur={handleBlur}
       dropdownRender={dropdownRender}
+      showArrow={false}
+      open={false}
       {...props}
     />
   )

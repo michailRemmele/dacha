@@ -3,7 +3,9 @@ import { css } from '@emotion/react'
 
 export const EditorStyled = styled.div(({ theme }) => css`
   display: flex;
-  flex: 1;
+
+  width: 100%;
+  height: 100%;
 
   background-color: ${theme.colorBgContainer};
 `)

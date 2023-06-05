@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useState,
   useMemo,
@@ -15,6 +15,11 @@ import { addValue } from '../../../../commands'
 import type { SchemasDataEntry } from '../../../../providers'
 import type { WidgetSchema } from '../../../../../types/widget-schema'
 
+import {
+  EntityPickerStyled,
+  SelectCSS,
+  ButtonCSS,
+} from './entity-list.style'
 import { CONFIG_KEY_MAP } from './consts'
 import type { EntityType } from './types'
 
@@ -68,9 +73,9 @@ export const EntityPicker: FC<EntityPickerProps> = ({
   }, [value, schemasMap, rootPath, type])
 
   return (
-    <div className="entity-picker">
+    <EntityPickerStyled>
       <Select
-        className="entity-picker__select"
+        css={SelectCSS}
         options={options}
         onChange={handleChange}
         value={value}
@@ -78,10 +83,10 @@ export const EntityPicker: FC<EntityPickerProps> = ({
         showSearch
       />
       <Button
-        className="entity-picker__button"
+        css={ButtonCSS}
         icon={<PlusOutlined />}
         onClick={handleAdd}
       />
-    </div>
+    </EntityPickerStyled>
   )
 }

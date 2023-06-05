@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, FC } from 'react'
+import { useContext, useMemo, FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
 import { SelectedEntityContext } from '../../../../providers'
@@ -8,7 +8,7 @@ import { CustomWidget } from '../custom-widget'
 import { CONFIG_KEY_MAP } from './consts'
 import type { Entity, EntityType } from './types'
 
-import './style.less'
+import { EntityFormStyled } from './entity-list.style'
 
 interface EntityFormProps extends Entity {
   type: EntityType
@@ -39,9 +39,9 @@ export const EntityForm: FC<EntityFormProps> = ({ data, type }) => {
 
   if (!schema.fields || schema.fields.length === 0) {
     return (
-      <div className="entity-form">
+      <EntityFormStyled>
         {t('inspector.entityList.content.empty.title')}
-      </div>
+      </EntityFormStyled>
     )
   }
 

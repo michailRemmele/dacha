@@ -1,16 +1,15 @@
-import React, { useContext, useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SelectedEntityContext } from '../../../../providers'
 import type { SchemasDataEntry } from '../../../../providers'
 
+import { EntityListStyled } from './entity-list.style'
 import { EntityPicker } from './entity-picker'
 import { Panels } from './panels'
 import { DraggablePanels } from './draggable-panels'
 
 import type { EntityType } from './types'
-
-import './style.less'
 
 interface EntityListProps {
   entities: Array<SchemasDataEntry>
@@ -55,7 +54,7 @@ export const EntityList = ({
   }, [pathKey, entities, addedEntities, sortByAddition])
 
   return (
-    <div className="entity-list">
+    <EntityListStyled>
       {draggable && panels ? (
         <DraggablePanels
           panels={panels}
@@ -73,6 +72,6 @@ export const EntityList = ({
         placeholder={placeholder}
         type={type}
       />
-    </div>
+    </EntityListStyled>
   )
 }

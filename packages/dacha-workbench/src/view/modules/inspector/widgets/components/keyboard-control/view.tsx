@@ -1,4 +1,4 @@
-import React, {
+import {
   useMemo,
   useCallback,
   FC,
@@ -11,14 +11,15 @@ import type { WidgetProps } from '../../../../../../types/widget-schema'
 import { useConfig, useCommander } from '../../../../../hooks'
 import { addValue } from '../../../../../commands'
 
+import {
+  EventListStyled,
+  ButtonCSS,
+} from './keyboard-control.style'
 import { keys } from './keys'
 import { RELEASED, PRESSED } from './events'
 import { InputBind } from './input-bind'
 import { capitalize } from './utils'
-
 import type { InputEventBind, InputEventBindings } from './types'
-
-import './style.less'
 
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
@@ -67,9 +68,9 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
 
   return (
     <div>
-      <ul className="keyboard-control__events">
+      <EventListStyled>
         {addedKeys.map(({ id, key, event }, index) => (
-          <li className="keyboard-control__fieldset" key={id}>
+          <li key={id}>
             <InputBind
               path={path}
               id={id}
@@ -81,9 +82,9 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
             />
           </li>
         ))}
-      </ul>
+      </EventListStyled>
       <Button
-        className="keyboard-control__button"
+        css={ButtonCSS}
         size="small"
         onClick={handleAddNewBind}
         disabled={availableKeys.length === 0}
