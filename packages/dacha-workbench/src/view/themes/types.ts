@@ -1,3 +1,3 @@
 export interface CustomToken {
-  colorBgPanel: string
+  example: string
 }
