@@ -26,6 +26,11 @@ export const EntityFormStyled = styled.div`
   text-align: center;
 `
 
+export const DragOverlayStyled = styled.div(({ theme }) => css`
+  background-color: ${theme.colorBgContainer};
+  border-radius: ${theme.borderRadiusLG}px;
+`)
+
 export const HolderOutlinedCSS = (): SerializedStyles => {
   const theme = useTheme()
   return css`
