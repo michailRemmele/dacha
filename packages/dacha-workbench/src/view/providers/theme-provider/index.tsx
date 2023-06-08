@@ -1,25 +1,35 @@
-import { useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import type { FC } from 'react'
-import { ThemeProvider as ThemeProviderEmotion } from '@emotion/react'
-import { theme } from 'antd'
 
-import { customToken } from '../../themes/light'
+import { ConfigProvider } from './config-provider'
+import { ThemeTokenProvider } from './theme-token-provider'
+import { ThemeContext } from './contexts'
+import type { ThemeMode } from './types'
 
 interface ThemeProviderProps {
   children: JSX.Element | Array<JSX.Element>
 }
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
-  const { token } = theme.useToken()
+  const [mode, setMode] = useState<ThemeMode>('light')
 
-  const combinedToken = useMemo(() => ({
-    ...token,
-    ...customToken,
-  }), [token])
+  useEffect(() => {
+    const handleSwitchTheme = (): void => {
+      setMode(mode === 'light' ? 'dark' : 'light')
+    }
+
+    const unsubscribe = window.electron.onSwitchTheme(handleSwitchTheme)
+
+    return () => unsubscribe()
+  }, [mode])
 
   return (
-    <ThemeProviderEmotion theme={combinedToken}>
-      {children}
-    </ThemeProviderEmotion>
+    <ThemeContext.Provider value={mode}>
+      <ConfigProvider>
+        <ThemeTokenProvider>
+          {children}
+        </ThemeTokenProvider>
+      </ConfigProvider>
+    </ThemeContext.Provider>
   )
 }
