@@ -50,6 +50,7 @@ interface RendererOptions extends SystemOptions {
   windowNodeId: string
   sortingLayers: Array<string>
   backgroundColor: string
+  backgroundAlpha: number
 }
 
 export class Renderer implements System {
@@ -76,6 +77,7 @@ export class Renderer implements System {
       windowNodeId,
       sortingLayers,
       backgroundColor,
+      backgroundAlpha,
       templateCollection,
       sceneContext,
     } = options as RendererOptions;
@@ -112,7 +114,7 @@ export class Renderer implements System {
     this.renderScene = new Scene();
     this.currentCamera = new OrthographicCamera();
     this.renderer = new WebGLRenderer();
-    this.renderer.setClearColor(new Color(backgroundColor));
+    this.renderer.setClearColor(new Color(backgroundColor), backgroundAlpha);
 
     this.lightSubsystem = new LightSubsystem(
       this.renderScene,
