@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useMemo,
   useContext,
@@ -9,6 +9,7 @@ import { Button } from 'antd'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'remiz'
 
+import { FormStyled, FooterStyled, ButtonCSS } from '../inspector.style'
 import {
   Field,
   LabelledNumberInput,
@@ -20,8 +21,7 @@ import { AnimationEditorContext } from '../../../providers'
 import { CONDITION_TYPE } from '../../../const'
 
 import { Condition } from './condition'
-
-import './style.less'
+import { ConditionsStyled, ConditionStyled } from './transition-inspector.style'
 
 export const TransitionInspector: FC = () => {
   const { t } = useTranslation()
@@ -66,7 +66,7 @@ export const TransitionInspector: FC = () => {
   }, [dispatch, conditionsPath])
 
   return (
-    <form className="animation-inspector__form">
+    <FormStyled>
       <Field
         path={stateTransitionPath}
         component={LabelledSelect}
@@ -79,27 +79,27 @@ export const TransitionInspector: FC = () => {
         label={t('components.animatable.editor.transition.time.title')}
       />
 
-      <ul className="animation-inspector__conditions">
+      <ConditionsStyled>
         {conditions.map((condition, index) => (
-          <li className="animation-inspector__condition" key={condition.id}>
+          <ConditionStyled key={condition.id}>
             <Condition
               path={conditionsPath}
               id={condition.id}
               order={index}
             />
-          </li>
+          </ConditionStyled>
         ))}
-      </ul>
+      </ConditionsStyled>
 
-      <footer className="animation-inspector__footer">
+      <FooterStyled>
         <Button
-          className="animation-inspector__button"
+          css={ButtonCSS}
           size="small"
           onClick={handleAddCondition}
         >
           {t('components.animatable.editor.condition.add.button.title')}
         </Button>
-      </footer>
-    </form>
+      </FooterStyled>
+    </FormStyled>
   )
 }

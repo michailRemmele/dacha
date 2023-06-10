@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -6,11 +6,13 @@ import React, {
 } from 'react'
 import type { Animation } from 'remiz'
 
+import { ListCSS } from '../../editor.style'
 import { AnimationEditorContext } from '../../providers'
 import { useConfig } from '../../../../../../../../hooks'
 import { STATE_TYPE } from '../../const'
 
 import { Frame } from './frame'
+import { ListStyled, ListItemStyled } from './timeline.style'
 
 export const List: FC = () => {
   const {
@@ -52,20 +54,17 @@ export const List: FC = () => {
   }
 
   return (
-    <ul className="animation-editor__list timeline__list">
+    <ListStyled css={ListCSS}>
       {frames && frames.map(({ id }, index) => (
-        <li
-          className="timeline__item"
-          key={id}
-        >
+        <ListItemStyled key={id}>
           <Frame
             id={id}
             title={String(index)}
             onSelect={handleSelect}
             isSelected={id === selectedFrame}
           />
-        </li>
+        </ListItemStyled>
       ))}
-    </ul>
+    </ListStyled>
   )
 }

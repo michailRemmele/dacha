@@ -1,9 +1,7 @@
-import React, { useState, FC } from 'react'
+import { useState, FC } from 'react'
 
 import { List } from './list'
 import { ActionBar } from './action-bar'
-
-import './style.less'
 
 interface StateListProps {
   className?: string

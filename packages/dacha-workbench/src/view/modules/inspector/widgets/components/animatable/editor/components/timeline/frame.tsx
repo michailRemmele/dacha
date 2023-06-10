@@ -1,9 +1,8 @@
-import React, { useCallback, FC } from 'react'
+import { useCallback, FC } from 'react'
 
-import { cn } from '../../../../../../../../utils/cn'
+import { FrameButtonStyled } from './timeline.style'
 
 interface FrameProps {
-  className?: string
   isSelected?: boolean
   id: string
   title: string
@@ -11,7 +10,6 @@ interface FrameProps {
 }
 
 export const Frame: FC<FrameProps> = ({
-  className = '',
   isSelected,
   id,
   title,
@@ -20,16 +18,12 @@ export const Frame: FC<FrameProps> = ({
   const handleSelect = useCallback((() => onSelect(id)), [id])
 
   return (
-    <button
-      className={cn(
-        className,
-        'timeline__frame',
-        isSelected && 'timeline__frame_selected',
-      )}
+    <FrameButtonStyled
       type="button"
       onClick={handleSelect}
+      isSelected={isSelected}
     >
       {`Frame ${title}`}
-    </button>
+    </FrameButtonStyled>
   )
 }
