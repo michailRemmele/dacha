@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -10,6 +10,7 @@ import { DeleteOutlined, PlusOutlined, CopyOutlined } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'remiz'
 
+import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { duplicateFrame } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { addValue, deleteValue } from '../../../../../../../../commands'
@@ -77,9 +78,9 @@ export const ActionBar: FC = () => {
   }, [dispatch, framePath])
 
   return (
-    <header className="animation-editor__action-bar">
+    <ActionBarStyled>
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<PlusOutlined />}
         size="small"
         onClick={handleAdd}
@@ -87,7 +88,7 @@ export const ActionBar: FC = () => {
         disabled={framesPath === undefined}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -95,13 +96,13 @@ export const ActionBar: FC = () => {
         disabled={selectedFrame === undefined}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}
         title={t('components.animatable.editor.frame.delete.button.title')}
         disabled={selectedFrame === undefined}
       />
-    </header>
+    </ActionBarStyled>
   )
 }

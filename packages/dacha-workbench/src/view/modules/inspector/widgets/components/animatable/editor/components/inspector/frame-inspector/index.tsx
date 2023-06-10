@@ -1,10 +1,11 @@
-import React, {
+import {
   useMemo,
   useContext,
   FC,
 } from 'react'
 import type { Animation } from 'remiz'
 
+import { FormStyled } from '../inspector.style'
 import { MultiField } from '../../../../../../../components/multi-field'
 import { useConfig } from '../../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../../providers'
@@ -39,8 +40,8 @@ export const FrameInspector: FC = () => {
   const fieldsPath = useMemo(() => framePath.concat('fields'), [framePath])
 
   return (
-    <form className="animation-inspector__form">
+    <FormStyled>
       <MultiField path={fieldsPath} />
-    </form>
+    </FormStyled>
   )
 }

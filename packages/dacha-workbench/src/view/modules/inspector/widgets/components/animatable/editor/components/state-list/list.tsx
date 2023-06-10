@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -11,9 +11,9 @@ import type { Animation } from 'remiz'
 
 import { useConfig } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
-import { cn } from '../../../../../../../../utils/cn'
 import type { SelectFn, ExpandFn } from '../../../../../../../../../types/tree-node'
 
+import { TreeCSS } from './state-list.style'
 import { parseStates } from './utils'
 import type { DataNodeWithParent } from './utils'
 
@@ -64,7 +64,7 @@ export const List: FC<ListProps> = ({ expandedKeys, setExpandedKeys }) => {
 
   return (
     <Tree.DirectoryTree
-      className={cn('animation-editor__list', isInactive && 'animation-editor__list_inactive')}
+      css={TreeCSS(isInactive)}
       selectedKeys={selectedKey ? [selectedKey] : []}
       expandedKeys={expandedKeys}
       onSelect={handleSelect}

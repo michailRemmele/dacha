@@ -1,4 +1,4 @@
-import React, {
+import {
   useContext,
   FC,
 } from 'react'
@@ -8,7 +8,7 @@ import { AnimationEditorContext } from '../../providers'
 import { ActionBar } from './action-bar'
 import { List } from './list'
 
-import './style.less'
+import { TimelineWrapperStyled } from './timeline.style'
 
 interface TimelineProps {
   className?: string
@@ -22,9 +22,9 @@ export const Timeline: FC<TimelineProps> = ({
   return (
     <div className={className}>
       <ActionBar />
-      <div className="timeline__wrapper">
+      <TimelineWrapperStyled>
         {selectedState && <List />}
-      </div>
+      </TimelineWrapperStyled>
     </div>
   )
 }

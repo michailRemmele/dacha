@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useMemo,
   useContext,
@@ -7,6 +7,7 @@ import React, {
 import { useTranslation } from 'react-i18next'
 import type { Animation } from 'remiz'
 
+import { FormStyled } from '../inspector.style'
 import {
   Field,
   DependencyField,
@@ -94,7 +95,7 @@ export const StateInspector: FC = () => {
   }, [dispatch, state, substatesPath])
 
   return (
-    <form className="animation-inspector__form">
+    <FormStyled>
       <Field
         path={namePath}
         component={LabelledTextInput}
@@ -146,6 +147,6 @@ export const StateInspector: FC = () => {
         dependencyPath={pickModePath}
         dependencyValue={PICK_MODE.TWO_DIMENSIONAL}
       />
-    </form>
+    </FormStyled>
   )
 }

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import {
   StateList,
@@ -7,23 +7,29 @@ import {
   Inspector,
 } from './components'
 
-import './style.less'
+import {
+  EditorStyled,
+  EditorSectionStyled,
+  StateTreeStyled,
+  StateListCSS,
+  TransitionListCSS,
+  FooterStyled,
+  AsideStyled,
+} from './editor.style'
 
 export const Editor: FC = () => (
-  <div className="animation-editor">
-    <section className="animation-editor__section">
-      <section className="animation-editor__state-tree">
-        <StateList className="animation-editor__state-list" />
-        <TransitionList className="animation-editor__transition-list" />
-      </section>
-      <footer className="animation-editor__footer">
-        <Timeline
-          className="animation-editor__timeline"
-        />
-      </footer>
-    </section>
-    <aside className="animation-editor__aside">
+  <EditorStyled>
+    <EditorSectionStyled>
+      <StateTreeStyled>
+        <StateList css={StateListCSS} />
+        <TransitionList css={TransitionListCSS} />
+      </StateTreeStyled>
+      <FooterStyled>
+        <Timeline />
+      </FooterStyled>
+    </EditorSectionStyled>
+    <AsideStyled>
       <Inspector />
-    </aside>
-  </div>
+    </AsideStyled>
+  </EditorStyled>
 )

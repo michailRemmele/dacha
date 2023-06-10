@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -10,6 +10,7 @@ import { DeleteOutlined, PlusOutlined, CopyOutlined } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'remiz'
 
+import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { duplicateTransition } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { addValue, deleteValue } from '../../../../../../../../commands'
@@ -63,9 +64,9 @@ export const ActionBar: FC = () => {
   }, [dispatch, transitionPath])
 
   return (
-    <header className="animation-editor__action-bar">
+    <ActionBarStyled>
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<PlusOutlined />}
         size="small"
         onClick={handleAdd}
@@ -73,7 +74,7 @@ export const ActionBar: FC = () => {
         disabled={selectedState === undefined}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -81,13 +82,13 @@ export const ActionBar: FC = () => {
         disabled={selectedTransition === undefined}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}
         title={t('components.animatable.editor.transition.delete.button.title')}
         disabled={selectedTransition === undefined}
       />
-    </header>
+    </ActionBarStyled>
   )
 }

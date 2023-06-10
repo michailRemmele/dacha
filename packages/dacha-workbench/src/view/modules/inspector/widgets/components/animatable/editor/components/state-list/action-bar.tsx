@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -16,6 +16,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'remiz'
 
+import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { duplicateState, duplicateSubstate } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { addValue, deleteValue, setValue } from '../../../../../../../../commands'
@@ -150,16 +151,16 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
   }, [dispatch, statePath, substatePath, selectedEntity, expandedKeys, selectedStateConfig])
 
   return (
-    <header className="animation-editor__action-bar">
+    <ActionBarStyled>
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<PlusOutlined />}
         size="small"
         onClick={handleAddState}
         title={t('components.animatable.editor.state.add.button.title')}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<PlusCircleOutlined />}
         size="small"
         onClick={handleAddSubstate}
@@ -167,7 +168,7 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
         disabled={(selectedEntity?.type !== 'state' || selectedStateConfig?.type !== 'group') && selectedEntity?.type !== 'substate'}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<RightCircleOutlined />}
         size="small"
         onClick={handleInitialSet}
@@ -175,7 +176,7 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
         disabled={selectedEntity?.type !== 'state' || selectedStateConfig?.id === initialState}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -187,7 +188,7 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
         disabled={selectedEntity?.type !== 'state' && selectedEntity?.type !== 'substate'}
       />
       <Button
-        className="animation-editor__action"
+        css={ActionButtonCSS}
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}
@@ -198,6 +199,6 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
         }
         disabled={selectedEntity?.type !== 'state' && selectedEntity?.type !== 'substate'}
       />
-    </header>
+    </ActionBarStyled>
   )
 }

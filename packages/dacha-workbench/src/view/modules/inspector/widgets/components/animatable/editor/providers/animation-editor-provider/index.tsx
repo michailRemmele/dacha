@@ -1,7 +1,8 @@
-import React, {
+import {
   useState,
   useMemo,
   useCallback,
+  createContext,
   FC,
 } from 'react'
 
@@ -26,7 +27,7 @@ interface AnimationEditorProviderProps {
   children: JSX.Element | Array<JSX.Element>
 }
 
-export const AnimationEditorContext = React.createContext<AnimationEditorData>({
+export const AnimationEditorContext = createContext<AnimationEditorData>({
   path: [],
   selectState: () => void 0,
   selectSubstate: () => void 0,
