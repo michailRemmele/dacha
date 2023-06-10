@@ -43,8 +43,10 @@ export const HelperCanvasRootStyled = styled.div`
   pointer-events: none;
 `
 
-export const CanvasRootStyled = styled.div`
+export const CanvasRootStyled = styled.div(({ theme }) => css`
   flex: 1;
+
+  background-color: ${theme.colorBgLayout};
 
   &.canvas-root_tool_hand {
     cursor: grab;
@@ -61,4 +63,4 @@ export const CanvasRootStyled = styled.div`
   &.canvas-root_tool_zoom.canvas-root_feature-direction_out {
     cursor: zoom-out;
   }
-`
+`)
