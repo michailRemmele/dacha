@@ -19,8 +19,7 @@ import {
   CanvasStyled,
   ToolbarStyled,
   InspectorStyled,
-  CanvasRootStyled,
-  HelperCanvasRootStyled,
+  HelperCanvasRootCSS,
 } from './app.style'
 
 export const App = (): JSX.Element => {
@@ -35,9 +34,15 @@ export const App = (): JSX.Element => {
         <ToolbarStyled>
           {context && <Toolbar />}
         </ToolbarStyled>
-        <CanvasRootStyled id={CANVAS_ROOT} />
-        <HelperCanvasRootStyled id={GRID_ROOT} />
-        <HelperCanvasRootStyled as="canvas" id={SHAPE_CANVAS_ROOT} />
+        <div id={CANVAS_ROOT} />
+        <div
+          id={GRID_ROOT}
+          css={HelperCanvasRootCSS}
+        />
+        <canvas
+          id={SHAPE_CANVAS_ROOT}
+          css={HelperCanvasRootCSS}
+        />
       </CanvasStyled>
       <InspectorStyled>
         {context && <Inspector />}
