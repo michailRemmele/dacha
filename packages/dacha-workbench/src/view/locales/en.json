@@ -287,6 +287,7 @@
   "systems.renderer.title": "Renderer",
   "systems.renderer.windowNodeId.title": "Window Node Id",
   "systems.renderer.backgroundColor.title": "Background Color",
+  "systems.renderer.backgroundAlpha.title": "Background Alpha",
   "systems.renderer.sortingLayers.title": "Sorting Layers",
 
   "systems.uiBridge.title": "UI Bridge",
