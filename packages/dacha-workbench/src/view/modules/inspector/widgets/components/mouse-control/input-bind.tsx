@@ -1,4 +1,4 @@
-import React, {
+import {
   useMemo,
   useCallback,
   FC,
@@ -12,6 +12,11 @@ import { Field } from '../../../components/field'
 import { Panel } from '../../../components/panel'
 import { useCommander } from '../../../../../hooks'
 import { deleteValue } from '../../../../../commands'
+
+import {
+  PanelCSS,
+  SectionHeaderStyled,
+} from './mouse-control.style'
 
 export interface InputBindProps {
   path: Array<string>
@@ -42,7 +47,7 @@ export const InputBind: FC<InputBindProps> = ({
 
   return (
     <Panel
-      className="mouse-control__panel"
+      css={PanelCSS}
       title={t('components.mouseControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
@@ -57,9 +62,9 @@ export const InputBind: FC<InputBindProps> = ({
         component={LabelledTextInput}
         label={t('components.mouseControl.bind.messageType.title')}
       />
-      <span className="mouse-control__section-header">
+      <SectionHeaderStyled>
         {t('components.mouseControl.bind.attributes.title')}
-      </span>
+      </SectionHeaderStyled>
       <MultiField
         path={attrsPath}
       />

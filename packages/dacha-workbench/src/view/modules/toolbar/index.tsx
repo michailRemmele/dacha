@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useCallback,
   useContext,
@@ -24,7 +24,7 @@ import type { Tool } from '../../../engine/components'
 import type { FeatureValue } from '../../../engine/components/tool'
 
 import { features } from './components'
-import './style.less'
+import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
 
 const TOOL_COMPONENT_NAME = 'tool'
 
@@ -102,9 +102,9 @@ export const Toolbar: FC = () => {
   }, [pushMessage])
 
   return (
-    <div className="toolbar">
+    <ToolbarStyled>
       <Radio.Group
-        className="toolbar__tools"
+        css={ToolGroupCSS}
         buttonStyle="solid"
         size="small"
         value={selectedTool}
@@ -126,6 +126,6 @@ export const Toolbar: FC = () => {
       </Radio.Group>
 
       {features[selectedTool] && !disabled ? (<ToolFeatures features={toolFeatures} />) : null}
-    </div>
+    </ToolbarStyled>
   )
 }

@@ -1,4 +1,4 @@
-import React, {
+import {
   useMemo,
   useCallback,
   FC,
@@ -91,7 +91,6 @@ export const Condition: FC<ConditionProps> = ({
 
   return (
     <Panel
-      className="animation-condition__panel"
       title={t('components.animatable.editor.condition.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >

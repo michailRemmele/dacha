@@ -1,7 +1,7 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { RightOutlined } from '@ant-design/icons'
 
-import { cn } from '../../../../utils/cn'
+import { RightOutlinedCSS } from './collapse-panel.style'
 
 interface PanelExpandProps {
   isActive?: boolean
@@ -12,10 +12,10 @@ export const PanelExpand: FC<PanelExpandProps> = ({
   isActive,
   children,
 }) => (
-  <span className="collapse-panel__expand-extra">
+  <>
     {children}
     <RightOutlined
-      className={cn('collapse-panel__expand-arrow', isActive && 'collapse-panel__expand-arrow_active')}
+      css={RightOutlinedCSS(isActive)}
     />
-  </span>
+  </>
 )

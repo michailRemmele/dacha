@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -15,7 +15,7 @@ import { useConfig } from '../../../../../../hooks'
 import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../../../consts/message-types'
 import { TEMPLATE_FEATURE_NAME } from '../../consts'
 
-import './style.less'
+import { SelectCSS } from './template-feature.style'
 
 interface SelectOption {
   label: string
@@ -57,7 +57,7 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
         title={t('toolbar.template.features.template.title')}
       >
         <Select
-          className="tool-features__select"
+          css={SelectCSS}
           size="small"
           options={options}
           onChange={handleChange}

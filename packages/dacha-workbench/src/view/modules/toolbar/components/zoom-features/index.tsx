@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useCallback,
   useContext,
@@ -10,10 +10,10 @@ import type { RadioChangeEvent } from 'antd'
 import { Radio } from 'antd'
 import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
 
+import { ToolFeaturesStyled, RadioGroupCSS } from '../../toolbar.style'
 import { EngineContext } from '../../../../providers'
 import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../consts/message-types'
 import type { FeatureValue } from '../../../../../engine/components/tool'
-
 import type { ToolFeaturesProps } from '../types'
 
 export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
@@ -44,8 +44,9 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
   }, [pushMessage])
 
   return (
-    <div className="tool-features">
+    <ToolFeaturesStyled>
       <Radio.Group
+        css={RadioGroupCSS}
         name="direction"
         buttonStyle="solid"
         size="small"
@@ -59,6 +60,6 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
           <ZoomOutOutlined title={t('toolbar.zoom.features.direction.out.title')} />
         </Radio.Button>
       </Radio.Group>
-    </div>
+    </ToolFeaturesStyled>
   )
 }

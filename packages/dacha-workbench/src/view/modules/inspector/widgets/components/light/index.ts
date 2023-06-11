@@ -21,7 +21,7 @@ export const light: WidgetSchema = {
     {
       name: 'options.color',
       title: 'components.light.color.title',
-      type: 'string',
+      type: 'color',
     },
     {
       name: 'options.intensity',

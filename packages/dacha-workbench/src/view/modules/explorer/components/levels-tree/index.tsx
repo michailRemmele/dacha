@@ -1,9 +1,9 @@
-import React, { useState, FC } from 'react'
+import { useState, FC } from 'react'
 
 import { ActionBar } from './action-bar'
 import { Tree } from './tree'
 
-import './style.less'
+import { TreeCSS } from './level-tree.style'
 
 export const LevelsTree: FC = () => {
   const [expandedKeys, setExpandedKeys] = useState<Array<string>>([])
@@ -17,6 +17,7 @@ export const LevelsTree: FC = () => {
         setSelectedLevel={setSelectedLevel}
       />
       <Tree
+        css={TreeCSS}
         expandedKeys={expandedKeys}
         setExpandedKeys={setExpandedKeys}
         selectedLevel={selectedLevel}

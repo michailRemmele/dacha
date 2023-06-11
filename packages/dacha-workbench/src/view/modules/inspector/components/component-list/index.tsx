@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, FC } from 'react'
+import { useContext, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { GameObjectConfig } from 'remiz'
 

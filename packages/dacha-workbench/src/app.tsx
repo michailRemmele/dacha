@@ -1,10 +1,14 @@
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import 'antd/dist/reset.css'
 
 import { App } from './view'
-import { EngineProvider, SelectedEntityProvider } from './view/providers'
+import {
+  EngineProvider,
+  SelectedEntityProvider,
+  ThemeProvider,
+} from './view/providers'
 import { APP_ROOT } from './consts/root-nodes'
 
 import en from './view/locales/en.json'
@@ -24,9 +28,11 @@ void i18next
 const root = createRoot(document.getElementById(APP_ROOT) as HTMLElement)
 
 root.render(
-  <EngineProvider>
-    <SelectedEntityProvider>
-      <App />
-    </SelectedEntityProvider>
-  </EngineProvider>,
+  <ThemeProvider>
+    <EngineProvider>
+      <SelectedEntityProvider>
+        <App />
+      </SelectedEntityProvider>
+    </EngineProvider>
+  </ThemeProvider>,
 )

@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { Tree } from 'antd'
 import type { Animation } from 'remiz'
 
+import { TreeCSS } from '../../editor.style'
 import { useConfig } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 import type { SelectFn } from '../../../../../../../../../types/tree-node'
@@ -52,7 +53,7 @@ export const List: FC = () => {
 
   return (
     <Tree.DirectoryTree
-      className="animation-editor__list"
+      css={TreeCSS}
       selectedKeys={selectedTransition ? [selectedTransition] : []}
       onSelect={handleSelect}
       treeData={treeData}

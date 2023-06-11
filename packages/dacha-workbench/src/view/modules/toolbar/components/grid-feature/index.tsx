@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   FC,
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Checkbox } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
+import { CheckboxCSS } from '../../toolbar.style'
 import { ToolFeature } from '../tool-feature'
 import { EngineContext } from '../../../../providers'
 import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../consts/message-types'
@@ -32,7 +33,7 @@ export const GridFeature: FC<GridFeatureProps> = ({ value }) => {
   return (
     <ToolFeature>
       <Checkbox
-        className="tool-features__checkbox"
+        css={CheckboxCSS}
         checked={value}
         onChange={handleChange}
       >
