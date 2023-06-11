@@ -18,7 +18,7 @@ export interface Reference {
 
 export type References = Record<string, Reference | undefined>
 
-export type FieldType = 'string' | 'number' | 'boolean' | 'select' | 'multitext' | 'multiselect'
+export type FieldType = 'string' | 'number' | 'boolean' | 'select' | 'multitext' | 'multiselect' | 'color'
 
 export interface Field {
   name: string

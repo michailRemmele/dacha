@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { ModalStyled } from './modal.style'
 
@@ -25,6 +25,7 @@ export const Modal: FC<ModalProps> = ({
     onCancel={onCancel}
     footer={null}
     centered
+    destroyOnClose
   >
     {children}
   </ModalStyled>

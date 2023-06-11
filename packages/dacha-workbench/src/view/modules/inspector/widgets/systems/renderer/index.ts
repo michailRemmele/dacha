@@ -11,7 +11,7 @@ export const renderer: WidgetSchema = {
     {
       name: 'backgroundColor',
       title: 'systems.renderer.backgroundColor.title',
-      type: 'string',
+      type: 'color',
     },
     {
       name: 'backgroundAlpha',
