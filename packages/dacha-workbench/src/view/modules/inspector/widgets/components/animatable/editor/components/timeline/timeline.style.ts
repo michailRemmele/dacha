@@ -38,6 +38,7 @@ export const FrameButtonStyled = styled.button<FrameButtonStyledProps>(({ theme,
   padding: 30px;
 
   border: 1px solid ${theme.colorBorder};
+  border-radius: ${theme.borderRadiusLG}px;
   background: transparent;
 
   cursor: pointer;

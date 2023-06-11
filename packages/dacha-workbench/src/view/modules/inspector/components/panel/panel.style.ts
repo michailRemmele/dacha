@@ -5,6 +5,7 @@ export const PanelStyled = styled.div(() => {
   const theme = useTheme()
   return css`
     border: 1px solid ${theme.colorBorder};
+    border-radius: ${theme.borderRadiusLG}px;
   `
 })
 

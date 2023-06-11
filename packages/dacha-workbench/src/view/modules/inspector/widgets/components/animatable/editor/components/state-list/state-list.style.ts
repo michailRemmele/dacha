@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { css, useTheme } from '@emotion/react'
 import type { SerializedStyles } from '@emotion/react'
 
-import { ListCSS } from '../../editor.style'
+import { TreeCSS as BaseTreeCSS } from '../../editor.style'
 
 export const ListItemInitialStyled = styled.span`
   margin-right: 5px;
@@ -15,7 +15,7 @@ export const ListItemSuffixStyled = styled.span(({ theme }) => css`
 export const TreeCSS = (isInactive: boolean): SerializedStyles => {
   const theme = useTheme()
   return css`
-    ${ListCSS}
+    ${BaseTreeCSS}
 
     ${isInactive && css`
       &.ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before,

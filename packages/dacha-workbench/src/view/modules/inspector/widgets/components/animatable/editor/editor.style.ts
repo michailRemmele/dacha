@@ -58,6 +58,8 @@ export const ActionBarStyled = styled.header(({ theme }) => css`
   padding: 5px;
 
   height: 34px;
+
+  flex-shrink: 0;
 `)
 
 export const ActionButtonCSS = css`
@@ -68,4 +70,10 @@ export const ActionButtonCSS = css`
 
 export const ListCSS = css`
   overflow: scroll;
+`
+
+export const TreeCSS = css`
+  border-radius: 0;
+
+  ${ListCSS}
 `
