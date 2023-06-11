@@ -1,5 +1,8 @@
 import type { Config } from 'remiz'
 import type { Resource } from 'i18next'
+import type { GlobalToken } from 'antd'
+
+import type { CustomToken } from '../view/themes/types'
 
 import type { WidgetSchema, WidgetPartSchema } from './widget-schema'
 
@@ -26,6 +29,7 @@ export interface ElectronAPI {
   saveProjectConfig: (config: Config) => void
   onSave: (callback: () => void) => void
   onSettings: (callback: (type: string) => void) => void
+  onSwitchTheme: (callback: () => void) => () => void
 }
 
 declare global {
@@ -34,4 +38,9 @@ declare global {
     editorExtension?: Extension
     RemizEditor: Record<string, unknown>
   }
+}
+
+declare module '@emotion/react' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface Theme extends GlobalToken, CustomToken {}
 }

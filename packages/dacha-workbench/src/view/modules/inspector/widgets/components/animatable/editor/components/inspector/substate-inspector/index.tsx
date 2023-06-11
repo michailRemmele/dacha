@@ -1,10 +1,11 @@
-import React, {
+import {
   useMemo,
   useContext,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { FormStyled } from '../inspector.style'
 import {
   Field,
   DependencyField,
@@ -40,7 +41,7 @@ export const SubstateInspector: FC = () => {
   const pickModePath = useMemo(() => statePath.concat('pickMode'), [statePath])
 
   return (
-    <form className="animation-inspector__form">
+    <FormStyled>
       <Field
         path={namePath}
         component={LabelledTextInput}
@@ -63,6 +64,6 @@ export const SubstateInspector: FC = () => {
         dependencyPath={pickModePath}
         dependencyValue="2D"
       />
-    </form>
+    </FormStyled>
   )
 }

@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useMemo,
@@ -14,6 +14,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import type { SceneConfig } from 'remiz'
 
+import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue } from '../../../../commands'
 import { SelectedEntityContext, EngineContext } from '../../../../providers'
@@ -89,16 +90,16 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
   }, [dispatch, selectedEntityPath, selectedEntity])
 
   return (
-    <header className="explorer__action-bar">
+    <ActionBarStyled>
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<FileAddOutlined />}
         size="small"
         onClick={handleAdd}
         title={t(translations.add)}
       />
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -106,13 +107,13 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
         disabled={isLoaders ? (type !== 'loader') : (type !== 'scene')}
       />
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}
         title={t(translations.delete)}
         disabled={isLoaders ? (type !== 'loader') : (type !== 'scene')}
       />
-    </header>
+    </ActionBarStyled>
   )
 }

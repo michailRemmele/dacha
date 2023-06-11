@@ -1,10 +1,10 @@
-import React, { useCallback, FC } from 'react'
+import { useCallback, FC } from 'react'
 import { Select as AntdSelect } from 'antd'
 
 import { Labelled, LabelledProps } from '../labelled'
 import type { MultiSelectProps } from '../../../../../types/inputs'
 
-import './style.less'
+import { SelectCSS } from './multi-select.style'
 
 export const MultiSelect: FC<MultiSelectProps> = ({
   options = [],
@@ -24,7 +24,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
 
   return (
     <AntdSelect
-      className="multi-select"
+      css={SelectCSS}
       size="small"
       mode="multiple"
       onChange={handleChange}

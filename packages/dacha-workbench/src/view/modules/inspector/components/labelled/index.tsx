@@ -1,6 +1,10 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
-import './style.less'
+import {
+  LabelledStyled,
+  LabelStyled,
+  InputStyled,
+} from './labelled.style'
 
 export interface LabelledProps {
   label: string
@@ -8,14 +12,12 @@ export interface LabelledProps {
 }
 
 export const Labelled: FC<LabelledProps> = ({ label, children }) => (
-  // comment: associated control is a react children
-  // eslint-disable-next-line jsx-a11y/label-has-associated-control
-  <label className="labelled">
-    <span className="labelled__label">
+  <LabelledStyled>
+    <LabelStyled>
       {label}
-    </span>
-    <span className="labelled__input">
+    </LabelStyled>
+    <InputStyled>
       {children}
-    </span>
-  </label>
+    </InputStyled>
+  </LabelledStyled>
 )

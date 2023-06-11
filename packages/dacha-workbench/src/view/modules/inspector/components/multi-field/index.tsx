@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   FC,
 } from 'react'
@@ -13,7 +13,12 @@ import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 import { Entry } from './entry'
 import type { MultiFieldEntry } from './types'
 
-import './style.less'
+import {
+  FieldsStyled,
+  NoFieldsStyled,
+  FieldStyled,
+  ButtonCSS,
+} from './multi-field.style'
 
 interface MultiFieldProps {
   path: Array<string>
@@ -35,28 +40,28 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   }, [dispatch, path])
 
   return (
-    <div className="multifield">
+    <div>
       {!values.length && (
-        <div className="multifield__no-fields">
+        <NoFieldsStyled>
           {t('inspector.multifield.noFields.title')}
-        </div>
+        </NoFieldsStyled>
       )}
       {Boolean(values.length) && (
-        <ul className="multifield__fields">
+        <FieldsStyled>
           {values.map((entry, index) => (
-            <li key={entry.id} className="multifield__field">
+            <FieldStyled key={entry.id}>
               <Entry
                 path={path}
                 id={entry.id}
                 type={entry.type}
                 order={index}
               />
-            </li>
+            </FieldStyled>
           ))}
-        </ul>
+        </FieldsStyled>
       )}
       <Button
-        className="multifield__button"
+        css={ButtonCSS}
         size="small"
         onClick={handleAddField}
       >

@@ -26,4 +26,8 @@ contextBridge.exposeInMainWorld('electron', {
   },
   onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
   onSettings: (callback) => ipcRenderer.on(MESSAGES.SETTINGS, (_, ...args) => callback(...args)),
+  onSwitchTheme: (callback) => {
+    ipcRenderer.on(MESSAGES.SWITCH_THEME, callback)
+    return () => ipcRenderer.removeListener(MESSAGES.SWITCH_THEME, callback)
+  },
 })

@@ -11,7 +11,12 @@ export const renderer: WidgetSchema = {
     {
       name: 'backgroundColor',
       title: 'systems.renderer.backgroundColor.title',
-      type: 'string',
+      type: 'color',
+    },
+    {
+      name: 'backgroundAlpha',
+      title: 'systems.renderer.backgroundAlpha.title',
+      type: 'number',
     },
     {
       name: 'sortingLayers',
@@ -22,6 +27,7 @@ export const renderer: WidgetSchema = {
   getInitialState: () => ({
     windowNodeId: '',
     backgroundColor: '#000',
+    backgroundAlpha: 1,
     sortingLayers: [],
   }),
 }

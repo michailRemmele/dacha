@@ -1,4 +1,4 @@
-import React, {
+import {
   useMemo,
   useCallback,
   FC,
@@ -13,6 +13,10 @@ import { Panel } from '../../../components/panel'
 import { useCommander } from '../../../../../hooks'
 import { deleteValue, setValue } from '../../../../../commands'
 
+import {
+  SectionHeaderStyled,
+  PanelCSS,
+} from './keyboard-control.style'
 import { RELEASED, PRESSED } from './events'
 import { capitalize } from './utils'
 import type { InputEventBindings } from './types'
@@ -84,7 +88,7 @@ export const InputBind: FC<InputBindProps> = ({
 
   return (
     <Panel
-      className="keyboard-control__panel"
+      css={PanelCSS}
       title={t('components.keyboardControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
@@ -106,9 +110,9 @@ export const InputBind: FC<InputBindProps> = ({
         component={LabelledTextInput}
         label={t('components.keyboardControl.bind.messageType.title')}
       />
-      <span className="keyboard-control__section-header">
+      <SectionHeaderStyled>
         {t('components.keyboardControl.bind.attributes.title')}
-      </span>
+      </SectionHeaderStyled>
       <MultiField
         path={attrsPath}
       />

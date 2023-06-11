@@ -1,8 +1,10 @@
-import React, { FC } from 'react'
+import type { FC } from 'react'
+import { Typography } from 'antd'
 
-import { cn } from '../../../../utils/cn'
-
-import './style.less'
+import {
+  FeatureLabelStyled,
+  TitleCSS,
+} from './feature-label.style'
 
 interface LabelProps {
   title: string
@@ -11,10 +13,8 @@ interface LabelProps {
 }
 
 export const FeatureLabel: FC<LabelProps> = ({ title, children, className }) => (
-  // comment: associated control is a react children
-  // eslint-disable-next-line jsx-a11y/label-has-associated-control
-  <label className={cn('feature-label', className)}>
-    <span className="feature-label__title">{title}</span>
+  <FeatureLabelStyled className={className}>
+    <Typography.Text css={TitleCSS}>{title}</Typography.Text>
     {children}
-  </label>
+  </FeatureLabelStyled>
 )

@@ -1,13 +1,13 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
-import './style.less'
+import { FormStyled } from './form.style'
 
 export interface FormProps {
   children: JSX.Element | Array<JSX.Element | null> | null
 }
 
 export const Form: FC<FormProps> = ({ children }) => (
-  <div className="form">
+  <FormStyled>
     {children}
-  </div>
+  </FormStyled>
 )

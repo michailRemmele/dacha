@@ -1,10 +1,10 @@
-import React, { useCallback, FC } from 'react'
+import { useCallback, FC } from 'react'
 import { InputNumber } from 'antd'
 
 import { Labelled, LabelledProps } from '../labelled'
 import type { NumberInputProps } from '../../../../../types/inputs'
 
-import './style.less'
+import { InputNumberCSS } from './number-input.style'
 
 export const NumberInput: FC<NumberInputProps> = ({
   onChange = (): void => void 0,
@@ -24,7 +24,7 @@ export const NumberInput: FC<NumberInputProps> = ({
 
   return (
     <InputNumber
-      className="input-number"
+      css={InputNumberCSS}
       type="number"
       size="small"
       onChange={handleChange}

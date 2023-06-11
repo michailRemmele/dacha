@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useState,
   useRef,
@@ -10,7 +10,7 @@ import { PanelExtra } from './panel-extra'
 import { PanelHeader } from './panel-header'
 import { PanelExpand } from './panel-expand'
 
-import './style.less'
+import { CollapseCSS } from './collapse-panel.style'
 
 type ExpandIcon = FC<{
   isActive?: boolean
@@ -51,7 +51,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
 
   return (
     <Collapse
-      className="collapse-panel"
+      css={CollapseCSS}
       activeKey={activeKey}
       onChange={handleChange}
       expandIcon={expandIcon}

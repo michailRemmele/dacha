@@ -1,4 +1,4 @@
-import React, {
+import {
   useContext,
   useMemo,
   useCallback,
@@ -17,6 +17,7 @@ import type { DataNodeWithPath, ExpandFn, SelectFn } from '../../../../../types/
 import { parseLevels, getKey } from './utils'
 
 interface TreeProps {
+  className?: string
   expandedKeys: Array<string>
   setExpandedKeys: (keys: Array<string>) => void
   selectedLevel: string | undefined
@@ -24,6 +25,7 @@ interface TreeProps {
 }
 
 export const Tree: FC<TreeProps> = ({
+  className,
   expandedKeys,
   setExpandedKeys,
   selectedLevel,
@@ -76,6 +78,7 @@ export const Tree: FC<TreeProps> = ({
   return (
     <ListWrapper>
       <AntdTree.DirectoryTree
+        className={className}
         expandedKeys={expandedKeys}
         selectedKeys={selectedKey ? [selectedKey] : []}
         onSelect={handleSelect}

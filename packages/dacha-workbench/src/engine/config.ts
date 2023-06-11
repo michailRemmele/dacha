@@ -95,7 +95,8 @@ export const editorConfig: Config = {
           name: 'renderer',
           options: {
             windowNodeId: 'canvas-root',
-            backgroundColor: '#fafafa',
+            backgroundColor: '#ffffff',
+            backgroundAlpha: 0,
             sortingLayers: [
               'default',
               'background',

@@ -60,6 +60,13 @@ module.exports = (window) => Menu.buildFromTemplate([
       { type: 'separator' },
 
       { role: 'togglefullscreen' },
+
+      { type: 'separator' },
+
+      {
+        label: 'Switch Theme',
+        click: () => window.webContents.send(MESSAGES.SWITCH_THEME, 'grid'),
+      },
     ],
   },
 ])

@@ -11,6 +11,7 @@ export { NumberInput, LabelledNumberInput } from './number-input'
 export { Checkbox, LabelledCheckbox } from './checkbox'
 export { MultiTextInput, LabelledMultiTextInput } from './multi-text-input'
 export { MultiSelect, LabelledMultiSelect } from './multi-select'
+export { ColorInput, LabelledColorInput } from './color-input'
 
 export { Form } from './form'
 export { CollapsePanel } from './collapse-panel'

@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   FC,
@@ -14,6 +14,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import type { GameObjectConfig, LevelConfig } from 'remiz'
 
+import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue } from '../../../../commands'
 import { SelectedEntityContext, EngineContext } from '../../../../providers'
@@ -110,9 +111,9 @@ export const ActionBar: FC<ActionBarProps> = ({
   }, [dispatch, selectedEntityPath, selectedEntity, type])
 
   return (
-    <header className="explorer__action-bar">
+    <ActionBarStyled>
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<FileAddOutlined />}
         size="small"
         onClick={handleAddGameObject}
@@ -120,14 +121,14 @@ export const ActionBar: FC<ActionBarProps> = ({
         disabled={type !== 'gameObject' && type !== 'level'}
       />
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<FolderAddOutlined />}
         size="small"
         onClick={handleAddLevel}
         title={t('explorer.levels.actionBar.addLevel.button.title')}
       />
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<CopyOutlined />}
         size="small"
         onClick={handleDuplicate}
@@ -139,7 +140,7 @@ export const ActionBar: FC<ActionBarProps> = ({
         disabled={type !== 'gameObject' && type !== 'level'}
       />
       <Button
-        className="explorer__action"
+        css={ButtonCSS}
         icon={<DeleteOutlined />}
         size="small"
         onClick={handleDelete}
@@ -150,6 +151,6 @@ export const ActionBar: FC<ActionBarProps> = ({
         }
         disabled={type !== 'gameObject' && type !== 'level'}
       />
-    </header>
+    </ActionBarStyled>
   )
 }

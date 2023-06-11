@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { LabelledCheckbox } from '../../../checkbox'
 import type { CheckboxProps } from '../../../../../../../types/inputs'

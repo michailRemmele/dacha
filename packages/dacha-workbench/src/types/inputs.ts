@@ -37,3 +37,7 @@ export interface CheckboxProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: boolean
   onChange?: (value: boolean) => void
 }
+
+export interface ColorInputProps extends Omit<InputProps, 'defaultValue' | 'color'> {
+  defaultValue: string
+}

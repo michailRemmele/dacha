@@ -1,4 +1,4 @@
-import React, { useCallback, FC } from 'react'
+import { useCallback, FC } from 'react'
 import { Checkbox as AntdCheckbox } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 

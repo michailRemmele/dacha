@@ -1,4 +1,4 @@
-import React, {
+import {
   useMemo,
   useCallback,
   FC,
@@ -13,7 +13,10 @@ import { addValue } from '../../../../../commands'
 import { events } from './events'
 import { InputBind } from './input-bind'
 
-import './style.less'
+import {
+  EventListStyled,
+  ButtonCSS,
+} from './mouse-control.style'
 
 export interface EventOption {
   title: string
@@ -64,9 +67,9 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
 
   return (
     <div>
-      <ul className="mouse-control__events">
+      <EventListStyled>
         {addedOptions.map((event, index) => (
-          <li className="mouse-control__fieldset" key={event.value}>
+          <li key={event.value}>
             <InputBind
               path={path}
               event={event}
@@ -75,9 +78,9 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
             />
           </li>
         ))}
-      </ul>
+      </EventListStyled>
       <Button
-        className="mouse-control__button"
+        css={ButtonCSS}
         size="small"
         onClick={handleAddNewBind}
         disabled={availableOptions.length === 0}

@@ -1,4 +1,4 @@
-import React, { useMemo, FC } from 'react'
+import { useMemo, FC } from 'react'
 import type { SceneConfig, LevelConfig, GameObjectConfig } from 'remiz'
 
 import type { References, WidgetProps } from '../../../../../../types/widget-schema'
