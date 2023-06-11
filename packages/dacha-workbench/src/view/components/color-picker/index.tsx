@@ -48,8 +48,6 @@ export const ColorPicker: FC<ColorPickerProps> = ({
         return
       }
 
-      event.stopPropagation()
-
       setOpen(false)
       onOpenChange(false)
 
