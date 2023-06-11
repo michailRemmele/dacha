@@ -19,20 +19,20 @@ export const ColorStyled = styled.span<ColorStyledProps>(({ color, theme }) => c
 export const ColorButtonCSS = (isOpen: boolean): SerializedStyles => {
   const theme = useTheme()
   return css`
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 
-  width: 21px;
+    width: 21px;
 
-  &.ant-btn {
-    padding: 3px;
-  }
+    &.ant-btn {
+      padding: 3px;
+    }
 
-  ${isOpen && css`
-    border-color: ${theme.colorPrimaryHover};
-    box-shadow: 0 0 0 ${theme.controlOutlineWidth}px ${theme.controlOutline};
-  `}
-`
+    ${isOpen && css`
+      border-color: ${theme.colorPrimaryHover};
+      box-shadow: 0 0 0 ${theme.controlOutlineWidth}px ${theme.controlOutline};
+    `}
+  `
 }
 
 export const GlobalCSS = css`
