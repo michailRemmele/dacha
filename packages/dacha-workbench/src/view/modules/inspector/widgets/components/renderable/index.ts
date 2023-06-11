@@ -84,7 +84,7 @@ export const renderable: WidgetSchema = {
     {
       name: 'material.options.color',
       title: 'components.renderable.material.color.title',
-      type: 'string',
+      type: 'color',
     },
     {
       name: 'material.options.opacity',

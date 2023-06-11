@@ -20,7 +20,6 @@ import type {
   InspectEntityMessage,
   MouseInputMessage,
 } from '../../../types/messages'
-import type { Store } from '../../../store'
 
 import { SelectionMovementSubsystem } from './selection-movement'
 import { buildGameObjectPath, updateFrameSize } from './utils'
