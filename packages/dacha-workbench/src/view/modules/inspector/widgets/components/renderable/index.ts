@@ -12,7 +12,7 @@ export const renderable: WidgetSchema = {
     {
       name: 'src',
       title: 'components.renderable.src.title',
-      type: 'string',
+      type: 'file',
     },
     {
       name: 'width',

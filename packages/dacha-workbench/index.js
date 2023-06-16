@@ -2,11 +2,14 @@ const {
   app,
   BrowserWindow,
   Menu,
+  ipcMain,
 } = require('electron')
 const express = require('express')
 const path = require('path')
 
 const getMenu = require('./electron/get-menu')
+const getAssetsDialog = require('./electron/get-assets-dialog')
+const MESSAGES = require('./electron/messages')
 
 const { assets } = require(path.resolve(process.env.EDITOR_CONFIG))
 
@@ -46,6 +49,8 @@ const createWindow = () => {
   win.maximize()
 
   Menu.setApplicationMenu(getMenu(win))
+
+  ipcMain.handle(MESSAGES.ASSETS_DIALOG, () => getAssetsDialog(assets))
 
   win.loadURL(`http://localhost:${UI_PORT}`)
 }
