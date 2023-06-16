@@ -16,6 +16,8 @@ export { Select, LabelledSelect } from './view/modules/inspector/components/sele
 export { Checkbox, LabelledCheckbox } from './view/modules/inspector/components/checkbox'
 export { MultiTextInput, LabelledMultiTextInput } from './view/modules/inspector/components/multi-text-input'
 export { MultiSelect, LabelledMultiSelect } from './view/modules/inspector/components/multi-select'
+export { ColorInput, LabelledColorInput } from './view/modules/inspector/components/color-input'
+export { FileInput, LabelledFileInput } from './view/modules/inspector/components/file-input'
 export { MultiField } from './view/modules/inspector/components/multi-field'
 export { Panel } from './view/modules/inspector/components/panel'
 

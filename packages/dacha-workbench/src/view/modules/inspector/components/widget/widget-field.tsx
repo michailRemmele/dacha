@@ -1,4 +1,4 @@
-import React, {
+import {
   useMemo,
   FC,
 } from 'react'

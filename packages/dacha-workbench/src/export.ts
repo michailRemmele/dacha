@@ -15,6 +15,8 @@ import { Select, LabelledSelect } from './view/modules/inspector/components/sele
 import { Checkbox, LabelledCheckbox } from './view/modules/inspector/components/checkbox'
 import { MultiTextInput, LabelledMultiTextInput } from './view/modules/inspector/components/multi-text-input'
 import { MultiSelect, LabelledMultiSelect } from './view/modules/inspector/components/multi-select'
+import { ColorInput, LabelledColorInput } from './view/modules/inspector/components/color-input'
+import { FileInput, LabelledFileInput } from './view/modules/inspector/components/file-input'
 import { MultiField } from './view/modules/inspector/components/multi-field'
 import { Panel } from './view/modules/inspector/components/panel'
 
@@ -43,6 +45,10 @@ window.RemizEditor = {
   LabelledMultiTextInput,
   MultiSelect,
   LabelledMultiSelect,
+  ColorInput,
+  LabelledColorInput,
+  FileInput,
+  LabelledFileInput,
   MultiField,
   Panel,
 
