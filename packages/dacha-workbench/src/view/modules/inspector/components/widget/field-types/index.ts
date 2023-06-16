@@ -9,6 +9,7 @@ import { BooleanField } from './checkbox'
 import { MultiTextField } from './multi-text'
 import { MultiSelectField } from './multi-select'
 import { ColorField } from './color'
+import { FileField } from './file'
 
 // comment: TODO: Find the way to avoid using any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,4 +21,5 @@ export const fieldTypes: Record<FieldType, FC<any>> = {
   multitext: MultiTextField,
   multiselect: MultiSelectField,
   color: ColorField,
+  file: FileField,
 }
