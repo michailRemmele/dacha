@@ -50,7 +50,7 @@ const createWindow = () => {
 
   Menu.setApplicationMenu(getMenu(win))
 
-  ipcMain.handle(MESSAGES.ASSETS_DIALOG, () => getAssetsDialog(assets))
+  ipcMain.handle(MESSAGES.ASSETS_DIALOG, (_, ...args) => getAssetsDialog(assets, ...args))
 
   win.loadURL(`http://localhost:${UI_PORT}`)
 }
