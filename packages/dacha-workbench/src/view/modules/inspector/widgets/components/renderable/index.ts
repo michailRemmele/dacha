@@ -13,6 +13,9 @@ export const renderable: WidgetSchema = {
       name: 'src',
       title: 'components.renderable.src.title',
       type: 'file',
+      properties: {
+        extensions: ['png'],
+      },
     },
     {
       name: 'width',

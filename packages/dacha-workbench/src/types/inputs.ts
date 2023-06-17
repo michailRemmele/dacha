@@ -41,3 +41,7 @@ export interface CheckboxProps extends Omit<InputProps, 'value' | 'onChange'> {
 export interface ColorInputProps extends Omit<InputProps, 'defaultValue' | 'color'> {
   defaultValue: string
 }
+
+export interface FileInputProps extends InputProps {
+  extensions?: Array<string>
+}
