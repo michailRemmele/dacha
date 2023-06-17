@@ -20,6 +20,8 @@ export interface EditorConfig {
   projectConfig: string
   assets: string
   extension?: string
+  autoSave?: boolean
+  autoSaveInterval?: number
 }
 
 export interface ElectronAPI {
