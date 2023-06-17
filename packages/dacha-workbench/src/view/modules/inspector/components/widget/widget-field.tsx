@@ -31,6 +31,7 @@ export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) =
         path={fieldPath}
         label={t(field.title)}
         component={fieldTypes[field.type] ? fieldTypes[field.type] : fieldTypes.string}
+        properties={field.properties}
         {...field.referenceId ? { reference: references?.[field.referenceId] } : {}}
         dependencyPath={dependencyPath}
         dependencyValue={field.dependency.value}
@@ -43,6 +44,7 @@ export const WidgetField: FC<WidgetFieldProps> = ({ field, path, references }) =
       path={fieldPath}
       label={t(field.title)}
       component={fieldTypes[field.type] ? fieldTypes[field.type] : fieldTypes.string}
+      properties={field.properties}
       {...field.referenceId ? { reference: references?.[field.referenceId] } : {}}
     />
   )

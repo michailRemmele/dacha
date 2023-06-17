@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('electron', {
 
     return undefined
   },
-  openAssetsDialog: () => ipcRenderer.invoke(MESSAGES.ASSETS_DIALOG),
+  openAssetsDialog: (extensions) => ipcRenderer.invoke(MESSAGES.ASSETS_DIALOG, extensions),
   saveProjectConfig: (config) => {
     // TODO: Remove json beautify before production
     fs.writeFileSync(path.resolve(editorConfig.projectConfig), JSON.stringify(config, null, 2))
