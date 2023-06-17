@@ -1,5 +1,7 @@
 import type { FC } from 'react'
 
+export type Properties = Record<string, string | number | boolean | Array<string> | undefined>
+
 export type DependencyValue = string | number | boolean
 
 export interface Dependency {
@@ -26,6 +28,7 @@ export interface Field {
   type: FieldType
   referenceId?: string
   dependency?: Dependency
+  properties?: Properties
 }
 
 export interface WidgetProps {

@@ -2,9 +2,9 @@ import { useCallback, FC } from 'react'
 
 import { Labelled, LabelledProps } from '../labelled'
 import { FilePicker } from '../../../../components'
-import type { InputProps } from '../../../../../types/inputs'
+import type { FileInputProps } from '../../../../../types/inputs'
 
-export const FileInput: FC<InputProps> = ({
+export const FileInput: FC<FileInputProps> = ({
   onAccept = (): void => void 0,
   onBlur = (): void => void 0,
   ...props
@@ -30,7 +30,7 @@ export const FileInput: FC<InputProps> = ({
   )
 }
 
-export const LabelledFileInput: FC<InputProps & Omit<LabelledProps, 'children'>> = ({ label, ...props }) => (
+export const LabelledFileInput: FC<FileInputProps & Omit<LabelledProps, 'children'>> = ({ label, ...props }) => (
   <Labelled label={label}>
     <FileInput {...props} />
   </Labelled>

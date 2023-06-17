@@ -12,11 +12,13 @@ interface FilePickerProps extends Omit<HTMLProps<HTMLInputElement>, 'size' | 're
   onPressEnter?: KeyboardEventHandler<HTMLInputElement>
   onOpenChange?: (state: boolean) => void
   value?: string
+  extensions?: Array<string>
 }
 
 export const FilePicker: FC<FilePickerProps> = ({
   onChange = (): void => void 0,
   onOpenChange = (): void => void 0,
+  extensions,
   ...props
 }) => {
   const handleChange = useCallback(
@@ -26,14 +28,14 @@ export const FilePicker: FC<FilePickerProps> = ({
 
   const handleClick = useCallback(() => {
     onOpenChange(true)
-    void window.electron.openAssetsDialog()
+    void window.electron.openAssetsDialog(extensions)
       .then((filePath) => {
         if (filePath !== undefined) {
           onChange(filePath)
         }
         onOpenChange(false)
       })
-  }, [onChange, onOpenChange])
+  }, [onChange, onOpenChange, extensions])
 
   return (
     <Space.Compact
