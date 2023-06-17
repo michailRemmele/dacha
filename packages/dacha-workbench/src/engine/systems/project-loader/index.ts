@@ -3,15 +3,20 @@ import type {
   System,
   SystemOptions,
   SceneContext,
+  UpdateOptions,
 } from 'remiz'
 
 import { Store } from '../../../store'
 import type { Data } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
 
+const DEFAULT_AUTO_SAVE_INTERVAL = 10_000
+
 export class ProjectLoader implements System {
   private sceneContext: SceneContext
   private editorCofig: EditorConfig
+
+  private autoSaveInterval: number
 
   constructor(options: SystemOptions) {
     this.sceneContext = options.sceneContext
@@ -20,6 +25,8 @@ export class ProjectLoader implements System {
     const projectConfig = window.electron.getProjectConfig()
     this.sceneContext.data.configStore = new Store(projectConfig as unknown as Data)
     this.sceneContext.data.editorConfig = this.editorCofig
+
+    this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
   }
 
   private setUpData(extension: Extension = {}): void {
@@ -76,12 +83,28 @@ export class ProjectLoader implements System {
     })
   }
 
+  private saveProjectConfig(): void {
+    const projectConfig = (this.sceneContext.data.configStore as Store).get([]) as Config
+    window.electron.saveProjectConfig(projectConfig)
+  }
+
   mount(): void {
     window.electron.onSave(() => {
-      const projectConfig = (this.sceneContext.data.configStore as Store).get([]) as Config
-      window.electron.saveProjectConfig(projectConfig)
+      this.saveProjectConfig()
     })
   }
 
-  update(): void {}
+  update(options: UpdateOptions): void {
+    if (!this.editorCofig.autoSave) {
+      return
+    }
+
+    const { deltaTime } = options
+
+    this.autoSaveInterval -= deltaTime
+    if (this.autoSaveInterval <= 0) {
+      this.saveProjectConfig()
+      this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
+    }
+  }
 }
