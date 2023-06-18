@@ -1,4 +1,4 @@
-import type { Config } from 'remiz'
+import type { Config, GlobalOption } from 'remiz'
 
 import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
 import {
@@ -10,7 +10,13 @@ import {
   ADD_FROM_TEMPLATE_MSG,
 } from '../consts/message-types'
 
-export const editorConfig: Config = {
+interface EditorConfigOptions {
+  globalOptions: Array<GlobalOption>
+}
+
+export const getEditorConfig = ({
+  globalOptions,
+}: EditorConfigOptions): Config => ({
   scenes: [
     {
       id: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
@@ -97,16 +103,6 @@ export const editorConfig: Config = {
             windowNodeId: 'canvas-root',
             backgroundColor: '#ffffff',
             backgroundAlpha: 0,
-            sortingLayers: [
-              'default',
-              'background',
-              'space',
-              'terrain',
-              'decorations',
-              'lights',
-              'effectsBack',
-              'units',
-            ],
           },
         },
         {
@@ -371,5 +367,8 @@ export const editorConfig: Config = {
     },
   ],
   loaders: [],
+  globalOptions: [
+    ...globalOptions,
+  ],
   startSceneId: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
-}
+})

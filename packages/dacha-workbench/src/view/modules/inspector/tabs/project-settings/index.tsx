@@ -1,4 +1,4 @@
-import React, { useMemo, FC } from 'react'
+import { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SceneConfig } from 'remiz'
 
@@ -7,6 +7,7 @@ import {
   Field,
   LabelledSelect,
   Form,
+  MultiField,
 } from '../../components'
 
 export const ProjectSettings: FC = () => {
@@ -40,6 +41,12 @@ export const ProjectSettings: FC = () => {
         label={t('inspector.projectSettings.field.startLoader.label')}
         options={loaderOptions}
         allowEmpty
+      />
+      <div>
+        {t('inspector.projectSettings.globalOptions.title')}
+      </div>
+      <MultiField
+        path={['globalOptions']}
       />
     </Form>
   )

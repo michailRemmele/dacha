@@ -2,6 +2,7 @@ export { Field } from './field'
 export { DependencyField } from './dependency-field'
 export { ComponentList } from './component-list'
 export { SystemList } from './system-list'
+export { MultiField } from './multi-field'
 
 export { Labelled } from './labelled'
 

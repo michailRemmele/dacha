@@ -11,8 +11,12 @@ import {
   contribSystems,
 } from 'remiz'
 
-import { editorConfig } from '../../../engine/config'
+import { getEditorConfig } from '../../../engine/config'
 import { editorSystems, editorComponents } from '../../../engine'
+
+const REQUIRED_GLOBAL_OPTIONS = [
+  'sortingLayers',
+]
 
 interface EngineProviderProps {
   children: JSX.Element | Array<JSX.Element>
@@ -23,8 +27,14 @@ export const EngineContext = React.createContext<UiInitFnOptions>({} as UiInitFn
 export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Element => {
   const [context, setContext] = useState<UiInitFnOptions>()
 
+  const globalOptions = useMemo(() => {
+    const projectConfig = window.electron.getProjectConfig()
+    return projectConfig.globalOptions
+      .filter((option) => REQUIRED_GLOBAL_OPTIONS.includes(option.name))
+  }, [])
+
   const editorEngine = useMemo(() => new Engine({
-    config: editorConfig,
+    config: getEditorConfig({ globalOptions }),
     systems: {
       ...contribSystems,
       ...editorSystems,
@@ -39,7 +49,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
         onDestroy: (): void => setContext(void 0),
       }),
     },
-  }), [])
+  }), [globalOptions])
 
   useEffect(() => {
     void editorEngine.start()
