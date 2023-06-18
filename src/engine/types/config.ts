@@ -1,3 +1,10 @@
+export interface GlobalOption {
+  id: string
+  name: string
+  type: string
+  value: unknown
+}
+
 export interface ComponentConfig {
   name: string
   config: Record<string, unknown>
@@ -46,4 +53,5 @@ export interface Config {
   loaders: Array<SceneConfig>
   startSceneId: string
   startLoaderId?: string
+  globalOptions: Array<GlobalOption>
 }

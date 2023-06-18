@@ -30,6 +30,7 @@ export class Engine {
         loaders,
         startSceneId,
         startLoaderId,
+        globalOptions,
       },
       systems,
       components,
@@ -50,6 +51,7 @@ export class Engine {
       loaders,
       systems,
       helpers,
+      globalOptions,
       gameObjectCreator,
       templateCollection,
     });

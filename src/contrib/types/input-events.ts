@@ -1,4 +1,6 @@
-export type InputEventAttributes = Record<string, string | number | boolean>;
+export type AttributeValue = string | number | boolean | Array<string>;
+
+export type InputEventAttributes = Record<string, AttributeValue>;
 
 export interface InputEventBind {
   event: string
@@ -12,5 +14,5 @@ export interface InputEventBindings {
 
 export interface InputEventAttributeConfig {
   name: string
-  value: string | number | boolean
+  value: AttributeValue
 }

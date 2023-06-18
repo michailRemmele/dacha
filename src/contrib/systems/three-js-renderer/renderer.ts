@@ -48,7 +48,6 @@ import {
 
 interface RendererOptions extends SystemOptions {
   windowNodeId: string
-  sortingLayers: Array<string>
   backgroundColor: string
   backgroundAlpha: number
 }
@@ -72,10 +71,10 @@ export class Renderer implements System {
 
   constructor(options: SystemOptions) {
     const {
+      globalOptions,
       createGameObjectObserver,
       store,
       windowNodeId,
-      sortingLayers,
       backgroundColor,
       backgroundAlpha,
       templateCollection,
@@ -99,8 +98,9 @@ export class Renderer implements System {
 
     this.window = window;
 
+    const sortingLayers = globalOptions.sortingLayers as Array<string> | undefined;
     this.sortFn = composeSort([
-      createSortByLayer(sortingLayers),
+      createSortByLayer(sortingLayers ?? []),
       sortByYAxis,
       sortByXAxis,
       sortByZAxis,
