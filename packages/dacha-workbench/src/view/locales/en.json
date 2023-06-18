@@ -71,8 +71,9 @@
     "gameObjectForm.field.templateName.label": "Template",
     "gameObjectForm.field.type.label": "Type",
 
-    "projectSettings.field.startScene.label": "Start scene",
-    "projectSettings.field.startLoader.label": "Start loader",
+    "projectSettings.field.startScene.label": "Start Scene",
+    "projectSettings.field.startLoader.label": "Start Loader",
+    "projectSettings.globalOptions.title": "Global Options",
 
     "components.select.option.none.title": "[none]",
 
