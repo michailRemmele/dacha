@@ -22,6 +22,7 @@ describe('Engine -> GameObjectObserver', () => {
       gameObjects: [],
       availableSystems: {},
       helpers: {},
+      globalOptions: {},
       systems: [],
       gameObjectCreator: new GameObjectCreator({}, templateCollection),
       templateCollection,
