@@ -30,13 +30,13 @@ export const Field: FC<FieldProps> = ({
   onAccept = (): void => void 0,
   ...props
 }) => {
-  const valueRef = useRef<string>()
-  const [value, setValue] = useState('')
-
-  const InputComponent = component
-
   const initialValue = useConfig(path) as string
   const { dispatch } = useCommander()
+
+  const valueRef = useRef(initialValue)
+  const [value, setValue] = useState(initialValue)
+
+  const InputComponent = component
 
   useEffect(() => {
     valueRef.current = initialValue
