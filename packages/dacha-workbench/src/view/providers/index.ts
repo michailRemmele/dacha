@@ -3,3 +3,4 @@ export { SelectedEntityContext, SelectedEntityProvider } from './selected-entity
 export { SchemasContext, SchemasProvider } from './schemas-provider'
 export type { SchemasDataEntry } from './schemas-provider'
 export { ThemeProvider } from './theme-provider'
+export { NotificationContext, NotificationProvider } from './notification-provider'
