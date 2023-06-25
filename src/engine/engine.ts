@@ -16,12 +16,38 @@ export interface EngineOptions {
 
 export class Engine {
   private options: EngineOptions;
+  private gameLoop?: GameLoop;
+  private sceneProvider?: SceneProvider;
 
   constructor(options: EngineOptions) {
     this.options = options;
   }
 
-  async start(): Promise<void> {
+  private handleWindowBlur = (): void => {
+    this.gameLoop?.stop();
+  };
+
+  private handleWindowFocus = (): void => {
+    this.gameLoop?.run();
+  };
+
+  private addWindowListeners(): void {
+    window.addEventListener('blur', this.handleWindowBlur);
+    window.addEventListener('focus', this.handleWindowFocus);
+  }
+
+  private removeWindowListeners(): void {
+    window.removeEventListener('blur', this.handleWindowBlur);
+    window.removeEventListener('focus', this.handleWindowFocus);
+  }
+
+  async play(): Promise<void> {
+    if (this.sceneProvider !== undefined && this.gameLoop !== undefined) {
+      this.gameLoop.run();
+      this.addWindowListeners();
+      return;
+    }
+
     const {
       config: {
         templates,
@@ -45,7 +71,7 @@ export class Engine {
 
     const gameObjectCreator = new GameObjectCreator(components, templateCollection);
 
-    const sceneProvider = new SceneProvider({
+    this.sceneProvider = new SceneProvider({
       scenes,
       levels,
       loaders,
@@ -56,27 +82,40 @@ export class Engine {
       templateCollection,
     });
 
-    await sceneProvider.prepareLoaders();
+    await this.sceneProvider.prepareLoaders();
 
-    const asyncLoading = sceneProvider.loadScene({
+    const asyncLoading = this.sceneProvider.loadScene({
       sceneId: startSceneId,
       loaderId: startLoaderId,
     });
 
     if (asyncLoading && !startLoaderId) {
       await asyncLoading;
-      sceneProvider.moveToLoaded();
+      this.sceneProvider.moveToLoaded();
     }
 
-    const gameLoop = new GameLoop(
-      sceneProvider,
+    this.gameLoop = new GameLoop(
+      this.sceneProvider,
       [
-        new SceneController({ sceneProvider }),
+        new SceneController({ sceneProvider: this.sceneProvider }),
       ],
     );
-    gameLoop.run();
 
-    window.onblur = (): void => gameLoop.stop();
-    window.onfocus = (): void => gameLoop.run();
+    this.gameLoop.run();
+    this.addWindowListeners();
+  }
+
+  pause(): void {
+    this.gameLoop?.stop();
+    this.removeWindowListeners();
+  }
+
+  stop(): void {
+    this.gameLoop?.stop();
+    this.sceneProvider?.leaveCurrentScene();
+    this.removeWindowListeners();
+
+    this.gameLoop = undefined;
+    this.sceneProvider = undefined;
   }
 }

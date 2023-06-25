@@ -201,6 +201,15 @@ export class SceneProvider {
     this.setCurrentScene(id);
   }
 
+  leaveCurrentScene(): void {
+    if (!this.currentSceneId || !this.sceneContainer[this.currentSceneId]) {
+      return;
+    }
+
+    this.sceneContainer[this.currentSceneId].unmount();
+    this.currentSceneId = void '';
+  }
+
   private setCurrentScene(id: string): void {
     if (!this.sceneContainer[id]) {
       throw new Error(`Error while setting new scene. Not found scene with same id: ${id}`);
@@ -208,15 +217,6 @@ export class SceneProvider {
 
     this.currentSceneId = id;
     this.sceneContainer[this.currentSceneId].mount();
-  }
-
-  private leaveCurrentScene(): void {
-    if (!this.currentSceneId || !this.sceneContainer[this.currentSceneId]) {
-      return;
-    }
-
-    this.sceneContainer[this.currentSceneId].unmount();
-    this.currentSceneId = void '';
   }
 
   private removeScene(id: string): void {
