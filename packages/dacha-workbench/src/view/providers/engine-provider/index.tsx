@@ -52,7 +52,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
   }), [globalOptions])
 
   useEffect(() => {
-    void editorEngine.start()
+    void editorEngine.play()
   }, [editorEngine])
 
   return (
