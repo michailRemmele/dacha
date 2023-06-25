@@ -8,6 +8,7 @@ import {
   EngineProvider,
   SelectedEntityProvider,
   ThemeProvider,
+  NotificationProvider,
 } from './view/providers'
 import { APP_ROOT } from './consts/root-nodes'
 
@@ -31,7 +32,9 @@ root.render(
   <ThemeProvider>
     <EngineProvider>
       <SelectedEntityProvider>
-        <App />
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
       </SelectedEntityProvider>
     </EngineProvider>
   </ThemeProvider>,
