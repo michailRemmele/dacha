@@ -1,5 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema'
 
+import { RenderableWidget } from './view'
+
 export const renderable: WidgetSchema = {
   title: 'components.renderable.title',
   fields: [
@@ -64,7 +66,8 @@ export const renderable: WidgetSchema = {
     {
       name: 'sortingLayer',
       title: 'components.renderable.sortingLayer.title',
-      type: 'string',
+      type: 'select',
+      referenceId: 'sortingLayers',
     },
     {
       name: 'fit',
@@ -153,6 +156,7 @@ export const renderable: WidgetSchema = {
       ],
     },
   },
+  view: RenderableWidget,
   getInitialState: () => ({
     type: 'static',
     src: '',

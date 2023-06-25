@@ -10,6 +10,7 @@ import { LabelledSelect } from '../select'
 import { LabelledTextInput } from '../text-input'
 import { LabelledNumberInput } from '../number-input'
 import { LabelledCheckbox } from '../checkbox'
+import { LabelledMultiTextInput } from '../multi-text-input'
 import { Panel } from '../panel'
 import { useCommander } from '../../../../hooks'
 import { deleteValue, setValue } from '../../../../commands'
@@ -30,18 +31,24 @@ const TYPES = [
     title: 'boolean',
     value: 'boolean',
   },
+  {
+    title: 'array',
+    value: 'array',
+  },
 ]
 
 const TYPES_MAP = {
   string: LabelledTextInput,
   number: LabelledNumberInput,
   boolean: LabelledCheckbox,
+  array: LabelledMultiTextInput,
 }
 
 const TYPES_INITIAL_VALUES_MAP = {
   string: '',
   number: 0,
   boolean: false,
+  array: [],
 }
 
 interface MultiFieldEntryProps {

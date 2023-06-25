@@ -47,12 +47,7 @@
           "name": "renderer",
           "options": {
             "windowNodeId": "root",
-            "backgroundColor": "#000",
-            "sortingLayers": [
-              "background",
-              "terrain",
-              "units"
-            ]
+            "backgroundColor": "#000"
           }
         },
         {
@@ -555,6 +550,17 @@
         }
       ],
       "id": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
+    }
+  ],
+  "globalOptions": [
+    {
+      "id": "9bd6453a-75f5-42b2-8ad3-e7c7157d7e0a",
+      "name": "sortingLayers",
+      "type": "array",
+      "value": [
+        "background",
+        "terrain"
+      ]
     }
   ],
   "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",

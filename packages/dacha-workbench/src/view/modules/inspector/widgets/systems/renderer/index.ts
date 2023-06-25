@@ -18,16 +18,10 @@ export const renderer: WidgetSchema = {
       title: 'systems.renderer.backgroundAlpha.title',
       type: 'number',
     },
-    {
-      name: 'sortingLayers',
-      title: 'systems.renderer.sortingLayers.title',
-      type: 'multitext',
-    },
   ],
   getInitialState: () => ({
     windowNodeId: '',
     backgroundColor: '#000',
     backgroundAlpha: 1,
-    sortingLayers: [],
   }),
 }

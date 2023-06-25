@@ -1,8 +1,8 @@
-export type MultiFieldEntryType = 'string' | 'number' | 'boolean'
+export type MultiFieldEntryType = 'string' | 'number' | 'boolean' | 'array'
 
 export interface MultiFieldEntry {
   id: string
   name: string
   type: MultiFieldEntryType
-  value: string | number | boolean
+  value: string | number | boolean | Array<string>
 }
