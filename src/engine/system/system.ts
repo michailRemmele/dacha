@@ -15,6 +15,7 @@ export interface SystemOptions extends Record<string, unknown> {
   gameObjectSpawner: GameObjectSpawner
   gameObjectDestroyer: GameObjectDestroyer
   helpers: Record<string, HelperFn>
+  globalOptions: Record<string, unknown>
   store: Store
   messageBus: MessageBus
   sceneContext: SceneContext

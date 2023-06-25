@@ -25,6 +25,7 @@ interface SceneOptions extends SceneConfig {
   gameObjects: Array<GameObjectConfig>
   availableSystems: SystemsMap
   helpers: Record<string, HelperFn>
+  globalOptions: Record<string, unknown>
   gameObjectCreator: GameObjectCreator
   templateCollection: TemplateCollection
 }
@@ -50,6 +51,7 @@ export class Scene {
     gameObjects,
     systems,
     helpers,
+    globalOptions,
     gameObjectCreator,
     availableSystems,
     templateCollection,
@@ -80,6 +82,7 @@ export class Scene {
       ),
       messageBus: this.getMessageBus(),
       helpers,
+      globalOptions,
       sceneContext: this.context,
       templateCollection: this.templateCollection,
     }));

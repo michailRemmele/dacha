@@ -1,4 +1,4 @@
-import type { SceneConfig, LevelConfig } from '../types';
+import type { SceneConfig, LevelConfig, GlobalOption } from '../types';
 import type { GameObjectCreator } from '../game-object';
 import type { SystemsMap, HelperFn } from '../system';
 import type { TemplateCollection } from '../template';
@@ -12,6 +12,7 @@ interface SceneProviderOptions {
   levels: Array<LevelConfig>
   systems: SystemsMap
   helpers: Record<string, HelperFn>
+  globalOptions: Array<GlobalOption>
   gameObjectCreator: GameObjectCreator
   templateCollection: TemplateCollection
 }
@@ -35,6 +36,7 @@ export class SceneProvider {
   private availableLevels: Record<string, LevelConfig>;
   private systems: SystemsMap;
   private helpers: Record<string, HelperFn>;
+  private globalOptions: Record<string, unknown>;
   private sceneContainer: Record<string, Scene>;
   private currentSceneId?: string;
   private loadedScene?: Scene;
@@ -47,6 +49,7 @@ export class SceneProvider {
     systems,
     loaders,
     helpers,
+    globalOptions,
     gameObjectCreator,
     templateCollection,
   }: SceneProviderOptions) {
@@ -66,6 +69,10 @@ export class SceneProvider {
     }, {});
     this.systems = systems;
     this.helpers = helpers;
+    this.globalOptions = globalOptions.reduce((acc: Record<string, unknown>, option) => {
+      acc[option.name] = option.value;
+      return acc;
+    }, {});
     this.loadedScene = void 0;
     this.gameObjectCreator = gameObjectCreator;
     this.templateCollection = templateCollection;
@@ -82,6 +89,7 @@ export class SceneProvider {
             : [],
           availableSystems: this.systems,
           helpers: this.helpers,
+          globalOptions: this.globalOptions,
           gameObjectCreator: this.gameObjectCreator,
           templateCollection: this.templateCollection,
         });
@@ -137,6 +145,7 @@ export class SceneProvider {
         gameObjects: selectedLevelId ? this.availableLevels[selectedLevelId].gameObjects : [],
         availableSystems: this.systems,
         helpers: this.helpers,
+        globalOptions: this.globalOptions,
         gameObjectCreator: this.gameObjectCreator,
         templateCollection: this.templateCollection,
       });
@@ -192,6 +201,15 @@ export class SceneProvider {
     this.setCurrentScene(id);
   }
 
+  leaveCurrentScene(): void {
+    if (!this.currentSceneId || !this.sceneContainer[this.currentSceneId]) {
+      return;
+    }
+
+    this.sceneContainer[this.currentSceneId].unmount();
+    this.currentSceneId = void '';
+  }
+
   private setCurrentScene(id: string): void {
     if (!this.sceneContainer[id]) {
       throw new Error(`Error while setting new scene. Not found scene with same id: ${id}`);
@@ -199,15 +217,6 @@ export class SceneProvider {
 
     this.currentSceneId = id;
     this.sceneContainer[this.currentSceneId].mount();
-  }
-
-  private leaveCurrentScene(): void {
-    if (!this.currentSceneId || !this.sceneContainer[this.currentSceneId]) {
-      return;
-    }
-
-    this.sceneContainer[this.currentSceneId].unmount();
-    this.currentSceneId = void '';
   }
 
   private removeScene(id: string): void {
