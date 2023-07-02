@@ -29,6 +29,7 @@ import {
   sortByZAxis,
   sortByFit,
 } from './sort';
+import { parseSortingLayers } from './sort/utils';
 import { LightSubsystem } from './light-subsystem';
 import { createMaterial, updateMaterial } from './material-factory';
 import {
@@ -98,9 +99,8 @@ export class Renderer implements System {
 
     this.window = window;
 
-    const sortingLayers = globalOptions.sortingLayers as Array<string> | undefined;
     this.sortFn = composeSort([
-      createSortByLayer(sortingLayers ?? []),
+      createSortByLayer(parseSortingLayers(globalOptions.sortingLayers)),
       sortByYAxis,
       sortByXAxis,
       sortByZAxis,
