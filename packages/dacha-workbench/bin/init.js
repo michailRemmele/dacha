@@ -9,6 +9,7 @@ const INITIAL_DATA = {
   levels: [],
   templates: [],
   loaders: [],
+  globalOptions: [],
   startSceneId: null,
   startLoaderId: null,
 }
@@ -28,6 +29,7 @@ const init = () => {
   fs.writeFileSync(path.resolve('remiz-editor.config.js'), `module.exports = ${JSON.stringify({
     projectConfig: `${DATA_FOLDER_NAME}/data.json`,
     assets: `${DATA_FOLDER_NAME}/${ASSETS_FOLDER_NAME}`,
+    autoSave: true,
   }, null, 2)}`)
 }
 

@@ -102,6 +102,8 @@ export const Entry: FC<MultiFieldEntryProps> = ({
         onChange={handleTypeChange}
       />
       <Field
+        // Reset component on type change to prevent issues with value mismatch
+        key={type}
         path={valuePath}
         component={InputField}
         label={t('inspector.multifield.field.value.title')}
