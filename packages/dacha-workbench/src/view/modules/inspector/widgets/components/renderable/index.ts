@@ -166,7 +166,7 @@ export const renderable: WidgetSchema = {
     sortCenter: [0, 0],
     flipX: false,
     flipY: false,
-    sortingLayer: 'default',
+    sortingLayer: '',
     fit: 'stretch',
     material: {
       type: 'basic',
