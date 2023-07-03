@@ -50,7 +50,7 @@ export class CameraSystem implements System {
     this.store = store;
     this.window = windowNode as (Window & HTMLElement);
 
-    this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1) as number;
+    this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1);
 
     const currentCamera = this.gameObjectObserver.getById(initialCamera);
 
