@@ -1,11 +1,6 @@
 import { Animator } from './animator';
 import { CameraSystem } from './camera-system';
-import { CollisionBroadcastSystem } from './collision-broadcast-system';
-import { CollisionDetectionSystem } from './collision-detection-system';
-import { CollisionSolver } from './collision-solver';
-import { ConstraintSolver } from './constraint-solver';
 import { GameStatsMeter } from './game-stats-meter';
-import { Jammer } from './jammer';
 import { KeyboardInputSystem } from './keyboard-input-system';
 import { KeyboardControlSystem } from './keyboard-control-system';
 import { MouseControlSystem } from './mouse-control-system';
@@ -19,12 +14,7 @@ import { UiBridge } from './ui-bridge';
 export const contribSystems = {
   animator: Animator,
   cameraSystem: CameraSystem,
-  collisionBroadcastSystem: CollisionBroadcastSystem,
-  collisionDetectionSystem: CollisionDetectionSystem,
-  collisionSolver: CollisionSolver,
-  constraintSolver: ConstraintSolver,
   gameStatsMeter: GameStatsMeter,
-  jammer: Jammer,
   keyboardInputSystem: KeyboardInputSystem,
   keyboardControlSystem: KeyboardControlSystem,
   mouseControlSystem: MouseControlSystem,
