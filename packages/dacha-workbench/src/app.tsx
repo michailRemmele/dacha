@@ -9,6 +9,7 @@ import {
   SelectedEntityProvider,
   ThemeProvider,
   NotificationProvider,
+  CommandProvider,
 } from './view/providers'
 import { APP_ROOT } from './consts/root-nodes'
 
@@ -31,11 +32,13 @@ const root = createRoot(document.getElementById(APP_ROOT) as HTMLElement)
 root.render(
   <ThemeProvider>
     <EngineProvider>
-      <SelectedEntityProvider>
-        <NotificationProvider>
-          <App />
-        </NotificationProvider>
-      </SelectedEntityProvider>
+      <CommandProvider>
+        <SelectedEntityProvider>
+          <NotificationProvider>
+            <App />
+          </NotificationProvider>
+        </SelectedEntityProvider>
+      </CommandProvider>
     </EngineProvider>
   </ThemeProvider>,
 )

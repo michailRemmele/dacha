@@ -1,4 +1,7 @@
-import { FC } from 'react'
+import { useCallback } from 'react'
+import type { FC } from 'react'
+
+import { MODAL_ROOT } from '../../../consts/root-nodes'
 
 import { ModalStyled } from './modal.style'
 
@@ -16,17 +19,21 @@ export const Modal: FC<ModalProps> = ({
   onCancel,
   width,
   children,
-}) => (
-  <ModalStyled
-    wrapClassName="modal"
-    width={width}
-    title={title}
-    open={open}
-    onCancel={onCancel}
-    footer={null}
-    centered
-    destroyOnClose
-  >
-    {children}
-  </ModalStyled>
-)
+}) => {
+  const getContainer = useCallback(() => document.getElementById(MODAL_ROOT) as HTMLElement, [])
+  return (
+    <ModalStyled
+      wrapClassName="modal"
+      width={width}
+      title={title}
+      open={open}
+      onCancel={onCancel}
+      footer={null}
+      centered
+      destroyOnClose
+      getContainer={getContainer}
+    >
+      {children}
+    </ModalStyled>
+  )
+}
