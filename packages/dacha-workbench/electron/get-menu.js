@@ -25,8 +25,16 @@ module.exports = (window) => Menu.buildFromTemplate([
   {
     role: 'editMenu',
     submenu: [
-      { role: 'undo' },
-      { role: 'redo' },
+      {
+        label: 'Undo',
+        accelerator: process.platform === 'darwin' ? 'Cmd+Z' : 'Ctrl+Z',
+        click: () => window.webContents.send(MESSAGES.UNDO),
+      },
+      {
+        label: 'Redo',
+        accelerator: process.platform === 'darwin' ? 'Cmd+Shift+Z' : 'Ctrl+Shift+Z',
+        click: () => window.webContents.send(MESSAGES.REDO),
+      },
 
       { type: 'separator' },
 
