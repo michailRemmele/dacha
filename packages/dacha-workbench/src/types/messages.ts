@@ -39,3 +39,7 @@ export interface CommandUndoMessage extends Message {
 export interface CommandRedoMessage extends Message {
   scope: string
 }
+
+export interface CommandCleanMessage extends Message {
+  scope: string
+}
