@@ -6,7 +6,7 @@ import type {
 import type { WatcherFn, WatcherOptions } from './types'
 
 const GAME_OBJECT_PATH_LENGTH = 4
-const GAME_OBJECTS_PATH_LENGTH = 3
+const LEVEL_OBJECTS_PATH_LENGTH = 3
 
 const getDiff = (
   first: Array<GameObjectConfig>,
@@ -59,8 +59,9 @@ export const watchGameObjects: WatcherFn = (options): void => {
     return
   }
 
-  if (path.length === GAME_OBJECTS_PATH_LENGTH) {
+  if (path.length <= LEVEL_OBJECTS_PATH_LENGTH) {
     syncGameObjects(options)
+    return
   }
 
   const gameObjectPath = path.slice(0, GAME_OBJECT_PATH_LENGTH)

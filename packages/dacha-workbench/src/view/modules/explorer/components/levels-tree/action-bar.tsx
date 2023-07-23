@@ -17,30 +17,17 @@ import type { GameObjectConfig, LevelConfig } from 'remiz'
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue } from '../../../../commands'
-import { SelectedEntityContext, EngineContext } from '../../../../providers'
-import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
+import { SelectedEntityContext } from '../../../../providers'
 import {
   duplicateGameObject,
   duplicateLevel,
-  getKeysToDelete,
 } from '../../utils'
 
-interface ActionBarProps {
-  expandedKeys: Array<string>
-  setExpandedKeys: (keys: Array<string>) => void
-  setSelectedLevel: (id: string | undefined) => void
-}
-
-export const ActionBar: FC<ActionBarProps> = ({
-  expandedKeys,
-  setExpandedKeys,
-  setSelectedLevel,
-}) => {
+export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
-  const { pushMessage } = useContext(EngineContext)
 
   const levels = useConfig('levels') as Array<LevelConfig>
   const selectedEntity = useConfig(selectedEntityPath) as GameObjectConfig | LevelConfig | undefined
@@ -61,11 +48,7 @@ export const ActionBar: FC<ActionBarProps> = ({
       components: [],
       children: [],
     }))
-
-    if (!expandedKeys.includes(selectedEntity.id)) {
-      setExpandedKeys([...expandedKeys, selectedEntity.id])
-    }
-  }, [dispatch, selectedEntityPath, selectedEntity, type, expandedKeys])
+  }, [dispatch, selectedEntityPath, selectedEntity, type])
 
   const handleAddLevel = useCallback(() => {
     dispatch(addValue<LevelConfig>(['levels'], {
@@ -77,23 +60,7 @@ export const ActionBar: FC<ActionBarProps> = ({
 
   const handleDelete = useCallback(() => {
     dispatch(deleteValue(selectedEntityPath as Array<string>))
-
-    if (type === 'level') {
-      pushMessage({
-        type: SELECT_LEVEL_MSG,
-        levelId: undefined,
-      })
-      setSelectedLevel(undefined)
-    }
-
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
-      path: undefined,
-    })
-
-    const keys = getKeysToDelete(selectedEntity, type)
-    setExpandedKeys(expandedKeys.filter((key) => !keys.has(key)))
-  }, [dispatch, selectedEntityPath, expandedKeys, selectedEntity, type])
+  }, [dispatch, selectedEntityPath])
 
   const handleDuplicate = useCallback(() => {
     let duplicate: GameObjectConfig | LevelConfig | undefined

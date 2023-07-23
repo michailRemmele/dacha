@@ -8,29 +8,24 @@ import { Tree as AntdTree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
 import type { TemplateConfig } from 'remiz'
 
+import { useExpandedKeys } from '../../hooks'
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
-import type { DataNodeWithPath, ExpandFn, SelectFn } from '../../../../../types/tree-node'
+import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 
 import { parseTemplates, getKey } from './utils'
 
-interface TreeProps {
-  expandedKeys: Array<string>
-  setExpandedKeys: (keys: Array<string>) => void
-}
-
-export const Tree: FC<TreeProps> = ({
-  expandedKeys,
-  setExpandedKeys,
-}) => {
+export const Tree: FC = () => {
   const { pushMessage } = useContext(EngineContext)
   const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
   const templates = useConfig('templates') as Array<TemplateConfig>
   const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseTemplates(templates), [templates])
+
+  const { expandedKeys, setExpandedKeys } = useExpandedKeys(treeData)
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
@@ -43,7 +38,7 @@ export const Tree: FC<TreeProps> = ({
 
     pushMessage({
       type: INSPECT_ENTITY_MSG,
-      path: (node as EventDataNode<DataNodeWithPath>).path.slice(0),
+      path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
     })
   }, [pushMessage])
 

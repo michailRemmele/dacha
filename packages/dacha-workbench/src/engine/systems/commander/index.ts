@@ -2,24 +2,29 @@ import type {
   MessageBus,
   System,
   SystemOptions,
-  Message,
 } from 'remiz'
 
-import { COMMAND_MSG } from '../../../consts/message-types'
+import { COMMAND_MSG, COMMAND_UNDO_MSG } from '../../../consts/message-types'
+import type {
+  CommandMessage,
+  CommandUndoMessage,
+} from '../../../types/messages'
 import type { Store } from '../../../store'
 
 import { commands } from './commands'
 import { Command } from './commands/command'
 
-export interface CommandMessage extends Message {
-  command: string
-  options: unknown
+const HISTORY_SIZE = 100
+
+interface HistoryOperation {
+  undo: () => void
 }
 
 export class Commander implements System {
   private messageBus: MessageBus
   private configStore: Store
   private commands: Record<string, Command>
+  private history: Record<string, Array<HistoryOperation>>
 
   constructor(options: SystemOptions) {
     const {
@@ -35,19 +40,44 @@ export class Commander implements System {
 
       return acc
     }, {})
+    this.history = {}
   }
 
   update(): void {
     const messages = (this.messageBus.get(COMMAND_MSG) || []) as Array<CommandMessage>
 
-    messages.forEach((message) => {
-      const cmd = this.commands[message.command]
+    messages.forEach(({ command, scope, options }) => {
+      const cmd = this.commands[command]
 
       if (!cmd) {
         return
       }
 
-      cmd.execute(message.options)
+      const undo = cmd.execute(options)
+      if (undo === undefined) {
+        return
+      }
+
+      this.history[scope] ??= []
+      this.history[scope].push({ undo })
+
+      if (this.history[scope].length > HISTORY_SIZE) {
+        this.history[scope].shift()
+      }
+    })
+
+    const undoMessages = this.messageBus.get(
+      COMMAND_UNDO_MSG,
+    ) as Array<CommandUndoMessage> | undefined
+    if (!undoMessages?.length) {
+      return
+    }
+
+    undoMessages.forEach(({ scope }) => {
+      if (this.history[scope]?.length > 0) {
+        const operation = this.history[scope].pop() as HistoryOperation
+        operation.undo()
+      }
     })
   }
 }

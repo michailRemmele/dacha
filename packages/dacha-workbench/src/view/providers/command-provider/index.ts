@@ -1,2 +1,2 @@
 export { CommandProvider, CommandContext } from './command-provider'
-export { CommandScope, CommandScopeContext } from './command-scope'
+export { CommandScopeProvider, CommandScopeContext } from './command-scope'

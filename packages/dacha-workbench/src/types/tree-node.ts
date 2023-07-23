@@ -1,7 +1,8 @@
 import type { TreeProps, DataNode } from 'antd/lib/tree'
 
-export interface DataNodeWithPath extends DataNode {
+export interface ExplorerDataNode extends DataNode {
   path: Array<string>
+  parent?: ExplorerDataNode
 }
 
 export type ExpandFn = Required<TreeProps>['onExpand']

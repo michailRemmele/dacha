@@ -1,11 +1,11 @@
 import type { SceneConfig } from 'remiz'
 
-import { DataNodeWithPath } from '../../../../../types/tree-node'
+import { ExplorerDataNode } from '../../../../../types/tree-node'
 
 export const parseScenes = (
   scenes: Array<SceneConfig>,
   isLoaders?: boolean,
-): Array<DataNodeWithPath> => scenes.map((scene) => ({
+): Array<ExplorerDataNode> => scenes.map((scene) => ({
   key: scene.id,
   title: scene.name,
   path: [isLoaders ? 'loaders' : 'scenes', `id:${scene.id}`],

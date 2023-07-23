@@ -13,6 +13,7 @@ import {
   COMMAND_MSG,
 } from '../../../../consts/message-types'
 import { SET } from '../../../../command-types'
+import { ROOT_SCOPE } from '../../../../consts/command-scopes'
 import {
   TRANSFORM_COMPONENT_NAME,
   RENDERABLE_COMPONENT_NAME,
@@ -20,7 +21,7 @@ import {
 import { buildGameObjectPath } from '../utils'
 import { getTool } from '../../../../utils/get-tool'
 import { getGridValue, getGridStep } from '../../../../utils/grid'
-import type { MouseInputMessage } from '../../../../types/messages'
+import type { MouseInputMessage, CommandMessage } from '../../../../types/messages'
 import type { Store } from '../../../../store'
 
 import {
@@ -125,9 +126,10 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    this.messageBus.send({
+    const commandMessage: CommandMessage = {
       type: COMMAND_MSG,
       command: SET,
+      scope: ROOT_SCOPE,
       options: {
         path: transformPath,
         value: {
@@ -136,7 +138,8 @@ export class SelectionMovementSubsystem {
           offsetY: transform.relativeOffsetY,
         },
       },
-    })
+    }
+    this.messageBus.send(commandMessage)
   }
 
   private handleMoveMessages(selectionId: string): void {
