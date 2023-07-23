@@ -4,10 +4,15 @@ import type {
   SystemOptions,
 } from 'remiz'
 
-import { COMMAND_MSG, COMMAND_UNDO_MSG } from '../../../consts/message-types'
+import {
+  COMMAND_MSG,
+  COMMAND_UNDO_MSG,
+  COMMAND_CLEAN_MSG,
+} from '../../../consts/message-types'
 import type {
   CommandMessage,
   CommandUndoMessage,
+  CommandCleanMessage,
 } from '../../../types/messages'
 import type { Store } from '../../../store'
 
@@ -43,8 +48,11 @@ export class Commander implements System {
     this.history = {}
   }
 
-  update(): void {
-    const messages = (this.messageBus.get(COMMAND_MSG) || []) as Array<CommandMessage>
+  private handleCommandMessages(): void {
+    const messages = this.messageBus.get(COMMAND_MSG) as Array<CommandMessage>
+    if (!messages?.length) {
+      return
+    }
 
     messages.forEach(({ command, scope, options }) => {
       const cmd = this.commands[command]
@@ -65,10 +73,10 @@ export class Commander implements System {
         this.history[scope].shift()
       }
     })
+  }
 
-    const undoMessages = this.messageBus.get(
-      COMMAND_UNDO_MSG,
-    ) as Array<CommandUndoMessage> | undefined
+  private handleUndoMessages(): void {
+    const undoMessages = this.messageBus.get(COMMAND_UNDO_MSG) as Array<CommandUndoMessage>
     if (!undoMessages?.length) {
       return
     }
@@ -79,5 +87,22 @@ export class Commander implements System {
         operation.undo()
       }
     })
+  }
+
+  private handleCleanMessages(): void {
+    const cleanMessages = this.messageBus.get(COMMAND_CLEAN_MSG) as Array<CommandCleanMessage>
+    if (!cleanMessages?.length) {
+      return
+    }
+
+    cleanMessages.forEach(({ scope }) => {
+      delete this.history[scope]
+    })
+  }
+
+  update(): void {
+    this.handleCommandMessages()
+    this.handleUndoMessages()
+    this.handleCleanMessages()
   }
 }
