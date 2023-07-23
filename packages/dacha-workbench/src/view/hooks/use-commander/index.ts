@@ -3,7 +3,7 @@ import {
   useCallback,
 } from 'react'
 
-import { EngineContext } from '../../providers'
+import { EngineContext, CommandScopeContext } from '../../providers'
 import { COMMAND_MSG } from '../../../consts/message-types'
 
 export interface Command {
@@ -17,13 +17,15 @@ export type UseCommanderHook = () => {
 
 export const useCommander: UseCommanderHook = () => {
   const { pushMessage } = useContext(EngineContext)
+  const scope = useContext(CommandScopeContext)
 
   const dispatch = useCallback((command: Command) => {
     pushMessage({
       type: COMMAND_MSG,
+      scope,
       ...command,
     })
-  }, [pushMessage])
+  }, [pushMessage, scope])
 
   return { dispatch }
 }

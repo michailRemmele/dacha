@@ -16,26 +16,16 @@ import type { TemplateConfig, LevelConfig } from 'remiz'
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue, setValue } from '../../../../commands'
-import { SelectedEntityContext, EngineContext } from '../../../../providers'
-import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
-import { duplicateTemplate, getKeysToDelete } from '../../utils'
+import { SelectedEntityContext } from '../../../../providers'
+import { duplicateTemplate } from '../../utils'
 
 import { filterLevels } from './utils'
 
-interface ActionBarProps {
-  expandedKeys: Array<string>
-  setExpandedKeys: (keys: Array<string>) => void
-}
-
-export const ActionBar: FC<ActionBarProps> = ({
-  expandedKeys,
-  setExpandedKeys,
-}) => {
+export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
-  const { pushMessage } = useContext(EngineContext)
 
   const templates = useConfig('templates') as Array<TemplateConfig>
   const levels = useConfig('levels') as Array<LevelConfig>
@@ -56,28 +46,16 @@ export const ActionBar: FC<ActionBarProps> = ({
       components: [],
       children: [],
     }))
-
-    if (selectedEntity && !expandedKeys.includes(selectedEntity.id)) {
-      setExpandedKeys([...expandedKeys, selectedEntity.id])
-    }
-  }, [dispatch, selectedEntityPath, selectedEntity, expandedKeys, templates, type])
+  }, [dispatch, selectedEntityPath, selectedEntity, templates, type])
 
   const handleDelete = useCallback(() => {
     if (!selectedEntity || !selectedEntityPath) {
       return
     }
 
-    dispatch(deleteValue(selectedEntityPath))
     dispatch(setValue(['levels'], filterLevels(levels, selectedEntity.id)))
-
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
-      path: undefined,
-    })
-
-    const keys = getKeysToDelete(selectedEntity, type)
-    setExpandedKeys(expandedKeys.filter((key) => !keys.has(key)))
-  }, [dispatch, selectedEntityPath, expandedKeys, selectedEntity, type, levels])
+    dispatch(deleteValue(selectedEntityPath))
+  }, [dispatch, selectedEntityPath, selectedEntity, levels])
 
   const handleDuplicate = useCallback(() => {
     if (selectedEntityPath === undefined) {

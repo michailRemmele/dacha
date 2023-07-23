@@ -11,16 +11,20 @@ import { HeaderStyled } from './entity-inspector.style'
 
 export const EntityInspector = (): JSX.Element | null => {
   const { t } = useTranslation()
-  const { type, path = [] } = useContext(SelectedEntityContext)
+  const { type, path } = useContext(SelectedEntityContext)
 
-  const entity = useConfig(path) as { id: string }
+  const entity = useConfig(path) as { id: string } | undefined
   const handleCopyId = useCallback(() => {
+    if (!entity) {
+      return
+    }
+
     void navigator.clipboard.writeText(entity.id)
   }, [entity])
 
   const FormComponent = type ? forms[type] : null
 
-  if (!FormComponent) {
+  if (!FormComponent || !path) {
     return null
   }
 

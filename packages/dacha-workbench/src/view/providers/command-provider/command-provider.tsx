@@ -10,8 +10,7 @@ import {
   COMMAND_UNDO_MSG,
   COMMAND_REDO_MSG,
 } from '../../../consts/message-types'
-
-import { DEFAULT_SCOPE } from './consts'
+import { ROOT_SCOPE } from '../../../consts/command-scopes'
 
 interface UndoRedoProviderProviderProps {
   children: JSX.Element | Array<JSX.Element>
@@ -29,7 +28,7 @@ export const CommandProvider = ({
 }: UndoRedoProviderProviderProps): JSX.Element => {
   const engineContext = useContext(EngineContext)
 
-  const [activeScope, setActiveScope] = useState(DEFAULT_SCOPE)
+  const [activeScope, setActiveScope] = useState(ROOT_SCOPE)
 
   useEffect(() => {
     if (engineContext === undefined) {

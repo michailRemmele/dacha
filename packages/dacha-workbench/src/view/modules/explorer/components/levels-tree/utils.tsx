@@ -1,19 +1,21 @@
 import type { LevelConfig, GameObjectConfig } from 'remiz'
 import { FileOutlined } from '@ant-design/icons'
 
-import type { DataNodeWithPath } from '../../../../../types/tree-node'
+import type { ExplorerDataNode } from '../../../../../types/tree-node'
 
 const parseGameObject = (
   gameObject: GameObjectConfig,
   path: Array<string>,
-): DataNodeWithPath => {
+  parent?: ExplorerDataNode,
+): ExplorerDataNode => {
   const isLeaf = !gameObject?.children?.length
   const gameObjectPath = path.concat(`id:${gameObject.id}`)
 
-  const node: DataNodeWithPath = {
+  const node: ExplorerDataNode = {
     key: gameObject.id,
     title: gameObject.name,
     path: gameObjectPath,
+    parent,
     icon: <FileOutlined />,
     isLeaf,
   }
@@ -21,7 +23,7 @@ const parseGameObject = (
   if (!isLeaf) {
     const childPath = gameObjectPath.concat('children')
     node.children = gameObject.children?.map(
-      (child) => parseGameObject(child, childPath),
+      (child) => parseGameObject(child, childPath, node),
     )
   }
 
@@ -31,7 +33,7 @@ const parseGameObject = (
 export const parseLevels = (
   levels: Array<LevelConfig>,
   inactiveSelectedLevelId?: string,
-): Array<DataNodeWithPath> => levels.map((level) => ({
+): Array<ExplorerDataNode> => levels.map((level) => ({
   key: level.id,
   title: level.name,
   path: ['levels', `id:${level.id}`],

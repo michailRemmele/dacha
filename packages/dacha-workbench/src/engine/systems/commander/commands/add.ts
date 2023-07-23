@@ -8,7 +8,7 @@ interface AddCommandOptions {
 }
 
 export class AddCmd extends Command {
-  execute(options: unknown): void {
+  execute(options: unknown): (() => void) | void {
     const {
       path,
       value,
@@ -18,9 +18,14 @@ export class AddCmd extends Command {
 
     if (!Array.isArray(array)) {
       console.error('Can\'t add value to store. The item found by path should be an array')
-      return
+      return undefined
     }
 
     this.store.set(path, [...array, value])
+
+    return () => {
+      const modifiedArray = this.store.get(path) as Array<DataValue>
+      this.store.set(path, modifiedArray.slice(0, -1))
+    }
   }
 }

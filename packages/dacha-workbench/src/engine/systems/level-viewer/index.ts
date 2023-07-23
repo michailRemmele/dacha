@@ -127,7 +127,7 @@ export class LevelViewer implements System {
       if (includesArray(path, ['templates'])) {
         watchTemplates(options)
       }
-      if (this.currentLevel && includesArray(path, ['levels', `id:${this.currentLevel}`, 'gameObjects'])) {
+      if (this.currentLevel && includesArray(path, ['levels'])) {
         watchGameObjects(options)
       }
 

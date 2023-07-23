@@ -7,6 +7,6 @@ export { NotificationContext, NotificationProvider } from './notification-provid
 export {
   CommandContext,
   CommandProvider,
-  CommandScope,
+  CommandScopeProvider,
   CommandScopeContext,
 } from './command-provider'

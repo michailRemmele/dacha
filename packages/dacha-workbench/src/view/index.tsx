@@ -4,7 +4,6 @@ import {
   CANVAS_ROOT,
   SHAPE_CANVAS_ROOT,
   GRID_ROOT,
-  MODAL_ROOT,
 } from '../consts/root-nodes'
 
 import {
@@ -13,9 +12,9 @@ import {
   Toolbar,
   SettingsModal,
 } from './modules'
-import { EngineContext, CommandScope } from './providers'
+import { EngineContext } from './providers'
 import {
-  EditorCSS,
+  EditorStyled,
   ExplorerStyled,
   CanvasStyled,
   ToolbarStyled,
@@ -27,7 +26,7 @@ export const App = (): JSX.Element => {
   const context = useContext(EngineContext)
 
   return (
-    <CommandScope css={EditorCSS}>
+    <EditorStyled>
       <ExplorerStyled>
         {context && <Explorer />}
       </ExplorerStyled>
@@ -50,10 +49,6 @@ export const App = (): JSX.Element => {
       </InspectorStyled>
 
       {context && <SettingsModal />}
-
-      <CommandScope name="modal">
-        <div id={MODAL_ROOT} />
-      </CommandScope>
-    </CommandScope>
+    </EditorStyled>
   )
 }

@@ -10,8 +10,10 @@ import {
   ThemeProvider,
   NotificationProvider,
   CommandProvider,
+  CommandScopeProvider,
 } from './view/providers'
 import { APP_ROOT } from './consts/root-nodes'
+import { ROOT_SCOPE } from './consts/command-scopes'
 
 import en from './view/locales/en.json'
 import './export'
@@ -33,11 +35,13 @@ root.render(
   <ThemeProvider>
     <EngineProvider>
       <CommandProvider>
-        <SelectedEntityProvider>
-          <NotificationProvider>
-            <App />
-          </NotificationProvider>
-        </SelectedEntityProvider>
+        <CommandScopeProvider name={ROOT_SCOPE}>
+          <SelectedEntityProvider>
+            <NotificationProvider>
+              <App />
+            </NotificationProvider>
+          </SelectedEntityProvider>
+        </CommandScopeProvider>
       </CommandProvider>
     </EngineProvider>
   </ThemeProvider>,

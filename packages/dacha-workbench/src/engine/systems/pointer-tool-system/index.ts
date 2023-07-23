@@ -13,6 +13,7 @@ import { RendererService } from 'remiz'
 import {
   SELECTION_MOVE_START_MSG,
   INSPECT_ENTITY_MSG,
+  INSPECTED_ENTITY_CHANGE_MSG,
   SELECT_LEVEL_MSG,
 } from '../../../consts/message-types'
 import type {
@@ -76,7 +77,7 @@ export class PointerToolSystem implements System {
   }
 
   private handleInspectEntityMessages(): void {
-    const inspectMessages = this.messageBus.get(INSPECT_ENTITY_MSG)
+    const inspectMessages = this.messageBus.get(INSPECTED_ENTITY_CHANGE_MSG)
     if (!inspectMessages?.length) {
       return
     }

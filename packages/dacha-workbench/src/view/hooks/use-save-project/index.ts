@@ -11,6 +11,10 @@ export const useSaveProject = (): UseSaveProjectReturn => {
   const store = useStore()
 
   const save = useCallback(() => {
+    if (store === undefined) {
+      return
+    }
+
     const projectConfig = store.get([]) as Config
     window.electron.saveProjectConfig(projectConfig)
   }, [store])
