@@ -69,6 +69,7 @@ export const ActionButtonCSS = css`
 `
 
 export const ListCSS = css`
+  flex: 1;
   overflow-y: scroll;
 `
 
