@@ -16,7 +16,7 @@ export const HeaderStyled = styled.header(({ theme }) => `
 `)
 
 export const InspectorContentStyled = styled.div`
-  overflow: auto;
+  overflow-y: scroll;
 
   height: calc(100% - 34px);
 `
