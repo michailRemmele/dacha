@@ -6,7 +6,6 @@ import {
 } from 'react'
 import type { Animation } from 'remiz'
 
-import { ListCSS } from '../../editor.style'
 import { AnimationEditorContext } from '../../providers'
 import { useConfig } from '../../../../../../../../hooks'
 import { STATE_TYPE } from '../../const'
@@ -54,7 +53,7 @@ export const List: FC = () => {
   }
 
   return (
-    <ListStyled css={ListCSS}>
+    <ListStyled>
       {frames && frames.map(({ id }, index) => (
         <ListItemStyled key={id}>
           <Frame

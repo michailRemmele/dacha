@@ -8,8 +8,11 @@ export const TimelineWrapperStyled = styled.div`
 
 export const ListStyled = styled.ul`
   display: flex;
+  height: 100%;
 
   list-style: none;
+
+  overflow-x: scroll;
 
   padding: 15px;
   margin: 0px;
@@ -33,9 +36,10 @@ export const FrameButtonStyled = styled.button<FrameButtonStyledProps>(({ theme,
   align-items: center;
 
   width: 100%;
+  height: 100%;
   border: none;
 
-  padding: 30px;
+  padding: 0 30px;
 
   border: 1px solid ${theme.colorBorder};
   border-radius: ${theme.borderRadiusLG}px;

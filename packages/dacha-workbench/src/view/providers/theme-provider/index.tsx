@@ -15,7 +15,15 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const handleSwitchTheme = (): void => {
-      setMode(mode === 'light' ? 'dark' : 'light')
+      const newMode = mode === 'light' ? 'dark' : 'light'
+
+      if (newMode === 'dark') {
+        document.body.classList.add('editor-theme_dark')
+      } else {
+        document.body.classList.remove('editor-theme_dark')
+      }
+
+      setMode(newMode)
     }
 
     const unsubscribe = window.electron.onSwitchTheme(handleSwitchTheme)
