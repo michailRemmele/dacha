@@ -13,7 +13,7 @@ export const TabContentStyled = styled.div`
   height: 100%;
   padding: 5px 5px 5px 10px;
 
-  overflow: scroll;
+  overflow-y: scroll;
 `
 
 export const TabsCSS = css`

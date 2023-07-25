@@ -27,7 +27,10 @@ program
 
     process.env.EDITOR_CONFIG = options.config
 
-    const electron = spawn('electron', [path.join(__dirname, '../index')])
+    const electron = spawn(
+      process.platform === 'win32' ? 'electron.cmd' : 'electron',
+      [path.join(__dirname, '../index')],
+    )
 
     electron.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`)
