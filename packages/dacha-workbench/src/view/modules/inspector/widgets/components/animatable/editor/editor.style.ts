@@ -69,7 +69,7 @@ export const ActionButtonCSS = css`
 `
 
 export const ListCSS = css`
-  overflow: scroll;
+  overflow-y: scroll;
 `
 
 export const TreeCSS = css`
