@@ -11,6 +11,7 @@ export const EditorStyled = styled.div(({ theme }) => css`
   height: 100%;
 
   background-color: ${theme.colorBgContainer};
+  border-top: 1px solid ${theme.colorBorderSecondary};
 `)
 
 export const ExplorerStyled = styled.div`
@@ -20,6 +21,8 @@ export const ExplorerStyled = styled.div`
 export const CanvasRootCSS = (): SerializedStyles => {
   const theme = useTheme()
   return css`
+    overflow: hidden;
+
     flex: 1;
 
     background-color: ${theme.colorBgLayout};
