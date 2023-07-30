@@ -29,6 +29,7 @@ export interface SetSettingsValueMessage extends Message {
 export interface CommandMessage extends Message {
   command: string
   scope: string
+  isEffect?: boolean
   options: unknown
 }
 
