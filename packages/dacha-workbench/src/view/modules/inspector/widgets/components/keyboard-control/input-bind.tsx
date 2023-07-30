@@ -83,7 +83,10 @@ export const InputBind: FC<InputBindProps> = ({
   }, [dispatch, bindPath])
 
   const handleKeyChange = useCallback((newKey: unknown) => {
-    dispatch(setValue(eventPath, !bindingsMap[`${newKey as string}_${PRESSED}`] ? PRESSED : RELEASED))
+    dispatch(
+      setValue(eventPath, !bindingsMap[`${newKey as string}_${PRESSED}`] ? PRESSED : RELEASED),
+      { isEffect: true },
+    )
   }, [dispatch, eventPath, bindingsMap])
 
   return (
@@ -97,7 +100,7 @@ export const InputBind: FC<InputBindProps> = ({
         component={LabelledSelect}
         label={t('components.keyboardControl.bind.key.title')}
         options={inputKeys}
-        onChange={handleKeyChange}
+        onAccept={handleKeyChange}
       />
       <Field
         path={eventPath}

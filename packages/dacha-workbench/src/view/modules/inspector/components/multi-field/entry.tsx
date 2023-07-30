@@ -77,7 +77,10 @@ export const Entry: FC<MultiFieldEntryProps> = ({
   }, [dispatch, entryPath])
 
   const handleTypeChange = useCallback((newType: unknown) => {
-    dispatch(setValue(valuePath, TYPES_INITIAL_VALUES_MAP[newType as MultiFieldEntryType]))
+    dispatch(
+      setValue(valuePath, TYPES_INITIAL_VALUES_MAP[newType as MultiFieldEntryType]),
+      { isEffect: true },
+    )
   }, [dispatch, valuePath])
 
   // comment: It's hard to merge different Input types in one component
@@ -99,7 +102,7 @@ export const Entry: FC<MultiFieldEntryProps> = ({
         component={LabelledSelect}
         label={t('inspector.multifield.field.type.title')}
         options={TYPES}
-        onChange={handleTypeChange}
+        onAccept={handleTypeChange}
       />
       <Field
         // Reset component on type change to prevent issues with value mismatch

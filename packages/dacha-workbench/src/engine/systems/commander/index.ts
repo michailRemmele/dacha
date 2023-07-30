@@ -21,8 +21,13 @@ import { Command } from './commands/command'
 
 const HISTORY_SIZE = 100
 
+interface HistoryOperationEffect {
+  undo: () => void
+}
+
 interface HistoryOperation {
   undo: () => void
+  effects: Array<HistoryOperationEffect>
 }
 
 export class Commander implements System {
@@ -54,7 +59,12 @@ export class Commander implements System {
       return
     }
 
-    messages.forEach(({ command, scope, options }) => {
+    messages.forEach(({
+      command,
+      scope,
+      isEffect,
+      options,
+    }) => {
       const cmd = this.commands[command]
 
       if (!cmd) {
@@ -67,7 +77,14 @@ export class Commander implements System {
       }
 
       this.history[scope] ??= []
-      this.history[scope].push({ undo })
+
+      if (isEffect && this.history[scope].length > 0) {
+        const lastOperation = this.history[scope].at(-1) as HistoryOperation
+        lastOperation.effects.push({ undo })
+        return
+      }
+
+      this.history[scope].push({ undo, effects: [] })
 
       if (this.history[scope].length > HISTORY_SIZE) {
         this.history[scope].shift()
@@ -84,6 +101,11 @@ export class Commander implements System {
     undoMessages.forEach(({ scope }) => {
       if (this.history[scope]?.length > 0) {
         const operation = this.history[scope].pop() as HistoryOperation
+
+        for (let j = operation.effects.length - 1; j >= 0; j -= 1) {
+          operation.effects[j].undo()
+        }
+
         operation.undo()
       }
     })
