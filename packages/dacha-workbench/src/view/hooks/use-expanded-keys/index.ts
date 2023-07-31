@@ -3,8 +3,11 @@ import {
   useEffect,
   useRef,
 } from 'react'
+import type { DataNode } from 'antd/lib/tree'
 
-import type { ExplorerDataNode } from '../../../../types/tree-node'
+interface TreeNode<T extends DataNode> extends DataNode {
+  parent?: TreeNode<T>
+}
 
 interface UseExpandedKeysReturnType {
   expandedKeys: Array<string>
@@ -13,7 +16,9 @@ interface UseExpandedKeysReturnType {
 
 // Provides storage of tree's expanded keys with possibility to manually set new keys
 // In addition, it observes tree changes and clean deleted nodes, and expand branches with new nodes
-export const useExpandedKeys = (tree: Array<ExplorerDataNode>): UseExpandedKeysReturnType => {
+export const useExpandedKeys = <T extends DataNode>(
+  tree: Array<TreeNode<T>>,
+): UseExpandedKeysReturnType => {
   const [expandedKeys, setExpandedKeys] = useState<Array<string>>([])
   const prevTreeKeys = useRef<Set<string>>()
 
@@ -26,7 +31,7 @@ export const useExpandedKeys = (tree: Array<ExplorerDataNode>): UseExpandedKeysR
     const keysToAdd = new Set<string>()
 
     while (stack.length !== 0) {
-      const node = stack.pop() as ExplorerDataNode
+      const node = stack.pop() as TreeNode<T>
       const key = String(node.key)
 
       // Delete all existed nodes from deletion set
@@ -50,7 +55,7 @@ export const useExpandedKeys = (tree: Array<ExplorerDataNode>): UseExpandedKeysR
       treeKeys.add(key)
 
       if (node.children !== undefined) {
-        node.children.map((child) => stack.push(child as ExplorerDataNode))
+        node.children.map((child) => stack.push(child as TreeNode<T>))
       }
     }
 

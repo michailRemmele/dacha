@@ -9,7 +9,7 @@ import { Tree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
 import type { Animation } from 'remiz'
 
-import { useConfig } from '../../../../../../../../hooks'
+import { useConfig, useExpandedKeys } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 import type { SelectFn, ExpandFn } from '../../../../../../../../../types/tree-node'
 
@@ -17,12 +17,7 @@ import { TreeCSS } from './state-list.style'
 import { parseStates } from './utils'
 import type { DataNodeWithParent } from './utils'
 
-interface ListProps {
-  expandedKeys: Array<string>
-  setExpandedKeys: (keys: Array<string>) => void
-}
-
-export const List: FC<ListProps> = ({ expandedKeys, setExpandedKeys }) => {
+export const List: FC = () => {
   const { t } = useTranslation()
   const {
     path,
@@ -45,6 +40,8 @@ export const List: FC<ListProps> = ({ expandedKeys, setExpandedKeys }) => {
     initialState,
     t('components.animatable.editor.state.initial.title'),
   ), [states, initialState])
+
+  const { expandedKeys, setExpandedKeys } = useExpandedKeys(treeData)
 
   const handleSelect = useCallback<SelectFn>((keys, { node }) => {
     if (node.isLeaf) {
