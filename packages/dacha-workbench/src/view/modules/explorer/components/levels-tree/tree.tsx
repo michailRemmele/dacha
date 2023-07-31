@@ -10,10 +10,9 @@ import { Tree as AntdTree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
 import type { LevelConfig } from 'remiz'
 
-import { useExpandedKeys } from '../../hooks'
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
-import { useConfig } from '../../../../hooks'
+import { useConfig, useExpandedKeys } from '../../../../hooks'
 import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 
