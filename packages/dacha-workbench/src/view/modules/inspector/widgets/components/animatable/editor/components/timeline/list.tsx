@@ -6,6 +6,7 @@ import {
 } from 'react'
 import type { Animation } from 'remiz'
 
+import { getKey } from '../../utils'
 import { AnimationEditorContext } from '../../providers'
 import { useConfig } from '../../../../../../../../hooks'
 import { STATE_TYPE } from '../../const'
@@ -15,42 +16,35 @@ import { ListStyled, ListItemStyled } from './timeline.style'
 
 export const List: FC = () => {
   const {
-    path,
     selectedFrame,
     selectedState,
     selectedSubstate,
     selectFrame,
   } = useContext(AnimationEditorContext)
 
-  const statePath = useMemo(
-    () => path.concat('states', `id:${selectedState as string}`),
-    [path, selectedState],
-  )
+  const statePath = selectedState as Array<string>
   const state = useConfig(statePath) as Animation.StateConfig
 
-  const frames = useMemo(() => {
+  const framesPath = useMemo(() => {
     if (state.type === STATE_TYPE.INDIVIDUAL) {
-      return (
-        state as Animation.IndividualStateConfig
-      ).timeline.frames
+      return statePath.concat('timeline', 'frames')
     }
-
     if (!selectedSubstate) {
       return undefined
     }
+    return selectedSubstate.concat('timeline', 'frames')
+  }, [state, statePath, selectedSubstate])
+  const frames = useConfig(framesPath) as Array<Animation.FrameConfig> | undefined
 
-    return (state as Animation.GroupStateConfig).substates.find(
-      (substate) => substate.id === selectedSubstate,
-    )?.timeline.frames as Array<Animation.FrameConfig>
-  }, [state, selectedSubstate])
-
-  const handleSelect = useCallback((id: string) => {
-    selectFrame(id)
+  const handleSelect = useCallback((path: Array<string>) => {
+    selectFrame(path)
   }, [])
 
-  if (frames === undefined) {
+  if (framesPath === undefined || frames === undefined) {
     return null
   }
+
+  const selectedId = getKey(selectedFrame)
 
   return (
     <ListStyled>
@@ -58,9 +52,10 @@ export const List: FC = () => {
         <ListItemStyled key={id}>
           <Frame
             id={id}
+            path={framesPath}
             title={String(index)}
             onSelect={handleSelect}
-            isSelected={id === selectedFrame}
+            isSelected={id === selectedId}
           />
         </ListItemStyled>
       ))}

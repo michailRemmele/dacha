@@ -1,4 +1,4 @@
-import { useCallback, FC } from 'react'
+import { useCallback, useMemo, FC } from 'react'
 
 import { FrameButtonStyled } from './timeline.style'
 
@@ -6,7 +6,8 @@ interface FrameProps {
   isSelected?: boolean
   id: string
   title: string
-  onSelect: (id: string) => void
+  onSelect: (path: Array<string>) => void
+  path: Array<string>
 }
 
 export const Frame: FC<FrameProps> = ({
@@ -14,8 +15,10 @@ export const Frame: FC<FrameProps> = ({
   id,
   title,
   onSelect = (): void => void 0,
+  path,
 }) => {
-  const handleSelect = useCallback((() => onSelect(id)), [id])
+  const framePath = useMemo(() => path.concat(`id:${id}`), [path, id])
+  const handleSelect = useCallback((() => onSelect(framePath)), [framePath])
 
   return (
     <FrameButtonStyled

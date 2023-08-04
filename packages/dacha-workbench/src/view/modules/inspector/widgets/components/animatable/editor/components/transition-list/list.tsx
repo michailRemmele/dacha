@@ -8,12 +8,14 @@ import { useTranslation } from 'react-i18next'
 import { Tree } from 'antd'
 import type { Animation } from 'remiz'
 
+import { getKey } from '../../utils'
 import { TreeCSS } from '../../editor.style'
 import { useConfig } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 import type { SelectFn } from '../../../../../../../../../types/tree-node'
 
 import { parseTransitions } from './utils'
+import type { TransitionDataNode } from './utils'
 
 export const List: FC = () => {
   const { t } = useTranslation()
@@ -25,7 +27,7 @@ export const List: FC = () => {
   } = useContext(AnimationEditorContext)
 
   const statesPath = useMemo(() => path.concat('states'), [path])
-  const statePath = useMemo(() => statesPath.concat(`id:${selectedState as string}`), [statesPath, selectedState])
+  const statePath = selectedState as Array<string>
   const transitionsPath = useMemo(() => statePath.concat('transitions'), [statePath])
 
   const statesConfigs = useConfig(statesPath) as Array<Animation.StateConfig>
@@ -40,21 +42,24 @@ export const List: FC = () => {
   const treeData = useMemo(
     () => parseTransitions(
       transitions,
+      statePath,
       stateConfig.name,
       statesNames,
       t('components.animatable.editor.transition.unknown.state.title'),
     ),
-    [transitions, stateConfig, statesNames],
+    [transitions, statePath, stateConfig, statesNames],
   )
 
-  const handleSelect = useCallback<SelectFn>((keys, { node }) => {
-    selectTransition(node.key as string)
+  const handleSelect = useCallback<SelectFn<TransitionDataNode>>((keys, { node }) => {
+    selectTransition(node.path)
   }, [])
+
+  const selectedKey = getKey(selectedTransition)
 
   return (
     <Tree.DirectoryTree
       css={TreeCSS}
-      selectedKeys={selectedTransition ? [selectedTransition] : []}
+      selectedKeys={selectedKey ? [selectedKey] : []}
       onSelect={handleSelect}
       treeData={treeData}
       showIcon={false}

@@ -21,40 +21,26 @@ export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
   const {
-    path,
-    selectedState,
+    selectedState: statePath,
     selectedSubstate,
-    selectedFrame,
-    selectFrame,
+    selectedFrame: framePath,
   } = useContext(AnimationEditorContext)
 
-  const statesPath = useMemo(() => path.concat('states'), [path])
-  const states = useConfig(statesPath) as Array<Animation.StateConfig>
+  const state = useConfig(statePath) as Animation.StateConfig | undefined
 
-  const framesPath = useMemo(
-    () => {
-      const state = states.find((item) => item.id === selectedState)
+  const framesPath = useMemo(() => {
+    if (statePath === undefined || state === undefined) {
+      return undefined
+    }
+    if (state.type === STATE_TYPE.INDIVIDUAL) {
+      return statePath.concat('timeline', 'frames')
+    }
+    if (!selectedSubstate) {
+      return undefined
+    }
+    return selectedSubstate.concat('timeline', 'frames')
+  }, [state, statePath, selectedSubstate])
 
-      if (!state) {
-        return undefined
-      }
-
-      if (state.type === STATE_TYPE.INDIVIDUAL) {
-        return statesPath.concat(`id:${selectedState as string}`, 'timeline', 'frames')
-      }
-
-      if (!selectedSubstate) {
-        return undefined
-      }
-
-      return statesPath.concat(`id:${selectedState as string}`, 'substates', `id:${selectedSubstate}`, 'timeline', 'frames')
-    },
-    [states, selectedState, statesPath, selectedSubstate],
-  )
-  const framePath = useMemo(
-    () => framesPath && framesPath.concat(`id:${selectedFrame as string}`),
-    [framesPath, selectedFrame],
-  )
   const frame = useConfig(framePath) as Animation.FrameConfig | undefined
 
   const handleAdd = useCallback(() => {
@@ -73,7 +59,6 @@ export const ActionBar: FC = () => {
   }, [dispatch, framesPath, frame])
 
   const handleDelete = useCallback(() => {
-    selectFrame()
     dispatch(deleteValue(framePath as Array<string>))
   }, [dispatch, framePath])
 
@@ -93,7 +78,7 @@ export const ActionBar: FC = () => {
         size="small"
         onClick={handleDuplicate}
         title={t('components.animatable.editor.frame.duplicate.button.title')}
-        disabled={selectedFrame === undefined}
+        disabled={framePath === undefined}
       />
       <Button
         css={ActionButtonCSS}
@@ -101,7 +86,7 @@ export const ActionBar: FC = () => {
         size="small"
         onClick={handleDelete}
         title={t('components.animatable.editor.frame.delete.button.title')}
-        disabled={selectedFrame === undefined}
+        disabled={framePath === undefined}
       />
     </ActionBarStyled>
   )

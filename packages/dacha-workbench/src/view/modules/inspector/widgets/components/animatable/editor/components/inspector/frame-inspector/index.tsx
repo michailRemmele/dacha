@@ -3,40 +3,15 @@ import {
   useContext,
   FC,
 } from 'react'
-import type { Animation } from 'remiz'
 
 import { FormStyled } from '../inspector.style'
 import { MultiField } from '../../../../../../../components/multi-field'
-import { useConfig } from '../../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../../providers'
 
 export const FrameInspector: FC = () => {
-  const {
-    path,
-    selectedState,
-    selectedSubstate,
-    selectedFrame,
-  } = useContext(AnimationEditorContext)
+  const { selectedFrame } = useContext(AnimationEditorContext)
 
-  const statePath = useMemo(
-    () => path.concat('states', `id:${selectedState as string}`),
-    [path, selectedState],
-  )
-  const state = useConfig(statePath) as Animation.StateConfig
-
-  const framePath = useMemo(() => {
-    if (state.type === 'individual') {
-      return statePath.concat('timeline', 'frames', `id:${selectedFrame as string}`)
-    }
-
-    return statePath.concat(
-      'substates',
-      `id:${selectedSubstate as string}`,
-      'timeline',
-      'frames',
-      `id:${selectedFrame as string}`,
-    )
-  }, [statePath, state, selectedSubstate, selectedFrame])
+  const framePath = selectedFrame as Array<string>
   const fieldsPath = useMemo(() => framePath.concat('fields'), [framePath])
 
   return (

@@ -27,15 +27,9 @@ import { pickModes } from './pick-modes'
 export const StateInspector: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const {
-    path,
-    selectedState,
-  } = useContext(AnimationEditorContext)
+  const { selectedState } = useContext(AnimationEditorContext)
 
-  const statePath = useMemo(
-    () => path.concat('states', `id:${selectedState as string}`),
-    [path, selectedState],
-  )
+  const statePath = selectedState as Array<string>
   const state = useConfig(statePath) as Animation.StateConfig
 
   const namePath = useMemo(() => statePath.concat('name'), [statePath])
