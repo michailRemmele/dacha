@@ -28,45 +28,22 @@ export const ActionBar: FC = () => {
   const { dispatch } = useCommander()
   const {
     path,
-    selectedState,
-    selectedSubstate,
+    selectedState: statePath,
+    selectedSubstate: substatePath,
     selectedEntity,
-    selectState,
-    selectSubstate,
   } = useContext(AnimationEditorContext)
 
   const initialStatePath = useMemo(() => path.concat('initialState'), [path])
   const statesPath = useMemo(() => path.concat('states'), [path])
-  const statePath = useMemo(
-    () => !!selectedState && statesPath.concat(`id:${selectedState}`),
-    [statesPath, selectedState],
-  )
   const substatesPath = useMemo(
     () => statePath && statePath.concat('substates'),
     [statePath],
   )
-  const substatePath = useMemo(
-    () => !!(substatesPath && selectedSubstate) && substatesPath.concat(`id:${selectedSubstate}`),
-    [substatesPath, selectedSubstate],
-  )
 
   const initialState = useConfig(initialStatePath) as string
   const states = useConfig(statesPath) as Array<Animation.StateConfig>
-  const selectedStateConfig = useMemo(
-    () => states.find((item) => item.id === selectedState),
-    [states, selectedState],
-  )
-  const selectedSubstateConfig = useMemo(
-    () => {
-      if (selectedStateConfig === undefined || selectedStateConfig.type === STATE_TYPE.INDIVIDUAL) {
-        return undefined
-      }
-
-      return (selectedStateConfig as Animation.GroupStateConfig)
-        .substates.find((item) => item.id === selectedSubstate)
-    },
-    [selectedStateConfig, selectedSubstate],
-  )
+  const selectedStateConfig = useConfig(statePath) as Animation.StateConfig | undefined
+  const selectedSubstateConfig = useConfig(substatePath) as Animation.SubstateConfig | undefined
 
   const handleAddSubstate = useCallback(() => {
     const { substates, pickMode } = selectedStateConfig as Animation.GroupStateConfig
@@ -124,14 +101,12 @@ export const ActionBar: FC = () => {
 
   const handleDelete = useCallback(() => {
     if (selectedEntity?.type === 'state') {
-      selectState()
       dispatch(deleteValue(statePath as Array<string>))
     }
     if (selectedEntity?.type === 'substate') {
-      selectSubstate()
       dispatch(deleteValue(substatePath as Array<string>))
     }
-  }, [dispatch, statePath, substatePath, selectedEntity, selectedStateConfig])
+  }, [dispatch, statePath, substatePath, selectedEntity])
 
   return (
     <ActionBarStyled>

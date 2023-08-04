@@ -2,6 +2,8 @@ import {
   useContext,
   FC,
 } from 'react'
+
+import { useConfig } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 
 import { List } from './list'
@@ -15,11 +17,12 @@ export const TransitionList: FC<TransitionListProps> = ({
   className = '',
 }) => {
   const { selectedState } = useContext(AnimationEditorContext)
+  const state = useConfig(selectedState)
 
   return (
     <div className={className}>
       <ActionBar />
-      {selectedState && <List />}
+      {!!state && <List />}
     </div>
   )
 }
