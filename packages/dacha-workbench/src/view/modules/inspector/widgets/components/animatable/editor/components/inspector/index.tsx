@@ -5,6 +5,7 @@ import {
 import { Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
+import { useConfig } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 
 import { StateInspector } from './state-inspector'
@@ -22,21 +23,23 @@ export const Inspector: FC = () => {
   const { t } = useTranslation()
   const { selectedEntity } = useContext(AnimationEditorContext)
 
+  const entity = useConfig(selectedEntity?.path)
+
   return (
     <InspectorStyled>
       <HeaderStyled>
-        {selectedEntity && (
+        {!!entity && (
           <Typography.Text strong>
-            {t(`components.animatable.editor.inspector.${selectedEntity.type as string}.title`)}
+            {t(`components.animatable.editor.inspector.${selectedEntity?.type as string}.title`)}
           </Typography.Text>
         )}
       </HeaderStyled>
-      {selectedEntity && (
+      {!!entity && (
         <InspectorContentStyled>
-          {selectedEntity.type === 'state' && <StateInspector />}
-          {selectedEntity.type === 'transition' && <TransitionInspector />}
-          {selectedEntity.type === 'frame' && <FrameInspector />}
-          {selectedEntity.type === 'substate' && <SubstateInspector />}
+          {selectedEntity?.type === 'state' && <StateInspector />}
+          {selectedEntity?.type === 'transition' && <TransitionInspector />}
+          {selectedEntity?.type === 'frame' && <FrameInspector />}
+          {selectedEntity?.type === 'substate' && <SubstateInspector />}
         </InspectorContentStyled>
       )}
     </InspectorStyled>

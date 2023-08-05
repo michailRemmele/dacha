@@ -23,58 +23,30 @@ import { addValue, deleteValue, setValue } from '../../../../../../../../command
 import { AnimationEditorContext } from '../../providers'
 import { PICK_MODE, STATE_TYPE } from '../../const'
 
-interface ActionBarProps {
-  expandedKeys: Array<string>
-  setExpandedKeys: (keys: Array<string>) => void
-}
-
-export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys }) => {
+export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
   const {
     path,
-    selectedState,
-    selectedSubstate,
+    selectedState: statePath,
+    selectedSubstate: substatePath,
     selectedEntity,
-    selectState,
-    selectSubstate,
   } = useContext(AnimationEditorContext)
 
   const initialStatePath = useMemo(() => path.concat('initialState'), [path])
   const statesPath = useMemo(() => path.concat('states'), [path])
-  const statePath = useMemo(
-    () => !!selectedState && statesPath.concat(`id:${selectedState}`),
-    [statesPath, selectedState],
-  )
   const substatesPath = useMemo(
     () => statePath && statePath.concat('substates'),
     [statePath],
   )
-  const substatePath = useMemo(
-    () => !!(substatesPath && selectedSubstate) && substatesPath.concat(`id:${selectedSubstate}`),
-    [substatesPath, selectedSubstate],
-  )
 
   const initialState = useConfig(initialStatePath) as string
   const states = useConfig(statesPath) as Array<Animation.StateConfig>
-  const selectedStateConfig = useMemo(
-    () => states.find((item) => item.id === selectedState),
-    [states, selectedState],
-  )
-  const selectedSubstateConfig = useMemo(
-    () => {
-      if (selectedStateConfig === undefined || selectedStateConfig.type === STATE_TYPE.INDIVIDUAL) {
-        return undefined
-      }
-
-      return (selectedStateConfig as Animation.GroupStateConfig)
-        .substates.find((item) => item.id === selectedSubstate)
-    },
-    [selectedStateConfig, selectedSubstate],
-  )
+  const selectedStateConfig = useConfig(statePath) as Animation.StateConfig | undefined
+  const selectedSubstateConfig = useConfig(substatePath) as Animation.SubstateConfig | undefined
 
   const handleAddSubstate = useCallback(() => {
-    const { id, substates, pickMode } = selectedStateConfig as Animation.GroupStateConfig
+    const { substates, pickMode } = selectedStateConfig as Animation.GroupStateConfig
 
     dispatch(addValue(substatesPath as Array<string>, {
       id: uuidv4(),
@@ -86,11 +58,7 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
       x: 0,
       y: pickMode === PICK_MODE.TWO_DIMENSIONAL ? 0 : undefined,
     }))
-
-    if (!expandedKeys.includes(id)) {
-      setExpandedKeys([...expandedKeys, id])
-    }
-  }, [dispatch, substatesPath, selectedStateConfig, expandedKeys])
+  }, [dispatch, substatesPath, selectedStateConfig])
 
   const handleAddState = useCallback(() => {
     dispatch(addValue(statesPath, {
@@ -133,22 +101,12 @@ export const ActionBar: FC<ActionBarProps> = ({ expandedKeys, setExpandedKeys })
 
   const handleDelete = useCallback(() => {
     if (selectedEntity?.type === 'state') {
-      if (expandedKeys.includes(selectedEntity.id)) {
-        setExpandedKeys(expandedKeys.filter((key) => key !== selectedEntity.id))
-      }
-
-      selectState()
       dispatch(deleteValue(statePath as Array<string>))
     }
     if (selectedEntity?.type === 'substate') {
-      if ((selectedStateConfig as Animation.GroupStateConfig).substates.length === 1) {
-        setExpandedKeys(expandedKeys.filter((key) => key !== selectedStateConfig?.id))
-      }
-
-      selectSubstate()
       dispatch(deleteValue(substatePath as Array<string>))
     }
-  }, [dispatch, statePath, substatePath, selectedEntity, expandedKeys, selectedStateConfig])
+  }, [dispatch, statePath, substatePath, selectedEntity])
 
   return (
     <ActionBarStyled>

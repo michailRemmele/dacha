@@ -9,8 +9,11 @@ import {
   SelectedEntityProvider,
   ThemeProvider,
   NotificationProvider,
+  CommandProvider,
+  CommandScopeProvider,
 } from './view/providers'
 import { APP_ROOT } from './consts/root-nodes'
+import { ROOT_SCOPE } from './consts/command-scopes'
 
 import en from './view/locales/en.json'
 import './export'
@@ -31,11 +34,15 @@ const root = createRoot(document.getElementById(APP_ROOT) as HTMLElement)
 root.render(
   <ThemeProvider>
     <EngineProvider>
-      <SelectedEntityProvider>
-        <NotificationProvider>
-          <App />
-        </NotificationProvider>
-      </SelectedEntityProvider>
+      <CommandProvider>
+        <CommandScopeProvider name={ROOT_SCOPE}>
+          <SelectedEntityProvider>
+            <NotificationProvider>
+              <App />
+            </NotificationProvider>
+          </SelectedEntityProvider>
+        </CommandScopeProvider>
+      </CommandProvider>
     </EngineProvider>
   </ThemeProvider>,
 )

@@ -12,7 +12,7 @@ import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
-import type { DataNodeWithPath, SelectFn } from '../../../../../types/tree-node'
+import type { ExplorerDataNode, SelectFn } from '../../../../../types/tree-node'
 
 import { parseScenes, getKey } from './utils'
 
@@ -35,7 +35,7 @@ export const List: FC<ListProps> = ({ isLoaders = false }) => {
 
     pushMessage({
       type: INSPECT_ENTITY_MSG,
-      path: (node as EventDataNode<DataNodeWithPath>).path.slice(0),
+      path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
     })
   }, [pushMessage])
 

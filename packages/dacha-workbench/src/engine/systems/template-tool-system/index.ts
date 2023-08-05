@@ -18,9 +18,11 @@ import {
   TOOL_CURSOR_LEAVE_MSG,
 } from '../../../consts/message-types'
 import { ADD } from '../../../command-types'
+import { ROOT_SCOPE } from '../../../consts/command-scopes'
 import type {
   SelectLevelMessage,
   MouseInputMessage,
+  CommandMessage,
 } from '../../../types/messages'
 import type { Store } from '../../../store'
 
@@ -139,14 +141,16 @@ export class TemplateToolSystem implements System {
       this.placementPosition.y || 0,
     )
 
-    this.messageBus.send({
+    const commandMessage: CommandMessage = {
       type: COMMAND_MSG,
       command: ADD,
+      scope: ROOT_SCOPE,
       options: {
         path: ['levels', `id:${levelId}`, 'gameObjects'],
         value: gameObject,
       },
-    })
+    }
+    this.messageBus.send(commandMessage)
   }
 
   update(): void {

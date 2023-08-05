@@ -17,8 +17,7 @@ import type { SceneConfig } from 'remiz'
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue } from '../../../../commands'
-import { SelectedEntityContext, EngineContext } from '../../../../providers'
-import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
+import { SelectedEntityContext } from '../../../../providers'
 import { duplicateScene } from '../../utils'
 
 interface ActionBarProps {
@@ -50,7 +49,6 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
   )
 
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
-  const { pushMessage } = useContext(EngineContext)
 
   const scenes = useConfig(isLoaders ? 'loaders' : 'scenes') as Array<SceneConfig>
   const selectedEntity = useConfig(selectedEntityPath) as SceneConfig | undefined
@@ -71,11 +69,6 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
     }
 
     dispatch(deleteValue(selectedEntityPath))
-
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
-      path: undefined,
-    })
   }, [dispatch, selectedEntityPath])
 
   const handleDuplicate = useCallback(() => {

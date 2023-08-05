@@ -33,6 +33,8 @@ export interface ElectronAPI {
   onSave: (callback: () => void) => void
   onSettings: (callback: (type: string) => void) => void
   onSwitchTheme: (callback: () => void) => () => void
+  onUndo: (callback: () => void) => () => void
+  onRedo: (callback: () => void) => () => void
 }
 
 declare global {
