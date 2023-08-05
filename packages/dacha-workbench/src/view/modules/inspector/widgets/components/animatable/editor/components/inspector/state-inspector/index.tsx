@@ -81,10 +81,16 @@ export const StateInspector: FC = () => {
     const { substates } = state as Animation.GroupStateConfig & Animation.IndividualStateConfig
 
     if (value === PICK_MODE.ONE_DIMENSIONAL) {
-      dispatch(setValue(substatesPath, substates.map(({ y, ...substate }) => substate)))
+      dispatch(
+        setValue(substatesPath, substates.map(({ y, ...substate }) => substate)),
+        { isEffect: true },
+      )
     }
     if (value === PICK_MODE.TWO_DIMENSIONAL) {
-      dispatch(setValue(substatesPath, substates.map((substate) => ({ ...substate, y: 0 }))))
+      dispatch(
+        setValue(substatesPath, substates.map((substate) => ({ ...substate, y: 0 }))),
+        { isEffect: true },
+      )
     }
   }, [dispatch, state, substatesPath])
 

@@ -78,11 +78,17 @@ export const Condition: FC<ConditionProps> = ({
   }, [dispatch, conditionPath, condition])
 
   const handleArg1TypeChange = useCallback((value: unknown) => {
-    dispatch(setValue(arg1ValuePath, COMPARATOR_INITIAL_VALUES_MAP[value as ArgType]))
+    dispatch(
+      setValue(arg1ValuePath, COMPARATOR_INITIAL_VALUES_MAP[value as ArgType]),
+      { isEffect: true },
+    )
   }, [dispatch, arg1ValuePath])
 
   const handleArg2TypeChange = useCallback((value: unknown) => {
-    dispatch(setValue(arg2ValuePath, COMPARATOR_INITIAL_VALUES_MAP[value as ArgType]))
+    dispatch(
+      setValue(arg2ValuePath, COMPARATOR_INITIAL_VALUES_MAP[value as ArgType]),
+      { isEffect: true },
+    )
   }, [dispatch, arg2ValuePath])
 
   const handleDeleteBind = useCallback(() => {
