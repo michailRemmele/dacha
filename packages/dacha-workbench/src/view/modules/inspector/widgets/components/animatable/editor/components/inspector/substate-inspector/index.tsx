@@ -17,21 +17,9 @@ import { AnimationEditorContext } from '../../../providers'
 
 export const SubstateInspector: FC = () => {
   const { t } = useTranslation()
-  const {
-    path,
-    selectedState,
-    selectedSubstate,
-  } = useContext(AnimationEditorContext)
-  const id = selectedSubstate as string
-
-  const statePath = useMemo(
-    () => path.concat('states', `id:${selectedState as string}`),
-    [path, selectedState],
-  )
-  const substatePath = useMemo(
-    () => statePath.concat('substates', `id:${id}`),
-    [statePath, id],
-  )
+  const { selectedState, selectedSubstate } = useContext(AnimationEditorContext)
+  const statePath = selectedState as Array<string>
+  const substatePath = selectedSubstate as Array<string>
 
   const namePath = useMemo(() => substatePath.concat('name'), [substatePath])
   const loopedPath = useMemo(() => substatePath.concat('timeline', 'looped'), [substatePath])

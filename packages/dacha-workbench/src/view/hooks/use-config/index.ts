@@ -21,15 +21,15 @@ export const useConfig = (path?: Array<string> | string): unknown => {
   }, [path])
   const prevPath = useRef(parsedPath)
 
-  const [value, setValue] = useState(parsedPath ? configStore.get(parsedPath) : void 0)
+  const [value, setValue] = useState(parsedPath ? configStore?.get(parsedPath) : void 0)
 
   useEffect(() => {
     if (parsedPath !== prevPath.current) {
       prevPath.current = parsedPath
-      setValue(parsedPath ? configStore.get(parsedPath) : void 0)
+      setValue(parsedPath ? configStore?.get(parsedPath) : void 0)
     }
 
-    const unsubscribe = configStore.subscribe((updatePath, updateValue) => {
+    const unsubscribe = configStore?.subscribe((updatePath, updateValue) => {
       if (isEqual(parsedPath, updatePath)) {
         setValue(updateValue)
       } else if (includesArray(updatePath, parsedPath) || includesArray(parsedPath, updatePath)) {

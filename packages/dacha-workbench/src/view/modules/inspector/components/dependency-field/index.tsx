@@ -26,15 +26,18 @@ export const DependencyField: FC<DependencyFieldProps> = ({
 }) => {
   const { dispatch } = useCommander()
 
-  const value = useConfig(dependencyPath)
+  const dependencyCurrentValue = useConfig(dependencyPath)
+  const value = useConfig(path)
 
-  const visible = checkDependency(value, dependencyValue)
+  const visible = checkDependency(dependencyCurrentValue, dependencyValue)
   const visibleRef = useRef(visible)
 
+  // dispatch inside useEffect leads to false executions
+  // it should be carefully checked and dispatched ony if it is necessary
   useEffect(() => {
     if (visibleRef.current !== visible) {
-      if (!visible && deleteOnHide) {
-        dispatch(deleteValue(path))
+      if (!visible && deleteOnHide && value !== undefined) {
+        dispatch(deleteValue(path), { isEffect: true })
       }
       visibleRef.current = visible
     }
