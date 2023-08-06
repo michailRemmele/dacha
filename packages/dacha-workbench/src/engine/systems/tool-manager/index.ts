@@ -15,6 +15,7 @@ import type { FeatureValue } from '../../components/tool'
 import type { SelectToolMessage } from '../../../types/messages'
 
 const TOOL_COMPONENT_NAME = 'tool'
+const TOOL_CONTROLLER_COMPONENT_NAME = 'toolController'
 const MOUSE_CONTROL_COMPONENT_NAME = 'mouseControl'
 const DEFAULT_TOOL_NAME = 'hand'
 const TOOL_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_tool_`
@@ -52,7 +53,9 @@ export class ToolManager implements System {
   }
 
   private selectTool(id: string): void {
-    const toolController = this.mainObject.getComponent('toolController') as ToolController
+    const toolController = this.mainObject.getComponent(
+      TOOL_CONTROLLER_COMPONENT_NAME,
+    ) as ToolController
     toolController.activeTool = id
 
     const toolObject = this.mainObject.getChildById(id)
@@ -80,7 +83,9 @@ export class ToolManager implements System {
   }
 
   private removeCurrentTool(): void {
-    const toolController = this.mainObject.getComponent('toolController') as ToolController
+    const toolController = this.mainObject.getComponent(
+      TOOL_CONTROLLER_COMPONENT_NAME,
+    ) as ToolController
     const toolObject = this.mainObject.getChildById(toolController.activeTool)
 
     if (toolObject) {
@@ -99,7 +104,9 @@ export class ToolManager implements System {
   }
 
   private setToolFeatureValue(name: string, value: string): void {
-    const toolController = this.mainObject.getComponent('toolController') as ToolController
+    const toolController = this.mainObject.getComponent(
+      TOOL_CONTROLLER_COMPONENT_NAME,
+    ) as ToolController
     const toolObject = this.mainObject.getChildById(toolController.activeTool)
 
     if (toolObject) {
