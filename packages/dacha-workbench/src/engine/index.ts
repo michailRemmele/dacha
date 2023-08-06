@@ -14,6 +14,7 @@ import {
 
 import {
   Tool,
+  ToolController,
   Shape,
   Settings,
 } from './components'
@@ -34,6 +35,7 @@ export const editorSystems = {
 
 export const editorComponents = {
   tool: Tool,
+  toolController: ToolController,
   shape: Shape,
   settings: Settings,
 }

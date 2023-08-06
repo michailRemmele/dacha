@@ -1,21 +1,21 @@
-import type {
+import {
   System,
   SystemOptions,
   GameObject,
-  GameObjectSpawner,
-  GameObjectDestroyer,
   MessageBus,
   Message,
   SceneContext,
+  MouseControl,
 } from 'remiz'
 
 import { SELECT_TOOL_MSG, SET_TOOL_FEATURE_VALUE_MSG } from '../../../consts/message-types'
 import { CANVAS_ROOT } from '../../../consts/root-nodes'
-import { Tool } from '../../components'
+import type { Tool, ToolController } from '../../components'
 import type { FeatureValue } from '../../components/tool'
 import type { SelectToolMessage } from '../../../types/messages'
 
 const TOOL_COMPONENT_NAME = 'tool'
+const MOUSE_CONTROL_COMPONENT_NAME = 'mouseControl'
 const DEFAULT_TOOL_NAME = 'hand'
 const TOOL_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_tool_`
 const FEATURE_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_feature-`
@@ -31,23 +31,14 @@ const getFeatureClassName = (
 ): string => `${FEATURE_CLASS_NAME_PREFIX}${name}_${String(value)}`
 
 export class ToolManager implements System {
-  private gameObjectSpawner: GameObjectSpawner
-  private gameObjectDestroyer: GameObjectDestroyer
   private messageBus: MessageBus
   private sceneContext: SceneContext
   private mainObject: GameObject
   private rootNode: HTMLElement
 
   constructor(options: SystemOptions) {
-    const {
-      gameObjectSpawner,
-      gameObjectDestroyer,
-      messageBus,
-      sceneContext,
-    } = options
+    const { messageBus, sceneContext } = options
 
-    this.gameObjectSpawner = gameObjectSpawner
-    this.gameObjectDestroyer = gameObjectDestroyer
     this.messageBus = messageBus
     this.sceneContext = sceneContext
 
@@ -60,15 +51,25 @@ export class ToolManager implements System {
     this.selectTool(DEFAULT_TOOL_NAME)
   }
 
-  private selectTool(name: string): void {
-    const toolObject = this.gameObjectSpawner.spawn(name)
-    const { features } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+  private selectTool(id: string): void {
+    const toolController = this.mainObject.getComponent('toolController') as ToolController
+    toolController.activeTool = id
 
-    this.mainObject.appendChild(toolObject)
+    const toolObject = this.mainObject.getChildById(id)
 
-    this.sceneContext.data.currentToolObjectId = toolObject.id
+    if (toolObject === undefined) {
+      console.error(`Not found tool with same id: ${id}`)
+      return
+    }
 
-    this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${name}`)
+    const { features, inputBindings } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+
+    const mouseControl = new MouseControl(MOUSE_CONTROL_COMPONENT_NAME, {
+      inputEventBindings: inputBindings,
+    })
+    toolObject.setComponent(MOUSE_CONTROL_COMPONENT_NAME, mouseControl)
+
+    this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${id}`)
 
     Object.keys(features).forEach((key) => {
       const { value, withClassName } = features[key]
@@ -79,14 +80,13 @@ export class ToolManager implements System {
   }
 
   private removeCurrentTool(): void {
-    const toolObject = this.mainObject.getChildById(
-      this.sceneContext.data.currentToolObjectId as string,
-    )
+    const toolController = this.mainObject.getComponent('toolController') as ToolController
+    const toolObject = this.mainObject.getChildById(toolController.activeTool)
 
     if (toolObject) {
       const { name, features } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
 
-      this.gameObjectDestroyer.destroy(toolObject)
+      toolObject.removeComponent(MOUSE_CONTROL_COMPONENT_NAME)
       this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${name}`)
 
       Object.keys(features).forEach((key) => {
@@ -99,9 +99,8 @@ export class ToolManager implements System {
   }
 
   private setToolFeatureValue(name: string, value: string): void {
-    const toolObject = this.mainObject.getChildById(
-      this.sceneContext.data.currentToolObjectId as string,
-    )
+    const toolController = this.mainObject.getComponent('toolController') as ToolController
+    const toolObject = this.mainObject.getChildById(toolController.activeTool)
 
     if (toolObject) {
       const { features } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
