@@ -1,12 +1,12 @@
-import {
+import type {
   System,
   SystemOptions,
   GameObject,
   MessageBus,
   Message,
   SceneContext,
-  MouseControl,
 } from 'remiz'
+import { MouseControl } from 'remiz'
 
 import { SELECT_TOOL_MSG, SET_TOOL_FEATURE_VALUE_MSG } from '../../../consts/message-types'
 import { CANVAS_ROOT } from '../../../consts/root-nodes'
