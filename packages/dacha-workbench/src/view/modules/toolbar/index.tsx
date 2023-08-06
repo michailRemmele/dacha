@@ -27,6 +27,7 @@ import { features } from './components'
 import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
 
 const TOOL_COMPONENT_NAME = 'tool'
+const TOOL_CONTROLLER_COMPONENT_NAME = 'toolController'
 
 export const Toolbar: FC = () => {
   const { t } = useTranslation()
@@ -48,7 +49,9 @@ export const Toolbar: FC = () => {
   useEffect(() => {
     const handleUpdate = (gameObject: unknown): void => {
       const mainObject = gameObject as GameObject
-      const toolController = mainObject.getComponent('toolController') as ToolController
+      const toolController = mainObject.getComponent(
+        TOOL_CONTROLLER_COMPONENT_NAME,
+      ) as ToolController
       const toolObject = mainObject.getChildById(toolController.activeTool)
 
       if (!toolObject) {
