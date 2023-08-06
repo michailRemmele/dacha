@@ -20,7 +20,7 @@ import type { GameObject, MessageBus } from 'remiz'
 
 import { EngineContext } from '../../providers'
 import { SELECT_TOOL_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types'
-import type { Tool } from '../../../engine/components'
+import type { Tool, ToolController } from '../../../engine/components'
 import type { FeatureValue } from '../../../engine/components/tool'
 
 import { features } from './components'
@@ -48,9 +48,8 @@ export const Toolbar: FC = () => {
   useEffect(() => {
     const handleUpdate = (gameObject: unknown): void => {
       const mainObject = gameObject as GameObject
-      const toolObjectId = sceneContext.data.currentToolObjectId as string
-
-      const toolObject = mainObject.getChildById(toolObjectId)
+      const toolController = mainObject.getComponent('toolController') as ToolController
+      const toolObject = mainObject.getChildById(toolController.activeTool)
 
       if (!toolObject) {
         return
