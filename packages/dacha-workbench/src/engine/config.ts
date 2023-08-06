@@ -126,7 +126,145 @@ export const getEditorConfig = ({
         {
           id: 'main-object',
           name: 'mainCamera',
-          children: [],
+          children: [
+            {
+              id: 'hand',
+              name: 'hand',
+              children: [],
+              components: [
+                {
+                  name: 'tool',
+                  config: {
+                    name: 'hand',
+                    features: {},
+                    inputBindings: [
+                      {
+                        event: 'MOUSE_LEFT_BUTTON_PRESS',
+                        messageType: 'CAMERA_MOVE_START',
+                        attrs: [],
+                      },
+                      {
+                        event: 'MOUSE_LEFT_BUTTON_RELEASE',
+                        messageType: 'CAMERA_MOVE_END',
+                        attrs: [],
+                      },
+                      {
+                        event: 'MOUSE_MOVE',
+                        messageType: 'CAMERA_MOVE',
+                        attrs: [],
+                      },
+                      {
+                        event: 'MOUSE_LEAVE',
+                        messageType: 'CAMERA_MOVE_END',
+                        attrs: [],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            {
+              id: 'zoom',
+              name: 'zoom',
+              children: [],
+              components: [
+                {
+                  name: 'tool',
+                  config: {
+                    name: 'zoom',
+                    features: {
+                      direction: {
+                        value: 'in',
+                        withClassName: true,
+                      },
+                    },
+                    inputBindings: [
+                      {
+                        event: 'MOUSE_LEFT_BUTTON_PRESS',
+                        messageType: 'CAMERA_ZOOM',
+                        attrs: [],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            {
+              id: 'pointer',
+              name: 'pointer',
+              children: [],
+              components: [
+                {
+                  name: 'tool',
+                  config: {
+                    name: 'pointer',
+                    features: {
+                      grid: {
+                        value: false,
+                        withClassName: false,
+                      },
+                    },
+                    inputBindings: [
+                      {
+                        event: 'MOUSE_LEFT_BUTTON_PRESS',
+                        messageType: SELECTION_MOVE_START_MSG,
+                        attrs: [],
+                      },
+                      {
+                        event: 'MOUSE_MOVE',
+                        messageType: SELECTION_MOVE_MSG,
+                        attrs: [],
+                      },
+                      {
+                        event: 'MOUSE_LEFT_BUTTON_RELEASE',
+                        messageType: SELECTION_MOVE_END_MSG,
+                        attrs: [],
+                      },
+                      {
+                        event: 'MOUSE_LEAVE',
+                        messageType: SELECTION_MOVE_END_MSG,
+                        attrs: [],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            {
+              id: 'template',
+              name: 'template',
+              children: [],
+              components: [
+                {
+                  name: 'tool',
+                  config: {
+                    name: 'template',
+                    features: {
+                      preview: {
+                        value: true,
+                        withClassName: false,
+                      },
+                      grid: {
+                        value: false,
+                        withClassName: false,
+                      },
+                      templateId: {
+                        value: undefined,
+                        withClassName: false,
+                      },
+                    },
+                    inputBindings: [
+                      {
+                        event: 'MOUSE_LEFT_BUTTON_CLICK',
+                        messageType: ADD_FROM_TEMPLATE_MSG,
+                        attrs: [],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
           components: [
             {
               name: 'transform',
@@ -161,6 +299,12 @@ export const getEditorConfig = ({
               },
             },
             {
+              name: 'toolController',
+              config: {
+                activeTool: 'hand',
+              },
+            },
+            {
               name: 'settings',
               config: {
                 showGrid: false,
@@ -174,167 +318,6 @@ export const getEditorConfig = ({
     },
   ],
   templates: [
-    {
-      id: 'hand',
-      name: 'hand',
-      type: 'tool',
-      children: [],
-      components: [
-        {
-          name: 'tool',
-          config: {
-            name: 'hand',
-            features: {},
-          },
-        },
-        {
-          name: 'mouseControl',
-          config: {
-            inputEventBindings: [
-              {
-                event: 'MOUSE_LEFT_BUTTON_PRESS',
-                messageType: 'CAMERA_MOVE_START',
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_LEFT_BUTTON_RELEASE',
-                messageType: 'CAMERA_MOVE_END',
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_MOVE',
-                messageType: 'CAMERA_MOVE',
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_LEAVE',
-                messageType: 'CAMERA_MOVE_END',
-                attrs: [],
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      id: 'zoom',
-      name: 'zoom',
-      type: 'tool',
-      children: [],
-      components: [
-        {
-          name: 'tool',
-          config: {
-            name: 'zoom',
-            features: {
-              direction: {
-                value: 'in',
-                withClassName: true,
-              },
-            },
-          },
-        },
-        {
-          name: 'mouseControl',
-          config: {
-            inputEventBindings: [
-              {
-                event: 'MOUSE_LEFT_BUTTON_PRESS',
-                messageType: 'CAMERA_ZOOM',
-                attrs: [],
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      id: 'pointer',
-      name: 'pointer',
-      type: 'tool',
-      children: [],
-      components: [
-        {
-          name: 'tool',
-          config: {
-            name: 'pointer',
-            features: {
-              grid: {
-                value: false,
-                withClassName: false,
-              },
-            },
-          },
-        },
-        {
-          name: 'mouseControl',
-          config: {
-            inputEventBindings: [
-              {
-                event: 'MOUSE_LEFT_BUTTON_PRESS',
-                messageType: SELECTION_MOVE_START_MSG,
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_MOVE',
-                messageType: SELECTION_MOVE_MSG,
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_LEFT_BUTTON_RELEASE',
-                messageType: SELECTION_MOVE_END_MSG,
-                attrs: [],
-              },
-              {
-                event: 'MOUSE_LEAVE',
-                messageType: SELECTION_MOVE_END_MSG,
-                attrs: [],
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      id: 'template',
-      name: 'template',
-      type: 'tool',
-      children: [],
-      components: [
-        {
-          name: 'tool',
-          config: {
-            name: 'template',
-            features: {
-              preview: {
-                value: true,
-                withClassName: false,
-              },
-              grid: {
-                value: false,
-                withClassName: false,
-              },
-              templateId: {
-                value: undefined,
-                withClassName: false,
-              },
-            },
-          },
-        },
-        {
-          name: 'mouseControl',
-          config: {
-            inputEventBindings: [
-              {
-                event: 'MOUSE_LEFT_BUTTON_CLICK',
-                messageType: ADD_FROM_TEMPLATE_MSG,
-                attrs: [],
-              },
-            ],
-          },
-        },
-      ],
-    },
     {
       id: 'frame',
       name: 'frame',
