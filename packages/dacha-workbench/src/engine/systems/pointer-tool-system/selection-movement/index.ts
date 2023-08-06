@@ -103,8 +103,6 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    const { x, y } = endMoveMessages.at(-1) as MouseInputMessage
-
     this.isMoving = false
 
     const selectedObject = this.gameObjectObserver.getById(selectionId)
@@ -122,7 +120,10 @@ export class SelectionMovementSubsystem {
 
     const transformConfig = this.configStore.get(transformPath) as Record<string, unknown>
 
-    if (isFloatEqual(x, this.pointerStart.x) && isFloatEqual(y, this.pointerStart.y)) {
+    if (
+      isFloatEqual(transform.offsetX, this.selectionStart.x)
+      && isFloatEqual(transform.offsetY, this.selectionStart.y)
+    ) {
       return
     }
 
