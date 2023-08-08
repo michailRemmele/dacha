@@ -18,7 +18,6 @@ export class GameObject {
   private components: Record<string, Component>;
   private children: Array<GameObject>;
   private subscribers: Array<(event: ComponentsEditionEvent) => void>;
-  private childrenNames: Record<string, GameObject>;
   private childrenIds: Record<string, GameObject>;
 
   public readonly id: string;
@@ -40,7 +39,6 @@ export class GameObject {
     this.components = {};
     this.parent = void 0;
     this.children = [];
-    this.childrenNames = {};
     this.childrenIds = {};
 
     this.subscribers = [];
@@ -66,11 +64,6 @@ export class GameObject {
       throw new Error(`Can't add child with id: ${child.id}. Child with same name already exists`);
     }
     this.childrenIds[child.id] = child;
-
-    if (this.childrenNames[child.name]) {
-      throw new Error(`Can't add child with name: ${child.name}. Child with same name already exists`);
-    }
-    this.childrenNames[child.name] = child;
   }
 
   removeChild(child: GameObject): void {
@@ -78,7 +71,6 @@ export class GameObject {
     child.parent = void 0;
 
     this.childrenIds = filterByKey(this.childrenIds, child.id);
-    this.childrenNames = filterByKey(this.childrenNames, child.name);
   }
 
   getChildren(): Array<GameObject> {
@@ -89,8 +81,8 @@ export class GameObject {
     return this.childrenIds[id];
   }
 
-  getChildByName(name: string): GameObject | undefined {
-    return this.childrenNames[name];
+  getChildrenByName(name: string): Array<GameObject> {
+    return this.children.filter((gameObject) => gameObject.name === name);
   }
 
   getId(): string {

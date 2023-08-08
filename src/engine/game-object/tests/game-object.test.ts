@@ -230,13 +230,33 @@ describe('Engine -> GameObject', () => {
     gameObject3.appendChild(gameObject2);
     gameObject2.appendChild(gameObject1);
 
-    expect(gameObject3.getChildByName('game-object-2')).toEqual(gameObject2);
-    expect(gameObject3.getChildByName('game-object-1')).toBeUndefined();
-    expect(gameObject2.getChildByName('game-object-1')).toEqual(gameObject1);
+    expect(gameObject3.getChildrenByName('game-object-2')).toEqual([gameObject2]);
+    expect(gameObject3.getChildrenByName('game-object-1')).toEqual([]);
+    expect(gameObject2.getChildrenByName('game-object-1')).toEqual([gameObject1]);
 
     gameObject3.removeChild(gameObject2);
 
-    expect(gameObject3.getChildByName('game-object-2')).toBeUndefined();
+    expect(gameObject3.getChildrenByName('game-object-2')).toEqual([]);
+  });
+
+  it('Returns multiple game objects if there are few of them with same name', () => {
+    const gameObject1 = new GameObject({
+      id: '1',
+      name: 'game-object-1',
+    });
+    const gameObject2 = new GameObject({
+      id: '2',
+      name: 'game-object-2',
+    });
+    const gameObject3 = new GameObject({
+      id: '3',
+      name: 'game-object-2',
+    });
+
+    gameObject1.appendChild(gameObject2);
+    gameObject1.appendChild(gameObject3);
+
+    expect(gameObject1.getChildrenByName('game-object-2')).toEqual([gameObject2, gameObject3]);
   });
 
   it('Throws error if child with same id already exists', () => {
@@ -258,26 +278,5 @@ describe('Engine -> GameObject', () => {
     expect(() => {
       gameObject1.appendChild(gameObject3);
     }).toThrowError('Can\'t add child with id: 2. Child with same name already exists');
-  });
-
-  it('Throws error if child with same name already exists', () => {
-    const gameObject1 = new GameObject({
-      id: '1',
-      name: 'game-object-1',
-    });
-    const gameObject2 = new GameObject({
-      id: '2',
-      name: 'game-object-2',
-    });
-    const gameObject3 = new GameObject({
-      id: '3',
-      name: 'game-object-2',
-    });
-
-    gameObject1.appendChild(gameObject2);
-
-    expect(() => {
-      gameObject1.appendChild(gameObject3);
-    }).toThrowError('Can\'t add child with name: game-object-2. Child with same name already exists');
   });
 });
