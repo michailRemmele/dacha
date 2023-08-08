@@ -14,7 +14,9 @@ const _getValue = (
   for (let i = 0; i < pathDepth && soughtValue !== undefined; i += 1) {
     if (soughtValue instanceof GameObject && path[i] === PATH_CHILDREN) {
       i += 1;
-      soughtValue = soughtValue.getChildByName(path[i]);
+      // comment: looks better without destructuring
+      // eslint-disable-next-line prefer-destructuring
+      soughtValue = soughtValue.getChildrenByName(path[i])[0];
     } else if (soughtValue instanceof GameObject && path[i] === PATH_COMPONENTS) {
       i += 1;
       soughtValue = soughtValue.getComponent(path[i]);
