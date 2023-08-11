@@ -4,8 +4,10 @@ import type {
   SystemOptions,
   SceneContext,
   UpdateOptions,
+  MessageBus,
 } from 'remiz'
 
+import { SAVE_PROJECT_MSG } from '../../../consts/message-types'
 import { Store } from '../../../store'
 import type { Data } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
@@ -14,12 +16,14 @@ const DEFAULT_AUTO_SAVE_INTERVAL = 10_000
 
 export class ProjectLoader implements System {
   private sceneContext: SceneContext
+  private messageBus: MessageBus
   private editorCofig: EditorConfig
 
   private autoSaveInterval: number
 
   constructor(options: SystemOptions) {
     this.sceneContext = options.sceneContext
+    this.messageBus = options.messageBus
     this.editorCofig = window.electron.getEditorConfig()
 
     const projectConfig = window.electron.getProjectConfig()
@@ -86,6 +90,8 @@ export class ProjectLoader implements System {
   private saveProjectConfig(): void {
     const projectConfig = (this.sceneContext.data.configStore as Store).get([]) as Config
     window.electron.saveProjectConfig(projectConfig)
+
+    this.messageBus.send({ type: SAVE_PROJECT_MSG })
   }
 
   mount(): void {
