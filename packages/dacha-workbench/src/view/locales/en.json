@@ -11,6 +11,7 @@
     "levels.actionBar.duplicateLevel.button.title": "Duplicate Level",
     "levels.actionBar.deleteGameObject.button.title": "Delete Game Object",
     "levels.actionBar.deleteLevel.button.title": "Delete Level",
+    "levels.actionBar.focusGameObject.button.title": "Focus Game Object",
 
     "levels.actionBar.gameObject.new.title": "New Game Object {{index}}",
     "levels.actionBar.level.new.title": "New Level {{index}}",
