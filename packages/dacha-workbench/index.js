@@ -9,6 +9,7 @@ const path = require('path')
 
 const getMenu = require('./electron/get-menu')
 const getAssetsDialog = require('./electron/get-assets-dialog')
+const handleCloseApp = require('./electron/handle-close-app')
 const MESSAGES = require('./electron/messages')
 
 const { assets } = require(path.resolve(process.env.EDITOR_CONFIG))
@@ -44,6 +45,7 @@ const createWindow = () => {
   const win = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      sandbox: false,
     },
   })
   win.maximize()
@@ -51,6 +53,12 @@ const createWindow = () => {
   Menu.setApplicationMenu(getMenu(win))
 
   ipcMain.handle(MESSAGES.ASSETS_DIALOG, (_, ...args) => getAssetsDialog(assets, ...args))
+  ipcMain.on(MESSAGES.SET_UNSAVED_CHANGES, (_, unsavedChanges) => {
+    win.off('close', handleCloseApp)
+    if (unsavedChanges) {
+      win.on('close', handleCloseApp)
+    }
+  })
 
   win.loadURL(`http://localhost:${UI_PORT}`)
 }

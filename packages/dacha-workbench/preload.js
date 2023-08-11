@@ -25,6 +25,9 @@ contextBridge.exposeInMainWorld('electron', {
     // TODO: Remove json beautify before production
     fs.writeFileSync(path.resolve(editorConfig.projectConfig), JSON.stringify(config, null, 2))
   },
+  setUnsavedChanges: (unsavedChanges) => {
+    ipcRenderer.send(MESSAGES.SET_UNSAVED_CHANGES, unsavedChanges)
+  },
   onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
   onSettings: (callback) => ipcRenderer.on(MESSAGES.SETTINGS, (_, ...args) => callback(...args)),
   onSwitchTheme: (callback) => {
