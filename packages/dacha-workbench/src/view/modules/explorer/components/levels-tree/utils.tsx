@@ -33,15 +33,20 @@ const parseGameObject = (
 export const parseLevels = (
   levels: Array<LevelConfig>,
   inactiveSelectedLevelId?: string,
-): Array<ExplorerDataNode> => levels.map((level) => ({
-  key: level.id,
-  title: level.name,
-  path: ['levels', `id:${level.id}`],
-  children: level.gameObjects.map(
-    (gameObject) => parseGameObject(gameObject, ['levels', `id:${level.id}`, 'gameObjects']),
-  ),
-  className: inactiveSelectedLevelId === level.id ? 'levels-tree__level_inactive' : undefined,
-}))
+): Array<ExplorerDataNode> => levels.map((level) => {
+  const node: ExplorerDataNode = {
+    key: level.id,
+    title: level.name,
+    path: ['levels', `id:${level.id}`],
+    className: inactiveSelectedLevelId === level.id ? 'levels-tree__level_inactive' : undefined,
+  }
+
+  node.children = level.gameObjects.map(
+    (gameObject) => parseGameObject(gameObject, ['levels', `id:${level.id}`, 'gameObjects'], node),
+  )
+
+  return node
+})
 
 export const getKey = (entity?: unknown, path?: Array<string>): string | undefined => {
   if (!entity || !path) {
