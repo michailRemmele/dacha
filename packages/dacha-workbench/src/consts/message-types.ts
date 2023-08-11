@@ -26,3 +26,5 @@ export const COMMAND_MSG = 'COMMAND'
 export const COMMAND_UNDO_MSG = 'COMMAND_UNDO'
 export const COMMAND_REDO_MSG = 'COMMAND_REDO'
 export const COMMAND_CLEAN_MSG = 'COMMAND_CLEAN'
+
+export const SAVE_PROJECT_MSG = 'SAVE_PROJECT'

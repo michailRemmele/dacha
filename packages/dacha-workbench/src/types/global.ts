@@ -30,6 +30,7 @@ export interface ElectronAPI {
   getExtension: () => string | undefined
   openAssetsDialog: (extensions?: Array<string>) => Promise<string | undefined>
   saveProjectConfig: (config: Config) => void
+  setUnsavedChanges: (unsavedChanges: boolean) => void
   onSave: (callback: () => void) => void
   onSettings: (callback: (type: string) => void) => void
   onSwitchTheme: (callback: () => void) => () => void
