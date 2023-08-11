@@ -7,7 +7,6 @@ import {
   FC,
 } from 'react'
 import { Tree as AntdTree } from 'antd'
-import type { EventDataNode } from 'antd/lib/tree'
 import type { LevelConfig } from 'remiz'
 
 import { ListWrapper } from '../list-wrapper'
@@ -58,12 +57,12 @@ export const Tree: FC<TreeProps> = ({ className }) => {
     setExpandedKeys(keys as Array<string>)
   }, [])
 
-  const handleSelect = useCallback<SelectFn>((keys, { node }) => {
+  const handleSelect = useCallback<SelectFn<ExplorerDataNode>>((keys, { node }) => {
     if (node.selected) {
       return
     }
 
-    const entityPath = (node as EventDataNode<ExplorerDataNode>).path.slice(0)
+    const entityPath = node.path.slice(0)
     const levelId = entityPath[0] === 'levels' ? entityPath[1].split(':')[1] : undefined
 
     if (levelId !== undefined && levelId !== selectedLevel) {

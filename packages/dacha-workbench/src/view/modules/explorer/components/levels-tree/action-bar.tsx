@@ -14,7 +14,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import type { GameObjectConfig, LevelConfig } from 'remiz'
 
-import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
+import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue } from '../../../../commands'
 import { SelectedEntityContext } from '../../../../providers'
@@ -22,6 +22,8 @@ import {
   duplicateGameObject,
   duplicateLevel,
 } from '../../utils'
+
+import { FocusActionButton } from './components'
 
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
@@ -118,6 +120,12 @@ export const ActionBar: FC = () => {
         }
         disabled={type !== 'gameObject' && type !== 'level'}
       />
+
+      <AdditionalSectionStyled>
+        <FocusActionButton
+          path={type === 'gameObject' ? selectedEntityPath : undefined}
+        />
+      </AdditionalSectionStyled>
     </ActionBarStyled>
   )
 }
