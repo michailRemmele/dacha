@@ -5,6 +5,7 @@ const fs = require('fs')
 const MESSAGES = require('./electron/messages')
 
 const editorConfig = require(path.resolve(process.env.EDITOR_CONFIG))
+const isDev = process.env.NODE_ENV === 'development'
 
 contextBridge.exposeInMainWorld('electron', {
   getProjectConfig: () => {
@@ -22,8 +23,10 @@ contextBridge.exposeInMainWorld('electron', {
   },
   openAssetsDialog: (extensions) => ipcRenderer.invoke(MESSAGES.ASSETS_DIALOG, extensions),
   saveProjectConfig: (config) => {
-    // TODO: Remove json beautify before production
-    fs.writeFileSync(path.resolve(editorConfig.projectConfig), JSON.stringify(config, null, 2))
+    fs.writeFileSync(
+      path.resolve(editorConfig.projectConfig),
+      JSON.stringify(config, null, isDev ? 2 : 0),
+    )
   },
   setUnsavedChanges: (unsavedChanges) => {
     ipcRenderer.send(MESSAGES.SET_UNSAVED_CHANGES, unsavedChanges)

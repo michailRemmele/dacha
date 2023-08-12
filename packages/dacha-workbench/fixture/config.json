@@ -559,7 +559,8 @@
       "type": "array",
       "value": [
         "background",
-        "terrain"
+        "terrain",
+        "units"
       ]
     }
   ],
