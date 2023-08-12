@@ -14,8 +14,6 @@ const MESSAGES = require('./electron/messages')
 
 const { assets } = require(path.resolve(process.env.EDITOR_CONFIG))
 
-const UI_PORT = 8080
-
 const isDev = process.env.NODE_ENV === 'development'
 
 const expressApp = express()
@@ -39,7 +37,7 @@ if (!isDev) {
 }
 expressApp.use(express.static(path.resolve(assets)))
 
-expressApp.listen(UI_PORT)
+const server = expressApp.listen(0)
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -60,7 +58,7 @@ const createWindow = () => {
     }
   })
 
-  win.loadURL(`http://localhost:${UI_PORT}`)
+  win.loadURL(`http://localhost:${server.address().port}`)
 }
 
 app.whenReady().then(() => {
