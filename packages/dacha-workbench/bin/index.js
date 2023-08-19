@@ -6,6 +6,9 @@ const fs = require('fs')
 const { Command } = require('commander')
 
 const init = require('./init')
+const getExecPath = require('./utils/get-exec-path')
+
+const isDev = process.env.NODE_ENV === 'development'
 
 const program = new Command()
 
@@ -27,10 +30,15 @@ program
 
     process.env.EDITOR_CONFIG = options.config
 
-    const electron = spawn(
-      process.platform === 'win32' ? 'electron.cmd' : 'electron',
-      [path.join(__dirname, '../index')],
-    )
+    let electron
+    if (isDev) {
+      electron = spawn(
+        process.platform === 'win32' ? 'electron.cmd' : 'electron',
+        [path.join(__dirname, '../index')],
+      )
+    } else {
+      electron = spawn(path.join(__dirname, '../build-app', getExecPath()))
+    }
 
     electron.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`)
