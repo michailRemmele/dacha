@@ -3,8 +3,9 @@ const path = require('path')
 const fs = require('fs')
 
 const MESSAGES = require('./electron/messages')
+const getEditorConfig = require('./electron/utils/get-editor-config')
 
-const editorConfig = require(path.resolve(process.env.EDITOR_CONFIG))
+const editorConfig = getEditorConfig()
 const isDev = process.env.NODE_ENV === 'development'
 
 contextBridge.exposeInMainWorld('electron', {
@@ -14,13 +15,7 @@ contextBridge.exposeInMainWorld('electron', {
     return JSON.parse(configData)
   },
   getEditorConfig: () => editorConfig,
-  getExtension: () => {
-    if (editorConfig.extension) {
-      return fs.readFileSync(path.resolve(editorConfig.extension)).toString('utf8')
-    }
-
-    return undefined
-  },
+  isExtensionAvailable: () => Boolean(editorConfig.extensionEntry),
   openAssetsDialog: (extensions) => ipcRenderer.invoke(MESSAGES.ASSETS_DIALOG, extensions),
   saveProjectConfig: (config) => {
     fs.writeFileSync(

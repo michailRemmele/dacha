@@ -11,8 +11,9 @@ const getMenu = require('./electron/get-menu')
 const getAssetsDialog = require('./electron/get-assets-dialog')
 const handleCloseApp = require('./electron/handle-close-app')
 const MESSAGES = require('./electron/messages')
+const getEditorConfig = require('./electron/utils/get-editor-config')
 
-const { assets } = require(path.resolve(process.env.EDITOR_CONFIG))
+const { assets, extensionEntry } = getEditorConfig()
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -36,6 +37,25 @@ if (!isDev) {
   expressApp.use(express.static(path.join(__dirname, 'build')))
 }
 expressApp.use(express.static(path.resolve(assets)))
+
+if (extensionEntry) {
+  const webpack = require('webpack')
+  const middleware = require('webpack-dev-middleware')
+
+  const getExtensionWebpackConfig = require('./webpack.extension.config')
+
+  const compiler = webpack(getExtensionWebpackConfig(extensionEntry))
+
+  // compiler.hooks.done.tap('RebuildWatcher', () => {
+  //   Можно через хук подписаться на ребилд расширения в проекте и отправлять сообщение
+  //   на сторону клиента о том что произошли изменения из-за которых нужно перезагрузить редактор
+  //   console.log('editor has been rebuilt!')
+  // })
+
+  expressApp.use(
+    middleware(compiler),
+  )
+}
 
 const server = expressApp.listen(0)
 
