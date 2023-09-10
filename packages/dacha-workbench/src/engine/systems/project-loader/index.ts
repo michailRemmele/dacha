@@ -57,22 +57,15 @@ export class ProjectLoader implements System {
 
   load(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const extension = window.electron.getExtension()
-
-      if (!extension) {
+      if (!window.electron.isExtensionAvailable()) {
         this.setUpData()
 
         resolve()
         return
       }
 
-      const blob = new Blob([extension], {
-        type: 'application/javascript',
-      })
-      const url = URL.createObjectURL(blob)
-
       const script = document.createElement('script')
-      script.src = url
+      script.src = '/extension.js'
 
       script.onload = (): void => {
         this.setUpData(window.editorExtension)
@@ -80,7 +73,7 @@ export class ProjectLoader implements System {
         resolve()
       }
       script.onerror = (): void => {
-        reject(new Error(`Error while loading extension script: ${url}`))
+        reject(new Error('Error while loading extension script'))
       }
 
       document.body.appendChild(script)

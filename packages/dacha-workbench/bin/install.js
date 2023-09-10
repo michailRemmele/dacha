@@ -9,8 +9,8 @@ const packager = require('electron-packager')
 const getAppIconPath = require('./utils/get-app-icon-path')
 const buildPackage = require('./utils/build-package')
 
-if (fs.existsSync('build-app')) {
-  // Exit if editor already was built
+// Exit because we don't need to install editor during editor development process
+if (fs.existsSync('src')) {
   process.exit(0)
 }
 
@@ -20,10 +20,19 @@ const packageOptions = {
   platform: os.platform(),
   arch: os.arch(),
   overwrite: true,
+  prune: false,
   icon: getAppIconPath(),
 }
 
-const appFiles = ['build', 'electron', 'preload.js', 'index.js']
+const appFiles = [
+  'build',
+  'electron',
+  'preload.js',
+  'index.js',
+  'babelrc.js',
+  'webpack.config.js',
+  'webpack.extension.config.js',
+]
 
 // Copy resources
 appFiles.forEach((file) => {

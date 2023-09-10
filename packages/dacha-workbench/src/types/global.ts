@@ -27,7 +27,7 @@ export interface EditorConfig {
 export interface ElectronAPI {
   getProjectConfig: () => Config,
   getEditorConfig: () => EditorConfig
-  getExtension: () => string | undefined
+  isExtensionAvailable: () => boolean
   openAssetsDialog: (extensions?: Array<string>) => Promise<string | undefined>
   saveProjectConfig: (config: Config) => void
   setUnsavedChanges: (unsavedChanges: boolean) => void
