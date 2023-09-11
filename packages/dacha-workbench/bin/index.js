@@ -45,7 +45,7 @@ program
       electron = spawn(path.join(__dirname, '../build-app', getExecPath()), {
         // CWD needs to be overwritten to run application from binary app resources context
         // since we copy some of the dev deps to app resources folder
-        // and we need to have and access to them
+        // and we need to have an access to them
         // TODO: Try to remove that along with including webpack to dependencies section
         cwd: path.join(__dirname, '../build-app', getResourcesPath()),
       })
