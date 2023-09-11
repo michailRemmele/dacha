@@ -3,6 +3,8 @@ import type {
   LevelConfig,
 } from 'remiz'
 
+import { omit } from '../utils'
+
 import type { WatcherFn, WatcherOptions } from './types'
 
 const GAME_OBJECT_PATH_LENGTH = 4
@@ -40,7 +42,7 @@ const syncGameObjects = ({
     }
   })
   gameObjectsToAdd.forEach((gameObjectConfig) => {
-    gameObjectSpawner.spawn(gameObjectCreator.create(gameObjectConfig))
+    gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
   })
 }
 
@@ -76,6 +78,6 @@ export const watchGameObjects: WatcherFn = (options): void => {
 
   if (gameObject) {
     gameObjectDestroyer.destroy(gameObject)
-    gameObjectSpawner.spawn(gameObjectCreator.create(gameObjectConfig))
+    gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
   }
 }
