@@ -12,7 +12,7 @@ import {
   Toolbar,
   SettingsModal,
 } from './modules'
-import { useUnsavedChanges } from './hooks'
+import { useUnsavedChanges, useNeedsReload } from './hooks'
 import { EngineContext } from './providers'
 import {
   EditorStyled,
@@ -27,6 +27,7 @@ export const App = (): JSX.Element => {
   const context = useContext(EngineContext)
 
   useUnsavedChanges()
+  useNeedsReload()
 
   return (
     <EditorStyled>
