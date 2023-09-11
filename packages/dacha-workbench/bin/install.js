@@ -6,7 +6,7 @@ const os = require('os')
 const { execSync } = require('child_process')
 const packager = require('electron-packager')
 
-const getAppIconPath = require('./utils/get-app-icon-path')
+// const getAppIconPath = require('./utils/get-app-icon-path')
 const buildPackage = require('./utils/build-package')
 
 // Exit because we don't need to install editor during editor development process
@@ -21,7 +21,8 @@ const packageOptions = {
   arch: os.arch(),
   overwrite: true,
   prune: false,
-  icon: getAppIconPath(),
+  // TODO: Add and configure editor icon set
+  // icon: getAppIconPath(),
 }
 
 const appFiles = [

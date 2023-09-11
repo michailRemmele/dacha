@@ -12,6 +12,7 @@ const getAssetsDialog = require('./electron/get-assets-dialog')
 const handleCloseApp = require('./electron/handle-close-app')
 const MESSAGES = require('./electron/messages')
 const getEditorConfig = require('./electron/utils/get-editor-config')
+const applyExtension = require('./electron/apply-extension')
 
 const { assets, extensionEntry } = getEditorConfig()
 
@@ -38,25 +39,6 @@ if (!isDev) {
 }
 expressApp.use(express.static(path.resolve(assets)))
 
-if (extensionEntry) {
-  const webpack = require('webpack')
-  const middleware = require('webpack-dev-middleware')
-
-  const getExtensionWebpackConfig = require('./webpack.extension.config')
-
-  const compiler = webpack(getExtensionWebpackConfig(extensionEntry))
-
-  // compiler.hooks.done.tap('RebuildWatcher', () => {
-  //   Можно через хук подписаться на ребилд расширения в проекте и отправлять сообщение
-  //   на сторону клиента о том что произошли изменения из-за которых нужно перезагрузить редактор
-  //   console.log('editor has been rebuilt!')
-  // })
-
-  expressApp.use(
-    middleware(compiler),
-  )
-}
-
 const server = expressApp.listen(0)
 
 const createWindow = () => {
@@ -79,6 +61,10 @@ const createWindow = () => {
   })
 
   win.loadURL(`http://localhost:${server.address().port}`)
+
+  if (extensionEntry) {
+    applyExtension(extensionEntry, expressApp, win)
+  }
 }
 
 app.whenReady().then(() => {
