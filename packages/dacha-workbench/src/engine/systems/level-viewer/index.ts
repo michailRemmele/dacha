@@ -11,15 +11,15 @@ import {
   LevelConfig,
   MessageBus,
   SceneContext,
-  ComponentsMap,
 } from 'remiz'
 
-import type { EditorConfig, Extension } from '../../../types/global'
+import type { EditorConfig } from '../../../types/global'
 import type { Store, ListenerFn } from '../../../store'
 import type { SelectLevelMessage } from '../../../types/messages'
 import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { includesArray } from '../../../utils/includes-array'
 
+import { omit } from './utils'
 import {
   watchTemplates,
   watchGameObjects,
@@ -39,10 +39,9 @@ export class LevelViewer implements System {
   mainObjectId: string
   configStore: Store
   editorConfig: EditorConfig
-  projectComponents: ComponentsMap
-  gameObjectCreator?: GameObjectCreator
+  gameObjectCreator: GameObjectCreator
   currentLevel?: string
-  templateCollection?: TemplateCollection
+  templateCollection: TemplateCollection
   subscription?: () => void
   prevLevel?: LevelConfig
 
@@ -74,32 +73,20 @@ export class LevelViewer implements System {
 
     this.sceneContext.data.mainObject = mainObject
 
-    this.projectComponents = {}
-  }
-
-  mount(): void {
-    if (this.sceneContext.data.extension) {
-      const extension = this.sceneContext.data.extension as Extension
-      this.projectComponents = extension.components as ComponentsMap
-    }
-
-    const components = {
-      ...contribComponents,
-      ...this.projectComponents,
-    }
-
-    const templateCollection = new TemplateCollection(components)
+    const templateCollection = new TemplateCollection(contribComponents)
     const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
 
     templates.forEach((template) => {
-      templateCollection.register(template)
+      templateCollection.register(omit(template))
     })
 
     this.templateCollection = templateCollection
-    this.gameObjectCreator = new GameObjectCreator(components, templateCollection)
+    this.gameObjectCreator = new GameObjectCreator(contribComponents, templateCollection)
 
     this.sceneContext.data.gameObjectCreator = this.gameObjectCreator
+  }
 
+  mount(): void {
     this.watchStore()
   }
 
@@ -117,9 +104,9 @@ export class LevelViewer implements System {
         store: this.configStore,
         gameObjectObserver: this.gameObjectObserver,
         gameObjectDestroyer: this.gameObjectDestroyer,
-        gameObjectCreator: this.gameObjectCreator as GameObjectCreator,
+        gameObjectCreator: this.gameObjectCreator,
         gameObjectSpawner: this.gameObjectSpawner,
-        templateCollection: this.templateCollection as TemplateCollection,
+        templateCollection: this.templateCollection,
         level,
         prevLevel: this.prevLevel,
       }
@@ -163,9 +150,7 @@ export class LevelViewer implements System {
 
     if (selectedLevel && gameObjectCreator) {
       selectedLevel.gameObjects.forEach((gameObjectConfig) => {
-        const gameObject = gameObjectCreator.create(gameObjectConfig)
-
-        this.gameObjectSpawner.spawn(gameObject)
+        this.gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
       })
     }
 
