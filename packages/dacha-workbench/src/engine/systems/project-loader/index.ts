@@ -35,9 +35,6 @@ export class ProjectLoader implements System {
 
   private setUpData(extension: Extension = {}): void {
     const {
-      components = {},
-      systems = {},
-      scripts = {},
       componentsSchema = {},
       systemsSchema = {},
       scriptsSchema = {},
@@ -45,13 +42,10 @@ export class ProjectLoader implements System {
     } = extension
 
     this.sceneContext.data.extension = {
-      components,
-      systems,
       componentsSchema,
       systemsSchema,
       scriptsSchema,
       locales,
-      scripts,
     }
   }
 

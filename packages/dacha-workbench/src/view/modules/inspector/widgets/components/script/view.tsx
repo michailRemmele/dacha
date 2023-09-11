@@ -19,14 +19,14 @@ export const ScriptWidget: FC<WidgetProps> = ({ path }) => {
   const { t, i18n } = useTranslation()
   const { dispatch } = useCommander()
 
-  const { scripts, scriptsSchema } = useExtension()
+  const { scriptsSchema } = useExtension()
 
   const namePath = useMemo(() => path.concat('name'), [path])
   const optionsPath = useMemo(() => path.concat('options'), [path])
   const scriptName = useConfig(namePath) as string
 
   const availableScripts = useMemo(() => {
-    const scriptNames = Object.keys(scripts[SCRIPT_SYSTEM_NAME] || {})
+    const scriptNames = Object.keys(scriptsSchema[SCRIPT_SYSTEM_NAME] || {})
     return scriptNames.map((key) => ({
       title: key,
       value: key,
