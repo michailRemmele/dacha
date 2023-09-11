@@ -5,8 +5,6 @@ node_modules
 /build-app
 /esm
 
-/tmp
-
 .DS_Store
 npm-debug.log*
 

@@ -75,9 +75,6 @@
     "projectSettings.field.startScene.label": "Start Scene",
     "projectSettings.field.startLoader.label": "Start Loader",
     "projectSettings.globalOptions.title": "Global Options",
-    "projectSettings.reload.message": "Reload Required",
-    "projectSettings.reload.description": "To apply changes, the editor should be reloaded. Do you want to reload now?",
-    "projectSettings.reload.button.title": "Reload",
 
     "components.select.option.none.title": "[none]",
 
@@ -98,6 +95,11 @@
     "grid.modal.field.step.label": "Step",
     "grid.modal.field.showGrid.label": "Show Grid",
     "grid.modal.field.color.label": "Color"
+  },
+  "system": {
+    "notification.reload.message": "Reload Required",
+    "notification.reload.description": "To apply changes, the editor should be reloaded. Do you want to reload now?",
+    "notification.reload.button.title": "Reload"
   },
 
   "components.animatable.title": "Animatable",

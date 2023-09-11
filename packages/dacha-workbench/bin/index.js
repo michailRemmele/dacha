@@ -29,16 +29,24 @@ program
     }
 
     process.env.EDITOR_CONFIG = options.config
+    // Save original project CWD
+    // to allow to specify relative project paths (assets, entryPoint, etc.)
     process.env.ORIGINAL_CWD = process.cwd()
 
     let electron
     if (isDev) {
+      // Run application in development mode using electron CLI
       electron = spawn(
         process.platform === 'win32' ? 'electron.cmd' : 'electron',
         [path.join(__dirname, '../index')],
       )
     } else {
+      // Run application in production mode using binary package
       electron = spawn(path.join(__dirname, '../build-app', getExecPath()), {
+        // CWD needs to be overwritten to run application from binary app resources context
+        // since we copy some of the dev deps to app resources folder
+        // and we need to have and access to them
+        // TODO: Try to remove that along with including webpack to dependencies section
         cwd: path.join(__dirname, '../build-app', getResourcesPath()),
       })
     }

@@ -1,17 +1,13 @@
 import {
   useMemo,
   useEffect,
-  useCallback,
   useRef,
-  useContext,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from 'antd'
 import type { SceneConfig } from 'remiz'
 
-import { useConfig, useSaveProject } from '../../../../hooks'
-import { NotificationContext } from '../../../../providers'
+import { useConfig, useReloadNotification } from '../../../../hooks'
 import {
   Field,
   LabelledSelect,
@@ -19,24 +15,8 @@ import {
   MultiField,
 } from '../../components'
 
-const ReloadButton: FC = () => {
-  const { t } = useTranslation()
-  const { save } = useSaveProject()
-
-  const handleReload = useCallback(() => {
-    save()
-    window.location.reload()
-  }, [])
-  return (
-    <Button onClick={handleReload}>
-      {t('inspector.projectSettings.reload.button.title')}
-    </Button>
-  )
-}
-
 export const ProjectSettings: FC = () => {
   const { t } = useTranslation()
-  const notificationApi = useContext(NotificationContext)
 
   const loaders = useConfig('loaders') as Array<SceneConfig>
   const scenes = useConfig('scenes') as Array<SceneConfig>
@@ -44,19 +24,14 @@ export const ProjectSettings: FC = () => {
 
   const prevGlobalOptions = useRef(globalOptions)
 
+  const showReloadNotification = useReloadNotification()
+
   useEffect(() => {
     if (globalOptions === prevGlobalOptions.current) {
       return
     }
 
-    notificationApi.warning({
-      key: 'reload-warning-notification',
-      message: t('inspector.projectSettings.reload.message'),
-      description: t('inspector.projectSettings.reload.description'),
-      placement: 'bottomRight',
-      btn: <ReloadButton />,
-      duration: 0,
-    })
+    showReloadNotification()
     prevGlobalOptions.current = globalOptions
   }, [globalOptions])
 
