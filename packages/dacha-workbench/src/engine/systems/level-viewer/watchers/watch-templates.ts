@@ -1,5 +1,7 @@
 import type { TemplateConfig } from 'remiz'
 
+import { omit } from '../utils'
+
 import type { WatcherFn } from './types'
 
 const TEMPLATES_PATH_LENGTH = 1
@@ -59,7 +61,7 @@ export const watchTemplates: WatcherFn = ({
     templateCollection.delete(id)
   })
   templatesToAdd.forEach((template) => {
-    templateCollection.register(template)
+    templateCollection.register(omit(template))
   })
 
   if (!level) {
@@ -88,7 +90,7 @@ export const watchTemplates: WatcherFn = ({
       gameObjectDestroyer.destroy(gameObject)
     }
     if (templatesToAdd.has(templateId)) {
-      gameObjectSpawner.spawn(gameObjectCreator.create(gameObjectConfig))
+      gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
     }
   })
 }
