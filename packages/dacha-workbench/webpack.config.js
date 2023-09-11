@@ -5,6 +5,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
+const babelrc = require('./babelrc')
+
 const isDev = process.env.NODE_ENV === 'development'
 
 module.exports = {
@@ -40,7 +42,7 @@ module.exports = {
   devtool: isDev ? 'eval' : false,
 
   resolve: {
-    extensions: ['.js', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
 
   optimization: {
@@ -64,7 +66,7 @@ module.exports = {
         {
           from: path.join(__dirname, 'public'),
           globOptions: {
-            ignore: [path.resolve(__dirname, 'public/index.html')],
+            ignore: ['**/index.html'],
           },
         },
       ],
@@ -74,11 +76,12 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts(x?)$/,
+        test: /\.(j|t)s(x?)$/,
         exclude: /(node_modules)/,
         use: [
           {
             loader: 'babel-loader',
+            options: babelrc,
           },
         ],
       },

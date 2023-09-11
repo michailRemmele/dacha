@@ -27,12 +27,13 @@ export interface EditorConfig {
 export interface ElectronAPI {
   getProjectConfig: () => Config,
   getEditorConfig: () => EditorConfig
-  getExtension: () => string | undefined
+  isExtensionAvailable: () => boolean
   openAssetsDialog: (extensions?: Array<string>) => Promise<string | undefined>
   saveProjectConfig: (config: Config) => void
   setUnsavedChanges: (unsavedChanges: boolean) => void
   onSave: (callback: () => void) => void
   onSettings: (callback: (type: string) => void) => void
+  onNeedsReload: (callback: () => void) => () => void
   onSwitchTheme: (callback: () => void) => () => void
   onUndo: (callback: () => void) => () => void
   onRedo: (callback: () => void) => () => void

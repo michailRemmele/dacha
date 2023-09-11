@@ -11,10 +11,10 @@ const getMenu = require('./electron/get-menu')
 const getAssetsDialog = require('./electron/get-assets-dialog')
 const handleCloseApp = require('./electron/handle-close-app')
 const MESSAGES = require('./electron/messages')
+const getEditorConfig = require('./electron/utils/get-editor-config')
+const applyExtension = require('./electron/apply-extension')
 
-const { assets } = require(path.resolve(process.env.EDITOR_CONFIG))
-
-const UI_PORT = 8080
+const { assets, extensionEntry } = getEditorConfig()
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -39,7 +39,7 @@ if (!isDev) {
 }
 expressApp.use(express.static(path.resolve(assets)))
 
-expressApp.listen(UI_PORT)
+const server = expressApp.listen(0)
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -60,7 +60,11 @@ const createWindow = () => {
     }
   })
 
-  win.loadURL(`http://localhost:${UI_PORT}`)
+  win.loadURL(`http://localhost:${server.address().port}`)
+
+  if (extensionEntry) {
+    applyExtension(extensionEntry, expressApp, win)
+  }
 }
 
 app.whenReady().then(() => {
