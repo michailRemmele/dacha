@@ -9,7 +9,7 @@ import { Tree } from 'antd'
 import type { Animation } from 'remiz'
 
 import { getKey } from '../../utils'
-import { useConfig, useExpandedKeys } from '../../../../../../../../hooks'
+import { useConfig, useTreeKeys } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 import type { SelectFn, ExpandFn } from '../../../../../../../../../types/tree-node'
 
@@ -42,7 +42,7 @@ export const List: FC = () => {
     t('components.animatable.editor.state.initial.title'),
   ), [states, initialState, path])
 
-  const { expandedKeys, setExpandedKeys } = useExpandedKeys(treeData)
+  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData)
 
   const handleSelect = useCallback<SelectFn<StateDataNode>>((keys, { node }) => {
     if (node.isLeaf) {
