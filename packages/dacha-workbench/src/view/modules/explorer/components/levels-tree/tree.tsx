@@ -11,7 +11,7 @@ import type { LevelConfig } from 'remiz'
 
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
-import { useConfig, useExpandedKeys } from '../../../../hooks'
+import { useConfig, useTreeKeys } from '../../../../hooks'
 import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 
@@ -51,7 +51,7 @@ export const Tree: FC<TreeProps> = ({ className }) => {
     [levels, inactiveSelectedLevelId],
   )
 
-  const { expandedKeys, setExpandedKeys } = useExpandedKeys(treeData)
+  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData)
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
