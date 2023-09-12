@@ -10,7 +10,7 @@ import type { TemplateConfig } from 'remiz'
 
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
-import { useConfig, useExpandedKeys } from '../../../../hooks'
+import { useConfig, useTreeKeys } from '../../../../hooks'
 import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 
@@ -24,7 +24,7 @@ export const Tree: FC = () => {
   const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseTemplates(templates), [templates])
 
-  const { expandedKeys, setExpandedKeys } = useExpandedKeys(treeData)
+  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData)
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
