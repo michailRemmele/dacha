@@ -27,16 +27,16 @@ export const useConfig = (path?: Array<string> | string): unknown => {
     prevPath.current = parsedPath
   }
 
-  const [, setForceRerender] = useState(false)
+  const [, setForceRerender] = useState(0)
 
   useEffect(() => {
     const unsubscribe = configStore?.subscribe((updatePath, updateValue) => {
       if (isEqual(parsedPath, updatePath)) {
         valueRef.current = updateValue
-        setForceRerender((forceRerender) => !forceRerender)
+        setForceRerender((forceRerender) => forceRerender + 1)
       } else if (includesArray(updatePath, parsedPath) || includesArray(parsedPath, updatePath)) {
         valueRef.current = configStore.get(parsedPath as Array<string>)
-        setForceRerender((forceRerender) => !forceRerender)
+        setForceRerender((forceRerender) => forceRerender + 1)
       }
     })
 
