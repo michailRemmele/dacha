@@ -2,7 +2,7 @@ import { KeyboardControl } from '../index';
 
 describe('Contrib -> components -> KeyboardControl', () => {
   it('Returns correct values ', () => {
-    const keyboardControl = new KeyboardControl('keyboardControl', {
+    const keyboardControl = new KeyboardControl({
       inputEventBindings: [
         {
           key: 'W',
@@ -42,7 +42,7 @@ describe('Contrib -> components -> KeyboardControl', () => {
   });
 
   it('Correct updates values ', () => {
-    const keyboardControl = new KeyboardControl('keyboardControl', {
+    const keyboardControl = new KeyboardControl({
       inputEventBindings: [
         {
           key: 'W',
@@ -81,7 +81,7 @@ describe('Contrib -> components -> KeyboardControl', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalKeyboardControl = new KeyboardControl('keyboardControl', {
+    const originalKeyboardControl = new KeyboardControl({
       inputEventBindings: [
         {
           key: 'W',

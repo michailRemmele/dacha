@@ -21,8 +21,8 @@ export class Light extends Component {
   type: LightType;
   options: BaseLightOptions | PointLightOptions;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const lightConfig = config as LightConfig;
 
@@ -31,7 +31,7 @@ export class Light extends Component {
   }
 
   clone(): Light {
-    return new Light(this.componentName, {
+    return new Light({
       type: this.type,
       options: this.options,
     });

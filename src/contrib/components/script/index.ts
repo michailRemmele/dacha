@@ -5,12 +5,12 @@ export interface ScriptConfig extends Record<string, unknown> {
   options: Record<string, unknown>
 }
 
-export class ScriptComponent extends Component {
+export class Script extends Component {
   name: string;
   options: Record<string, unknown>;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const scriptConfig = config as ScriptConfig;
 
@@ -18,8 +18,8 @@ export class ScriptComponent extends Component {
     this.options = { ...scriptConfig.options };
   }
 
-  clone(): ScriptComponent {
-    return new ScriptComponent(this.componentName, {
+  clone(): Script {
+    return new Script({
       name: this.name,
       options: this.options,
     });

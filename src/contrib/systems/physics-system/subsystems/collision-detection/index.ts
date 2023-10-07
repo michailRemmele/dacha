@@ -1,12 +1,8 @@
-import {
-  COLLIDER_COMPONENT_NAME,
-  TRANSFORM_COMPONENT_NAME,
-  COLLISION_MSG,
-} from '../../consts';
+import { COLLISION_MSG } from '../../consts';
 import type { System, SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus } from '../../../../../engine/message-bus';
-import type { Transform, ColliderContainer } from '../../../../components';
+import { Transform, ColliderContainer } from '../../../../components';
 
 import { coordinatesCalculators } from './coordinates-calculators';
 import { aabbBuilders } from './aabb-builders';
@@ -39,8 +35,8 @@ export class CollisionDetectionSubsystem implements System {
   constructor(options: SystemOptions) {
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [
-        COLLIDER_COMPONENT_NAME,
-        TRANSFORM_COMPONENT_NAME,
+        ColliderContainer,
+        Transform,
       ],
     });
     this.messageBus = options.messageBus;
@@ -100,7 +96,7 @@ export class CollisionDetectionSubsystem implements System {
       return true;
     }
 
-    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+    const transform = gameObject.getComponent(Transform);
 
     return transform.offsetX !== previousTransform.offsetX
       || transform.offsetY !== previousTransform.offsetY;
@@ -193,8 +189,7 @@ export class CollisionDetectionSubsystem implements System {
 
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
     const getIntersectionEntry = (arg: SortedEntry): IntersectionEntry => {
-      const colliderContainer = arg.gameObject
-        .getComponent(COLLIDER_COMPONENT_NAME) as ColliderContainer;
+      const colliderContainer = arg.gameObject.getComponent(ColliderContainer);
 
       return {
         type: colliderContainer.type,
@@ -245,9 +240,8 @@ export class CollisionDetectionSubsystem implements System {
       }
 
       const gameObjectId = gameObject.getId();
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-      const colliderContainer = gameObject
-        .getComponent(COLLIDER_COMPONENT_NAME) as ColliderContainer;
+      const transform = gameObject.getComponent(Transform);
+      const colliderContainer = gameObject.getComponent(ColliderContainer);
 
       const coordinates = this.coordinatesCalculators[colliderContainer.type].calc(
         colliderContainer,

@@ -22,8 +22,8 @@ export class KeyboardControl extends Component {
   inputEventBindings: InputEventBindings;
   keyStates: Record<string, string | null>;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const { inputEventBindings } = config as KeyboardControlConfig;
 
@@ -49,7 +49,7 @@ export class KeyboardControl extends Component {
   }
 
   clone(): KeyboardControl {
-    return new KeyboardControl(this.componentName, {
+    return new KeyboardControl({
       inputEventBindings: Object.keys(this.inputEventBindings).map(
         (inputEvent) => {
           const [key, event] = inputEvent.split(PREFIX_SEPARATOR);

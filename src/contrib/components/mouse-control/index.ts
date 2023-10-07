@@ -18,8 +18,8 @@ export interface MouseControlConfig extends Record<string, unknown> {
 export class MouseControl extends Component {
   inputEventBindings: InputEventBindings;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const { inputEventBindings } = config as MouseControlConfig;
 
@@ -36,7 +36,7 @@ export class MouseControl extends Component {
   }
 
   clone(): MouseControl {
-    return new MouseControl(this.componentName, {
+    return new MouseControl({
       inputEventBindings: Object.keys(this.inputEventBindings).map(
         (key) => ({
           event: key,

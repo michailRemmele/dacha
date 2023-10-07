@@ -36,19 +36,19 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
     const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
     const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject1.setComponent(new Renderable(baseRenderableProps));
+    gameObject1.setComponent(new Transform(baseTransformProps));
 
-    gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject2.setComponent(new Renderable(baseRenderableProps));
+    gameObject2.setComponent(new Transform(baseTransformProps));
 
     expect(sortByYAxis(gameObject1, gameObject2)).toBe(0);
 
-    (gameObject2.getComponent('transform') as Transform).offsetY = 50;
+    (gameObject2.getComponent(Transform)).offsetY = 50;
 
     expect(sortByYAxis(gameObject1, gameObject2)).toBeLessThan(0);
 
-    (gameObject1.getComponent('transform') as Transform).offsetY = 100;
+    (gameObject1.getComponent(Transform)).offsetY = 100;
 
     expect(sortByYAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
   });
@@ -57,25 +57,25 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
     const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
     const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject1.setComponent(new Renderable(baseRenderableProps));
+    gameObject1.setComponent(new Transform(baseTransformProps));
 
-    gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject2.setComponent(new Renderable(baseRenderableProps));
+    gameObject2.setComponent(new Transform(baseTransformProps));
 
-    (gameObject1.getComponent('transform') as Transform).offsetY = 100;
-    (gameObject2.getComponent('transform') as Transform).offsetY = 50;
+    (gameObject1.getComponent(Transform)).offsetY = 100;
+    (gameObject2.getComponent(Transform)).offsetY = 50;
 
-    (gameObject1.getComponent('renderable') as Renderable).height = 10;
-    (gameObject2.getComponent('renderable') as Renderable).height = 100;
+    (gameObject1.getComponent(Renderable)).height = 10;
+    (gameObject2.getComponent(Renderable)).height = 100;
 
     expect(sortByYAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
 
-    (gameObject2.getComponent('renderable') as Renderable).height = 110;
+    (gameObject2.getComponent(Renderable)).height = 110;
 
     expect(sortByYAxis(gameObject1, gameObject2)).toBe(0);
 
-    (gameObject2.getComponent('renderable') as Renderable).height = 130;
+    (gameObject2.getComponent(Renderable)).height = 130;
 
     expect(sortByYAxis(gameObject1, gameObject2)).toBeLessThan(0);
   });

@@ -2,14 +2,12 @@ import type { System, SystemOptions } from '../../../engine/system';
 import type { GameObject } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
-import type { Camera } from '../../components/camera';
-import type { Transform } from '../../components/transform';
+import { Camera } from '../../components/camera';
+import { Transform } from '../../components/transform';
 
 const INPUT_MESSAGE = 'MOUSE_INPUT_EVENT_QUERY';
 
 const CURRENT_CAMERA_NAME = 'currentCamera';
-const CAMERA_COMPONENT_NAME = 'camera';
-const TRANSFORM_COMPONENT_NAME = 'transform';
 
 interface MouseInputEvent {
   type: string
@@ -40,14 +38,14 @@ export class MouseInputCoordinatesProjector implements System {
       windowSizeX,
       windowSizeY,
       zoom,
-    } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
+    } = currentCamera.getComponent(Camera);
     const windowCenterX = windowSizeX / 2;
     const windowCenterY = windowSizeY / 2;
 
     const {
       offsetX: cameraOffsetX,
       offsetY: cameraOffsetY,
-    } = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+    } = currentCamera.getComponent(Transform);
 
     const messages = (this.messageBus.get(INPUT_MESSAGE) || []) as Array<InputEventQueryMessage>;
     messages.forEach((message) => {

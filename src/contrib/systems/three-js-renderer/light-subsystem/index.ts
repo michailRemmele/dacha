@@ -1,13 +1,9 @@
 import type { Scene, Light as ThreeJSLight } from 'three/src/Three';
 
-import type { GameObject, GameObjectObserver } from '../../../../engine/game-object';
-import type { Light } from '../../../components/light';
-import type { Transform } from '../../../components/transform';
+import { Light } from '../../../components/light';
+import { Transform } from '../../../components/transform';
 import { filterByKey } from '../../../../engine/utils';
-import {
-  LIGHT_COMPONENT_NAME,
-  TRANSFORM_COMPONENT_NAME,
-} from '../consts';
+import type { GameObject, GameObjectObserver } from '../../../../engine/game-object';
 
 import { createLight, updateLight } from './light-factory';
 
@@ -34,7 +30,7 @@ export class LightSubsystem {
   }
 
   private handleLightAdd = (gameObject: GameObject): void => {
-    const { type } = gameObject.getComponent(LIGHT_COMPONENT_NAME) as Light;
+    const { type } = gameObject.getComponent(Light);
 
     const light = createLight(type);
 
@@ -59,8 +55,8 @@ export class LightSubsystem {
     this.lightsObserver.fireEvents();
 
     this.lightsObserver.getList().forEach((gameObject) => {
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-      const { type, options } = gameObject.getComponent(LIGHT_COMPONENT_NAME) as Light;
+      const transform = gameObject.getComponent(Transform);
+      const { type, options } = gameObject.getComponent(Light);
 
       const light = this.renderScene.getObjectById(
         this.lightsMap[gameObject.getId()],

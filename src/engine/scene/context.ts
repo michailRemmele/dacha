@@ -1,6 +1,4 @@
-// comment: There can be any constructor signature
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Constructor<T> = new (...args: any[]) => T;
+import type { Constructor } from '../../types/utils';
 
 export class SceneContext {
   name: string;

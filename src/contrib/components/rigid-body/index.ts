@@ -19,8 +19,8 @@ export class RigidBody extends Component {
   ghost: boolean;
   drag: number;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const rigidBodyConfig = config as RigidBodyConfig;
 
@@ -33,7 +33,7 @@ export class RigidBody extends Component {
   }
 
   clone(): RigidBody {
-    return new RigidBody(this.componentName, {
+    return new RigidBody({
       mass: this.mass,
       useGravity: this.useGravity,
       isPermeable: this.isPermeable,

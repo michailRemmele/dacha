@@ -27,17 +27,17 @@ describe('Contrib -> RenderSystem -> Sort -> sortByFit()', () => {
     const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
     const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    gameObject1.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
-    gameObject2.setComponent('renderable', new Renderable('renderable', baseRenderableProps));
+    gameObject1.setComponent(new Renderable(baseRenderableProps));
+    gameObject2.setComponent(new Renderable(baseRenderableProps));
 
     expect(sortByFit(gameObject1, gameObject2)).toBe(0);
 
-    (gameObject2.getComponent('renderable') as Renderable).fit = 'repeat';
+    (gameObject2.getComponent(Renderable)).fit = 'repeat';
 
     expect(sortByFit(gameObject1, gameObject2)).toBeGreaterThan(0);
 
-    (gameObject2.getComponent('renderable') as Renderable).fit = 'stretch';
-    (gameObject1.getComponent('renderable') as Renderable).fit = 'repeat';
+    (gameObject2.getComponent(Renderable)).fit = 'stretch';
+    (gameObject1.getComponent(Renderable)).fit = 'repeat';
 
     expect(sortByFit(gameObject1, gameObject2)).toBeLessThan(0);
   });

@@ -2,7 +2,7 @@ import { RigidBody } from '../index';
 
 describe('Contrib -> components -> RigidBody', () => {
   it('Returns correct values ', () => {
-    const rigidBody = new RigidBody('rigidBody', {
+    const rigidBody = new RigidBody({
       type: 'dynamic',
       mass: 10,
       useGravity: true,
@@ -20,7 +20,7 @@ describe('Contrib -> components -> RigidBody', () => {
   });
 
   it('Correct updates values ', () => {
-    const rigidBody = new RigidBody('rigidBody', {
+    const rigidBody = new RigidBody({
       type: 'dynamic',
       mass: 10,
       useGravity: true,
@@ -45,7 +45,7 @@ describe('Contrib -> components -> RigidBody', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalRigidBody = new RigidBody('rigidBody', {
+    const originalRigidBody = new RigidBody({
       type: 'dynamic',
       mass: 10,
       useGravity: true,

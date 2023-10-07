@@ -1,5 +1,7 @@
+import type { Constructor } from '../types/utils';
+
 import type { SystemsMap, HelperFn } from './system';
-import type { ComponentsMap } from './component';
+import type { Component } from './component';
 import type { Config } from './types';
 import { SceneProvider } from './scene/scene-provider';
 import { GameObjectCreator } from './game-object';
@@ -10,7 +12,7 @@ import { SceneController } from './controllers';
 export interface EngineOptions {
   config: Config
   systems: SystemsMap
-  components: ComponentsMap
+  components: Array<Constructor<Component>>
   helpers: Record<string, HelperFn>
 }
 

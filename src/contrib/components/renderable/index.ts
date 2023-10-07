@@ -44,8 +44,8 @@ export class Renderable extends Component {
   fit: FitType;
   material: Material;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const renderableConfig = config as RenderableConfig;
 
@@ -76,7 +76,7 @@ export class Renderable extends Component {
   }
 
   clone(): Renderable {
-    return new Renderable(this.componentName, {
+    return new Renderable({
       src: this.src,
       width: this.width,
       height: this.height,

@@ -1,14 +1,18 @@
-import type { ComponentsMap } from '../component';
+import type { Component } from '../component';
 import type { TemplateConfig } from '../types';
+import type { Constructor } from '../../types/utils';
 
 import { Template } from './template';
 
 export class TemplateCollection {
-  private components: ComponentsMap;
+  private components: Record<string, Constructor<Component>>;
   private storage: Record<string, Template>;
 
-  constructor(components: ComponentsMap) {
-    this.components = components;
+  constructor(components: Array<Constructor<Component>>) {
+    this.components = components.reduce((acc, ComponentClass) => {
+      acc[ComponentClass.name] = ComponentClass;
+      return acc;
+    }, {} as Record<string, Constructor<Component>>);
     this.storage = {};
   }
 
@@ -31,10 +35,7 @@ export class TemplateCollection {
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      template.setComponent(
-        componentOptions.name,
-        new Component(componentOptions.name, componentOptions.config),
-      );
+      template.setComponent(new Component(componentOptions.config));
     });
 
     return template;
@@ -49,7 +50,8 @@ export class TemplateCollection {
       throw new Error(`Can't find template with the following id: ${id}`);
     }
 
-    return this.storage[id].clone();
+    const copy = this.storage[id].clone();
+    return copy;
   }
 
   getAll(): Array<Template> {

@@ -1,5 +1,19 @@
+/* comment: mock classes for test */
+/* eslint-disable max-classes-per-file */
 import { GameObject, ComponentsEditionEvent } from '../game-object';
-import { createMockComponent } from '../../../__mocks__';
+import { Component } from '../../component';
+
+class TestComponent1 extends Component {
+  clone(): Component {
+    return new TestComponent1();
+  }
+}
+
+class TestComponent2 extends Component {
+  clone(): Component {
+    return new TestComponent2();
+  }
+}
 
 describe('Engine -> GameObject', () => {
   it('Returns correct id and name', () => {
@@ -39,18 +53,18 @@ describe('Engine -> GameObject', () => {
       id: '0',
       name: 'gameObject',
     });
-    const component1 = createMockComponent('component-1');
-    const component2 = createMockComponent('component-2');
+    const component1 = new TestComponent1();
+    const component2 = new TestComponent2();
 
-    gameObject.setComponent('component-1', component1);
-    gameObject.setComponent('component-2', component2);
+    gameObject.setComponent(component1);
+    gameObject.setComponent(component2);
 
-    expect(gameObject.getComponentNamesList()).toStrictEqual([
-      'component-1',
-      'component-2',
+    expect(gameObject.getComponents()).toStrictEqual([
+      component1,
+      component2,
     ]);
-    expect(gameObject.getComponent('component-1')).toEqual(component1);
-    expect(gameObject.getComponent('component-2')).toEqual(component2);
+    expect(gameObject.getComponent(TestComponent1)).toEqual(component1);
+    expect(gameObject.getComponent(TestComponent2)).toEqual(component2);
   });
 
   it('Returns correct list of component names after deletion one', () => {
@@ -58,18 +72,18 @@ describe('Engine -> GameObject', () => {
       id: '0',
       name: 'gameObject',
     });
-    const component1 = createMockComponent('component-1');
-    const component2 = createMockComponent('component-2');
+    const component1 = new TestComponent1();
+    const component2 = new TestComponent2();
 
-    gameObject.setComponent('component-1', component1);
-    gameObject.setComponent('component-2', component2);
+    gameObject.setComponent(component1);
+    gameObject.setComponent(component2);
 
-    gameObject.removeComponent('component-2');
+    gameObject.removeComponent(TestComponent2);
 
-    expect(gameObject.getComponentNamesList()).toStrictEqual([
-      'component-1',
+    expect(gameObject.getComponents()).toStrictEqual([
+      component1,
     ]);
-    expect(gameObject.getComponent('component-2')).toBeUndefined();
+    expect(gameObject.getComponent(TestComponent2)).toBeUndefined();
   });
 
   it('Returns correct ancestor', () => {
@@ -124,45 +138,45 @@ describe('Engine -> GameObject', () => {
       name: 'gameObject',
     });
     const subscription1 = jest.fn() as jest.Mock<void, [ComponentsEditionEvent]>;
-    const wrappedSubscription1 = (event: ComponentsEditionEvent) => { subscription1(event); };
+    const wrappedSubscription1 = (event: ComponentsEditionEvent): void => { subscription1(event); };
     const subscription2 = jest.fn() as jest.Mock<void, [ComponentsEditionEvent]>;
-    const wrappedSubscription2 = (event: ComponentsEditionEvent) => { subscription2(event); };
+    const wrappedSubscription2 = (event: ComponentsEditionEvent): void => { subscription2(event); };
 
     gameObject.subscribe(wrappedSubscription1);
-    gameObject.setComponent('component-1', createMockComponent('component-1'));
+    gameObject.setComponent(new TestComponent1());
 
     gameObject.subscribe(wrappedSubscription2);
-    gameObject.setComponent('component-2', createMockComponent('component-2'));
+    gameObject.setComponent(new TestComponent2());
 
-    gameObject.removeComponent('component-1');
+    gameObject.removeComponent(TestComponent1);
 
     expect(subscription1.mock.calls.length).toEqual(3);
     expect(subscription2.mock.calls.length).toEqual(2);
 
     expect(subscription1.mock.calls[0][0]).toStrictEqual({
       type: 'COMPONENT_ADDED',
-      componentName: 'component-1',
+      componentName: 'TestComponent1',
       gameObject,
     });
     expect(subscription1.mock.calls[1][0]).toStrictEqual({
       type: 'COMPONENT_ADDED',
-      componentName: 'component-2',
+      componentName: 'TestComponent2',
       gameObject,
     });
     expect(subscription1.mock.calls[2][0]).toStrictEqual({
       type: 'COMPONENT_REMOVED',
-      componentName: 'component-1',
+      componentName: 'TestComponent1',
       gameObject,
     });
 
     expect(subscription2.mock.calls[0][0]).toStrictEqual({
       type: 'COMPONENT_ADDED',
-      componentName: 'component-2',
+      componentName: 'TestComponent2',
       gameObject,
     });
     expect(subscription2.mock.calls[1][0]).toStrictEqual({
       type: 'COMPONENT_REMOVED',
-      componentName: 'component-1',
+      componentName: 'TestComponent1',
       gameObject,
     });
   });
@@ -173,16 +187,16 @@ describe('Engine -> GameObject', () => {
       name: 'gameObject',
     });
     const subscription1 = jest.fn() as jest.Mock<void, [ComponentsEditionEvent]>;
-    const wrappedSubscription1 = (event: ComponentsEditionEvent) => { subscription1(event); };
+    const wrappedSubscription1 = (event: ComponentsEditionEvent): void => { subscription1(event); };
 
     gameObject.subscribe(wrappedSubscription1);
 
-    gameObject.setComponent('component-1', createMockComponent('component-1'));
+    gameObject.setComponent(new TestComponent1());
 
     gameObject.clearSubscriptions();
 
-    gameObject.setComponent('component-2', createMockComponent('component-2'));
-    gameObject.removeComponent('component-1');
+    gameObject.setComponent(new TestComponent2());
+    gameObject.removeComponent(TestComponent1);
 
     expect(subscription1.mock.calls.length).toEqual(1);
   });

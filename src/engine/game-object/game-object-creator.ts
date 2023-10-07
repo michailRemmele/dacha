@@ -6,12 +6,9 @@ import type {
   Template,
   TemplateCollection,
 } from '../template';
+import type { Constructor } from '../../types/utils';
 
 import { GameObject } from './game-object';
-
-interface ComponentConstructor {
-  new(name: ComponentConfig['name'], options: ComponentConfig['config']): Component
-}
 
 export interface GameObjectOptions {
   id?: string
@@ -25,14 +22,17 @@ export interface GameObjectOptions {
 }
 
 export class GameObjectCreator {
-  private components: Record<string, ComponentConstructor>;
+  private components: Record<string, Constructor<Component>>;
   private templateCollection: TemplateCollection;
 
   constructor(
-    components: Record<string, ComponentConstructor>,
+    components: Array<Constructor<Component>>,
     templateCollection: TemplateCollection,
   ) {
-    this.components = components;
+    this.components = components.reduce((acc, ComponentClass) => {
+      acc[ComponentClass.name] = ComponentClass;
+      return acc;
+    }, {} as Record<string, Constructor<Component>>);
     this.templateCollection = templateCollection;
   }
 
@@ -93,19 +93,13 @@ export class GameObjectCreator {
       });
     }
 
-    template.getAvailableComponents().forEach((componentName) => {
-      const component = template.getComponent(componentName);
-      if (component) {
-        gameObject.setComponent(componentName, component);
-      }
+    template.getComponents().forEach((component) => {
+      gameObject.setComponent(component);
     });
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      gameObject.setComponent(
-        componentOptions.name,
-        new Component(componentOptions.name, componentOptions.config),
-      );
+      gameObject.setComponent(new Component(componentOptions.config));
     });
 
     return gameObject;
@@ -135,10 +129,7 @@ export class GameObjectCreator {
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      gameObject.setComponent(
-        componentOptions.name,
-        new Component(componentOptions.name, componentOptions.config),
-      );
+      gameObject.setComponent(new Component(componentOptions.config));
     });
 
     return gameObject;

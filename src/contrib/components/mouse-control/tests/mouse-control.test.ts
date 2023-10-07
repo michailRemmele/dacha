@@ -2,7 +2,7 @@ import { MouseControl } from '../index';
 
 describe('Contrib -> components -> MouseControl', () => {
   it('Returns correct values ', () => {
-    const mouseControl = new MouseControl('mouseControl', {
+    const mouseControl = new MouseControl({
       inputEventBindings: [
         {
           event: 'MOUSE_LEFT_BUTTON_PRESS',
@@ -44,7 +44,7 @@ describe('Contrib -> components -> MouseControl', () => {
   });
 
   it('Correct updates values ', () => {
-    const mouseControl = new MouseControl('mouseControl', {
+    const mouseControl = new MouseControl({
       inputEventBindings: [
         {
           event: 'MOUSE_LEFT_BUTTON_PRESS',
@@ -78,7 +78,7 @@ describe('Contrib -> components -> MouseControl', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalMouseControl = new MouseControl('mouseControl', {
+    const originalMouseControl = new MouseControl({
       inputEventBindings: [
         {
           event: 'MOUSE_LEFT_BUTTON_PRESS',
