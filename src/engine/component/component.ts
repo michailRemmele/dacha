@@ -31,6 +31,3 @@ export abstract class Component {
 
   abstract clone(): Component;
 }
-
-export type ComponentsMap
-  = Record<string, new (...args: [Record<string, unknown>]) => Component>;

@@ -3,11 +3,9 @@ import { Component } from './engine/component';
 import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
 
 export * from './engine/types';
-export type { ComponentsMap } from './engine/component';
 export type {
   System,
   SystemOptions,
-  SystemsMap,
   UpdateOptions,
   HelperFn,
 } from './engine/system';
@@ -28,7 +26,7 @@ export { RendererService } from './contrib/systems/three-js-renderer';
 export { GameObject, GameObjectCreator } from './engine/game-object';
 export { TemplateCollection } from './engine/template';
 
-export { contribSystems } from './contrib/systems';
+export * from './contrib/systems';
 export * from './contrib/components';
 
 export {

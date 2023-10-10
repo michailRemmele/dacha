@@ -1,6 +1,6 @@
 import type { Constructor } from '../types/utils';
 
-import type { SystemsMap, HelperFn } from './system';
+import type { System, HelperFn } from './system';
 import type { Component } from './component';
 import type { Config } from './types';
 import { SceneProvider } from './scene/scene-provider';
@@ -11,7 +11,7 @@ import { SceneController } from './controllers';
 
 export interface EngineOptions {
   config: Config
-  systems: SystemsMap
+  systems: Array<Constructor<System>>
   components: Array<Constructor<Component>>
   helpers: Record<string, HelperFn>
 }

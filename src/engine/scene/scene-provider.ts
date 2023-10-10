@@ -1,16 +1,17 @@
+import { filterByKey } from '../utils';
 import type { SceneConfig, LevelConfig, GlobalOption } from '../types';
 import type { GameObjectCreator } from '../game-object';
-import type { SystemsMap, HelperFn } from '../system';
+import type { System, HelperFn } from '../system';
 import type { TemplateCollection } from '../template';
+import type { Constructor } from '../../types/utils';
 
 import { Scene } from './scene';
-import { filterByKey } from '../utils';
 
 interface SceneProviderOptions {
   scenes: Array<SceneConfig>
   loaders: Array<SceneConfig>
   levels: Array<LevelConfig>
-  systems: SystemsMap
+  systems: Array<Constructor<System>>
   helpers: Record<string, HelperFn>
   globalOptions: Array<GlobalOption>
   gameObjectCreator: GameObjectCreator
@@ -34,7 +35,7 @@ export class SceneProvider {
   private availableScenes: Record<string, SceneConfig>;
   private availableLoaders: Record<string, SceneConfig>;
   private availableLevels: Record<string, LevelConfig>;
-  private systems: SystemsMap;
+  private systems: Array<Constructor<System>>;
   private helpers: Record<string, HelperFn>;
   private globalOptions: Record<string, unknown>;
   private sceneContainer: Record<string, Scene>;

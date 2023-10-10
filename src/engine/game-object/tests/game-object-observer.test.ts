@@ -40,7 +40,7 @@ describe('Engine -> GameObjectObserver', () => {
       id: '000',
       name: 'test-scene',
       gameObjects: [],
-      availableSystems: {},
+      availableSystems: [],
       helpers: {},
       globalOptions: {},
       systems: [],

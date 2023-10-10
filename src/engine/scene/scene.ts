@@ -1,5 +1,5 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
-import type { SystemsMap, HelperFn } from '../system';
+import type { HelperFn } from '../system';
 import type { TemplateCollection } from '../template';
 import { System } from '../system';
 import {
@@ -11,6 +11,7 @@ import {
   GameObjectCreator,
 } from '../game-object';
 import { MessageBus } from '../message-bus';
+import type { Constructor } from '../../types/utils';
 
 import { SceneContext } from './context';
 import { Store } from './store';
@@ -23,7 +24,7 @@ export interface GameObjectChangeEvent {
 
 interface SceneOptions extends SceneConfig {
   gameObjects: Array<GameObjectConfig>
-  availableSystems: SystemsMap
+  availableSystems: Array<Constructor<System>>
   helpers: Record<string, HelperFn>
   globalOptions: Record<string, unknown>
   gameObjectCreator: GameObjectCreator
@@ -42,6 +43,7 @@ export class Scene {
   private systems: Array<System>;
   private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
   private templateCollection: TemplateCollection;
+  private availableSystemsMap: Record<string, Constructor<System>>;
 
   readonly id: string;
 
@@ -72,14 +74,18 @@ export class Scene {
       this.addGameObject(this.gameObjectCreator.create(gameObjectOptions));
     });
 
-    this.systems = systems.map((config) => new availableSystems[config.name]({
+    this.availableSystemsMap = availableSystems.reduce((acc, AvailableSystem) => {
+      acc[AvailableSystem.name] = AvailableSystem;
+      return acc;
+    }, {} as Record<string, Constructor<System>>);
+    this.systems = systems.map((config) => new this.availableSystemsMap[config.name]({
       ...config.options,
       store: this.getStore(),
       gameObjectSpawner: this.getGameObjectSpawner(),
       gameObjectDestroyer: this.getGameObjectDestroyer(),
-      createGameObjectObserver: (filter): GameObjectObserver => this.createGameObjectObserver(
-        filter,
-      ),
+      createGameObjectObserver: (
+        filter: GameObjectObserverFilter,
+      ): GameObjectObserver => this.createGameObjectObserver(filter),
       messageBus: this.getMessageBus(),
       helpers,
       globalOptions,

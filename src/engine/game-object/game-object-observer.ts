@@ -20,11 +20,11 @@ interface ObserverSubscriptions {
 
 export interface GameObjectObserverFilter {
   type?: string;
-  components?: Array<Constructor<Component>>;
+  components?: Array<Constructor<Component> | string>;
 }
 
 export class GameObjectObserver implements EventEmitter {
-  private _components: Array<Constructor<Component>>;
+  private _components: Array<Constructor<Component> | string>;
   private _type?: string;
   private _observedGameObjects: Array<GameObject>;
   private _addedToAccepted: Array<GameObject>;
@@ -111,7 +111,13 @@ export class GameObjectObserver implements EventEmitter {
       return false;
     }
 
-    return this._components.every((component) => gameObject.getComponent(component));
+    return this._components.every((component) => {
+      // Dummy check to avoid typescript error
+      if (typeof component === 'string') {
+        return gameObject.getComponent(component);
+      }
+      return gameObject.getComponent(component);
+    });
   }
 
   private _accept(gameObject: GameObject): void {
