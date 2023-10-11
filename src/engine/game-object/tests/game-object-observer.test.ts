@@ -46,6 +46,7 @@ describe('Engine -> GameObjectObserver', () => {
       systems: [],
       gameObjectCreator: new GameObjectCreator([], templateCollection),
       templateCollection,
+      levelId: null,
     });
 
     gameObject1 = new GameObject({

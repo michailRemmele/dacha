@@ -65,6 +65,10 @@ export class Engine {
       helpers,
     } = this.options;
 
+    if (!startSceneId) {
+      throw new Error('Can\'t start the engine without starting scene. Please specify start scene id.');
+    }
+
     const templateCollection = new TemplateCollection(components);
 
     for (let i = 0; i < templates.length; i += 1) {
@@ -89,6 +93,7 @@ export class Engine {
     const asyncLoading = this.sceneProvider.loadScene({
       sceneId: startSceneId,
       loaderId: startLoaderId,
+      levelId: null,
     });
 
     if (asyncLoading && !startLoaderId) {

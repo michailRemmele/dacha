@@ -20,15 +20,15 @@ interface SceneProviderOptions {
 
 export interface SceneLoadOptions {
   sceneId: string
-  loaderId?: string
-  levelId?: string
+  loaderId: string | null
+  levelId: string | null
   clean?: boolean
   unloadCurrent?: boolean
 }
 
 export interface LevelLoadOptions {
   levelId: string
-  loaderId?: string
+  loaderId: string | null
 }
 
 export class SceneProvider {
