@@ -3,8 +3,8 @@ import { Component } from './engine/component';
 import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
 
 export * from './engine/types';
+export { System } from './engine/system';
 export type {
-  System,
   SystemOptions,
   UpdateOptions,
   HelperFn,

@@ -1,18 +1,17 @@
-import type { Component } from '../component';
+import type { ComponentConstructor } from '../component';
 import type { TemplateConfig } from '../types';
-import type { Constructor } from '../../types/utils';
 
 import { Template } from './template';
 
 export class TemplateCollection {
-  private components: Record<string, Constructor<Component>>;
+  private components: Record<string, ComponentConstructor>;
   private storage: Record<string, Template>;
 
-  constructor(components: Array<Constructor<Component>>) {
+  constructor(components: Array<ComponentConstructor>) {
     this.components = components.reduce((acc, ComponentClass) => {
-      acc[ComponentClass.name] = ComponentClass;
+      acc[ComponentClass.componentName] = ComponentClass;
       return acc;
-    }, {} as Record<string, Constructor<Component>>);
+    }, {} as Record<string, ComponentConstructor>);
     this.storage = {};
   }
 

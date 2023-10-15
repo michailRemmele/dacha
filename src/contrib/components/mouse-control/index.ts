@@ -49,3 +49,5 @@ export class MouseControl extends Component {
     });
   }
 }
+
+MouseControl.componentName = 'MouseControl';

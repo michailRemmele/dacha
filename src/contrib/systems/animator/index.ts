@@ -1,4 +1,5 @@
-import type { System, SystemOptions, UpdateOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions, UpdateOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus } from '../../../engine/message-bus';
 import { Animatable } from '../../components/animatable';
@@ -15,13 +16,15 @@ import { setValue } from './utils';
 
 const FRAME_RATE = 100;
 
-export class Animator implements System {
+export class Animator extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private conditionControllers: Record<string, ConditionController>;
   private substatePickers: Record<string, Picker>;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [Animatable],
     });
@@ -100,3 +103,5 @@ export class Animator implements System {
     });
   }
 }
+
+Animator.systemName = 'Animator';

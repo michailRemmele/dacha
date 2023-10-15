@@ -37,3 +37,5 @@ export class Camera extends Component {
     });
   }
 }
+
+Camera.componentName = 'Camera';

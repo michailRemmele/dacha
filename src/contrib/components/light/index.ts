@@ -37,3 +37,5 @@ export class Light extends Component {
     });
   }
 }
+
+Light.componentName = 'Light';

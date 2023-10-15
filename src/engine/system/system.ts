@@ -7,6 +7,7 @@ import type {
 import type { TemplateCollection } from '../template';
 import type { Store, SceneContext } from '../scene';
 import type { MessageBus } from '../message-bus';
+import type { Constructor } from '../../types/utils';
 
 export type HelperFn = () => Promise<Record<string, unknown>>;
 
@@ -26,11 +27,12 @@ export interface UpdateOptions {
   deltaTime: number;
 }
 
-export interface System {
-  load?(): Promise<void>
+export abstract class System {
+  static systemName: string;
+  load?(): Promise<void>;
   mount?(): void;
   unmount?(): void;
-  update(options: UpdateOptions): void;
+  abstract update(options: UpdateOptions): void;
 }
 
-export type SystemsMap = Record<string, new (options: SystemOptions) => System>;
+export type SystemConstructor = Constructor<System> & { systemName: string };

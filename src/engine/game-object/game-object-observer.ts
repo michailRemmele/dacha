@@ -1,8 +1,7 @@
 import { GAME_OBJECT_ADDED } from '../scene/consts';
 import type { Scene, GameObjectChangeEvent } from '../scene';
 import type { EventEmitter } from '../types';
-import type { Component } from '../component';
-import type { Constructor } from '../../types/utils';
+import type { ComponentConstructor } from '../component';
 
 import type { GameObject } from './game-object';
 
@@ -20,11 +19,11 @@ interface ObserverSubscriptions {
 
 export interface GameObjectObserverFilter {
   type?: string;
-  components?: Array<Constructor<Component> | string>;
+  components?: Array<ComponentConstructor | string>;
 }
 
 export class GameObjectObserver implements EventEmitter {
-  private _components: Array<Constructor<Component> | string>;
+  private _components: Array<ComponentConstructor | string>;
   private _type?: string;
   private _observedGameObjects: Array<GameObject>;
   private _addedToAccepted: Array<GameObject>;

@@ -94,3 +94,5 @@ export class Transform extends Component {
     });
   }
 }
+
+Transform.componentName = 'Transform';

@@ -1,5 +1,6 @@
 import { MathOps } from '../../../engine/mathLib';
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
@@ -20,7 +21,7 @@ interface CameraSystemOptions extends SystemOptions {
   scaleSensitivity: number
 }
 
-export class CameraSystem implements System {
+export class CameraSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private store: Store;
@@ -28,6 +29,8 @@ export class CameraSystem implements System {
   private scaleSensitivity: number;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       initialCamera,
       windowNodeId,
@@ -118,3 +121,5 @@ export class CameraSystem implements System {
     }
   }
 }
+
+CameraSystem.systemName = 'CameraSystem';

@@ -66,3 +66,5 @@ export class KeyboardControl extends Component {
     });
   }
 }
+
+KeyboardControl.componentName = 'KeyboardControl';

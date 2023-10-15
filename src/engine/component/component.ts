@@ -1,9 +1,12 @@
 import type { GameObject } from '../game-object';
 import type { Constructor } from '../../types/utils';
 
+export type ComponentConstructor<T extends Component = Component>
+  = Constructor<T> & { componentName: string };
+
 export const findParentComponent = (
   gameObject: GameObject,
-  componentClass: Constructor<Component>,
+  componentClass: ComponentConstructor,
 ): Component | void => {
   if (!gameObject.parent) {
     return void 0;
@@ -15,6 +18,7 @@ export const findParentComponent = (
 };
 
 export abstract class Component {
+  static componentName: string;
   public gameObject?: GameObject;
 
   constructor() {
@@ -26,7 +30,7 @@ export abstract class Component {
       return void 0;
     }
 
-    return findParentComponent(this.gameObject, this.constructor as Constructor<Component>);
+    return findParentComponent(this.gameObject, this.constructor as ComponentConstructor);
   }
 
   abstract clone(): Component;

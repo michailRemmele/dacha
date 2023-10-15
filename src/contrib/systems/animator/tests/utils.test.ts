@@ -7,6 +7,7 @@ interface TestComponentConfig extends Record<string, unknown> {
 }
 
 class TestComponent extends Component {
+  static componentName = 'TestComponent';
   testField: string;
 
   constructor(config: Record<string, unknown>) {

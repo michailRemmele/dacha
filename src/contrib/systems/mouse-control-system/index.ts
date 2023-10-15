@@ -1,4 +1,5 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import { MouseControl } from '../../components/mouse-control';
@@ -17,11 +18,13 @@ interface InputEventQueryMessage extends Message {
   query: Array<MouseInputEvent>
 }
 
-export class MouseControlSystem implements System {
+export class MouseControlSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [
         MouseControl,
@@ -59,3 +62,5 @@ export class MouseControlSystem implements System {
     });
   }
 }
+
+MouseControlSystem.systemName = 'MouseControlSystem';

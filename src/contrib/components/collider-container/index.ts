@@ -40,3 +40,5 @@ export class ColliderContainer extends Component {
     });
   }
 }
+
+ColliderContainer.componentName = 'ColliderContainer';

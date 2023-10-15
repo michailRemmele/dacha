@@ -52,3 +52,5 @@ export class Animatable extends Component {
     });
   }
 }
+
+Animatable.componentName = 'Animatable';

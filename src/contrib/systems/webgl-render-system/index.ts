@@ -1,4 +1,5 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import { Store } from '../../../engine/scene';
 import { Renderable } from '../../components/renderable';
@@ -58,7 +59,7 @@ interface WebGLRendererOptions extends SystemOptions {
 
 export { TextureDescriptor } from './texture-handlers';
 
-export class RenderSystem implements System {
+export class RenderSystem extends System {
   private textureAtlasSrc: string;
   private textureAtlasDescriptorSrc: string;
   private textureAtlas?: HTMLImageElement;
@@ -98,6 +99,8 @@ export class RenderSystem implements System {
   private resourceLoader: ResourceLoader;
 
   constructor(options: WebGLRendererOptions) {
+    super();
+
     const {
       windowNodeId, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
@@ -613,3 +616,5 @@ export class RenderSystem implements System {
     });
   }
 }
+
+RenderSystem.systemName = 'RenderSystem';

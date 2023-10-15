@@ -2,6 +2,8 @@ import { findParentComponent, Component } from '../component';
 import { GameObject } from '../../game-object';
 
 class MockComponent extends Component {
+  static componentName = 'MockComponent';
+
   clone(): Component {
     return new MockComponent();
   }

@@ -9,7 +9,8 @@ import {
   Color,
 } from 'three/src/Three';
 
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { TemplateCollection } from '../../../engine/template';
 import type { Store } from '../../../engine/scene/store';
@@ -48,7 +49,7 @@ interface RendererOptions extends SystemOptions {
   backgroundAlpha: number
 }
 
-export class Renderer implements System {
+export class Renderer extends System {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private window: HTMLElement;
@@ -66,6 +67,8 @@ export class Renderer implements System {
   private templateCollection: TemplateCollection;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       globalOptions,
       createGameObjectObserver,
@@ -332,3 +335,5 @@ export class Renderer implements System {
     this.renderer.render(this.renderScene, this.currentCamera);
   }
 }
+
+Renderer.systemName = 'Renderer';

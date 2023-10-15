@@ -1,5 +1,5 @@
+import { System } from '../../../engine/system';
 import type {
-  System,
   SystemOptions,
   UpdateOptions,
   HelperFn,
@@ -17,7 +17,7 @@ export interface GameObjectScriptClass {
   new(options: GameObjectScriptOptions): GameObjectScript
 }
 
-export class ScriptSystem implements System {
+export class ScriptSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private scriptsObserver: GameObjectObserver;
   private gameObjectSpawner: unknown;
@@ -29,6 +29,8 @@ export class ScriptSystem implements System {
   private helpers: Record<string, HelperFn>;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       createGameObjectObserver,
       gameObjectSpawner,
@@ -109,3 +111,5 @@ export class ScriptSystem implements System {
     });
   }
 }
+
+ScriptSystem.systemName = 'ScriptSystem';

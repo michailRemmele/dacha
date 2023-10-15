@@ -1,12 +1,11 @@
 import uuid from 'uuid-random';
 
 import type { ComponentConfig } from '../types';
-import type { Component } from '../component';
+import type { ComponentConstructor } from '../component';
 import type {
   Template,
   TemplateCollection,
 } from '../template';
-import type { Constructor } from '../../types/utils';
 
 import { GameObject } from './game-object';
 
@@ -22,17 +21,17 @@ export interface GameObjectOptions {
 }
 
 export class GameObjectCreator {
-  private components: Record<string, Constructor<Component>>;
+  private components: Record<string, ComponentConstructor>;
   private templateCollection: TemplateCollection;
 
   constructor(
-    components: Array<Constructor<Component>>,
+    components: Array<ComponentConstructor>,
     templateCollection: TemplateCollection,
   ) {
     this.components = components.reduce((acc, ComponentClass) => {
-      acc[ComponentClass.name] = ComponentClass;
+      acc[ComponentClass.componentName] = ComponentClass;
       return acc;
-    }, {} as Record<string, Constructor<Component>>);
+    }, {} as Record<string, ComponentConstructor>);
     this.templateCollection = templateCollection;
   }
 

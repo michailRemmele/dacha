@@ -15,6 +15,8 @@ interface TestComponent1Config extends Record<string, unknown> {
 }
 
 class TestComponent1 extends Component {
+  static componentName = 'TestComponent1';
+
   testField1: string;
   testField2: boolean;
   testField3: number;
@@ -45,6 +47,8 @@ interface TestComponent2Config extends Record<string, unknown> {
 }
 
 class TestComponent2 extends Component {
+  static componentName = 'TestComponent2';
+
   testField4: string;
   testField5: boolean;
   testField6: number;

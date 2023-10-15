@@ -1,7 +1,6 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
-import type { HelperFn } from '../system';
 import type { TemplateCollection } from '../template';
-import { System } from '../system';
+import type { System, HelperFn, SystemConstructor } from '../system';
 import {
   GameObjectObserver,
   GameObjectObserverFilter,
@@ -11,7 +10,6 @@ import {
   GameObjectCreator,
 } from '../game-object';
 import { MessageBus } from '../message-bus';
-import type { Constructor } from '../../types/utils';
 
 import { SceneContext } from './context';
 import { Store } from './store';
@@ -24,7 +22,7 @@ export interface GameObjectChangeEvent {
 
 interface SceneOptions extends SceneConfig {
   gameObjects: Array<GameObjectConfig>
-  availableSystems: Array<Constructor<System>>
+  availableSystems: Array<SystemConstructor>
   helpers: Record<string, HelperFn>
   globalOptions: Record<string, unknown>
   gameObjectCreator: GameObjectCreator
@@ -43,7 +41,7 @@ export class Scene {
   private systems: Array<System>;
   private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
   private templateCollection: TemplateCollection;
-  private availableSystemsMap: Record<string, Constructor<System>>;
+  private availableSystemsMap: Record<string, SystemConstructor>;
 
   readonly id: string;
 
@@ -75,9 +73,9 @@ export class Scene {
     });
 
     this.availableSystemsMap = availableSystems.reduce((acc, AvailableSystem) => {
-      acc[AvailableSystem.name] = AvailableSystem;
+      acc[AvailableSystem.systemName] = AvailableSystem;
       return acc;
-    }, {} as Record<string, Constructor<System>>);
+    }, {} as Record<string, SystemConstructor>);
     this.systems = systems.map((config) => new this.availableSystemsMap[config.name]({
       ...config.options,
       store: this.getStore(),

@@ -1,4 +1,5 @@
-import type { System, SystemOptions, UpdateOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions, UpdateOptions } from '../../../engine/system';
 import type { MessageBus } from '../../../engine/message-bus';
 
 import {
@@ -15,7 +16,7 @@ const COLLISION_MESSAGES = [
   'COLLISION_LEAVE',
 ];
 
-export class PhysicsSystem implements System {
+export class PhysicsSystem extends System {
   private messageBus: MessageBus;
 
   private physicsSubsystem: System;
@@ -25,6 +26,8 @@ export class PhysicsSystem implements System {
   private constraintSolver: System;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.messageBus = options.messageBus;
 
     this.physicsSubsystem = new PhysicsSubsystem(options);
@@ -62,3 +65,5 @@ export class PhysicsSystem implements System {
     this.constraintSolver.update(options);
   }
 }
+
+PhysicsSystem.systemName = 'PhysicsSystem';

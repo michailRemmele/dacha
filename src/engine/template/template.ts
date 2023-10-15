@@ -1,4 +1,4 @@
-import type { Component } from '../component';
+import type { Component, ComponentConstructor } from '../component';
 import type { Constructor } from '../../types/utils';
 
 interface TemplateOptions {
@@ -45,11 +45,13 @@ export class Template {
   }
 
   setComponent(component: Component): void {
-    this.components[component.constructor.name] = component;
+    const { componentName } = (component.constructor as ComponentConstructor);
+
+    this.components[componentName] = component;
   }
 
-  getComponent<T extends Component>(componentClass: Constructor<T>): T {
-    return this.components[componentClass.name] as T;
+  getComponent<T extends Component>(componentClass: ComponentConstructor<T>): T {
+    return this.components[componentClass.componentName] as T;
   }
 
   getComponents(): Array<Component> {

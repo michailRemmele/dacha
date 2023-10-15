@@ -1,4 +1,5 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObject } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
@@ -21,11 +22,13 @@ interface InputEventQueryMessage extends Message {
   query: Array<MouseInputEvent>
 }
 
-export class MouseInputCoordinatesProjector implements System {
+export class MouseInputCoordinatesProjector extends System {
   private messageBus: MessageBus;
   private store: Store;
 
   constructor(options: SystemOptions) {
+    super();
+
     const { store, messageBus } = options;
 
     this.store = store;
@@ -58,3 +61,5 @@ export class MouseInputCoordinatesProjector implements System {
     });
   }
 }
+
+MouseInputCoordinatesProjector.systemName = 'MouseInputCoordinatesProjector';

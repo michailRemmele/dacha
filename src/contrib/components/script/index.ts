@@ -25,3 +25,5 @@ export class Script extends Component {
     });
   }
 }
+
+Script.componentName = 'Script';

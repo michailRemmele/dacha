@@ -1,4 +1,5 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import { KeyboardControl } from '../../components/keyboard-control';
@@ -13,11 +14,13 @@ interface InputEventQueryMessage extends Message {
   query: Array<string>
 }
 
-export class KeyboardControlSystem implements System {
+export class KeyboardControlSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [
         KeyboardControl,
@@ -68,3 +71,5 @@ export class KeyboardControlSystem implements System {
     });
   }
 }
+
+KeyboardControlSystem.systemName = 'KeyboardControlSystem';

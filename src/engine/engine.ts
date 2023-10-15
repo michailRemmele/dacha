@@ -1,7 +1,5 @@
-import type { Constructor } from '../types/utils';
-
-import type { System, HelperFn } from './system';
-import type { Component } from './component';
+import type { HelperFn, SystemConstructor } from './system';
+import type { ComponentConstructor } from './component';
 import type { Config } from './types';
 import { SceneProvider } from './scene/scene-provider';
 import { GameObjectCreator } from './game-object';
@@ -11,8 +9,8 @@ import { SceneController } from './controllers';
 
 export interface EngineOptions {
   config: Config
-  systems: Array<Constructor<System>>
-  components: Array<Constructor<Component>>
+  systems: Array<SystemConstructor>
+  components: Array<ComponentConstructor>
   helpers: Record<string, HelperFn>
 }
 
@@ -67,6 +65,18 @@ export class Engine {
 
     if (!startSceneId) {
       throw new Error('Can\'t start the engine without starting scene. Please specify start scene id.');
+    }
+
+    for (let i = 0; i < components.length; i += 1) {
+      if (components[i].componentName === undefined) {
+        throw new Error(`Missing componentName field for ${components[i].name} component.`);
+      }
+    }
+
+    for (let i = 0; i < systems.length; i += 1) {
+      if (systems[i].systemName === undefined) {
+        throw new Error(`Missing systemName field for ${systems[i].name} system.`);
+      }
     }
 
     const templateCollection = new TemplateCollection(components);

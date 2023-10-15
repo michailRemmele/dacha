@@ -95,3 +95,5 @@ export class Renderable extends Component {
     });
   }
 }
+
+Renderable.componentName = 'Renderable';

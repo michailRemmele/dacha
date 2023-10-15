@@ -4,12 +4,16 @@ import { GameObject, ComponentsEditionEvent } from '../game-object';
 import { Component } from '../../component';
 
 class TestComponent1 extends Component {
+  static componentName = 'TestComponent1';
+
   clone(): Component {
     return new TestComponent1();
   }
 }
 
 class TestComponent2 extends Component {
+  static componentName = 'TestComponent2';
+
   clone(): Component {
     return new TestComponent2();
   }

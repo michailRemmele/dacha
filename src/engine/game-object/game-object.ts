@@ -1,7 +1,5 @@
-import type { Component } from '../component';
+import type { Component, ComponentConstructor } from '../component';
 import { filterByKey } from '../utils';
-
-import type { Constructor } from '../../types/utils';
 
 export interface ComponentsEditionEvent {
   type: 'COMPONENT_ADDED' | 'COMPONENT_REMOVED';
@@ -96,16 +94,16 @@ export class GameObject {
   }
 
   getComponent<T extends Component = Component>(componentName: string): T;
-  getComponent<T extends Component>(componentClass: Constructor<T>): T;
-  getComponent<T extends Component>(classOrName: Constructor<T> | string): T {
+  getComponent<T extends Component>(componentClass: ComponentConstructor<T>): T;
+  getComponent<T extends Component>(classOrName: ComponentConstructor<T> | string): T {
     if (typeof classOrName === 'string') {
       return this.components[classOrName] as T;
     }
-    return this.components[classOrName.name] as T;
+    return this.components[classOrName.componentName] as T;
   }
 
   setComponent(component: Component): void {
-    const componentName = component.constructor.name;
+    const { componentName } = (component.constructor as ComponentConstructor);
 
     this.components[componentName] = component;
     component.gameObject = this;
@@ -119,8 +117,8 @@ export class GameObject {
     });
   }
 
-  removeComponent(componentClass: Constructor<Component>): void {
-    const componentName = componentClass.name;
+  removeComponent(componentClass: ComponentConstructor): void {
+    const { componentName } = componentClass;
 
     if (!this.components[componentName]) {
       return;
