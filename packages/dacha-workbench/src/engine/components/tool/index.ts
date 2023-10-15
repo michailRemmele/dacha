@@ -16,8 +16,8 @@ export class Tool extends Component {
   features: Record<string, Feature>
   inputBindings: Array<unknown>
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName)
+  constructor(config: Record<string, unknown>) {
+    super()
 
     const toolConfig = config as ToolConfig
 
@@ -31,10 +31,12 @@ export class Tool extends Component {
   }
 
   clone(): Tool {
-    return new Tool(this.componentName, {
+    return new Tool({
       name: this.name,
       features: this.features,
       inputBindings: this.inputBindings,
     })
   }
 }
+
+Tool.componentName = 'Tool'

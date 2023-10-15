@@ -1,12 +1,13 @@
 import {
   System,
+  GameObjectCreator,
+  TemplateCollection,
+} from 'remiz'
+import type {
   SystemOptions,
   GameObjectSpawner,
   GameObjectDestroyer,
   GameObjectObserver,
-  contribComponents,
-  GameObjectCreator,
-  TemplateCollection,
   TemplateConfig,
   LevelConfig,
   MessageBus,
@@ -19,6 +20,7 @@ import type { SelectLevelMessage } from '../../../types/messages'
 import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { includesArray } from '../../../utils/includes-array'
 
+import { ALLOWED_COMPONENTS } from './consts'
 import { omit } from './utils'
 import {
   watchTemplates,
@@ -30,7 +32,7 @@ interface LevelViewerOptions extends SystemOptions {
   mainObjectId: string;
 }
 
-export class LevelViewer implements System {
+export class LevelViewer extends System {
   messageBus: MessageBus
   sceneContext: SceneContext
   gameObjectSpawner: GameObjectSpawner
@@ -46,6 +48,8 @@ export class LevelViewer implements System {
   prevLevel?: LevelConfig
 
   constructor(options: SystemOptions) {
+    super()
+
     const {
       messageBus,
       sceneContext,
@@ -73,7 +77,7 @@ export class LevelViewer implements System {
 
     this.sceneContext.data.mainObject = mainObject
 
-    const templateCollection = new TemplateCollection(contribComponents)
+    const templateCollection = new TemplateCollection(ALLOWED_COMPONENTS)
     const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
 
     templates.forEach((template) => {
@@ -81,7 +85,7 @@ export class LevelViewer implements System {
     })
 
     this.templateCollection = templateCollection
-    this.gameObjectCreator = new GameObjectCreator(contribComponents, templateCollection)
+    this.gameObjectCreator = new GameObjectCreator(ALLOWED_COMPONENTS, templateCollection)
 
     this.sceneContext.data.gameObjectCreator = this.gameObjectCreator
   }
@@ -162,3 +166,5 @@ export class LevelViewer implements System {
     this.updateLevels()
   }
 }
+
+LevelViewer.systemName = 'LevelViewer'

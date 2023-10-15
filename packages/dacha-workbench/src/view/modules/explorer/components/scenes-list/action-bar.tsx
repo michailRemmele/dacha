@@ -60,6 +60,7 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
       id: uuidv4(),
       name: t(translations.name, { index: scenes.length }),
       systems: [],
+      levelId: null,
     }))
   }, [dispatch, isLoaders, scenes, translations])
 

@@ -21,8 +21,8 @@ export class Shape extends Component {
   type: ShapeType
   properties: BaseShapeConfig
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName)
+  constructor(config: Record<string, unknown>) {
+    super()
 
     const shapeConfig = config as ShapeConfig
 
@@ -31,12 +31,14 @@ export class Shape extends Component {
   }
 
   clone(): Shape {
-    return new Shape(this.componentName, {
+    return new Shape({
       type: this.type,
       properties: this.properties,
     })
   }
 }
+
+Shape.componentName = 'Shape'
 
 export type {
   BaseShape,

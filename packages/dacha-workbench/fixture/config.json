@@ -5,7 +5,7 @@
       "levelId": null,
       "systems": [
         {
-          "name": "uiBridge",
+          "name": "UiBridge",
           "options": {}
         }
       ],
@@ -16,27 +16,27 @@
       "levelId": "9e30cb58-130a-4732-a313-a459a2ad66b5",
       "systems": [
         {
-          "name": "mouseInputSystem",
+          "name": "MouseInputSystem",
           "options": {}
         },
         {
-          "name": "mouseInputCoordinatesProjector",
+          "name": "MouseInputCoordinatesProjector",
           "options": {}
         },
         {
-          "name": "mouseControlSystem",
+          "name": "MouseControlSystem",
           "options": {}
         },
         {
-          "name": "keyboardInputSystem",
+          "name": "KeyboardInputSystem",
           "options": {}
         },
         {
-          "name": "keyboardControlSystem",
+          "name": "KeyboardControlSystem",
           "options": {}
         },
         {
-          "name": "cameraSystem",
+          "name": "CameraSystem",
           "options": {
             "windowNodeId": "root",
             "initialCamera": "1.2",
@@ -44,18 +44,18 @@
           }
         },
         {
-          "name": "renderer",
+          "name": "Renderer",
           "options": {
             "windowNodeId": "root",
             "backgroundColor": "#000"
           }
         },
         {
-          "name": "uiBridge",
+          "name": "UiBridge",
           "options": {
             "filterComponents": [
-              "keyboardControl",
-              "mouseControl"
+              "KeyboardControl",
+              "MouseControl"
             ]
           }
         }
@@ -74,7 +74,7 @@
           "children": [],
           "components": [
             {
-              "name": "transform",
+              "name": "Transform",
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
@@ -94,7 +94,7 @@
           "children": [],
           "components": [
             {
-              "name": "transform",
+              "name": "Transform",
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
@@ -121,7 +121,7 @@
               "children": [],
               "components": [
                 {
-                  "name": "transform",
+                  "name": "Transform",
                   "config": {
                     "offsetX": 0,
                     "offsetY": 0,
@@ -132,7 +132,7 @@
                   }
                 },
                 {
-                  "name": "camera",
+                  "name": "Camera",
                   "config": {
                     "zoom": 4
                   }
@@ -142,7 +142,7 @@
           ],
           "components": [
             {
-              "name": "transform",
+              "name": "Transform",
               "config": {
                 "offsetX": 55,
                 "offsetY": 30,
@@ -153,7 +153,7 @@
               }
             },
             {
-              "name": "keyboardControl",
+              "name": "KeyboardControl",
               "config": {
                 "inputEventBindings": [
                   {
@@ -214,6 +214,12 @@
                   }
                 ]
               }
+            },
+            {
+              "name": "Camera",
+              "config": {
+                "zoom": 1
+              }
             }
           ],
           "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
@@ -231,7 +237,7 @@
           "children": [],
           "components": [
             {
-              "name": "transform",
+              "name": "Transform",
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
@@ -242,7 +248,7 @@
               }
             },
             {
-              "name": "renderable",
+              "name": "Renderable",
               "config": {
                 "type": "static",
                 "src": "assets/terrain/grass.png",
@@ -276,7 +282,7 @@
           "children": [],
           "components": [
             {
-              "name": "transform",
+              "name": "Transform",
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
@@ -287,7 +293,7 @@
               }
             },
             {
-              "name": "renderable",
+              "name": "Renderable",
               "config": {
                 "type": "static",
                 "src": "assets/terrain/sea.png",
@@ -321,7 +327,7 @@
           "children": [],
           "components": [
             {
-              "name": "transform",
+              "name": "Transform",
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
@@ -332,7 +338,7 @@
               }
             },
             {
-              "name": "colliderContainer",
+              "name": "ColliderContainer",
               "config": {
                 "type": "circleCollider",
                 "collider": {
@@ -343,7 +349,7 @@
               }
             },
             {
-              "name": "renderable",
+              "name": "Renderable",
               "config": {
                 "type": "static",
                 "src": "assets/units/human.png",
@@ -388,7 +394,7 @@
       ],
       "components": [
         {
-          "name": "transform",
+          "name": "Transform",
           "config": {
             "offsetX": 0,
             "offsetY": 0,
@@ -399,7 +405,7 @@
           }
         },
         {
-          "name": "rigidBody",
+          "name": "RigidBody",
           "config": {
             "type": "dynamic",
             "mass": 2,
@@ -410,7 +416,7 @@
           }
         },
         {
-          "name": "colliderContainer",
+          "name": "ColliderContainer",
           "config": {
             "type": "boxCollider",
             "collider": {
@@ -422,7 +428,7 @@
           }
         },
         {
-          "name": "renderable",
+          "name": "Renderable",
           "config": {
             "type": "static",
             "src": "assets/units/rooster.png",
@@ -455,7 +461,7 @@
       "children": [],
       "components": [
         {
-          "name": "transform",
+          "name": "Transform",
           "config": {
             "offsetX": 0,
             "offsetY": 0,
@@ -466,7 +472,7 @@
           }
         },
         {
-          "name": "renderable",
+          "name": "Renderable",
           "config": {
             "type": "static",
             "src": "assets/terrain/space.png",
@@ -499,7 +505,7 @@
       "children": [],
       "components": [
         {
-          "name": "transform",
+          "name": "Transform",
           "config": {
             "offsetX": 0,
             "offsetY": 0,
@@ -510,7 +516,7 @@
           }
         },
         {
-          "name": "renderable",
+          "name": "Renderable",
           "config": {
             "type": "static",
             "src": "assets/terrain/floor.png",
@@ -545,7 +551,7 @@
       "levelId": null,
       "systems": [
         {
-          "name": "uiBridge",
+          "name": "UiBridge",
           "options": {}
         }
       ],

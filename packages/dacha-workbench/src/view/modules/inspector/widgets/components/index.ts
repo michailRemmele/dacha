@@ -1,3 +1,16 @@
+import {
+  Animatable,
+  Camera,
+  ColliderContainer,
+  KeyboardControl,
+  Light,
+  MouseControl,
+  Renderable,
+  RigidBody,
+  Script,
+  Transform,
+} from 'remiz'
+
 import type { WidgetSchema } from '../../../../../types/widget-schema'
 
 import { animatable } from './animatable'
@@ -12,14 +25,14 @@ import { script } from './script'
 import { transform } from './transform'
 
 export const componentsSchema: Record<string, WidgetSchema> = {
-  animatable,
-  camera,
-  colliderContainer,
-  keyboardControl,
-  light,
-  mouseControl,
-  renderable,
-  rigidBody,
-  script,
-  transform,
+  [Animatable.componentName]: animatable,
+  [Camera.componentName]: camera,
+  [ColliderContainer.componentName]: colliderContainer,
+  [KeyboardControl.componentName]: keyboardControl,
+  [Light.componentName]: light,
+  [MouseControl.componentName]: mouseControl,
+  [Renderable.componentName]: renderable,
+  [RigidBody.componentName]: rigidBody,
+  [Script.componentName]: script,
+  [Transform.componentName]: transform,
 }

@@ -1,7 +1,8 @@
-import { MathOps } from 'remiz'
-import type { GameObject, Transform, Renderable } from 'remiz'
+import { MathOps, Transform, Renderable } from 'remiz'
+import type { GameObject } from 'remiz'
 
-import type { Shape, RectangleShape } from '../../components/shape'
+import { Shape } from '../../components/shape'
+import type { RectangleShape } from '../../components/shape'
 
 const accumulatePath = (gameObject: GameObject, path: Array<string>): void => {
   path.unshift(`id:${gameObject.id}`)
@@ -29,8 +30,8 @@ const getAngle = (rotation: number): number => {
 }
 
 export const updateFrameSize = (frame: GameObject, gameObject: GameObject): void => {
-  const renderable = gameObject.getComponent('renderable') as Renderable | undefined
-  const transform = gameObject.getComponent('transform') as Transform | undefined
+  const renderable = gameObject.getComponent(Renderable)
+  const transform = gameObject.getComponent(Transform)
 
   let offsetX = 0
   let offsetY = 0
@@ -52,8 +53,8 @@ export const updateFrameSize = (frame: GameObject, gameObject: GameObject): void
     height = renderable.height * transform.scaleY
   }
 
-  const frameTransform = frame.getComponent('transform') as Transform
-  const frameShape = frame.getComponent('shape') as Shape
+  const frameTransform = frame.getComponent(Transform)
+  const frameShape = frame.getComponent(Shape)
   const properties = frameShape.properties as RectangleShape
 
   frameTransform.offsetX = offsetX

@@ -24,67 +24,67 @@ export const getEditorConfig = ({
       levelId: 'cd42a993-f3c0-4921-b867-108c81028a26',
       systems: [
         {
-          name: 'keyboardInputSystem',
+          name: 'KeyboardInputSystem',
           options: {},
         },
         {
-          name: 'mouseInputSystem',
+          name: 'MouseInputSystem',
           options: {
             windowNodeId: 'canvas-root',
           },
         },
         {
-          name: 'mouseInputCoordinatesProjector',
+          name: 'MouseInputCoordinatesProjector',
           options: {},
         },
         {
-          name: 'keyboardControlSystem',
+          name: 'KeyboardControlSystem',
           options: {},
         },
         {
-          name: 'mouseControlSystem',
+          name: 'MouseControlSystem',
           options: {},
         },
         {
-          name: 'projectLoader',
+          name: 'ProjectLoader',
           options: {},
         },
         {
-          name: 'levelViewer',
+          name: 'LevelViewer',
           options: {
             mainObjectId: 'main-object',
           },
         },
         {
-          name: 'settingsSystem',
+          name: 'SettingsSystem',
           options: {},
         },
         {
-          name: 'toolManager',
+          name: 'ToolManager',
           options: {},
         },
         {
-          name: 'zoomToolSystem',
+          name: 'ZoomToolSystem',
           options: {},
         },
         {
-          name: 'handToolSystem',
+          name: 'HandToolSystem',
           options: {},
         },
         {
-          name: 'pointerToolSystem',
+          name: 'PointerToolSystem',
           options: {},
         },
         {
-          name: 'templateToolSystem',
+          name: 'TemplateToolSystem',
           options: {},
         },
         {
-          name: 'commander',
+          name: 'Commander',
           options: {},
         },
         {
-          name: 'cameraSystem',
+          name: 'CameraSystem',
           options: {
             windowNodeId: 'canvas-root',
             initialCamera: 'main-object',
@@ -92,13 +92,13 @@ export const getEditorConfig = ({
           },
         },
         {
-          name: 'uiBridge',
+          name: 'UiBridge',
           options: {
             filterComponents: [],
           },
         },
         {
-          name: 'renderer',
+          name: 'Renderer',
           options: {
             windowNodeId: 'canvas-root',
             backgroundColor: '#ffffff',
@@ -106,13 +106,13 @@ export const getEditorConfig = ({
           },
         },
         {
-          name: 'shapesRenderer',
+          name: 'ShapesRenderer',
           options: {
             windowNodeId: SHAPE_CANVAS_ROOT,
           },
         },
         {
-          name: 'gridSystem',
+          name: 'GridSystem',
           options: {},
         },
       ],
@@ -133,7 +133,7 @@ export const getEditorConfig = ({
               children: [],
               components: [
                 {
-                  name: 'tool',
+                  name: 'Tool',
                   config: {
                     name: 'hand',
                     features: {},
@@ -169,7 +169,7 @@ export const getEditorConfig = ({
               children: [],
               components: [
                 {
-                  name: 'tool',
+                  name: 'Tool',
                   config: {
                     name: 'zoom',
                     features: {
@@ -195,7 +195,7 @@ export const getEditorConfig = ({
               children: [],
               components: [
                 {
-                  name: 'tool',
+                  name: 'Tool',
                   config: {
                     name: 'pointer',
                     features: {
@@ -236,7 +236,7 @@ export const getEditorConfig = ({
               children: [],
               components: [
                 {
-                  name: 'tool',
+                  name: 'Tool',
                   config: {
                     name: 'template',
                     features: {
@@ -267,7 +267,7 @@ export const getEditorConfig = ({
           ],
           components: [
             {
-              name: 'transform',
+              name: 'Transform',
               config: {
                 offsetX: 0,
                 offsetY: 0,
@@ -276,13 +276,13 @@ export const getEditorConfig = ({
               },
             },
             {
-              name: 'camera',
+              name: 'Camera',
               config: {
                 zoom: 1,
               },
             },
             {
-              name: 'mouseControl',
+              name: 'MouseControl',
               config: {
                 inputEventBindings: [
                   {
@@ -299,13 +299,13 @@ export const getEditorConfig = ({
               },
             },
             {
-              name: 'toolController',
+              name: 'ToolController',
               config: {
                 activeTool: 'hand',
               },
             },
             {
-              name: 'settings',
+              name: 'Settings',
               config: {
                 showGrid: false,
                 gridStep: 16,
@@ -325,7 +325,7 @@ export const getEditorConfig = ({
       children: [],
       components: [
         {
-          name: 'transform',
+          name: 'Transform',
           config: {
             offsetX: 0,
             offsetY: 0,
@@ -334,7 +334,7 @@ export const getEditorConfig = ({
           },
         },
         {
-          name: 'shape',
+          name: 'Shape',
           config: {
             type: 'rectangle',
             properties: {
@@ -354,4 +354,5 @@ export const getEditorConfig = ({
     ...globalOptions,
   ],
   startSceneId: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
+  startLoaderId: null,
 })

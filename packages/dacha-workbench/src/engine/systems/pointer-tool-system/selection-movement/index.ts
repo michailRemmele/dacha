@@ -1,9 +1,11 @@
+import {
+  Transform,
+  Renderable,
+} from 'remiz'
 import type {
   GameObjectObserver,
   MessageBus,
   SceneContext,
-  Transform,
-  Renderable,
 } from 'remiz'
 
 import {
@@ -14,10 +16,6 @@ import {
 } from '../../../../consts/message-types'
 import { SET } from '../../../../command-types'
 import { ROOT_SCOPE } from '../../../../consts/command-scopes'
-import {
-  TRANSFORM_COMPONENT_NAME,
-  RENDERABLE_COMPONENT_NAME,
-} from '../consts'
 import { buildGameObjectPath } from '../utils'
 import { getTool } from '../../../../utils/get-tool'
 import { getGridValue, getGridStep } from '../../../../utils/grid'
@@ -79,7 +77,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    const transform = selectedObject.getComponent(Transform)
     if (transform === undefined) {
       return
     }
@@ -111,9 +109,9 @@ export class SelectionMovementSubsystem {
     }
 
     const objectPath = buildGameObjectPath(selectedObject, levelId)
-    const transformPath = objectPath.concat('components', 'name:transform', 'config')
+    const transformPath = objectPath.concat('components', `name:${Transform.componentName}`, 'config')
 
-    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    const transform = selectedObject.getComponent(Transform)
     if (transform === undefined) {
       return
     }
@@ -160,7 +158,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    const transform = selectedObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    const transform = selectedObject.getComponent(Transform)
     if (transform === undefined) {
       return
     }
@@ -172,8 +170,7 @@ export class SelectionMovementSubsystem {
     const offsetY = this.selectionStart.y - this.pointerStart.y + y
 
     if (snapToGrid) {
-      const renderable = selectedObject
-        .getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined
+      const renderable = selectedObject.getComponent(Renderable)
 
       const gridStep = getGridStep(this.sceneContext)
 
