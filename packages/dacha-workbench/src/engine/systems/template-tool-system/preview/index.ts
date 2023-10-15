@@ -1,18 +1,15 @@
+import { Transform } from 'remiz'
 import type {
   GameObjectCreator,
   GameObjectDestroyer,
   GameObjectSpawner,
   MessageBus,
   GameObject,
-  Transform,
   SceneContext,
   TemplateConfig,
 } from 'remiz'
 
-import {
-  TOOL_NAME,
-  TRANSFORM_COMPONENT_NAME,
-} from '../consts'
+import { TOOL_NAME } from '../consts'
 import { SELECT_TOOL_MSG } from '../../../../consts/message-types'
 import { getTool } from '../../../../utils/get-tool'
 import { includesArray } from '../../../../utils/includes-array'
@@ -147,7 +144,7 @@ export class PreviewSubsystem {
       this.preview = this.spawnPreview(templateId)
     }
 
-    const transform = this.preview.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+    const transform = this.preview.getComponent(Transform)
     if (transform !== undefined) {
       transform.offsetX = x
       transform.offsetY = y

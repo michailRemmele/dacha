@@ -20,14 +20,11 @@ import type { GameObject, MessageBus } from 'remiz'
 
 import { EngineContext } from '../../providers'
 import { SELECT_TOOL_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types'
-import type { Tool, ToolController } from '../../../engine/components'
+import { Tool, ToolController } from '../../../engine/components'
 import type { FeatureValue } from '../../../engine/components/tool'
 
 import { features } from './components'
 import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
-
-const TOOL_COMPONENT_NAME = 'tool'
-const TOOL_CONTROLLER_COMPONENT_NAME = 'toolController'
 
 export const Toolbar: FC = () => {
   const { t } = useTranslation()
@@ -49,9 +46,7 @@ export const Toolbar: FC = () => {
   useEffect(() => {
     const handleUpdate = (gameObject: unknown): void => {
       const mainObject = gameObject as GameObject
-      const toolController = mainObject.getComponent(
-        TOOL_CONTROLLER_COMPONENT_NAME,
-      ) as ToolController
+      const toolController = mainObject.getComponent(ToolController)
       const toolObject = mainObject.getChildById(toolController.activeTool)
 
       if (!toolObject) {
@@ -61,7 +56,7 @@ export const Toolbar: FC = () => {
       const {
         name,
         features: currentFeatures,
-      } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+      } = toolObject.getComponent(Tool)
 
       if (name !== selectedTool) {
         setSelectedTool(name)

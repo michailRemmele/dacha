@@ -1,5 +1,5 @@
+import { System } from 'remiz'
 import type {
-  System,
   SystemOptions,
   MessageBus,
   SceneContext,
@@ -31,7 +31,7 @@ import { createFromTemplate, updatePlacementPosition } from './utils'
 import { getTool } from '../../../utils/get-tool'
 import type { Position } from './types'
 
-export class TemplateToolSystem implements System {
+export class TemplateToolSystem extends System {
   private messageBus: MessageBus
   private sceneContext: SceneContext
   private configStore: Store
@@ -45,6 +45,8 @@ export class TemplateToolSystem implements System {
   private placementPosition: Position
 
   constructor(options: SystemOptions) {
+    super()
+
     const {
       messageBus,
       sceneContext,
@@ -175,3 +177,5 @@ export class TemplateToolSystem implements System {
     this.handleAddMessages(levelId)
   }
 }
+
+TemplateToolSystem.systemName = 'TemplateToolSystem'

@@ -9,15 +9,11 @@ import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 import { AimOutlined } from '@ant-design/icons'
-import type {
-  GameObject,
-  Transform,
-} from 'remiz'
+import { Transform } from 'remiz'
+import type { GameObject } from 'remiz'
 
 import { EngineContext } from '../../../../../../providers'
 import { ButtonCSS } from '../../../../explorer.style'
-
-const TRANSFORM_COMPONENT_NAME = 'transform'
 
 interface FocusActionButtonProps {
   path?: Array<string>
@@ -47,7 +43,7 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
         return
       }
 
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform | undefined
+      const transform = gameObject.getComponent(Transform)
       if (transform === undefined) {
         setSelectedGameObject(undefined)
         return
@@ -70,8 +66,8 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
     }
 
     pushAction(() => {
-      const mainObjectTransform = mainObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
-      const transform = selectedGameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
+      const mainObjectTransform = mainObject.getComponent(Transform)
+      const transform = selectedGameObject.getComponent(Transform)
 
       mainObjectTransform.offsetX = transform.offsetX
       mainObjectTransform.offsetY = transform.offsetY

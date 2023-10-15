@@ -1,19 +1,14 @@
+import { System, Transform } from 'remiz'
 import type {
-  System,
   SystemOptions,
   GameObjectObserver,
   GameObject,
   Store,
-  Transform,
 } from 'remiz'
 
-import type { Shape } from '../../components/shape'
+import { Shape } from '../../components'
 
-import {
-  SHAPE_COMPONENT_NAME,
-  TRANSFORM_COMPONENT_NAME,
-  CURRENT_CAMERA_NAME,
-} from './conts'
+import { CURRENT_CAMERA_NAME } from './conts'
 import { CoordinatesTransformer } from './coordinates-transformer'
 import { painters } from './shape-painters'
 
@@ -21,7 +16,7 @@ interface ShapesRendererOptions extends SystemOptions {
   windowNodeId: string
 }
 
-export class ShapesRenderer implements System {
+export class ShapesRenderer extends System {
   private gameObjectObserver: GameObjectObserver
   private store: Store
   private window: HTMLCanvasElement
@@ -32,6 +27,8 @@ export class ShapesRenderer implements System {
   private transformer: CoordinatesTransformer
 
   constructor(options: SystemOptions) {
+    super()
+
     const {
       createGameObjectObserver,
       store,
@@ -40,8 +37,8 @@ export class ShapesRenderer implements System {
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
-        TRANSFORM_COMPONENT_NAME,
-        SHAPE_COMPONENT_NAME,
+        Transform,
+        Shape,
       ],
     })
     this.store = store
@@ -91,11 +88,13 @@ export class ShapesRenderer implements System {
     this.transformer.setCamera(currentCamera)
 
     this.gameObjectObserver.forEach((gameObject) => {
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
-      const shape = gameObject.getComponent(SHAPE_COMPONENT_NAME) as Shape
+      const transform = gameObject.getComponent(Transform)
+      const shape = gameObject.getComponent(Shape)
 
       const paintShape = painters[shape.type]
       paintShape(this.context, this.transformer, shape.properties, transform)
     })
   }
 }
+
+ShapesRenderer.systemName = 'ShapesRenderer'

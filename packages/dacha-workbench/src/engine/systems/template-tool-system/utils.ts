@@ -1,3 +1,7 @@
+import {
+  Transform,
+  Renderable,
+} from 'remiz'
 import type {
   GameObjectConfig,
   TemplateConfig,
@@ -14,11 +18,7 @@ import {
 import { getTool } from '../../../utils/get-tool'
 import type { Store } from '../../../store'
 
-import {
-  TOOL_NAME,
-  TRANSFORM_COMPONENT_NAME,
-  RENDERABLE_COMPONENT_NAME,
-} from './consts'
+import { TOOL_NAME } from './consts'
 import type { Position } from './types'
 
 const buildGameObject = (template: TemplateConfig, index?: number): GameObjectConfig => ({
@@ -46,7 +46,7 @@ export const createFromTemplate = (
   const gameObject = buildGameObject(templateCopy, sameTemplateObjects.length)
 
   const transform = templateCopy.components
-    ?.find((component) => component.name === TRANSFORM_COMPONENT_NAME)
+    ?.find((component) => component.name === Transform.componentName)
 
   if (transform !== undefined) {
     transform.config.offsetX = x
@@ -109,9 +109,9 @@ export const updatePlacementPosition = (
   const template = store.get(['templates', `id:${templateId}`]) as TemplateConfig
 
   const transform = template.components
-    ?.find((component) => component.name === TRANSFORM_COMPONENT_NAME)
+    ?.find((component) => component.name === Transform.componentName)
   const renderable = template.components
-    ?.find((component) => component.name === RENDERABLE_COMPONENT_NAME)
+    ?.find((component) => component.name === Renderable.componentName)
 
   if (transform !== undefined) {
     // eslint-disable-next-line no-param-reassign
