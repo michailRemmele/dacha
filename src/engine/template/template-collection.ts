@@ -49,8 +49,7 @@ export class TemplateCollection {
       throw new Error(`Can't find template with the following id: ${id}`);
     }
 
-    const copy = this.storage[id].clone();
-    return copy;
+    return this.storage[id].clone();
   }
 
   getAll(): Array<Template> {
