@@ -19,11 +19,11 @@ const COLLISION_MESSAGES = [
 export class PhysicsSystem extends System {
   private messageBus: MessageBus;
 
-  private physicsSubsystem: System;
-  private collisionDetectionSubsystem: System;
-  private collisionBroadcastSubsystem: System;
-  private collisionSolver: System;
-  private constraintSolver: System;
+  private physicsSubsystem: PhysicsSubsystem;
+  private collisionDetectionSubsystem: CollisionDetectionSubsystem;
+  private collisionBroadcastSubsystem: CollisionBroadcastSubsystem;
+  private collisionSolver: CollisionSolver;
+  private constraintSolver: ConstraintSolver;
 
   constructor(options: SystemOptions) {
     super();
@@ -38,19 +38,15 @@ export class PhysicsSystem extends System {
   }
 
   mount(): void {
-    this.physicsSubsystem.mount?.();
-    this.collisionDetectionSubsystem.mount?.();
-    this.collisionBroadcastSubsystem.mount?.();
-    this.collisionSolver.mount?.();
-    this.constraintSolver.mount?.();
+    this.physicsSubsystem.mount();
+    this.collisionDetectionSubsystem.mount();
+    this.collisionBroadcastSubsystem.mount();
   }
 
   unmount(): void {
     this.physicsSubsystem.unmount?.();
     this.collisionDetectionSubsystem.unmount?.();
     this.collisionBroadcastSubsystem.unmount?.();
-    this.collisionSolver.unmount?.();
-    this.constraintSolver.unmount?.();
   }
 
   update(options: UpdateOptions): void {
@@ -59,10 +55,10 @@ export class PhysicsSystem extends System {
     });
 
     this.physicsSubsystem.update(options);
-    this.collisionDetectionSubsystem.update(options);
-    this.collisionBroadcastSubsystem.update(options);
-    this.collisionSolver.update(options);
-    this.constraintSolver.update(options);
+    this.collisionDetectionSubsystem.update();
+    this.collisionBroadcastSubsystem.update();
+    this.collisionSolver.update();
+    this.constraintSolver.update();
   }
 }
 

@@ -6,7 +6,7 @@ import {
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
 import { filterByKey } from '../../../../../engine/utils';
-import type { System, SystemOptions, UpdateOptions } from '../../../../../engine/system';
+import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
 import type { Store } from '../../../../../engine/scene';
@@ -36,7 +36,7 @@ interface PhysicsSystemOptions extends SystemOptions {
   gravitationalAcceleration: number;
 }
 
-export class PhysicsSubsystem implements System {
+export class PhysicsSubsystem {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private messageBus: MessageBus;

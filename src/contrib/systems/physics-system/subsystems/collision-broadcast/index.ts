@@ -1,5 +1,5 @@
 import { COLLISION_MSG } from '../../consts';
-import type { System, SystemOptions } from '../../../../../engine/system';
+import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
 import { ColliderContainer } from '../../../../components/collider-container';
@@ -13,7 +13,7 @@ interface CollisionMessage extends Message {
   mtv2: unknown
 }
 
-export class CollisionBroadcastSubsystem implements System {
+export class CollisionBroadcastSubsystem {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private collisionMap: Record<string, Record<string, Collision>>;

@@ -6,7 +6,7 @@ import {
   GRAVITATIONAL_ACCELERATION_STORE_KEY,
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
-import type { System, SystemOptions } from '../../../../../engine/system';
+import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
 import type { Store } from '../../../../../engine/scene';
@@ -27,7 +27,7 @@ interface CollisionEventMessage extends Message {
   mtv2: Mtv
 }
 
-export class CollisionSolver implements System {
+export class CollisionSolver {
   private messageBus: MessageBus;
   private store: Store;
   private gravitationalAcceleration: number;

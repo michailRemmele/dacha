@@ -1,5 +1,5 @@
 import { COLLISION_MSG } from '../../consts';
-import type { System, SystemOptions } from '../../../../../engine/system';
+import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus } from '../../../../../engine/message-bus';
 import { Transform, ColliderContainer } from '../../../../components';
@@ -23,7 +23,7 @@ const AXIS = {
   Y: 'y',
 } as const;
 
-export class CollisionDetectionSubsystem implements System {
+export class CollisionDetectionSubsystem {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private coordinatesCalculators: Record<string, CoordinatesCalculator>;

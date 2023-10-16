@@ -3,7 +3,7 @@ import {
   COLLISION_STAY_MSG,
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
-import type { System, SystemOptions } from '../../../../../engine/system';
+import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
 import { RigidBody } from '../../../../components/rigid-body';
@@ -27,7 +27,7 @@ interface CollisionEventMessage extends Message {
   mtv2: Mtv
 }
 
-export class ConstraintSolver implements System {
+export class ConstraintSolver {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private processedPairs: Record<string, Record<string, boolean>>;
