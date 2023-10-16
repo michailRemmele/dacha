@@ -1,27 +1,12 @@
-import { Animator } from './animator';
-import { CameraSystem } from './camera-system';
-import { GameStatsMeter } from './game-stats-meter';
-import { KeyboardInputSystem } from './keyboard-input-system';
-import { KeyboardControlSystem } from './keyboard-control-system';
-import { MouseControlSystem } from './mouse-control-system';
-import { MouseInputSystem } from './mouse-input-system';
-import { MouseInputCoordinatesProjector } from './mouse-input-coordinates-projector';
-import { PhysicsSystem } from './physics-system';
-import { ScriptSystem } from './script-system';
-import { Renderer } from './three-js-renderer';
-import { UiBridge } from './ui-bridge';
-
-export const contribSystems = {
-  animator: Animator,
-  cameraSystem: CameraSystem,
-  gameStatsMeter: GameStatsMeter,
-  keyboardInputSystem: KeyboardInputSystem,
-  keyboardControlSystem: KeyboardControlSystem,
-  mouseControlSystem: MouseControlSystem,
-  mouseInputSystem: MouseInputSystem,
-  mouseInputCoordinatesProjector: MouseInputCoordinatesProjector,
-  physicsSystem: PhysicsSystem,
-  scriptSystem: ScriptSystem,
-  renderer: Renderer,
-  uiBridge: UiBridge,
-};
+export { Animator } from './animator';
+export { CameraSystem } from './camera-system';
+export { GameStatsMeter } from './game-stats-meter';
+export { KeyboardInputSystem } from './keyboard-input-system';
+export { KeyboardControlSystem } from './keyboard-control-system';
+export { MouseControlSystem } from './mouse-control-system';
+export { MouseInputSystem } from './mouse-input-system';
+export { MouseInputCoordinatesProjector } from './mouse-input-coordinates-projector';
+export { PhysicsSystem } from './physics-system';
+export { ScriptSystem } from './script-system';
+export { Renderer } from './three-js-renderer';
+export { UiBridge } from './ui-bridge';

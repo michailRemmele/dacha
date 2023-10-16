@@ -1,9 +1,35 @@
+/* comment: mock classes for test */
+/* eslint-disable max-classes-per-file */
 import { Scene } from '../../scene';
-import { createMockComponent } from '../../../__mocks__';
 import { GameObjectObserver } from '../game-object-observer';
 import { GameObjectCreator } from '../game-object-creator';
 import { GameObject } from '../game-object';
 import { TemplateCollection } from '../../template';
+import { Component } from '../../component';
+
+class TestComponent1 extends Component {
+  static componentName = 'TestComponent1';
+
+  clone(): Component {
+    return new TestComponent1();
+  }
+}
+
+class TestComponent2 extends Component {
+  static componentName = 'TestComponent2';
+
+  clone(): Component {
+    return new TestComponent2();
+  }
+}
+
+class TestComponent3 extends Component {
+  static componentName = 'TestComponent3';
+
+  clone(): Component {
+    return new TestComponent3();
+  }
+}
 
 describe('Engine -> GameObjectObserver', () => {
   let scene: Scene;
@@ -15,17 +41,18 @@ describe('Engine -> GameObjectObserver', () => {
   let gameObject5: GameObject;
 
   beforeEach(() => {
-    const templateCollection = new TemplateCollection({});
+    const templateCollection = new TemplateCollection([]);
     scene = new Scene({
       id: '000',
       name: 'test-scene',
       gameObjects: [],
-      availableSystems: {},
+      availableSystems: [],
       helpers: {},
       globalOptions: {},
       systems: [],
-      gameObjectCreator: new GameObjectCreator({}, templateCollection),
+      gameObjectCreator: new GameObjectCreator([], templateCollection),
       templateCollection,
+      levelId: null,
     });
 
     gameObject1 = new GameObject({
@@ -54,23 +81,23 @@ describe('Engine -> GameObjectObserver', () => {
       type: 'correct-type',
     });
 
-    gameObject1.setComponent('test-1', createMockComponent('test-1'));
+    gameObject1.setComponent(new TestComponent1());
 
-    gameObject2.setComponent('test-1', createMockComponent('test-1'));
+    gameObject2.setComponent(new TestComponent1());
 
-    gameObject3.setComponent('test-2', createMockComponent('test-2'));
+    gameObject3.setComponent(new TestComponent2());
 
-    gameObject4.setComponent('test-1', createMockComponent('test-1'));
-    gameObject4.setComponent('test-2', createMockComponent('test-2'));
+    gameObject4.setComponent(new TestComponent1());
+    gameObject4.setComponent(new TestComponent2());
 
-    gameObject5.setComponent('test-1', createMockComponent('test-1'));
-    gameObject5.setComponent('test-2', createMockComponent('test-2'));
-    gameObject5.setComponent('test-3', createMockComponent('test-3'));
+    gameObject5.setComponent(new TestComponent1());
+    gameObject5.setComponent(new TestComponent2());
+    gameObject5.setComponent(new TestComponent3());
   });
 
   it('Correct filters game objects by components', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
-      components: ['test-1', 'test-2'],
+      components: [TestComponent1, TestComponent2],
       type: 'correct-type',
     });
 
@@ -94,7 +121,7 @@ describe('Engine -> GameObjectObserver', () => {
 
   it('Correct subscribe on new game objects additions', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
-      components: ['test-1'],
+      components: [TestComponent1],
       type: 'correct-type',
     });
     const testFn1 = jest.fn();
@@ -130,7 +157,7 @@ describe('Engine -> GameObjectObserver', () => {
     expect(testFn2.mock.calls.length).toEqual(1);
     expect(gameObjectObserver.size()).toEqual(1);
 
-    gameObject3.setComponent('test-1', createMockComponent('test-1'));
+    gameObject3.setComponent(new TestComponent1());
     gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(2);
@@ -154,7 +181,7 @@ describe('Engine -> GameObjectObserver', () => {
 
   it('Correct subscribe on new game objects removes', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
-      components: ['test-1'],
+      components: [TestComponent1],
       type: 'correct-type',
     });
 
@@ -176,7 +203,7 @@ describe('Engine -> GameObjectObserver', () => {
     expect(testFn2.mock.calls.length).toEqual(0);
     expect(gameObjectObserver.size()).toEqual(3);
 
-    gameObject1.removeComponent('test-1');
+    gameObject1.removeComponent(TestComponent1);
     gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(1);
@@ -186,7 +213,7 @@ describe('Engine -> GameObjectObserver', () => {
     expect(gameObjectObserver.size()).toEqual(2);
 
     scene.removeGameObject(gameObject4);
-    gameObject5.removeComponent('test-1');
+    gameObject5.removeComponent(TestComponent1);
     gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(3);
@@ -200,7 +227,7 @@ describe('Engine -> GameObjectObserver', () => {
 
   it('Correct unsubscribe from game object observer events', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
-      components: ['test-1'],
+      components: [TestComponent1],
       type: 'correct-type',
     });
 
@@ -223,7 +250,7 @@ describe('Engine -> GameObjectObserver', () => {
 
   it('Correct returns game objects by id and index', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
-      components: ['test-1', 'test-2'],
+      components: [TestComponent1, TestComponent2],
     });
 
     scene.addGameObject(gameObject1);
@@ -245,7 +272,7 @@ describe('Engine -> GameObjectObserver', () => {
 
   it('Correct sorts game objects', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
-      components: ['test-1'],
+      components: [TestComponent1],
     });
 
     scene.addGameObject(gameObject5);

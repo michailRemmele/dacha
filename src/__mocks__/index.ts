@@ -1,1 +1,0 @@
-export { createMockComponent } from './component';

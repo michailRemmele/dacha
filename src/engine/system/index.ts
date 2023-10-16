@@ -1,7 +1,7 @@
-export {
-  System,
+export { System } from './system';
+export type {
+  SystemConstructor,
   SystemOptions,
   UpdateOptions,
   HelperFn,
-  SystemsMap,
 } from './system';

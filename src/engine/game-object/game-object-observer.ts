@@ -1,8 +1,9 @@
 import { GAME_OBJECT_ADDED } from '../scene/consts';
 import type { Scene, GameObjectChangeEvent } from '../scene';
 import type { EventEmitter } from '../types';
+import type { ComponentConstructor } from '../component';
 
-import { GameObject } from './game-object';
+import type { GameObject } from './game-object';
 
 interface ObserverEventMap {
   'onadd': GameObject
@@ -18,11 +19,11 @@ interface ObserverSubscriptions {
 
 export interface GameObjectObserverFilter {
   type?: string;
-  components?: Array<string>;
+  components?: Array<ComponentConstructor | string>;
 }
 
 export class GameObjectObserver implements EventEmitter {
-  private _components: Array<string>;
+  private _components: Array<ComponentConstructor | string>;
   private _type?: string;
   private _observedGameObjects: Array<GameObject>;
   private _addedToAccepted: Array<GameObject>;
@@ -109,7 +110,13 @@ export class GameObjectObserver implements EventEmitter {
       return false;
     }
 
-    return this._components.every((component) => gameObject.getComponent(component));
+    return this._components.every((component) => {
+      // Dummy check to avoid typescript error
+      if (typeof component === 'string') {
+        return gameObject.getComponent(component);
+      }
+      return gameObject.getComponent(component);
+    });
   }
 
   private _accept(gameObject: GameObject): void {

@@ -1,5 +1,5 @@
-import type { SystemsMap, HelperFn } from './system';
-import type { ComponentsMap } from './component';
+import type { HelperFn, SystemConstructor } from './system';
+import type { ComponentConstructor } from './component';
 import type { Config } from './types';
 import { SceneProvider } from './scene/scene-provider';
 import { GameObjectCreator } from './game-object';
@@ -9,8 +9,8 @@ import { SceneController } from './controllers';
 
 export interface EngineOptions {
   config: Config
-  systems: SystemsMap
-  components: ComponentsMap
+  systems: Array<SystemConstructor>
+  components: Array<ComponentConstructor>
   helpers: Record<string, HelperFn>
 }
 
@@ -63,6 +63,22 @@ export class Engine {
       helpers,
     } = this.options;
 
+    if (!startSceneId) {
+      throw new Error('Can\'t start the engine without starting scene. Please specify start scene id.');
+    }
+
+    for (let i = 0; i < components.length; i += 1) {
+      if (components[i].componentName === undefined) {
+        throw new Error(`Missing componentName field for ${components[i].name} component.`);
+      }
+    }
+
+    for (let i = 0; i < systems.length; i += 1) {
+      if (systems[i].systemName === undefined) {
+        throw new Error(`Missing systemName field for ${systems[i].name} system.`);
+      }
+    }
+
     const templateCollection = new TemplateCollection(components);
 
     for (let i = 0; i < templates.length; i += 1) {
@@ -87,6 +103,7 @@ export class Engine {
     const asyncLoading = this.sceneProvider.loadScene({
       sceneId: startSceneId,
       loaderId: startLoaderId,
+      levelId: null,
     });
 
     if (asyncLoading && !startLoaderId) {

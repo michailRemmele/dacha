@@ -4,7 +4,7 @@ import { CircleCollider } from '../circle-collider';
 
 describe('Contrib -> components -> ColliderContainer', () => {
   it('Returns correct values ', () => {
-    const boxColliderContainer = new ColliderContainer('colliderContainer', {
+    const boxColliderContainer = new ColliderContainer({
       type: 'boxCollider',
       collider: {
         sizeX: 10,
@@ -13,7 +13,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
         centerY: 2,
       },
     }).clone();
-    const circleColliderContainer = new ColliderContainer('colliderContainer', {
+    const circleColliderContainer = new ColliderContainer({
       type: 'circleCollider',
       collider: {
         radius: 20,
@@ -38,7 +38,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
   });
 
   it('Correct updates values ', () => {
-    const boxColliderContainer = new ColliderContainer('colliderContainer', {
+    const boxColliderContainer = new ColliderContainer({
       type: 'boxCollider',
       collider: {
         sizeX: 10,
@@ -47,7 +47,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
         centerY: 2,
       },
     }).clone();
-    const circleColliderContainer = new ColliderContainer('colliderContainer', {
+    const circleColliderContainer = new ColliderContainer({
       type: 'circleCollider',
       collider: {
         radius: 20,
@@ -80,7 +80,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
 
   it('Throws error if type of collider unexpected ', () => {
     expect(() => {
-      const incorrectColliderContainer = new ColliderContainer('colliderContainer', {
+      const incorrectColliderContainer = new ColliderContainer({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore: For test to throw error
         type: 'superCollider',
@@ -93,7 +93,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalBoxColliderContainer = new ColliderContainer('colliderContainer', {
+    const originalBoxColliderContainer = new ColliderContainer({
       type: 'boxCollider',
       collider: {
         sizeX: 10,
@@ -110,7 +110,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
       cloneBoxColliderContainer.collider,
     );
 
-    const originalCircleColliderContainer = new ColliderContainer('colliderContainer', {
+    const originalCircleColliderContainer = new ColliderContainer({
       type: 'circleCollider',
       collider: {
         radius: 20,

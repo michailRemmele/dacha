@@ -1,14 +1,17 @@
-import type { ComponentsMap } from '../component';
+import type { ComponentConstructor } from '../component';
 import type { TemplateConfig } from '../types';
 
 import { Template } from './template';
 
 export class TemplateCollection {
-  private components: ComponentsMap;
+  private components: Record<string, ComponentConstructor>;
   private storage: Record<string, Template>;
 
-  constructor(components: ComponentsMap) {
-    this.components = components;
+  constructor(components: Array<ComponentConstructor>) {
+    this.components = components.reduce((acc, ComponentClass) => {
+      acc[ComponentClass.componentName] = ComponentClass;
+      return acc;
+    }, {} as Record<string, ComponentConstructor>);
     this.storage = {};
   }
 
@@ -31,10 +34,7 @@ export class TemplateCollection {
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      template.setComponent(
-        componentOptions.name,
-        new Component(componentOptions.name, componentOptions.config),
-      );
+      template.setComponent(new Component(componentOptions.config));
     });
 
     return template;

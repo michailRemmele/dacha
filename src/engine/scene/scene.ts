@@ -1,7 +1,6 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
-import type { SystemsMap, HelperFn } from '../system';
 import type { TemplateCollection } from '../template';
-import { System } from '../system';
+import type { System, HelperFn, SystemConstructor } from '../system';
 import {
   GameObjectObserver,
   GameObjectObserverFilter,
@@ -23,7 +22,7 @@ export interface GameObjectChangeEvent {
 
 interface SceneOptions extends SceneConfig {
   gameObjects: Array<GameObjectConfig>
-  availableSystems: SystemsMap
+  availableSystems: Array<SystemConstructor>
   helpers: Record<string, HelperFn>
   globalOptions: Record<string, unknown>
   gameObjectCreator: GameObjectCreator
@@ -42,6 +41,7 @@ export class Scene {
   private systems: Array<System>;
   private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
   private templateCollection: TemplateCollection;
+  private availableSystemsMap: Record<string, SystemConstructor>;
 
   readonly id: string;
 
@@ -72,14 +72,18 @@ export class Scene {
       this.addGameObject(this.gameObjectCreator.create(gameObjectOptions));
     });
 
-    this.systems = systems.map((config) => new availableSystems[config.name]({
+    this.availableSystemsMap = availableSystems.reduce((acc, AvailableSystem) => {
+      acc[AvailableSystem.systemName] = AvailableSystem;
+      return acc;
+    }, {} as Record<string, SystemConstructor>);
+    this.systems = systems.map((config) => new this.availableSystemsMap[config.name]({
       ...config.options,
       store: this.getStore(),
       gameObjectSpawner: this.getGameObjectSpawner(),
       gameObjectDestroyer: this.getGameObjectDestroyer(),
-      createGameObjectObserver: (filter): GameObjectObserver => this.createGameObjectObserver(
-        filter,
-      ),
+      createGameObjectObserver: (
+        filter: GameObjectObserverFilter,
+      ): GameObjectObserver => this.createGameObjectObserver(filter),
       messageBus: this.getMessageBus(),
       helpers,
       globalOptions,

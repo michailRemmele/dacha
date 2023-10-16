@@ -1,36 +1,82 @@
-import type { Component } from '../../component';
+/* comment: mock classes for test */
+/* eslint-disable max-classes-per-file */
+import { Component } from '../../component';
 import { TemplateCollection } from '../../template';
-import { createMockComponent } from '../../../__mocks__';
 import { GameObjectCreator } from '..';
 
 import gameObjectExample from './jsons/game-object-example.json';
 import templateExample from './jsons/template-example.json';
 import gameObjectFromTemplateExample from './jsons/game-object-from-template-example.json';
 
-interface TestComponent1 extends Component {
+interface TestComponent1Config extends Record<string, unknown> {
   testField1: string
   testField2: boolean
   testField3: number
 }
 
-interface TestComponent2 extends Component {
+class TestComponent1 extends Component {
+  static componentName = 'TestComponent1';
+
+  testField1: string;
+  testField2: boolean;
+  testField3: number;
+
+  constructor(config: Record<string, unknown>) {
+    super();
+
+    const { testField1, testField2, testField3 } = config as TestComponent1Config;
+
+    this.testField1 = testField1;
+    this.testField2 = testField2;
+    this.testField3 = testField3;
+  }
+
+  clone(): Component {
+    return new TestComponent1({
+      testField1: this.testField1,
+      testField2: this.testField2,
+      testField3: this.testField3,
+    });
+  }
+}
+
+interface TestComponent2Config extends Record<string, unknown> {
   testField4: string
   testField5: boolean
   testField6: number
 }
 
-describe('Engine -> GameObjectCreator', () => {
-  function createTestComponent1(name: string, config: Record<string, unknown>): Component {
-    return createMockComponent(name, config);
-  }
-  function createTestComponent2(name: string, config: Record<string, unknown>): Component {
-    return createMockComponent(name, config);
+class TestComponent2 extends Component {
+  static componentName = 'TestComponent2';
+
+  testField4: string;
+  testField5: boolean;
+  testField6: number;
+
+  constructor(config: Record<string, unknown>) {
+    super();
+
+    const { testField4, testField5, testField6 } = config as TestComponent2Config;
+
+    this.testField4 = testField4;
+    this.testField5 = testField5;
+    this.testField6 = testField6;
   }
 
-  const components = {
-    test1: createTestComponent1 as unknown as { new(): Component },
-    test2: createTestComponent2 as unknown as { new(): Component },
-  };
+  clone(): Component {
+    return new TestComponent2({
+      testField4: this.testField4,
+      testField5: this.testField5,
+      testField6: this.testField6,
+    });
+  }
+}
+
+describe('Engine -> GameObjectCreator', () => {
+  const components = [
+    TestComponent1,
+    TestComponent2,
+  ];
 
   let templateCollection: TemplateCollection;
 
@@ -55,21 +101,24 @@ describe('Engine -> GameObjectCreator', () => {
     expect(gameObject.getChildren().length).toBe(1);
     expect(gameObject.getChildren()[0].parent).toBe(gameObject);
 
-    expect(gameObject.getComponentNamesList()).toStrictEqual(['test1', 'test2']);
+    expect(gameObject.getComponents()).toStrictEqual([
+      gameObject.getComponent(TestComponent1),
+      gameObject.getComponent(TestComponent2),
+    ]);
 
-    expect((gameObject.getComponent('test1') as TestComponent1).testField1).toBe('testField1Value');
-    expect((gameObject.getComponent('test1') as TestComponent1).testField2).toBe(true);
-    expect((gameObject.getComponent('test1') as TestComponent1).testField3).toBe(100);
+    expect((gameObject.getComponent(TestComponent1)).testField1).toBe('testField1Value');
+    expect((gameObject.getComponent(TestComponent1)).testField2).toBe(true);
+    expect((gameObject.getComponent(TestComponent1)).testField3).toBe(100);
 
-    expect((gameObject.getComponent('test2') as TestComponent2).testField4).toBe('testField4Value');
-    expect((gameObject.getComponent('test2') as TestComponent2).testField5).toBe(false);
-    expect((gameObject.getComponent('test2') as TestComponent2).testField6).toBe(300);
+    expect((gameObject.getComponent(TestComponent2)).testField4).toBe('testField4Value');
+    expect((gameObject.getComponent(TestComponent2)).testField5).toBe(false);
+    expect((gameObject.getComponent(TestComponent2)).testField6).toBe(300);
 
-    expect(gameObject.getChildren()[0].getComponent('test1')).toBeUndefined();
+    expect(gameObject.getChildren()[0].getComponent(TestComponent1)).toBeUndefined();
 
-    expect((gameObject.getChildren()[0].getComponent('test2') as TestComponent2).testField4).toBe('testField4ValueChild');
-    expect((gameObject.getChildren()[0].getComponent('test2') as TestComponent2).testField5).toBe(true);
-    expect((gameObject.getChildren()[0].getComponent('test2') as TestComponent2).testField6).toBe(450);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
+    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField5).toBe(true);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField6).toBe(450);
   });
 
   it('Creates game object from template', () => {
@@ -96,27 +145,30 @@ describe('Engine -> GameObjectCreator', () => {
     expect(gameObject.getChildren()[0].parent).toBe(gameObject);
     expect(gameObject.getChildren()[1].parent).toBe(gameObject);
 
-    expect(gameObject.getComponentNamesList()).toStrictEqual(['test2', 'test1']);
+    expect(gameObject.getComponents()).toStrictEqual([
+      gameObject.getComponent(TestComponent2),
+      gameObject.getComponent(TestComponent1),
+    ]);
 
-    expect((gameObject.getComponent('test1') as TestComponent1).testField1).toBe('testField1ValueFromTemplate');
-    expect((gameObject.getComponent('test1') as TestComponent1).testField2).toBe(false);
-    expect((gameObject.getComponent('test1') as TestComponent1).testField3).toBe(100);
+    expect((gameObject.getComponent(TestComponent1)).testField1).toBe('testField1ValueFromTemplate');
+    expect((gameObject.getComponent(TestComponent1)).testField2).toBe(false);
+    expect((gameObject.getComponent(TestComponent1)).testField3).toBe(100);
 
-    expect((gameObject.getComponent('test2') as TestComponent2).testField4).toBe('testField4ValueTemplate');
-    expect((gameObject.getComponent('test2') as TestComponent2).testField5).toBe(true);
-    expect((gameObject.getComponent('test2') as TestComponent2).testField6).toBe(200);
+    expect((gameObject.getComponent(TestComponent2)).testField4).toBe('testField4ValueTemplate');
+    expect((gameObject.getComponent(TestComponent2)).testField5).toBe(true);
+    expect((gameObject.getComponent(TestComponent2)).testField6).toBe(200);
 
-    expect((gameObject.getChildren()[0].getComponent('test1') as TestComponent1).testField1).toBe('testField1ValueChild');
-    expect((gameObject.getChildren()[0].getComponent('test1') as TestComponent1).testField2).toBe(false);
-    expect((gameObject.getChildren()[0].getComponent('test1') as TestComponent1).testField3).toBe(350);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
+    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField2).toBe(false);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField3).toBe(350);
 
-    expect((gameObject.getChildren()[0].getComponent('test2') as TestComponent2).testField4).toBe('testField4ValueChild');
-    expect((gameObject.getChildren()[0].getComponent('test2') as TestComponent2).testField5).toBe(true);
-    expect((gameObject.getChildren()[0].getComponent('test2') as TestComponent2).testField6).toBe(750);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
+    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField5).toBe(true);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField6).toBe(750);
 
-    expect((gameObject.getChildren()[1].getComponent('test1') as TestComponent1).testField1).toBe('testField1ValueChild');
-    expect((gameObject.getChildren()[1].getComponent('test1') as TestComponent1).testField2).toBe(false);
-    expect((gameObject.getChildren()[1].getComponent('test1') as TestComponent1).testField3).toBe(950);
+    expect((gameObject.getChildren()[1].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
+    expect((gameObject.getChildren()[1].getComponent(TestComponent1)).testField2).toBe(false);
+    expect((gameObject.getChildren()[1].getComponent(TestComponent1)).testField3).toBe(950);
   });
 
   it('Creates game object from template without game object options', () => {
@@ -141,14 +193,16 @@ describe('Engine -> GameObjectCreator', () => {
     expect(gameObject.getChildren().length).toBe(1);
     expect(gameObject.getChildren()[0].parent).toBe(gameObject);
 
-    expect(gameObject.getComponentNamesList()).toStrictEqual(['test2']);
+    expect(gameObject.getComponents()).toStrictEqual([
+      gameObject.getComponent(TestComponent2),
+    ]);
 
-    expect((gameObject.getComponent('test2') as TestComponent2).testField4).toBe('testField4ValueTemplate');
-    expect((gameObject.getComponent('test2') as TestComponent2).testField5).toBe(true);
-    expect((gameObject.getComponent('test2') as TestComponent2).testField6).toBe(200);
+    expect((gameObject.getComponent(TestComponent2)).testField4).toBe('testField4ValueTemplate');
+    expect((gameObject.getComponent(TestComponent2)).testField5).toBe(true);
+    expect((gameObject.getComponent(TestComponent2)).testField6).toBe(200);
 
-    expect((gameObject.getChildren()[0].getComponent('test1') as TestComponent1).testField1).toBe('testField1ValueChild');
-    expect((gameObject.getChildren()[0].getComponent('test1') as TestComponent1).testField2).toBe(false);
-    expect((gameObject.getChildren()[0].getComponent('test1') as TestComponent1).testField3).toBe(350);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
+    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField2).toBe(false);
+    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField3).toBe(350);
   });
 });

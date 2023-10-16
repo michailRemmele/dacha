@@ -2,7 +2,7 @@ import { Renderable } from '../index';
 
 describe('Contrib -> components -> Renderable', () => {
   it('Returns correct values ', () => {
-    const renderable = new Renderable('renderable', {
+    const renderable = new Renderable({
       src: 'some-path-to-texture',
       type: 'sprite',
       width: 100,
@@ -40,7 +40,7 @@ describe('Contrib -> components -> Renderable', () => {
   });
 
   it('Correct updates values ', () => {
-    const renderable = new Renderable('renderable', {
+    const renderable = new Renderable({
       src: 'some-path-to-texture',
       type: 'sprite',
       width: 100,
@@ -98,7 +98,7 @@ describe('Contrib -> components -> Renderable', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalRenderable = new Renderable('renderable', {
+    const originalRenderable = new Renderable({
       src: 'some-path-to-texture',
       type: 'sprite',
       width: 100,

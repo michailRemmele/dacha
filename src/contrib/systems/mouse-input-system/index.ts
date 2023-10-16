@@ -1,4 +1,5 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { MessageBus } from '../../../engine/message-bus';
 
 import { MouseInputListener } from './mouse-input-listener';
@@ -9,11 +10,13 @@ interface MouseInputSystemOptions extends SystemOptions {
   windowNodeId?: string;
 }
 
-export class MouseInputSystem implements System {
+export class MouseInputSystem extends System {
   private messageBus: MessageBus;
   private inputListener: MouseInputListener;
 
   constructor(options: SystemOptions) {
+    super();
+
     const { messageBus, windowNodeId } = options as MouseInputSystemOptions;
 
     this.messageBus = messageBus;
@@ -42,3 +45,5 @@ export class MouseInputSystem implements System {
     this.inputListener.clearFiredEvents();
   }
 }
+
+MouseInputSystem.systemName = 'MouseInputSystem';

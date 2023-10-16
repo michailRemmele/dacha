@@ -1,14 +1,13 @@
 import { MathOps } from '../../../engine/mathLib';
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
-import type { Camera } from '../../components/camera';
+import { Camera } from '../../components/camera';
 
 const CURRENT_CAMERA_NAME = 'currentCamera';
 const SET_CAMERA_MESSAGE = 'SET_CAMERA';
-
-const CAMERA_COMPONENT_NAME = 'camera';
 
 export const STD_SCREEN_SIZE = 1080;
 
@@ -22,7 +21,7 @@ interface CameraSystemOptions extends SystemOptions {
   scaleSensitivity: number
 }
 
-export class CameraSystem implements System {
+export class CameraSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private store: Store;
@@ -30,6 +29,8 @@ export class CameraSystem implements System {
   private scaleSensitivity: number;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       initialCamera,
       windowNodeId,
@@ -43,7 +44,7 @@ export class CameraSystem implements System {
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
-        CAMERA_COMPONENT_NAME,
+        Camera,
       ],
     });
     this.messageBus = messageBus;
@@ -81,7 +82,7 @@ export class CameraSystem implements System {
   private updateCameraWindowSize(width: number, height: number): void {
     const camera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
 
-    const cameraComponent = camera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
+    const cameraComponent = camera.getComponent(Camera);
     const { windowSizeX, windowSizeY } = cameraComponent;
 
     if (width !== windowSizeX || height !== windowSizeY) {
@@ -96,7 +97,7 @@ export class CameraSystem implements System {
     const normalizedSize = screenSize - ((screenSize - STD_SCREEN_SIZE) * avaragingValue);
 
     const camera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
-    const cameraComponent = camera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
+    const cameraComponent = camera.getComponent(Camera);
 
     cameraComponent.screenScale = normalizedSize / STD_SCREEN_SIZE;
   }
@@ -120,3 +121,5 @@ export class CameraSystem implements System {
     }
   }
 }
+
+CameraSystem.systemName = 'CameraSystem';

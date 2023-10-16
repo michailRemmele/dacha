@@ -2,7 +2,7 @@ import type { GameObject, GameObjectObserver } from '../../../engine/game-object
 import type { MessageBus } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
 
-export interface ScriptOptions {
+export interface GameObjectScriptOptions {
   gameObject: GameObject
   messageBus: MessageBus
   store: Store
@@ -11,6 +11,6 @@ export interface ScriptOptions {
   destroyer: unknown
 }
 
-export interface Script {
+export interface GameObjectScript {
   update(deltaTime: number): void
 }

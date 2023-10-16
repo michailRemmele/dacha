@@ -2,18 +2,16 @@ import {
   ADD_FORCE_MSG,
   ADD_IMPULSE_MSG,
   STOP_MOVEMENT_MSG,
-  RIGID_BODY_COMPONENT_NAME,
-  TRANSFORM_COMPONENT_NAME,
   GRAVITATIONAL_ACCELERATION_STORE_KEY,
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
 import { filterByKey } from '../../../../../engine/utils';
-import type { System, SystemOptions, UpdateOptions } from '../../../../../engine/system';
+import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
 import type { Store } from '../../../../../engine/scene';
-import type { RigidBody } from '../../../../components/rigid-body';
-import type { Transform } from '../../../../components/transform';
+import { RigidBody } from '../../../../components/rigid-body';
+import { Transform } from '../../../../components/transform';
 
 const DIRECTION_VECTOR = {
   UP: new Vector2(0, -1),
@@ -38,7 +36,7 @@ interface PhysicsSystemOptions extends SystemOptions {
   gravitationalAcceleration: number;
 }
 
-export class PhysicsSubsystem implements System {
+export class PhysicsSubsystem {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private messageBus: MessageBus;
@@ -52,8 +50,8 @@ export class PhysicsSubsystem implements System {
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
-        RIGID_BODY_COMPONENT_NAME,
-        TRANSFORM_COMPONENT_NAME,
+        RigidBody,
+        Transform,
       ],
     });
     this.store = store;
@@ -77,7 +75,7 @@ export class PhysicsSubsystem implements System {
   };
 
   private applyDragForce(gameObject: GameObject, deltaTime: number): void {
-    const { mass, drag } = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const { mass, drag } = gameObject.getComponent(RigidBody);
     const gameObjectId = gameObject.getId();
     const velocity = this.gameObjectsVelocity[gameObjectId];
 
@@ -119,7 +117,7 @@ export class PhysicsSubsystem implements System {
 
   private getForceVector(gameObject: GameObject): Vector2 {
     const gameObjectId = gameObject.getId();
-    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody = gameObject.getComponent(RigidBody);
 
     const forceVector = new Vector2(0, 0);
 
@@ -170,8 +168,8 @@ export class PhysicsSubsystem implements System {
 
     this.gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
-      const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+      const rigidBody = gameObject.getComponent(RigidBody);
+      const transform = gameObject.getComponent(Transform);
       const { mass } = rigidBody;
 
       const forceVector = this.getForceVector(gameObject);

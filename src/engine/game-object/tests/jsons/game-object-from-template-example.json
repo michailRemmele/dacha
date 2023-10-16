@@ -15,7 +15,7 @@
       "children": [],
       "components": [
         {
-          "name": "test2",
+          "name": "TestComponent2",
           "config": {
             "testField4": "testField4ValueChild",
             "testField5": true,
@@ -31,7 +31,7 @@
       "children": [],
       "components": [
         {
-          "name": "test1",
+          "name": "TestComponent1",
           "config": {
             "testField1": "testField1ValueChild",
             "testField2": false,
@@ -43,7 +43,7 @@
   ],
   "components": [
     {
-      "name": "test1",
+      "name": "TestComponent1",
       "config": {
         "testField1": "testField1ValueFromTemplate",
         "testField2": false,

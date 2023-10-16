@@ -1,4 +1,5 @@
-import type { Component } from '../component';
+import type { Component, ComponentConstructor } from '../component';
+import type { Constructor } from '../../types/utils';
 
 interface TemplateOptions {
   id: string
@@ -43,16 +44,18 @@ export class Template {
     return this.children;
   }
 
-  setComponent(name: string, component: Component): void {
-    this.components[name] = component;
+  setComponent(component: Component): void {
+    const { componentName } = (component.constructor as ComponentConstructor);
+
+    this.components[componentName] = component;
   }
 
-  getComponent(name: string): Component | undefined {
-    return this.components[name];
+  getComponent<T extends Component>(componentClass: ComponentConstructor<T>): T {
+    return this.components[componentClass.componentName] as T;
   }
 
-  getAvailableComponents(): Array<string> {
-    return Object.keys(this.components);
+  getComponents(): Array<Component> {
+    return Object.values(this.components);
   }
 
   clone(): Template {
@@ -69,7 +72,7 @@ export class Template {
     });
 
     Object.keys(this.components).forEach((name) => {
-      template.setComponent(name, this.components[name].clone());
+      template.setComponent(this.components[name].clone());
     });
 
     return template;

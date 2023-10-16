@@ -10,8 +10,8 @@ export class Animatable extends Component {
   currentState?: IndividualState | GroupState;
   duration: number;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const {
       initialState,
@@ -46,9 +46,11 @@ export class Animatable extends Component {
   }
 
   clone(): Animatable {
-    return new Animatable(this.componentName, {
+    return new Animatable({
       states: this.states,
       initialState: this.initialState,
     });
   }
 }
+
+Animatable.componentName = 'Animatable';

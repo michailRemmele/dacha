@@ -1,4 +1,4 @@
-import type { Component } from '../component';
+import type { Component, ComponentConstructor } from '../component';
 import { filterByKey } from '../utils';
 
 export interface ComponentsEditionEvent {
@@ -89,39 +89,48 @@ export class GameObject {
     return this.id;
   }
 
-  getComponentNamesList(): Array<string> {
-    return Object.keys(this.components);
+  getComponents(): Array<Component> {
+    return Object.values(this.components);
   }
 
-  getComponent(name: string): Component {
-    return this.components[name];
+  getComponent<T extends Component = Component>(componentName: string): T;
+  getComponent<T extends Component>(componentClass: ComponentConstructor<T>): T;
+  getComponent<T extends Component>(classOrName: ComponentConstructor<T> | string): T {
+    if (typeof classOrName === 'string') {
+      return this.components[classOrName] as T;
+    }
+    return this.components[classOrName.componentName] as T;
   }
 
-  setComponent(name: string, component: Component): void {
-    this.components[name] = component;
+  setComponent(component: Component): void {
+    const { componentName } = (component.constructor as ComponentConstructor);
+
+    this.components[componentName] = component;
     component.gameObject = this;
 
     this.subscribers.forEach((callback) => {
       callback({
         type: 'COMPONENT_ADDED',
-        componentName: name,
+        componentName,
         gameObject: this,
       });
     });
   }
 
-  removeComponent(name: string): void {
-    if (!this.components[name]) {
+  removeComponent(componentClass: ComponentConstructor): void {
+    const { componentName } = componentClass;
+
+    if (!this.components[componentName]) {
       return;
     }
 
-    this.components[name].gameObject = void 0;
-    this.components = filterByKey(this.components, name);
+    this.components[componentName].gameObject = void 0;
+    this.components = filterByKey(this.components, componentName);
 
     this.subscribers.forEach((callback) => {
       callback({
         type: 'COMPONENT_REMOVED',
-        componentName: name,
+        componentName,
         gameObject: this,
       });
     });

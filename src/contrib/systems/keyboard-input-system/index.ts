@@ -1,4 +1,5 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { MessageBus } from '../../../engine/message-bus';
 
 import { InputListener } from './input-listener';
@@ -17,13 +18,15 @@ interface KeyboardInputEvent {
   onProcessComplete: () => void
 }
 
-export class KeyboardInputSystem implements System {
+export class KeyboardInputSystem extends System {
   private messageBus: MessageBus;
   private inputListener: InputListener;
   private keyCodeMapper: KeyCodeMapper;
   private events: Array<KeyboardInputEvent>;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.messageBus = options.messageBus;
     this.inputListener = new InputListener(window);
     this.keyCodeMapper = new KeyCodeMapper();
@@ -67,3 +70,5 @@ export class KeyboardInputSystem implements System {
     });
   }
 }
+
+KeyboardInputSystem.systemName = 'KeyboardInputSystem';

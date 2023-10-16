@@ -2,7 +2,7 @@ import { Light, PointLightOptions } from '../index';
 
 describe('Contrib -> components -> Light', () => {
   it('Returns correct values ', () => {
-    const ambientLight = new Light('light', {
+    const ambientLight = new Light({
       type: 'ambient',
       options: {
         color: '#fff',
@@ -10,7 +10,7 @@ describe('Contrib -> components -> Light', () => {
       },
     }).clone();
 
-    const pointLight = new Light('light', {
+    const pointLight = new Light({
       type: 'point',
       options: {
         color: '#000',
@@ -30,7 +30,7 @@ describe('Contrib -> components -> Light', () => {
   });
 
   it('Correct updates values ', () => {
-    const ambientLight = new Light('light', {
+    const ambientLight = new Light({
       type: 'ambient',
       options: {
         color: '#fff',
@@ -38,7 +38,7 @@ describe('Contrib -> components -> Light', () => {
       },
     }).clone();
 
-    const pointLight = new Light('light', {
+    const pointLight = new Light({
       type: 'point',
       options: {
         color: '#000',
@@ -63,7 +63,7 @@ describe('Contrib -> components -> Light', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const ambientLight = new Light('light', {
+    const ambientLight = new Light({
       type: 'ambient',
       options: {
         color: '#fff',
@@ -72,7 +72,7 @@ describe('Contrib -> components -> Light', () => {
     }).clone();
     const cloneAmbientLight = ambientLight.clone();
 
-    const pointLight = new Light('light', {
+    const pointLight = new Light({
       type: 'point',
       options: {
         color: '#000',

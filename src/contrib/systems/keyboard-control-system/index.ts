@@ -1,9 +1,8 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
-import type { KeyboardControl } from '../../components/keyboard-control';
-
-const CONTROL_COMPONENT_NAME = 'keyboardControl';
+import { KeyboardControl } from '../../components/keyboard-control';
 
 const INPUT_MESSAGE = 'INPUT_EVENT_QUERY';
 
@@ -15,14 +14,16 @@ interface InputEventQueryMessage extends Message {
   query: Array<string>
 }
 
-export class KeyboardControlSystem implements System {
+export class KeyboardControlSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [
-        CONTROL_COMPONENT_NAME,
+        KeyboardControl,
       ],
     });
     this.messageBus = options.messageBus;
@@ -30,7 +31,7 @@ export class KeyboardControlSystem implements System {
 
   update(): void {
     this.gameObjectObserver.forEach((gameObject) => {
-      const control = gameObject.getComponent(CONTROL_COMPONENT_NAME) as KeyboardControl;
+      const control = gameObject.getComponent(KeyboardControl);
 
       const messages = (this.messageBus.get(INPUT_MESSAGE) || []) as Array<InputEventQueryMessage>;
       messages.forEach((message) => {
@@ -70,3 +71,5 @@ export class KeyboardControlSystem implements System {
     });
   }
 }
+
+KeyboardControlSystem.systemName = 'KeyboardControlSystem';

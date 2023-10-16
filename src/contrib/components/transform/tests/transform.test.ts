@@ -7,7 +7,7 @@ describe('Contrib -> components -> Transform', () => {
   let transform3: Transform;
 
   beforeEach(() => {
-    transform1 = new Transform('transform', {
+    transform1 = new Transform({
       offsetX: 10,
       offsetY: 5,
       offsetZ: 1,
@@ -15,7 +15,7 @@ describe('Contrib -> components -> Transform', () => {
       scaleX: 3,
       scaleY: 4,
     }).clone();
-    transform2 = new Transform('transform', {
+    transform2 = new Transform({
       offsetX: 20,
       offsetY: 10,
       offsetZ: 2,
@@ -23,7 +23,7 @@ describe('Contrib -> components -> Transform', () => {
       scaleX: 6,
       scaleY: 8,
     }).clone();
-    transform3 = new Transform('transform', {
+    transform3 = new Transform({
       offsetX: 30,
       offsetY: 20,
       offsetZ: 3,
@@ -36,9 +36,9 @@ describe('Contrib -> components -> Transform', () => {
     const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
     const gameObject3 = new GameObject({ id: '3', name: 'mock-game-object-3' });
 
-    gameObject1.setComponent('transform', transform1);
-    gameObject2.setComponent('transform', transform2);
-    gameObject3.setComponent('transform', transform3);
+    gameObject1.setComponent(transform1);
+    gameObject2.setComponent(transform2);
+    gameObject3.setComponent(transform3);
 
     gameObject3.appendChild(gameObject2);
     gameObject2.appendChild(gameObject1);
@@ -179,7 +179,7 @@ describe('Contrib -> components -> Transform', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalTransform = new Transform('transform', {
+    const originalTransform = new Transform({
       offsetX: 10,
       offsetY: 5,
       offsetZ: 1,

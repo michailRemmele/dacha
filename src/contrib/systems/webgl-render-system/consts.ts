@@ -11,7 +11,4 @@ export const VERTEX_DATA_STRIDE = VERTEX_STRIDE * DRAW_COUNT;
 
 export const BUFFER_SIZE = VERTEX_DATA_STRIDE * Float32Array.BYTES_PER_ELEMENT;
 
-export const RENDERABLE_COMPONENT_NAME = 'renderable';
-export const TRANSFORM_COMPONENT_NAME = 'transform';
-export const CAMERA_COMPONENT_NAME = 'camera';
 export const CURRENT_CAMERA_NAME = 'currentCamera';

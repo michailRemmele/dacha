@@ -2,7 +2,7 @@ import { Camera } from '../index';
 
 describe('Contrib -> components -> Camera', () => {
   it('Returns correct values ', () => {
-    const camera = new Camera('camera', {
+    const camera = new Camera({
       zoom: 100,
     }).clone();
 
@@ -13,7 +13,7 @@ describe('Contrib -> components -> Camera', () => {
   });
 
   it('Correct updates values ', () => {
-    const camera = new Camera('camera', {
+    const camera = new Camera({
       zoom: 100,
     }).clone();
 
@@ -29,7 +29,7 @@ describe('Contrib -> components -> Camera', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalCamera = new Camera('camera', {
+    const originalCamera = new Camera({
       zoom: 100,
     });
     const cloneCamera = originalCamera.clone();

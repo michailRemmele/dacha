@@ -9,13 +9,15 @@ import {
   Color,
 } from 'three/src/Three';
 
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { TemplateCollection } from '../../../engine/template';
 import type { Store } from '../../../engine/scene/store';
-import type { Transform } from '../../components/transform';
-import type { Renderable } from '../../components/renderable';
-import type { Camera } from '../../components/camera';
+import { Transform } from '../../components/transform';
+import { Renderable } from '../../components/renderable';
+import { Light } from '../../components/light';
+import { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
 
@@ -39,13 +41,7 @@ import {
   getTextureMapKey,
   cloneTexture,
 } from './utils';
-import {
-  CAMERA_COMPONENT_NAME,
-  CURRENT_CAMERA_NAME,
-  TRANSFORM_COMPONENT_NAME,
-  RENDERABLE_COMPONENT_NAME,
-  LIGHT_COMPONENT_NAME,
-} from './consts';
+import { CURRENT_CAMERA_NAME } from './consts';
 
 interface RendererOptions extends SystemOptions {
   windowNodeId: string
@@ -53,7 +49,7 @@ interface RendererOptions extends SystemOptions {
   backgroundAlpha: number
 }
 
-export class Renderer implements System {
+export class Renderer extends System {
   private gameObjectObserver: GameObjectObserver;
   private store: Store;
   private window: HTMLElement;
@@ -71,6 +67,8 @@ export class Renderer implements System {
   private templateCollection: TemplateCollection;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       globalOptions,
       createGameObjectObserver,
@@ -84,8 +82,8 @@ export class Renderer implements System {
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
-        RENDERABLE_COMPONENT_NAME,
-        TRANSFORM_COMPONENT_NAME,
+        Renderable,
+        Transform,
       ],
     });
     this.store = store;
@@ -120,8 +118,8 @@ export class Renderer implements System {
       this.renderScene,
       createGameObjectObserver({
         components: [
-          LIGHT_COMPONENT_NAME,
-          TRANSFORM_COMPONENT_NAME,
+          Light,
+          Transform,
         ],
       }),
     );
@@ -226,7 +224,7 @@ export class Renderer implements System {
 
     this.gameObjectObserver.getList()
       .reduce((acc: Record<string, Renderable>, gameObject) => {
-        const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+        const renderable = gameObject.getComponent(Renderable);
 
         if (!acc[renderable.src]) {
           acc[renderable.src] = renderable;
@@ -239,7 +237,7 @@ export class Renderer implements System {
   }
 
   private handleGameObjectAdd = (gameObject: GameObject): void => {
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const renderable = gameObject.getComponent(Renderable);
 
     const material = createMaterial(renderable.material.type);
     const geometry = new PlaneGeometry(renderable.width, renderable.height);
@@ -278,8 +276,8 @@ export class Renderer implements System {
 
   private updateCamera(): void {
     const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
-    const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
+    const transform = currentCamera.getComponent(Transform);
+    const { zoom } = currentCamera.getComponent(Camera);
 
     this.currentCamera.zoom = zoom;
     // TODO: Figure out how to set up camera correctly to avoid negative transform by y axis
@@ -290,8 +288,8 @@ export class Renderer implements System {
 
   private updateGameObjects(): void {
     this.gameObjectObserver.getList().forEach((gameObject, index) => {
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-      const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+      const transform = gameObject.getComponent(Transform);
+      const renderable = gameObject.getComponent(Renderable);
 
       const object = this.renderScene.getObjectById(
         this.gameObjectsMap[gameObject.getId()],
@@ -337,3 +335,5 @@ export class Renderer implements System {
     this.renderer.render(this.renderScene, this.currentCamera);
   }
 }
+
+Renderer.systemName = 'Renderer';

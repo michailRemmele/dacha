@@ -1,5 +1,5 @@
+import { System } from '../../../engine/system';
 import type {
-  System,
   SystemOptions,
   UpdateOptions,
   HelperFn,
@@ -7,30 +7,30 @@ import type {
 import type { GameObjectObserver, GameObject } from '../../../engine/game-object';
 import type { Store } from '../../../engine/scene/store';
 import type { MessageBus } from '../../../engine/message-bus';
-import type { ScriptComponent } from '../../components/script';
+import { Script } from '../../components/script';
 
-import type { Script, ScriptOptions } from './script';
+import type { GameObjectScript, GameObjectScriptOptions } from './types';
 
-const SCRIPT_COMPONENT_NAME = 'script';
+export { GameObjectScript, GameObjectScriptOptions };
 
-export { Script, ScriptOptions };
-
-export interface ScriptClass {
-  new(options: ScriptOptions): Script
+export interface GameObjectScriptClass {
+  new(options: GameObjectScriptOptions): GameObjectScript
 }
 
-export class ScriptSystem implements System {
+export class ScriptSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private scriptsObserver: GameObjectObserver;
   private gameObjectSpawner: unknown;
   private gameObjectDestroyer: unknown;
   private store: Store;
-  private scripts: Record<string, ScriptClass>;
+  private scripts: Record<string, GameObjectScriptClass>;
   private messageBus: MessageBus;
-  private activeScripts: Record<string, Script>;
+  private activeScripts: Record<string, GameObjectScript>;
   private helpers: Record<string, HelperFn>;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       createGameObjectObserver,
       gameObjectSpawner,
@@ -43,7 +43,7 @@ export class ScriptSystem implements System {
     this.gameObjectObserver = createGameObjectObserver({});
     this.scriptsObserver = createGameObjectObserver({
       components: [
-        SCRIPT_COMPONENT_NAME,
+        Script,
       ],
     });
     this.gameObjectSpawner = gameObjectSpawner;
@@ -58,7 +58,7 @@ export class ScriptSystem implements System {
 
   async load(): Promise<void> {
     const { scripts } = await this.helpers.loadScripts();
-    this.scripts = scripts as Record<string, ScriptClass>;
+    this.scripts = scripts as Record<string, GameObjectScriptClass>;
   }
 
   mount(): void {
@@ -73,7 +73,7 @@ export class ScriptSystem implements System {
     const gameObjectId = gameObject.getId();
 
     this.activeScripts = Object.keys(this.activeScripts)
-      .reduce((acc: Record<string, Script>, key) => {
+      .reduce((acc: Record<string, GameObjectScript>, key) => {
         if (key !== gameObjectId) {
           acc[key] = this.activeScripts[key];
         }
@@ -92,12 +92,12 @@ export class ScriptSystem implements System {
       const {
         name,
         options: scriptOptions,
-      } = gameObject.getComponent(SCRIPT_COMPONENT_NAME) as ScriptComponent;
+      } = gameObject.getComponent(Script);
 
-      const Script = this.scripts[name];
+      const SelectedGameObjectScript = this.scripts[name];
 
       this.activeScripts[id] = this.activeScripts[id]
-        || new Script({
+        || new SelectedGameObjectScript({
           gameObject,
           gameObjectObserver: this.gameObjectObserver,
           messageBus: this.messageBus,
@@ -111,3 +111,5 @@ export class ScriptSystem implements System {
     });
   }
 }
+
+ScriptSystem.systemName = 'ScriptSystem';

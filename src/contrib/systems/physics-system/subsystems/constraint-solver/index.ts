@@ -1,15 +1,14 @@
 import {
   COLLISION_ENTER_MSG,
   COLLISION_STAY_MSG,
-  RIGID_BODY_COMPONENT_NAME,
-  TRANSFORM_COMPONENT_NAME,
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
-import type { System, SystemOptions } from '../../../../../engine/system';
+import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
-import type { RigidBody, RigidBodyType } from '../../../../components/rigid-body';
-import type { Transform } from '../../../../components/transform';
+import { RigidBody } from '../../../../components/rigid-body';
+import type { RigidBodyType } from '../../../../components/rigid-body';
+import { Transform } from '../../../../components/transform';
 
 const RIGID_BODY_TYPE = {
   STATIC: 'static',
@@ -28,7 +27,7 @@ interface CollisionEventMessage extends Message {
   mtv2: Mtv
 }
 
-export class ConstraintSolver implements System {
+export class ConstraintSolver {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private processedPairs: Record<string, Record<string, boolean>>;
@@ -37,8 +36,8 @@ export class ConstraintSolver implements System {
   constructor(options: SystemOptions) {
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [
-        RIGID_BODY_COMPONENT_NAME,
-        TRANSFORM_COMPONENT_NAME,
+        RigidBody,
+        Transform,
       ],
     });
     this.messageBus = options.messageBus;
@@ -47,8 +46,8 @@ export class ConstraintSolver implements System {
   }
 
   private validateCollision(gameObject1: GameObject, gameObject2: GameObject): boolean {
-    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
-    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody1 = gameObject1.getComponent(RigidBody);
+    const rigidBody2 = gameObject2.getComponent(RigidBody);
 
     return rigidBody1 && !rigidBody1.ghost && !rigidBody1.isPermeable
       && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable
@@ -90,8 +89,8 @@ export class ConstraintSolver implements System {
     const id1 = gameObject1.getId();
     const id2 = gameObject2.getId();
 
-    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
-    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody1 = gameObject1.getComponent(RigidBody);
+    const rigidBody2 = gameObject2.getComponent(RigidBody);
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
       this.setMtv(id2, mtv2.x, mtv2.y, rigidBody1.type);
@@ -135,7 +134,7 @@ export class ConstraintSolver implements System {
 
     Object.keys(this.mtvMap).forEach((id) => {
       const gameObject = this.gameObjectObserver.getById(id) as GameObject;
-      const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+      const transform = gameObject.getComponent(Transform);
 
       const mtvs = Object.keys(this.mtvMap[id]);
 

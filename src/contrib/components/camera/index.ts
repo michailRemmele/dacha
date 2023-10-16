@@ -11,8 +11,8 @@ export class Camera extends Component {
 
   private _zoom: number;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const cameraConfig = config as CameraConfig;
 
@@ -32,8 +32,10 @@ export class Camera extends Component {
   }
 
   clone(): Camera {
-    return new Camera(this.componentName, {
+    return new Camera({
       zoom: this.zoom,
     });
   }
 }
+
+Camera.componentName = 'Camera';

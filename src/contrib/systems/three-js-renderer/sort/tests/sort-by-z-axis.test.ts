@@ -17,16 +17,16 @@ describe('Contrib -> RenderSystem -> Sort -> sortByZAxis()', () => {
     const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
     const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
 
-    gameObject1.setComponent('transform', new Transform('transform', baseTransformProps));
-    gameObject2.setComponent('transform', new Transform('transform', baseTransformProps));
+    gameObject1.setComponent(new Transform(baseTransformProps));
+    gameObject2.setComponent(new Transform(baseTransformProps));
 
     expect(sortByZAxis(gameObject1, gameObject2)).toBe(0);
 
-    (gameObject2.getComponent('transform') as Transform).offsetZ = 50;
+    (gameObject2.getComponent(Transform)).offsetZ = 50;
 
     expect(sortByZAxis(gameObject1, gameObject2)).toBeLessThan(0);
 
-    (gameObject1.getComponent('transform') as Transform).offsetZ = 100;
+    (gameObject1.getComponent(Transform)).offsetZ = 100;
 
     expect(sortByZAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
   });

@@ -1,15 +1,14 @@
+import { Renderable } from '../../../components/renderable';
+import { Transform } from '../../../components/transform';
 import type { GameObject } from '../../../../engine/game-object';
-import type { Renderable } from '../../../components/renderable';
-import type { Transform } from '../../../components/transform';
-import { TRANSFORM_COMPONENT_NAME, RENDERABLE_COMPONENT_NAME } from '../consts';
 
 import type { SortFn } from './types';
 
 export const sortByYAxis: SortFn = (a: GameObject, b: GameObject): number => {
-  const aRenderable = a.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-  const bRenderable = b.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-  const aTransform = a.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-  const bTransform = b.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+  const aRenderable = a.getComponent(Renderable);
+  const bRenderable = b.getComponent(Renderable);
+  const aTransform = a.getComponent(Transform);
+  const bTransform = b.getComponent(Transform);
 
   const aOffsetY = aTransform.offsetY
     + aRenderable.sortCenter[1]

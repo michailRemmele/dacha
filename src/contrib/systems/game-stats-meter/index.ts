@@ -1,4 +1,5 @@
-import type { System, SystemOptions, UpdateOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions, UpdateOptions } from '../../../engine/system';
 import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus } from '../../../engine/message-bus';
 
@@ -9,7 +10,7 @@ interface GameStatsMeterOptions extends SystemOptions {
   frequency: number;
 }
 
-export class GameStatsMeter implements System {
+export class GameStatsMeter extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private frequency: number;
@@ -18,6 +19,8 @@ export class GameStatsMeter implements System {
   private messages: number;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       createGameObjectObserver,
       messageBus,
@@ -54,3 +57,5 @@ export class GameStatsMeter implements System {
     }
   }
 }
+
+GameStatsMeter.systemName = 'GameStatsMeter';

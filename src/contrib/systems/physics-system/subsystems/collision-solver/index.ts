@@ -3,15 +3,14 @@ import {
   STOP_MOVEMENT_MSG,
   COLLISION_ENTER_MSG,
   COLLISION_STAY_MSG,
-  RIGID_BODY_COMPONENT_NAME,
   GRAVITATIONAL_ACCELERATION_STORE_KEY,
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
-import type { System, SystemOptions } from '../../../../../engine/system';
+import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
 import type { Store } from '../../../../../engine/scene';
-import type { RigidBody } from '../../../../components/rigid-body';
+import { RigidBody } from '../../../../components/rigid-body';
 
 const REACTION_FORCE_VECTOR_X = 0;
 const REACTION_FORCE_VECTOR_Y = -1;
@@ -28,7 +27,7 @@ interface CollisionEventMessage extends Message {
   mtv2: Mtv
 }
 
-export class CollisionSolver implements System {
+export class CollisionSolver {
   private messageBus: MessageBus;
   private store: Store;
   private gravitationalAcceleration: number;
@@ -43,7 +42,7 @@ export class CollisionSolver implements System {
   }
 
   private addReactionForce(gameObject: GameObject, mtv: Mtv): void {
-    const rigidBody = gameObject.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody = gameObject.getComponent(RigidBody);
     const { useGravity, mass } = rigidBody;
 
     if (useGravity && mtv.y && Math.sign(mtv.y) === -1 && !mtv.x) {
@@ -66,8 +65,8 @@ export class CollisionSolver implements System {
   }
 
   private validateCollision(gameObject1: GameObject, gameObject2: GameObject): boolean {
-    const rigidBody1 = gameObject1.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
-    const rigidBody2 = gameObject2.getComponent(RIGID_BODY_COMPONENT_NAME) as RigidBody;
+    const rigidBody1 = gameObject1.getComponent(RigidBody);
+    const rigidBody2 = gameObject2.getComponent(RigidBody);
 
     return rigidBody1 && !rigidBody1.ghost && rigidBody2 && !rigidBody2.ghost;
   }

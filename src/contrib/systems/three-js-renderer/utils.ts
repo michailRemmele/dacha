@@ -5,12 +5,11 @@ import {
   ClampToEdgeWrapping,
 } from 'three/src/Three';
 
-import type { Renderable } from '../../components/renderable';
+import { Renderable } from '../../components/renderable';
 import type { Template } from '../../../engine/template';
 import { ResourceLoader } from '../../../engine/resource-loader';
 
 import { SpriteCropper } from './sprite-cropper';
-import { RENDERABLE_COMPONENT_NAME } from './consts';
 
 const spriteCropper = new SpriteCropper();
 const resourceLoader = new ResourceLoader();
@@ -39,7 +38,7 @@ export const getImagesFromTemplates = (
 ): void => {
   template.getChildren().forEach((childTemplate) => getImagesFromTemplates(images, childTemplate));
 
-  const renderable = template.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable | undefined;
+  const renderable = template.getComponent(Renderable);
 
   if (!renderable || images[renderable.src]) {
     return;

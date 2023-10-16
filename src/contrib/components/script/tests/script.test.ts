@@ -1,8 +1,8 @@
-import { ScriptComponent } from '../index';
+import { Script } from '../index';
 
 describe('Contrib -> components -> Script', () => {
   it('Returns correct values ', () => {
-    const script = new ScriptComponent('script', {
+    const script = new Script({
       name: 'some-script',
       options: {
         value1: 10,
@@ -16,7 +16,7 @@ describe('Contrib -> components -> Script', () => {
   });
 
   it('Correct updates values ', () => {
-    const script = new ScriptComponent('script', {
+    const script = new Script({
       name: 'some-script',
       options: {
         value1: 10,
@@ -34,7 +34,7 @@ describe('Contrib -> components -> Script', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalScript = new ScriptComponent('script', {
+    const originalScript = new Script({
       name: 'some-script',
       options: {
         value1: 10,

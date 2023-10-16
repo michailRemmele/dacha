@@ -17,8 +17,8 @@ export class ColliderContainer extends Component {
   type: 'boxCollider' | 'circleCollider';
   collider: BoxCollider | CircleCollider;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const colliderContainerConfig = config as ColliderContainerConfig;
 
@@ -34,9 +34,11 @@ export class ColliderContainer extends Component {
   }
 
   clone(): ColliderContainer {
-    return new ColliderContainer(this.componentName, {
+    return new ColliderContainer({
       type: this.type,
       collider: this.collider as unknown as Record<string, number>,
     });
   }
 }
+
+ColliderContainer.componentName = 'ColliderContainer';

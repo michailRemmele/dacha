@@ -2,8 +2,7 @@ import type {
   GameObjectObserver,
   GameObject,
 } from '../../../../engine/game-object';
-import type { Renderable } from '../../../components/renderable';
-import { RENDERABLE_COMPONENT_NAME } from '../consts';
+import { Renderable } from '../../../components/renderable';
 
 export class ShaderProvider {
   private gameObjectObserver: GameObjectObserver;
@@ -38,7 +37,7 @@ export class ShaderProvider {
   };
 
   private calculateShadingId(gameObject: GameObject): string {
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const renderable = gameObject.getComponent(Renderable);
 
     return `${renderable.fit}`;
   }

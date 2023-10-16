@@ -1,10 +1,8 @@
-import {
-  COLLISION_MSG,
-  COLLIDER_COMPONENT_NAME,
-} from '../../consts';
-import type { System, SystemOptions } from '../../../../../engine/system';
+import { COLLISION_MSG } from '../../consts';
+import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
+import { ColliderContainer } from '../../../../components/collider-container';
 
 import { Collision } from './collision';
 
@@ -15,7 +13,7 @@ interface CollisionMessage extends Message {
   mtv2: unknown
 }
 
-export class CollisionBroadcastSubsystem implements System {
+export class CollisionBroadcastSubsystem {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private collisionMap: Record<string, Record<string, Collision>>;
@@ -23,7 +21,7 @@ export class CollisionBroadcastSubsystem implements System {
 
   constructor(options: SystemOptions) {
     this.gameObjectObserver = options.createGameObjectObserver({
-      components: [COLLIDER_COMPONENT_NAME],
+      components: [ColliderContainer],
     });
     this.messageBus = options.messageBus;
 

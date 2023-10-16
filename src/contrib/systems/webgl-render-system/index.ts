@@ -1,4 +1,5 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import { Store } from '../../../engine/scene';
 import { Renderable } from '../../components/renderable';
@@ -36,9 +37,6 @@ import {
   VERTEX_STRIDE,
   VERTEX_DATA_STRIDE,
   BUFFER_SIZE,
-  RENDERABLE_COMPONENT_NAME,
-  TRANSFORM_COMPONENT_NAME,
-  CAMERA_COMPONENT_NAME,
   CURRENT_CAMERA_NAME,
 } from './consts';
 
@@ -61,7 +59,7 @@ interface WebGLRendererOptions extends SystemOptions {
 
 export { TextureDescriptor } from './texture-handlers';
 
-export class RenderSystem implements System {
+export class RenderSystem extends System {
   private textureAtlasSrc: string;
   private textureAtlasDescriptorSrc: string;
   private textureAtlas?: HTMLImageElement;
@@ -101,6 +99,8 @@ export class RenderSystem implements System {
   private resourceLoader: ResourceLoader;
 
   constructor(options: WebGLRendererOptions) {
+    super();
+
     const {
       windowNodeId, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
@@ -157,8 +157,8 @@ export class RenderSystem implements System {
     this._store = store;
     this._gameObjectObserver = createGameObjectObserver({
       components: [
-        RENDERABLE_COMPONENT_NAME,
-        TRANSFORM_COMPONENT_NAME,
+        Renderable,
+        Transform,
       ],
     });
 
@@ -478,11 +478,11 @@ export class RenderSystem implements System {
     this._windowDidResize = false;
   }
 
-  private updateViewMatrix() {
+  private updateViewMatrix(): void {
     const gl = this.gl as WebGLRenderingContext;
     const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as GameObject;
-    const transform = currentCamera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
-    const { zoom } = currentCamera.getComponent(CAMERA_COMPONENT_NAME) as Camera;
+    const transform = currentCamera.getComponent(Transform);
+    const { zoom } = currentCamera.getComponent(Camera);
     const scale = zoom * this._screenScale;
 
     const prevStats = this._viewMatrixStats;
@@ -516,7 +516,7 @@ export class RenderSystem implements System {
     this._viewMatrixStats.scale = scale;
   }
 
-  private setUpBuffers() {
+  private setUpBuffers(): void {
     const vaoExt = this._vaoExt as OES_vertex_array_object;
     const gl = this.gl as WebGLRenderingContext;
     const vertexData = this._vertexData;
@@ -525,10 +525,10 @@ export class RenderSystem implements System {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
   }
 
-  private setUpVertexData(gameObject: GameObject) {
+  private setUpVertexData(gameObject: GameObject): void {
     const vertexData = this._vertexData;
     const gameObjectId = gameObject.getId();
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
+    const renderable = gameObject.getComponent(Renderable);
 
     // TODO: Filter hidden object while frustum culling step and remove that
     if (renderable.disabled) {
@@ -557,11 +557,11 @@ export class RenderSystem implements System {
     }
   }
 
-  private setUpUniforms(gameObject: GameObject) {
+  private setUpUniforms(gameObject: GameObject): void {
     const gl = this.gl as WebGLRenderingContext;
 
-    const renderable = gameObject.getComponent(RENDERABLE_COMPONENT_NAME) as Renderable;
-    const transform = gameObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform;
+    const renderable = gameObject.getComponent(Renderable);
+    const transform = gameObject.getComponent(Transform);
 
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
@@ -585,7 +585,7 @@ export class RenderSystem implements System {
     gl.uniform2fv(this._variables.uGameObjectSize, [renderable.width, renderable.height]);
   }
 
-  update() {
+  update(): void {
     this._gameObjectObserver.fireEvents();
 
     const gl = this.gl as WebGLRenderingContext;
@@ -616,3 +616,5 @@ export class RenderSystem implements System {
     });
   }
 }
+
+RenderSystem.systemName = 'RenderSystem';

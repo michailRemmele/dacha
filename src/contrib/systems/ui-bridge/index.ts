@@ -1,5 +1,5 @@
+import { System } from '../../../engine/system';
 import type {
-  System,
   SystemOptions,
   UpdateOptions,
   HelperFn,
@@ -38,7 +38,7 @@ interface UiBridgeOptions extends SystemOptions {
   filterComponents: Array<string>;
 }
 
-export class UiBridge implements System {
+export class UiBridge extends System {
   private sceneContext: SceneContext;
   private gameObjectObserver: GameObjectObserver;
   private gameObjectSpawner: unknown;
@@ -56,6 +56,8 @@ export class UiBridge implements System {
   private onUiDestroy?: UiDestroyFn;
 
   constructor(options: SystemOptions) {
+    super();
+
     const {
       createGameObjectObserver,
       gameObjectSpawner,
@@ -159,3 +161,5 @@ export class UiBridge implements System {
     this.actionsQueue = [];
   }
 }
+
+UiBridge.systemName = 'UiBridge';

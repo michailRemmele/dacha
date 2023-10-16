@@ -1,9 +1,8 @@
-import type { System, SystemOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions } from '../../../engine/system';
 import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
-import type { MouseControl } from '../../components/mouse-control';
-
-const CONTROL_COMPONENT_NAME = 'mouseControl';
+import { MouseControl } from '../../components/mouse-control';
 
 const INPUT_MESSAGE = 'MOUSE_INPUT_EVENT_QUERY';
 
@@ -19,14 +18,16 @@ interface InputEventQueryMessage extends Message {
   query: Array<MouseInputEvent>
 }
 
-export class MouseControlSystem implements System {
+export class MouseControlSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [
-        CONTROL_COMPONENT_NAME,
+        MouseControl,
       ],
     });
     this.messageBus = options.messageBus;
@@ -37,7 +38,7 @@ export class MouseControlSystem implements System {
     messages.forEach((message) => {
       message.query.forEach((inputEvent) => {
         this.gameObjectObserver.forEach((gameObject) => {
-          const control = gameObject.getComponent(CONTROL_COMPONENT_NAME) as MouseControl;
+          const control = gameObject.getComponent(MouseControl);
           const eventBinding = control.inputEventBindings[inputEvent.type];
 
           if (eventBinding) {
@@ -61,3 +62,5 @@ export class MouseControlSystem implements System {
     });
   }
 }
+
+MouseControlSystem.systemName = 'MouseControlSystem';

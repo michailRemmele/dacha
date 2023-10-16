@@ -1,7 +1,8 @@
-import type { System, SystemOptions, UpdateOptions } from '../../../engine/system';
+import { System } from '../../../engine/system';
+import type { SystemOptions, UpdateOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus } from '../../../engine/message-bus';
-import type { Animatable } from '../../components/animatable';
+import { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
 import type { IndividualState } from '../../components/animatable/individual-state';
 import type { GroupState } from '../../components/animatable/group-state';
@@ -15,17 +16,17 @@ import { setValue } from './utils';
 
 const FRAME_RATE = 100;
 
-const ANIMATABLE_COMPONENT_NAME = 'animatable';
-
-export class Animator implements System {
+export class Animator extends System {
   private gameObjectObserver: GameObjectObserver;
   private messageBus: MessageBus;
   private conditionControllers: Record<string, ConditionController>;
   private substatePickers: Record<string, Picker>;
 
   constructor(options: SystemOptions) {
+    super();
+
     this.gameObjectObserver = options.createGameObjectObserver({
-      components: [ANIMATABLE_COMPONENT_NAME],
+      components: [Animatable],
     });
     this.messageBus = options.messageBus;
     this.conditionControllers = Object.keys(conditionControllers)
@@ -59,7 +60,7 @@ export class Animator implements System {
     const { deltaTime } = options;
 
     this.gameObjectObserver.forEach((gameObject) => {
-      const animatable = gameObject.getComponent(ANIMATABLE_COMPONENT_NAME) as Animatable;
+      const animatable = gameObject.getComponent(Animatable);
 
       if (animatable.currentState === void 0) {
         return;
@@ -102,3 +103,5 @@ export class Animator implements System {
     });
   }
 }
+
+Animator.systemName = 'Animator';

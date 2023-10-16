@@ -12,7 +12,7 @@ describe('Contrib -> RenderSystem -> texture handlers -> SpriteTextureHandler', 
       width: 150,
       height: 80,
     };
-    const renderable = new Renderable('renderable', {
+    const renderable = new Renderable({
       src: 'some-path-to-texture',
       type: 'sprite',
       width: 30,

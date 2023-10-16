@@ -8,7 +8,7 @@ import animationExample from './jsons/animation-example.json';
 
 describe('Contrib -> components -> Animatable', () => {
   it('Returns correct initial state', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -18,7 +18,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Returns correct states ', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -41,7 +41,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Returns correct group state', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -55,7 +55,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Returns correct individual state', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -66,7 +66,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Returns correct transitions', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -82,7 +82,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Returns correct conditions', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -108,7 +108,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Returns correct group state\'s substates', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -146,7 +146,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Returns correct substate timeline\'s frames', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -238,7 +238,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Correct updates current state', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -248,7 +248,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Correct updates duration', () => {
-    const animatable = new Animatable('animatable', {
+    const animatable = new Animatable({
       ...animationExample,
     }).clone();
 
@@ -258,7 +258,7 @@ describe('Contrib -> components -> Animatable', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalAnimatable = new Animatable('animatable', {
+    const originalAnimatable = new Animatable({
       ...animationExample,
     });
     const cloneAnimatable = originalAnimatable.clone();

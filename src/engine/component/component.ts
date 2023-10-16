@@ -1,37 +1,37 @@
-import { GameObject } from '../game-object';
+import type { GameObject } from '../game-object';
+import type { Constructor } from '../../types/utils';
+
+export type ComponentConstructor<T extends Component = Component>
+  = Constructor<T> & { componentName: string };
 
 export const findParentComponent = (
   gameObject: GameObject,
-  componentName: string,
+  componentClass: ComponentConstructor,
 ): Component | void => {
   if (!gameObject.parent) {
     return void 0;
   }
 
-  const parentComponent = gameObject.parent.getComponent(componentName);
+  const parentComponent = gameObject.parent.getComponent(componentClass);
 
-  return parentComponent || findParentComponent(gameObject.parent, componentName);
+  return parentComponent || findParentComponent(gameObject.parent, componentClass);
 };
 
 export abstract class Component {
-  public componentName: string;
+  static componentName: string;
   public gameObject?: GameObject;
 
-  constructor(name: string) {
-    this.componentName = name;
+  constructor() {
     this.gameObject = void 0;
   }
 
-  getParentComponent() {
+  getParentComponent(): Component | void {
     if (!this.gameObject) {
       return void 0;
     }
 
-    return findParentComponent(this.gameObject, this.componentName);
+    return findParentComponent(this.gameObject, this.constructor as ComponentConstructor);
   }
 
   abstract clone(): Component;
 }
-
-export type ComponentsMap
-  = Record<string, new (...args: [string, Record<string, unknown>]) => Component>;

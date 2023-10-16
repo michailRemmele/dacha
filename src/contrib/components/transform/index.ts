@@ -17,8 +17,8 @@ export class Transform extends Component {
   relativeScaleX: number;
   relativeScaleY: number;
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName);
+  constructor(config: Record<string, unknown>) {
+    super();
 
     const transformConfig = config as TransformConfig;
 
@@ -39,7 +39,7 @@ export class Transform extends Component {
     this.relativeOffsetX = offsetX - this._getPropertyFromParent('offsetX', 0);
   }
 
-  get offsetX() {
+  get offsetX(): number {
     return this.relativeOffsetX + this._getPropertyFromParent('offsetX', 0);
   }
 
@@ -47,7 +47,7 @@ export class Transform extends Component {
     this.relativeOffsetY = offsetY - this._getPropertyFromParent('offsetY', 0);
   }
 
-  get offsetY() {
+  get offsetY(): number {
     return this.relativeOffsetY + this._getPropertyFromParent('offsetY', 0);
   }
 
@@ -55,7 +55,7 @@ export class Transform extends Component {
     this.relativeOffsetZ = offsetZ - this._getPropertyFromParent('offsetZ', 0);
   }
 
-  get offsetZ() {
+  get offsetZ(): number {
     return this.relativeOffsetZ + this._getPropertyFromParent('offsetZ', 0);
   }
 
@@ -63,7 +63,7 @@ export class Transform extends Component {
     this.relativeRotation = rotation - this._getPropertyFromParent('rotation', 0);
   }
 
-  get rotation() {
+  get rotation(): number {
     return this.relativeRotation + this._getPropertyFromParent('rotation', 0);
   }
 
@@ -71,7 +71,7 @@ export class Transform extends Component {
     this.relativeScaleX = scaleX / this._getPropertyFromParent('scaleX', 1);
   }
 
-  get scaleX() {
+  get scaleX(): number {
     return this.relativeScaleX * this._getPropertyFromParent('scaleX', 1);
   }
 
@@ -79,12 +79,12 @@ export class Transform extends Component {
     this.relativeScaleY = scaleY / this._getPropertyFromParent('scaleY', 1);
   }
 
-  get scaleY() {
+  get scaleY(): number {
     return this.relativeScaleY * this._getPropertyFromParent('scaleY', 1);
   }
 
-  clone() {
-    return new Transform(this.componentName, {
+  clone(): Transform {
+    return new Transform({
       offsetX: this.relativeOffsetX,
       offsetY: this.relativeOffsetY,
       offsetZ: this.relativeOffsetZ,
@@ -94,3 +94,5 @@ export class Transform extends Component {
     });
   }
 }
+
+Transform.componentName = 'Transform';
