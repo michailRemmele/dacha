@@ -1,5 +1,5 @@
+import { System, RendererService } from 'remiz'
 import type {
-  System,
   SystemOptions,
   MessageBus,
   SceneContext,
@@ -8,7 +8,6 @@ import type {
   GameObjectDestroyer,
   GameObjectObserver,
 } from 'remiz'
-import { RendererService } from 'remiz'
 
 import {
   SELECTION_MOVE_START_MSG,
@@ -26,7 +25,7 @@ import { SelectionMovementSubsystem } from './selection-movement'
 import { buildGameObjectPath, updateFrameSize } from './utils'
 import { LEVEL_PATH_LEGTH } from './consts'
 
-export class PointerToolSystem implements System {
+export class PointerToolSystem extends System {
   private messageBus: MessageBus
   private sceneContext: SceneContext
   private gameObjectSpawner: GameObjectSpawner
@@ -42,6 +41,8 @@ export class PointerToolSystem implements System {
   private selectionMovementSubsystem: SelectionMovementSubsystem
 
   constructor(options: SystemOptions) {
+    super()
+
     const {
       messageBus,
       sceneContext,
@@ -163,3 +164,5 @@ export class PointerToolSystem implements System {
     this.updateFrame()
   }
 }
+
+PointerToolSystem.systemName = 'PointerToolSystem'

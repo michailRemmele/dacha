@@ -4,6 +4,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
+import { ScriptSystem } from 'remiz'
 
 import { Field } from '../../../components/field'
 import { LabelledSelect } from '../../../components/select'
@@ -12,8 +13,6 @@ import { Widget } from '../../../components/widget'
 import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/consts'
 import { useExtension, useConfig, useCommander } from '../../../../../hooks'
 import { setValue } from '../../../../../commands'
-
-const SCRIPT_SYSTEM_NAME = 'scriptSystem'
 
 export const ScriptWidget: FC<WidgetProps> = ({ path }) => {
   const { t, i18n } = useTranslation()
@@ -26,14 +25,14 @@ export const ScriptWidget: FC<WidgetProps> = ({ path }) => {
   const scriptName = useConfig(namePath) as string
 
   const availableScripts = useMemo(() => {
-    const scriptNames = Object.keys(scriptsSchema[SCRIPT_SYSTEM_NAME] || {})
+    const scriptNames = Object.keys(scriptsSchema[ScriptSystem.systemName] || {})
     return scriptNames.map((key) => ({
       title: key,
       value: key,
     }))
   }, [])
 
-  const partSchema = scriptsSchema[SCRIPT_SYSTEM_NAME]?.[scriptName]
+  const partSchema = scriptsSchema[ScriptSystem.systemName]?.[scriptName]
   const partFields = partSchema?.fields
   const partReferences = partSchema?.references
 

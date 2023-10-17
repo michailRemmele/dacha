@@ -1,3 +1,18 @@
+import {
+  Animator,
+  CameraSystem,
+  GameStatsMeter,
+  KeyboardControlSystem,
+  KeyboardInputSystem,
+  MouseControlSystem,
+  MouseInputCoordinatesProjector,
+  MouseInputSystem,
+  PhysicsSystem,
+  ScriptSystem,
+  Renderer,
+  UiBridge,
+} from 'remiz'
+
 import type { WidgetSchema } from '../../../../../types/widget-schema'
 
 import { animator } from './animator'
@@ -14,16 +29,16 @@ import { renderer } from './renderer'
 import { uiBridge } from './ui-bridge'
 
 export const systemsSchema: Record<string, WidgetSchema> = {
-  animator,
-  cameraSystem,
-  gameStatsMeter,
-  keyboardControlSystem,
-  keyboardInputSystem,
-  mouseControlSystem,
-  mouseInputCoordinatesProjector,
-  mouseInputSystem,
-  physicsSystem,
-  scriptSystem,
-  renderer,
-  uiBridge,
+  [Animator.systemName]: animator,
+  [CameraSystem.systemName]: cameraSystem,
+  [GameStatsMeter.systemName]: gameStatsMeter,
+  [KeyboardControlSystem.systemName]: keyboardControlSystem,
+  [KeyboardInputSystem.systemName]: keyboardInputSystem,
+  [MouseControlSystem.systemName]: mouseControlSystem,
+  [MouseInputCoordinatesProjector.systemName]: mouseInputCoordinatesProjector,
+  [MouseInputSystem.systemName]: mouseInputSystem,
+  [PhysicsSystem.systemName]: physicsSystem,
+  [ScriptSystem.systemName]: scriptSystem,
+  [Renderer.systemName]: renderer,
+  [UiBridge.systemName]: uiBridge,
 }

@@ -7,12 +7,37 @@ import React, {
 import type { UiInitFnOptions } from 'remiz'
 import {
   Engine,
-  contribComponents,
-  contribSystems,
+  KeyboardInputSystem,
+  KeyboardControlSystem,
+  MouseInputSystem,
+  MouseInputCoordinatesProjector,
+  MouseControlSystem,
+  CameraSystem,
+  UiBridge,
+  Renderer,
+  Transform,
+  Camera,
+  MouseControl,
 } from 'remiz'
 
 import { getEditorConfig } from '../../../engine/config'
-import { editorSystems, editorComponents } from '../../../engine'
+import {
+  ProjectLoader,
+  LevelViewer,
+  ToolManager,
+  ZoomToolSystem,
+  HandToolSystem,
+  PointerToolSystem,
+  TemplateToolSystem,
+  Commander,
+  ShapesRenderer,
+  GridSystem,
+  SettingsSystem,
+  Tool,
+  ToolController,
+  Shape,
+  Settings,
+} from '../../../engine'
 
 const REQUIRED_GLOBAL_OPTIONS = [
   'sortingLayers',
@@ -35,14 +60,36 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
 
   const editorEngine = useMemo(() => new Engine({
     config: getEditorConfig({ globalOptions }),
-    systems: {
-      ...contribSystems,
-      ...editorSystems,
-    },
-    components: {
-      ...contribComponents,
-      ...editorComponents,
-    },
+    systems: [
+      KeyboardInputSystem,
+      KeyboardControlSystem,
+      MouseInputSystem,
+      MouseInputCoordinatesProjector,
+      MouseControlSystem,
+      CameraSystem,
+      UiBridge,
+      Renderer,
+      ProjectLoader,
+      LevelViewer,
+      ToolManager,
+      ZoomToolSystem,
+      HandToolSystem,
+      PointerToolSystem,
+      TemplateToolSystem,
+      Commander,
+      ShapesRenderer,
+      GridSystem,
+      SettingsSystem,
+    ],
+    components: [
+      Transform,
+      Camera,
+      MouseControl,
+      Tool,
+      ToolController,
+      Shape,
+      Settings,
+    ],
     helpers: {
       loadUiApp: () => Promise.resolve({
         onInit: (options: UiInitFnOptions): void => setContext(options),

@@ -1,6 +1,6 @@
+import { System } from 'remiz'
 import type {
   Config,
-  System,
   SystemOptions,
   SceneContext,
   UpdateOptions,
@@ -14,7 +14,7 @@ import type { EditorConfig, Extension } from '../../../types/global'
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10_000
 
-export class ProjectLoader implements System {
+export class ProjectLoader extends System {
   private sceneContext: SceneContext
   private messageBus: MessageBus
   private editorCofig: EditorConfig
@@ -22,6 +22,8 @@ export class ProjectLoader implements System {
   private autoSaveInterval: number
 
   constructor(options: SystemOptions) {
+    super()
+
     this.sceneContext = options.sceneContext
     this.messageBus = options.messageBus
     this.editorCofig = window.electron.getEditorConfig()
@@ -101,3 +103,5 @@ export class ProjectLoader implements System {
     }
   }
 }
+
+ProjectLoader.systemName = 'ProjectLoader'
