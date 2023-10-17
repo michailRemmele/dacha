@@ -3,9 +3,7 @@ import type {
   GameObject,
 } from 'remiz'
 
-import type { Settings } from '../engine/components'
-
-export const SETTINGS_COMPONENT_NAME = 'settings'
+import { Settings } from '../engine/components'
 
 export const getGridValue = (
   value: number,
@@ -15,7 +13,7 @@ export const getGridValue = (
 
 export const getGridStep = (sceneContext: SceneContext): number => {
   const mainObject = sceneContext.data.mainObject as GameObject
-  const settings = mainObject.getComponent(SETTINGS_COMPONENT_NAME) as Settings
+  const settings = mainObject.getComponent(Settings)
 
   return settings.data.gridStep as number
 }

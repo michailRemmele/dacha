@@ -1,10 +1,12 @@
-import type {
+import {
   System,
+  Camera,
+  Transform,
+} from 'remiz'
+import type {
   SystemOptions,
   GameObject,
   MessageBus,
-  Camera,
-  Transform,
   SceneContext,
 } from 'remiz'
 
@@ -12,19 +14,19 @@ import { CAMERA_ZOOM_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types
 import { getTool } from '../../../utils/get-tool'
 import type { SelectLevelMessage, MouseInputMessage } from '../../../types/messages'
 
-const CAMERA_COMPONENT_NAME = 'camera'
-const TRANSFORM_COMPONENT_NAME = 'transform'
 const ZOOM_FACTOR = 1.5
 const DEFAULT_ZOOM = 1
 
 type ZoomMode = 'in' | 'out'
 
-export class ZoomToolSystem implements System {
+export class ZoomToolSystem extends System {
   private messageBus: MessageBus
   private sceneContext: SceneContext
   private mainObject: GameObject
 
   constructor(options: SystemOptions) {
+    super()
+
     const {
       messageBus,
       sceneContext,
@@ -43,7 +45,7 @@ export class ZoomToolSystem implements System {
       return
     }
 
-    const cameraComponent = this.mainObject.getComponent(CAMERA_COMPONENT_NAME) as Camera
+    const cameraComponent = this.mainObject.getComponent(Camera)
     cameraComponent.zoom = DEFAULT_ZOOM
   }
 
@@ -66,8 +68,8 @@ export class ZoomToolSystem implements System {
     const tool = getTool(this.sceneContext)
     const zoomMode = tool.features.direction.value as ZoomMode
 
-    const cameraComponent = this.mainObject.getComponent(CAMERA_COMPONENT_NAME) as Camera
-    const transform = this.mainObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
+    const cameraComponent = this.mainObject.getComponent(Camera)
+    const transform = this.mainObject.getComponent(Transform)
 
     if (zoomMode === 'in') {
       cameraComponent.zoom *= ZOOM_FACTOR
@@ -92,3 +94,5 @@ export class ZoomToolSystem implements System {
     transform.offsetY += y - nextY
   }
 }
+
+ZoomToolSystem.systemName = 'ZoomToolSystem'

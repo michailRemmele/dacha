@@ -1,11 +1,13 @@
 import {
   System,
-  SystemOptions,
-  GameObject,
-  MessageBus,
   Transform,
   Camera,
   Vector2,
+} from 'remiz'
+import type {
+  SystemOptions,
+  GameObject,
+  MessageBus,
 } from 'remiz'
 
 import {
@@ -19,13 +21,10 @@ import type {
   MouseInputMessage,
 } from '../../../types/messages'
 
-const TRANSFORM_COMPONENT_NAME = 'transform'
-const CAMERA_COMPONENT_NAME = 'camera'
-
 const DEFAULT_POS_X = 0
 const DEFAULT_POS_Y = 0
 
-export class HandToolSystem implements System {
+export class HandToolSystem extends System {
   private messageBus: MessageBus
   private mainObject: GameObject
 
@@ -33,6 +32,8 @@ export class HandToolSystem implements System {
   private anchor: Vector2
 
   constructor(options: SystemOptions) {
+    super()
+
     const { messageBus, sceneContext } = options
 
     this.messageBus = messageBus
@@ -50,7 +51,7 @@ export class HandToolSystem implements System {
       return
     }
 
-    const transform = this.mainObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
+    const transform = this.mainObject.getComponent(Transform)
     transform.offsetX = DEFAULT_POS_X
     transform.offsetY = DEFAULT_POS_Y
   }
@@ -98,8 +99,8 @@ export class HandToolSystem implements System {
       screenY,
     } = moveMessages[moveMessages.length - 1] as MouseInputMessage
 
-    const transform = this.mainObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
-    const { zoom } = this.mainObject.getComponent(CAMERA_COMPONENT_NAME) as Camera
+    const transform = this.mainObject.getComponent(Transform)
+    const { zoom } = this.mainObject.getComponent(Camera)
 
     transform.offsetX += (this.anchor.x - screenX) / zoom
     transform.offsetY += (this.anchor.y - screenY) / zoom
@@ -116,3 +117,5 @@ export class HandToolSystem implements System {
     this.handleMoveMessages()
   }
 }
+
+HandToolSystem.systemName = 'HandToolSystem'

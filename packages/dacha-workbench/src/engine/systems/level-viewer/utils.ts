@@ -1,14 +1,8 @@
 import type { GameObjectConfig, TemplateConfig } from 'remiz'
 
-const TRANSFORM_COMPONENT_NAME = 'transform'
-const RENDERABLE_COMPONENT_NAME = 'renderable'
-const LIGHT_COMPONENT_NAME = 'light'
+import { ALLOWED_COMPONENTS } from './consts'
 
-const ALLOWED_COMPONENTS = new Set([
-  TRANSFORM_COMPONENT_NAME,
-  RENDERABLE_COMPONENT_NAME,
-  LIGHT_COMPONENT_NAME,
-])
+const ALLOWED_COMPONENT_NAMES = new Set(ALLOWED_COMPONENTS.map((entry) => entry.componentName))
 
 /**
  * Leaves only necessary components to display object in level viewer
@@ -16,5 +10,5 @@ const ALLOWED_COMPONENTS = new Set([
 export const omit = <T extends GameObjectConfig | TemplateConfig>(entity: T): T => ({
   ...entity,
   children: entity.children?.map(omit),
-  components: entity.components?.filter((component) => ALLOWED_COMPONENTS.has(component.name)),
+  components: entity.components?.filter((component) => ALLOWED_COMPONENT_NAMES.has(component.name)),
 })

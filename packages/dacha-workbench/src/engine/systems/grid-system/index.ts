@@ -1,22 +1,20 @@
 import {
   System,
+  Transform,
+  Camera,
+} from 'remiz'
+import type {
   SystemOptions,
   MessageBus,
   GameObject,
-  Transform,
-  Camera,
 } from 'remiz'
 
 import { GRID_ROOT } from '../../../consts/root-nodes'
 import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
+import { Settings } from '../../components'
 import type { SelectLevelMessage } from '../../../types/messages'
-import type { Settings } from '../../components'
 
-const TRANSFORM_COMPONENT_NAME = 'transform'
-const CAMERA_COMPONENT_NAME = 'camera'
-const SETTINGS_COMPONENT_NAME = 'settings'
-
-export class GridSystem implements System {
+export class GridSystem extends System {
   private messageBus: MessageBus
 
   private mainObject: GameObject
@@ -26,6 +24,8 @@ export class GridSystem implements System {
   private showGrid: boolean
 
   constructor(options: SystemOptions) {
+    super()
+
     const {
       messageBus,
       sceneContext,
@@ -54,7 +54,7 @@ export class GridSystem implements System {
 
     const {
       data: { gridStep, showGrid, gridColor },
-    } = this.mainObject.getComponent(SETTINGS_COMPONENT_NAME) as Settings
+    } = this.mainObject.getComponent(Settings)
 
     if (this.selectedLevelId === undefined || !showGrid) {
       if (this.showGrid) {
@@ -66,8 +66,8 @@ export class GridSystem implements System {
 
     this.showGrid = true
 
-    const transform = this.mainObject.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
-    const { zoom } = this.mainObject.getComponent(CAMERA_COMPONENT_NAME) as Camera
+    const transform = this.mainObject.getComponent(Transform)
+    const { zoom } = this.mainObject.getComponent(Camera)
 
     const offsetX = ((gridStep as number) / 2 - transform.offsetX) * zoom
     const offsetY = ((gridStep as number) / 2 - transform.offsetY) * zoom
@@ -82,3 +82,5 @@ export class GridSystem implements System {
     this.gridNode.style.backgroundPosition = `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`
   }
 }
+
+GridSystem.systemName = 'GridSystem'

@@ -11,11 +11,9 @@ import type { GameObject, MessageBus } from 'remiz'
 import { Modal } from '../../components'
 import { EngineContext } from '../../providers'
 import { SET_SETTINGS_VALUE_MSG } from '../../../consts/message-types'
-import type { Settings } from '../../../engine/components'
+import { Settings } from '../../../engine/components'
 
 import { modals } from './components'
-
-const SETTINGS_COMPONENT_NAME = 'settings'
 
 export const SettingsModal: FC = () => {
   const { t } = useTranslation()
@@ -44,7 +42,7 @@ export const SettingsModal: FC = () => {
   useEffect(() => {
     const updateSettings = (): void => {
       const mainObject = sceneContext.data.mainObject as GameObject
-      const { data } = mainObject.getComponent(SETTINGS_COMPONENT_NAME) as Settings
+      const { data } = mainObject.getComponent(Settings)
 
       setSettings({ ...data })
     }

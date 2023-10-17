@@ -1,6 +1,6 @@
+import { System } from 'remiz'
 import type {
   MessageBus,
-  System,
   SystemOptions,
 } from 'remiz'
 
@@ -34,7 +34,7 @@ interface HistoryOperation {
   effects: Array<HistoryOperationEffect>
 }
 
-export class Commander implements System {
+export class Commander extends System {
   private messageBus: MessageBus
   private configStore: Store
   private commands: Record<string, Command>
@@ -42,6 +42,8 @@ export class Commander implements System {
   private redoHistory: Record<string, Array<HistoryOperation>>
 
   constructor(options: SystemOptions) {
+    super()
+
     const {
       messageBus,
       sceneContext,
@@ -160,3 +162,5 @@ export class Commander implements System {
     this.handleCleanMessages()
   }
 }
+
+Commander.systemName = 'Commander'

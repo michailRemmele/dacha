@@ -1,22 +1,18 @@
+import { System, MouseControl } from 'remiz'
 import type {
-  System,
   SystemOptions,
   GameObject,
   MessageBus,
   Message,
   SceneContext,
 } from 'remiz'
-import { MouseControl } from 'remiz'
 
 import { SELECT_TOOL_MSG, SET_TOOL_FEATURE_VALUE_MSG } from '../../../consts/message-types'
 import { CANVAS_ROOT } from '../../../consts/root-nodes'
-import type { Tool, ToolController } from '../../components'
+import { Tool, ToolController } from '../../components'
 import type { FeatureValue } from '../../components/tool'
 import type { SelectToolMessage } from '../../../types/messages'
 
-const TOOL_COMPONENT_NAME = 'tool'
-const TOOL_CONTROLLER_COMPONENT_NAME = 'toolController'
-const MOUSE_CONTROL_COMPONENT_NAME = 'mouseControl'
 const DEFAULT_TOOL_NAME = 'hand'
 const TOOL_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_tool_`
 const FEATURE_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_feature-`
@@ -31,13 +27,15 @@ const getFeatureClassName = (
   value: FeatureValue,
 ): string => `${FEATURE_CLASS_NAME_PREFIX}${name}_${String(value)}`
 
-export class ToolManager implements System {
+export class ToolManager extends System {
   private messageBus: MessageBus
   private sceneContext: SceneContext
   private mainObject: GameObject
   private rootNode: HTMLElement
 
   constructor(options: SystemOptions) {
+    super()
+
     const { messageBus, sceneContext } = options
 
     this.messageBus = messageBus
@@ -53,9 +51,7 @@ export class ToolManager implements System {
   }
 
   private selectTool(id: string): void {
-    const toolController = this.mainObject.getComponent(
-      TOOL_CONTROLLER_COMPONENT_NAME,
-    ) as ToolController
+    const toolController = this.mainObject.getComponent(ToolController)
     toolController.activeTool = id
 
     const toolObject = this.mainObject.getChildById(id)
@@ -65,12 +61,12 @@ export class ToolManager implements System {
       return
     }
 
-    const { features, inputBindings } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+    const { features, inputBindings } = toolObject.getComponent(Tool)
 
-    const mouseControl = new MouseControl(MOUSE_CONTROL_COMPONENT_NAME, {
+    const mouseControl = new MouseControl({
       inputEventBindings: inputBindings,
     })
-    toolObject.setComponent(MOUSE_CONTROL_COMPONENT_NAME, mouseControl)
+    toolObject.setComponent(mouseControl)
 
     this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${id}`)
 
@@ -83,15 +79,13 @@ export class ToolManager implements System {
   }
 
   private removeCurrentTool(): void {
-    const toolController = this.mainObject.getComponent(
-      TOOL_CONTROLLER_COMPONENT_NAME,
-    ) as ToolController
+    const toolController = this.mainObject.getComponent(ToolController)
     const toolObject = this.mainObject.getChildById(toolController.activeTool)
 
     if (toolObject) {
-      const { name, features } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+      const { name, features } = toolObject.getComponent(Tool)
 
-      toolObject.removeComponent(MOUSE_CONTROL_COMPONENT_NAME)
+      toolObject.removeComponent(MouseControl)
       this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${name}`)
 
       Object.keys(features).forEach((key) => {
@@ -104,13 +98,11 @@ export class ToolManager implements System {
   }
 
   private setToolFeatureValue(name: string, value: string): void {
-    const toolController = this.mainObject.getComponent(
-      TOOL_CONTROLLER_COMPONENT_NAME,
-    ) as ToolController
+    const toolController = this.mainObject.getComponent(ToolController)
     const toolObject = this.mainObject.getChildById(toolController.activeTool)
 
     if (toolObject) {
-      const { features } = toolObject.getComponent(TOOL_COMPONENT_NAME) as Tool
+      const { features } = toolObject.getComponent(Tool)
       const feature = features[name]
 
       if (feature.withClassName) {
@@ -156,3 +148,5 @@ export class ToolManager implements System {
     this.handleSetToolFeatureValue()
   }
 }
+
+ToolManager.systemName = 'ToolManager'

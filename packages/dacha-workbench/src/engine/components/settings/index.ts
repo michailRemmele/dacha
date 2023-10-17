@@ -9,8 +9,8 @@ export type SettingsConfig = {
 export class Settings extends Component {
   data: Record<keyof SettingsConfig, unknown>
 
-  constructor(componentName: string, config: Record<string, unknown>) {
-    super(componentName)
+  constructor(config: Record<string, unknown>) {
+    super()
 
     const settingsConfig = config as SettingsConfig
 
@@ -22,10 +22,12 @@ export class Settings extends Component {
   }
 
   clone(): Settings {
-    return new Settings(this.componentName, {
+    return new Settings({
       showGrid: this.data.showGrid,
       gridStep: this.data.gridStep,
       gridColor: this.data.gridColor,
     })
   }
 }
+
+Settings.componentName = 'Settings'

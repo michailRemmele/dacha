@@ -1,13 +1,8 @@
-import type {
+import {
   Transform,
   Camera,
-  GameObject,
 } from 'remiz'
-
-import {
-  TRANSFORM_COMPONENT_NAME,
-  CAMERA_COMPONENT_NAME,
-} from '../conts'
+import type { GameObject } from 'remiz'
 
 export class CoordinatesTransformer {
   private cameraScale: number
@@ -30,8 +25,8 @@ export class CoordinatesTransformer {
     const {
       offsetX,
       offsetY,
-    } = camera.getComponent(TRANSFORM_COMPONENT_NAME) as Transform
-    const { zoom } = camera.getComponent(CAMERA_COMPONENT_NAME) as Camera
+    } = camera.getComponent(Transform)
+    const { zoom } = camera.getComponent(Camera)
 
     this.cameraScale = zoom
     this.cameraOffsetX = offsetX
