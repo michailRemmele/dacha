@@ -214,12 +214,6 @@
                   }
                 ]
               }
-            },
-            {
-              "name": "Camera",
-              "config": {
-                "zoom": 1
-              }
             }
           ],
           "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
