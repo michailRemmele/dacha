@@ -5,7 +5,6 @@ export { KeyboardInputSystem } from './keyboard-input-system';
 export { KeyboardControlSystem } from './keyboard-control-system';
 export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
-export { MouseInputCoordinatesProjector } from './mouse-input-coordinates-projector';
 export { PhysicsSystem } from './physics-system';
 export { ScriptSystem } from './script-system';
 export { Renderer } from './three-js-renderer';

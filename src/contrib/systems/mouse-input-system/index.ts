@@ -1,48 +1,33 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
-import type { MessageBus } from '../../../engine/message-bus';
 
-import { MouseInputListener } from './mouse-input-listener';
-
-const INPUT_MESSAGE = 'MOUSE_INPUT_EVENT_QUERY';
-
-interface MouseInputSystemOptions extends SystemOptions {
-  windowNodeId?: string;
-}
+import {
+  QueryBuilder,
+  CoordinatesProjector,
+} from './subsystems';
 
 export class MouseInputSystem extends System {
-  private messageBus: MessageBus;
-  private inputListener: MouseInputListener;
+  private queryBuilder: QueryBuilder;
+  private coordinatesProjector: CoordinatesProjector;
 
   constructor(options: SystemOptions) {
     super();
 
-    const { messageBus, windowNodeId } = options as MouseInputSystemOptions;
-
-    this.messageBus = messageBus;
-
-    let windowNode: GlobalEventHandlers = window;
-    if (windowNodeId) {
-      windowNode = document.getElementById(windowNodeId) || windowNode;
-    }
-
-    this.inputListener = new MouseInputListener(windowNode);
+    this.queryBuilder = new QueryBuilder(options);
+    this.coordinatesProjector = new CoordinatesProjector(options);
   }
 
   mount(): void {
-    this.inputListener.startListen();
+    this.queryBuilder.mount();
   }
 
   unmount(): void {
-    this.inputListener.stopListen();
+    this.queryBuilder.unmount();
   }
 
   update(): void {
-    this.messageBus.send({
-      type: INPUT_MESSAGE,
-      query: this.inputListener.getFiredEvents() || [],
-    });
-    this.inputListener.clearFiredEvents();
+    this.queryBuilder.update();
+    this.coordinatesProjector.update();
   }
 }
 

@@ -1,3 +1,5 @@
+import type { MouseInputEvent } from '../../../../types/messages';
+
 const BUTTON_TYPE: Record<number, string> = {
   1: 'LEFT',
   2: 'MIDDLE',
@@ -36,12 +38,6 @@ type MouseEventType =
   'onmouseenter' |
   'onmouseleave';
 
-interface MouseInputEvent {
-  type: string
-  x: number
-  y: number
-}
-
 export class MouseInputListener {
   private window: GlobalEventHandlers;
   private firedEvents: Array<MouseInputEvent>;
@@ -55,9 +51,11 @@ export class MouseInputListener {
     LISTENING_EVENTS.forEach((listeningEvent) => {
       this.window[listeningEvent as MouseEventType] = (event): void => {
         this.firedEvents.push({
-          type: EVENT_TYPE[event.type](event),
+          eventType: EVENT_TYPE[event.type](event),
           x: event.offsetX,
           y: event.offsetY,
+          screenX: event.offsetX,
+          screenY: event.offsetY,
         });
       };
     });
