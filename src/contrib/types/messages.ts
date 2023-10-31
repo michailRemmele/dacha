@@ -9,3 +9,10 @@ export interface MouseInputEvent {
 }
 
 export type MouseInputMessage = Message & MouseInputEvent;
+
+export interface KeyboardInputEvent {
+  key: string
+  pressed: boolean
+}
+
+export type KeyboardInputMessage = Message & KeyboardInputEvent;

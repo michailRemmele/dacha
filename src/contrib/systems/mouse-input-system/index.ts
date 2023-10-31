@@ -2,31 +2,31 @@ import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 
 import {
-  QueryBuilder,
+  InputSubsystem,
   CoordinatesProjector,
 } from './subsystems';
 
 export class MouseInputSystem extends System {
-  private queryBuilder: QueryBuilder;
+  private inputSubsystem: InputSubsystem;
   private coordinatesProjector: CoordinatesProjector;
 
   constructor(options: SystemOptions) {
     super();
 
-    this.queryBuilder = new QueryBuilder(options);
+    this.inputSubsystem = new InputSubsystem(options);
     this.coordinatesProjector = new CoordinatesProjector(options);
   }
 
   mount(): void {
-    this.queryBuilder.mount();
+    this.inputSubsystem.mount();
   }
 
   unmount(): void {
-    this.queryBuilder.unmount();
+    this.inputSubsystem.unmount();
   }
 
   update(): void {
-    this.queryBuilder.update();
+    this.inputSubsystem.update();
     this.coordinatesProjector.update();
   }
 }

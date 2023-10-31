@@ -1,2 +1,2 @@
-export { QueryBuilder } from './query-builder';
+export { InputSubsystem } from './input-subsystem';
 export { CoordinatesProjector } from './coordinates-projector';

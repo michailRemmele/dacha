@@ -5,16 +5,16 @@ import type { MouseInputMessage } from '../../../../types/messages';
 
 import { MouseInputListener } from './mouse-input-listener';
 
-interface QueryBuilderOptions extends SystemOptions {
+interface InputSubsystemOptions extends SystemOptions {
   windowNodeId?: string;
 }
 
-export class QueryBuilder {
+export class InputSubsystem {
   private messageBus: MessageBus;
   private inputListener: MouseInputListener;
 
   constructor(options: SystemOptions) {
-    const { messageBus, windowNodeId } = options as QueryBuilderOptions;
+    const { messageBus, windowNodeId } = options as InputSubsystemOptions;
 
     this.messageBus = messageBus;
 
