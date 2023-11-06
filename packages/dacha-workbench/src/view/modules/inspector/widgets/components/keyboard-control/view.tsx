@@ -15,11 +15,8 @@ import {
   EventListStyled,
   ButtonCSS,
 } from './keyboard-control.style'
-import { keys } from './keys'
-import { RELEASED, PRESSED } from './events'
 import { InputBind } from './input-bind'
-import { capitalize } from './utils'
-import type { InputEventBind, InputEventBindings } from './types'
+import type { InputEventBind } from './types'
 
 export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
@@ -28,57 +25,32 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
   const inputEventBindings = useConfig(bindingsPath) as Array<InputEventBind>
 
-  const inputKeys = useMemo(() => keys.map((key) => ({
-    title: capitalize(key),
-    value: key,
-  }), []), [])
-  const bindingsMap = useMemo(
-    () => inputEventBindings.reduce((acc: InputEventBindings, { event, key, ...bind }) => {
-      acc[`${key}_${event}`] = bind
-      return acc
-    }, {}),
-    [inputEventBindings],
-  )
-
-  const availableKeys = useMemo(
-    () => inputKeys.filter(
-      (event) => !bindingsMap[`${event.value}_${PRESSED}`] || !bindingsMap[`${event.value}_${RELEASED}`],
-    ),
-    [bindingsMap, inputKeys],
-  )
-
   const addedKeys = useMemo(() => inputEventBindings.map((inputBind) => ({
     id: inputBind.id,
     key: inputBind.key,
-    event: inputBind.event,
   })), [inputEventBindings])
 
   const handleAddNewBind = useCallback(() => {
-    const key = availableKeys[0].value
-    const event = !bindingsMap[`${key}_${PRESSED}`] ? PRESSED : RELEASED
-
     dispatch(addValue(bindingsPath, {
       id: uuidv4(),
-      key,
-      event,
+      key: '',
+      pressed: true,
+      keepEmit: false,
       messageType: '',
       attrs: [],
     }))
-  }, [dispatch, bindingsPath, availableKeys, bindingsMap])
+  }, [dispatch, bindingsPath])
 
   return (
     <div>
       <EventListStyled>
-        {addedKeys.map(({ id, key, event }, index) => (
+        {addedKeys.map(({ id, key }, index) => (
           <li key={id}>
             <InputBind
               path={path}
               id={id}
               inputKey={key}
-              inputEvent={event}
               order={index}
-              availableKeys={availableKeys}
-              bindingsMap={bindingsMap}
             />
           </li>
         ))}
@@ -87,7 +59,6 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
         css={ButtonCSS}
         size="small"
         onClick={handleAddNewBind}
-        disabled={availableKeys.length === 0}
       >
         {t('components.keyboardControl.bind.addNew.title')}
       </Button>

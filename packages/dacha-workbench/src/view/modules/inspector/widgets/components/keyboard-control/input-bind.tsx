@@ -5,51 +5,35 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LabelledSelect } from '../../../components/select'
+import { LabelledCheckbox } from '../../../components/checkbox'
 import { LabelledTextInput } from '../../../components/text-input'
 import { MultiField } from '../../../components/multi-field'
+import { DependencyField } from '../../../components/dependency-field'
 import { Field } from '../../../components/field'
 import { Panel } from '../../../components/panel'
 import { useCommander } from '../../../../../hooks'
 import { deleteValue, setValue } from '../../../../../commands'
 
+import { KeyPicker } from './key-picker'
 import {
   SectionHeaderStyled,
   PanelCSS,
 } from './keyboard-control.style'
-import { RELEASED, PRESSED } from './events'
-import { capitalize } from './utils'
-import type { InputEventBindings } from './types'
 
-const events = [
-  {
-    title: 'components.keyboardControl.event.pressed.title',
-    value: PRESSED,
-  },
-  {
-    title: 'components.keyboardControl.event.released.title',
-    value: RELEASED,
-  },
-]
+const KEEP_EMIT_DEPENDENCY_VALUE = true
 
 export interface InputBindProps {
   path: Array<string>
   id: string
   inputKey: string
-  inputEvent: string
   order: number
-  availableKeys: Array<{ title: string, value: string }>
-  bindingsMap: InputEventBindings
 }
 
 export const InputBind: FC<InputBindProps> = ({
   path,
   id,
   inputKey,
-  inputEvent,
   order,
-  availableKeys,
-  bindingsMap,
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
@@ -59,35 +43,18 @@ export const InputBind: FC<InputBindProps> = ({
     [path],
   )
   const keyPath = useMemo(() => bindPath.concat('key'), [bindPath])
-  const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
+  const pressedPath = useMemo(() => bindPath.concat('pressed'), [bindPath])
+  const keepEmitPath = useMemo(() => bindPath.concat('keepEmit'), [bindPath])
   const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
-  const inputEvents = useMemo(
-    () => events
-      .map(({ title, value }) => ({
-        title: t(title),
-        value,
-      }))
-      .filter(({ value }) => !bindingsMap[`${inputKey}_${value}`] || value === inputEvent),
-    [bindingsMap, inputEvent, inputKey],
-  )
-
-  const inputKeys = useMemo(() => [
-    { title: capitalize(inputKey), value: inputKey },
-    ...availableKeys.filter((availableKey) => availableKey.value !== inputKey),
-  ], [availableKeys, inputKey])
+  const handleKeyChange = useCallback((value: string) => {
+    dispatch(setValue(keyPath, value))
+  }, [keyPath, keyPath])
 
   const handleDeleteBind = useCallback(() => {
     dispatch(deleteValue(bindPath))
   }, [dispatch, bindPath])
-
-  const handleKeyChange = useCallback((newKey: unknown) => {
-    dispatch(
-      setValue(eventPath, !bindingsMap[`${newKey as string}_${PRESSED}`] ? PRESSED : RELEASED),
-      { isEffect: true },
-    )
-  }, [dispatch, eventPath, bindingsMap])
 
   return (
     <Panel
@@ -95,18 +62,21 @@ export const InputBind: FC<InputBindProps> = ({
       title={t('components.keyboardControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
-      <Field
-        path={keyPath}
-        component={LabelledSelect}
-        label={t('components.keyboardControl.bind.key.title')}
-        options={inputKeys}
-        onAccept={handleKeyChange}
+      <KeyPicker
+        value={inputKey}
+        onChange={handleKeyChange}
       />
       <Field
-        path={eventPath}
-        component={LabelledSelect}
-        label={t('components.keyboardControl.bind.event.title')}
-        options={inputEvents}
+        path={pressedPath}
+        component={LabelledCheckbox}
+        label={t('components.keyboardControl.bind.pressed.title')}
+      />
+      <DependencyField
+        path={keepEmitPath}
+        component={LabelledCheckbox}
+        label={t('components.keyboardControl.bind.keepEmit.title')}
+        dependencyPath={pressedPath}
+        dependencyValue={KEEP_EMIT_DEPENDENCY_VALUE}
       />
       <Field
         path={messageTypePath}

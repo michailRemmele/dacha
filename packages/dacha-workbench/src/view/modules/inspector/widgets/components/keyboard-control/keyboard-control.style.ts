@@ -19,3 +19,13 @@ export const PanelCSS = css`
 export const ButtonCSS = css`
   width: 100%;
 `
+
+export const KeyPickerSpaceCompactCSS = css`
+  width: 100%;
+`
+
+export const KeyPickerButtonCSS = css`
+  &.ant-btn.ant-btn-sm {
+    height: 22px;
+  }
+`

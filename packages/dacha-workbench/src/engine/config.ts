@@ -34,10 +34,6 @@ export const getEditorConfig = ({
           },
         },
         {
-          name: 'MouseInputCoordinatesProjector',
-          options: {},
-        },
-        {
           name: 'KeyboardControlSystem',
           options: {},
         },
