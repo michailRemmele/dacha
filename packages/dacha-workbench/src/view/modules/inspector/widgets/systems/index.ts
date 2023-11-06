@@ -5,7 +5,6 @@ import {
   KeyboardControlSystem,
   KeyboardInputSystem,
   MouseControlSystem,
-  MouseInputCoordinatesProjector,
   MouseInputSystem,
   PhysicsSystem,
   ScriptSystem,
@@ -21,7 +20,6 @@ import { gameStatsMeter } from './game-stats-meter'
 import { keyboardControlSystem } from './keyboard-control-system'
 import { keyboardInputSystem } from './keyboard-input-system'
 import { mouseControlSystem } from './mouse-control-system'
-import { mouseInputCoordinatesProjector } from './mouse-input-coordinates-projector'
 import { mouseInputSystem } from './mouse-input-system'
 import { physicsSystem } from './physics-system'
 import { scriptSystem } from './script-system'
@@ -35,7 +33,6 @@ export const systemsSchema: Record<string, WidgetSchema> = {
   [KeyboardControlSystem.systemName]: keyboardControlSystem,
   [KeyboardInputSystem.systemName]: keyboardInputSystem,
   [MouseControlSystem.systemName]: mouseControlSystem,
-  [MouseInputCoordinatesProjector.systemName]: mouseInputCoordinatesProjector,
   [MouseInputSystem.systemName]: mouseInputSystem,
   [PhysicsSystem.systemName]: physicsSystem,
   [ScriptSystem.systemName]: scriptSystem,
