@@ -5,7 +5,8 @@ describe('Contrib -> components -> MouseControl', () => {
     const mouseControl = new MouseControl({
       inputEventBindings: [
         {
-          event: 'MOUSE_LEFT_BUTTON_PRESS',
+          event: 'mousedown',
+          button: 0,
           messageType: 'ATTACK',
           attrs: [
             {
@@ -16,7 +17,8 @@ describe('Contrib -> components -> MouseControl', () => {
           ],
         },
         {
-          event: 'MOUSE_RIGHT_BUTTON_PRESS',
+          event: 'mousedown',
+          button: 2,
           messageType: 'BLOCK',
           attrs: [
             {
@@ -29,13 +31,13 @@ describe('Contrib -> components -> MouseControl', () => {
       ],
     }).clone();
 
-    expect(mouseControl.inputEventBindings.MOUSE_LEFT_BUTTON_PRESS).toStrictEqual({
+    expect(mouseControl.inputEventBindings.mousedown[0]).toStrictEqual({
       messageType: 'ATTACK',
       attrs: {
         someOption: 10,
       },
     });
-    expect(mouseControl.inputEventBindings.MOUSE_RIGHT_BUTTON_PRESS).toStrictEqual({
+    expect(mouseControl.inputEventBindings.mousedown[2]).toStrictEqual({
       messageType: 'BLOCK',
       attrs: {
         someOption: 20,
@@ -47,7 +49,8 @@ describe('Contrib -> components -> MouseControl', () => {
     const mouseControl = new MouseControl({
       inputEventBindings: [
         {
-          event: 'MOUSE_LEFT_BUTTON_PRESS',
+          event: 'mousedown',
+          button: 0,
           messageType: 'ATTACK',
           attrs: [
             {
@@ -61,15 +64,17 @@ describe('Contrib -> components -> MouseControl', () => {
     }).clone();
 
     mouseControl.inputEventBindings = {
-      MOUSE_RIGHT_BUTTON_PRESS: {
-        messageType: 'BLOCK',
-        attrs: {
-          someOption: 20,
+      mousedown: {
+        0: {
+          messageType: 'BLOCK',
+          attrs: {
+            someOption: 20,
+          },
         },
       },
     };
 
-    expect(mouseControl.inputEventBindings.MOUSE_RIGHT_BUTTON_PRESS).toStrictEqual({
+    expect(mouseControl.inputEventBindings.mousedown[0]).toStrictEqual({
       messageType: 'BLOCK',
       attrs: {
         someOption: 20,
@@ -81,7 +86,7 @@ describe('Contrib -> components -> MouseControl', () => {
     const originalMouseControl = new MouseControl({
       inputEventBindings: [
         {
-          event: 'MOUSE_LEFT_BUTTON_PRESS',
+          event: 'dblclick',
           messageType: 'ATTACK',
           attrs: [
             {
@@ -97,14 +102,17 @@ describe('Contrib -> components -> MouseControl', () => {
 
     expect(originalMouseControl).not.toBe(cloneMouseControl);
 
+    expect(originalMouseControl.inputEventBindings.dblclick[0]).toBeDefined();
+    expect(cloneMouseControl.inputEventBindings.dblclick[0]).toBeDefined();
+
     expect(originalMouseControl.inputEventBindings).not.toBe(cloneMouseControl.inputEventBindings);
-    expect(originalMouseControl.inputEventBindings.MOUSE_LEFT_BUTTON_PRESS).not.toBe(
-      cloneMouseControl.inputEventBindings.MOUSE_LEFT_BUTTON_PRESS,
+    expect(originalMouseControl.inputEventBindings.dblclick[0]).not.toBe(
+      cloneMouseControl.inputEventBindings.dblclick[0],
     );
     expect(
-      originalMouseControl.inputEventBindings.MOUSE_LEFT_BUTTON_PRESS.attrs,
+      originalMouseControl.inputEventBindings.dblclick[0].attrs,
     ).not.toBe(
-      cloneMouseControl.inputEventBindings.MOUSE_LEFT_BUTTON_PRESS.attrs,
+      cloneMouseControl.inputEventBindings.dblclick[0].attrs,
     );
   });
 });

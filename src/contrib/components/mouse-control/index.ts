@@ -1,12 +1,34 @@
 import { Component } from '../../../engine/component';
 import type {
-  InputEventBindings,
   InputEventAttributes,
   InputEventAttributeConfig,
 } from '../../types';
 
+const MOUSE_BUTTONS_MAP = {
+  mousedown: 0,
+  mouseup: 0,
+  mousemove: 0,
+  click: 0,
+  contextmenu: 2,
+  dblclick: 0,
+  mouseenter: 0,
+  mouseleave: 0,
+} as Record<string, number>;
+
+export interface MouseEventBind {
+  messageType: string
+  attrs: InputEventAttributes
+}
+
+export interface InputEventBindings {
+  [key: string]: {
+    [button: string]: MouseEventBind
+  }
+}
+
 export interface MouseEventBindConfig {
   event: string
+  button?: number
   messageType: string
   attrs: Array<InputEventAttributeConfig>
 }
@@ -24,7 +46,8 @@ export class MouseControl extends Component {
     const { inputEventBindings } = config as MouseControlConfig;
 
     this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
-      acc[bind.event] = {
+      acc[bind.event] ??= {};
+      acc[bind.event][bind.button ?? MOUSE_BUTTONS_MAP[bind.event]] = {
         messageType: bind.messageType,
         attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
           attrs[attr.name] = attr.value;
@@ -37,14 +60,24 @@ export class MouseControl extends Component {
 
   clone(): MouseControl {
     return new MouseControl({
-      inputEventBindings: Object.keys(this.inputEventBindings).map(
-        (key) => ({
-          event: key,
-          messageType: this.inputEventBindings[key].messageType,
-          attrs: Object.keys(this.inputEventBindings[key].attrs).map(
-            (name) => ({ name, value: this.inputEventBindings[key].attrs[name] }),
-          ),
-        }),
+      inputEventBindings: Object.keys(this.inputEventBindings).reduce(
+        (acc, inputEvent) => {
+          const buttonBinds = this.inputEventBindings[inputEvent];
+
+          Object.keys(buttonBinds).forEach((button) => {
+            acc.push({
+              event: inputEvent,
+              button: Number(button),
+              messageType: buttonBinds[button].messageType,
+              attrs: Object.keys(buttonBinds[button].attrs).map(
+                (name) => ({ name, value: buttonBinds[button].attrs[name] }),
+              ),
+            });
+          });
+
+          return acc;
+        },
+        [] as Array<MouseEventBindConfig>,
       ),
     });
   }

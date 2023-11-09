@@ -28,7 +28,7 @@ export class MouseControlSystem extends System {
     messages?.forEach((message) => {
       this.gameObjectObserver.forEach((gameObject) => {
         const control = gameObject.getComponent(MouseControl);
-        const eventBinding = control.inputEventBindings[message.eventType];
+        const eventBinding = control.inputEventBindings[message.eventType]?.[message.button];
 
         if (eventBinding) {
           if (!eventBinding.messageType) {

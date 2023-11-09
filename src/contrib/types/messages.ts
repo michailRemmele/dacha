@@ -2,6 +2,7 @@ import type { Message } from '../../engine/message-bus';
 
 export interface MouseInputEvent {
   eventType: string
+  button: number
   x: number
   y: number
   screenX: number
