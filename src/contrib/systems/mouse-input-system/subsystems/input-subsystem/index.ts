@@ -2,11 +2,12 @@ import type { SystemOptions } from '../../../../../engine/system';
 import type { MessageBus } from '../../../../../engine/message-bus';
 import { MOUSE_INPUT_MESSAGE } from '../../../../consts/messages';
 import type { MouseInputMessage } from '../../../../types/messages';
+import { getWindowNode } from '../../../../utils/get-window-node';
 
 import { MouseInputListener } from './mouse-input-listener';
 
 interface InputSubsystemOptions extends SystemOptions {
-  windowNodeId?: string;
+  windowNodeId: string;
 }
 
 export class InputSubsystem {
@@ -18,10 +19,7 @@ export class InputSubsystem {
 
     this.messageBus = messageBus;
 
-    let windowNode: GlobalEventHandlers = window;
-    if (windowNodeId) {
-      windowNode = document.getElementById(windowNodeId) || windowNode;
-    }
+    const windowNode = getWindowNode(windowNodeId);
 
     this.inputListener = new MouseInputListener(windowNode);
   }

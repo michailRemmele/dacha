@@ -1,33 +1,36 @@
 import type { KeyboardInputEvent } from '../../types/messages';
 
 export class InputListener {
-  private window: Window;
+  private windowNode: Window | HTMLElement;
   private eventsQuery: Array<KeyboardInputEvent>;
 
-  constructor(window: Window) {
-    this.window = window;
+  constructor(window: Window | HTMLElement) {
+    this.windowNode = window;
     this.eventsQuery = [];
   }
 
-  startListen(): void {
-    this.window.onkeydown = (event): void => {
-      this.eventsQuery.push({
-        key: event.code,
-        pressed: true,
-      });
-    };
+  handleKeyDown = (event: Event): void => {
+    this.eventsQuery.push({
+      key: (event as KeyboardEvent).code,
+      pressed: true,
+    });
+  };
 
-    this.window.onkeyup = (event): void => {
-      this.eventsQuery.push({
-        key: event.code,
-        pressed: false,
-      });
-    };
+  handleKeyUp = (event: Event): void => {
+    this.eventsQuery.push({
+      key: (event as KeyboardEvent).code,
+      pressed: false,
+    });
+  };
+
+  startListen(): void {
+    this.windowNode.addEventListener('keydown', this.handleKeyDown);
+    this.windowNode.addEventListener('keyup', this.handleKeyUp);
   }
 
   stopListen(): void {
-    this.window.onkeydown = null;
-    this.window.onkeyup = null;
+    this.windowNode.removeEventListener('keydown', this.handleKeyDown);
+    this.windowNode.removeEventListener('keyup', this.handleKeyUp);
   }
 
   getEvents(): Array<KeyboardInputEvent> {

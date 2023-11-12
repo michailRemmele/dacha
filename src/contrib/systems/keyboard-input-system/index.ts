@@ -2,8 +2,13 @@ import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import type { MessageBus } from '../../../engine/message-bus';
 import { KEYBOARD_INPUT_MESSAGE } from '../../consts/messages';
+import { getWindowNode } from '../../utils/get-window-node';
 
 import { InputListener } from './input-listener';
+
+interface KeyboardInputSystemOptions extends SystemOptions {
+  windowNodeId: string;
+}
 
 export class KeyboardInputSystem extends System {
   private messageBus: MessageBus;
@@ -12,8 +17,13 @@ export class KeyboardInputSystem extends System {
   constructor(options: SystemOptions) {
     super();
 
-    this.messageBus = options.messageBus;
-    this.inputListener = new InputListener(window);
+    const { messageBus, windowNodeId } = options as KeyboardInputSystemOptions;
+
+    this.messageBus = messageBus;
+
+    const windowNode = getWindowNode(windowNodeId);
+
+    this.inputListener = new InputListener(windowNode);
   }
 
   mount(): void {
