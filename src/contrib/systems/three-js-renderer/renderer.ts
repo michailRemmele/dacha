@@ -20,6 +20,7 @@ import { Light } from '../../components/light';
 import { Camera } from '../../components/camera';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
+import { getWindowNode } from '../../utils/get-window-node';
 
 import { RendererService } from './service';
 import {
@@ -89,13 +90,7 @@ export class Renderer extends System {
     this.store = store;
     this.templateCollection = templateCollection;
 
-    const window = document.getElementById(windowNodeId);
-
-    if (!window) {
-      throw new Error('Unable to load RenderSystem. Root canvas node not found');
-    }
-
-    this.window = window;
+    this.window = getWindowNode(windowNodeId);
 
     this.sortFn = composeSort([
       createSortByLayer(parseSortingLayers(globalOptions.sortingLayers)),

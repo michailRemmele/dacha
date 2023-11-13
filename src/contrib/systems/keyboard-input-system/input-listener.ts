@@ -1,42 +1,43 @@
-export class InputListener {
-  private window: Window;
-  private pressedKeys: Set<number>;
-  private releasedKeys: Set<number>;
+import type { KeyboardInputEvent } from '../../types/messages';
 
-  constructor(window: Window) {
-    this.window = window;
-    this.pressedKeys = new Set();
-    this.releasedKeys = new Set();
+export class InputListener {
+  private windowNode: Window | HTMLElement;
+  private eventsQuery: Array<KeyboardInputEvent>;
+
+  constructor(window: Window | HTMLElement) {
+    this.windowNode = window;
+    this.eventsQuery = [];
   }
 
-  startListen(): void {
-    this.window.onkeydown = (event): void => {
-      this.pressedKeys.add(event.keyCode);
-    };
+  handleKeyDown = (event: Event): void => {
+    this.eventsQuery.push({
+      key: (event as KeyboardEvent).code,
+      pressed: true,
+    });
+  };
 
-    this.window.onkeyup = (event): void => {
-      this.pressedKeys.delete(event.keyCode);
-      this.releasedKeys.add(event.keyCode);
-    };
+  handleKeyUp = (event: Event): void => {
+    this.eventsQuery.push({
+      key: (event as KeyboardEvent).code,
+      pressed: false,
+    });
+  };
+
+  startListen(): void {
+    this.windowNode.addEventListener('keydown', this.handleKeyDown);
+    this.windowNode.addEventListener('keyup', this.handleKeyUp);
   }
 
   stopListen(): void {
-    this.window.onkeydown = null;
+    this.windowNode.removeEventListener('keydown', this.handleKeyDown);
+    this.windowNode.removeEventListener('keyup', this.handleKeyUp);
   }
 
-  getPressedKeys(): Array<number> {
-    return Array.from(this.pressedKeys);
+  getEvents(): Array<KeyboardInputEvent> {
+    return this.eventsQuery;
   }
 
-  getReleasedKeys(): Array<number> {
-    return Array.from(this.releasedKeys);
-  }
-
-  clearPressedKeys(): void {
-    this.pressedKeys.clear();
-  }
-
-  clearReleasedKeys(): void {
-    this.releasedKeys.clear();
+  clear(): void {
+    this.eventsQuery = [];
   }
 }

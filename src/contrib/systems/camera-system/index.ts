@@ -5,6 +5,7 @@ import type { GameObject, GameObjectObserver } from '../../../engine/game-object
 import type { MessageBus, Message } from '../../../engine/message-bus';
 import type { Store } from '../../../engine/scene';
 import { Camera } from '../../components/camera';
+import { getWindowNode } from '../../utils/get-window-node';
 
 const CURRENT_CAMERA_NAME = 'currentCamera';
 const SET_CAMERA_MESSAGE = 'SET_CAMERA';
@@ -40,7 +41,7 @@ export class CameraSystem extends System {
       messageBus,
     } = options as CameraSystemOptions;
 
-    const windowNode = document.getElementById(windowNodeId) || window;
+    const windowNode = getWindowNode(windowNodeId);
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
