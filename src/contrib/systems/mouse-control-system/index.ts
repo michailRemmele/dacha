@@ -32,7 +32,7 @@ export class MouseControlSystem extends System {
 
         if (eventBinding) {
           if (!eventBinding.messageType) {
-            throw new Error(`The message type not specified for input event: ${message.eventType}`);
+            throw new Error(`The message type is not specified for input event: ${message.eventType}`);
           }
 
           this.messageBus.send({

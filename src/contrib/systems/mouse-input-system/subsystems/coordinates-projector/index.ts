@@ -19,39 +19,33 @@ export class CoordinatesProjector {
     this.messageBus = messageBus;
   }
 
-  private getProjectedX(inputX: number): number {
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject | undefined;
-
-    if (currentCamera === undefined) {
-      return inputX;
-    }
-
-    const { windowSizeX, zoom } = currentCamera.getComponent(Camera);
-    const { offsetX: cameraOffsetX } = currentCamera.getComponent(Transform);
+  private getProjectedX(inputX: number, camera: GameObject): number {
+    const { windowSizeX, zoom } = camera.getComponent(Camera);
+    const { offsetX: cameraOffsetX } = camera.getComponent(Transform);
 
     return ((inputX - (windowSizeX / 2)) / zoom) + cameraOffsetX;
   }
 
-  private getProjectedY(inputY: number): number {
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject | undefined;
-
-    if (currentCamera === undefined) {
-      return inputY;
-    }
-
-    const { windowSizeY, zoom } = currentCamera.getComponent(Camera);
-    const { offsetY: cameraOffsetY } = currentCamera.getComponent(Transform);
+  private getProjectedY(inputY: number, camera: GameObject): number {
+    const { windowSizeY, zoom } = camera.getComponent(Camera);
+    const { offsetY: cameraOffsetY } = camera.getComponent(Transform);
 
     return ((inputY - (windowSizeY / 2)) / zoom) + cameraOffsetY;
   }
 
   update(): void {
+    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject | undefined;
+
+    if (currentCamera === undefined) {
+      return;
+    }
+
     const messages = this.messageBus.get(
       MOUSE_INPUT_MESSAGE,
     ) as Array<MouseInputMessage> | undefined;
     messages?.forEach((message) => {
-      message.x = this.getProjectedX(message.x);
-      message.y = this.getProjectedY(message.y);
+      message.x = this.getProjectedX(message.x, currentCamera);
+      message.y = this.getProjectedY(message.y, currentCamera);
     });
   }
 }

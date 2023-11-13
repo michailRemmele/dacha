@@ -26,7 +26,11 @@ export class KeyboardControlSystem extends System {
     this.pressedKeys = new Set();
   }
 
-  private sendMessage(gameObject: GameObject, eventBinding: KeyboardEventBind): void {
+  private sendMessage(gameObject: GameObject, eventBinding: KeyboardEventBind, code: string): void {
+    if (!eventBinding.messageType) {
+      throw new Error(`The message type is not specified for input key: ${code}`);
+    }
+
     this.messageBus.send({
       type: eventBinding.messageType,
       ...eventBinding.attrs,
@@ -53,7 +57,7 @@ export class KeyboardControlSystem extends System {
       this.pressedKeys.forEach((key) => {
         const inputBinding = control.inputEventBindings[key]?.pressed;
         if (inputBinding !== undefined && inputBinding.keepEmit) {
-          this.sendMessage(gameObject, inputBinding);
+          this.sendMessage(gameObject, inputBinding, key);
         }
       });
 
@@ -62,7 +66,7 @@ export class KeyboardControlSystem extends System {
         const { key, pressed } = message;
         const inputBinding = control.inputEventBindings[key]?.[pressed ? 'pressed' : 'released'];
         if (inputBinding !== undefined && !this.pressedKeys.has(key)) {
-          this.sendMessage(gameObject, inputBinding);
+          this.sendMessage(gameObject, inputBinding, key);
         }
       });
     });
