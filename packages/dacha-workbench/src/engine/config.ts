@@ -24,18 +24,11 @@ export const getEditorConfig = ({
       levelId: 'cd42a993-f3c0-4921-b867-108c81028a26',
       systems: [
         {
-          name: 'KeyboardInputSystem',
-          options: {},
-        },
-        {
           name: 'MouseInputSystem',
           options: {
             windowNodeId: 'canvas-root',
+            useWindow: false,
           },
-        },
-        {
-          name: 'KeyboardControlSystem',
-          options: {},
         },
         {
           name: 'MouseControlSystem',
@@ -135,22 +128,28 @@ export const getEditorConfig = ({
                     features: {},
                     inputBindings: [
                       {
-                        event: 'MOUSE_LEFT_BUTTON_PRESS',
+                        id: '0ea69440-f648-4774-b62e-c2e5b95d04ca',
+                        event: 'mousedown',
+                        button: 0,
                         messageType: 'CAMERA_MOVE_START',
                         attrs: [],
                       },
                       {
-                        event: 'MOUSE_LEFT_BUTTON_RELEASE',
+                        id: '2769eec3-aa64-4b71-a0cc-d81e7c8d686c',
+                        event: 'mouseup',
+                        button: 0,
                         messageType: 'CAMERA_MOVE_END',
                         attrs: [],
                       },
                       {
-                        event: 'MOUSE_MOVE',
+                        id: '2a9351cd-2257-4c4d-a84e-3e8020ad14a3',
+                        event: 'mousemove',
                         messageType: 'CAMERA_MOVE',
                         attrs: [],
                       },
                       {
-                        event: 'MOUSE_LEAVE',
+                        id: '4a5da295-9621-41d4-8b88-77d3d8a0316e',
+                        event: 'mouseleave',
                         messageType: 'CAMERA_MOVE_END',
                         attrs: [],
                       },
@@ -176,7 +175,9 @@ export const getEditorConfig = ({
                     },
                     inputBindings: [
                       {
-                        event: 'MOUSE_LEFT_BUTTON_PRESS',
+                        id: 'f908d5e8-448b-420f-a417-9e2f17b20d0c',
+                        event: 'mousedown',
+                        button: 0,
                         messageType: 'CAMERA_ZOOM',
                         attrs: [],
                       },
@@ -202,22 +203,28 @@ export const getEditorConfig = ({
                     },
                     inputBindings: [
                       {
-                        event: 'MOUSE_LEFT_BUTTON_PRESS',
+                        id: '2180969a-b549-47de-ab14-1677378112bf',
+                        event: 'mousedown',
+                        button: 0,
                         messageType: SELECTION_MOVE_START_MSG,
                         attrs: [],
                       },
                       {
-                        event: 'MOUSE_MOVE',
+                        id: '3ef9cf69-240e-4b1a-823a-4b58fd34d80f',
+                        event: 'mousemove',
                         messageType: SELECTION_MOVE_MSG,
                         attrs: [],
                       },
                       {
-                        event: 'MOUSE_LEFT_BUTTON_RELEASE',
+                        id: '99b59ce8-e433-4749-bcea-8a0d5d1d7605',
+                        event: 'mouseup',
+                        button: 0,
                         messageType: SELECTION_MOVE_END_MSG,
                         attrs: [],
                       },
                       {
-                        event: 'MOUSE_LEAVE',
+                        id: '762e02df-24c5-4921-9d6c-5bea83a982cc',
+                        event: 'mouseleave',
                         messageType: SELECTION_MOVE_END_MSG,
                         attrs: [],
                       },
@@ -251,7 +258,8 @@ export const getEditorConfig = ({
                     },
                     inputBindings: [
                       {
-                        event: 'MOUSE_LEFT_BUTTON_CLICK',
+                        id: '2789da3d-7adf-4f63-9af3-513c75650066',
+                        event: 'click',
                         messageType: ADD_FROM_TEMPLATE_MSG,
                         attrs: [],
                       },
@@ -282,12 +290,14 @@ export const getEditorConfig = ({
               config: {
                 inputEventBindings: [
                   {
-                    event: 'MOUSE_MOVE',
+                    id: 'cd331a89-e99f-4d70-a8bc-8c794632e9a1',
+                    event: 'mousemove',
                     messageType: TOOL_CURSOR_MOVE_MSG,
                     attrs: [],
                   },
                   {
-                    event: 'MOUSE_LEAVE',
+                    id: '6abde95f-5b2b-4066-9ef3-7af0559e155a',
+                    event: 'mouseleave',
                     messageType: TOOL_CURSOR_LEAVE_MSG,
                     attrs: [],
                   },
