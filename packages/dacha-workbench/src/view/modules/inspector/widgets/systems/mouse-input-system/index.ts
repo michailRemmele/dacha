@@ -7,9 +7,18 @@ export const mouseInputSystem: WidgetSchema = {
       name: 'windowNodeId',
       title: 'systems.mouseInputSystem.windowNodeId.title',
       type: 'string',
+      dependency: {
+        name: 'useWindow',
+        value: false,
+      },
+    },
+    {
+      name: 'useWindow',
+      title: 'systems.mouseInputSystem.useWindow.title',
+      type: 'boolean',
     },
   ],
   getInitialState: () => ({
-    windowNodeId: '',
+    useWindow: true,
   }),
 }

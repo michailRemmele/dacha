@@ -17,7 +17,10 @@
       "systems": [
         {
           "name": "MouseInputSystem",
-          "options": {}
+          "options": {
+            "windowNodeId": "root",
+            "useWindow": false
+          }
         },
         {
           "name": "MouseControlSystem",
@@ -25,7 +28,10 @@
         },
         {
           "name": "KeyboardInputSystem",
-          "options": {}
+          "options": {
+            "windowNodeId": "root",
+            "useWindow": false
+          }
         },
         {
           "name": "KeyboardControlSystem",

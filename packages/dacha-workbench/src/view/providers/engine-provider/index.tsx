@@ -7,8 +7,6 @@ import React, {
 import type { UiInitFnOptions } from 'remiz'
 import {
   Engine,
-  KeyboardInputSystem,
-  KeyboardControlSystem,
   MouseInputSystem,
   MouseControlSystem,
   CameraSystem,
@@ -60,8 +58,6 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
   const editorEngine = useMemo(() => new Engine({
     config: getEditorConfig({ globalOptions }),
     systems: [
-      KeyboardInputSystem,
-      KeyboardControlSystem,
       MouseInputSystem,
       MouseControlSystem,
       CameraSystem,

@@ -7,8 +7,10 @@ import { useTranslation } from 'react-i18next'
 
 import { LabelledSelect } from '../../../components/select'
 import { LabelledTextInput } from '../../../components/text-input'
+import { LabelledNumberInput } from '../../../components/number-input'
 import { MultiField } from '../../../components/multi-field'
 import { Field } from '../../../components/field'
+import { DependencyField } from '../../../components/dependency-field'
 import { Panel } from '../../../components/panel'
 import { useCommander } from '../../../../../hooks'
 import { deleteValue } from '../../../../../commands'
@@ -20,26 +22,34 @@ import {
 
 export interface InputBindProps {
   path: Array<string>
-  event: { title: string, value: string }
+  value: string
   order: number
-  availableEvents: Array<{ title: string, value: string }>
+  options: Array<{ title: string, value: string }>
+  selectedOptions: Array<string>
 }
 
 export const InputBind: FC<InputBindProps> = ({
   path,
-  event,
+  value,
   order,
-  availableEvents,
+  options,
+  selectedOptions,
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const bindPath = useMemo(() => path.concat('inputEventBindings', `event:${event.value}`), [path, event])
+  const bindPath = useMemo(() => path.concat('inputEventBindings', `event:${value}`), [path, value])
   const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
+  const buttonPath = useMemo(() => bindPath.concat('button'), [bindPath])
   const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
-  const inputEvents = useMemo(() => [event, ...availableEvents], [availableEvents])
+  const inputEvents = useMemo(
+    () => options.filter(
+      (option) => !selectedOptions.includes(option.value) || option.value === value,
+    ),
+    [value, options, selectedOptions],
+  )
 
   const handleDeleteBind = useCallback(() => {
     dispatch(deleteValue(bindPath))
@@ -56,6 +66,13 @@ export const InputBind: FC<InputBindProps> = ({
         component={LabelledSelect}
         label={t('components.mouseControl.bind.event.title')}
         options={inputEvents}
+      />
+      <DependencyField
+        path={buttonPath}
+        component={LabelledNumberInput}
+        label={t('components.mouseControl.bind.button.title')}
+        dependencyPath={eventPath}
+        dependencyValue="mousedown|mouseup"
       />
       <Field
         path={messageTypePath}
