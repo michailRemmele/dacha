@@ -17,11 +17,10 @@
       "systems": [
         {
           "name": "MouseInputSystem",
-          "options": {}
-        },
-        {
-          "name": "MouseInputCoordinatesProjector",
-          "options": {}
+          "options": {
+            "windowNodeId": "root",
+            "useWindow": false
+          }
         },
         {
           "name": "MouseControlSystem",
@@ -29,7 +28,10 @@
         },
         {
           "name": "KeyboardInputSystem",
-          "options": {}
+          "options": {
+            "windowNodeId": "root",
+            "useWindow": false
+          }
         },
         {
           "name": "KeyboardControlSystem",
@@ -158,8 +160,9 @@
                 "inputEventBindings": [
                   {
                     "id": "926f76fd-50e2-4783-a6ff-8cbede1c3fce",
-                    "key": "W",
-                    "event": "PRESSED",
+                    "key": "KeyW",
+                    "pressed": true,
+                    "keepEmit": true,
                     "messageType": "MOVEMENT",
                     "attrs": [
                       {
@@ -172,8 +175,9 @@
                   },
                   {
                     "id": "33cded5b-f3e8-41f2-9c0c-bc473e79e0e2",
-                    "key": "A",
-                    "event": "PRESSED",
+                    "key": "KeyA",
+                    "pressed": true,
+                    "keepEmit": true,
                     "messageType": "MOVEMENT",
                     "attrs": [
                       {
@@ -186,8 +190,9 @@
                   },
                   {
                     "id": "de0cda01-8c99-493c-88ff-efac3c80c0e5",
-                    "key": "S",
-                    "event": "PRESSED",
+                    "key": "KeyS",
+                    "pressed": true,
+                    "keepEmit": true,
                     "messageType": "MOVEMENT",
                     "attrs": [
                       {
@@ -200,8 +205,9 @@
                   },
                   {
                     "id": "e13331a9-59eb-4412-9292-bd743e3b14fd",
-                    "key": "D",
-                    "event": "PRESSED",
+                    "key": "KeyD",
+                    "pressed": true,
+                    "keepEmit": true,
                     "messageType": "MOVEMENT",
                     "attrs": [
                       {

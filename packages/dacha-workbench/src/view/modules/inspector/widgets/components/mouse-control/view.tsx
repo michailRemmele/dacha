@@ -5,12 +5,12 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { WidgetProps } from '../../../../../../types/widget-schema'
 import { useConfig, useCommander } from '../../../../../hooks'
 import { addValue } from '../../../../../commands'
 
-import { events } from './events'
 import { InputBind } from './input-bind'
 
 import {
@@ -24,10 +24,25 @@ export interface EventOption {
 }
 
 export interface InputEventBind {
+  id: string
   event: string
+  button?: number
+  messageType: string
+  attrs: Array<unknown>
 }
 
 export type InputEventBindings = Record<string, Omit<InputEventBind, 'event'>>
+
+const options = [
+  'mousedown',
+  'mouseup',
+  'mousemove',
+  'click',
+  'contextmenu',
+  'dblclick',
+  'mouseenter',
+  'mouseleave',
+].map((value) => ({ title: value, value }))
 
 export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
@@ -36,45 +51,39 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
   const inputEventBindings = useConfig(bindingsPath) as Array<InputEventBind>
 
-  const options = useMemo(() => events.map(({ title, value }) => ({
-    title: t(title),
-    value,
-  })), [])
-  const optionsMap = useMemo(() => options.reduce((acc: Record<string, EventOption>, option) => {
-    acc[option.value] = option
-    return acc
-  }, {}), [options])
-  const bindingsMap = useMemo(
-    () => inputEventBindings.reduce((acc: InputEventBindings, { event, ...bind }) => {
-      acc[event] = bind
-      return acc
-    }, {}),
+  const selectedOptions = useMemo(
+    () => inputEventBindings.map((inputEventBinding) => inputEventBinding.event),
     [inputEventBindings],
-  )
-  const availableOptions = useMemo(
-    () => options.filter((event) => !bindingsMap[event.value]),
-    [bindingsMap, options],
-  )
-  const addedOptions = useMemo(
-    () => inputEventBindings.map((bind) => optionsMap[bind.event]),
-    [inputEventBindings, optionsMap],
   )
 
   const handleAddNewBind = useCallback(() => {
-    const inputEvent = availableOptions[0].value
-    dispatch(addValue(bindingsPath, { event: inputEvent, messageType: '', attrs: [] }))
-  }, [dispatch, bindingsPath, availableOptions])
+    const inputEvent = options.find(
+      (option) => !selectedOptions.includes(option.value),
+    )?.value as string
+
+    const inputBind: InputEventBind = {
+      id: uuidv4(),
+      event: inputEvent,
+      messageType: '',
+      attrs: [],
+    }
+    if (inputEvent === 'mousedown' || inputEvent === 'mouseup') {
+      inputBind.button = 0
+    }
+    dispatch(addValue(bindingsPath, inputBind))
+  }, [dispatch, bindingsPath, selectedOptions, options])
 
   return (
     <div>
       <EventListStyled>
-        {addedOptions.map((event, index) => (
-          <li key={event.value}>
+        {inputEventBindings.map((inputEventBind, index) => (
+          <li key={inputEventBind.id}>
             <InputBind
               path={path}
-              event={event}
+              value={inputEventBind.event}
               order={index}
-              availableEvents={availableOptions}
+              options={options}
+              selectedOptions={selectedOptions}
             />
           </li>
         ))}
@@ -83,7 +92,7 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
         css={ButtonCSS}
         size="small"
         onClick={handleAddNewBind}
-        disabled={availableOptions.length === 0}
+        disabled={selectedOptions.length === options.length}
       >
         {t('components.mouseControl.bind.addNew.title')}
       </Button>
