@@ -12,22 +12,26 @@ const LISTENING_EVENTS = [
 ] as const;
 
 export class MouseInputListener {
-  private window: HTMLElement;
+  private window: Window | HTMLElement;
   private firedEvents: Array<MouseInputEvent>;
 
-  constructor(window: HTMLElement) {
+  constructor(window: Window | HTMLElement) {
     this.window = window;
     this.firedEvents = [];
   }
 
-  handleMouseEvent = (event: MouseEvent): void => {
+  handleMouseEvent = (event: Event): void => {
+    const {
+      type, button, offsetX, offsetY,
+    } = event as MouseEvent;
+
     this.firedEvents.push({
-      eventType: event.type,
-      button: event.button,
-      x: event.offsetX,
-      y: event.offsetY,
-      screenX: event.offsetX,
-      screenY: event.offsetY,
+      eventType: type,
+      button,
+      x: offsetX,
+      y: offsetY,
+      screenX: offsetX,
+      screenY: offsetY,
     });
   };
 

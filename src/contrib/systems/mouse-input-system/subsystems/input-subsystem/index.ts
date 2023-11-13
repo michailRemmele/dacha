@@ -7,7 +7,8 @@ import { getWindowNode } from '../../../../utils/get-window-node';
 import { MouseInputListener } from './mouse-input-listener';
 
 interface InputSubsystemOptions extends SystemOptions {
-  windowNodeId: string;
+  windowNodeId?: string
+  useWindow: boolean
 }
 
 export class InputSubsystem {
@@ -15,11 +16,15 @@ export class InputSubsystem {
   private inputListener: MouseInputListener;
 
   constructor(options: SystemOptions) {
-    const { messageBus, windowNodeId } = options as InputSubsystemOptions;
+    const {
+      messageBus,
+      windowNodeId,
+      useWindow,
+    } = options as InputSubsystemOptions;
 
     this.messageBus = messageBus;
 
-    const windowNode = getWindowNode(windowNodeId);
+    const windowNode = useWindow ? window : getWindowNode(windowNodeId as string);
 
     this.inputListener = new MouseInputListener(windowNode);
   }

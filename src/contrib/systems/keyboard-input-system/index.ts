@@ -7,7 +7,8 @@ import { getWindowNode } from '../../utils/get-window-node';
 import { InputListener } from './input-listener';
 
 interface KeyboardInputSystemOptions extends SystemOptions {
-  windowNodeId: string;
+  windowNodeId?: string
+  useWindow: boolean
 }
 
 export class KeyboardInputSystem extends System {
@@ -17,11 +18,15 @@ export class KeyboardInputSystem extends System {
   constructor(options: SystemOptions) {
     super();
 
-    const { messageBus, windowNodeId } = options as KeyboardInputSystemOptions;
+    const {
+      messageBus,
+      windowNodeId,
+      useWindow,
+    } = options as KeyboardInputSystemOptions;
 
     this.messageBus = messageBus;
 
-    const windowNode = getWindowNode(windowNodeId);
+    const windowNode = useWindow ? window : getWindowNode(windowNodeId as string);
 
     this.inputListener = new InputListener(windowNode);
   }
