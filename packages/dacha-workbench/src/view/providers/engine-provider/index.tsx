@@ -84,11 +84,13 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
       Shape,
       Settings,
     ],
-    helpers: {
-      loadUiApp: () => Promise.resolve({
-        onInit: (options: UiInitFnOptions): void => setContext(options),
-        onDestroy: (): void => setContext(void 0),
-      }),
+    resources: {
+      [UiBridge.systemName]: {
+        loadUiApp: () => Promise.resolve({
+          onInit: (options: UiInitFnOptions): void => setContext(options),
+          onDestroy: (): void => setContext(void 0),
+        }),
+      },
     },
   }), [globalOptions])
 
