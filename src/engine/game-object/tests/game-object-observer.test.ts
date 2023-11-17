@@ -47,7 +47,7 @@ describe('Engine -> GameObjectObserver', () => {
       name: 'test-scene',
       gameObjects: [],
       availableSystems: [],
-      helpers: {},
+      resources: {},
       globalOptions: {},
       systems: [],
       gameObjectCreator: new GameObjectCreator([], templateCollection),

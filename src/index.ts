@@ -7,7 +7,6 @@ export { System } from './engine/system';
 export type {
   SystemOptions,
   UpdateOptions,
-  HelperFn,
 } from './engine/system';
 export type {
   GameObjectObserver,

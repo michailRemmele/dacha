@@ -1,7 +1,7 @@
 import { filterByKey } from '../utils';
 import type { SceneConfig, LevelConfig, GlobalOption } from '../types';
 import type { GameObjectCreator } from '../game-object';
-import type { HelperFn, SystemConstructor } from '../system';
+import type { SystemConstructor } from '../system';
 import type { TemplateCollection } from '../template';
 
 import { Scene } from './scene';
@@ -11,7 +11,7 @@ interface SceneProviderOptions {
   loaders: Array<SceneConfig>
   levels: Array<LevelConfig>
   systems: Array<SystemConstructor>
-  helpers: Record<string, HelperFn>
+  resources: Record<string, unknown>
   globalOptions: Array<GlobalOption>
   gameObjectCreator: GameObjectCreator
   templateCollection: TemplateCollection
@@ -35,7 +35,7 @@ export class SceneProvider {
   private availableLoaders: Record<string, SceneConfig>;
   private availableLevels: Record<string, LevelConfig>;
   private systems: Array<SystemConstructor>;
-  private helpers: Record<string, HelperFn>;
+  private resources: Record<string, unknown>;
   private globalOptions: Record<string, unknown>;
   private sceneContainer: Record<string, Scene>;
   private currentSceneId?: string;
@@ -48,7 +48,7 @@ export class SceneProvider {
     levels,
     systems,
     loaders,
-    helpers,
+    resources,
     globalOptions,
     gameObjectCreator,
     templateCollection,
@@ -68,7 +68,7 @@ export class SceneProvider {
       return acc;
     }, {});
     this.systems = systems;
-    this.helpers = helpers;
+    this.resources = resources;
     this.globalOptions = globalOptions.reduce((acc: Record<string, unknown>, option) => {
       acc[option.name] = option.value;
       return acc;
@@ -88,7 +88,7 @@ export class SceneProvider {
             ? this.availableLevels[loaderConfig.levelId].gameObjects
             : [],
           availableSystems: this.systems,
-          helpers: this.helpers,
+          resources: this.resources,
           globalOptions: this.globalOptions,
           gameObjectCreator: this.gameObjectCreator,
           templateCollection: this.templateCollection,
@@ -144,7 +144,7 @@ export class SceneProvider {
         ...this.availableScenes[sceneId],
         gameObjects: selectedLevelId ? this.availableLevels[selectedLevelId].gameObjects : [],
         availableSystems: this.systems,
-        helpers: this.helpers,
+        resources: this.resources,
         globalOptions: this.globalOptions,
         gameObjectCreator: this.gameObjectCreator,
         templateCollection: this.templateCollection,

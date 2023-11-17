@@ -2,7 +2,6 @@ import { System } from '../../../engine/system';
 import type {
   SystemOptions,
   UpdateOptions,
-  HelperFn,
 } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
@@ -33,6 +32,11 @@ export interface UiInitFnOptions {
 
 export type UiInitFn = (options: UiInitFnOptions) => void;
 export type UiDestroyFn = () => void;
+export type LoadUiAppFn = () => Promise<{ onInit: UiInitFn, onDestroy: UiDestroyFn }>;
+
+interface UiBridgeResources {
+  loadUiApp?: LoadUiAppFn
+}
 
 interface UiBridgeOptions extends SystemOptions {
   filterComponents: Array<string>;
@@ -45,7 +49,7 @@ export class UiBridge extends System {
   private gameObjectDestroyer: unknown;
   private store: Store;
   private messageBus: MessageBus;
-  private helpers: Record<string, HelperFn>;
+  private loadUiApp: LoadUiAppFn;
   private templateCollection: TemplateCollection;
   private messageBusObserver: Observer;
   private storeObserver: Observer;
@@ -64,11 +68,19 @@ export class UiBridge extends System {
       gameObjectDestroyer,
       store,
       messageBus,
-      helpers,
+      resources,
       sceneContext,
       templateCollection,
       filterComponents,
     } = options as UiBridgeOptions;
+
+    const loadUiApp = (resources as UiBridgeResources | undefined)?.loadUiApp;
+
+    if (loadUiApp === undefined) {
+      throw new Error('UiBridge requires a UI loader. Please specify the loader in the resources section.');
+    }
+
+    this.loadUiApp = loadUiApp;
 
     this.sceneContext = sceneContext;
     this.gameObjectObserver = createGameObjectObserver({
@@ -78,7 +90,6 @@ export class UiBridge extends System {
     this.gameObjectDestroyer = gameObjectDestroyer;
     this.store = store;
     this.messageBus = messageBus;
-    this.helpers = helpers;
     this.templateCollection = templateCollection;
 
     this.messageBusObserver = new Observer();
@@ -90,10 +101,10 @@ export class UiBridge extends System {
   }
 
   async load(): Promise<void> {
-    const { onInit, onDestroy } = await this.helpers.loadUiApp();
+    const { onInit, onDestroy } = await this.loadUiApp();
 
-    this.onUiInit = onInit as UiInitFn;
-    this.onUiDestroy = onDestroy as UiDestroyFn;
+    this.onUiInit = onInit;
+    this.onUiDestroy = onDestroy;
   }
 
   mount(): void {

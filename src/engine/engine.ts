@@ -1,4 +1,4 @@
-import type { HelperFn, SystemConstructor } from './system';
+import type { SystemConstructor } from './system';
 import type { ComponentConstructor } from './component';
 import type { Config } from './types';
 import { SceneProvider } from './scene/scene-provider';
@@ -11,7 +11,7 @@ export interface EngineOptions {
   config: Config
   systems: Array<SystemConstructor>
   components: Array<ComponentConstructor>
-  helpers: Record<string, HelperFn>
+  resources?: Record<string, unknown>
 }
 
 export class Engine {
@@ -60,7 +60,7 @@ export class Engine {
       },
       systems,
       components,
-      helpers,
+      resources = {},
     } = this.options;
 
     if (!startSceneId) {
@@ -92,7 +92,7 @@ export class Engine {
       levels,
       loaders,
       systems,
-      helpers,
+      resources,
       globalOptions,
       gameObjectCreator,
       templateCollection,

@@ -1,6 +1,6 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
 import type { TemplateCollection } from '../template';
-import type { System, HelperFn, SystemConstructor } from '../system';
+import type { System, SystemConstructor } from '../system';
 import {
   GameObjectObserver,
   GameObjectObserverFilter,
@@ -23,7 +23,7 @@ export interface GameObjectChangeEvent {
 interface SceneOptions extends SceneConfig {
   gameObjects: Array<GameObjectConfig>
   availableSystems: Array<SystemConstructor>
-  helpers: Record<string, HelperFn>
+  resources: Record<string, unknown>
   globalOptions: Record<string, unknown>
   gameObjectCreator: GameObjectCreator
   templateCollection: TemplateCollection
@@ -50,7 +50,7 @@ export class Scene {
     name,
     gameObjects,
     systems,
-    helpers,
+    resources,
     globalOptions,
     gameObjectCreator,
     availableSystems,
@@ -85,7 +85,7 @@ export class Scene {
         filter: GameObjectObserverFilter,
       ): GameObjectObserver => this.createGameObjectObserver(filter),
       messageBus: this.getMessageBus(),
-      helpers,
+      resources: resources[config.name],
       globalOptions,
       sceneContext: this.context,
       templateCollection: this.templateCollection,
