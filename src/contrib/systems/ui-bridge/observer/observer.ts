@@ -1,17 +1,14 @@
-export type SubscribeFn = (value: unknown) => void;
+export type SubscribeFn = () => void;
 
 export class Observer {
-  private value: unknown;
   private subscribers: Array<SubscribeFn>;
 
   constructor() {
-    this.value = null;
     this.subscribers = [];
   }
 
-  next(value: unknown): void {
-    this.value = value;
-    this.subscribers.forEach((callback) => callback(this.value));
+  next(): void {
+    this.subscribers.forEach((callback) => callback());
   }
 
   subscribe(callback: SubscribeFn): void {

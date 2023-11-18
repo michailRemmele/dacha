@@ -13,11 +13,11 @@ import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { TemplateCollection } from '../../../engine/template';
-import type { Store } from '../../../engine/scene/store';
 import { Transform } from '../../components/transform';
 import { Renderable } from '../../components/renderable';
 import { Light } from '../../components/light';
 import { Camera } from '../../components/camera';
+import { CameraService } from '../camera-system';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
 import { getWindowNode } from '../../utils/get-window-node';
@@ -42,7 +42,6 @@ import {
   getTextureMapKey,
   cloneTexture,
 } from './utils';
-import { CURRENT_CAMERA_NAME } from './consts';
 
 interface RendererOptions extends SystemOptions {
   windowNodeId: string
@@ -52,7 +51,6 @@ interface RendererOptions extends SystemOptions {
 
 export class Renderer extends System {
   private gameObjectObserver: GameObjectObserver;
-  private store: Store;
   private window: HTMLElement;
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
@@ -66,6 +64,7 @@ export class Renderer extends System {
   private viewWidth: number;
   private viewHeight: number;
   private templateCollection: TemplateCollection;
+  private cameraService: CameraService;
 
   constructor(options: SystemOptions) {
     super();
@@ -73,7 +72,6 @@ export class Renderer extends System {
     const {
       globalOptions,
       createGameObjectObserver,
-      store,
       windowNodeId,
       backgroundColor,
       backgroundAlpha,
@@ -87,7 +85,6 @@ export class Renderer extends System {
         Transform,
       ],
     });
-    this.store = store;
     this.templateCollection = templateCollection;
 
     this.window = getWindowNode(windowNodeId);
@@ -132,6 +129,8 @@ export class Renderer extends System {
       window: this.window,
       sortFn: this.sortFn,
     }));
+
+    this.cameraService = sceneContext.getService(CameraService);
   }
 
   async load(): Promise<void> {
@@ -270,7 +269,7 @@ export class Renderer extends System {
   };
 
   private updateCamera(): void {
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
+    const currentCamera = this.cameraService.getCurrentCamera();
     const transform = currentCamera.getComponent(Transform);
     const { zoom } = currentCamera.getComponent(Camera);
 

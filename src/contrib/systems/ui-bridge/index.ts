@@ -3,16 +3,15 @@ import type {
   SystemOptions,
   UpdateOptions,
 } from '../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
+import type { GameObjectObserver } from '../../../engine/game-object';
 import type { MessageBus, Message } from '../../../engine/message-bus';
-import type { Store, SceneContext } from '../../../engine/scene';
+import type { SceneContext } from '../../../engine/scene';
 import type { TemplateCollection } from '../../../engine/template';
 
-import { Observer, MapObserver } from './observer';
+import { Observer } from './observer';
 
 interface ActionFnOptions {
   messageBus: MessageBus
-  store: Store
   gameObjectSpawner: unknown
   gameObjectDestroyer: unknown
   deltaTime: number
@@ -21,11 +20,11 @@ interface ActionFnOptions {
 type ActionFn = (options: ActionFnOptions) => void;
 
 export interface UiInitFnOptions {
+  messageBus: MessageBus
   sceneContext: SceneContext
   templateCollection: TemplateCollection
-  messageBusObserver: Observer
-  storeObserver: Observer
-  gameObjects: MapObserver
+  gameObjectObserver: GameObjectObserver
+  gameStateObserver: Observer
   pushMessage: (message: Message) => void
   pushAction: (action: ActionFn) => void
 }
@@ -38,22 +37,15 @@ interface UiBridgeResources {
   loadUiApp?: LoadUiAppFn
 }
 
-interface UiBridgeOptions extends SystemOptions {
-  filterComponents: Array<string>;
-}
-
 export class UiBridge extends System {
   private sceneContext: SceneContext;
   private gameObjectObserver: GameObjectObserver;
   private gameObjectSpawner: unknown;
   private gameObjectDestroyer: unknown;
-  private store: Store;
   private messageBus: MessageBus;
   private loadUiApp: LoadUiAppFn;
   private templateCollection: TemplateCollection;
-  private messageBusObserver: Observer;
-  private storeObserver: Observer;
-  private gameObjects: MapObserver;
+  private gameStateObserver: Observer;
   private messageQueue: Array<Message>;
   private actionsQueue: Array<ActionFn>;
   private onUiInit?: UiInitFn;
@@ -66,13 +58,11 @@ export class UiBridge extends System {
       createGameObjectObserver,
       gameObjectSpawner,
       gameObjectDestroyer,
-      store,
       messageBus,
       resources,
       sceneContext,
       templateCollection,
-      filterComponents,
-    } = options as UiBridgeOptions;
+    } = options;
 
     const loadUiApp = (resources as UiBridgeResources | undefined)?.loadUiApp;
 
@@ -83,18 +73,13 @@ export class UiBridge extends System {
     this.loadUiApp = loadUiApp;
 
     this.sceneContext = sceneContext;
-    this.gameObjectObserver = createGameObjectObserver({
-      components: filterComponents,
-    });
+    this.gameObjectObserver = createGameObjectObserver({});
     this.gameObjectSpawner = gameObjectSpawner;
     this.gameObjectDestroyer = gameObjectDestroyer;
-    this.store = store;
     this.messageBus = messageBus;
     this.templateCollection = templateCollection;
 
-    this.messageBusObserver = new Observer();
-    this.storeObserver = new Observer();
-    this.gameObjects = new MapObserver();
+    this.gameStateObserver = new Observer();
 
     this.messageQueue = [];
     this.actionsQueue = [];
@@ -110,28 +95,22 @@ export class UiBridge extends System {
   mount(): void {
     if (this.onUiInit) {
       this.onUiInit({
+        messageBus: this.messageBus,
         sceneContext: this.sceneContext,
         templateCollection: this.templateCollection,
-        messageBusObserver: this.messageBusObserver,
-        storeObserver: this.storeObserver,
+        gameStateObserver: this.gameStateObserver,
+        gameObjectObserver: this.gameObjectObserver,
         pushMessage: this.pushMessage.bind(this),
         pushAction: this.pushAction.bind(this),
-        gameObjects: this.gameObjects,
       });
     }
-    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
   }
 
   unmount(): void {
     if (this.onUiDestroy) {
       this.onUiDestroy();
     }
-    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
   }
-
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    this.gameObjects.next(null, gameObject.getId());
-  };
 
   private pushAction(action: ActionFn): void {
     this.actionsQueue.push(action);
@@ -144,31 +123,21 @@ export class UiBridge extends System {
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
-    this.gameObjectObserver.fireEvents();
-
-    this.gameObjectObserver.forEach((gameObject) => {
-      this.gameObjects.next(gameObject, gameObject.getId());
-    });
-
-    this.messageBusObserver.next(this.messageBus);
-    this.storeObserver.next(this.store);
+    this.gameStateObserver.next();
 
     this.messageQueue.forEach((message) => {
       this.messageBus.send(message, true);
     });
-
     this.messageQueue = [];
 
     this.actionsQueue.forEach((action) => {
       action({
         messageBus: this.messageBus,
         deltaTime,
-        store: this.store,
         gameObjectSpawner: this.gameObjectSpawner,
         gameObjectDestroyer: this.gameObjectDestroyer,
       });
     });
-
     this.actionsQueue = [];
   }
 }

@@ -2,16 +2,15 @@ import {
   ADD_FORCE_MSG,
   ADD_IMPULSE_MSG,
   STOP_MOVEMENT_MSG,
-  GRAVITATIONAL_ACCELERATION_STORE_KEY,
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
 import { filterByKey } from '../../../../../engine/utils';
 import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
-import type { Store } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
+import type { PhysicsSystemOptions } from '../../types';
 
 const DIRECTION_VECTOR = {
   UP: new Vector2(0, -1),
@@ -32,20 +31,15 @@ interface StopMovementMessage extends Message {
   gameObject: GameObject
 }
 
-interface PhysicsSystemOptions extends SystemOptions {
-  gravitationalAcceleration: number;
-}
-
 export class PhysicsSubsystem {
   private gameObjectObserver: GameObjectObserver;
-  private store: Store;
   private messageBus: MessageBus;
   private gravitationalAcceleration: number;
   private gameObjectsVelocity: Record<string, Vector2>;
 
   constructor(options: SystemOptions) {
     const {
-      gravitationalAcceleration, createGameObjectObserver, store, messageBus,
+      gravitationalAcceleration, createGameObjectObserver, messageBus,
     } = options as PhysicsSystemOptions;
 
     this.gameObjectObserver = createGameObjectObserver({
@@ -54,7 +48,6 @@ export class PhysicsSubsystem {
         Transform,
       ],
     });
-    this.store = store;
     this.messageBus = messageBus;
     this.gravitationalAcceleration = gravitationalAcceleration;
 
@@ -62,7 +55,6 @@ export class PhysicsSubsystem {
   }
 
   mount(): void {
-    this.store.set(GRAVITATIONAL_ACCELERATION_STORE_KEY, this.gravitationalAcceleration);
     this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
   }
 

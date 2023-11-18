@@ -10,5 +10,3 @@ export const VERTEX_STRIDE = VECTOR_2_SIZE * 2;
 export const VERTEX_DATA_STRIDE = VERTEX_STRIDE * DRAW_COUNT;
 
 export const BUFFER_SIZE = VERTEX_DATA_STRIDE * Float32Array.BYTES_PER_ELEMENT;
-
-export const CURRENT_CAMERA_NAME = 'currentCamera';

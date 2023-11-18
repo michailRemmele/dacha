@@ -12,7 +12,6 @@ import {
 import { MessageBus } from '../message-bus';
 
 import { SceneContext } from './context';
-import { Store } from './store';
 import { GAME_OBJECT_ADDED, GAME_OBJECT_REMOVED } from './consts';
 
 export interface GameObjectChangeEvent {
@@ -32,7 +31,6 @@ interface SceneOptions extends SceneConfig {
 export class Scene {
   private name: string;
   private gameObjects: Record<string, GameObject>;
-  private store: Store;
   private context: SceneContext;
   private gameObjectCreator: GameObjectCreator;
   private gameObjectSpawner: GameObjectSpawner;
@@ -60,7 +58,6 @@ export class Scene {
     this.name = name;
     this.gameObjects = {};
     this.gameObjectsChangeSubscribers = [];
-    this.store = new Store();
     this.gameObjectCreator = gameObjectCreator;
     this.gameObjectSpawner = new GameObjectSpawner(this, this.gameObjectCreator);
     this.gameObjectDestroyer = new GameObjectDestroyer(this);
@@ -78,7 +75,6 @@ export class Scene {
     }, {} as Record<string, SystemConstructor>);
     this.systems = systems.map((config) => new this.availableSystemsMap[config.name]({
       ...config.options,
-      store: this.getStore(),
       gameObjectSpawner: this.getGameObjectSpawner(),
       gameObjectDestroyer: this.getGameObjectDestroyer(),
       createGameObjectObserver: (
@@ -123,10 +119,6 @@ export class Scene {
 
   getSystems(): Array<System> {
     return this.systems;
-  }
-
-  getStore(): Store {
-    return this.store;
   }
 
   createGameObjectObserver(filter: GameObjectObserverFilter): GameObjectObserver {
