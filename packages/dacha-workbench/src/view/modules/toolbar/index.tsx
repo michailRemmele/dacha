@@ -16,7 +16,7 @@ import {
   AimOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import type { GameObject, MessageBus } from 'remiz'
+import type { GameObject } from 'remiz'
 
 import { EngineContext } from '../../providers'
 import { SELECT_TOOL_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types'
@@ -29,7 +29,11 @@ import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
 export const Toolbar: FC = () => {
   const { t } = useTranslation()
   const {
-    pushMessage, gameObjects, sceneContext, messageBusObserver,
+    pushMessage,
+    gameObjectObserver,
+    gameStateObserver,
+    sceneContext,
+    messageBus,
   } = useContext(EngineContext)
 
   const mainObjectId = useMemo<string>(
@@ -44,8 +48,13 @@ export const Toolbar: FC = () => {
   const ToolFeatures = useMemo(() => features[selectedTool], [selectedTool])
 
   useEffect(() => {
-    const handleUpdate = (gameObject: unknown): void => {
-      const mainObject = gameObject as GameObject
+    const handleUpdate = (): void => {
+      const messages = messageBus.get(SELECT_LEVEL_MSG)
+      if (messages?.length) {
+        setDisabled(false)
+      }
+
+      const mainObject = gameObjectObserver.getById(mainObjectId) as GameObject
       const toolController = mainObject.getComponent(ToolController)
       const toolObject = mainObject.getChildById(toolController.activeTool)
 
@@ -72,24 +81,18 @@ export const Toolbar: FC = () => {
       }
     }
 
-    gameObjects.subscribe(handleUpdate, mainObjectId)
+    gameStateObserver.subscribe(handleUpdate)
 
-    return () => gameObjects.unsubscribe(handleUpdate, mainObjectId)
-  }, [gameObjects, sceneContext, mainObjectId, selectedTool, toolFeatures])
-
-  useEffect(() => {
-    const handleLevelSelect = (messageBus: unknown): void => {
-      const messages = (messageBus as MessageBus).get(SELECT_LEVEL_MSG) || []
-
-      if (messages.length) {
-        setDisabled(false)
-      }
-    }
-
-    messageBusObserver.subscribe(handleLevelSelect)
-
-    return () => messageBusObserver.unsubscribe(handleLevelSelect)
-  }, [messageBusObserver])
+    return () => gameStateObserver.unsubscribe(handleUpdate)
+  }, [
+    gameObjectObserver,
+    gameStateObserver,
+    sceneContext,
+    messageBus,
+    mainObjectId,
+    selectedTool,
+    toolFeatures,
+  ])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
     pushMessage({

@@ -16,6 +16,14 @@
       "levelId": "9e30cb58-130a-4732-a313-a459a2ad66b5",
       "systems": [
         {
+          "name": "CameraSystem",
+          "options": {
+            "windowNodeId": "root",
+            "initialCamera": "1.2",
+            "scaleSensitivity": 0.5
+          }
+        },
+        {
           "name": "MouseInputSystem",
           "options": {
             "windowNodeId": "root",
@@ -36,14 +44,6 @@
         {
           "name": "KeyboardControlSystem",
           "options": {}
-        },
-        {
-          "name": "CameraSystem",
-          "options": {
-            "windowNodeId": "root",
-            "initialCamera": "1.2",
-            "scaleSensitivity": 0.5
-          }
         },
         {
           "name": "Renderer",
