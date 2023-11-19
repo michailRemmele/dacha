@@ -6,7 +6,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { GameObject, MessageBus } from 'remiz'
+import type { GameObject } from 'remiz'
 
 import { Modal } from '../../components'
 import { EngineContext } from '../../providers'
@@ -19,7 +19,8 @@ export const SettingsModal: FC = () => {
   const { t } = useTranslation()
   const {
     sceneContext,
-    messageBusObserver,
+    gameStateObserver,
+    messageBus,
   } = useContext(EngineContext)
 
   const [open, setOpen] = useState(false)
@@ -47,8 +48,8 @@ export const SettingsModal: FC = () => {
       setSettings({ ...data })
     }
 
-    const handleSettingsUpdate = (messageBus: unknown): void => {
-      const messages = (messageBus as MessageBus).get(SET_SETTINGS_VALUE_MSG)
+    const handleGameStateUpdate = (): void => {
+      const messages = messageBus.get(SET_SETTINGS_VALUE_MSG)
       if (messages === undefined || messages.length === 0) {
         return
       }
@@ -58,10 +59,10 @@ export const SettingsModal: FC = () => {
 
     updateSettings()
 
-    messageBusObserver.subscribe(handleSettingsUpdate)
+    gameStateObserver.subscribe(handleGameStateUpdate)
 
-    return () => messageBusObserver.unsubscribe(handleSettingsUpdate)
-  }, [messageBusObserver])
+    return () => gameStateObserver.unsubscribe(handleGameStateUpdate)
+  }, [gameStateObserver, messageBus])
 
   if (type === undefined || settings === undefined) {
     return null

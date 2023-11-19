@@ -24,6 +24,14 @@ export const getEditorConfig = ({
       levelId: 'cd42a993-f3c0-4921-b867-108c81028a26',
       systems: [
         {
+          name: 'CameraSystem',
+          options: {
+            windowNodeId: 'canvas-root',
+            initialCamera: 'main-object',
+            scaleSensitivity: 0.5,
+          },
+        },
+        {
           name: 'MouseInputSystem',
           options: {
             windowNodeId: 'canvas-root',
@@ -73,21 +81,13 @@ export const getEditorConfig = ({
           options: {},
         },
         {
-          name: 'CameraSystem',
-          options: {
-            windowNodeId: 'canvas-root',
-            initialCamera: 'main-object',
-            scaleSensitivity: 0.5,
-          },
-        },
-        {
           name: 'UiBridge',
           options: {
             filterComponents: [],
           },
         },
         {
-          name: 'Renderer',
+          name: 'SpriteRenderer',
           options: {
             windowNodeId: 'canvas-root',
             backgroundColor: '#ffffff',

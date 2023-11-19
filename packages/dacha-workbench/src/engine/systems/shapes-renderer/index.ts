@@ -1,14 +1,11 @@
-import { System, Transform } from 'remiz'
+import { System, Transform, CameraService } from 'remiz'
 import type {
   SystemOptions,
   GameObjectObserver,
-  GameObject,
-  Store,
 } from 'remiz'
 
 import { Shape } from '../../components'
 
-import { CURRENT_CAMERA_NAME } from './conts'
 import { CoordinatesTransformer } from './coordinates-transformer'
 import { painters } from './shape-painters'
 
@@ -18,7 +15,7 @@ interface ShapesRendererOptions extends SystemOptions {
 
 export class ShapesRenderer extends System {
   private gameObjectObserver: GameObjectObserver
-  private store: Store
+  private cameraService: CameraService
   private window: HTMLCanvasElement
   private context: CanvasRenderingContext2D
   private canvasWidth: number
@@ -31,8 +28,8 @@ export class ShapesRenderer extends System {
 
     const {
       createGameObjectObserver,
-      store,
       windowNodeId,
+      sceneContext,
     } = options as ShapesRendererOptions
 
     this.gameObjectObserver = createGameObjectObserver({
@@ -41,7 +38,6 @@ export class ShapesRenderer extends System {
         Shape,
       ],
     })
-    this.store = store
 
     const window = document.getElementById(windowNodeId)
 
@@ -57,6 +53,8 @@ export class ShapesRenderer extends System {
     this.context = this.window.getContext('2d') as CanvasRenderingContext2D
     this.canvasWidth = this.window.clientWidth
     this.canvasHeight = this.window.clientHeight
+
+    this.cameraService = sceneContext.getService(CameraService)
 
     this.transformer = new CoordinatesTransformer()
   }
@@ -83,7 +81,7 @@ export class ShapesRenderer extends System {
   update(): void {
     this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
 
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject
+    const currentCamera = this.cameraService.getCurrentCamera()
 
     this.transformer.setCamera(currentCamera)
 

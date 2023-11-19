@@ -9,7 +9,7 @@ import type { WidgetSchema, WidgetPartSchema } from './widget-schema'
 export interface Extension {
   componentsSchema?: Record<string, WidgetSchema | undefined>
   systemsSchema?: Record<string, WidgetSchema | undefined>
-  scriptsSchema?: Record<string, Record<string, WidgetPartSchema | undefined> | undefined>
+  resourcesSchema?: Record<string, Record<string, WidgetPartSchema | undefined> | undefined>
   locales?: Resource
 }
 
