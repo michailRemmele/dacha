@@ -199,7 +199,6 @@
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
   "components.sprite.title": "Sprite",
-  "components.sprite.type.title": "Type",
   "components.sprite.src.title": "Source",
   "components.sprite.width.title": "Width",
   "components.sprite.height.title": "Height",
