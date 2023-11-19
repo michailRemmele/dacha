@@ -157,82 +157,82 @@ describe('Contrib -> components -> Animatable', () => {
     const substate4 = currentState.substates[3];
 
     const frames1 = substate1.timeline.frames;
-    expect(frames1[0]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames1[0]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 0,
     });
-    expect(frames1[0]['components.renderable.flipX']).toEqual({
-      path: ['components', 'renderable', 'flipX'],
+    expect(frames1[0]['components.sprite.flipX']).toEqual({
+      path: ['components', 'sprite', 'flipX'],
       value: false,
     });
-    expect(frames1[1]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames1[1]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 1,
     });
-    expect(frames1[1]['components.renderable.flipX']).toEqual({
-      path: ['components', 'renderable', 'flipX'],
+    expect(frames1[1]['components.sprite.flipX']).toEqual({
+      path: ['components', 'sprite', 'flipX'],
       value: false,
     });
-    expect(frames1[2]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames1[2]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 2,
     });
-    expect(frames1[2]['components.renderable.flipX']).toEqual({
-      path: ['components', 'renderable', 'flipX'],
+    expect(frames1[2]['components.sprite.flipX']).toEqual({
+      path: ['components', 'sprite', 'flipX'],
       value: false,
     });
 
     const frames2 = substate2.timeline.frames;
-    expect(frames2[0]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames2[0]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 0,
     });
-    expect(frames2[0]['components.renderable.flipX']).toEqual({
-      path: ['components', 'renderable', 'flipX'],
+    expect(frames2[0]['components.sprite.flipX']).toEqual({
+      path: ['components', 'sprite', 'flipX'],
       value: true,
     });
-    expect(frames2[1]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames2[1]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 1,
     });
-    expect(frames2[1]['components.renderable.flipX']).toEqual({
-      path: ['components', 'renderable', 'flipX'],
+    expect(frames2[1]['components.sprite.flipX']).toEqual({
+      path: ['components', 'sprite', 'flipX'],
       value: true,
     });
-    expect(frames2[2]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames2[2]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 2,
     });
-    expect(frames2[2]['components.renderable.flipX']).toEqual({
-      path: ['components', 'renderable', 'flipX'],
+    expect(frames2[2]['components.sprite.flipX']).toEqual({
+      path: ['components', 'sprite', 'flipX'],
       value: true,
     });
 
     const frames3 = substate3.timeline.frames;
-    expect(frames3[0]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames3[0]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 6,
     });
-    expect(frames3[1]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames3[1]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 7,
     });
-    expect(frames3[2]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames3[2]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 8,
     });
 
     const frames4 = substate4.timeline.frames;
-    expect(frames4[0]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames4[0]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 3,
     });
-    expect(frames4[1]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames4[1]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 4,
     });
-    expect(frames4[2]['components.renderable.currentFrame']).toEqual({
-      path: ['components', 'renderable', 'currentFrame'],
+    expect(frames4[2]['components.sprite.currentFrame']).toEqual({
+      path: ['components', 'sprite', 'currentFrame'],
       value: 5,
     });
   });

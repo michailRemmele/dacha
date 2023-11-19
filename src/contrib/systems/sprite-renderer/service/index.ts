@@ -4,14 +4,14 @@ import type { Scene, Camera } from 'three/src/Three';
 import type { GameObject } from '../../../../engine/game-object';
 import type { SortFn } from '../sort';
 
-interface RendererServiceOptions {
+interface SpriteRendererServiceOptions {
   scene: Scene
   camera: Camera
   window: HTMLElement
   sortFn: SortFn
 }
 
-export class RendererService {
+export class SpriteRendererService {
   private scene: Scene;
   private camera: Camera;
   private window: HTMLElement;
@@ -23,7 +23,7 @@ export class RendererService {
     camera,
     window,
     sortFn,
-  }: RendererServiceOptions) {
+  }: SpriteRendererServiceOptions) {
     this.scene = scene;
     this.camera = camera;
     this.window = window;

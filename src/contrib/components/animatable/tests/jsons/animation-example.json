@@ -73,27 +73,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -102,27 +102,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 1
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -131,27 +131,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 2
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -170,27 +170,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -199,27 +199,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 1
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -228,27 +228,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 2
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -267,27 +267,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 6
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -296,27 +296,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 7
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -325,27 +325,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 8
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -364,27 +364,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 3
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -393,27 +393,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 4
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -422,27 +422,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 5
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -522,27 +522,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 9
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -551,27 +551,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -580,27 +580,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 11
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -609,27 +609,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -648,27 +648,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 9
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -677,27 +677,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -706,27 +706,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 11
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -735,27 +735,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -774,27 +774,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 15
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -803,27 +803,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 16
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -832,27 +832,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 17
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -861,27 +861,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 16
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -900,27 +900,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 12
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -929,27 +929,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 13
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -958,27 +958,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 14
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -987,27 +987,27 @@
               {
                 "fields": [
                   {
-                    "name": "components.renderable.currentFrame",
+                    "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 13
                   },
                   {
-                    "name": "components.renderable.rotation",
+                    "name": "components.sprite.rotation",
                     "type": "number",
                     "value": 0
                   },
                   {
-                    "name": "components.renderable.flipX",
+                    "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.flipY",
+                    "name": "components.sprite.flipY",
                     "type": "boolean",
                     "value": false
                   },
                   {
-                    "name": "components.renderable.disabled",
+                    "name": "components.sprite.disabled",
                     "type": "boolean",
                     "value": false
                   }
@@ -1032,27 +1032,27 @@
           {
             "fields": [
               {
-                "name": "components.renderable.currentFrame",
+                "name": "components.sprite.currentFrame",
                 "type": "number",
                 "value": 27
               },
               {
-                "name": "components.renderable.rotation",
+                "name": "components.sprite.rotation",
                 "type": "number",
                 "value": 0
               },
               {
-                "name": "components.renderable.flipX",
+                "name": "components.sprite.flipX",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.flipY",
+                "name": "components.sprite.flipY",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.disabled",
+                "name": "components.sprite.disabled",
                 "type": "boolean",
                 "value": false
               }
@@ -1061,27 +1061,27 @@
           {
             "fields": [
               {
-                "name": "components.renderable.currentFrame",
+                "name": "components.sprite.currentFrame",
                 "type": "number",
                 "value": 24
               },
               {
-                "name": "components.renderable.rotation",
+                "name": "components.sprite.rotation",
                 "type": "number",
                 "value": 0
               },
               {
-                "name": "components.renderable.flipX",
+                "name": "components.sprite.flipX",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.flipY",
+                "name": "components.sprite.flipY",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.disabled",
+                "name": "components.sprite.disabled",
                 "type": "boolean",
                 "value": false
               }
@@ -1090,27 +1090,27 @@
           {
             "fields": [
               {
-                "name": "components.renderable.currentFrame",
+                "name": "components.sprite.currentFrame",
                 "type": "number",
                 "value": 25
               },
               {
-                "name": "components.renderable.rotation",
+                "name": "components.sprite.rotation",
                 "type": "number",
                 "value": 0
               },
               {
-                "name": "components.renderable.flipX",
+                "name": "components.sprite.flipX",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.flipY",
+                "name": "components.sprite.flipY",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.disabled",
+                "name": "components.sprite.disabled",
                 "type": "boolean",
                 "value": false
               }
@@ -1119,27 +1119,27 @@
           {
             "fields": [
               {
-                "name": "components.renderable.currentFrame",
+                "name": "components.sprite.currentFrame",
                 "type": "number",
                 "value": 26
               },
               {
-                "name": "components.renderable.rotation",
+                "name": "components.sprite.rotation",
                 "type": "number",
                 "value": 0
               },
               {
-                "name": "components.renderable.flipX",
+                "name": "components.sprite.flipX",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.flipY",
+                "name": "components.sprite.flipY",
                 "type": "boolean",
                 "value": false
               },
               {
-                "name": "components.renderable.disabled",
+                "name": "components.sprite.disabled",
                 "type": "boolean",
                 "value": false
               }

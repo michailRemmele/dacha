@@ -7,5 +7,5 @@ export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
 export { PhysicsSystem } from './physics-system';
 export { ScriptSystem } from './script-system';
-export { Renderer, RendererService } from './three-js-renderer';
+export { SpriteRenderer, SpriteRendererService } from './sprite-renderer';
 export { UiBridge } from './ui-bridge';

@@ -17,7 +17,7 @@ import type {
   MaterialType,
   BasicMaterialOptions,
   BlendingMode,
-} from '../../../components/renderable';
+} from '../../../components/sprite';
 
 const DEFAULT_COLOR = '#ffffff';
 const DEFAULT_BLENDING = 'normal';

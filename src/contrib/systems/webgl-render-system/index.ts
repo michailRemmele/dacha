@@ -25,7 +25,7 @@ import {
   sortByXAxis,
   sortByZAxis,
   sortByFit,
-} from '../three-js-renderer/sort';
+} from '../sprite-renderer/sort';
 import { splitToBatch } from './utils';
 import {
   MAX_COLOR_NUMBER,
