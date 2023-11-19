@@ -46,7 +46,7 @@
           "options": {}
         },
         {
-          "name": "Renderer",
+          "name": "SpriteRenderer",
           "options": {
             "windowNodeId": "root",
             "backgroundColor": "#000"
@@ -248,9 +248,9 @@
               }
             },
             {
-              "name": "Renderable",
+              "name": "Sprite",
               "config": {
-                "type": "static",
+                "slice": 1,
                 "src": "assets/terrain/grass.png",
                 "width": 320,
                 "height": 320,
@@ -293,9 +293,9 @@
               }
             },
             {
-              "name": "Renderable",
+              "name": "Sprite",
               "config": {
-                "type": "static",
+                "slice": 1,
                 "src": "assets/terrain/sea.png",
                 "width": 640,
                 "height": 640,
@@ -349,9 +349,9 @@
               }
             },
             {
-              "name": "Renderable",
+              "name": "Sprite",
               "config": {
-                "type": "static",
+                "slice": 1,
                 "src": "assets/units/human.png",
                 "width": 26,
                 "height": 26,
@@ -428,9 +428,9 @@
           }
         },
         {
-          "name": "Renderable",
+          "name": "Sprite",
           "config": {
-            "type": "static",
+            "slice": 1,
             "src": "assets/units/rooster.png",
             "width": 47,
             "height": 52,
@@ -472,9 +472,9 @@
           }
         },
         {
-          "name": "Renderable",
+          "name": "Sprite",
           "config": {
-            "type": "static",
+            "slice": 1,
             "src": "assets/terrain/space.png",
             "width": 1000,
             "height": 1000,
@@ -516,9 +516,9 @@
           }
         },
         {
-          "name": "Renderable",
+          "name": "Sprite",
           "config": {
-            "type": "static",
+            "slice": 1,
             "src": "assets/terrain/floor.png",
             "width": 408,
             "height": 408,
