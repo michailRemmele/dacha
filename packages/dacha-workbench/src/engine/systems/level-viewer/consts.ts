@@ -1,11 +1,11 @@
 import {
   Transform,
-  Renderable,
+  Sprite,
   Light,
 } from 'remiz'
 
 export const ALLOWED_COMPONENTS = [
   Transform,
-  Renderable,
+  Sprite,
   Light,
 ]

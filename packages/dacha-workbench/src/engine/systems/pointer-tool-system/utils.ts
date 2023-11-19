@@ -1,4 +1,4 @@
-import { MathOps, Transform, Renderable } from 'remiz'
+import { MathOps, Transform, Sprite } from 'remiz'
 import type { GameObject } from 'remiz'
 
 import { Shape } from '../../components/shape'
@@ -30,7 +30,7 @@ const getAngle = (rotation: number): number => {
 }
 
 export const updateFrameSize = (frame: GameObject, gameObject: GameObject): void => {
-  const renderable = gameObject.getComponent(Renderable)
+  const sprite = gameObject.getComponent(Sprite)
   const transform = gameObject.getComponent(Transform)
 
   let offsetX = 0
@@ -39,9 +39,9 @@ export const updateFrameSize = (frame: GameObject, gameObject: GameObject): void
   let width = 0
   let height = 0
   if (
-    renderable !== undefined
-    && renderable.width !== 0
-    && renderable.height !== 0
+    sprite !== undefined
+    && sprite.width !== 0
+    && sprite.height !== 0
     && transform !== undefined
   ) {
     offsetX = transform.offsetX
@@ -49,8 +49,8 @@ export const updateFrameSize = (frame: GameObject, gameObject: GameObject): void
     rotation = getAngle(transform.rotation)
 
     // Need to perform scale before rotation since main renderer has the same order
-    width = renderable.width * transform.scaleX
-    height = renderable.height * transform.scaleY
+    width = sprite.width * transform.scaleX
+    height = sprite.height * transform.scaleY
   }
 
   const frameTransform = frame.getComponent(Transform)

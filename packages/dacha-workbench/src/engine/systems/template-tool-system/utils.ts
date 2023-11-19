@@ -1,6 +1,6 @@
 import {
   Transform,
-  Renderable,
+  Sprite,
 } from 'remiz'
 import type {
   GameObjectConfig,
@@ -58,15 +58,15 @@ export const createFromTemplate = (
   return gameObject
 }
 
-const getSizeX = (transform: ComponentConfig, renderable?: ComponentConfig): number => {
+const getSizeX = (transform: ComponentConfig, sprite?: ComponentConfig): number => {
   const scaleX = (transform.config.scaleX as number | undefined) || 1
-  const width = (renderable?.config.width as number | undefined) || 0
+  const width = (sprite?.config.width as number | undefined) || 0
 
   return scaleX * width
 }
-const getSizeY = (transform: ComponentConfig, renderable?: ComponentConfig): number => {
+const getSizeY = (transform: ComponentConfig, sprite?: ComponentConfig): number => {
   const scaleY = (transform.config.scaleY as number | undefined) || 1
-  const height = (renderable?.config.height as number | undefined) || 0
+  const height = (sprite?.config.height as number | undefined) || 0
 
   return scaleY * height
 }
@@ -110,13 +110,13 @@ export const updatePlacementPosition = (
 
   const transform = template.components
     ?.find((component) => component.name === Transform.componentName)
-  const renderable = template.components
-    ?.find((component) => component.name === Renderable.componentName)
+  const sprite = template.components
+    ?.find((component) => component.name === Sprite.componentName)
 
   if (transform !== undefined) {
     // eslint-disable-next-line no-param-reassign
-    placementPosition.x = getGridValue(cursor.x, getSizeX(transform, renderable), gridStep)
+    placementPosition.x = getGridValue(cursor.x, getSizeX(transform, sprite), gridStep)
     // eslint-disable-next-line no-param-reassign
-    placementPosition.y = getGridValue(cursor.y, getSizeY(transform, renderable), gridStep)
+    placementPosition.y = getGridValue(cursor.y, getSizeY(transform, sprite), gridStep)
   }
 }

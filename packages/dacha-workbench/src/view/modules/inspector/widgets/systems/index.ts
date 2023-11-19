@@ -8,7 +8,7 @@ import {
   MouseInputSystem,
   PhysicsSystem,
   ScriptSystem,
-  Renderer,
+  SpriteRenderer,
   UiBridge,
 } from 'remiz'
 
@@ -23,7 +23,7 @@ import { mouseControlSystem } from './mouse-control-system'
 import { mouseInputSystem } from './mouse-input-system'
 import { physicsSystem } from './physics-system'
 import { scriptSystem } from './script-system'
-import { renderer } from './renderer'
+import { spriteRenderer } from './sprite-renderer'
 import { uiBridge } from './ui-bridge'
 
 export const systemsSchema: Record<string, WidgetSchema> = {
@@ -36,6 +36,6 @@ export const systemsSchema: Record<string, WidgetSchema> = {
   [MouseInputSystem.systemName]: mouseInputSystem,
   [PhysicsSystem.systemName]: physicsSystem,
   [ScriptSystem.systemName]: scriptSystem,
-  [Renderer.systemName]: renderer,
+  [SpriteRenderer.systemName]: spriteRenderer,
   [UiBridge.systemName]: uiBridge,
 }

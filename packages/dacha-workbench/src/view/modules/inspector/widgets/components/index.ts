@@ -5,7 +5,7 @@ import {
   KeyboardControl,
   Light,
   MouseControl,
-  Renderable,
+  Sprite,
   RigidBody,
   Script,
   Transform,
@@ -19,7 +19,7 @@ import { colliderContainer } from './collider-container'
 import { keyboardControl } from './keyboard-control'
 import { light } from './light'
 import { mouseControl } from './mouse-control'
-import { renderable } from './renderable'
+import { sprite } from './sprite'
 import { rigidBody } from './rigid-body'
 import { script } from './script'
 import { transform } from './transform'
@@ -31,7 +31,7 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [KeyboardControl.componentName]: keyboardControl,
   [Light.componentName]: light,
   [MouseControl.componentName]: mouseControl,
-  [Renderable.componentName]: renderable,
+  [Sprite.componentName]: sprite,
   [RigidBody.componentName]: rigidBody,
   [Script.componentName]: script,
   [Transform.componentName]: transform,

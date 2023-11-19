@@ -5,7 +5,7 @@ import type { References, WidgetProps } from '../../../../../../types/widget-sch
 import { Widget } from '../../../components/widget'
 import { useConfig } from '../../../../../hooks'
 
-export const RenderableWidget: FC<WidgetProps> = ({ fields, path, references }) => {
+export const SpriteWidget: FC<WidgetProps> = ({ fields, path, references }) => {
   const globalOptions = useConfig(['globalOptions']) as Array<GlobalOption>
 
   const items = useMemo(() => {
