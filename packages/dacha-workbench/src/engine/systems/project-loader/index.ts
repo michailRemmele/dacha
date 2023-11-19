@@ -39,14 +39,14 @@ export class ProjectLoader extends System {
     const {
       componentsSchema = {},
       systemsSchema = {},
-      scriptsSchema = {},
+      resourcesSchema = {},
       locales = {},
     } = extension
 
     this.sceneContext.data.extension = {
       componentsSchema,
       systemsSchema,
-      scriptsSchema,
+      resourcesSchema,
       locales,
     }
   }

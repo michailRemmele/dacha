@@ -1,21 +1,21 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema'
 
-export const renderer: WidgetSchema = {
-  title: 'systems.renderer.title',
+export const spriteRenderer: WidgetSchema = {
+  title: 'systems.spriteRenderer.title',
   fields: [
     {
       name: 'windowNodeId',
-      title: 'systems.renderer.windowNodeId.title',
+      title: 'systems.spriteRenderer.windowNodeId.title',
       type: 'string',
     },
     {
       name: 'backgroundColor',
-      title: 'systems.renderer.backgroundColor.title',
+      title: 'systems.spriteRenderer.backgroundColor.title',
       type: 'color',
     },
     {
       name: 'backgroundAlpha',
-      title: 'systems.renderer.backgroundAlpha.title',
+      title: 'systems.spriteRenderer.backgroundAlpha.title',
       type: 'number',
     },
   ],

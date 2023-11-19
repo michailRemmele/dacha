@@ -1,6 +1,6 @@
 import {
   Transform,
-  Renderable,
+  Sprite,
 } from 'remiz'
 import type {
   GameObjectObserver,
@@ -170,12 +170,12 @@ export class SelectionMovementSubsystem {
     const offsetY = this.selectionStart.y - this.pointerStart.y + y
 
     if (snapToGrid) {
-      const renderable = selectedObject.getComponent(Renderable)
+      const sprite = selectedObject.getComponent(Sprite)
 
       const gridStep = getGridStep(this.sceneContext)
 
-      transform.offsetX = getGridValue(offsetX, getSizeX(transform, renderable), gridStep)
-      transform.offsetY = getGridValue(offsetY, getSizeY(transform, renderable), gridStep)
+      transform.offsetX = getGridValue(offsetX, getSizeX(transform, sprite), gridStep)
+      transform.offsetY = getGridValue(offsetY, getSizeY(transform, sprite), gridStep)
     } else {
       transform.offsetX = Math.round(offsetX)
       transform.offsetY = Math.round(offsetY)

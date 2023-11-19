@@ -4,7 +4,6 @@ import React, {
   useState,
   FC,
 } from 'react'
-import type { MessageBus } from 'remiz'
 
 import { EngineContext } from '../engine-provider'
 import { INSPECT_ENTITY_MSG, INSPECTED_ENTITY_CHANGE_MSG } from '../../../consts/message-types'
@@ -31,18 +30,17 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
   const [entityData, setEntityData] = useState<SelectedEntityData>({})
   const store = useStore()
 
-  const { messageBusObserver, pushMessage } = useContext(EngineContext) || {}
+  const { gameStateObserver, pushMessage, messageBus } = useContext(EngineContext) || {}
 
   useEffect(() => {
-    if (!messageBusObserver) {
+    if (!gameStateObserver) {
       return () => void 0
     }
 
-    const handleMessageBusUpdate = (messageBus: unknown): void => {
-      const messages = ((messageBus as MessageBus)
-        .get(INSPECT_ENTITY_MSG) || []) as Array<InspectEntityMessage>
+    const handleGameStateUpdate = (): void => {
+      const messages = messageBus.get(INSPECT_ENTITY_MSG) as Array<InspectEntityMessage> | undefined
 
-      if (messages.length) {
+      if (messages?.length) {
         const { path } = messages[messages.length - 1]
 
         setEntityData({
@@ -56,13 +54,13 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
       }
     }
 
-    messageBusObserver.subscribe(handleMessageBusUpdate)
+    gameStateObserver.subscribe(handleGameStateUpdate)
 
     return (): void => {
       setEntityData({})
-      messageBusObserver.unsubscribe(handleMessageBusUpdate)
+      gameStateObserver.unsubscribe(handleGameStateUpdate)
     }
-  }, [messageBusObserver])
+  }, [gameStateObserver, messageBus])
 
   useEffect(() => {
     const { path } = entityData

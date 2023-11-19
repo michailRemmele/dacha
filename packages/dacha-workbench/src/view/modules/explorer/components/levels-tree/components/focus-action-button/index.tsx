@@ -23,7 +23,12 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
   path,
 }) => {
   const { t } = useTranslation()
-  const { sceneContext, pushAction, gameObjects } = useContext(EngineContext)
+  const {
+    sceneContext,
+    pushAction,
+    gameStateObserver,
+    gameObjectObserver,
+  } = useContext(EngineContext)
 
   const mainObject = sceneContext.data.mainObject as GameObject
 
@@ -35,8 +40,8 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
       return () => {}
     }
 
-    const handleUpdate = (value: unknown): void => {
-      const gameObject = value as GameObject | null
+    const handleGameStateUpdate = (): void => {
+      const gameObject = gameObjectObserver.getById(gameObjectId)
 
       if (!gameObject) {
         setSelectedGameObject(undefined)
@@ -52,13 +57,13 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
       setSelectedGameObject(gameObject)
     }
 
-    gameObjects.subscribe(handleUpdate, gameObjectId)
+    gameStateObserver.subscribe(handleGameStateUpdate)
 
     return () => {
       setSelectedGameObject(undefined)
-      gameObjects.unsubscribe(handleUpdate, gameObjectId)
+      gameStateObserver.unsubscribe(handleGameStateUpdate)
     }
-  }, [gameObjectId])
+  }, [gameObjectId, gameStateObserver, gameObjectObserver])
 
   const handleClick = useCallback(() => {
     if (selectedGameObject === undefined) {

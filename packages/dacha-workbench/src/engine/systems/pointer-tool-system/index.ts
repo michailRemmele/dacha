@@ -1,4 +1,4 @@
-import { System, RendererService } from 'remiz'
+import { System, SpriteRendererService } from 'remiz'
 import type {
   SystemOptions,
   MessageBus,
@@ -104,7 +104,7 @@ export class PointerToolSystem extends System {
 
     const { screenX, screenY } = selectionMessages.at(-1) as MouseInputMessage
 
-    const rendererService = this.sceneContext.getService(RendererService)
+    const rendererService = this.sceneContext.getService(SpriteRendererService)
 
     const selectedObject = rendererService
       .intersectsWithPoint(screenX, screenY)

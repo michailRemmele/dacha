@@ -1,5 +1,4 @@
 import { useEffect, useContext, useRef } from 'react'
-import type { MessageBus } from 'remiz'
 
 import { useConfig } from '../use-config'
 import { SAVE_PROJECT_MSG } from '../../../consts/message-types'
@@ -43,18 +42,18 @@ export const useUnsavedChanges = (): void => {
       return () => {}
     }
 
-    const { messageBusObserver } = context
+    const { gameStateObserver, messageBus } = context
 
-    const handleMessages = (messageBus: unknown): void => {
-      const saveMessages = (messageBus as MessageBus).get(SAVE_PROJECT_MSG)
+    const handleGameStateUpdate = (): void => {
+      const saveMessages = messageBus.get(SAVE_PROJECT_MSG)
       if (saveMessages?.length && unsavedChangesRef.current) {
         window.electron.setUnsavedChanges(false)
         unsavedChangesRef.current = false
       }
     }
 
-    messageBusObserver.subscribe(handleMessages)
+    gameStateObserver.subscribe(handleGameStateUpdate)
 
-    return () => messageBusObserver.unsubscribe(handleMessages)
+    return () => gameStateObserver.unsubscribe(handleGameStateUpdate)
   }, [context])
 }
