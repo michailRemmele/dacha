@@ -13,16 +13,16 @@ import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { TemplateCollection } from '../../../engine/template';
-import type { Store } from '../../../engine/scene/store';
 import { Transform } from '../../components/transform';
-import { Renderable } from '../../components/renderable';
+import { Sprite } from '../../components/sprite';
 import { Light } from '../../components/light';
 import { Camera } from '../../components/camera';
+import { CameraService } from '../camera-system';
 import { MathOps } from '../../../engine/mathLib';
 import { filterByKey } from '../../../engine/utils';
 import { getWindowNode } from '../../utils/get-window-node';
 
-import { RendererService } from './service';
+import { SpriteRendererService } from './service';
 import {
   composeSort,
   SortFn,
@@ -42,7 +42,6 @@ import {
   getTextureMapKey,
   cloneTexture,
 } from './utils';
-import { CURRENT_CAMERA_NAME } from './consts';
 
 interface RendererOptions extends SystemOptions {
   windowNodeId: string
@@ -50,9 +49,8 @@ interface RendererOptions extends SystemOptions {
   backgroundAlpha: number
 }
 
-export class Renderer extends System {
+export class SpriteRenderer extends System {
   private gameObjectObserver: GameObjectObserver;
-  private store: Store;
   private window: HTMLElement;
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
@@ -66,6 +64,7 @@ export class Renderer extends System {
   private viewWidth: number;
   private viewHeight: number;
   private templateCollection: TemplateCollection;
+  private cameraService: CameraService;
 
   constructor(options: SystemOptions) {
     super();
@@ -73,7 +72,6 @@ export class Renderer extends System {
     const {
       globalOptions,
       createGameObjectObserver,
-      store,
       windowNodeId,
       backgroundColor,
       backgroundAlpha,
@@ -83,11 +81,10 @@ export class Renderer extends System {
 
     this.gameObjectObserver = createGameObjectObserver({
       components: [
-        Renderable,
+        Sprite,
         Transform,
       ],
     });
-    this.store = store;
     this.templateCollection = templateCollection;
 
     this.window = getWindowNode(windowNodeId);
@@ -126,12 +123,14 @@ export class Renderer extends System {
     this.spriteCache = {};
     this.textureMap = {};
 
-    sceneContext.registerService(new RendererService({
+    sceneContext.registerService(new SpriteRendererService({
       scene: this.renderScene,
       camera: this.currentCamera,
       window: this.window,
       sortFn: this.sortFn,
     }));
+
+    this.cameraService = sceneContext.getService(CameraService);
   }
 
   async load(): Promise<void> {
@@ -142,19 +141,19 @@ export class Renderer extends System {
     );
   }
 
-  private async loadImage(renderable: Renderable): Promise<void> {
-    const { src, slice } = renderable;
+  private async loadImage(sprite: Sprite): Promise<void> {
+    const { src, slice } = sprite;
 
     this.imageCache[src] = null;
-    return loadImage(renderable)
+    return loadImage(sprite)
       .then((image) => {
         this.imageCache[src] = image;
 
-        const sprite = prepareSprite(image, renderable);
+        const spriteTextures = prepareSprite(image, sprite);
         this.spriteCache[src] ??= {};
-        this.spriteCache[src][slice] = sprite;
-        this.textureMap[getTextureMapKey(renderable)] = sprite.map(
-          (frame) => cloneTexture(renderable, frame),
+        this.spriteCache[src][slice] = spriteTextures;
+        this.textureMap[getTextureMapKey(sprite)] = spriteTextures.map(
+          (frame) => cloneTexture(sprite, frame),
         );
       })
       .catch(() => {
@@ -162,25 +161,25 @@ export class Renderer extends System {
       });
   }
 
-  private getTextureArray(renderable: Renderable): Array<Texture> | undefined {
-    const { src, slice } = renderable;
+  private getTextureArray(sprite: Sprite): Array<Texture> | undefined {
+    const { src, slice } = sprite;
     const image = this.imageCache[src];
 
     if (image === null) {
       return void 0;
     }
     if (image === undefined) {
-      void this.loadImage(renderable);
+      void this.loadImage(sprite);
       return void 0;
     }
 
     if (image && !this.spriteCache[src][slice]) {
-      this.spriteCache[src][slice] = prepareSprite(image, renderable);
+      this.spriteCache[src][slice] = prepareSprite(image, sprite);
     }
-    const textureKey = getTextureMapKey(renderable);
+    const textureKey = getTextureMapKey(sprite);
     if (image && this.spriteCache[src][slice] && !this.textureMap[textureKey]) {
       this.textureMap[textureKey] = this.spriteCache[src][slice].map(
-        (frame) => cloneTexture(renderable, frame),
+        (frame) => cloneTexture(sprite, frame),
       );
     }
 
@@ -210,19 +209,19 @@ export class Renderer extends System {
     this.window.removeChild(this.renderer.domElement);
   }
 
-  private getImagesToLoad(): Record<string, Renderable> {
-    const imagesToLoad: Record<string, Renderable> = {};
+  private getImagesToLoad(): Record<string, Sprite> {
+    const imagesToLoad: Record<string, Sprite> = {};
 
     this.templateCollection.getAll().forEach(
       (template) => getImagesFromTemplates(imagesToLoad, template),
     );
 
     this.gameObjectObserver.getList()
-      .reduce((acc: Record<string, Renderable>, gameObject) => {
-        const renderable = gameObject.getComponent(Renderable);
+      .reduce((acc: Record<string, Sprite>, gameObject) => {
+        const sprite = gameObject.getComponent(Sprite);
 
-        if (!acc[renderable.src]) {
-          acc[renderable.src] = renderable;
+        if (!acc[sprite.src]) {
+          acc[sprite.src] = sprite;
         }
 
         return acc;
@@ -232,10 +231,10 @@ export class Renderer extends System {
   }
 
   private handleGameObjectAdd = (gameObject: GameObject): void => {
-    const renderable = gameObject.getComponent(Renderable);
+    const sprite = gameObject.getComponent(Sprite);
 
-    const material = createMaterial(renderable.material.type);
-    const geometry = new PlaneGeometry(renderable.width, renderable.height);
+    const material = createMaterial(sprite.material.type);
+    const geometry = new PlaneGeometry(sprite.width, sprite.height);
     const object = new Mesh(geometry, material);
 
     object.userData.gameObject = gameObject;
@@ -270,7 +269,7 @@ export class Renderer extends System {
   };
 
   private updateCamera(): void {
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject;
+    const currentCamera = this.cameraService.getCurrentCamera();
     const transform = currentCamera.getComponent(Transform);
     const { zoom } = currentCamera.getComponent(Camera);
 
@@ -284,7 +283,7 @@ export class Renderer extends System {
   private updateGameObjects(): void {
     this.gameObjectObserver.getList().forEach((gameObject, index) => {
       const transform = gameObject.getComponent(Transform);
-      const renderable = gameObject.getComponent(Renderable);
+      const sprite = gameObject.getComponent(Sprite);
 
       const object = this.renderScene.getObjectById(
         this.gameObjectsMap[gameObject.getId()],
@@ -294,26 +293,26 @@ export class Renderer extends System {
         return;
       }
 
-      object.visible = !renderable.disabled;
+      object.visible = !sprite.disabled;
       if (!object.visible) {
         return;
       }
 
       object.scale.set(
-        (renderable.flipX ? -1 : 1) * transform.scaleX,
-        (renderable.flipY ? -1 : 1) * transform.scaleY,
+        (sprite.flipX ? -1 : 1) * transform.scaleX,
+        (sprite.flipY ? -1 : 1) * transform.scaleY,
         1,
       );
-      object.rotation.set(0, 0, MathOps.degToRad(transform.rotation + renderable.rotation));
+      object.rotation.set(0, 0, MathOps.degToRad(transform.rotation + sprite.rotation));
       object.position.set(transform.offsetX, transform.offsetY, 0);
       object.renderOrder = index;
 
       const material = object.material as MeshStandardMaterial;
 
-      const textureArray = this.getTextureArray(renderable);
-      const texture = textureArray?.[renderable.currentFrame || 0];
+      const textureArray = this.getTextureArray(sprite);
+      const texture = textureArray?.[sprite.currentFrame || 0];
 
-      updateMaterial(renderable.material.type, material, renderable.material.options, texture);
+      updateMaterial(sprite.material.type, material, sprite.material.options, texture);
     });
   }
 
@@ -331,4 +330,4 @@ export class Renderer extends System {
   }
 }
 
-Renderer.systemName = 'Renderer';
+SpriteRenderer.systemName = 'SpriteRenderer';

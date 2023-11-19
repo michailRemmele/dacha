@@ -1,5 +1,5 @@
 export { Animator } from './animator';
-export { CameraSystem } from './camera-system';
+export { CameraSystem, CameraService } from './camera-system';
 export { GameStatsMeter } from './game-stats-meter';
 export { KeyboardInputSystem } from './keyboard-input-system';
 export { KeyboardControlSystem } from './keyboard-control-system';
@@ -7,5 +7,5 @@ export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
 export { PhysicsSystem } from './physics-system';
 export { ScriptSystem } from './script-system';
-export { Renderer } from './three-js-renderer';
+export { SpriteRenderer, SpriteRendererService } from './sprite-renderer';
 export { UiBridge } from './ui-bridge';

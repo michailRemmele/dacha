@@ -1,22 +1,20 @@
 import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject } from '../../../../../engine/game-object';
 import type { MessageBus } from '../../../../../engine/message-bus';
-import type { Store } from '../../../../../engine/scene';
 import { Camera, Transform } from '../../../../components';
 import { MOUSE_INPUT_MESSAGE } from '../../../../consts/messages';
 import type { MouseInputMessage } from '../../../../types/messages';
-
-const CURRENT_CAMERA_NAME = 'currentCamera';
+import { CameraService } from '../../../camera-system';
 
 export class CoordinatesProjector {
   private messageBus: MessageBus;
-  private store: Store;
+  private cameraService: CameraService;
 
   constructor(options: SystemOptions) {
-    const { store, messageBus } = options;
+    const { messageBus, sceneContext } = options;
 
-    this.store = store;
     this.messageBus = messageBus;
+    this.cameraService = sceneContext.getService(CameraService);
   }
 
   private getProjectedX(inputX: number, camera: GameObject): number {
@@ -34,11 +32,7 @@ export class CoordinatesProjector {
   }
 
   update(): void {
-    const currentCamera = this.store.get(CURRENT_CAMERA_NAME) as GameObject | undefined;
-
-    if (currentCamera === undefined) {
-      return;
-    }
+    const currentCamera = this.cameraService.getCurrentCamera();
 
     const messages = this.messageBus.get(
       MOUSE_INPUT_MESSAGE,

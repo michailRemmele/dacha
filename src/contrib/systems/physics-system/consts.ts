@@ -5,5 +5,3 @@ export const COLLISION_MSG = 'COLLISION';
 export const COLLISION_ENTER_MSG = 'COLLISION_ENTER';
 export const COLLISION_STAY_MSG = 'COLLISION_STAY';
 export const COLLISION_LEAVE_MSG = 'COLLISION_LEAVE';
-
-export const GRAVITATIONAL_ACCELERATION_STORE_KEY = 'gravitationalAcceleration';

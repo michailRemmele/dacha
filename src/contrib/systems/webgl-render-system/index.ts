@@ -1,11 +1,11 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import { Store } from '../../../engine/scene';
 import { Renderable } from '../../components/renderable';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
 import { ResourceLoader } from '../../../engine/resource-loader';
+import { CameraService } from '../camera-system';
 
 import { Rectangle } from './geometry/rectangle';
 import { Color } from './color';
@@ -25,7 +25,7 @@ import {
   sortByXAxis,
   sortByZAxis,
   sortByFit,
-} from '../three-js-renderer/sort';
+} from '../sprite-renderer/sort';
 import { splitToBatch } from './utils';
 import {
   MAX_COLOR_NUMBER,
@@ -37,7 +37,6 @@ import {
   VERTEX_STRIDE,
   VERTEX_DATA_STRIDE,
   BUFFER_SIZE,
-  CURRENT_CAMERA_NAME,
 } from './consts';
 
 interface ViewMatrixStats {
@@ -78,7 +77,6 @@ export class RenderSystem extends System {
   private _onWindowResizeBind: () => void;
   private _shaders: Array<WebGLShader>;
   private shaderProvider: ShaderProvider;
-  private _store: Store;
   private _gameObjectObserver: GameObjectObserver;
   private _scaleSensitivity: number;
   private _screenScale: number;
@@ -97,6 +95,7 @@ export class RenderSystem extends System {
   private _variables: Record<string, number | WebGLUniformLocation | null>;
   private sortFn: SortFn;
   private resourceLoader: ResourceLoader;
+  private cameraService: CameraService;
 
   constructor(options: WebGLRendererOptions) {
     super();
@@ -105,7 +104,7 @@ export class RenderSystem extends System {
       windowNodeId, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
       createGameObjectObserver, sortingLayers,
-      store, scaleSensitivity,
+      scaleSensitivity, sceneContext,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -154,7 +153,6 @@ export class RenderSystem extends System {
       sortByFit,
     ]);
 
-    this._store = store;
     this._gameObjectObserver = createGameObjectObserver({
       components: [
         Renderable,
@@ -178,6 +176,8 @@ export class RenderSystem extends System {
     this._vertexData = new Float32Array(VERTEX_DATA_STRIDE);
 
     this.resourceLoader = new ResourceLoader();
+
+    this.cameraService = sceneContext.getService(CameraService);
   }
 
   mount(): void {
@@ -480,7 +480,7 @@ export class RenderSystem extends System {
 
   private updateViewMatrix(): void {
     const gl = this.gl as WebGLRenderingContext;
-    const currentCamera = this._store.get(CURRENT_CAMERA_NAME) as GameObject;
+    const currentCamera = this.cameraService.getCurrentCamera();
     const transform = currentCamera.getComponent(Transform);
     const { zoom } = currentCamera.getComponent(Camera);
     const scale = zoom * this._screenScale;

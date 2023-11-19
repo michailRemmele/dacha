@@ -5,7 +5,7 @@ import {
   ClampToEdgeWrapping,
 } from 'three/src/Three';
 
-import { Renderable } from '../../components/renderable';
+import { Sprite } from '../../components/sprite';
 import type { Template } from '../../../engine/template';
 import { ResourceLoader } from '../../../engine/resource-loader';
 
@@ -15,13 +15,11 @@ const spriteCropper = new SpriteCropper();
 const resourceLoader = new ResourceLoader();
 
 export const loadImage = (
-  renderable: Renderable,
-): Promise<HTMLImageElement> => resourceLoader.load(renderable.src) as Promise<HTMLImageElement>;
+  sprite: Sprite,
+): Promise<HTMLImageElement> => resourceLoader.load(sprite.src) as Promise<HTMLImageElement>;
 
-export const prepareSprite = (image: HTMLImageElement, renderable: Renderable): Array<Texture> => {
-  const textures = renderable.type === 'static'
-    ? [new Texture(image)]
-    : spriteCropper.crop(image, renderable);
+export const prepareSprite = (image: HTMLImageElement, sprite: Sprite): Array<Texture> => {
+  const textures = spriteCropper.crop(image, sprite);
 
   textures.forEach((texture) => {
     texture.magFilter = NearestFilter;
@@ -33,18 +31,18 @@ export const prepareSprite = (image: HTMLImageElement, renderable: Renderable): 
 };
 
 export const getImagesFromTemplates = (
-  images: Record<string, Renderable>,
+  images: Record<string, Sprite>,
   template: Template,
 ): void => {
   template.getChildren().forEach((childTemplate) => getImagesFromTemplates(images, childTemplate));
 
-  const renderable = template.getComponent(Renderable);
+  const sprite = template.getComponent(Sprite);
 
-  if (!renderable || images[renderable.src]) {
+  if (!sprite || images[sprite.src]) {
     return;
   }
 
-  images[renderable.src] = renderable;
+  images[sprite.src] = sprite;
 };
 
 export const getTextureMapKey = ({
@@ -53,10 +51,10 @@ export const getTextureMapKey = ({
   width = 0,
   height = 0,
   src,
-}: Renderable): string => `${slice}_${fit}_${width}_${height}_${src}`;
+}: Sprite): string => `${slice}_${fit}_${width}_${height}_${src}`;
 
-export const cloneTexture = (renderable: Renderable, texture: Texture): Texture => {
-  const { fit, width = 0, height = 0 } = renderable;
+export const cloneTexture = (sprite: Sprite, texture: Texture): Texture => {
+  const { fit, width = 0, height = 0 } = sprite;
 
   const repeatX = fit === 'repeat' ? width / (texture.image as HTMLImageElement).width : 1;
   const repeatY = fit === 'repeat' ? height / (texture.image as HTMLImageElement).height : 1;

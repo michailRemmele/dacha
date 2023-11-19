@@ -3,7 +3,7 @@ export { KeyboardControl } from './keyboard-control';
 export { ColliderContainer } from './collider-container';
 export { RigidBody } from './rigid-body';
 export { Animatable } from './animatable';
-export { Renderable } from './renderable';
+export { Sprite } from './sprite';
 export { Transform } from './transform';
 export { MouseControl } from './mouse-control';
 export { Script } from './script';

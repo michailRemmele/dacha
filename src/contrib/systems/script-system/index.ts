@@ -2,10 +2,8 @@ import { System } from '../../../engine/system';
 import type {
   SystemOptions,
   UpdateOptions,
-  HelperFn,
 } from '../../../engine/system';
 import type { GameObjectObserver, GameObject } from '../../../engine/game-object';
-import type { Store } from '../../../engine/scene/store';
 import type { MessageBus } from '../../../engine/message-bus';
 import { Script } from '../../components/script';
 
@@ -22,11 +20,9 @@ export class ScriptSystem extends System {
   private scriptsObserver: GameObjectObserver;
   private gameObjectSpawner: unknown;
   private gameObjectDestroyer: unknown;
-  private store: Store;
   private scripts: Record<string, GameObjectScriptClass>;
   private messageBus: MessageBus;
   private activeScripts: Record<string, GameObjectScript>;
-  private helpers: Record<string, HelperFn>;
 
   constructor(options: SystemOptions) {
     super();
@@ -35,9 +31,8 @@ export class ScriptSystem extends System {
       createGameObjectObserver,
       gameObjectSpawner,
       gameObjectDestroyer,
-      store,
       messageBus,
-      helpers,
+      resources = {},
     } = options;
 
     this.gameObjectObserver = createGameObjectObserver({});
@@ -48,17 +43,10 @@ export class ScriptSystem extends System {
     });
     this.gameObjectSpawner = gameObjectSpawner;
     this.gameObjectDestroyer = gameObjectDestroyer;
-    this.store = store;
-    this.scripts = {};
+    this.scripts = resources as Record<string, GameObjectScriptClass>;
     this.messageBus = messageBus;
-    this.helpers = helpers;
 
     this.activeScripts = {};
-  }
-
-  async load(): Promise<void> {
-    const { scripts } = await this.helpers.loadScripts();
-    this.scripts = scripts as Record<string, GameObjectScriptClass>;
   }
 
   mount(): void {
@@ -101,7 +89,6 @@ export class ScriptSystem extends System {
           gameObject,
           gameObjectObserver: this.gameObjectObserver,
           messageBus: this.messageBus,
-          store: this.store,
           spawner: this.gameObjectSpawner,
           destroyer: this.gameObjectDestroyer,
           ...scriptOptions,

@@ -1,6 +1,6 @@
 import { Texture } from 'three/src/Three';
 
-import type { Renderable } from '../../components/renderable';
+import type { Sprite } from '../../components/sprite';
 
 export class SpriteCropper {
   private canvas: HTMLCanvasElement;
@@ -11,15 +11,15 @@ export class SpriteCropper {
     this.canvasContext = this.canvas.getContext('2d') as CanvasRenderingContext2D;
   }
 
-  crop(sprite: HTMLImageElement, renderable: Renderable): Array<Texture> {
-    const frames = renderable.slice;
+  crop(spriteTexture: HTMLImageElement, sprite: Sprite): Array<Texture> {
+    const frames = sprite.slice;
 
-    if (frames === 0) {
+    if (frames <= 0) {
       return [];
     }
 
-    const width = Math.max(sprite.width / frames, 1);
-    const height = Math.max(sprite.height, 1);
+    const width = Math.max(spriteTexture.width / frames, 1);
+    const height = Math.max(spriteTexture.height, 1);
 
     this.canvas.width = width;
     this.canvas.height = height;
@@ -30,7 +30,7 @@ export class SpriteCropper {
       this.canvasContext.clearRect(0, 0, width, height);
 
       this.canvasContext.drawImage(
-        sprite,
+        spriteTexture,
         width * i,
         0,
         width,

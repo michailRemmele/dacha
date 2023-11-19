@@ -5,19 +5,16 @@ import type {
   GameObjectDestroyer,
 } from '../game-object';
 import type { TemplateCollection } from '../template';
-import type { Store, SceneContext } from '../scene';
+import type { SceneContext } from '../scene';
 import type { MessageBus } from '../message-bus';
 import type { Constructor } from '../../types/utils';
-
-export type HelperFn = () => Promise<Record<string, unknown>>;
 
 export interface SystemOptions extends Record<string, unknown> {
   createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver
   gameObjectSpawner: GameObjectSpawner
   gameObjectDestroyer: GameObjectDestroyer
-  helpers: Record<string, HelperFn>
+  resources?: unknown
   globalOptions: Record<string, unknown>
-  store: Store
   messageBus: MessageBus
   sceneContext: SceneContext
   templateCollection: TemplateCollection

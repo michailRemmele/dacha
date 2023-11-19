@@ -3,14 +3,13 @@ import {
   STOP_MOVEMENT_MSG,
   COLLISION_ENTER_MSG,
   COLLISION_STAY_MSG,
-  GRAVITATIONAL_ACCELERATION_STORE_KEY,
 } from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
 import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject } from '../../../../../engine/game-object';
 import type { MessageBus, Message } from '../../../../../engine/message-bus';
-import type { Store } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
+import type { PhysicsSystemOptions } from '../../types';
 
 const REACTION_FORCE_VECTOR_X = 0;
 const REACTION_FORCE_VECTOR_Y = -1;
@@ -29,16 +28,13 @@ interface CollisionEventMessage extends Message {
 
 export class CollisionSolver {
   private messageBus: MessageBus;
-  private store: Store;
   private gravitationalAcceleration: number;
 
   constructor(options: SystemOptions) {
-    const { store, messageBus } = options;
+    const { messageBus, gravitationalAcceleration } = options as PhysicsSystemOptions;
 
-    this.store = store;
     this.messageBus = messageBus;
-
-    this.gravitationalAcceleration = this.store.get(GRAVITATIONAL_ACCELERATION_STORE_KEY) as number;
+    this.gravitationalAcceleration = gravitationalAcceleration;
   }
 
   private addReactionForce(gameObject: GameObject, mtv: Mtv): void {

@@ -3,7 +3,6 @@ export {
   GAME_OBJECT_REMOVED,
 } from './consts';
 export { Scene } from './scene';
-export { Store } from './store';
 export { SceneProvider } from './scene-provider';
 export { SceneContext } from './context';
 export type { GameObjectChangeEvent } from './scene';
