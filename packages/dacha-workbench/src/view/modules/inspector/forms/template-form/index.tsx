@@ -1,4 +1,4 @@
-import React, { useMemo, FC } from 'react'
+import { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -13,7 +13,6 @@ export const TemplateForm: FC<FormComponentProps> = ({ path }) => {
   const { t } = useTranslation()
 
   const namePath = useMemo(() => path.concat('name'), [path])
-  const typePath = useMemo(() => path.concat('type'), [path])
 
   return (
     <Form>
@@ -21,11 +20,6 @@ export const TemplateForm: FC<FormComponentProps> = ({ path }) => {
         path={namePath}
         component={LabelledTextInput}
         label={t('inspector.templateForm.field.name.label')}
-      />
-      <Field
-        path={typePath}
-        component={LabelledTextInput}
-        label={t('inspector.templateForm.field.type.label')}
       />
 
       <ComponentList />
