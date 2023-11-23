@@ -12,7 +12,6 @@ import { GameObject } from './game-object';
 export interface GameObjectOptions {
   id?: string
   name?: string
-  type?: string
   children?: Array<GameObjectOptions>
   components?: Array<ComponentConfig>
   fromTemplate?: boolean
@@ -37,7 +36,6 @@ export class GameObjectCreator {
 
   private buildFromTemplate(options: GameObjectOptions, template: Template): GameObject {
     const {
-      type,
       templateId = void '',
       components = [],
       children = [],
@@ -56,7 +54,6 @@ export class GameObjectCreator {
     const gameObject = new GameObject({
       id,
       name,
-      type: type || template.type,
       templateId,
     });
 
@@ -65,7 +62,6 @@ export class GameObjectCreator {
         const childOptions = {
           name: templateChild.name,
           templateId: templateChild.id,
-          type: templateChild.type,
           fromTemplate: true,
           isNew,
         };
@@ -107,7 +103,6 @@ export class GameObjectCreator {
   private buildFromScratch(options: GameObjectOptions): GameObject {
     const {
       name,
-      type,
       components = [],
       children = [],
     } = options;
@@ -118,7 +113,6 @@ export class GameObjectCreator {
     const gameObject = new GameObject({
       id,
       name: name as string,
-      type,
     });
 
     children.forEach((child) => {

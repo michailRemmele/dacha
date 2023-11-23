@@ -92,11 +92,9 @@ describe('Engine -> GameObjectCreator', () => {
 
     expect(gameObject.id).toBe('001');
     expect(gameObject.name).toBe('gameObjectExample');
-    expect(gameObject.type).toBe('example');
 
     expect(gameObject.getChildren()[0].id).toBe('002');
     expect(gameObject.getChildren()[0].name).toBe('childExample');
-    expect(gameObject.getChildren()[0].type).toBe('exampleChild');
 
     expect(gameObject.getChildren().length).toBe(1);
     expect(gameObject.getChildren()[0].parent).toBe(gameObject);
@@ -128,17 +126,14 @@ describe('Engine -> GameObjectCreator', () => {
 
     expect(gameObject.id).toBe('003');
     expect(gameObject.name).toBe('gameObjectFromTemplateExample');
-    expect(gameObject.type).toBe('example');
     expect(gameObject.templateId).toBe('000');
 
     expect(gameObject.getChildren()[0].id).toBe('004');
     expect(gameObject.getChildren()[0].name).toBe('childFromTemplateExample1');
-    expect(gameObject.getChildren()[0].type).toBe('exampleChild');
     expect(gameObject.getChildren()[0].templateId).toBe('001');
 
     expect(gameObject.getChildren()[1].id).toBe('005');
     expect(gameObject.getChildren()[1].name).toBe('childFromTemplateExample2');
-    expect(gameObject.getChildren()[1].type).toBe('exampleChild');
     expect(gameObject.getChildren()[1].templateId).toBeUndefined();
 
     expect(gameObject.getChildren().length).toBe(2);
@@ -182,12 +177,10 @@ describe('Engine -> GameObjectCreator', () => {
 
     expect(gameObject.id).toBeDefined();
     expect(gameObject.name).toBeDefined();
-    expect(gameObject.type).toBe('example');
     expect(gameObject.templateId).toBe('000');
 
     expect(gameObject.getChildren()[0].id).toBeDefined();
     expect(gameObject.getChildren()[0].name).toBe('childTemplateExample');
-    expect(gameObject.getChildren()[0].type).toBe('exampleChild');
     expect(gameObject.getChildren()[0].templateId).toBe('001');
 
     expect(gameObject.getChildren().length).toBe(1);

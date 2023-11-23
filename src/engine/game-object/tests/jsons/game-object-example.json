@@ -2,12 +2,10 @@
 {
   "id": "001",
   "name": "gameObjectExample",
-  "type": "example",
   "children": [
     {
       "id": "002", 
       "name": "childExample",
-      "type": "exampleChild",
       "children": [],
       "components": [
         {

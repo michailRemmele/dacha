@@ -36,22 +36,6 @@ describe('Engine -> GameObject', () => {
     expect(gameObject2.name).toEqual('game-object-2');
   });
 
-  it('Returns correct type', () => {
-    const gameObject1 = new GameObject({
-      id: '1',
-      name: 'game-object-1',
-    });
-    const gameObject2 = new GameObject({
-      id: '2',
-      name: 'game-object-2',
-    });
-    gameObject1.type = 'some-type-1';
-    gameObject2.type = 'some-type-2';
-
-    expect(gameObject1.type).toEqual('some-type-1');
-    expect(gameObject2.type).toEqual('some-type-2');
-  });
-
   it('Returns correct list of component names', () => {
     const gameObject = new GameObject({
       id: '0',

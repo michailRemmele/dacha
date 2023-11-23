@@ -2,14 +2,12 @@
 {
   "id": "003",
   "name": "gameObjectFromTemplateExample",
-  "type": "example",
   "fromTemplate": true,
   "templateId": "000",
   "children": [
     {
       "id": "004",
       "name": "childFromTemplateExample1",
-      "type": "exampleChild",
       "fromTemplate": true,
       "templateId": "001",
       "children": [],
@@ -27,7 +25,6 @@
     {
       "id": "005",
       "name": "childFromTemplateExample2",
-      "type": "exampleChild",
       "children": [],
       "components": [
         {

@@ -78,7 +78,7 @@ export class Scene {
       gameObjectSpawner: this.getGameObjectSpawner(),
       gameObjectDestroyer: this.getGameObjectDestroyer(),
       createGameObjectObserver: (
-        filter: GameObjectObserverFilter,
+        filter?: GameObjectObserverFilter,
       ): GameObjectObserver => this.createGameObjectObserver(filter),
       messageBus: this.getMessageBus(),
       resources: resources[config.name],
@@ -121,7 +121,7 @@ export class Scene {
     return this.systems;
   }
 
-  createGameObjectObserver(filter: GameObjectObserverFilter): GameObjectObserver {
+  createGameObjectObserver(filter?: GameObjectObserverFilter): GameObjectObserver {
     return new GameObjectObserver(this, filter);
   }
 

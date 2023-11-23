@@ -19,12 +19,11 @@ export class TemplateCollection {
     const {
       id,
       name,
-      type,
       components = [],
       children = [],
     } = options;
 
-    const template = new Template({ id, name, type });
+    const template = new Template({ id, name });
 
     children.forEach((child) => {
       const childTemplate = this.buildTemplate(child);

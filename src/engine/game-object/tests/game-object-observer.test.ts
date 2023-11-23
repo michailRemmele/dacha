@@ -58,27 +58,22 @@ describe('Engine -> GameObjectObserver', () => {
     gameObject1 = new GameObject({
       id: '1',
       name: 'game-object-1',
-      type: 'correct-type',
     });
     gameObject2 = new GameObject({
       id: '2',
       name: 'game-object-2',
-      type: 'incorrect-type',
     });
     gameObject3 = new GameObject({
       id: '3',
       name: 'game-object-3',
-      type: 'correct-type',
     });
     gameObject4 = new GameObject({
       id: '4',
       name: 'game-object-4',
-      type: 'correct-type',
     });
     gameObject5 = new GameObject({
       id: '5',
       name: 'game-object-5',
-      type: 'correct-type',
     });
 
     gameObject1.setComponent(new TestComponent1());
@@ -98,7 +93,6 @@ describe('Engine -> GameObjectObserver', () => {
   it('Correct filters game objects by components', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
       components: [TestComponent1, TestComponent2],
-      type: 'correct-type',
     });
 
     scene.addGameObject(gameObject1);
@@ -122,7 +116,6 @@ describe('Engine -> GameObjectObserver', () => {
   it('Correct subscribe on new game objects additions', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
       components: [TestComponent1],
-      type: 'correct-type',
     });
     const testFn1 = jest.fn();
     const testFn2 = jest.fn();
@@ -141,13 +134,6 @@ describe('Engine -> GameObjectObserver', () => {
     expect(testFn1.mock.calls[0]).toEqual([gameObject1]);
     expect(testFn2.mock.calls.length).toEqual(1);
     expect(testFn2.mock.calls[0]).toEqual([gameObject1]);
-    expect(gameObjectObserver.size()).toEqual(1);
-
-    scene.addGameObject(gameObject2);
-    gameObjectObserver.fireEvents();
-
-    expect(testFn1.mock.calls.length).toEqual(1);
-    expect(testFn2.mock.calls.length).toEqual(1);
     expect(gameObjectObserver.size()).toEqual(1);
 
     scene.addGameObject(gameObject3);
@@ -182,7 +168,6 @@ describe('Engine -> GameObjectObserver', () => {
   it('Correct subscribe on new game objects removes', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
       components: [TestComponent1],
-      type: 'correct-type',
     });
 
     const testFn1 = jest.fn();
@@ -201,7 +186,7 @@ describe('Engine -> GameObjectObserver', () => {
 
     expect(testFn1.mock.calls.length).toEqual(0);
     expect(testFn2.mock.calls.length).toEqual(0);
-    expect(gameObjectObserver.size()).toEqual(3);
+    expect(gameObjectObserver.size()).toEqual(4);
 
     gameObject1.removeComponent(TestComponent1);
     gameObjectObserver.fireEvents();
@@ -210,7 +195,7 @@ describe('Engine -> GameObjectObserver', () => {
     expect(testFn1.mock.calls[0]).toEqual([gameObject1]);
     expect(testFn2.mock.calls.length).toEqual(1);
     expect(testFn2.mock.calls[0]).toEqual([gameObject1]);
-    expect(gameObjectObserver.size()).toEqual(2);
+    expect(gameObjectObserver.size()).toEqual(3);
 
     scene.removeGameObject(gameObject4);
     gameObject5.removeComponent(TestComponent1);
@@ -222,13 +207,12 @@ describe('Engine -> GameObjectObserver', () => {
     expect(testFn2.mock.calls.length).toEqual(3);
     expect(testFn2.mock.calls[1]).toEqual([gameObject4]);
     expect(testFn2.mock.calls[2]).toEqual([gameObject5]);
-    expect(gameObjectObserver.size()).toEqual(0);
+    expect(gameObjectObserver.size()).toEqual(1);
   });
 
   it('Correct unsubscribe from game object observer events', () => {
     const gameObjectObserver = new GameObjectObserver(scene, {
       components: [TestComponent1],
-      type: 'correct-type',
     });
 
     const testFn = jest.fn();

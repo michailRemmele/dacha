@@ -18,13 +18,11 @@ interface ObserverSubscriptions {
 }
 
 export interface GameObjectObserverFilter {
-  type?: string;
   components?: Array<ComponentConstructor | string>;
 }
 
 export class GameObjectObserver implements EventEmitter {
   private _components: Array<ComponentConstructor | string>;
-  private _type?: string;
   private _observedGameObjects: Array<GameObject>;
   private _addedToAccepted: Array<GameObject>;
   private _removedFromAccepted: Array<GameObject>;
@@ -32,14 +30,12 @@ export class GameObjectObserver implements EventEmitter {
   private _acceptedGameObjectsMap: Record<string, GameObject | undefined>;
   private subscriptions: ObserverSubscriptions;
 
-  constructor(scene: Scene, filter: GameObjectObserverFilter) {
+  constructor(scene: Scene, filter: GameObjectObserverFilter = {}) {
     const {
-      type,
       components = [],
     } = filter;
 
     this._components = components;
-    this._type = type;
     this._observedGameObjects = scene.getGameObjects();
     this._addedToAccepted = [];
     this._removedFromAccepted = [];
@@ -106,10 +102,6 @@ export class GameObjectObserver implements EventEmitter {
   }
 
   private _test(gameObject: GameObject): boolean {
-    if (this._type && this._type !== gameObject.type) {
-      return false;
-    }
-
     return this._components.every((component) => {
       // Dummy check to avoid typescript error
       if (typeof component === 'string') {

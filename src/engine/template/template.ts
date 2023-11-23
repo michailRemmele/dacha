@@ -1,27 +1,23 @@
 import type { Component, ComponentConstructor } from '../component';
-import type { Constructor } from '../../types/utils';
 
 interface TemplateOptions {
   id: string
   name: string
-  type: string
 }
 
 export class Template {
   readonly id: string;
   readonly name: string;
-  readonly type: string;
 
   private components: Record<string, Component>;
   private parent?: Template;
   private children: Array<Template>;
 
   constructor(options: TemplateOptions) {
-    const { id, name, type } = options;
+    const { id, name } = options;
 
     this.id = id;
     this.name = name;
-    this.type = type;
 
     this.components = {};
     this.parent = void 0;
@@ -62,7 +58,6 @@ export class Template {
     const template = new Template({
       id: this.id,
       name: this.name,
-      type: this.type,
     });
 
     this.children.forEach((child) => {
