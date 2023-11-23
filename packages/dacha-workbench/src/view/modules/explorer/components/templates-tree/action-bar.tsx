@@ -42,7 +42,6 @@ export const ActionBar: FC = () => {
     dispatch(addValue<TemplateConfig>(pathToAdd, {
       id: uuidv4(),
       name: t('explorer.levels.actionBar.template.new.title', { index }),
-      type: '',
       components: [],
       children: [],
     }))

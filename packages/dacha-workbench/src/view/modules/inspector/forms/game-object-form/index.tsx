@@ -17,7 +17,6 @@ export const GameObjectForm: FC<FormComponentProps> = ({ path }) => {
   const { t } = useTranslation()
 
   const namePath = useMemo(() => path.concat('name'), [path])
-  const typePath = useMemo(() => path.concat('type'), [path])
 
   const { templateId } = useConfig(path) as GameObjectConfig
 
@@ -31,11 +30,6 @@ export const GameObjectForm: FC<FormComponentProps> = ({ path }) => {
       {templateId ? (
         <TemplateField path={path} />
       ) : null}
-      <Field
-        path={typePath}
-        component={LabelledTextInput}
-        label={t('inspector.gameObjectForm.field.type.label')}
-      />
 
       <ComponentList />
     </Form>

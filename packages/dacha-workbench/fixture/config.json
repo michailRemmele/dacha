@@ -112,14 +112,12 @@
         {
           "id": "3",
           "name": "player_1",
-          "type": "unit",
           "fromTemplate": true,
           "children": [
             {
               "id": "3.1",
               "name": "mainCamera",
               "fromTemplate": false,
-              "templateName": "",
               "children": [],
               "components": [
                 {
@@ -383,7 +381,6 @@
   "templates": [
     {
       "name": "player",
-      "type": "unit",
       "children": [
         {
           "name": "playerHitBox",

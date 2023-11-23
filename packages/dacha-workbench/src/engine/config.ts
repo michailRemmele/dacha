@@ -327,7 +327,6 @@ export const getEditorConfig = ({
     {
       id: 'frame',
       name: 'frame',
-      type: '',
       children: [],
       components: [
         {
