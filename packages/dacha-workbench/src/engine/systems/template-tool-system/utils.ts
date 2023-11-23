@@ -26,7 +26,6 @@ const buildGameObject = (template: TemplateConfig, index?: number): GameObjectCo
   templateId: template.id,
   fromTemplate: true,
   name: index ? `${template.name} ${index}` : template.name,
-  type: template.type,
   components: [],
   children: (template.children ?? []).map((child) => buildGameObject(child)),
 })
