@@ -11,7 +11,6 @@ export interface GameObjectOptions {
   id: string
   name: string
   templateId?: string
-  type?: string
 }
 
 export class GameObject {
@@ -22,7 +21,6 @@ export class GameObject {
 
   public readonly id: string;
   public name: string;
-  public type?: string;
   public readonly templateId?: string;
   public parent?: GameObject;
 
@@ -30,11 +28,9 @@ export class GameObject {
     id,
     name,
     templateId,
-    type,
   }: GameObjectOptions) {
     this.id = id;
     this.name = name;
-    this.type = type;
     this.templateId = templateId;
     this.components = {};
     this.parent = void 0;

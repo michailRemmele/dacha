@@ -13,7 +13,6 @@ export interface ComponentConfig {
 export interface TemplateConfig {
   id: string
   name: string
-  type: string
   components?: Array<ComponentConfig>
   children?: Array<TemplateConfig>
 }
@@ -21,7 +20,6 @@ export interface TemplateConfig {
 export interface GameObjectConfig {
   id: string
   name: string
-  type?: string
   children?: Array<GameObjectConfig>
   components?: Array<ComponentConfig>
   fromTemplate?: boolean
