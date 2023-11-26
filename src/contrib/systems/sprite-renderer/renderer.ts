@@ -317,8 +317,6 @@ export class SpriteRenderer extends System {
   }
 
   update(): void {
-    this.gameObjectObserver.fireEvents();
-
     this.updateCamera();
 
     this.lightSubsystem.update();

@@ -154,8 +154,6 @@ export class PhysicsSubsystem {
     const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
 
-    this.gameObjectObserver.fireEvents();
-
     this.processConstraints();
 
     this.gameObjectObserver.forEach((gameObject) => {

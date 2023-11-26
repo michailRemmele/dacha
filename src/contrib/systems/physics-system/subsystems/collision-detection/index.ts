@@ -232,8 +232,6 @@ export class CollisionDetectionSubsystem {
   }
 
   update(): void {
-    this.gameObjectObserver.fireEvents();
-
     this.gameObjectObserver.forEach((gameObject) => {
       if (!this.checkOnReorientation(gameObject)) {
         return;

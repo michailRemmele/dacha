@@ -73,8 +73,6 @@ export class ScriptSystem extends System {
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
-    this.scriptsObserver.fireEvents();
-
     this.scriptsObserver.forEach((gameObject) => {
       const id = gameObject.getId();
       const {

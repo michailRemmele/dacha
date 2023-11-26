@@ -52,8 +52,6 @@ export class LightSubsystem {
   };
 
   update(): void {
-    this.lightsObserver.fireEvents();
-
     this.lightsObserver.getList().forEach((gameObject) => {
       const transform = gameObject.getComponent(Transform);
       const { type, options } = gameObject.getComponent(Light);

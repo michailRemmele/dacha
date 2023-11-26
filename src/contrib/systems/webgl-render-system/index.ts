@@ -586,8 +586,6 @@ export class RenderSystem extends System {
   }
 
   update(): void {
-    this._gameObjectObserver.fireEvents();
-
     const gl = this.gl as WebGLRenderingContext;
 
     const { canvas } = gl;

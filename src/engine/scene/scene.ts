@@ -1,9 +1,8 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
 import type { TemplateCollection } from '../template';
 import type { System, SystemConstructor } from '../system';
+import { SystemController } from '../system';
 import {
-  GameObjectObserver,
-  GameObjectObserverFilter,
   GameObject,
   GameObjectSpawner,
   GameObjectDestroyer,
@@ -29,19 +28,20 @@ interface SceneOptions extends SceneConfig {
 }
 
 export class Scene {
-  private name: string;
   private gameObjects: Record<string, GameObject>;
-  private context: SceneContext;
   private gameObjectCreator: GameObjectCreator;
-  private gameObjectSpawner: GameObjectSpawner;
-  private gameObjectDestroyer: GameObjectDestroyer;
-  private messageBus: MessageBus;
   private systems: Array<System>;
   private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
-  private templateCollection: TemplateCollection;
   private availableSystemsMap: Record<string, SystemConstructor>;
 
+  public templateCollection: TemplateCollection;
+  public gameObjectSpawner: GameObjectSpawner;
+  public gameObjectDestroyer: GameObjectDestroyer;
+  public messageBus: MessageBus;
+  public context: SceneContext;
+
   readonly id: string;
+  readonly name: string;
 
   constructor({
     id,
@@ -73,18 +73,13 @@ export class Scene {
       acc[AvailableSystem.systemName] = AvailableSystem;
       return acc;
     }, {} as Record<string, SystemConstructor>);
-    this.systems = systems.map((config) => new this.availableSystemsMap[config.name]({
-      ...config.options,
-      gameObjectSpawner: this.getGameObjectSpawner(),
-      gameObjectDestroyer: this.getGameObjectDestroyer(),
-      createGameObjectObserver: (
-        filter?: GameObjectObserverFilter,
-      ): GameObjectObserver => this.createGameObjectObserver(filter),
-      messageBus: this.getMessageBus(),
-      resources: resources[config.name],
+
+    this.systems = systems.map((config) => new SystemController({
+      systemOptions: config.options,
       globalOptions,
-      sceneContext: this.context,
-      templateCollection: this.templateCollection,
+      resources: resources[config.name],
+      scene: this,
+      SystemClass: this.availableSystemsMap[config.name],
     }));
   }
 
@@ -119,22 +114,6 @@ export class Scene {
 
   getSystems(): Array<System> {
     return this.systems;
-  }
-
-  createGameObjectObserver(filter?: GameObjectObserverFilter): GameObjectObserver {
-    return new GameObjectObserver(this, filter);
-  }
-
-  getGameObjectSpawner(): GameObjectSpawner {
-    return this.gameObjectSpawner;
-  }
-
-  getGameObjectDestroyer(): GameObjectDestroyer {
-    return this.gameObjectDestroyer;
-  }
-
-  getMessageBus(): MessageBus {
-    return this.messageBus;
   }
 
   addGameObject(gameObject: GameObject): void {
@@ -175,10 +154,6 @@ export class Scene {
         gameObject,
       });
     });
-  }
-
-  getName(): string {
-    return this.name;
   }
 
   getGameObjects(): Array<GameObject> {

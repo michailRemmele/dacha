@@ -25,7 +25,7 @@ export class GameLoop {
 
     const currentScene = this.sceneProvider.getCurrentScene();
 
-    const messageBus = currentScene?.getMessageBus();
+    const messageBus = currentScene?.messageBus;
 
     messageBus?.sendDelayed();
 

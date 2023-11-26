@@ -77,8 +77,6 @@ export class CollisionBroadcastSubsystem {
   }
 
   update(): void {
-    this.gameObjectObserver.fireEvents();
-
     const collisionMessages = this.messageBus.get(COLLISION_MSG) || [];
     collisionMessages.forEach((message) => {
       const {

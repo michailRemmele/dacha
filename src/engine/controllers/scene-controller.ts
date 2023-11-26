@@ -20,7 +20,7 @@ export class SceneController implements Controller {
   update(): void {
     const currentScene = this.sceneProvider.getCurrentScene();
 
-    const messageBus = currentScene?.getMessageBus();
+    const messageBus = currentScene?.messageBus;
 
     const loadSceneMessages = messageBus?.get(LOAD_SCENE_MSG) || [];
     if (loadSceneMessages.length) {
