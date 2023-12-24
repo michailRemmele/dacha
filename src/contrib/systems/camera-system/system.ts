@@ -2,7 +2,7 @@ import { MathOps } from '../../../engine/mathLib';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus, Message } from '../../../engine/message-bus';
+import type { Message, MessageEmitter } from '../../../engine/message-bus';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
 
@@ -24,7 +24,7 @@ interface CameraSystemOptions extends SystemOptions {
 
 export class CameraSystem extends System {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private messageEmitter: MessageEmitter;
   private window: Window & HTMLElement;
   private scaleSensitivity: number;
   private cameraService: CameraService;
@@ -37,7 +37,7 @@ export class CameraSystem extends System {
       windowNodeId,
       scaleSensitivity,
       createGameObjectObserver,
-      messageBus,
+      messageEmitter,
       sceneContext,
     } = options as CameraSystemOptions;
 
@@ -48,7 +48,7 @@ export class CameraSystem extends System {
         Camera,
       ],
     });
-    this.messageBus = messageBus;
+    this.messageEmitter = messageEmitter;
     this.window = windowNode as (Window & HTMLElement);
 
     this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1);
@@ -68,11 +68,24 @@ export class CameraSystem extends System {
   mount(): void {
     this.handleCameraUpdate();
     window.addEventListener('resize', this.handleCameraUpdate);
+    this.messageEmitter.on(SET_CAMERA_MESSAGE, this.handleSetCameraMessage);
   }
 
   unmount(): void {
     window.removeEventListener('resize', this.handleCameraUpdate);
+    this.messageEmitter.off(SET_CAMERA_MESSAGE, this.handleSetCameraMessage);
   }
+
+  private handleSetCameraMessage = (message: unknown): void => {
+    const { gameObjectId } = message as SetCameraMessage;
+    const newCamera = this.gameObjectObserver.getById(gameObjectId);
+
+    if (!newCamera) {
+      throw new Error(`Could not set camera with id ${gameObjectId} for the scene`);
+    }
+
+    this.setCamera(newCamera);
+  };
 
   private handleCameraUpdate = (): void => {
     const width = this.window.innerWidth || this.window.clientWidth;
@@ -108,20 +121,6 @@ export class CameraSystem extends System {
   private setCamera(camera: GameObject): void {
     this.cameraService.setCurrentCamera(camera);
     this.handleCameraUpdate();
-  }
-
-  update(): void {
-    const messages = this.messageBus.get(SET_CAMERA_MESSAGE);
-    if (messages) {
-      const { gameObjectId } = messages[messages.length - 1] as SetCameraMessage;
-      const newCamera = this.gameObjectObserver.getById(gameObjectId);
-
-      if (!newCamera) {
-        throw new Error(`Could not set camera with id ${gameObjectId} for the scene`);
-      }
-
-      this.setCamera(newCamera);
-    }
   }
 }
 

@@ -6,7 +6,7 @@ import type {
 } from '../game-object';
 import type { TemplateCollection } from '../template';
 import type { SceneContext } from '../scene';
-import type { MessageBus } from '../message-bus';
+import type { MessageBus, MessageEmitter } from '../message-bus';
 import type { Constructor } from '../../types/utils';
 
 export interface SystemOptions extends Record<string, unknown> {
@@ -16,6 +16,7 @@ export interface SystemOptions extends Record<string, unknown> {
   resources?: unknown
   globalOptions: Record<string, unknown>
   messageBus: MessageBus
+  messageEmitter: MessageEmitter
   sceneContext: SceneContext
   templateCollection: TemplateCollection
 }
@@ -29,7 +30,7 @@ export abstract class System {
   load?(): Promise<void>;
   mount?(): void;
   unmount?(): void;
-  abstract update(options: UpdateOptions): void;
+  update?(options: UpdateOptions): void;
 }
 
 export type SystemConstructor = Constructor<System> & { systemName: string };

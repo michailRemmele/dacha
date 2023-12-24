@@ -1,10 +1,11 @@
 import { GameObjectObserver } from '../game-object';
 import type { GameObjectObserverFilter } from '../game-object';
 import type { Scene } from '../scene';
+import { MessageEmitter } from '../message-bus';
 
+import { System } from './system';
 import type {
   SystemConstructor,
-  System,
   UpdateOptions,
 } from './system';
 
@@ -16,9 +17,10 @@ export interface SystemControllerOptions {
   SystemClass: SystemConstructor
 }
 
-export class SystemController implements System {
+export class SystemController extends System {
   private instance: System;
   private gameObjectObservers: Array<GameObjectObserver>;
+  private messageEmitter: MessageEmitter;
 
   constructor({
     systemOptions,
@@ -27,7 +29,10 @@ export class SystemController implements System {
     scene,
     SystemClass,
   }: SystemControllerOptions) {
+    super();
+
     this.gameObjectObservers = [];
+    this.messageEmitter = new MessageEmitter(scene.messageBus);
 
     const createGameObjectObserver = (filter?: GameObjectObserverFilter): GameObjectObserver => {
       const gameObjectObserver = new GameObjectObserver(scene, filter);
@@ -41,6 +46,7 @@ export class SystemController implements System {
       gameObjectSpawner: scene.gameObjectSpawner,
       gameObjectDestroyer: scene.gameObjectDestroyer,
       messageBus: scene.messageBus,
+      messageEmitter: this.messageEmitter,
       sceneContext: scene.context,
       createGameObjectObserver,
       resources,
@@ -62,7 +68,8 @@ export class SystemController implements System {
 
   update(options: UpdateOptions): void {
     this.gameObjectObservers.forEach((gameObjectObserver) => gameObjectObserver.fireEvents());
+    this.messageEmitter.fireAll();
 
-    this.instance.update(options);
+    this.instance.update?.(options);
   }
 }

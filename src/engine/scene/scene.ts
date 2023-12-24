@@ -1,6 +1,6 @@
 import type { SceneConfig, GameObjectConfig } from '../types';
 import type { TemplateCollection } from '../template';
-import type { System, SystemConstructor } from '../system';
+import type { SystemConstructor } from '../system';
 import { SystemController } from '../system';
 import {
   GameObject,
@@ -30,7 +30,7 @@ interface SceneOptions extends SceneConfig {
 export class Scene {
   private gameObjects: Record<string, GameObject>;
   private gameObjectCreator: GameObjectCreator;
-  private systems: Array<System>;
+  private systems: Array<SystemController>;
   private gameObjectsChangeSubscribers: Array<(event: GameObjectChangeEvent) => void>;
   private availableSystemsMap: Record<string, SystemConstructor>;
 
@@ -112,7 +112,7 @@ export class Scene {
     });
   }
 
-  getSystems(): Array<System> {
+  getSystems(): Array<SystemController> {
     return this.systems;
   }
 
