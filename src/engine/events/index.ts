@@ -2,14 +2,14 @@ import type { SceneLoadOptions, LevelLoadOptions } from '../scene';
 import type { GameObject } from '../game-object';
 import type { GameObjectEvent, SceneEvent } from '../../types/events';
 
-export const AddGameObject = Symbol('AddGameObject');
-export const RemoveGameObject = Symbol('RemoveGameObject');
+export const AddGameObject = 'AddGameObject';
+export const RemoveGameObject = 'RemoveGameObject';
 
-export const LoadScene = Symbol('LoadScene');
-export const LoadLevel = Symbol('LoadLevel');
+export const LoadScene = 'LoadScene';
+export const LoadLevel = 'LoadLevel';
 
-export const AddComponent = Symbol('AddComponent');
-export const RemoveComponent = Symbol('RemoveComponent');
+export const AddComponent = 'AddComponent';
+export const RemoveComponent = 'RemoveComponent';
 
 export type UpdateComponentEvent = GameObjectEvent<{
   componentName: string

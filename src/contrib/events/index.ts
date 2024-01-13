@@ -3,18 +3,18 @@ import type { Vector2 } from '../../engine/mathLib';
 import type { MouseEvent, KeyboardEvent } from '../types/input-events';
 import type { GameObjectEvent, SceneEvent } from '../../types/events';
 
-export const SetCamera = Symbol('SetCamera');
-export const GameStatsUpdate = Symbol('GameStatsUpdate');
-export const Collision = Symbol('Collision');
-export const KeyboardInput = Symbol('KeyboardInput');
-export const MouseInput = Symbol('MouseInput');
+export const SetCamera = 'SetCamera';
+export const GameStatsUpdate = 'GameStatsUpdate';
+export const Collision = 'Collision';
+export const KeyboardInput = 'KeyboardInput';
+export const MouseInput = 'MouseInput';
 
-export const CollisionEnter = Symbol('CollisionEnter');
-export const CollisionStay = Symbol('CollisionStay');
-export const CollisionLeave = Symbol('CollisionLeave');
-export const AddForce = Symbol('AddForce');
-export const AddImpulse = Symbol('AddImpulse');
-export const StopMovement = Symbol('StopMovement');
+export const CollisionEnter = 'CollisionEnter';
+export const CollisionStay = 'CollisionStay';
+export const CollisionLeave = 'CollisionLeave';
+export const AddForce = 'AddForce';
+export const AddImpulse = 'AddImpulse';
+export const StopMovement = 'StopMovement';
 
 export type MouseInputEvent = SceneEvent<MouseEvent>;
 
