@@ -1,20 +1,28 @@
 import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject } from '../../../../../engine/game-object';
-import type { MessageBus } from '../../../../../engine/message-bus';
+import type { Scene } from '../../../../../engine/scene';
 import { Camera, Transform } from '../../../../components';
-import { MOUSE_INPUT_MESSAGE } from '../../../../consts/messages';
-import type { MouseInputMessage } from '../../../../types/messages';
+import { MouseInput } from '../../../../events';
+import type { MouseInputEvent } from '../../../../events';
 import { CameraService } from '../../../camera-system';
 
 export class CoordinatesProjector {
-  private messageBus: MessageBus;
+  private scene: Scene;
   private cameraService: CameraService;
 
   constructor(options: SystemOptions) {
-    const { messageBus, sceneContext } = options;
+    const { scene } = options;
 
-    this.messageBus = messageBus;
-    this.cameraService = sceneContext.getService(CameraService);
+    this.scene = scene;
+    this.cameraService = scene.context.getService(CameraService);
+  }
+
+  mount(): void {
+    this.scene.addEventListener(MouseInput, this.handleMouseInput);
+  }
+
+  unmount(): void {
+    this.scene.removeEventListener(MouseInput, this.handleMouseInput);
   }
 
   private getProjectedX(inputX: number, camera: GameObject): number {
@@ -31,15 +39,10 @@ export class CoordinatesProjector {
     return ((inputY - (windowSizeY / 2)) / zoom) + cameraOffsetY;
   }
 
-  update(): void {
+  private handleMouseInput = (event: MouseInputEvent): void => {
     const currentCamera = this.cameraService.getCurrentCamera();
 
-    const messages = this.messageBus.get(
-      MOUSE_INPUT_MESSAGE,
-    ) as Array<MouseInputMessage> | undefined;
-    messages?.forEach((message) => {
-      message.x = this.getProjectedX(message.x, currentCamera);
-      message.y = this.getProjectedY(message.y, currentCamera);
-    });
-  }
+    event.x = this.getProjectedX(event.x, currentCamera);
+    event.y = this.getProjectedY(event.y, currentCamera);
+  };
 }

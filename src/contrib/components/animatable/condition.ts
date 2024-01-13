@@ -4,12 +4,14 @@ import { MessageConditionProps } from './message-condition-props';
 import type { ConditionConfig } from './types';
 
 export class Condition {
+  id: string;
   type: 'comparator' | 'message';
   props: ComparatorConditionProps | MessageConditionProps;
 
   constructor(config: ConditionConfig) {
-    const { type, props = {} } = config;
+    const { id, type, props = {} } = config;
 
+    this.id = id;
     this.type = type;
     this.props = new conditionProps[type](props);
   }

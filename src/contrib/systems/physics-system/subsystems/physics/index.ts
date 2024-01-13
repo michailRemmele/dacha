@@ -1,16 +1,19 @@
-import {
-  ADD_FORCE_MSG,
-  ADD_IMPULSE_MSG,
-  STOP_MOVEMENT_MSG,
-} from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
-import { filterByKey } from '../../../../../engine/utils';
 import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
-import type { MessageBus, Message } from '../../../../../engine/message-bus';
+import { GameObject } from '../../../../../engine/game-object';
+import type { GameObjectObserver } from '../../../../../engine/game-object';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { PhysicsSystemOptions } from '../../types';
+import {
+  AddForce,
+  AddImpulse,
+  StopMovement,
+} from '../../../../events';
+import type { AddForceEvent, AddImpulseEvent } from '../../../../events';
+import { AddGameObject, RemoveGameObject } from '../../../../../engine/events';
+import type { UpdateGameObjectEvent } from '../../../../../engine/events';
+import type { GameObjectEvent } from '../../../../../types/events';
 
 const DIRECTION_VECTOR = {
   UP: new Vector2(0, -1),
@@ -19,27 +22,16 @@ const DIRECTION_VECTOR = {
   DOWN: new Vector2(0, 1),
 };
 
-interface AddForceMessage extends Message {
-  value: Vector2
-}
-
-interface AddImpulseMessage extends Message {
-  value: Vector2
-}
-
-interface StopMovementMessage extends Message {
-  gameObject: GameObject
-}
-
 export class PhysicsSubsystem {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
   private gravitationalAcceleration: number;
   private gameObjectsVelocity: Record<string, Vector2>;
+  private gameObjectsForceVector: Record<string, Vector2>;
+  private gameObjectsImpulseVector: Record<string, Vector2>;
 
   constructor(options: SystemOptions) {
     const {
-      gravitationalAcceleration, createGameObjectObserver, messageBus,
+      gravitationalAcceleration, createGameObjectObserver,
     } = options as PhysicsSystemOptions;
 
     this.gameObjectObserver = createGameObjectObserver({
@@ -48,22 +40,63 @@ export class PhysicsSubsystem {
         Transform,
       ],
     });
-    this.messageBus = messageBus;
     this.gravitationalAcceleration = gravitationalAcceleration;
 
     this.gameObjectsVelocity = {};
+    this.gameObjectsForceVector = {};
+    this.gameObjectsImpulseVector = {};
+
+    this.gameObjectObserver.forEach(this.handleGameObjectAdd);
   }
 
   mount(): void {
-    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
+    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
   unmount(): void {
-    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this.gameObjectObserver.removeEventListener(AddGameObject, this.handleGameObjectAdd);
+    this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    this.gameObjectsVelocity = filterByKey(this.gameObjectsVelocity, gameObject.getId());
+  private handleGameObjectAdd = (value: UpdateGameObjectEvent | GameObject): void => {
+    const gameObject = value instanceof GameObject ? value : value.gameObject;
+
+    this.gameObjectsVelocity[gameObject.id] = new Vector2(0, 0);
+    this.gameObjectsForceVector[gameObject.id] = new Vector2(0, 0);
+    this.gameObjectsImpulseVector[gameObject.id] = new Vector2(0, 0);
+
+    gameObject.addEventListener(StopMovement, this.handleStopMovement);
+    gameObject.addEventListener(AddForce, this.handleAddForce);
+    gameObject.addEventListener(AddImpulse, this.handleAddImpulse);
+  };
+
+  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+    const { gameObject } = event;
+
+    delete this.gameObjectsVelocity[gameObject.id];
+    delete this.gameObjectsForceVector[gameObject.id];
+    delete this.gameObjectsImpulseVector[gameObject.id];
+
+    gameObject.removeEventListener(StopMovement, this.handleStopMovement);
+    gameObject.removeEventListener(AddForce, this.handleAddForce);
+    gameObject.removeEventListener(AddImpulse, this.handleAddImpulse);
+  };
+
+  private handleStopMovement = (event: GameObjectEvent): void => {
+    if (this.gameObjectsVelocity[event.target.id]) {
+      this.gameObjectsVelocity[event.target.id].multiplyNumber(0);
+    }
+  };
+
+  private handleAddForce = (event: AddForceEvent): void => {
+    const { target, value } = event;
+    this.gameObjectsForceVector[target.id].add(value);
+  };
+
+  private handleAddImpulse = (event: AddImpulseEvent): void => {
+    const { target, value } = event;
+    this.gameObjectsImpulseVector[target.id].add(value);
   };
 
   private applyDragForce(gameObject: GameObject, deltaTime: number): void {
@@ -107,54 +140,10 @@ export class PhysicsSubsystem {
     return gravityVector;
   }
 
-  private getForceVector(gameObject: GameObject): Vector2 {
-    const gameObjectId = gameObject.getId();
-    const rigidBody = gameObject.getComponent(RigidBody);
-
-    const forceVector = new Vector2(0, 0);
-
-    forceVector.add(this.getGravityForce(rigidBody));
-
-    const addForceMessages = (
-      this.messageBus.getById(ADD_FORCE_MSG, gameObjectId) || []
-    ) as Array<AddForceMessage>;
-    addForceMessages.forEach((message) => forceVector.add(message.value));
-
-    return forceVector;
-  }
-
-  private getImpulseVector(gameObject: GameObject): Vector2 {
-    const gameObjectId = gameObject.getId();
-    const addImpulseMessages = (
-      this.messageBus.getById(ADD_IMPULSE_MSG, gameObjectId) || []
-    ) as Array<AddImpulseMessage>;
-
-    return addImpulseMessages.reduce((vector, message) => {
-      vector.add(message.value);
-
-      return vector;
-    }, new Vector2(0, 0));
-  }
-
-  private processConstraints(): void {
-    const stopMovementMessages = this.messageBus.get(STOP_MOVEMENT_MSG) || [];
-
-    stopMovementMessages.forEach((message) => {
-      const { gameObject } = message as StopMovementMessage;
-      const gameObjectId = gameObject.getId();
-
-      if (this.gameObjectsVelocity[gameObjectId]) {
-        this.gameObjectsVelocity[gameObjectId].multiplyNumber(0);
-      }
-    });
-  }
-
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
     const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
-
-    this.processConstraints();
 
     this.gameObjectObserver.forEach((gameObject) => {
       const gameObjectId = gameObject.getId();
@@ -162,11 +151,10 @@ export class PhysicsSubsystem {
       const transform = gameObject.getComponent(Transform);
       const { mass } = rigidBody;
 
-      const forceVector = this.getForceVector(gameObject);
-      const impulseVector = this.getImpulseVector(gameObject);
+      const forceVector = this.gameObjectsForceVector[gameObject.id];
+      forceVector.add(this.getGravityForce(rigidBody));
 
-      this.gameObjectsVelocity[gameObjectId] = this.gameObjectsVelocity[gameObjectId]
-        || new Vector2(0, 0);
+      const impulseVector = this.gameObjectsImpulseVector[gameObject.id];
 
       const velocityVector = this.gameObjectsVelocity[gameObjectId];
 
@@ -184,6 +172,9 @@ export class PhysicsSubsystem {
 
       transform.offsetX += velocityVector.x * deltaTimeInSeconds;
       transform.offsetY += velocityVector.y * deltaTimeInSeconds;
+
+      this.gameObjectsForceVector[gameObject.id].multiplyNumber(0);
+      this.gameObjectsImpulseVector[gameObject.id].multiplyNumber(0);
     });
   }
 }

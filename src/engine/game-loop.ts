@@ -25,23 +25,17 @@ export class GameLoop {
 
     const currentScene = this.sceneProvider.getCurrentScene();
 
-    const messageBus = currentScene?.messageBus;
-
-    messageBus?.sendDelayed();
-
     const options = {
       deltaTime: elapsed,
     };
 
     currentScene?.getSystems().forEach((system) => {
-      system.update(options);
+      system.update?.(options);
     });
 
     this.controllers.forEach((controller) => {
       controller.update();
     });
-
-    messageBus?.clear();
 
     this.previous = current;
 

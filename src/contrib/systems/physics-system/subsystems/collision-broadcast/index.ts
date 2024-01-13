@@ -1,103 +1,76 @@
-import { COLLISION_MSG } from '../../consts';
 import type { SystemOptions } from '../../../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
-import type { MessageBus, Message } from '../../../../../engine/message-bus';
-import { ColliderContainer } from '../../../../components/collider-container';
+import type { Scene } from '../../../../../engine/scene';
+import {
+  Collision as RawCollision,
+  CollisionEnter,
+  CollisionStay,
+  CollisionLeave,
+} from '../../../../events';
+import type { CollisionEvent } from '../../../../events';
 
 import { Collision } from './collision';
+import type { CollisionState } from './collision';
 
-interface CollisionMessage extends Message {
-  gameObject1: GameObject
-  gameObject2: GameObject
-  mtv1: unknown
-  mtv2: unknown
-}
+type CollisionStateMessage = typeof CollisionEnter | typeof CollisionStay | typeof CollisionLeave;
+
+const STATE_TO_MESSAGE: Record<CollisionState, CollisionStateMessage> = {
+  enter: CollisionEnter,
+  stay: CollisionStay,
+  leave: CollisionLeave,
+};
 
 export class CollisionBroadcastSubsystem {
-  private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private scene: Scene;
   private collisionMap: Record<string, Record<string, Collision>>;
   private activeCollisions: Array<Collision>;
 
   constructor(options: SystemOptions) {
-    this.gameObjectObserver = options.createGameObjectObserver({
-      components: [ColliderContainer],
-    });
-    this.messageBus = options.messageBus;
+    this.scene = options.scene;
 
     this.collisionMap = {};
     this.activeCollisions = [];
   }
 
   mount(): void {
-    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this.scene.addEventListener(RawCollision, this.handleCollision);
   }
 
   unmount(): void {
-    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this.scene.removeEventListener(RawCollision, this.handleCollision);
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    const id = gameObject.getId();
+  private handleCollision = (event: CollisionEvent): void => {
+    const {
+      gameObject1, gameObject2, mtv1, mtv2,
+    } = event;
+    const gameObject1Id = gameObject1.getId();
+    const gameObject2Id = gameObject2.getId();
 
-    this.activeCollisions = this.activeCollisions.filter((collision) => {
-      if (collision.gameObject1.getId() !== id && collision.gameObject2.getId() !== id) {
-        return true;
-      }
+    this.collisionMap[gameObject1Id] = this.collisionMap[gameObject1Id] || {};
 
-      if (collision.gameObject2.getId() === id) {
-        delete this.collisionMap[collision.gameObject1.getId()][id];
-      }
-
-      this.publishMessage(collision);
-
-      collision.tick();
-
-      return false;
-    });
-
-    delete this.collisionMap[id];
+    if (!this.collisionMap[gameObject1Id][gameObject2Id]) {
+      const collision = new Collision(gameObject1, gameObject2, mtv1, mtv2);
+      this.collisionMap[gameObject1Id][gameObject2Id] = collision;
+      this.activeCollisions.push(collision);
+    } else {
+      this.collisionMap[gameObject1Id][gameObject2Id].mtv1 = mtv1;
+      this.collisionMap[gameObject1Id][gameObject2Id].mtv2 = mtv2;
+      this.collisionMap[gameObject1Id][gameObject2Id].signal();
+    }
   };
 
   private publishMessage(collision: Collision): void {
     const {
-      gameObject1, gameObject2, mtv1, mtv2,
+      gameObject1, gameObject2, mtv1,
     } = collision;
-    const message = {
-      type: `${COLLISION_MSG}_${collision.getState()}`,
-      id: gameObject1.getId(),
-      gameObject1,
-      gameObject2,
-      mtv1,
-      mtv2,
-    };
 
-    this.messageBus.send(message);
-    this.messageBus.send(message, true);
+    gameObject1.emit(STATE_TO_MESSAGE[collision.getState()], {
+      gameObject: gameObject2,
+      mtv: mtv1,
+    });
   }
 
   update(): void {
-    const collisionMessages = this.messageBus.get(COLLISION_MSG) || [];
-    collisionMessages.forEach((message) => {
-      const {
-        gameObject1, gameObject2, mtv1, mtv2,
-      } = message as CollisionMessage;
-      const gameObject1Id = gameObject1.getId();
-      const gameObject2Id = gameObject2.getId();
-
-      this.collisionMap[gameObject1Id] = this.collisionMap[gameObject1Id] || {};
-
-      if (!this.collisionMap[gameObject1Id][gameObject2Id]) {
-        const collision = new Collision(gameObject1, gameObject2, mtv1, mtv2);
-        this.collisionMap[gameObject1Id][gameObject2Id] = collision;
-        this.activeCollisions.push(collision);
-      } else {
-        this.collisionMap[gameObject1Id][gameObject2Id].mtv1 = mtv1;
-        this.collisionMap[gameObject1Id][gameObject2Id].mtv2 = mtv2;
-        this.collisionMap[gameObject1Id][gameObject2Id].signal();
-      }
-    });
-
     this.activeCollisions = this.activeCollisions.filter((collision) => {
       const { gameObject1, gameObject2 } = collision;
 
@@ -106,7 +79,7 @@ export class CollisionBroadcastSubsystem {
       collision.tick();
 
       if (collision.isFinished()) {
-        delete this.collisionMap[gameObject1.getId()][gameObject2.getId()];
+        delete this.collisionMap[gameObject1.id][gameObject2.id];
       }
 
       return !collision.isFinished();

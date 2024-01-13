@@ -1,12 +1,13 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions, UpdateOptions } from '../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus } from '../../../engine/message-bus';
+import { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
 import type { IndividualState } from '../../components/animatable/individual-state';
 import type { GroupState } from '../../components/animatable/group-state';
 import type { Substate } from '../../components/animatable/substate';
+import { AddGameObject, RemoveGameObject } from '../../../engine/events';
+import type { UpdateGameObjectEvent } from '../../../engine/events';
 
 import type { ConditionController } from './condition-controllers/condition-controller';
 import type { Picker } from './substate-pickers/picker';
@@ -18,9 +19,9 @@ const FRAME_RATE = 100;
 
 export class Animator extends System {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
-  private conditionControllers: Record<string, ConditionController>;
   private substatePickers: Record<string, Picker>;
+
+  private gameObjectConditions: Record<string, Record<string, Record<string, ConditionController>>>;
 
   constructor(options: SystemOptions) {
     super();
@@ -28,19 +29,52 @@ export class Animator extends System {
     this.gameObjectObserver = options.createGameObjectObserver({
       components: [Animatable],
     });
-    this.messageBus = options.messageBus;
-    this.conditionControllers = Object.keys(conditionControllers)
-      .reduce((storage: Record<string, ConditionController>, key) => {
-        const ConditionController = conditionControllers[key];
-        storage[key] = new ConditionController();
-        return storage;
-      }, {});
     this.substatePickers = Object.keys(substatePickers)
       .reduce((storage: Record<string, Picker>, key) => {
         const SubstatePicker = substatePickers[key];
         storage[key] = new SubstatePicker();
         return storage;
       }, {});
+
+    this.gameObjectConditions = {};
+
+    this.gameObjectObserver.forEach((gameObject) => this.setUpConditionControllers(gameObject));
+  }
+
+  mount(): void {
+    this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
+    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
+  }
+
+  unmount(): void {
+    this.gameObjectObserver.removeEventListener(AddGameObject, this.handleGameObjectAdd);
+    this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
+  }
+
+  private handleGameObjectAdd = (event: UpdateGameObjectEvent): void => {
+    this.setUpConditionControllers(event.gameObject);
+  };
+
+  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+    delete this.gameObjectConditions[event.gameObject.id];
+  };
+
+  private setUpConditionControllers(gameObject: GameObject): void {
+    this.gameObjectConditions[gameObject.id] = {};
+
+    const animatable = gameObject.getComponent(Animatable);
+    animatable.currentState?.transitions.forEach((transition) => {
+      this.gameObjectConditions[gameObject.id][transition.id] ??= {};
+      const transitionMap = this.gameObjectConditions[gameObject.id][transition.id];
+
+      transition.conditions.forEach((condition) => {
+        const ConditionController = conditionControllers[condition.type];
+        transitionMap[condition.id] = new ConditionController(
+          condition.props,
+          gameObject,
+        );
+      });
+    });
   }
 
   private updateFrame(gameObject: GameObject, frame: Frame): void {
@@ -91,14 +125,15 @@ export class Animator extends System {
         }
 
         return transition.conditions.every((condition) => {
-          const conditionController = this.conditionControllers[condition.type];
-          return conditionController.check(condition.props, gameObject, this.messageBus);
+          return this.gameObjectConditions[gameObject.id][transition.id][condition.id].check();
         });
       });
 
       if (nextTransition) {
         animatable.setCurrentState(nextTransition.state);
         animatable.duration = 0;
+
+        this.setUpConditionControllers(gameObject);
       }
     });
   }

@@ -14,7 +14,12 @@
         "target": "es6",
         "esModuleInterop": true,
 
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+         
+        "typeRoots": [
+            "src/types",
+            "node_modules/@types"
+        ]
     },
     "include": [
         "src/**/*"

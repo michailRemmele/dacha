@@ -9,9 +9,12 @@ import {
   Color,
 } from 'three/src/Three';
 
+import { AddGameObject, RemoveGameObject } from '../../../engine/events';
+import type { UpdateGameObjectEvent } from '../../../engine/events';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
+import { GameObject } from '../../../engine/game-object';
+import type { GameObjectObserver } from '../../../engine/game-object';
 import type { TemplateCollection } from '../../../engine/template';
 import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
@@ -19,7 +22,6 @@ import { Light } from '../../components/light';
 import { Camera } from '../../components/camera';
 import { CameraService } from '../camera-system';
 import { MathOps } from '../../../engine/mathLib';
-import { filterByKey } from '../../../engine/utils';
 import { getWindowNode } from '../../utils/get-window-node';
 
 import { SpriteRendererService } from './service';
@@ -76,7 +78,7 @@ export class SpriteRenderer extends System {
       backgroundColor,
       backgroundAlpha,
       templateCollection,
-      sceneContext,
+      scene,
     } = options as RendererOptions;
 
     this.gameObjectObserver = createGameObjectObserver({
@@ -123,14 +125,16 @@ export class SpriteRenderer extends System {
     this.spriteCache = {};
     this.textureMap = {};
 
-    sceneContext.registerService(new SpriteRendererService({
+    scene.context.registerService(new SpriteRendererService({
       scene: this.renderScene,
       camera: this.currentCamera,
       window: this.window,
       sortFn: this.sortFn,
     }));
 
-    this.cameraService = sceneContext.getService(CameraService);
+    this.cameraService = scene.context.getService(CameraService);
+
+    this.gameObjectObserver.forEach(this.handleGameObjectAdd);
   }
 
   async load(): Promise<void> {
@@ -190,8 +194,8 @@ export class SpriteRenderer extends System {
     this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
 
-    this.gameObjectObserver.subscribe('onadd', this.handleGameObjectAdd);
-    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
+    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
 
     this.lightSubsystem.mount();
 
@@ -201,8 +205,8 @@ export class SpriteRenderer extends System {
   unmount(): void {
     window.removeEventListener('resize', this.handleWindowResize);
 
-    this.gameObjectObserver.unsubscribe('onadd', this.handleGameObjectAdd);
-    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this.gameObjectObserver.removeEventListener(AddGameObject, this.handleGameObjectAdd);
+    this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
 
     this.lightSubsystem.unmount();
 
@@ -230,7 +234,9 @@ export class SpriteRenderer extends System {
     return imagesToLoad;
   }
 
-  private handleGameObjectAdd = (gameObject: GameObject): void => {
+  private handleGameObjectAdd = (value: UpdateGameObjectEvent | GameObject): void => {
+    const gameObject = value instanceof GameObject ? value : value.gameObject;
+
     const sprite = gameObject.getComponent(Sprite);
 
     const material = createMaterial(sprite.material.type);
@@ -243,15 +249,15 @@ export class SpriteRenderer extends System {
     this.renderScene.add(object);
   };
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    const gameObjectId = gameObject.getId();
-    const object = this.renderScene.getObjectById(this.gameObjectsMap[gameObjectId]);
+  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+    const { gameObject } = event;
+    const object = this.renderScene.getObjectById(this.gameObjectsMap[gameObject.id]);
 
     if (object) {
       this.renderScene.remove(object);
     }
 
-    this.gameObjectsMap = filterByKey(this.gameObjectsMap, gameObjectId);
+    delete this.gameObjectsMap[gameObject.id];
   };
 
   private handleWindowResize = (): void => {

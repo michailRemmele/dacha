@@ -1,7 +1,6 @@
 import type { SystemOptions } from '../../../../../engine/system';
-import type { MessageBus } from '../../../../../engine/message-bus';
-import { MOUSE_INPUT_MESSAGE } from '../../../../consts/messages';
-import type { MouseInputMessage } from '../../../../types/messages';
+import type { Scene } from '../../../../../engine/scene';
+import { MouseInput } from '../../../../events';
 import { getWindowNode } from '../../../../utils/get-window-node';
 
 import { MouseInputListener } from './mouse-input-listener';
@@ -12,17 +11,17 @@ interface InputSubsystemOptions extends SystemOptions {
 }
 
 export class InputSubsystem {
-  private messageBus: MessageBus;
+  private scene: Scene;
   private inputListener: MouseInputListener;
 
   constructor(options: SystemOptions) {
     const {
-      messageBus,
+      scene,
       windowNodeId,
       useWindow,
     } = options as InputSubsystemOptions;
 
-    this.messageBus = messageBus;
+    this.scene = scene;
 
     const windowNode = useWindow ? window : getWindowNode(windowNodeId as string);
 
@@ -39,10 +38,7 @@ export class InputSubsystem {
 
   update(): void {
     this.inputListener.getFiredEvents().forEach((inputEvent) => {
-      this.messageBus.send({
-        type: MOUSE_INPUT_MESSAGE,
-        ...inputEvent,
-      } as MouseInputMessage);
+      this.scene.emit(MouseInput, inputEvent);
     });
     this.inputListener.clearFiredEvents();
   }

@@ -1,83 +1,72 @@
-import { GAME_OBJECT_ADDED } from '../scene/consts';
-import type { Scene, GameObjectChangeEvent } from '../scene';
-import type { EventEmitter } from '../types';
+import { EventEmitter } from '../event-emitter';
+import {
+  AddComponent,
+  RemoveComponent,
+  AddGameObject,
+  RemoveGameObject,
+} from '../events';
+import type { UpdateComponentEvent, GameObjectObserverEventMap } from '../events';
+import type { Scene } from '../scene';
 import type { ComponentConstructor } from '../component';
 
 import type { GameObject } from './game-object';
 
-interface ObserverEventMap {
-  'onadd': GameObject
-  'onremove': GameObject
-}
-
 type GetObjectsToRemoveFn = (gameObjects: Array<GameObject>, id: string) => Array<GameObject>;
-
-interface ObserverSubscriptions {
-  'onadd': Array<(event: ObserverEventMap['onadd']) => void>
-  'onremove': Array<(event: ObserverEventMap['onremove']) => void>
-}
 
 export interface GameObjectObserverFilter {
   components?: Array<ComponentConstructor | string>;
 }
 
-export class GameObjectObserver implements EventEmitter {
+export class GameObjectObserver extends EventEmitter<GameObjectObserverEventMap> {
   private _components: Array<ComponentConstructor | string>;
   private _observedGameObjects: Array<GameObject>;
-  private _addedToAccepted: Array<GameObject>;
-  private _removedFromAccepted: Array<GameObject>;
   private _acceptedGameObjects: Array<GameObject>;
   private _acceptedGameObjectsMap: Record<string, GameObject | undefined>;
-  private subscriptions: ObserverSubscriptions;
 
   constructor(scene: Scene, filter: GameObjectObserverFilter = {}) {
+    super();
+
     const {
       components = [],
     } = filter;
 
     this._components = components;
     this._observedGameObjects = scene.getGameObjects();
-    this._addedToAccepted = [];
-    this._removedFromAccepted = [];
     this._acceptedGameObjectsMap = {};
-    this.subscriptions = {
-      onadd: [],
-      onremove: [],
-    };
     this._acceptedGameObjects = this._observedGameObjects.filter((gameObject) => {
-      gameObject.subscribe(this._subscribeGameObject.bind(this));
+      gameObject.addEventListener(AddComponent, this.handleGameObjectUpdate);
+      gameObject.addEventListener(RemoveComponent, this.handleGameObjectUpdate);
 
       if (!this._test(gameObject)) {
         return false;
       }
 
       this._acceptedGameObjectsMap[gameObject.getId()] = gameObject;
-      this._addedToAccepted.push(gameObject);
 
       return true;
     });
 
-    scene.subscribeOnGameObjectsChange((event) => {
+    scene.addEventListener(AddGameObject, (event) => {
       const { gameObject } = event;
-
-      if (event.type === GAME_OBJECT_ADDED) {
-        gameObject.subscribe(this._subscribeGameObject.bind(this));
-        this._add(gameObject);
-      } else {
-        this._remove(gameObject);
-      }
+      gameObject.addEventListener(AddComponent, this.handleGameObjectUpdate);
+      gameObject.addEventListener(RemoveComponent, this.handleGameObjectUpdate);
+      this._add(gameObject);
+    });
+    scene.addEventListener(RemoveGameObject, (event) => {
+      const { gameObject } = event;
+      this._remove(gameObject);
     });
   }
 
-  private _subscribeGameObject(event: GameObjectChangeEvent): void {
-    const { gameObject } = event;
+  private handleGameObjectUpdate = (event: UpdateComponentEvent): void => {
+    const { target } = event;
 
-    if (this._test(gameObject)) {
-      this._accept(gameObject);
+    if (this._test(target)) {
+      this._accept(target);
     } else {
-      this._decline(gameObject);
+      this._decline(target);
     }
-  }
+  };
 
   private _add(gameObject: GameObject): void {
     this._observedGameObjects.push(gameObject);
@@ -98,7 +87,7 @@ export class GameObjectObserver implements EventEmitter {
     this._acceptedGameObjects = remove(this._acceptedGameObjects, gameObjectId);
     this._acceptedGameObjectsMap[gameObjectId] = void 0;
 
-    this._removedFromAccepted.push(gameObject);
+    this.emit(RemoveGameObject, { gameObject });
   }
 
   private _test(gameObject: GameObject): boolean {
@@ -121,7 +110,7 @@ export class GameObjectObserver implements EventEmitter {
     this._acceptedGameObjects.push(gameObject);
     this._acceptedGameObjectsMap[gameObjectId] = gameObject;
 
-    this._addedToAccepted.push(gameObject);
+    this.emit(AddGameObject, { gameObject });
   }
 
   private _decline(gameObject: GameObject): void {
@@ -136,7 +125,7 @@ export class GameObjectObserver implements EventEmitter {
     );
     this._acceptedGameObjectsMap[gameObjectId] = void 0;
 
-    this._removedFromAccepted.push(gameObject);
+    this.emit(RemoveGameObject, { gameObject });
   }
 
   size(): number {
@@ -165,41 +154,5 @@ export class GameObjectObserver implements EventEmitter {
 
   getList(): Array<GameObject> {
     return this._acceptedGameObjects;
-  }
-
-  subscribe<K extends keyof ObserverEventMap>(
-    type: K,
-    callback: (event: ObserverEventMap[K]) => void,
-  ): void {
-    if (!this.subscriptions[type]) {
-      return;
-    }
-
-    this.subscriptions[type].push(callback);
-  }
-
-  unsubscribe<K extends keyof ObserverEventMap>(
-    type: K,
-    callback: (event: ObserverEventMap[K]) => void,
-  ): void {
-    if (!this.subscriptions[type]) {
-      return;
-    }
-
-    this.subscriptions[type] = this.subscriptions[type].filter(
-      (currentCallback: (gameObject: GameObject) => void) => callback !== currentCallback,
-    );
-  }
-
-  fireEvents(): void {
-    this.subscriptions.onremove.forEach((callback: (gameObject: GameObject) => void) => {
-      this._removedFromAccepted.forEach((gameObject: GameObject) => callback(gameObject));
-    });
-    this._removedFromAccepted = [];
-
-    this.subscriptions.onadd.forEach((callback: (gameObject: GameObject) => void) => {
-      this._addedToAccepted.forEach((gameObject: GameObject) => callback(gameObject));
-    });
-    this._addedToAccepted = [];
   }
 }

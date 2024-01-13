@@ -1,7 +1,7 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
-import type { MessageBus } from '../../../engine/message-bus';
-import { KEYBOARD_INPUT_MESSAGE } from '../../consts/messages';
+import type { Scene } from '../../../engine/scene';
+import { KeyboardInput } from '../../events';
 import { getWindowNode } from '../../utils/get-window-node';
 
 import { InputListener } from './input-listener';
@@ -12,19 +12,19 @@ interface KeyboardInputSystemOptions extends SystemOptions {
 }
 
 export class KeyboardInputSystem extends System {
-  private messageBus: MessageBus;
+  private scene: Scene;
   private inputListener: InputListener;
 
   constructor(options: SystemOptions) {
     super();
 
     const {
-      messageBus,
+      scene,
       windowNodeId,
       useWindow,
     } = options as KeyboardInputSystemOptions;
 
-    this.messageBus = messageBus;
+    this.scene = scene;
 
     const windowNode = useWindow ? window : getWindowNode(windowNodeId as string);
 
@@ -41,10 +41,7 @@ export class KeyboardInputSystem extends System {
 
   update(): void {
     this.inputListener.getEvents().forEach((event) => {
-      this.messageBus.send({
-        type: KEYBOARD_INPUT_MESSAGE,
-        ...event,
-      });
+      this.scene.emit(KeyboardInput, event);
     });
 
     this.inputListener.clear();

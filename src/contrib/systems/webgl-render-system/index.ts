@@ -1,3 +1,5 @@
+import { RemoveGameObject } from '../../../engine/events';
+import type { UpdateGameObjectEvent } from '../../../engine/events';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../engine/game-object';
@@ -104,7 +106,7 @@ export class RenderSystem extends System {
       windowNodeId, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
       createGameObjectObserver, sortingLayers,
-      scaleSensitivity, sceneContext,
+      scaleSensitivity, scene,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -177,12 +179,12 @@ export class RenderSystem extends System {
 
     this.resourceLoader = new ResourceLoader();
 
-    this.cameraService = sceneContext.getService(CameraService);
+    this.cameraService = scene.context.getService(CameraService);
   }
 
   mount(): void {
     window.addEventListener('resize', this._onWindowResizeBind);
-    this._gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this._gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
     this.gl = this._initGraphicContext();
     this._initExtensions();
     this._initScreen();
@@ -193,7 +195,7 @@ export class RenderSystem extends System {
 
   unmount(): void {
     window.removeEventListener('resize', this._onWindowResizeBind);
-    this._gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this._gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
     this._shaders.forEach((shader) => {
       if (this.program) {
         this.gl?.detachShader(this.program, shader);
@@ -229,9 +231,8 @@ export class RenderSystem extends System {
     this.textureAtlasSize.height = this.textureAtlas.height;
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject) => {
-    const gameObjectId = gameObject.getId();
-    this._geometry[gameObjectId] = null;
+  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+    this._geometry[event.gameObject.id] = null;
   };
 
   _onWindowResize() {

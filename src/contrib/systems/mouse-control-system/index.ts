@@ -1,14 +1,14 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import type { GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus } from '../../../engine/message-bus';
+import type { Scene } from '../../../engine/scene';
 import { MouseControl } from '../../components/mouse-control';
-import { MOUSE_INPUT_MESSAGE } from '../../consts/messages';
-import type { MouseInputMessage } from '../../types/messages';
+import { MouseInput } from '../../events';
+import type { MouseInputEvent } from '../../events';
 
 export class MouseControlSystem extends System {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private scene: Scene;
 
   constructor(options: SystemOptions) {
     super();
@@ -18,37 +18,37 @@ export class MouseControlSystem extends System {
         MouseControl,
       ],
     });
-    this.messageBus = options.messageBus;
+    this.scene = options.scene;
   }
 
-  update(): void {
-    const messages = this.messageBus.get(
-      MOUSE_INPUT_MESSAGE,
-    ) as Array<MouseInputMessage> | undefined;
-    messages?.forEach((message) => {
-      this.gameObjectObserver.forEach((gameObject) => {
-        const control = gameObject.getComponent(MouseControl);
-        const eventBinding = control.inputEventBindings[message.eventType]?.[message.button];
+  mount(): void {
+    this.scene.addEventListener(MouseInput, this.handleMouseInput);
+  }
 
-        if (eventBinding) {
-          if (!eventBinding.messageType) {
-            throw new Error(`The message type is not specified for input event: ${message.eventType}`);
-          }
+  unmount(): void {
+    this.scene.removeEventListener(MouseInput, this.handleMouseInput);
+  }
 
-          this.messageBus.send({
-            type: eventBinding.messageType,
-            ...eventBinding.attrs,
-            gameObject,
-            id: gameObject.getId(),
-            x: message.x,
-            y: message.y,
-            screenX: message.screenX,
-            screenY: message.screenY,
-          });
+  private handleMouseInput = (message: MouseInputEvent): void => {
+    this.gameObjectObserver.forEach((gameObject) => {
+      const control = gameObject.getComponent(MouseControl);
+      const eventBinding = control.inputEventBindings[message.eventType]?.[message.button];
+
+      if (eventBinding) {
+        if (!eventBinding.messageType) {
+          throw new Error(`The message type is not specified for input event: ${message.eventType}`);
         }
-      });
+
+        gameObject.emit(eventBinding.messageType, {
+          ...eventBinding.attrs,
+          x: message.x,
+          y: message.y,
+          screenX: message.screenX,
+          screenY: message.screenY,
+        });
+      }
     });
-  }
+  };
 }
 
 MouseControlSystem.systemName = 'MouseControlSystem';

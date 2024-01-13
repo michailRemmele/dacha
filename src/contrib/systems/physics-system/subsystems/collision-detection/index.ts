@@ -1,8 +1,10 @@
-import { COLLISION_MSG } from '../../consts';
 import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
-import type { MessageBus } from '../../../../../engine/message-bus';
+import type { Scene } from '../../../../../engine/scene';
 import { Transform, ColliderContainer } from '../../../../components';
+import { RemoveGameObject } from '../../../../../engine/events';
+import type { UpdateGameObjectEvent } from '../../../../../engine/events';
+import { Collision } from '../../../../events';
 
 import { coordinatesCalculators } from './coordinates-calculators';
 import { aabbBuilders } from './aabb-builders';
@@ -25,7 +27,7 @@ const AXIS = {
 
 export class CollisionDetectionSubsystem {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private scene: Scene;
   private coordinatesCalculators: Record<string, CoordinatesCalculator>;
   private aabbBuilders: Record<string, AABBBuilder>;
   private intersectionCheckers: Record<string, IntersectionChecker>;
@@ -39,7 +41,7 @@ export class CollisionDetectionSubsystem {
         Transform,
       ],
     });
-    this.messageBus = options.messageBus;
+    this.scene = options.scene;
     this.coordinatesCalculators = Object.keys(coordinatesCalculators).reduce((storage, key) => {
       const CoordinatesCalculator = coordinatesCalculators[key];
       storage[key] = new CoordinatesCalculator();
@@ -70,22 +72,22 @@ export class CollisionDetectionSubsystem {
   }
 
   mount(): void {
-    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
   unmount(): void {
-    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    const gameObjectId = gameObject.getId();
+  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+    const { id } = event.gameObject;
 
     Object.values(AXIS).forEach((axis) => {
-      this.axis[axis].dispersionCalculator.removeFromSample(gameObjectId);
-      this.removeFromSortedList(gameObject, axis);
+      this.axis[axis].dispersionCalculator.removeFromSample(id);
+      this.removeFromSortedList(event.gameObject, axis);
     });
 
-    delete this.lastProcessedGameObjects[gameObjectId];
+    delete this.lastProcessedGameObjects[id];
   };
 
   private checkOnReorientation(gameObject: GameObject): boolean {
@@ -221,8 +223,7 @@ export class CollisionDetectionSubsystem {
         gameObject1: gameObject2, gameObject2: gameObject1, mtv1: mtv2, mtv2: mtv1,
       },
     ].forEach((entry) => {
-      this.messageBus.send({
-        type: COLLISION_MSG,
+      this.scene.emit(Collision, {
         gameObject1: entry.gameObject1,
         gameObject2: entry.gameObject2,
         mtv1: entry.mtv1,

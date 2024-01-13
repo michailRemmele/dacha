@@ -6,5 +6,5 @@ export { Animatable } from './animatable';
 export { Sprite } from './sprite';
 export { Transform } from './transform';
 export { MouseControl } from './mouse-control';
-export { Script } from './script';
+export { ScriptBundle } from './script-bundle';
 export { Light } from './light';

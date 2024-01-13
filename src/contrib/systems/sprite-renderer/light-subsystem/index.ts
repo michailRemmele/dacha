@@ -3,7 +3,10 @@ import type { Scene, Light as ThreeJSLight } from 'three/src/Three';
 import { Light } from '../../../components/light';
 import { Transform } from '../../../components/transform';
 import { filterByKey } from '../../../../engine/utils';
-import type { GameObject, GameObjectObserver } from '../../../../engine/game-object';
+import { GameObject } from '../../../../engine/game-object';
+import type { GameObjectObserver } from '../../../../engine/game-object';
+import { AddGameObject, RemoveGameObject } from '../../../../engine/events';
+import type { UpdateGameObjectEvent } from '../../../../engine/events';
 
 import { createLight, updateLight } from './light-factory';
 
@@ -17,19 +20,22 @@ export class LightSubsystem {
     this.lightsObserver = lightsObserver;
 
     this.lightsMap = {};
+
+    this.lightsObserver.forEach(this.handleLightAdd);
   }
 
   mount(): void {
-    this.lightsObserver.subscribe('onadd', this.handleLightAdd);
-    this.lightsObserver.subscribe('onremove', this.handleLightRemove);
+    this.lightsObserver.addEventListener(AddGameObject, this.handleLightAdd);
+    this.lightsObserver.addEventListener(RemoveGameObject, this.handleLightRemove);
   }
 
   unmount(): void {
-    this.lightsObserver.unsubscribe('onadd', this.handleLightAdd);
-    this.lightsObserver.unsubscribe('onremove', this.handleLightRemove);
+    this.lightsObserver.removeEventListener(AddGameObject, this.handleLightAdd);
+    this.lightsObserver.removeEventListener(RemoveGameObject, this.handleLightRemove);
   }
 
-  private handleLightAdd = (gameObject: GameObject): void => {
+  private handleLightAdd = (value: UpdateGameObjectEvent | GameObject): void => {
+    const gameObject = value instanceof GameObject ? value : value.gameObject;
     const { type } = gameObject.getComponent(Light);
 
     const light = createLight(type);
@@ -40,7 +46,8 @@ export class LightSubsystem {
     this.renderScene.add(light);
   };
 
-  private handleLightRemove = (gameObject: GameObject): void => {
+  private handleLightRemove = (event: UpdateGameObjectEvent): void => {
+    const { gameObject } = event;
     const gameObjectId = gameObject.getId();
     const object = this.renderScene.getObjectById(this.lightsMap[gameObjectId]);
 

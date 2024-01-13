@@ -1,37 +1,23 @@
-import {
-  COLLISION_ENTER_MSG,
-  COLLISION_STAY_MSG,
-} from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
 import type { SystemOptions } from '../../../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
-import type { MessageBus, Message } from '../../../../../engine/message-bus';
+import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { RigidBodyType } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
+import { Collision } from '../../../../events';
+import type { CollisionEvent } from '../../../../events';
 
 const RIGID_BODY_TYPE = {
   STATIC: 'static',
   DYNAMIC: 'dynamic',
 };
 
-interface Mtv {
-  x: number
-  y: number
-}
-
-interface CollisionEventMessage extends Message {
-  gameObject1: GameObject
-  gameObject2: GameObject
-  mtv1: Mtv
-  mtv2: Mtv
-}
-
 export class ConstraintSolver {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private scene: Scene;
   private processedPairs: Record<string, Record<string, boolean>>;
-  private mtvMap: Record<string, Record<string, Mtv>>;
+  private mtvMap: Record<string, Record<string, Vector2>>;
 
   constructor(options: SystemOptions) {
     this.gameObjectObserver = options.createGameObjectObserver({
@@ -40,10 +26,40 @@ export class ConstraintSolver {
         Transform,
       ],
     });
-    this.messageBus = options.messageBus;
+    this.scene = options.scene;
     this.processedPairs = {};
     this.mtvMap = {};
   }
+
+  mount(): void {
+    this.scene.addEventListener(Collision, this.handleCollision);
+  }
+
+  unmount(): void {
+    this.scene.removeEventListener(Collision, this.handleCollision);
+  }
+
+  private handleCollision = (event: CollisionEvent): void => {
+    const {
+      gameObject1, gameObject2, mtv1, mtv2,
+    } = event;
+
+    const id1 = gameObject1.id;
+    const id2 = gameObject2.id;
+
+    if (this.processedPairs[id2] && this.processedPairs[id2][id1]) {
+      return;
+    }
+
+    this.processedPairs[id1] ??= {};
+    this.processedPairs[id1][id2] = true;
+
+    if (!this.validateCollision(gameObject1, gameObject2)) {
+      return;
+    }
+
+    this.resolveCollision(gameObject1, gameObject2, mtv1, mtv2);
+  };
 
   private validateCollision(gameObject1: GameObject, gameObject2: GameObject): boolean {
     const rigidBody1 = gameObject1.getComponent(RigidBody);
@@ -83,8 +99,8 @@ export class ConstraintSolver {
   private resolveCollision(
     gameObject1: GameObject,
     gameObject2: GameObject,
-    mtv1: Mtv,
-    mtv2: Mtv,
+    mtv1: Vector2,
+    mtv2: Vector2,
   ): void {
     const id1 = gameObject1.getId();
     const id2 = gameObject2.getId();
@@ -103,35 +119,6 @@ export class ConstraintSolver {
   }
 
   update(): void {
-    this.processedPairs = {};
-    this.mtvMap = {};
-
-    const enterMessages = this.messageBus.get(COLLISION_ENTER_MSG) || [];
-    const stayMessages = this.messageBus.get(COLLISION_STAY_MSG) || [];
-    [enterMessages, stayMessages].forEach((messages) => {
-      messages.forEach((message) => {
-        const {
-          gameObject1, gameObject2, mtv1, mtv2,
-        } = message as CollisionEventMessage;
-
-        const id1 = gameObject1.getId();
-        const id2 = gameObject2.getId();
-
-        if (this.processedPairs[id2] && this.processedPairs[id2][id1]) {
-          return;
-        }
-
-        this.processedPairs[id1] = this.processedPairs[id1] || {};
-        this.processedPairs[id1][id2] = true;
-
-        if (!this.validateCollision(gameObject1, gameObject2)) {
-          return;
-        }
-
-        this.resolveCollision(gameObject1, gameObject2, mtv1, mtv2);
-      });
-    });
-
     Object.keys(this.mtvMap).forEach((id) => {
       const gameObject = this.gameObjectObserver.getById(id) as GameObject;
       const transform = gameObject.getComponent(Transform);
@@ -160,5 +147,8 @@ export class ConstraintSolver {
       transform.offsetX += staticMtv.x + dynamicMtv.x;
       transform.offsetY += staticMtv.y + dynamicMtv.y;
     });
+
+    this.processedPairs = {};
+    this.mtvMap = {};
   }
 }

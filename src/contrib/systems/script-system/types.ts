@@ -1,14 +1,24 @@
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus } from '../../../engine/message-bus';
+import type {
+  GameObject,
+  GameObjectObserver,
+  GameObjectSpawner,
+  GameObjectDestroyer,
+} from '../../../engine/game-object';
+import type { Scene } from '../../../engine/scene';
 
 export interface GameObjectScriptOptions {
+  scene: Scene
   gameObject: GameObject
-  messageBus: MessageBus
   gameObjectObserver: GameObjectObserver
-  spawner: unknown
-  destroyer: unknown
+  gameObjectSpawner: GameObjectSpawner
+  gameObjectDestroyer: GameObjectDestroyer
+}
+
+interface UpdateOptions {
+  deltaTime: number
 }
 
 export interface GameObjectScript {
-  update(deltaTime: number): void
+  destroy?(): void
+  update?(options: UpdateOptions): void
 }

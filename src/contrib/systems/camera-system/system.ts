@@ -1,20 +1,16 @@
 import { MathOps } from '../../../engine/mathLib';
 import { System } from '../../../engine/system';
+import type { Scene } from '../../../engine/scene';
 import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { Message, MessageEmitter } from '../../../engine/message-bus';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
+import { SetCamera } from '../../events';
+import type { SetCameraEvent } from '../../events';
 
 import { CameraService } from './service';
 
-const SET_CAMERA_MESSAGE = 'SET_CAMERA';
-
 export const STD_SCREEN_SIZE = 1080;
-
-interface SetCameraMessage extends Message {
-  gameObjectId: string
-}
 
 interface CameraSystemOptions extends SystemOptions {
   initialCamera: string
@@ -24,7 +20,7 @@ interface CameraSystemOptions extends SystemOptions {
 
 export class CameraSystem extends System {
   private gameObjectObserver: GameObjectObserver;
-  private messageEmitter: MessageEmitter;
+  private scene: Scene;
   private window: Window & HTMLElement;
   private scaleSensitivity: number;
   private cameraService: CameraService;
@@ -37,8 +33,7 @@ export class CameraSystem extends System {
       windowNodeId,
       scaleSensitivity,
       createGameObjectObserver,
-      messageEmitter,
-      sceneContext,
+      scene,
     } = options as CameraSystemOptions;
 
     const windowNode = getWindowNode(windowNodeId);
@@ -48,7 +43,7 @@ export class CameraSystem extends System {
         Camera,
       ],
     });
-    this.messageEmitter = messageEmitter;
+    this.scene = scene;
     this.window = windowNode as (Window & HTMLElement);
 
     this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1);
@@ -60,7 +55,7 @@ export class CameraSystem extends System {
     }
 
     this.cameraService = new CameraService({ camera: currentCamera });
-    sceneContext.registerService(this.cameraService);
+    scene.context.registerService(this.cameraService);
 
     this.setCamera(currentCamera);
   }
@@ -68,16 +63,16 @@ export class CameraSystem extends System {
   mount(): void {
     this.handleCameraUpdate();
     window.addEventListener('resize', this.handleCameraUpdate);
-    this.messageEmitter.on(SET_CAMERA_MESSAGE, this.handleSetCameraMessage);
+    this.scene.addEventListener(SetCamera, this.handleSetCamera);
   }
 
   unmount(): void {
     window.removeEventListener('resize', this.handleCameraUpdate);
-    this.messageEmitter.off(SET_CAMERA_MESSAGE, this.handleSetCameraMessage);
+    this.scene.removeEventListener(SetCamera, this.handleSetCamera);
   }
 
-  private handleSetCameraMessage = (message: unknown): void => {
-    const { gameObjectId } = message as SetCameraMessage;
+  private handleSetCamera = (event: SetCameraEvent): void => {
+    const { gameObjectId } = event;
     const newCamera = this.gameObjectObserver.getById(gameObjectId);
 
     if (!newCamera) {

@@ -1,17 +1,18 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus } from '../../../engine/message-bus';
+import type { Scene } from '../../../engine/scene';
 import { KeyboardControl } from '../../components/keyboard-control';
 import type { KeyboardEventBind } from '../../components/keyboard-control';
-import { KEYBOARD_INPUT_MESSAGE } from '../../consts/messages';
-import type { KeyboardInputMessage } from '../../types/messages';
+import { KeyboardInput } from '../../events';
+import type { KeyboardInputEvent } from '../../events';
 
 export class KeyboardControlSystem extends System {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private scene: Scene;
 
   private pressedKeys: Set<string>;
+  private events: Array<KeyboardInputEvent>;
 
   constructor(options: SystemOptions) {
     super();
@@ -21,32 +22,38 @@ export class KeyboardControlSystem extends System {
         KeyboardControl,
       ],
     });
-    this.messageBus = options.messageBus;
+    this.scene = options.scene;
 
     this.pressedKeys = new Set();
+    this.events = [];
   }
+
+  mount(): void {
+    this.scene.addEventListener(KeyboardInput, this.handleKeyboardInput);
+  }
+
+  unmount(): void {
+    this.scene.removeEventListener(KeyboardInput, this.handleKeyboardInput);
+  }
+
+  private handleKeyboardInput = (event: KeyboardInputEvent): void => {
+    this.events.push(event);
+  };
 
   private sendMessage(gameObject: GameObject, eventBinding: KeyboardEventBind, code: string): void {
     if (!eventBinding.messageType) {
       throw new Error(`The message type is not specified for input key: ${code}`);
     }
 
-    this.messageBus.send({
-      type: eventBinding.messageType,
+    gameObject.emit(eventBinding.messageType, {
       ...eventBinding.attrs,
-      gameObject,
-      id: gameObject.getId(),
     });
   }
 
   update(): void {
-    const messages = this.messageBus.get(
-      KEYBOARD_INPUT_MESSAGE,
-    ) as Array<KeyboardInputMessage> | undefined;
-
-    messages?.forEach((message) => {
-      if (!message.pressed) {
-        this.pressedKeys.delete(message.key);
+    this.events.forEach((event) => {
+      if (!event.pressed) {
+        this.pressedKeys.delete(event.key);
       }
     });
 
@@ -62,8 +69,8 @@ export class KeyboardControlSystem extends System {
       });
 
       // Send control message on input event excluding repeated browser generated key pressed events
-      messages?.forEach((message) => {
-        const { key, pressed } = message;
+      this.events.forEach((event) => {
+        const { key, pressed } = event;
         const inputBinding = control.inputEventBindings[key]?.[pressed ? 'pressed' : 'released'];
         if (inputBinding !== undefined && !this.pressedKeys.has(key)) {
           this.sendMessage(gameObject, inputBinding, key);
@@ -71,13 +78,14 @@ export class KeyboardControlSystem extends System {
       });
     });
 
-    messages?.forEach((message) => {
-      if (message.pressed) {
-        this.pressedKeys.add(message.key);
+    this.events.forEach((event) => {
+      if (event.pressed) {
+        this.pressedKeys.add(event.key);
       } else {
-        this.pressedKeys.delete(message.key);
+        this.pressedKeys.delete(event.key);
       }
     });
+    this.events = [];
   }
 }
 

@@ -1,8 +1,10 @@
+import { EventEmitter } from '../event-emitter';
 import type { Component, ComponentConstructor } from '../component';
 import { filterByKey } from '../utils';
+import type { GameObjectEventMap } from '../../types/events';
+import { AddComponent, RemoveComponent } from '../events';
 
-export interface ComponentsEditionEvent {
-  type: 'COMPONENT_ADDED' | 'COMPONENT_REMOVED';
+export interface UpdateComponentMessage {
   componentName: string;
   gameObject: GameObject;
 }
@@ -13,10 +15,9 @@ export interface GameObjectOptions {
   templateId?: string
 }
 
-export class GameObject {
+export class GameObject extends EventEmitter<GameObjectEventMap> {
   private components: Record<string, Component>;
   private children: Array<GameObject>;
-  private subscribers: Array<(event: ComponentsEditionEvent) => void>;
   private childrenIds: Record<string, GameObject>;
 
   public readonly id: string;
@@ -29,6 +30,8 @@ export class GameObject {
     name,
     templateId,
   }: GameObjectOptions) {
+    super();
+
     this.id = id;
     this.name = name;
     this.templateId = templateId;
@@ -36,8 +39,6 @@ export class GameObject {
     this.parent = void 0;
     this.children = [];
     this.childrenIds = {};
-
-    this.subscribers = [];
   }
 
   getAncestor(): GameObject {
@@ -104,13 +105,7 @@ export class GameObject {
     this.components[componentName] = component;
     component.gameObject = this;
 
-    this.subscribers.forEach((callback) => {
-      callback({
-        type: 'COMPONENT_ADDED',
-        componentName,
-        gameObject: this,
-      });
-    });
+    this.emit(AddComponent, { componentName });
   }
 
   removeComponent(componentClass: ComponentConstructor): void {
@@ -123,24 +118,6 @@ export class GameObject {
     this.components[componentName].gameObject = void 0;
     this.components = filterByKey(this.components, componentName);
 
-    this.subscribers.forEach((callback) => {
-      callback({
-        type: 'COMPONENT_REMOVED',
-        componentName,
-        gameObject: this,
-      });
-    });
-  }
-
-  subscribe(callback: (event: ComponentsEditionEvent) => void): void {
-    if (!(callback instanceof Function)) {
-      throw new Error('On subscribe callback should be a function');
-    }
-
-    this.subscribers.push(callback);
-  }
-
-  clearSubscriptions(): void {
-    this.subscribers = [];
+    this.emit(RemoveComponent, { componentName });
   }
 }

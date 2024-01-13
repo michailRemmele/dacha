@@ -6,6 +6,7 @@ import { GameObjectCreator } from '../game-object-creator';
 import { GameObject } from '../game-object';
 import { TemplateCollection } from '../../template';
 import { Component } from '../../component';
+import { AddGameObject, RemoveGameObject } from '../../events';
 
 class TestComponent1 extends Component {
   static componentName = 'TestComponent1';
@@ -120,48 +121,72 @@ describe('Engine -> GameObjectObserver', () => {
     const testFn1 = jest.fn();
     const testFn2 = jest.fn();
 
-    gameObjectObserver.subscribe('onadd', testFn1);
-    gameObjectObserver.subscribe('onadd', testFn2);
+    gameObjectObserver.addEventListener(AddGameObject, testFn1);
+    gameObjectObserver.addEventListener(AddGameObject, testFn2);
 
     scene.addGameObject(gameObject1);
 
-    expect(testFn1.mock.calls.length).toEqual(0);
-    expect(testFn2.mock.calls.length).toEqual(0);
-
-    gameObjectObserver.fireEvents();
-
     expect(testFn1.mock.calls.length).toEqual(1);
-    expect(testFn1.mock.calls[0]).toEqual([gameObject1]);
+    expect(testFn1.mock.calls[0]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject1,
+    }]);
     expect(testFn2.mock.calls.length).toEqual(1);
-    expect(testFn2.mock.calls[0]).toEqual([gameObject1]);
+    expect(testFn2.mock.calls[0]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject1,
+    }]);
     expect(gameObjectObserver.size()).toEqual(1);
 
     scene.addGameObject(gameObject3);
-    gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(1);
     expect(testFn2.mock.calls.length).toEqual(1);
     expect(gameObjectObserver.size()).toEqual(1);
 
     gameObject3.setComponent(new TestComponent1());
-    gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(2);
-    expect(testFn1.mock.calls[1]).toEqual([gameObject3]);
+    expect(testFn1.mock.calls[1]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject3,
+    }]);
     expect(testFn2.mock.calls.length).toEqual(2);
-    expect(testFn2.mock.calls[1]).toEqual([gameObject3]);
+    expect(testFn2.mock.calls[1]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject3,
+    }]);
     expect(gameObjectObserver.size()).toEqual(2);
 
     scene.addGameObject(gameObject4);
     scene.addGameObject(gameObject5);
-    gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(4);
-    expect(testFn1.mock.calls[2]).toEqual([gameObject4]);
-    expect(testFn1.mock.calls[3]).toEqual([gameObject5]);
+    expect(testFn1.mock.calls[2]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject4,
+    }]);
+    expect(testFn1.mock.calls[3]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject5,
+    }]);
     expect(testFn2.mock.calls.length).toEqual(4);
-    expect(testFn2.mock.calls[2]).toEqual([gameObject4]);
-    expect(testFn2.mock.calls[3]).toEqual([gameObject5]);
+    expect(testFn2.mock.calls[2]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject4,
+    }]);
+    expect(testFn2.mock.calls[3]).toEqual([{
+      type: AddGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject5,
+    }]);
     expect(gameObjectObserver.size()).toEqual(4);
   });
 
@@ -173,8 +198,8 @@ describe('Engine -> GameObjectObserver', () => {
     const testFn1 = jest.fn();
     const testFn2 = jest.fn();
 
-    gameObjectObserver.subscribe('onremove', testFn1);
-    gameObjectObserver.subscribe('onremove', testFn2);
+    gameObjectObserver.addEventListener(RemoveGameObject, testFn1);
+    gameObjectObserver.addEventListener(RemoveGameObject, testFn2);
 
     scene.addGameObject(gameObject1);
     scene.addGameObject(gameObject2);
@@ -182,31 +207,51 @@ describe('Engine -> GameObjectObserver', () => {
     scene.addGameObject(gameObject4);
     scene.addGameObject(gameObject5);
 
-    gameObjectObserver.fireEvents();
-
     expect(testFn1.mock.calls.length).toEqual(0);
     expect(testFn2.mock.calls.length).toEqual(0);
     expect(gameObjectObserver.size()).toEqual(4);
 
     gameObject1.removeComponent(TestComponent1);
-    gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(1);
-    expect(testFn1.mock.calls[0]).toEqual([gameObject1]);
+    expect(testFn1.mock.calls[0]).toEqual([{
+      type: RemoveGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject1,
+    }]);
     expect(testFn2.mock.calls.length).toEqual(1);
-    expect(testFn2.mock.calls[0]).toEqual([gameObject1]);
+    expect(testFn2.mock.calls[0]).toEqual([{
+      type: RemoveGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject1,
+    }]);
     expect(gameObjectObserver.size()).toEqual(3);
 
     scene.removeGameObject(gameObject4);
     gameObject5.removeComponent(TestComponent1);
-    gameObjectObserver.fireEvents();
 
     expect(testFn1.mock.calls.length).toEqual(3);
-    expect(testFn1.mock.calls[1]).toEqual([gameObject4]);
-    expect(testFn1.mock.calls[2]).toEqual([gameObject5]);
+    expect(testFn1.mock.calls[1]).toEqual([{
+      type: RemoveGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject4,
+    }]);
+    expect(testFn1.mock.calls[2]).toEqual([{
+      type: RemoveGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject5,
+    }]);
     expect(testFn2.mock.calls.length).toEqual(3);
-    expect(testFn2.mock.calls[1]).toEqual([gameObject4]);
-    expect(testFn2.mock.calls[2]).toEqual([gameObject5]);
+    expect(testFn2.mock.calls[1]).toEqual([{
+      type: RemoveGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject4,
+    }]);
+    expect(testFn2.mock.calls[2]).toEqual([{
+      type: RemoveGameObject,
+      target: gameObjectObserver,
+      gameObject: gameObject5,
+    }]);
     expect(gameObjectObserver.size()).toEqual(1);
   });
 
@@ -217,17 +262,15 @@ describe('Engine -> GameObjectObserver', () => {
 
     const testFn = jest.fn();
 
-    gameObjectObserver.subscribe('onadd', testFn);
+    gameObjectObserver.addEventListener(AddGameObject, testFn);
 
     scene.addGameObject(gameObject1);
-    gameObjectObserver.fireEvents();
 
     expect(testFn.mock.calls.length).toEqual(1);
 
-    gameObjectObserver.unsubscribe('onadd', testFn);
+    gameObjectObserver.removeEventListener(AddGameObject, testFn);
 
     scene.addGameObject(gameObject4);
-    gameObjectObserver.fireEvents();
 
     expect(testFn.mock.calls.length).toEqual(1);
   });

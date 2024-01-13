@@ -1,8 +1,8 @@
-import type { KeyboardInputEvent } from '../../types/messages';
+import type { KeyboardEvent as CustomKeyboardEvent } from '../../types/input-events';
 
 export class InputListener {
   private windowNode: Window | HTMLElement;
-  private eventsQuery: Array<KeyboardInputEvent>;
+  private eventsQuery: Array<CustomKeyboardEvent>;
 
   constructor(window: Window | HTMLElement) {
     this.windowNode = window;
@@ -33,7 +33,7 @@ export class InputListener {
     this.windowNode.removeEventListener('keyup', this.handleKeyUp);
   }
 
-  getEvents(): Array<KeyboardInputEvent> {
+  getEvents(): Array<CustomKeyboardEvent> {
     return this.eventsQuery;
   }
 

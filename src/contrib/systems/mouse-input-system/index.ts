@@ -19,15 +19,16 @@ export class MouseInputSystem extends System {
 
   mount(): void {
     this.inputSubsystem.mount();
+    this.coordinatesProjector.mount();
   }
 
   unmount(): void {
     this.inputSubsystem.unmount();
+    this.coordinatesProjector.unmount();
   }
 
   update(): void {
     this.inputSubsystem.update();
-    this.coordinatesProjector.update();
   }
 }
 

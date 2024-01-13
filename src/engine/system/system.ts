@@ -5,8 +5,7 @@ import type {
   GameObjectDestroyer,
 } from '../game-object';
 import type { TemplateCollection } from '../template';
-import type { SceneContext } from '../scene';
-import type { MessageBus, MessageEmitter } from '../message-bus';
+import type { Scene } from '../scene';
 import type { Constructor } from '../../types/utils';
 
 export interface SystemOptions extends Record<string, unknown> {
@@ -15,9 +14,7 @@ export interface SystemOptions extends Record<string, unknown> {
   gameObjectDestroyer: GameObjectDestroyer
   resources?: unknown
   globalOptions: Record<string, unknown>
-  messageBus: MessageBus
-  messageEmitter: MessageEmitter
-  sceneContext: SceneContext
+  scene: Scene
   templateCollection: TemplateCollection
 }
 

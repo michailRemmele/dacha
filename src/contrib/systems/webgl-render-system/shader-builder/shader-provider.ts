@@ -1,3 +1,5 @@
+import { AddGameObject, RemoveGameObject } from '../../../../engine/events';
+import type { UpdateGameObjectEvent } from '../../../../engine/events';
 import type {
   GameObjectObserver,
   GameObject,
@@ -13,22 +15,25 @@ export class ShaderProvider {
 
     this.shadingIdMap = {};
 
-    this.gameObjectObserver.subscribe('onadd', this.handleGameObjectAdd);
-    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    // TODO: Remove listeners on system unmount
+    this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
+    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
   getShadingId(gameObjectId: string): string {
     return this.shadingIdMap[gameObjectId];
   }
 
-  private handleGameObjectAdd = (gameObject: GameObject): void => {
-    this.shadingIdMap[gameObject.getId()] = this.calculateShadingId(gameObject);
+  private handleGameObjectAdd = (event: UpdateGameObjectEvent): void => {
+    const { gameObject } = event;
+    this.shadingIdMap[gameObject.id] = this.calculateShadingId(gameObject);
   };
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
+  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+    const { gameObject } = event;
     this.shadingIdMap = Object.keys(this.shadingIdMap)
       .reduce((acc: Record<string, string>, key) => {
-        if (key !== gameObject.getId()) {
+        if (key !== gameObject.id) {
           acc[key] = this.shadingIdMap[key];
         }
 

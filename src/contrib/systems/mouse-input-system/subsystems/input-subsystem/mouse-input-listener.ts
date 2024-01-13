@@ -1,4 +1,4 @@
-import type { MouseInputEvent } from '../../../../types/messages';
+import type { MouseEvent as CustomMouseEvent } from '../../../../types/input-events';
 
 const LISTENING_EVENTS = [
   'mousedown',
@@ -13,7 +13,7 @@ const LISTENING_EVENTS = [
 
 export class MouseInputListener {
   private window: Window | HTMLElement;
-  private firedEvents: Array<MouseInputEvent>;
+  private firedEvents: Array<CustomMouseEvent>;
 
   constructor(window: Window | HTMLElement) {
     this.window = window;
@@ -47,7 +47,7 @@ export class MouseInputListener {
     });
   }
 
-  getFiredEvents(): Array<MouseInputEvent> {
+  getFiredEvents(): Array<CustomMouseEvent> {
     return this.firedEvents;
   }
 

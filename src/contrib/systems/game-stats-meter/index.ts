@@ -1,9 +1,9 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions, UpdateOptions } from '../../../engine/system';
 import type { GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus } from '../../../engine/message-bus';
+import type { Scene } from '../../../engine/scene';
+import { GameStatsUpdate } from '../../events';
 
-const GAME_STATS_UPDATE_MSG = 'GAME_STATS_UPDATE';
 const MS_IN_SEC = 1000;
 
 interface GameStatsMeterOptions extends SystemOptions {
@@ -12,28 +12,26 @@ interface GameStatsMeterOptions extends SystemOptions {
 
 export class GameStatsMeter extends System {
   private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private scene: Scene;
   private frequency: number;
   private fps: number;
   private time: number;
-  private messages: number;
 
   constructor(options: SystemOptions) {
     super();
 
     const {
       createGameObjectObserver,
-      messageBus,
+      scene,
       frequency,
     } = options as GameStatsMeterOptions;
 
     this.gameObjectObserver = createGameObjectObserver({});
-    this.messageBus = messageBus;
+    this.scene = scene;
     this.frequency = frequency || MS_IN_SEC;
 
     this.fps = 0;
     this.time = 0;
-    this.messages = 0;
   }
 
   update(options: UpdateOptions): void {
@@ -41,19 +39,15 @@ export class GameStatsMeter extends System {
 
     this.fps += 1;
     this.time += deltaTime;
-    this.messages += this.messageBus.getMessageCount();
 
     if (this.time >= this.frequency) {
-      this.messageBus.send({
-        type: GAME_STATS_UPDATE_MSG,
+      this.scene.emit(GameStatsUpdate, {
         fps: (this.fps * MS_IN_SEC) / this.time,
         gameObjectsCount: this.gameObjectObserver.size(),
-        messagesCount: (this.messages * MS_IN_SEC) / this.time,
       });
 
       this.fps = 0;
       this.time = 0;
-      this.messages = 0;
     }
   }
 }

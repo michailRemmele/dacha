@@ -1,7 +1,9 @@
 /* comment: mock classes for test */
 /* eslint-disable max-classes-per-file */
-import { GameObject, ComponentsEditionEvent } from '../game-object';
+import { GameObject } from '../game-object';
 import { Component } from '../../component';
+import { AddComponent, RemoveComponent } from '../../events';
+import type { UpdateComponentEvent } from '../../events';
 
 class TestComponent1 extends Component {
   static componentName = 'TestComponent1';
@@ -125,47 +127,42 @@ describe('Engine -> GameObject', () => {
       id: '0',
       name: 'gameObject',
     });
-    const subscription1 = jest.fn() as jest.Mock<void, [ComponentsEditionEvent]>;
-    const wrappedSubscription1 = (event: ComponentsEditionEvent): void => { subscription1(event); };
-    const subscription2 = jest.fn() as jest.Mock<void, [ComponentsEditionEvent]>;
-    const wrappedSubscription2 = (event: ComponentsEditionEvent): void => { subscription2(event); };
+    const subscription1 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
+    const subscription2 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
+    const subscription3 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
 
-    gameObject.subscribe(wrappedSubscription1);
+    gameObject.addEventListener(AddComponent, subscription1);
+    gameObject.addEventListener(RemoveComponent, subscription3);
     gameObject.setComponent(new TestComponent1());
 
-    gameObject.subscribe(wrappedSubscription2);
+    gameObject.addEventListener(AddComponent, subscription2);
     gameObject.setComponent(new TestComponent2());
 
     gameObject.removeComponent(TestComponent1);
 
-    expect(subscription1.mock.calls.length).toEqual(3);
-    expect(subscription2.mock.calls.length).toEqual(2);
+    expect(subscription1.mock.calls.length).toEqual(2);
+    expect(subscription2.mock.calls.length).toEqual(1);
 
     expect(subscription1.mock.calls[0][0]).toStrictEqual({
-      type: 'COMPONENT_ADDED',
+      type: AddComponent,
       componentName: 'TestComponent1',
-      gameObject,
+      target: gameObject,
     });
     expect(subscription1.mock.calls[1][0]).toStrictEqual({
-      type: 'COMPONENT_ADDED',
+      type: AddComponent,
       componentName: 'TestComponent2',
-      gameObject,
+      target: gameObject,
     });
-    expect(subscription1.mock.calls[2][0]).toStrictEqual({
-      type: 'COMPONENT_REMOVED',
+    expect(subscription3.mock.calls[0][0]).toStrictEqual({
+      type: RemoveComponent,
       componentName: 'TestComponent1',
-      gameObject,
+      target: gameObject,
     });
 
     expect(subscription2.mock.calls[0][0]).toStrictEqual({
-      type: 'COMPONENT_ADDED',
+      type: AddComponent,
       componentName: 'TestComponent2',
-      gameObject,
-    });
-    expect(subscription2.mock.calls[1][0]).toStrictEqual({
-      type: 'COMPONENT_REMOVED',
-      componentName: 'TestComponent1',
-      gameObject,
+      target: gameObject,
     });
   });
 
@@ -174,14 +171,14 @@ describe('Engine -> GameObject', () => {
       id: '0',
       name: 'gameObject',
     });
-    const subscription1 = jest.fn() as jest.Mock<void, [ComponentsEditionEvent]>;
-    const wrappedSubscription1 = (event: ComponentsEditionEvent): void => { subscription1(event); };
+    const subscription1 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
+    const wrappedSubscription1 = (event: UpdateComponentEvent): void => { subscription1(event); };
 
-    gameObject.subscribe(wrappedSubscription1);
+    gameObject.addEventListener(AddComponent, wrappedSubscription1);
 
     gameObject.setComponent(new TestComponent1());
 
-    gameObject.clearSubscriptions();
+    gameObject.removeAllListeners();
 
     gameObject.setComponent(new TestComponent2());
     gameObject.removeComponent(TestComponent1);
