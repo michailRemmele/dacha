@@ -19,9 +19,10 @@ import {
 import type { GameObject } from 'remiz'
 
 import { EngineContext } from '../../providers'
-import { SELECT_TOOL_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { Tool, ToolController } from '../../../engine/components'
 import type { FeatureValue } from '../../../engine/components/tool'
+import { EventType } from '../../../events'
+import type { SelectLevelEvent } from '../../../events'
 
 import { features } from './components'
 import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
@@ -29,16 +30,14 @@ import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
 export const Toolbar: FC = () => {
   const { t } = useTranslation()
   const {
-    pushMessage,
+    scene,
     gameObjectObserver,
     gameStateObserver,
-    sceneContext,
-    messageBus,
   } = useContext(EngineContext)
 
   const mainObjectId = useMemo<string>(
-    () => (sceneContext.data.mainObject as GameObject).id,
-    [sceneContext],
+    () => (scene.context.data.mainObject as GameObject).id,
+    [],
   )
 
   const [selectedTool, setSelectedTool] = useState('')
@@ -48,12 +47,11 @@ export const Toolbar: FC = () => {
   const ToolFeatures = useMemo(() => features[selectedTool], [selectedTool])
 
   useEffect(() => {
-    const handleUpdate = (): void => {
-      const messages = messageBus.get(SELECT_LEVEL_MSG)
-      if (messages?.length) {
-        setDisabled(false)
-      }
+    const handleSelectLevel = (event: SelectLevelEvent): void => {
+      setDisabled(event.levelId === undefined)
+    }
 
+    const handleUpdate = (): void => {
       const mainObject = gameObjectObserver.getById(mainObjectId) as GameObject
       const toolController = mainObject.getComponent(ToolController)
       const toolObject = mainObject.getChildById(toolController.activeTool)
@@ -81,25 +79,26 @@ export const Toolbar: FC = () => {
       }
     }
 
+    scene.addEventListener(EventType.SelectLevel, handleSelectLevel)
     gameStateObserver.subscribe(handleUpdate)
 
-    return () => gameStateObserver.unsubscribe(handleUpdate)
+    return () => {
+      scene.removeEventListener(EventType.SelectLevel, handleSelectLevel)
+      gameStateObserver.unsubscribe(handleUpdate)
+    }
   }, [
     gameObjectObserver,
     gameStateObserver,
-    sceneContext,
-    messageBus,
     mainObjectId,
     selectedTool,
     toolFeatures,
   ])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
-    pushMessage({
-      type: SELECT_TOOL_MSG,
-      name: event.target.value,
+    scene.emit(EventType.SelectTool, {
+      name: event.target.value as string,
     })
-  }, [pushMessage])
+  }, [])
 
   return (
     <ToolbarStyled>

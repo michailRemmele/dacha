@@ -41,7 +41,7 @@ export const InputBind: FC<InputBindProps> = ({
   const bindPath = useMemo(() => path.concat('inputEventBindings', `event:${value}`), [path, value])
   const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
   const buttonPath = useMemo(() => bindPath.concat('button'), [bindPath])
-  const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
+  const eventTypePath = useMemo(() => bindPath.concat('eventType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
   const inputEvents = useMemo(
@@ -75,9 +75,9 @@ export const InputBind: FC<InputBindProps> = ({
         dependencyValue="mousedown|mouseup"
       />
       <Field
-        path={messageTypePath}
+        path={eventTypePath}
         component={LabelledTextInput}
-        label={t('components.mouseControl.bind.messageType.title')}
+        label={t('components.mouseControl.bind.eventType.title')}
       />
       <SectionHeaderStyled>
         {t('components.mouseControl.bind.attributes.title')}

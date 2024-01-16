@@ -4,15 +4,14 @@ import {
   Transform,
 } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
   GameObject,
-  MessageBus,
-  SceneContext,
+  MouseControlEvent,
 } from 'remiz'
 
-import { CAMERA_ZOOM_MSG, SELECT_LEVEL_MSG } from '../../../consts/message-types'
-import { getTool } from '../../../utils/get-tool'
-import type { SelectLevelMessage, MouseInputMessage } from '../../../types/messages'
+import { EventType } from '../../../events'
+import { getTool, getZoomToolObject } from '../../../utils/get-tool'
 
 const ZOOM_FACTOR = 1.5
 const DEFAULT_ZOOM = 1
@@ -20,52 +19,44 @@ const DEFAULT_ZOOM = 1
 type ZoomMode = 'in' | 'out'
 
 export class ZoomToolSystem extends System {
-  private messageBus: MessageBus
-  private sceneContext: SceneContext
+  private scene: Scene
   private mainObject: GameObject
+  private zoomToolObject: GameObject
 
   constructor(options: SystemOptions) {
     super()
 
-    const {
-      messageBus,
-      sceneContext,
-    } = options
+    const { scene } = options
 
-    this.messageBus = messageBus
-    this.sceneContext = sceneContext
-
-    this.mainObject = sceneContext.data.mainObject as GameObject
+    this.scene = scene
+    this.mainObject = scene.context.data.mainObject as GameObject
+    this.zoomToolObject = getZoomToolObject(scene.context)
   }
 
-  private handleLevelChange(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
+  mount(): void {
+    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.zoomToolObject.addEventListener(EventType.CameraZoom, this.handleCameraZoom)
+  }
 
-    if (!messages) {
-      return
-    }
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.zoomToolObject.removeEventListener(EventType.CameraZoom, this.handleCameraZoom)
+  }
 
+  private handleSelectLevel = (): void => {
     const cameraComponent = this.mainObject.getComponent(Camera)
     cameraComponent.zoom = DEFAULT_ZOOM
   }
 
-  update(): void {
-    this.handleLevelChange()
-
-    const zoomMessages = (this.messageBus.get(CAMERA_ZOOM_MSG) || [])
-
-    if (!zoomMessages.length) {
-      return
-    }
-
+  private handleCameraZoom = (event: MouseControlEvent): void => {
     const {
       x,
       y,
       screenX,
       screenY,
-    } = zoomMessages.at(-1) as MouseInputMessage
+    } = event
 
-    const tool = getTool(this.sceneContext)
+    const tool = getTool(this.scene.context)
     const zoomMode = tool.features.direction.value as ZoomMode
 
     const cameraComponent = this.mainObject.getComponent(Camera)

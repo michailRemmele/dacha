@@ -4,7 +4,7 @@ import {
 } from 'react'
 
 import { EngineContext, CommandScopeContext } from '../../providers'
-import { COMMAND_MSG } from '../../../consts/message-types'
+import { EventType } from '../../../events'
 
 export interface DispatchOptions {
   isEffect?: boolean
@@ -20,17 +20,16 @@ export type UseCommanderHook = () => {
 }
 
 export const useCommander: UseCommanderHook = () => {
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
   const scope = useContext(CommandScopeContext)
 
   const dispatch = useCallback((command: Command, options?: DispatchOptions) => {
-    pushMessage({
-      type: COMMAND_MSG,
+    scene.emit(EventType.Command, {
       scope,
       isEffect: options?.isEffect,
       ...command,
     })
-  }, [pushMessage, scope])
+  }, [scene, scope])
 
   return { dispatch }
 }

@@ -149,7 +149,7 @@
 
   "components.animatable.editor.condition.title": "Condition {{index}}",
   "components.animatable.editor.condition.type.title": "Type",
-  "components.animatable.editor.condition.message.title": "Message",
+  "components.animatable.editor.condition.eventType.title": "Event Type",
   "components.animatable.editor.condition.operation.title": "Operation",
   "components.animatable.editor.condition.arg1.type.title": "Arg1 Type",
   "components.animatable.editor.condition.arg1.value.title": "Arg1 Value",
@@ -176,7 +176,7 @@
   "components.keyboardControl.bind.key.title": "Key",
   "components.keyboardControl.bind.pressed.title": "Pressed",
   "components.keyboardControl.bind.keepEmit.title": "Keep Emit",
-  "components.keyboardControl.bind.messageType.title": "Message Type",
+  "components.keyboardControl.bind.eventType.title": "Event Type",
   "components.keyboardControl.bind.attributes.title": "Attributes",
   "components.keyboardControl.bind.addNew.title": "Add New Bind",
 
@@ -192,7 +192,7 @@
   "components.mouseControl.bind.title": "Event Bind {{index}}",
   "components.mouseControl.bind.event.title": "Event",
   "components.mouseControl.bind.button.title": "Button",
-  "components.mouseControl.bind.messageType.title": "Message Type",
+  "components.mouseControl.bind.eventType.title": "Event Type",
   "components.mouseControl.bind.attributes.title": "Attributes",
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
@@ -233,8 +233,8 @@
   "components.rigidBody.types.dynamic.title": "Dynamic",
   "components.rigidBody.types.static.title": "Static",
 
-  "components.script.title": "Script",
-  "components.script.name.title": "Name",
+  "components.scriptBundle.title": "Script Bundle",
+  "components.scriptBundle.name.title": "Name",
 
   "components.transform.title": "Transform",
   "components.transform.offsetX.title": "Offset X",

@@ -7,7 +7,7 @@ import {
   MouseControl,
   Sprite,
   RigidBody,
-  Script,
+  ScriptBundle,
   Transform,
 } from 'remiz'
 
@@ -21,7 +21,7 @@ import { light } from './light'
 import { mouseControl } from './mouse-control'
 import { sprite } from './sprite'
 import { rigidBody } from './rigid-body'
-import { script } from './script'
+import { scriptBundle } from './script-bundle'
 import { transform } from './transform'
 
 export const componentsSchema: Record<string, WidgetSchema> = {
@@ -33,6 +33,6 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [MouseControl.componentName]: mouseControl,
   [Sprite.componentName]: sprite,
   [RigidBody.componentName]: rigidBody,
-  [Script.componentName]: script,
+  [ScriptBundle.componentName]: scriptBundle,
   [Transform.componentName]: transform,
 }

@@ -6,11 +6,8 @@ import React, {
 } from 'react'
 
 import { EngineContext } from '../engine-provider'
-import {
-  COMMAND_UNDO_MSG,
-  COMMAND_REDO_MSG,
-} from '../../../consts/message-types'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
+import { EventType } from '../../../events'
 
 interface UndoRedoProviderProviderProps {
   children: JSX.Element | Array<JSX.Element>
@@ -35,18 +32,16 @@ export const CommandProvider = ({
       return () => {}
     }
 
-    const { pushMessage } = engineContext
+    const { scene } = engineContext
 
     const handleUndo = (): void => {
-      pushMessage({
-        type: COMMAND_UNDO_MSG,
+      scene.emit(EventType.CommandUndo, {
         scope: activeScope,
       })
     }
 
     const handleRedo = (): void => {
-      pushMessage({
-        type: COMMAND_REDO_MSG,
+      scene.emit(EventType.CommandRedo, {
         scope: activeScope,
       })
     }

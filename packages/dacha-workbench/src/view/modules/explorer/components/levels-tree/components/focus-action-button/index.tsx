@@ -24,13 +24,13 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
 }) => {
   const { t } = useTranslation()
   const {
-    sceneContext,
+    scene,
     pushAction,
     gameStateObserver,
     gameObjectObserver,
   } = useContext(EngineContext)
 
-  const mainObject = sceneContext.data.mainObject as GameObject
+  const mainObject = scene.context.data.mainObject as GameObject
 
   const gameObjectId = useMemo(() => path?.at(-1)?.split(':')[1], [path])
   const [selectedGameObject, setSelectedGameObject] = useState<GameObject | undefined>()

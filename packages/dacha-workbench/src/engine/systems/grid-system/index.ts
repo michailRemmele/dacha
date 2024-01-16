@@ -4,18 +4,18 @@ import {
   Camera,
 } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
-  MessageBus,
   GameObject,
 } from 'remiz'
 
+import { EventType } from '../../../events'
+import type { SelectLevelEvent } from '../../../events'
 import { GRID_ROOT } from '../../../consts/root-nodes'
-import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { Settings } from '../../components'
-import type { SelectLevelMessage } from '../../../types/messages'
 
 export class GridSystem extends System {
-  private messageBus: MessageBus
+  private scene: Scene
 
   private mainObject: GameObject
   private selectedLevelId?: string
@@ -26,32 +26,29 @@ export class GridSystem extends System {
   constructor(options: SystemOptions) {
     super()
 
-    const {
-      messageBus,
-      sceneContext,
-    } = options
+    const { scene } = options
 
-    this.messageBus = messageBus
-    this.mainObject = sceneContext.data.mainObject as GameObject
+    this.scene = scene
+    this.mainObject = scene.context.data.mainObject as GameObject
     this.gridNode = document.getElementById(GRID_ROOT) as HTMLDivElement
 
     this.showGrid = false
   }
 
-  private handleLevelChange(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
-    if (!messages) {
-      return
-    }
+  mount(): void {
+    this.scene.addEventListener(EventType.SelectLevel, this.handleLevelChange)
+  }
 
-    const { levelId } = messages[0]
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleLevelChange)
+  }
 
+  private handleLevelChange = (event: SelectLevelEvent): void => {
+    const { levelId } = event
     this.selectedLevelId = levelId
   }
 
   update(): void {
-    this.handleLevelChange()
-
     const {
       data: { gridStep, showGrid, gridColor },
     } = this.mainObject.getComponent(Settings)

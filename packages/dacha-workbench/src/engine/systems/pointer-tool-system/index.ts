@@ -1,41 +1,34 @@
 import { System, SpriteRendererService } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
-  MessageBus,
-  SceneContext,
   GameObject,
   GameObjectSpawner,
   GameObjectDestroyer,
   GameObjectObserver,
+  MouseControlEvent,
 } from 'remiz'
 
-import {
-  SELECTION_MOVE_START_MSG,
-  INSPECT_ENTITY_MSG,
-  INSPECTED_ENTITY_CHANGE_MSG,
-  SELECT_LEVEL_MSG,
-} from '../../../consts/message-types'
-import type {
-  SelectLevelMessage,
-  InspectEntityMessage,
-  MouseInputMessage,
-} from '../../../types/messages'
+import { getPointerToolObject } from '../../../utils/get-tool'
+import { EventType } from '../../../events'
+import type { InspectEntityEvent, SelectLevelEvent } from '../../../events'
 
 import { SelectionMovementSubsystem } from './selection-movement'
 import { buildGameObjectPath, updateFrameSize } from './utils'
 import { LEVEL_PATH_LEGTH } from './consts'
+import type { SelectedObject } from './types'
 
 export class PointerToolSystem extends System {
-  private messageBus: MessageBus
-  private sceneContext: SceneContext
+  private scene: Scene
   private gameObjectSpawner: GameObjectSpawner
   private gameObjectDestroyer: GameObjectDestroyer
   private gameObjectObserver: GameObjectObserver
-  private selectedLevelId?: string
 
   private mainObject: GameObject
+  private pointerToolObject: GameObject
 
-  private selectedObjectId?: string
+  private selectedObject: SelectedObject
+
   private frame?: GameObject
 
   private selectionMovementSubsystem: SelectionMovementSubsystem
@@ -44,80 +37,86 @@ export class PointerToolSystem extends System {
     super()
 
     const {
-      messageBus,
-      sceneContext,
+      scene,
       gameObjectSpawner,
       gameObjectDestroyer,
       createGameObjectObserver,
     } = options
 
-    this.messageBus = messageBus
-    this.sceneContext = sceneContext
+    this.scene = scene
     this.gameObjectSpawner = gameObjectSpawner
     this.gameObjectDestroyer = gameObjectDestroyer
     this.gameObjectObserver = createGameObjectObserver({})
 
-    this.mainObject = sceneContext.data.mainObject as GameObject
+    this.mainObject = scene.context.data.mainObject as GameObject
+    this.pointerToolObject = getPointerToolObject(scene.context)
+
+    this.selectedObject = {}
 
     this.selectionMovementSubsystem = new SelectionMovementSubsystem({
-      messageBus,
+      scene,
       gameObjectObserver: this.gameObjectObserver,
-      sceneContext: this.sceneContext,
+      selectedObject: this.selectedObject,
     })
   }
 
-  private handleLevelChange(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
-    if (!messages) {
-      return
-    }
+  mount(): void {
+    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.scene.addEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
+    this.pointerToolObject.addEventListener(
+      EventType.SelectionMoveStart,
+      this.handleSelectionMoveStart,
+    )
 
-    const { levelId } = messages[0]
-
-    this.selectedLevelId = levelId
+    this.selectionMovementSubsystem.mount()
   }
 
-  private handleInspectEntityMessages(): void {
-    const inspectMessages = this.messageBus.get(INSPECTED_ENTITY_CHANGE_MSG)
-    if (!inspectMessages?.length) {
-      return
-    }
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.scene.removeEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
+    this.pointerToolObject.removeEventListener(
+      EventType.SelectionMoveStart,
+      this.handleSelectionMoveStart,
+    )
 
-    const { path } = inspectMessages.at(-1) as InspectEntityMessage
+    this.selectionMovementSubsystem.unmount()
+  }
+
+  private handleSelectLevel = (event: SelectLevelEvent): void => {
+    const { levelId } = event
+    this.selectedObject.levelId = levelId
+  }
+
+  private handleInspectEntity = (event: InspectEntityEvent): void => {
+    const { path } = event
 
     if (path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH) {
-      this.selectedObjectId = path.at(-1)?.split(':').at(-1)
+      this.selectedObject.objectId = path.at(-1)?.split(':').at(-1)
     } else {
-      this.selectedObjectId = undefined
+      this.selectedObject.objectId = undefined
     }
   }
 
-  private handleSelectionMessages(): void {
-    if (this.selectedLevelId === undefined) {
+  private handleSelectionMoveStart = (event: MouseControlEvent): void => {
+    if (this.selectedObject.levelId === undefined) {
       return
     }
 
-    const selectionMessages = this.messageBus.get(SELECTION_MOVE_START_MSG)
-    if (!selectionMessages?.length) {
-      return
-    }
+    const { screenX, screenY } = event
 
-    const { screenX, screenY } = selectionMessages.at(-1) as MouseInputMessage
-
-    const rendererService = this.sceneContext.getService(SpriteRendererService)
+    const rendererService = this.scene.context.getService(SpriteRendererService)
 
     const selectedObject = rendererService
       .intersectsWithPoint(screenX, screenY)
       .find((gameObject) => gameObject.getAncestor().id !== this.mainObject.id)
 
-    this.messageBus.send({
-      type: INSPECT_ENTITY_MSG,
+    this.scene.emit(EventType.InspectEntity, {
       path: selectedObject !== undefined
-        ? buildGameObjectPath(selectedObject, this.selectedLevelId)
+        ? buildGameObjectPath(selectedObject, this.selectedObject.levelId)
         : undefined,
     })
 
-    this.selectedObjectId = selectedObject?.id
+    this.selectedObject.objectId = selectedObject?.id
   }
 
   private deleteFrame(): void {
@@ -130,21 +129,21 @@ export class PointerToolSystem extends System {
   }
 
   private updateFrame(): void {
-    if (this.frame === undefined && this.selectedObjectId !== undefined) {
+    if (this.frame === undefined && this.selectedObject.objectId !== undefined) {
       this.frame = this.gameObjectSpawner.spawn('frame')
       this.mainObject.appendChild(this.frame)
     }
 
-    if (this.selectedObjectId === undefined) {
+    if (this.selectedObject.objectId === undefined) {
       this.deleteFrame()
       return
     }
 
-    if (this.frame === undefined || this.selectedObjectId === undefined) {
+    if (this.frame === undefined || this.selectedObject.objectId === undefined) {
       return
     }
 
-    const selectedObject = this.gameObjectObserver.getById(this.selectedObjectId)
+    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }
@@ -153,14 +152,6 @@ export class PointerToolSystem extends System {
   }
 
   update(): void {
-    this.handleLevelChange()
-    this.handleInspectEntityMessages()
-    this.handleSelectionMessages()
-
-    if (this.selectedLevelId !== undefined && this.selectedObjectId !== undefined) {
-      this.selectionMovementSubsystem.update(this.selectedObjectId, this.selectedLevelId)
-    }
-
     this.updateFrame()
   }
 }

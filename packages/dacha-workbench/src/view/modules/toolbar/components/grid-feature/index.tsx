@@ -10,7 +10,7 @@ import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import { CheckboxCSS } from '../../toolbar.style'
 import { ToolFeature } from '../tool-feature'
 import { EngineContext } from '../../../../providers'
-import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../consts/message-types'
+import { EventType } from '../../../../../events'
 
 export const GRID_FEATURE_NAME = 'grid'
 
@@ -20,11 +20,10 @@ interface GridFeatureProps {
 
 export const GridFeature: FC<GridFeatureProps> = ({ value }) => {
   const { t } = useTranslation()
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
 
   const handleChange = useCallback((event: CheckboxChangeEvent): void => {
-    pushMessage({
-      type: SET_TOOL_FEATURE_VALUE_MSG,
+    scene.emit(EventType.SetToolFeatureValue, {
       name: GRID_FEATURE_NAME,
       value: event.target.checked,
     })

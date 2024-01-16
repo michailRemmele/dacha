@@ -5,28 +5,22 @@ import {
   Vector2,
 } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
   GameObject,
-  MessageBus,
+  MouseControlEvent,
 } from 'remiz'
 
-import {
-  CAMERA_MOVE_START_MSG,
-  CAMERA_MOVE_END_MSG,
-  CAMERA_MOVE_MSG,
-  SELECT_LEVEL_MSG,
-} from '../../../consts/message-types'
-import type {
-  SelectLevelMessage,
-  MouseInputMessage,
-} from '../../../types/messages'
+import { getHandToolObject } from '../../../utils/get-tool'
+import { EventType } from '../../../events'
 
 const DEFAULT_POS_X = 0
 const DEFAULT_POS_Y = 0
 
 export class HandToolSystem extends System {
-  private messageBus: MessageBus
+  private scene: Scene
   private mainObject: GameObject
+  private handToolObject: GameObject
 
   private isMoving: boolean
   private anchor: Vector2
@@ -34,70 +28,55 @@ export class HandToolSystem extends System {
   constructor(options: SystemOptions) {
     super()
 
-    const { messageBus, sceneContext } = options
+    const { scene } = options
 
-    this.messageBus = messageBus
+    this.scene = scene
 
-    this.mainObject = sceneContext.data.mainObject as GameObject
+    this.mainObject = scene.context.data.mainObject as GameObject
+    this.handToolObject = getHandToolObject(scene.context)
 
     this.isMoving = false
     this.anchor = new Vector2(0, 0)
   }
 
-  private handleLevelChange(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
+  mount(): void {
+    this.scene.addEventListener(EventType.SelectLevel, this.handleLevelChange)
+    this.handToolObject.addEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.handToolObject.addEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.handToolObject.addEventListener(EventType.CameraMove, this.handleCameraMove)
+  }
 
-    if (!messages) {
-      return
-    }
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleLevelChange)
+    this.handToolObject.removeEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.handToolObject.removeEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.handToolObject.removeEventListener(EventType.CameraMove, this.handleCameraMove)
+  }
 
+  private handleLevelChange = (): void => {
     const transform = this.mainObject.getComponent(Transform)
     transform.offsetX = DEFAULT_POS_X
     transform.offsetY = DEFAULT_POS_Y
   }
 
-  private handleMoveStartMessages(): void {
-    const startMoveMessages = (this.messageBus.get(CAMERA_MOVE_START_MSG) || [])
-
-    if (!startMoveMessages.length) {
-      return
-    }
-
-    const {
-      screenX,
-      screenY,
-    } = startMoveMessages[startMoveMessages.length - 1] as MouseInputMessage
+  private handleCameraMoveStart = (event: MouseControlEvent): void => {
+    const { screenX, screenY } = event
 
     this.isMoving = true
     this.anchor.x = screenX
     this.anchor.y = screenY
   }
 
-  private handleMoveEndMessages(): void {
-    const endMoveMessages = (this.messageBus.get(CAMERA_MOVE_END_MSG) || [])
-
-    if (!endMoveMessages.length) {
-      return
-    }
-
+  private handleCameraMoveEnd = (): void => {
     this.isMoving = false
   }
 
-  private handleMoveMessages(): void {
+  private handleCameraMove = (event: MouseControlEvent): void => {
     if (!this.isMoving) {
       return
     }
 
-    const moveMessages = (this.messageBus.get(CAMERA_MOVE_MSG) || [])
-
-    if (!moveMessages.length) {
-      return
-    }
-
-    const {
-      screenX,
-      screenY,
-    } = moveMessages[moveMessages.length - 1] as MouseInputMessage
+    const { screenX, screenY } = event
 
     const transform = this.mainObject.getComponent(Transform)
     const { zoom } = this.mainObject.getComponent(Camera)
@@ -107,14 +86,6 @@ export class HandToolSystem extends System {
 
     this.anchor.x = screenX
     this.anchor.y = screenY
-  }
-
-  update(): void {
-    this.handleLevelChange()
-
-    this.handleMoveStartMessages()
-    this.handleMoveEndMessages()
-    this.handleMoveMessages()
   }
 }
 

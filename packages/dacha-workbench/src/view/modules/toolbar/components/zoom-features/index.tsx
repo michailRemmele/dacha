@@ -12,13 +12,13 @@ import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
 
 import { ToolFeaturesStyled, RadioGroupCSS } from '../../toolbar.style'
 import { EngineContext } from '../../../../providers'
-import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../consts/message-types'
 import type { FeatureValue } from '../../../../../engine/components/tool'
 import type { ToolFeaturesProps } from '../types'
+import { EventType } from '../../../../../events'
 
 export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
   const { t } = useTranslation()
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
 
   const [values, setValues] = useState<Record<string, FeatureValue>>({
     direction: '',
@@ -36,12 +36,11 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
   }, [features])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
-    pushMessage({
-      type: SET_TOOL_FEATURE_VALUE_MSG,
-      name: event.target.name,
-      value: event.target.value,
+    scene.emit(EventType.SetToolFeatureValue, {
+      name: event.target.name as string,
+      value: event.target.value as string,
     })
-  }, [pushMessage])
+  }, [])
 
   return (
     <ToolFeaturesStyled>

@@ -10,18 +10,14 @@ import type { GameObject } from 'remiz'
 
 import { Modal } from '../../components'
 import { EngineContext } from '../../providers'
-import { SET_SETTINGS_VALUE_MSG } from '../../../consts/message-types'
 import { Settings } from '../../../engine/components'
+import { EventType } from '../../../events'
 
 import { modals } from './components'
 
 export const SettingsModal: FC = () => {
   const { t } = useTranslation()
-  const {
-    sceneContext,
-    gameStateObserver,
-    messageBus,
-  } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
 
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<string>()
@@ -41,28 +37,19 @@ export const SettingsModal: FC = () => {
   }, [])
 
   useEffect(() => {
-    const updateSettings = (): void => {
-      const mainObject = sceneContext.data.mainObject as GameObject
+    const handleSettingsUpdate = (): void => {
+      const mainObject = scene.context.data.mainObject as GameObject
       const { data } = mainObject.getComponent(Settings)
 
       setSettings({ ...data })
     }
 
-    const handleGameStateUpdate = (): void => {
-      const messages = messageBus.get(SET_SETTINGS_VALUE_MSG)
-      if (messages === undefined || messages.length === 0) {
-        return
-      }
+    handleSettingsUpdate()
 
-      updateSettings()
-    }
+    scene.addEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
 
-    updateSettings()
-
-    gameStateObserver.subscribe(handleGameStateUpdate)
-
-    return () => gameStateObserver.unsubscribe(handleGameStateUpdate)
-  }, [gameStateObserver, messageBus])
+    return () => scene.removeEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
+  }, [])
 
   if (type === undefined || settings === undefined) {
     return null

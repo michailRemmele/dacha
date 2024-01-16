@@ -46,9 +46,9 @@ export const TransitionInspector: FC = () => {
   const handleAddCondition = useCallback(() => {
     dispatch(addValue(conditionsPath, {
       id: uuidv4(),
-      type: CONDITION_TYPE.MESSAGE,
+      type: CONDITION_TYPE.EVENT,
       props: {
-        message: '',
+        eventType: '',
       },
     }))
   }, [dispatch, conditionsPath])

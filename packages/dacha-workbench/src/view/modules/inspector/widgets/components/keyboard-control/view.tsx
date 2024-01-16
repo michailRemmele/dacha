@@ -36,7 +36,7 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
       key: '',
       pressed: true,
       keepEmit: false,
-      messageType: '',
+      eventType: '',
       attrs: [],
     }))
   }, [dispatch, bindingsPath])

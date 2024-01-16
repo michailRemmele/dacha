@@ -10,8 +10,8 @@ import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import { CheckboxCSS } from '../../../../toolbar.style'
 import { ToolFeature } from '../../../tool-feature'
 import { EngineContext } from '../../../../../../providers'
-import { SET_TOOL_FEATURE_VALUE_MSG } from '../../../../../../../consts/message-types'
 import { PREVIEW_FEATURE_NAME } from '../../consts'
+import { EventType } from '../../../../../../../events'
 
 interface PreviewFeatureProps {
   value: boolean
@@ -19,11 +19,10 @@ interface PreviewFeatureProps {
 
 export const PreviewFeature: FC<PreviewFeatureProps> = ({ value }) => {
   const { t } = useTranslation()
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
 
   const handleChange = useCallback((event: CheckboxChangeEvent): void => {
-    pushMessage({
-      type: SET_TOOL_FEATURE_VALUE_MSG,
+    scene.emit(EventType.SetToolFeatureValue, {
       name: PREVIEW_FEATURE_NAME,
       value: event.target.checked,
     })

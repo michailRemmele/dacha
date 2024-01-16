@@ -12,7 +12,7 @@ import type { GameObjectConfig, TemplateConfig } from 'remiz'
 import { Labelled } from '../../components'
 import { useConfig, useStore } from '../../../../hooks'
 import { EngineContext } from '../../../../providers'
-import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
+import { EventType } from '../../../../../events'
 
 import { SpaceCompactCSS, ButtonCSS } from './game-object-form.style'
 
@@ -26,7 +26,7 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
   const { t } = useTranslation()
   const store = useStore()
 
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
 
   const templatePath = useMemo(() => {
     if (store === undefined) {
@@ -51,11 +51,10 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
   const { name } = useConfig(templatePath) as TemplateConfig
 
   const handleTemplateInspect = useCallback(() => {
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
+    scene.emit(EventType.InspectEntity, {
       path: templatePath,
     })
-  }, [pushMessage, templatePath])
+  }, [templatePath])
 
   return (
     <Labelled

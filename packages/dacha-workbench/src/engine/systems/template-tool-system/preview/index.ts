@@ -1,82 +1,80 @@
 import { Transform } from 'remiz'
 import type {
+  Scene,
   GameObjectCreator,
   GameObjectDestroyer,
   GameObjectSpawner,
-  MessageBus,
   GameObject,
-  SceneContext,
   TemplateConfig,
 } from 'remiz'
 
+import { EventType } from '../../../../events'
+import type { SelectToolEvent } from '../../../../events'
 import { TOOL_NAME } from '../consts'
-import { SELECT_TOOL_MSG } from '../../../../consts/message-types'
 import { getTool } from '../../../../utils/get-tool'
 import { includesArray } from '../../../../utils/includes-array'
 import type { Tool } from '../../../components'
 import type { Store } from '../../../../store'
-import type { SelectToolMessage } from '../../../../types/messages'
 
 interface PreviewSubsystemOptions {
+  scene: Scene
   gameObjectCreator: GameObjectCreator
   gameObjectDestroyer: GameObjectDestroyer
   gameObjectSpawner: GameObjectSpawner
-  sceneContext: SceneContext
-  messageBus: MessageBus
 }
 
 export class PreviewSubsystem {
+  private scene: Scene
   private gameObjectCreator: GameObjectCreator
   private gameObjectDestroyer: GameObjectDestroyer
   private gameObjectSpawner: GameObjectSpawner
   private mainObject: GameObject
   private configStore: Store
-  private sceneContext: SceneContext
-  private messageBus: MessageBus
 
   private preview?: GameObject
 
-  private unsubscribe: () => void
+  private unsubscribe?: () => void
 
   constructor({
+    scene,
     gameObjectCreator,
     gameObjectDestroyer,
     gameObjectSpawner,
-    sceneContext,
-    messageBus,
   }: PreviewSubsystemOptions) {
+    this.scene = scene
     this.gameObjectCreator = gameObjectCreator
     this.gameObjectDestroyer = gameObjectDestroyer
     this.gameObjectSpawner = gameObjectSpawner
-    this.messageBus = messageBus
-    this.sceneContext = sceneContext
 
-    this.mainObject = this.sceneContext.data.mainObject as GameObject
-    this.configStore = this.sceneContext.data.configStore as Store
+    this.mainObject = this.scene.context.data.mainObject as GameObject
+    this.configStore = this.scene.context.data.configStore as Store
+  }
 
+  mount(): void {
+    this.scene.addEventListener(EventType.SelectTool, this.handleSelectTool)
     this.unsubscribe = this.configStore.subscribe(this.handleTemplatesUpdate)
   }
 
-  private deletePreview(): void {
-    if (this.preview === undefined) {
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SelectTool, this.handleSelectTool)
+    this.unsubscribe?.()
+  }
+
+  /**
+   * Tries to pick an initial value for template feature once template tool is selected
+   */
+  private handleSelectTool = (event: SelectToolEvent): void => {
+    const { name } = event
+    if (name !== TOOL_NAME) {
       return
     }
 
-    this.gameObjectDestroyer.destroy(this.preview)
-    this.preview = undefined
-  }
+    const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
+    const tool = getTool(this.scene.context)
 
-  // TODO: Simplify after gameObject/template creation refactoring
-  private spawnPreview(templateId: string): GameObject {
-    const preview = this.gameObjectCreator.create({
-      templateId,
-      fromTemplate: true,
-      isNew: true,
-    })
-    this.gameObjectSpawner.spawn(preview)
-    this.mainObject.appendChild(preview)
-
-    return preview
+    if (tool.features.templateId.value === undefined && templates.length > 0) {
+      tool.features.templateId.value = templates[0].id
+    }
   }
 
   /**
@@ -84,7 +82,7 @@ export class PreviewSubsystem {
    * if selected template was changed
    */
   private handleTemplatesUpdate = (path: Array<string>): void => {
-    const tool = getTool(this.sceneContext)
+    const tool = getTool(this.scene.context)
     if (tool.name !== TOOL_NAME || !includesArray(path, ['templates'])) {
       return
     }
@@ -109,26 +107,26 @@ export class PreviewSubsystem {
     this.deletePreview()
   }
 
-  /**
-   * Tries to pick an initial value for template feature once template tool is selected
-   */
-  private handleToolSelectMessages(): void {
-    const messages = this.messageBus.get(SELECT_TOOL_MSG)
-    if (!messages?.length) {
+  private deletePreview(): void {
+    if (this.preview === undefined) {
       return
     }
 
-    const { name } = messages.at(-1) as SelectToolMessage
-    if (name !== TOOL_NAME) {
-      return
-    }
+    this.gameObjectDestroyer.destroy(this.preview)
+    this.preview = undefined
+  }
 
-    const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
-    const tool = getTool(this.sceneContext)
+  // TODO: Simplify after gameObject/template creation refactoring
+  private spawnPreview(templateId: string): GameObject {
+    const preview = this.gameObjectCreator.create({
+      templateId,
+      fromTemplate: true,
+      isNew: true,
+    })
+    this.gameObjectSpawner.spawn(preview)
+    this.mainObject.appendChild(preview)
 
-    if (tool.features.templateId.value === undefined && templates.length > 0) {
-      tool.features.templateId.value = templates[0].id
-    }
+    return preview
   }
 
   private updatePreview(tool: Tool, x: number, y: number): void {
@@ -151,14 +149,8 @@ export class PreviewSubsystem {
     }
   }
 
-  unmount(): void {
-    this.unsubscribe()
-  }
-
   update(x: number | null, y: number | null): void {
-    this.handleToolSelectMessages()
-
-    const tool = getTool(this.sceneContext)
+    const tool = getTool(this.scene.context)
 
     if (tool.name !== TOOL_NAME || x === null || y === null) {
       this.deletePreview()

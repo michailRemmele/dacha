@@ -27,9 +27,9 @@ export class ShapesRenderer extends System {
     super()
 
     const {
+      scene,
       createGameObjectObserver,
       windowNodeId,
-      sceneContext,
     } = options as ShapesRendererOptions
 
     this.gameObjectObserver = createGameObjectObserver({
@@ -54,7 +54,7 @@ export class ShapesRenderer extends System {
     this.canvasWidth = this.window.clientWidth
     this.canvasHeight = this.window.clientHeight
 
-    this.cameraService = sceneContext.getService(CameraService)
+    this.cameraService = scene.context.getService(CameraService)
 
     this.transformer = new CoordinatesTransformer()
   }

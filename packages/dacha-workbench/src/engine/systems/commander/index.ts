@@ -1,21 +1,16 @@
 import { System } from 'remiz'
 import type {
-  MessageBus,
+  Scene,
   SystemOptions,
 } from 'remiz'
 
-import {
-  COMMAND_MSG,
-  COMMAND_UNDO_MSG,
-  COMMAND_CLEAN_MSG,
-  COMMAND_REDO_MSG,
-} from '../../../consts/message-types'
+import { EventType } from '../../../events'
 import type {
-  CommandMessage,
-  CommandUndoMessage,
-  CommandRedoMessage,
-  CommandCleanMessage,
-} from '../../../types/messages'
+  CommandEvent,
+  CommandUndoEvent,
+  CommandRedoEvent,
+  CommandCleanEvent,
+} from '../../../events'
 import type { Store } from '../../../store'
 
 import { commands } from './commands'
@@ -35,7 +30,7 @@ interface HistoryOperation {
 }
 
 export class Commander extends System {
-  private messageBus: MessageBus
+  private scene: Scene
   private configStore: Store
   private commands: Record<string, Command>
   private undoHistory: Record<string, Array<HistoryOperation>>
@@ -44,13 +39,10 @@ export class Commander extends System {
   constructor(options: SystemOptions) {
     super()
 
-    const {
-      messageBus,
-      sceneContext,
-    } = options
+    const { scene } = options
 
-    this.messageBus = messageBus
-    this.configStore = sceneContext.data.configStore as Store
+    this.scene = scene
+    this.configStore = scene.context.data.configStore as Store
     this.commands = Object.keys(commands).reduce((acc: Record<string, Command>, key) => {
       const SomeCommand = commands[key]
       acc[key] = new SomeCommand(this.configStore)
@@ -61,105 +53,92 @@ export class Commander extends System {
     this.redoHistory = {}
   }
 
-  private handleCommandMessages(): void {
-    const messages = this.messageBus.get(COMMAND_MSG) as Array<CommandMessage>
-    if (!messages?.length) {
-      return
-    }
+  mount(): void {
+    this.scene.addEventListener(EventType.Command, this.handleCommand)
+    this.scene.addEventListener(EventType.CommandUndo, this.handleCommandUndo)
+    this.scene.addEventListener(EventType.CommandRedo, this.handleCommandRedo)
+    this.scene.addEventListener(EventType.CommandClean, this.handleCommandClean)
+  }
 
-    messages.forEach(({
+  unmount(): void {
+    this.scene.removeEventListener(EventType.Command, this.handleCommand)
+    this.scene.removeEventListener(EventType.CommandUndo, this.handleCommandUndo)
+    this.scene.removeEventListener(EventType.CommandRedo, this.handleCommandRedo)
+    this.scene.removeEventListener(EventType.CommandClean, this.handleCommandClean)
+  }
+
+  private handleCommand = (event: CommandEvent): void => {
+    const {
       command,
       scope,
       isEffect,
       options,
-    }) => {
-      const cmd = this.commands[command]
+    } = event
 
-      if (!cmd) {
-        return
-      }
+    const cmd = this.commands[command]
 
-      const undo = cmd.execute(options)
-      const redo = cmd.execute.bind(cmd, options)
-
-      if (undo === undefined) {
-        return
-      }
-
-      this.undoHistory[scope] ??= []
-
-      if (isEffect && this.undoHistory[scope].length > 0) {
-        const lastOperation = this.undoHistory[scope].at(-1) as HistoryOperation
-        lastOperation.effects.push({ undo, redo })
-        return
-      }
-
-      this.undoHistory[scope].push({ undo, redo, effects: [] })
-
-      if (this.undoHistory[scope].length > HISTORY_SIZE) {
-        this.undoHistory[scope].shift()
-      }
-
-      this.redoHistory[scope] = []
-    })
-  }
-
-  private handleUndoMessages(): void {
-    const undoMessages = this.messageBus.get(COMMAND_UNDO_MSG) as Array<CommandUndoMessage>
-    if (!undoMessages?.length) {
+    if (!cmd) {
       return
     }
 
-    undoMessages.forEach(({ scope }) => {
-      if (this.undoHistory[scope]?.length > 0) {
-        const operation = this.undoHistory[scope].pop() as HistoryOperation
+    const undo = cmd.execute(options)
+    const redo = cmd.execute.bind(cmd, options)
 
-        for (let j = operation.effects.length - 1; j >= 0; j -= 1) {
-          operation.effects[j].undo()
-        }
-
-        operation.undo()
-
-        this.redoHistory[scope].push(operation)
-      }
-    })
-  }
-
-  private handleRedoMessages(): void {
-    const redoMessages = this.messageBus.get(COMMAND_REDO_MSG) as Array<CommandRedoMessage>
-    if (!redoMessages?.length) {
+    if (undo === undefined) {
       return
     }
 
-    redoMessages.forEach(({ scope }) => {
-      if (this.redoHistory[scope]?.length > 0) {
-        const operation = this.redoHistory[scope].pop() as HistoryOperation
+    this.undoHistory[scope] ??= []
 
-        operation.redo()
-        operation.effects.forEach((effect) => effect.redo())
-
-        this.undoHistory[scope].push(operation)
-      }
-    })
-  }
-
-  private handleCleanMessages(): void {
-    const cleanMessages = this.messageBus.get(COMMAND_CLEAN_MSG) as Array<CommandCleanMessage>
-    if (!cleanMessages?.length) {
+    if (isEffect && this.undoHistory[scope].length > 0) {
+      const lastOperation = this.undoHistory[scope].at(-1) as HistoryOperation
+      lastOperation.effects.push({ undo, redo })
       return
     }
 
-    cleanMessages.forEach(({ scope }) => {
-      delete this.undoHistory[scope]
-      delete this.redoHistory[scope]
-    })
+    this.undoHistory[scope].push({ undo, redo, effects: [] })
+
+    if (this.undoHistory[scope].length > HISTORY_SIZE) {
+      this.undoHistory[scope].shift()
+    }
+
+    this.redoHistory[scope] = []
   }
 
-  update(): void {
-    this.handleCommandMessages()
-    this.handleUndoMessages()
-    this.handleRedoMessages()
-    this.handleCleanMessages()
+  private handleCommandUndo = (event: CommandUndoEvent): void => {
+    const { scope } = event
+
+    if (this.undoHistory[scope]?.length > 0) {
+      const operation = this.undoHistory[scope].pop() as HistoryOperation
+
+      for (let j = operation.effects.length - 1; j >= 0; j -= 1) {
+        operation.effects[j].undo()
+      }
+
+      operation.undo()
+
+      this.redoHistory[scope].push(operation)
+    }
+  }
+
+  private handleCommandRedo = (event: CommandRedoEvent): void => {
+    const { scope } = event
+
+    if (this.redoHistory[scope]?.length > 0) {
+      const operation = this.redoHistory[scope].pop() as HistoryOperation
+
+      operation.redo()
+      operation.effects.forEach((effect) => effect.redo())
+
+      this.undoHistory[scope].push(operation)
+    }
+  }
+
+  private handleCommandClean = (event: CommandCleanEvent): void => {
+    const { scope } = event
+
+    delete this.undoHistory[scope]
+    delete this.redoHistory[scope]
   }
 }
 
