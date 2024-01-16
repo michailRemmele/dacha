@@ -40,12 +40,12 @@ export class KeyboardControlSystem extends System {
     this.events.push(event);
   };
 
-  private sendMessage(gameObject: GameObject, eventBinding: KeyboardEventBind, code: string): void {
-    if (!eventBinding.messageType) {
-      throw new Error(`The message type is not specified for input key: ${code}`);
+  private sendEvent(gameObject: GameObject, eventBinding: KeyboardEventBind, code: string): void {
+    if (!eventBinding.eventType) {
+      throw new Error(`The event type is not specified for input key: ${code}`);
     }
 
-    gameObject.emit(eventBinding.messageType, {
+    gameObject.emit(eventBinding.eventType, {
       ...eventBinding.attrs,
     });
   }
@@ -60,20 +60,20 @@ export class KeyboardControlSystem extends System {
     this.gameObjectObserver.forEach((gameObject) => {
       const control = gameObject.getComponent(KeyboardControl);
 
-      // Resend control message when key is pressed without actual event if keepEmit is set to true
+      // Resend control event when key is pressed without actual event if keepEmit is set to true
       this.pressedKeys.forEach((key) => {
         const inputBinding = control.inputEventBindings[key]?.pressed;
         if (inputBinding !== undefined && inputBinding.keepEmit) {
-          this.sendMessage(gameObject, inputBinding, key);
+          this.sendEvent(gameObject, inputBinding, key);
         }
       });
 
-      // Send control message on input event excluding repeated browser generated key pressed events
+      // Send control event on input event excluding repeated browser generated key pressed events
       this.events.forEach((event) => {
         const { key, pressed } = event;
         const inputBinding = control.inputEventBindings[key]?.[pressed ? 'pressed' : 'released'];
         if (inputBinding !== undefined && !this.pressedKeys.has(key)) {
-          this.sendMessage(gameObject, inputBinding, key);
+          this.sendEvent(gameObject, inputBinding, key);
         }
       });
     });

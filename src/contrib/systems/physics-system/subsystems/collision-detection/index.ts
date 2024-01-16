@@ -208,7 +208,7 @@ export class CollisionDetectionSubsystem {
     return this.intersectionCheckers[intersectionType].check(arg1, arg2);
   }
 
-  private sendCollisionMessage(
+  private sendCollisionEvent(
     gameObject1: GameObject,
     gameObject2: GameObject,
     intersection: Intersection,
@@ -274,7 +274,7 @@ export class CollisionDetectionSubsystem {
     this.sweepAndPrune(this.getSortingAxis()).forEach((pair) => {
       const intersection = this.checkOnIntersection(pair);
       if (intersection) {
-        this.sendCollisionMessage(
+        this.sendCollisionEvent(
           pair[0].gameObject,
           pair[1].gameObject,
           intersection,

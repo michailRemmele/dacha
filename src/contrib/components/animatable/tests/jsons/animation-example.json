@@ -10,9 +10,9 @@
           "state": "2",
           "conditions": [
             {
-              "type": "message",
+              "type": "event",
               "props": {
-                "message": "DEATH"
+                "eventType": "DEATH"
               }
             }
           ],
@@ -465,9 +465,9 @@
           "state": "2",
           "conditions": [
             {
-              "type": "message",
+              "type": "event",
               "props": {
-                "message": "DEATH"
+                "eventType": "DEATH"
               }
             }
           ],

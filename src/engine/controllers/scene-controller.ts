@@ -17,11 +17,11 @@ export class SceneController implements Controller {
     this.sceneProvider = sceneProvider;
   }
 
-  private handleLoadSceneMessage = (event: LoadSceneEvent): void => {
+  private handleLoadScene = (event: LoadSceneEvent): void => {
     this.nextSceneEvent = event;
   };
 
-  private handleLoadLevelMessage = (event: LoadLevelEvent): void => {
+  private handleLoadLevel = (event: LoadLevelEvent): void => {
     this.nextLevelEvent = event;
   };
 
@@ -29,12 +29,12 @@ export class SceneController implements Controller {
     const currentScene = this.sceneProvider.getCurrentScene();
 
     if (this.currentScene !== currentScene) {
-      this.currentScene?.removeEventListener(LoadScene, this.handleLoadSceneMessage);
-      this.currentScene?.removeEventListener(LoadLevel, this.handleLoadLevelMessage);
+      this.currentScene?.removeEventListener(LoadScene, this.handleLoadScene);
+      this.currentScene?.removeEventListener(LoadLevel, this.handleLoadLevel);
 
       if (currentScene !== undefined) {
-        currentScene?.addEventListener(LoadScene, this.handleLoadSceneMessage);
-        currentScene?.addEventListener(LoadLevel, this.handleLoadLevelMessage);
+        currentScene?.addEventListener(LoadScene, this.handleLoadScene);
+        currentScene?.addEventListener(LoadLevel, this.handleLoadLevel);
       }
 
       this.currentScene = currentScene;

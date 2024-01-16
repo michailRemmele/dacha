@@ -29,22 +29,22 @@ export class MouseControlSystem extends System {
     this.scene.removeEventListener(MouseInput, this.handleMouseInput);
   }
 
-  private handleMouseInput = (message: MouseInputEvent): void => {
+  private handleMouseInput = (event: MouseInputEvent): void => {
     this.gameObjectObserver.forEach((gameObject) => {
       const control = gameObject.getComponent(MouseControl);
-      const eventBinding = control.inputEventBindings[message.eventType]?.[message.button];
+      const eventBinding = control.inputEventBindings[event.eventType]?.[event.button];
 
       if (eventBinding) {
-        if (!eventBinding.messageType) {
-          throw new Error(`The message type is not specified for input event: ${message.eventType}`);
+        if (!eventBinding.eventType) {
+          throw new Error(`The event type is not specified for input event: ${event.eventType}`);
         }
 
-        gameObject.emit(eventBinding.messageType, {
+        gameObject.emit(eventBinding.eventType, {
           ...eventBinding.attrs,
-          x: message.x,
-          y: message.y,
-          screenX: message.screenX,
-          screenY: message.screenY,
+          x: event.x,
+          y: event.y,
+          screenX: event.screenX,
+          screenY: event.screenY,
         });
       }
     });

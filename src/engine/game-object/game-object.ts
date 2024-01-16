@@ -4,11 +4,6 @@ import { filterByKey } from '../utils';
 import type { GameObjectEventMap } from '../../types/events';
 import { AddComponent, RemoveComponent } from '../events';
 
-export interface UpdateComponentMessage {
-  componentName: string;
-  gameObject: GameObject;
-}
-
 export interface GameObjectOptions {
   id: string
   name: string

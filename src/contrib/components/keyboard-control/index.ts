@@ -5,7 +5,7 @@ import type {
 } from '../../types';
 
 export interface KeyboardEventBind {
-  messageType: string
+  eventType: string
   attrs: InputEventAttributes
   keepEmit: boolean
 }
@@ -21,7 +21,7 @@ export interface KeyboardEventBindConfig {
   key: string
   pressed: boolean
   keepEmit?: boolean
-  messageType: string
+  eventType: string
   attrs: Array<InputEventAttributeConfig>
 }
 
@@ -41,7 +41,7 @@ export class KeyboardControl extends Component {
       acc[bind.key] ??= {};
 
       acc[bind.key][bind.pressed ? 'pressed' : 'released'] = {
-        messageType: bind.messageType,
+        eventType: bind.eventType,
         keepEmit: !!bind.keepEmit,
         attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
           attrs[attr.name] = attr.value;
@@ -62,7 +62,7 @@ export class KeyboardControl extends Component {
           if (pressed !== undefined) {
             acc.push({
               key: inputEvent,
-              messageType: pressed.messageType,
+              eventType: pressed.eventType,
               pressed: true,
               keepEmit: pressed.keepEmit,
               attrs: Object.keys(pressed.attrs).map(
@@ -73,7 +73,7 @@ export class KeyboardControl extends Component {
           if (released !== undefined) {
             acc.push({
               key: inputEvent,
-              messageType: released.messageType,
+              eventType: released.eventType,
               pressed: false,
               attrs: Object.keys(released.attrs).map(
                 (name) => ({ name, value: released.attrs[name] }),

@@ -16,7 +16,7 @@ const MOUSE_BUTTONS_MAP = {
 } as Record<string, number>;
 
 export interface MouseEventBind {
-  messageType: string
+  eventType: string
   attrs: InputEventAttributes
 }
 
@@ -29,7 +29,7 @@ export interface InputEventBindings {
 export interface MouseEventBindConfig {
   event: string
   button?: number
-  messageType: string
+  eventType: string
   attrs: Array<InputEventAttributeConfig>
 }
 
@@ -48,7 +48,7 @@ export class MouseControl extends Component {
     this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
       acc[bind.event] ??= {};
       acc[bind.event][bind.button ?? MOUSE_BUTTONS_MAP[bind.event]] = {
-        messageType: bind.messageType,
+        eventType: bind.eventType,
         attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
           attrs[attr.name] = attr.value;
           return attrs;
@@ -68,7 +68,7 @@ export class MouseControl extends Component {
             acc.push({
               event: inputEvent,
               button: Number(button),
-              messageType: buttonBinds[button].messageType,
+              eventType: buttonBinds[button].eventType,
               attrs: Object.keys(buttonBinds[button].attrs).map(
                 (name) => ({ name, value: buttonBinds[button].attrs[name] }),
               ),

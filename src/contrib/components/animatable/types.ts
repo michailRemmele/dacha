@@ -38,13 +38,13 @@ export interface ComparatorConditionPropsConfig {
   arg2: ComparatorConditionArg
 }
 
-export interface MessageConditionPropsConfig {
-  message: string
+export interface EventConditionPropsConfig {
+  eventType: string
 }
 
 export interface ConditionConfig {
   id: string
-  type: 'comparator' | 'message'
+  type: 'comparator' | 'event'
   props: Record<string, unknown>
 }
 

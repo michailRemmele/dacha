@@ -11,9 +11,9 @@ import type { CollisionEvent } from '../../../../events';
 import { Collision } from './collision';
 import type { CollisionState } from './collision';
 
-type CollisionStateMessage = typeof CollisionEnter | typeof CollisionStay | typeof CollisionLeave;
+type CollisionStateEvent = typeof CollisionEnter | typeof CollisionStay | typeof CollisionLeave;
 
-const STATE_TO_MESSAGE: Record<CollisionState, CollisionStateMessage> = {
+const STATE_TO_EVENT: Record<CollisionState, CollisionStateEvent> = {
   enter: CollisionEnter,
   stay: CollisionStay,
   leave: CollisionLeave,
@@ -59,12 +59,12 @@ export class CollisionBroadcastSubsystem {
     }
   };
 
-  private publishMessage(collision: Collision): void {
+  private publishEvent(collision: Collision): void {
     const {
       gameObject1, gameObject2, mtv1,
     } = collision;
 
-    gameObject1.emit(STATE_TO_MESSAGE[collision.getState()], {
+    gameObject1.emit(STATE_TO_EVENT[collision.getState()], {
       gameObject: gameObject2,
       mtv: mtv1,
     });
@@ -74,7 +74,7 @@ export class CollisionBroadcastSubsystem {
     this.activeCollisions = this.activeCollisions.filter((collision) => {
       const { gameObject1, gameObject2 } = collision;
 
-      this.publishMessage(collision);
+      this.publishEvent(collision);
 
       collision.tick();
 

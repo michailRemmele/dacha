@@ -36,6 +36,11 @@ export type CollisionEvent = SceneEvent<{
   mtv2: Vector2
 }>;
 
+export type MouseControlEvent<T = Record<string, never>>
+  = GameObjectEvent<Pick<MouseEvent, 'x' | 'y' | 'screenX' | 'screenY'>> & T;
+
+export type KeyboardControlEvent<T = Record<string, never>> = GameObjectEvent<T>;
+
 type CollisionStateEvent = GameObjectEvent<{
   gameObject: GameObject
   mtv: Vector2

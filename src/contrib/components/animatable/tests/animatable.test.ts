@@ -2,7 +2,7 @@ import { Animatable } from '../index';
 import { GroupState } from '../group-state';
 import { IndividualState } from '../individual-state';
 import { TwoDimensionalProps } from '../two-dimensional-props';
-import { MessageConditionProps } from '../message-condition-props';
+import { EventConditionProps } from '../event-condition-props';
 import { ComparatorConditionProps } from '../comparator-condition-props';
 import animationExample from './jsons/animation-example.json';
 
@@ -91,10 +91,10 @@ describe('Contrib -> components -> Animatable', () => {
     const transition2 = currentState.transitions?.[1];
 
     const condition1 = transition1.conditions?.[0];
-    expect(condition1.type).toEqual('message');
+    expect(condition1.type).toEqual('event');
 
-    const condition1Props = condition1.props as MessageConditionProps;
-    expect(condition1Props.message).toEqual('DEATH');
+    const condition1Props = condition1.props as EventConditionProps;
+    expect(condition1Props.eventType).toEqual('DEATH');
 
     const condition2 = transition2.conditions?.[0];
     expect(condition2.type).toEqual('comparator');
