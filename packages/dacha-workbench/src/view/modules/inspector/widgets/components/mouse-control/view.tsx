@@ -27,7 +27,7 @@ export interface InputEventBind {
   id: string
   event: string
   button?: number
-  messageType: string
+  eventType: string
   attrs: Array<unknown>
 }
 
@@ -64,7 +64,7 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
     const inputBind: InputEventBind = {
       id: uuidv4(),
       event: inputEvent,
-      messageType: '',
+      eventType: '',
       attrs: [],
     }
     if (inputEvent === 'mousedown' || inputEvent === 'mouseup') {

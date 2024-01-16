@@ -1,13 +1,12 @@
 import { System } from 'remiz'
 import type {
+  Scene,
   Config,
   SystemOptions,
-  SceneContext,
   UpdateOptions,
-  MessageBus,
 } from 'remiz'
 
-import { SAVE_PROJECT_MSG } from '../../../consts/message-types'
+import { EventType } from '../../../events'
 import { Store } from '../../../store'
 import type { Data } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
@@ -15,8 +14,7 @@ import type { EditorConfig, Extension } from '../../../types/global'
 const DEFAULT_AUTO_SAVE_INTERVAL = 10_000
 
 export class ProjectLoader extends System {
-  private sceneContext: SceneContext
-  private messageBus: MessageBus
+  private scene: Scene
   private editorCofig: EditorConfig
 
   private autoSaveInterval: number
@@ -24,13 +22,12 @@ export class ProjectLoader extends System {
   constructor(options: SystemOptions) {
     super()
 
-    this.sceneContext = options.sceneContext
-    this.messageBus = options.messageBus
+    this.scene = options.scene
     this.editorCofig = window.electron.getEditorConfig()
 
     const projectConfig = window.electron.getProjectConfig()
-    this.sceneContext.data.configStore = new Store(projectConfig as unknown as Data)
-    this.sceneContext.data.editorConfig = this.editorCofig
+    this.scene.context.data.configStore = new Store(projectConfig as unknown as Data)
+    this.scene.context.data.editorConfig = this.editorCofig
 
     this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
   }
@@ -43,7 +40,7 @@ export class ProjectLoader extends System {
       locales = {},
     } = extension
 
-    this.sceneContext.data.extension = {
+    this.scene.context.data.extension = {
       componentsSchema,
       systemsSchema,
       resourcesSchema,
@@ -77,10 +74,10 @@ export class ProjectLoader extends System {
   }
 
   private saveProjectConfig(): void {
-    const projectConfig = (this.sceneContext.data.configStore as Store).get([]) as Config
+    const projectConfig = (this.scene.context.data.configStore as Store).get([]) as Config
     window.electron.saveProjectConfig(projectConfig)
 
-    this.messageBus.send({ type: SAVE_PROJECT_MSG })
+    this.scene.emit(EventType.SaveProject)
   }
 
   mount(): void {

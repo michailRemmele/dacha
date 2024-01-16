@@ -43,7 +43,7 @@ export const Condition: FC<ConditionProps> = ({
   const conditionPath = useMemo(() => path.concat(`id:${id}`), [id, path])
   const typePath = useMemo(() => conditionPath.concat('type'), [conditionPath])
   const propsPath = useMemo(() => conditionPath.concat('props'), [conditionPath])
-  const messagePath = useMemo(() => propsPath.concat('message'), [propsPath])
+  const eventTypePath = useMemo(() => propsPath.concat('eventType'), [propsPath])
   const arg1TypePath = useMemo(() => propsPath.concat('arg1', 'type'), [propsPath])
   const arg1ValuePath = useMemo(() => propsPath.concat('arg1', 'value'), [propsPath])
   const arg2TypePath = useMemo(() => propsPath.concat('arg2', 'type'), [propsPath])
@@ -56,12 +56,12 @@ export const Condition: FC<ConditionProps> = ({
   const handleTypeChange = useCallback((value: unknown) => {
     const { props, ...otherCondition } = condition
 
-    if (value === CONDITION_TYPE.MESSAGE) {
+    if (value === CONDITION_TYPE.EVENT) {
       dispatch(setValue(conditionPath, {
         ...otherCondition,
         type: value,
         props: {
-          message: '',
+          eventType: '',
         },
       }))
     } else {
@@ -108,11 +108,11 @@ export const Condition: FC<ConditionProps> = ({
       />
 
       <DependencyField
-        path={messagePath}
+        path={eventTypePath}
         component={LabelledTextInput}
-        label={t('components.animatable.editor.condition.message.title')}
+        label={t('components.animatable.editor.condition.eventType.title')}
         dependencyPath={typePath}
-        dependencyValue={CONDITION_TYPE.MESSAGE}
+        dependencyValue={CONDITION_TYPE.EVENT}
         deleteOnHide={false}
       />
 

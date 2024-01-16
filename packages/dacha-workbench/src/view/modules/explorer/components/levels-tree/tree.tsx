@@ -12,8 +12,8 @@ import type { LevelConfig } from 'remiz'
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig, useTreeKeys } from '../../../../hooks'
-import { SELECT_LEVEL_MSG, INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
+import { EventType } from '../../../../../events'
 
 import { parseLevels, getKey } from './utils'
 
@@ -22,7 +22,7 @@ interface TreeProps {
 }
 
 export const Tree: FC<TreeProps> = ({ className }) => {
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
   const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
   const levels = useConfig('levels') as Array<LevelConfig>
@@ -33,8 +33,7 @@ export const Tree: FC<TreeProps> = ({ className }) => {
   useEffect(() => {
     const isDeleted = levels.every((level) => level.id !== selectedLevel)
     if (isDeleted) {
-      pushMessage({
-        type: SELECT_LEVEL_MSG,
+      scene.emit(EventType.SelectLevel, {
         levelId: undefined,
       })
       setSelectedLevel(undefined)
@@ -66,18 +65,16 @@ export const Tree: FC<TreeProps> = ({ className }) => {
     const levelId = entityPath[0] === 'levels' ? entityPath[1].split(':')[1] : undefined
 
     if (levelId !== undefined && levelId !== selectedLevel) {
-      pushMessage({
-        type: SELECT_LEVEL_MSG,
+      scene.emit(EventType.SelectLevel, {
         levelId,
       })
       setSelectedLevel(levelId)
     }
 
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
+    scene.emit(EventType.InspectEntity, {
       path: entityPath,
     })
-  }, [pushMessage, selectedLevel])
+  }, [selectedLevel])
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath)
 

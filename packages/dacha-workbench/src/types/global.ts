@@ -3,6 +3,7 @@ import type { Resource } from 'i18next'
 import type { GlobalToken } from 'antd'
 
 import type { CustomToken } from '../view/themes/types'
+import '../events'
 
 import type { WidgetSchema, WidgetPartSchema } from './widget-schema'
 

@@ -3,24 +3,20 @@ import {
   Sprite,
 } from 'remiz'
 import type {
+  Scene,
+  GameObject,
   GameObjectObserver,
-  MessageBus,
-  SceneContext,
+  MouseControlEvent,
 } from 'remiz'
 
-import {
-  SELECTION_MOVE_START_MSG,
-  SELECTION_MOVE_END_MSG,
-  SELECTION_MOVE_MSG,
-  COMMAND_MSG,
-} from '../../../../consts/message-types'
+import { EventType } from '../../../../events'
 import { SET } from '../../../../command-types'
 import { ROOT_SCOPE } from '../../../../consts/command-scopes'
 import { buildGameObjectPath } from '../utils'
-import { getTool } from '../../../../utils/get-tool'
+import { getTool, getPointerToolObject } from '../../../../utils/get-tool'
 import { getGridValue, getGridStep } from '../../../../utils/grid'
-import type { MouseInputMessage, CommandMessage } from '../../../../types/messages'
 import type { Store } from '../../../../store'
+import type { SelectedObject } from '../types'
 
 import {
   isFloatEqual,
@@ -34,45 +30,77 @@ export interface Position {
 }
 
 interface SelectionMovementSubsystemOptions {
-  messageBus: MessageBus
+  scene: Scene
   gameObjectObserver: GameObjectObserver
-  sceneContext: SceneContext
+  selectedObject: SelectedObject
 }
 
 export class SelectionMovementSubsystem {
-  private messageBus: MessageBus
+  private scene: Scene
   private gameObjectObserver: GameObjectObserver
   private configStore: Store
-  private sceneContext: SceneContext
 
+  private pointerToolObject: GameObject
   private isMoving: boolean
   private selectionStart: Position
   private pointerStart: Position
 
+  private selectedObject: SelectedObject
+
   constructor({
-    messageBus,
+    scene,
     gameObjectObserver,
-    sceneContext,
+    selectedObject,
   }: SelectionMovementSubsystemOptions) {
-    this.messageBus = messageBus
+    this.scene = scene
     this.gameObjectObserver = gameObjectObserver
-    this.configStore = sceneContext.data.configStore as Store
-    this.sceneContext = sceneContext
+    this.pointerToolObject = getPointerToolObject(scene.context)
+    this.configStore = scene.context.data.configStore as Store
+    this.selectedObject = selectedObject
 
     this.isMoving = false
     this.selectionStart = { x: 0, y: 0 }
     this.pointerStart = { x: 0, y: 0 }
   }
 
-  private handleMoveStartMessages(selectionId: string): void {
-    const startMoveMessages = this.messageBus.get(SELECTION_MOVE_START_MSG)
-    if (!startMoveMessages?.length) {
+  mount(): void {
+    this.pointerToolObject.addEventListener(
+      EventType.SelectionMoveStart,
+      this.handleSelectionMoveStart,
+    )
+    this.pointerToolObject.addEventListener(
+      EventType.SelectionMoveEnd,
+      this.handleSelectionMoveEnd,
+    )
+    this.pointerToolObject.addEventListener(
+      EventType.SelectionMove,
+      this.handleSelectionMove,
+    )
+  }
+
+  unmount(): void {
+    this.pointerToolObject.removeEventListener(
+      EventType.SelectionMoveStart,
+      this.handleSelectionMoveStart,
+    )
+    this.pointerToolObject.removeEventListener(
+      EventType.SelectionMoveEnd,
+      this.handleSelectionMoveEnd,
+    )
+    this.pointerToolObject.removeEventListener(
+      EventType.SelectionMove,
+      this.handleSelectionMove,
+    )
+  }
+
+  private handleSelectionMoveStart = (event: MouseControlEvent): void => {
+    if (this.selectedObject.objectId === undefined) {
       return
     }
 
-    const { x, y } = startMoveMessages.at(-1) as MouseInputMessage
+    const { x, y } = event
 
-    const selectedObject = this.gameObjectObserver.getById(selectionId)
+    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }
@@ -91,24 +119,23 @@ export class SelectionMovementSubsystem {
     this.selectionStart.y = transform.offsetY
   }
 
-  private handleMoveEndMessages(selectionId: string, levelId: string): void {
-    if (!this.isMoving) {
-      return
-    }
-
-    const endMoveMessages = this.messageBus.get(SELECTION_MOVE_END_MSG)
-    if (!endMoveMessages?.length) {
+  private handleSelectionMoveEnd = (): void => {
+    if (
+      !this.isMoving
+      || this.selectedObject.objectId === undefined
+      || this.selectedObject.levelId === undefined
+    ) {
       return
     }
 
     this.isMoving = false
 
-    const selectedObject = this.gameObjectObserver.getById(selectionId)
+    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }
 
-    const objectPath = buildGameObjectPath(selectedObject, levelId)
+    const objectPath = buildGameObjectPath(selectedObject, this.selectedObject.levelId)
     const transformPath = objectPath.concat('components', `name:${Transform.componentName}`, 'config')
 
     const transform = selectedObject.getComponent(Transform)
@@ -125,8 +152,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    const commandMessage: CommandMessage = {
-      type: COMMAND_MSG,
+    this.scene.emit(EventType.Command, {
       command: SET,
       scope: ROOT_SCOPE,
       options: {
@@ -137,23 +163,17 @@ export class SelectionMovementSubsystem {
           offsetY: transform.relativeOffsetY,
         },
       },
-    }
-    this.messageBus.send(commandMessage)
+    })
   }
 
-  private handleMoveMessages(selectionId: string): void {
-    if (!this.isMoving) {
+  private handleSelectionMove = (event: MouseControlEvent): void => {
+    if (!this.isMoving || this.selectedObject.objectId === undefined) {
       return
     }
 
-    const moveMessages = this.messageBus.get(SELECTION_MOVE_MSG)
-    if (!moveMessages?.length) {
-      return
-    }
+    const { x, y } = event
 
-    const { x, y } = moveMessages.at(-1) as MouseInputMessage
-
-    const selectedObject = this.gameObjectObserver.getById(selectionId)
+    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }
@@ -163,7 +183,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    const tool = getTool(this.sceneContext)
+    const tool = getTool(this.scene.context)
     const snapToGrid = tool.features.grid.value as boolean
 
     const offsetX = this.selectionStart.x - this.pointerStart.x + x
@@ -172,7 +192,7 @@ export class SelectionMovementSubsystem {
     if (snapToGrid) {
       const sprite = selectedObject.getComponent(Sprite)
 
-      const gridStep = getGridStep(this.sceneContext)
+      const gridStep = getGridStep(this.scene.context)
 
       transform.offsetX = getGridValue(offsetX, getSizeX(transform, sprite), gridStep)
       transform.offsetY = getGridValue(offsetY, getSizeY(transform, sprite), gridStep)
@@ -180,11 +200,5 @@ export class SelectionMovementSubsystem {
       transform.offsetX = Math.round(offsetX)
       transform.offsetY = Math.round(offsetY)
     }
-  }
-
-  update(selectionId: string, levelId: string): void {
-    this.handleMoveStartMessages(selectionId)
-    this.handleMoveEndMessages(selectionId, levelId)
-    this.handleMoveMessages(selectionId)
   }
 }

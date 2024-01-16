@@ -14,7 +14,7 @@ import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/c
 import { useExtension, useConfig, useCommander } from '../../../../../hooks'
 import { setValue } from '../../../../../commands'
 
-export const ScriptWidget: FC<WidgetProps> = ({ path }) => {
+export const ScriptBundleWidget: FC<WidgetProps> = ({ path }) => {
   const { t, i18n } = useTranslation()
   const { dispatch } = useCommander()
 
@@ -47,7 +47,7 @@ export const ScriptWidget: FC<WidgetProps> = ({ path }) => {
       <Field
         path={namePath}
         component={LabelledSelect}
-        label={t('components.script.name.title')}
+        label={t('components.scriptBundle.name.title')}
         options={availableScripts}
         onAccept={handleChangeName}
       />

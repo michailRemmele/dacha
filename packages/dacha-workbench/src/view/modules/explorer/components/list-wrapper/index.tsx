@@ -5,7 +5,7 @@ import {
 } from 'react'
 
 import { EngineContext } from '../../../../providers'
-import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
+import { EventType } from '../../../../../events'
 
 import { ListWrapperStyled } from './list-wrapper.style'
 
@@ -14,16 +14,15 @@ interface ListWrapperProps {
 }
 
 export const ListWrapper: FC<ListWrapperProps> = ({ children }) => {
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
-      pushMessage({
-        type: INSPECT_ENTITY_MSG,
+      scene.emit(EventType.InspectEntity, {
         path: undefined,
       })
     }
-  }, [pushMessage])
+  }, [])
 
   return (
     <ListWrapperStyled

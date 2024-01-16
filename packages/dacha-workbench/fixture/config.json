@@ -161,7 +161,7 @@
                     "key": "KeyW",
                     "pressed": true,
                     "keepEmit": true,
-                    "messageType": "MOVEMENT",
+                    "eventType": "Movement",
                     "attrs": [
                       {
                         "id": "996ba61b-507a-4030-aa89-009854b928e5",
@@ -176,7 +176,7 @@
                     "key": "KeyA",
                     "pressed": true,
                     "keepEmit": true,
-                    "messageType": "MOVEMENT",
+                    "eventType": "Movement",
                     "attrs": [
                       {
                         "id": "46a78e5f-0872-4ae0-b7cd-bafe5938ed5d",
@@ -191,7 +191,7 @@
                     "key": "KeyS",
                     "pressed": true,
                     "keepEmit": true,
-                    "messageType": "MOVEMENT",
+                    "eventType": "Movement",
                     "attrs": [
                       {
                         "id": "c9508922-69c8-4fb5-8717-3a3eb7b799b3",
@@ -206,7 +206,7 @@
                     "key": "KeyD",
                     "pressed": true,
                     "keepEmit": true,
-                    "messageType": "MOVEMENT",
+                    "eventType": "Movement",
                     "attrs": [
                       {
                         "id": "50539a91-0f39-436c-9efc-a5ac0f766e3d",

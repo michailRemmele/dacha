@@ -4,20 +4,19 @@ import {
   TemplateCollection,
 } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
   GameObjectSpawner,
   GameObjectDestroyer,
   GameObjectObserver,
   TemplateConfig,
   LevelConfig,
-  MessageBus,
-  SceneContext,
 } from 'remiz'
 
+import { EventType } from '../../../events'
+import type { SelectLevelEvent } from '../../../events'
 import type { EditorConfig } from '../../../types/global'
 import type { Store, ListenerFn } from '../../../store'
-import type { SelectLevelMessage } from '../../../types/messages'
-import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { includesArray } from '../../../utils/includes-array'
 
 import { ALLOWED_COMPONENTS } from './consts'
@@ -33,8 +32,7 @@ interface LevelViewerOptions extends SystemOptions {
 }
 
 export class LevelViewer extends System {
-  messageBus: MessageBus
-  sceneContext: SceneContext
+  scene: Scene
   gameObjectSpawner: GameObjectSpawner
   gameObjectDestroyer: GameObjectDestroyer
   gameObjectObserver: GameObjectObserver
@@ -51,23 +49,21 @@ export class LevelViewer extends System {
     super()
 
     const {
-      messageBus,
-      sceneContext,
+      scene,
       gameObjectSpawner,
       gameObjectDestroyer,
       createGameObjectObserver,
       mainObjectId,
     } = options as LevelViewerOptions
 
-    this.messageBus = messageBus
-    this.sceneContext = sceneContext
+    this.scene = scene
     this.gameObjectSpawner = gameObjectSpawner
     this.gameObjectDestroyer = gameObjectDestroyer
     this.gameObjectObserver = createGameObjectObserver({})
     this.mainObjectId = mainObjectId
 
-    this.configStore = this.sceneContext.data.configStore as Store
-    this.editorConfig = sceneContext.data.editorConfig as EditorConfig
+    this.configStore = scene.context.data.configStore as Store
+    this.editorConfig = scene.context.data.editorConfig as EditorConfig
 
     const mainObject = this.gameObjectObserver.getById(this.mainObjectId)
 
@@ -75,7 +71,7 @@ export class LevelViewer extends System {
       throw new Error('Can\'t find the main object')
     }
 
-    this.sceneContext.data.mainObject = mainObject
+    this.scene.context.data.mainObject = mainObject
 
     const templateCollection = new TemplateCollection(ALLOWED_COMPONENTS)
     const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
@@ -87,14 +83,16 @@ export class LevelViewer extends System {
     this.templateCollection = templateCollection
     this.gameObjectCreator = new GameObjectCreator(ALLOWED_COMPONENTS, templateCollection)
 
-    this.sceneContext.data.gameObjectCreator = this.gameObjectCreator
+    this.scene.context.data.gameObjectCreator = this.gameObjectCreator
   }
 
   mount(): void {
+    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
     this.watchStore()
   }
 
   unmount(): void {
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
     this.subscription?.()
   }
 
@@ -128,14 +126,8 @@ export class LevelViewer extends System {
     this.subscription = this.configStore.subscribe(listener)
   }
 
-  private updateLevels(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
-
-    if (!messages) {
-      return
-    }
-
-    const { levelId } = messages[messages.length - 1]
+  private handleSelectLevel = (event: SelectLevelEvent): void => {
+    const { levelId } = event
 
     if (this.currentLevel === levelId) {
       return
@@ -160,10 +152,6 @@ export class LevelViewer extends System {
 
     this.prevLevel = selectedLevel
     this.currentLevel = levelId
-  }
-
-  update(): void {
-    this.updateLevels()
   }
 }
 

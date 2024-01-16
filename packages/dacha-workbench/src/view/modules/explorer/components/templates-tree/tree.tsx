@@ -11,13 +11,13 @@ import type { TemplateConfig } from 'remiz'
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig, useTreeKeys } from '../../../../hooks'
-import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
+import { EventType } from '../../../../../events'
 
 import { parseTemplates, getKey } from './utils'
 
 export const Tree: FC = () => {
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
   const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
   const templates = useConfig('templates') as Array<TemplateConfig>
@@ -35,11 +35,10 @@ export const Tree: FC = () => {
       return
     }
 
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
+    scene.emit(EventType.InspectEntity, {
       path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
     })
-  }, [pushMessage])
+  }, [])
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath)
 

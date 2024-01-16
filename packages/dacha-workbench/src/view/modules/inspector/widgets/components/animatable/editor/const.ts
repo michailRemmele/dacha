@@ -14,6 +14,6 @@ export const COMPARATOR_VALUE = {
 }
 
 export const CONDITION_TYPE = {
-  MESSAGE: 'message',
+  EVENT: 'event',
   COMPARATOR: 'comparator',
 }
