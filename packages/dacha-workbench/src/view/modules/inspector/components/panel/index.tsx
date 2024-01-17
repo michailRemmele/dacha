@@ -9,7 +9,7 @@ import {
 } from './panel.style'
 
 export interface PanelProps {
-  children: JSX.Element | Array<JSX.Element | null> | null
+  children: JSX.Element | Array<JSX.Element | null | undefined> | null | undefined
   title: string
   onDelete: () => void
   className?: string
