@@ -14,22 +14,19 @@ import { ScriptBundle } from '../../components';
 import { AddGameObject, RemoveGameObject } from '../../../engine/events';
 import type { UpdateGameObjectEvent } from '../../../engine/events';
 
-import type { GameObjectScript, GameObjectScriptOptions } from './types';
+import { Script } from './types';
+import type { ScriptOptions, ScriptConstructor } from './types';
 
-export { GameObjectScript, GameObjectScriptOptions };
-
-export interface GameObjectScriptClass {
-  new(options: GameObjectScriptOptions): GameObjectScript
-}
+export { Script, ScriptOptions, ScriptConstructor };
 
 export class ScriptSystem extends System {
   private gameObjectObserver: GameObjectObserver;
   private scriptsObserver: GameObjectObserver;
   private gameObjectSpawner: GameObjectSpawner;
   private gameObjectDestroyer: GameObjectDestroyer;
-  private scripts: Record<string, GameObjectScriptClass>;
+  private scripts: Record<string, ScriptConstructor>;
   private scene: Scene;
-  private activeScripts: Record<string, Array<GameObjectScript>>;
+  private activeScripts: Record<string, Array<Script>>;
 
   constructor(options: SystemOptions) {
     super();
@@ -42,6 +39,7 @@ export class ScriptSystem extends System {
       resources = {},
     } = options;
 
+    this.scene = scene;
     this.gameObjectObserver = createGameObjectObserver({});
     this.scriptsObserver = createGameObjectObserver({
       components: [
@@ -50,8 +48,14 @@ export class ScriptSystem extends System {
     });
     this.gameObjectSpawner = gameObjectSpawner;
     this.gameObjectDestroyer = gameObjectDestroyer;
-    this.scripts = resources as Record<string, GameObjectScriptClass>;
-    this.scene = scene;
+    this.scripts = (resources as Array<ScriptConstructor>).reduce((acc, script) => {
+      if (script.scriptName === undefined) {
+        throw new Error(`Missing scriptName field for ${script.name} script.`);
+      }
+
+      acc[script.scriptName] = script;
+      return acc;
+    }, {} as Record<string, ScriptConstructor>);
 
     this.activeScripts = {};
 
@@ -73,8 +77,8 @@ export class ScriptSystem extends System {
 
     const { scripts } = gameObject.getComponent(ScriptBundle);
     this.activeScripts[gameObject.id] = scripts.map((script) => {
-      const Script = this.scripts[script.name];
-      return new Script({
+      const ScriptClass = this.scripts[script.name];
+      return new ScriptClass({
         ...script.options,
         gameObject,
         gameObjectObserver: this.gameObjectObserver,

@@ -5,8 +5,9 @@ import type {
   GameObjectDestroyer,
 } from '../../../engine/game-object';
 import type { Scene } from '../../../engine/scene';
+import type { Constructor } from '../../../types/utils';
 
-export interface GameObjectScriptOptions {
+export interface ScriptOptions {
   scene: Scene
   gameObject: GameObject
   gameObjectObserver: GameObjectObserver
@@ -18,7 +19,10 @@ interface UpdateOptions {
   deltaTime: number
 }
 
-export interface GameObjectScript {
-  destroy?(): void
-  update?(options: UpdateOptions): void
+export abstract class Script {
+  static scriptName: string;
+  destroy?(): void;
+  update?(options: UpdateOptions): void;
 }
+
+export type ScriptConstructor = Constructor<Script> & { scriptName: string };

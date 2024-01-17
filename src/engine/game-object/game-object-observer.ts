@@ -11,8 +11,6 @@ import type { ComponentConstructor } from '../component';
 
 import type { GameObject } from './game-object';
 
-type GetObjectsToRemoveFn = (gameObjects: Array<GameObject>, id: string) => Array<GameObject>;
-
 export interface GameObjectObserverFilter {
   components?: Array<ComponentConstructor | string>;
 }
@@ -77,15 +75,18 @@ export class GameObjectObserver extends EventEmitter<GameObjectObserverEventMap>
   }
 
   private _remove(gameObject: GameObject): void {
-    const remove: GetObjectsToRemoveFn = (gameObjects, id) => gameObjects.filter(
-      (item) => id !== item.getId(),
+    this._observedGameObjects = this._observedGameObjects.filter(
+      (observedGameObject) => gameObject.id !== observedGameObject.id,
     );
 
-    const gameObjectId = gameObject.getId();
+    if (!this._acceptedGameObjectsMap[gameObject.id]) {
+      return;
+    }
 
-    this._observedGameObjects = remove(this._observedGameObjects, gameObjectId);
-    this._acceptedGameObjects = remove(this._acceptedGameObjects, gameObjectId);
-    this._acceptedGameObjectsMap[gameObjectId] = void 0;
+    this._acceptedGameObjects = this._acceptedGameObjects.filter(
+      (acceptedGameObject) => gameObject.id !== acceptedGameObject.id,
+    );
+    delete this._acceptedGameObjectsMap[gameObject.id];
 
     this.emit(RemoveGameObject, { gameObject });
   }
@@ -114,16 +115,14 @@ export class GameObjectObserver extends EventEmitter<GameObjectObserverEventMap>
   }
 
   private _decline(gameObject: GameObject): void {
-    const gameObjectId = gameObject.getId();
-
-    if (!this._acceptedGameObjectsMap[gameObjectId]) {
+    if (!this._acceptedGameObjectsMap[gameObject.id]) {
       return;
     }
 
     this._acceptedGameObjects = this._acceptedGameObjects.filter(
-      (acceptedGameObject) => gameObjectId !== acceptedGameObject.getId(),
+      (acceptedGameObject) => gameObject.id !== acceptedGameObject.id,
     );
-    this._acceptedGameObjectsMap[gameObjectId] = void 0;
+    delete this._acceptedGameObjectsMap[gameObject.id];
 
     this.emit(RemoveGameObject, { gameObject });
   }

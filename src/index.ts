@@ -22,8 +22,7 @@ export type {
   ListenerFn,
 } from './engine/event-emitter';
 export type { Scene, SceneContext } from './engine/scene';
-export type { GameObjectScript, GameObjectScriptOptions } from './contrib/systems/script-system';
-export type { UiInitFnOptions, UiInitFn, UiDestroyFn } from './contrib/systems/ui-bridge';
+
 export * as Animation from './contrib/components/animatable/types';
 
 export { GameObject, GameObjectCreator } from './engine/game-object';

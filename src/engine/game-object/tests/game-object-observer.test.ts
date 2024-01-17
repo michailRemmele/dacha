@@ -227,6 +227,7 @@ describe('Engine -> GameObjectObserver', () => {
     }]);
     expect(gameObjectObserver.size()).toEqual(3);
 
+    scene.removeGameObject(gameObject3);
     scene.removeGameObject(gameObject4);
     gameObject5.removeComponent(TestComponent1);
 
