@@ -234,7 +234,9 @@
   "components.rigidBody.types.static.title": "Static",
 
   "components.scriptBundle.title": "Script Bundle",
-  "components.scriptBundle.name.title": "Name",
+  "components.scriptBundle.script.name.title": "Name",
+  "components.scriptBundle.script.title": "Script {{index}}",
+  "components.scriptBundle.script.addNew.title": "Add New Script",
 
   "components.transform.title": "Transform",
   "components.transform.offsetX.title": "Offset X",

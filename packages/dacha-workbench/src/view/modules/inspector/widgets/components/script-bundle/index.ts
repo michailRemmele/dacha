@@ -6,7 +6,6 @@ export const scriptBundle: WidgetSchema = {
   title: 'components.scriptBundle.title',
   view: ScriptBundleWidget,
   getInitialState: () => ({
-    name: '',
-    options: {},
+    scripts: [],
   }),
 }
