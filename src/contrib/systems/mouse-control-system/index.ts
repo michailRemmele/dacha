@@ -1,6 +1,6 @@
 import { System } from '../../../engine/system';
+import { GameObjectObserver } from '../../../engine/game-object';
 import type { SystemOptions } from '../../../engine/system';
-import type { GameObjectObserver } from '../../../engine/game-object';
 import type { Scene } from '../../../engine/scene';
 import { MouseControl } from '../../components/mouse-control';
 import { MouseInput } from '../../events';
@@ -13,7 +13,7 @@ export class MouseControlSystem extends System {
   constructor(options: SystemOptions) {
     super();
 
-    this.gameObjectObserver = options.createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(options.scene, {
       components: [
         MouseControl,
       ],

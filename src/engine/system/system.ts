@@ -1,6 +1,4 @@
 import type {
-  GameObjectObserver,
-  GameObjectObserverFilter,
   GameObjectSpawner,
   GameObjectDestroyer,
 } from '../game-object';
@@ -9,7 +7,6 @@ import type { Scene } from '../scene';
 import type { Constructor } from '../../types/utils';
 
 export interface SystemOptions extends Record<string, unknown> {
-  createGameObjectObserver: (filter: GameObjectObserverFilter) => GameObjectObserver
   gameObjectSpawner: GameObjectSpawner
   gameObjectDestroyer: GameObjectDestroyer
   resources?: unknown

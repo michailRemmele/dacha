@@ -1,10 +1,10 @@
 import { Scene } from '../../../engine/scene';
 import { System } from '../../../engine/system';
+import { GameObjectObserver } from '../../../engine/game-object';
 import type {
   SystemOptions,
   UpdateOptions,
 } from '../../../engine/system';
-import type { GameObjectObserver } from '../../../engine/game-object';
 import type { TemplateCollection } from '../../../engine/template';
 
 import { Observer } from './observer';
@@ -50,7 +50,6 @@ export class UiBridge extends System {
     super();
 
     const {
-      createGameObjectObserver,
       gameObjectSpawner,
       gameObjectDestroyer,
       resources,
@@ -67,7 +66,7 @@ export class UiBridge extends System {
     this.loadUiApp = loadUiApp;
 
     this.scene = scene;
-    this.gameObjectObserver = createGameObjectObserver({});
+    this.gameObjectObserver = new GameObjectObserver(scene);
     this.gameObjectSpawner = gameObjectSpawner;
     this.gameObjectDestroyer = gameObjectDestroyer;
     this.templateCollection = templateCollection;

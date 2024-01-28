@@ -1,5 +1,6 @@
+import { GameObjectObserver } from '../../../../../engine/game-object';
 import type { SystemOptions } from '../../../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
+import type { GameObject } from '../../../../../engine/game-object';
 import type { Scene } from '../../../../../engine/scene';
 import { Transform, ColliderContainer } from '../../../../components';
 import { RemoveGameObject } from '../../../../../engine/events';
@@ -35,7 +36,7 @@ export class CollisionDetectionSubsystem {
   private lastProcessedGameObjects: Record<string, Transform | undefined>;
 
   constructor(options: SystemOptions) {
-    this.gameObjectObserver = options.createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(options.scene, {
       components: [
         ColliderContainer,
         Transform,

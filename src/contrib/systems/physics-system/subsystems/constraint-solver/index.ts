@@ -1,6 +1,7 @@
 import { Vector2 } from '../../../../../engine/mathLib';
+import { GameObjectObserver } from '../../../../../engine/game-object';
 import type { SystemOptions } from '../../../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
+import type { GameObject } from '../../../../../engine/game-object';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { RigidBodyType } from '../../../../components/rigid-body';
@@ -20,7 +21,7 @@ export class ConstraintSolver {
   private mtvMap: Record<string, Record<string, Vector2>>;
 
   constructor(options: SystemOptions) {
-    this.gameObjectObserver = options.createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(options.scene, {
       components: [
         RigidBody,
         Transform,

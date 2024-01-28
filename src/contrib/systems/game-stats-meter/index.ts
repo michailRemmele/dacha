@@ -1,6 +1,6 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions, UpdateOptions } from '../../../engine/system';
-import type { GameObjectObserver } from '../../../engine/game-object';
+import { GameObjectObserver } from '../../../engine/game-object';
 import type { Scene } from '../../../engine/scene';
 import { GameStatsUpdate } from '../../events';
 
@@ -21,12 +21,11 @@ export class GameStatsMeter extends System {
     super();
 
     const {
-      createGameObjectObserver,
       scene,
       frequency,
     } = options as GameStatsMeterOptions;
 
-    this.gameObjectObserver = createGameObjectObserver({});
+    this.gameObjectObserver = new GameObjectObserver(scene);
     this.scene = scene;
     this.frequency = frequency || MS_IN_SEC;
 

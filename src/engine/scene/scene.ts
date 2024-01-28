@@ -7,9 +7,7 @@ import {
   GameObjectSpawner,
   GameObjectDestroyer,
   GameObjectCreator,
-  GameObjectObserver,
 } from '../game-object';
-import type { GameObjectObserverFilter } from '../game-object';
 import { EventEmitter } from '../event-emitter';
 import { AddGameObject, RemoveGameObject } from '../events';
 
@@ -75,10 +73,6 @@ export class Scene extends EventEmitter {
       gameObjectSpawner: this.gameObjectSpawner,
       gameObjectDestroyer: this.gameObjectDestroyer,
       scene: this,
-      createGameObjectObserver: (filter?: GameObjectObserverFilter): GameObjectObserver => {
-        const gameObjectObserver = new GameObjectObserver(this, filter);
-        return gameObjectObserver;
-      },
       resources: resources[config.name],
       globalOptions,
     }));

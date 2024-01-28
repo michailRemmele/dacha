@@ -105,8 +105,7 @@ export class RenderSystem extends System {
     const {
       windowNodeId, textureAtlas,
       textureAtlasDescriptor, backgroundColor,
-      createGameObjectObserver, sortingLayers,
-      scaleSensitivity, scene,
+      sortingLayers, scaleSensitivity, scene,
     } = options;
 
     const window = document.getElementById(windowNodeId);
@@ -155,7 +154,7 @@ export class RenderSystem extends System {
       sortByFit,
     ]);
 
-    this._gameObjectObserver = createGameObjectObserver({
+    this._gameObjectObserver = new GameObjectObserver(scene, {
       components: [
         Renderable,
         Transform,

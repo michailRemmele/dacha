@@ -13,8 +13,7 @@ import { AddGameObject, RemoveGameObject } from '../../../engine/events';
 import type { UpdateGameObjectEvent } from '../../../engine/events';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
-import { GameObject } from '../../../engine/game-object';
-import type { GameObjectObserver } from '../../../engine/game-object';
+import { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type { TemplateCollection } from '../../../engine/template';
 import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
@@ -73,7 +72,6 @@ export class SpriteRenderer extends System {
 
     const {
       globalOptions,
-      createGameObjectObserver,
       windowNodeId,
       backgroundColor,
       backgroundAlpha,
@@ -81,7 +79,7 @@ export class SpriteRenderer extends System {
       scene,
     } = options as RendererOptions;
 
-    this.gameObjectObserver = createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(scene, {
       components: [
         Sprite,
         Transform,
@@ -110,7 +108,7 @@ export class SpriteRenderer extends System {
 
     this.lightSubsystem = new LightSubsystem(
       this.renderScene,
-      createGameObjectObserver({
+      new GameObjectObserver(scene, {
         components: [
           Light,
           Transform,

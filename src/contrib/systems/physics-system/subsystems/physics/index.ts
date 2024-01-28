@@ -1,7 +1,6 @@
 import { Vector2 } from '../../../../../engine/mathLib';
 import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
-import { GameObject } from '../../../../../engine/game-object';
-import type { GameObjectObserver } from '../../../../../engine/game-object';
+import { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { PhysicsSystemOptions } from '../../types';
@@ -31,10 +30,10 @@ export class PhysicsSubsystem {
 
   constructor(options: SystemOptions) {
     const {
-      gravitationalAcceleration, createGameObjectObserver,
+      gravitationalAcceleration, scene,
     } = options as PhysicsSystemOptions;
 
-    this.gameObjectObserver = createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(scene, {
       components: [
         RigidBody,
         Transform,

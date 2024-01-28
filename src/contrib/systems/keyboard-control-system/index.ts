@@ -1,6 +1,7 @@
 import { System } from '../../../engine/system';
+import { GameObjectObserver } from '../../../engine/game-object';
 import type { SystemOptions } from '../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
+import type { GameObject } from '../../../engine/game-object';
 import type { Scene } from '../../../engine/scene';
 import { KeyboardControl } from '../../components/keyboard-control';
 import type { KeyboardEventBind } from '../../components/keyboard-control';
@@ -17,7 +18,7 @@ export class KeyboardControlSystem extends System {
   constructor(options: SystemOptions) {
     super();
 
-    this.gameObjectObserver = options.createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(options.scene, {
       components: [
         KeyboardControl,
       ],

@@ -3,9 +3,8 @@ import type {
   SystemOptions,
   UpdateOptions,
 } from '../../../engine/system';
-import { GameObject } from '../../../engine/game-object';
+import { GameObject, GameObjectObserver } from '../../../engine/game-object';
 import type {
-  GameObjectObserver,
   GameObjectSpawner,
   GameObjectDestroyer,
 } from '../../../engine/game-object';
@@ -32,7 +31,6 @@ export class ScriptSystem extends System {
     super();
 
     const {
-      createGameObjectObserver,
       gameObjectSpawner,
       gameObjectDestroyer,
       scene,
@@ -40,8 +38,8 @@ export class ScriptSystem extends System {
     } = options;
 
     this.scene = scene;
-    this.gameObjectObserver = createGameObjectObserver({});
-    this.scriptsObserver = createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(scene);
+    this.scriptsObserver = new GameObjectObserver(scene, {
       components: [
         ScriptBundle,
       ],

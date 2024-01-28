@@ -26,7 +26,7 @@ export class Animator extends System {
   constructor(options: SystemOptions) {
     super();
 
-    this.gameObjectObserver = options.createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(options.scene, {
       components: [Animatable],
     });
     this.substatePickers = Object.keys(substatePickers)

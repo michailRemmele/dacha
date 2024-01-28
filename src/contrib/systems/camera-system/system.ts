@@ -2,7 +2,8 @@ import { MathOps } from '../../../engine/mathLib';
 import { System } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
 import type { SystemOptions } from '../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
+import type { GameObject } from '../../../engine/game-object';
+import { GameObjectObserver } from '../../../engine/game-object';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
 import { SetCamera } from '../../events';
@@ -32,13 +33,12 @@ export class CameraSystem extends System {
       initialCamera,
       windowNodeId,
       scaleSensitivity,
-      createGameObjectObserver,
       scene,
     } = options as CameraSystemOptions;
 
     const windowNode = getWindowNode(windowNodeId);
 
-    this.gameObjectObserver = createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(scene, {
       components: [
         Camera,
       ],
