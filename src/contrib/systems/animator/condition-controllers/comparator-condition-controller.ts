@@ -1,23 +1,14 @@
 import type { GameObject } from '../../../../engine/game-object';
 import type { ComparatorConditionProps } from '../../../components/animatable/comparator-condition-props';
 import type { ComparatorConditionComponentValue } from '../../../components/animatable/comparator-condition-component-value';
-import type { ComparatorConditionNumberValue } from '../../../components/animatable/comparator-condition-number-value';
-import { getValue } from '../utils';
+import type { ComparatorConditionSimpleValue } from '../../../components/animatable/comparator-condition-number-value';
+import { getValue as getComponentValue } from '../utils';
 
 import { ConditionController } from './condition-controller';
 
-type GetterFn = (arg1: GameObject, arg2: string | number | Array<string>) => string | number;
-type OperationFn = (arg1: string | number, arg2: string | number) => boolean;
+type ComparatorValue = string | number | boolean;
+type OperationFn = (arg1: ComparatorValue, arg2: ComparatorValue) => boolean;
 
-const getters: Record<string, GetterFn> = {
-  number: (arg1, value): string | number => {
-    if (typeof value !== 'number') {
-      throw new Error('The value must be a number');
-    }
-    return value;
-  },
-  componentValue: getValue as GetterFn,
-};
 const operations: Record<string, OperationFn> = {
   equals: (arg1, arg2): boolean => arg1 === arg2,
   notEquals: (arg1, arg2): boolean => arg1 !== arg2,
@@ -41,13 +32,13 @@ export class ComparatorConditionController implements ConditionController {
 
   private getValue(
     gameObject: GameObject,
-    arg: ComparatorConditionComponentValue | ComparatorConditionNumberValue,
-  ): string | number {
-    if (!getters[arg.type]) {
-      throw new Error(`Unknown value type: ${arg.type}`);
+    arg: ComparatorConditionComponentValue | ComparatorConditionSimpleValue,
+  ): ComparatorValue {
+    if (arg.type === 'componentValue') {
+      return getComponentValue(gameObject, arg.value as Array<string>) as ComparatorValue;
     }
 
-    return getters[arg.type](gameObject, arg.value);
+    return arg.value as ComparatorValue;
   }
 
   check(): boolean {

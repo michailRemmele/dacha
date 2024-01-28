@@ -20,15 +20,15 @@ export interface ComparatorConditionComponentValueConfig {
   value: string | Array<string>
 }
 
-export interface ComparatorConditionNumberValueConfig {
+export interface ComparatorConditionSimpleValueConfig {
   type: string
-  value: number
+  value: string | number | boolean
 }
 
 export type OperationType = 'equals' | 'notEquals' | 'greater' | 'less' | 'greaterOrEqual' | 'lessOrEqual';
 
 export interface ComparatorConditionArg {
-  type: 'number' | 'componentValue'
+  type: 'string' | 'number' | 'boolean' | 'componentValue'
   [key: string]: unknown
 }
 
