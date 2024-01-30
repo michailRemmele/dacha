@@ -14,12 +14,12 @@ export type {
   GameObjectDestroyer,
 } from './engine/game-object';
 export type {
-  EventEmitter,
+  EventTarget,
   Event,
   EventType,
   EventPayload,
   ListenerFn,
-} from './engine/event-emitter';
+} from './engine/event-target';
 export type { Scene, SceneContext } from './engine/scene';
 
 export * as Animation from './contrib/components/animatable/types';

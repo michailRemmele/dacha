@@ -1,4 +1,4 @@
-export { EventEmitter } from './event-emitter';
+export { EventTarget } from './event-target';
 export type {
   Event,
   EventType,

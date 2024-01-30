@@ -1,4 +1,4 @@
-import { EventEmitter } from '../event-emitter';
+import { EventTarget } from '../event-target';
 import type { Component, ComponentConstructor } from '../component';
 import { filterByKey } from '../utils';
 import type { GameObjectEventMap } from '../../types/events';
@@ -10,7 +10,7 @@ export interface GameObjectOptions {
   templateId?: string
 }
 
-export class GameObject extends EventEmitter<GameObjectEventMap> {
+export class GameObject extends EventTarget<GameObjectEventMap> {
   private components: Record<string, Component>;
   private children: Array<GameObject>;
   private childrenIds: Record<string, GameObject>;

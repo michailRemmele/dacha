@@ -1,4 +1,4 @@
-import { EventEmitter } from '../event-emitter';
+import { EventTarget } from '../event-target';
 import {
   AddComponent,
   RemoveComponent,
@@ -15,7 +15,7 @@ export interface GameObjectObserverFilter {
   components?: Array<ComponentConstructor | string>;
 }
 
-export class GameObjectObserver extends EventEmitter<GameObjectObserverEventMap> {
+export class GameObjectObserver extends EventTarget<GameObjectObserverEventMap> {
   private _components: Array<ComponentConstructor | string>;
   private _observedGameObjects: Array<GameObject>;
   private _acceptedGameObjects: Array<GameObject>;

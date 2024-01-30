@@ -1,4 +1,4 @@
-import type { Event } from '../engine/event-emitter';
+import type { Event } from '../engine/event-target';
 import type { GameObject } from '../engine/game-object';
 import type { Scene } from '../engine/scene';
 

@@ -7,7 +7,7 @@ import type {
   ListenerFn,
 } from './types';
 
-export class EventEmitter<T extends EventMap<T> = SceneEventMap> {
+export class EventTarget<T extends EventMap<T> = SceneEventMap> {
   // comment: To avoid type checking errors inside implementation
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private listenersMap: Map<EventType, Array<ListenerFn<any, any, any>>>;

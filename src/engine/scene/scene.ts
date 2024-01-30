@@ -8,7 +8,7 @@ import {
   GameObjectDestroyer,
   GameObjectCreator,
 } from '../game-object';
-import { EventEmitter } from '../event-emitter';
+import { EventTarget } from '../event-target';
 import { AddGameObject, RemoveGameObject } from '../events';
 
 import { SceneContext } from './context';
@@ -22,7 +22,7 @@ interface SceneOptions extends SceneConfig {
   templateCollection: TemplateCollection
 }
 
-export class Scene extends EventEmitter {
+export class Scene extends EventTarget {
   private gameObjects: Record<string, GameObject>;
   private gameObjectCreator: GameObjectCreator;
   private systems: Array<System>;
