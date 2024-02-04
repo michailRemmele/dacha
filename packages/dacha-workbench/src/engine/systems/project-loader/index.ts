@@ -26,8 +26,8 @@ export class ProjectLoader extends System {
     this.editorCofig = window.electron.getEditorConfig()
 
     const projectConfig = window.electron.getProjectConfig()
-    this.scene.context.data.configStore = new Store(projectConfig as unknown as Data)
-    this.scene.context.data.editorConfig = this.editorCofig
+    this.scene.data.configStore = new Store(projectConfig as unknown as Data)
+    this.scene.data.editorConfig = this.editorCofig
 
     this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
   }
@@ -40,7 +40,7 @@ export class ProjectLoader extends System {
       locales = {},
     } = extension
 
-    this.scene.context.data.extension = {
+    this.scene.data.extension = {
       componentsSchema,
       systemsSchema,
       resourcesSchema,
@@ -74,7 +74,7 @@ export class ProjectLoader extends System {
   }
 
   private saveProjectConfig(): void {
-    const projectConfig = (this.scene.context.data.configStore as Store).get([]) as Config
+    const projectConfig = (this.scene.data.configStore as Store).get([]) as Config
     window.electron.saveProjectConfig(projectConfig)
 
     this.scene.emit(EventType.SaveProject)

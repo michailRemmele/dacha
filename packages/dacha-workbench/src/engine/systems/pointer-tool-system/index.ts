@@ -1,11 +1,12 @@
-import { System, SpriteRendererService } from 'remiz'
+import {
+  System,
+  SpriteRendererService,
+} from 'remiz'
 import type {
   Scene,
   SystemOptions,
   GameObject,
   GameObjectSpawner,
-  GameObjectDestroyer,
-  GameObjectObserver,
   MouseControlEvent,
 } from 'remiz'
 
@@ -21,8 +22,6 @@ import type { SelectedObject } from './types'
 export class PointerToolSystem extends System {
   private scene: Scene
   private gameObjectSpawner: GameObjectSpawner
-  private gameObjectDestroyer: GameObjectDestroyer
-  private gameObjectObserver: GameObjectObserver
 
   private mainObject: GameObject
   private pointerToolObject: GameObject
@@ -39,23 +38,18 @@ export class PointerToolSystem extends System {
     const {
       scene,
       gameObjectSpawner,
-      gameObjectDestroyer,
-      createGameObjectObserver,
     } = options
 
     this.scene = scene
     this.gameObjectSpawner = gameObjectSpawner
-    this.gameObjectDestroyer = gameObjectDestroyer
-    this.gameObjectObserver = createGameObjectObserver({})
 
-    this.mainObject = scene.context.data.mainObject as GameObject
-    this.pointerToolObject = getPointerToolObject(scene.context)
+    this.mainObject = scene.data.mainObject as GameObject
+    this.pointerToolObject = getPointerToolObject(scene)
 
     this.selectedObject = {}
 
     this.selectionMovementSubsystem = new SelectionMovementSubsystem({
       scene,
-      gameObjectObserver: this.gameObjectObserver,
       selectedObject: this.selectedObject,
     })
   }
@@ -104,7 +98,7 @@ export class PointerToolSystem extends System {
 
     const { screenX, screenY } = event
 
-    const rendererService = this.scene.context.getService(SpriteRendererService)
+    const rendererService = this.scene.getService(SpriteRendererService)
 
     const selectedObject = rendererService
       .intersectsWithPoint(screenX, screenY)
@@ -124,7 +118,7 @@ export class PointerToolSystem extends System {
       return
     }
 
-    this.gameObjectDestroyer.destroy(this.frame)
+    this.frame.destroy()
     this.frame = undefined
   }
 
@@ -143,7 +137,7 @@ export class PointerToolSystem extends System {
       return
     }
 
-    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
+    const selectedObject = this.scene.getGameObject(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }

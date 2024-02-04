@@ -1,8 +1,10 @@
-import { System, Transform, CameraService } from 'remiz'
-import type {
-  SystemOptions,
+import {
+  System,
+  Transform,
+  CameraService,
   GameObjectObserver,
 } from 'remiz'
+import type { SystemOptions } from 'remiz'
 
 import { Shape } from '../../components'
 
@@ -28,11 +30,10 @@ export class ShapesRenderer extends System {
 
     const {
       scene,
-      createGameObjectObserver,
       windowNodeId,
     } = options as ShapesRendererOptions
 
-    this.gameObjectObserver = createGameObjectObserver({
+    this.gameObjectObserver = new GameObjectObserver(scene, {
       components: [
         Transform,
         Shape,
@@ -54,7 +55,7 @@ export class ShapesRenderer extends System {
     this.canvasWidth = this.window.clientWidth
     this.canvasHeight = this.window.clientHeight
 
-    this.cameraService = scene.context.getService(CameraService)
+    this.cameraService = scene.getService(CameraService)
 
     this.transformer = new CoordinatesTransformer()
   }

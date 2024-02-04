@@ -1,5 +1,6 @@
 import {
   System,
+  GameObjectObserver,
   GameObjectCreator,
   TemplateCollection,
 } from 'remiz'
@@ -7,8 +8,6 @@ import type {
   Scene,
   SystemOptions,
   GameObjectSpawner,
-  GameObjectDestroyer,
-  GameObjectObserver,
   TemplateConfig,
   LevelConfig,
 } from 'remiz'
@@ -34,7 +33,6 @@ interface LevelViewerOptions extends SystemOptions {
 export class LevelViewer extends System {
   scene: Scene
   gameObjectSpawner: GameObjectSpawner
-  gameObjectDestroyer: GameObjectDestroyer
   gameObjectObserver: GameObjectObserver
   mainObjectId: string
   configStore: Store
@@ -51,19 +49,16 @@ export class LevelViewer extends System {
     const {
       scene,
       gameObjectSpawner,
-      gameObjectDestroyer,
-      createGameObjectObserver,
       mainObjectId,
     } = options as LevelViewerOptions
 
     this.scene = scene
     this.gameObjectSpawner = gameObjectSpawner
-    this.gameObjectDestroyer = gameObjectDestroyer
-    this.gameObjectObserver = createGameObjectObserver({})
+    this.gameObjectObserver = new GameObjectObserver(scene)
     this.mainObjectId = mainObjectId
 
-    this.configStore = scene.context.data.configStore as Store
-    this.editorConfig = scene.context.data.editorConfig as EditorConfig
+    this.configStore = scene.data.configStore as Store
+    this.editorConfig = scene.data.editorConfig as EditorConfig
 
     const mainObject = this.gameObjectObserver.getById(this.mainObjectId)
 
@@ -71,7 +66,7 @@ export class LevelViewer extends System {
       throw new Error('Can\'t find the main object')
     }
 
-    this.scene.context.data.mainObject = mainObject
+    this.scene.data.mainObject = mainObject
 
     const templateCollection = new TemplateCollection(ALLOWED_COMPONENTS)
     const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
@@ -83,7 +78,7 @@ export class LevelViewer extends System {
     this.templateCollection = templateCollection
     this.gameObjectCreator = new GameObjectCreator(ALLOWED_COMPONENTS, templateCollection)
 
-    this.scene.context.data.gameObjectCreator = this.gameObjectCreator
+    this.scene.data.gameObjectCreator = this.gameObjectCreator
   }
 
   mount(): void {
@@ -105,7 +100,6 @@ export class LevelViewer extends System {
         path,
         store: this.configStore,
         gameObjectObserver: this.gameObjectObserver,
-        gameObjectDestroyer: this.gameObjectDestroyer,
         gameObjectCreator: this.gameObjectCreator,
         gameObjectSpawner: this.gameObjectSpawner,
         templateCollection: this.templateCollection,
@@ -133,9 +127,9 @@ export class LevelViewer extends System {
       return
     }
 
-    this.gameObjectObserver.getList().forEach((gameObject) => {
+    this.gameObjectObserver.forEach((gameObject) => {
       if (gameObject.getAncestor().id !== this.mainObjectId) {
-        this.gameObjectDestroyer.destroy(gameObject)
+        gameObject.destroy()
       }
     })
 

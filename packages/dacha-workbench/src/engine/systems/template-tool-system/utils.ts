@@ -6,7 +6,7 @@ import type {
   GameObjectConfig,
   TemplateConfig,
   LevelConfig,
-  SceneContext,
+  Scene,
   ComponentConfig,
 } from 'remiz'
 import { v4 as uuidv4 } from 'uuid'
@@ -74,7 +74,7 @@ export const updatePlacementPosition = (
   cursor: Position,
   placementPosition: Position,
   store: Store,
-  sceneContext: SceneContext,
+  scene: Scene,
 ): void => {
   if (cursor.x === null || cursor.y === null) {
     // eslint-disable-next-line no-param-reassign
@@ -84,8 +84,8 @@ export const updatePlacementPosition = (
     return
   }
 
-  const tool = getTool(sceneContext)
-  const gridStep = getGridStep(sceneContext)
+  const tool = getTool(scene)
+  const gridStep = getGridStep(scene)
 
   if (tool.name !== TOOL_NAME) {
     return

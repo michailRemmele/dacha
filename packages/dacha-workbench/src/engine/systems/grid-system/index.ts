@@ -29,7 +29,7 @@ export class GridSystem extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = scene.context.data.mainObject as GameObject
+    this.mainObject = scene.data.mainObject as GameObject
     this.gridNode = document.getElementById(GRID_ROOT) as HTMLDivElement
 
     this.showGrid = false

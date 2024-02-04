@@ -20,7 +20,7 @@ export class SettingsSystem extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = scene.context.data.mainObject as GameObject
+    this.mainObject = scene.data.mainObject as GameObject
   }
 
   mount(): void {

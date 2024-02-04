@@ -26,7 +26,6 @@ const syncGameObjects = ({
   prevLevel,
   gameObjectObserver,
   gameObjectCreator,
-  gameObjectDestroyer,
   gameObjectSpawner,
 }: WatcherOptions): void => {
   const { gameObjects } = level as LevelConfig
@@ -37,9 +36,7 @@ const syncGameObjects = ({
 
   gameObjectsToDelete.forEach((gameObjectConfig) => {
     const gameObject = gameObjectObserver.getById(gameObjectConfig.id)
-    if (gameObject) {
-      gameObjectDestroyer.destroy(gameObject)
-    }
+    gameObject?.destroy()
   })
   gameObjectsToAdd.forEach((gameObjectConfig) => {
     gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
@@ -51,7 +48,6 @@ export const watchGameObjects: WatcherFn = (options): void => {
     path,
     store,
     gameObjectObserver,
-    gameObjectDestroyer,
     gameObjectCreator,
     gameObjectSpawner,
     level,
@@ -77,7 +73,7 @@ export const watchGameObjects: WatcherFn = (options): void => {
   const gameObject = gameObjectObserver.getById(gameObjectConfig.id)
 
   if (gameObject) {
-    gameObjectDestroyer.destroy(gameObject)
+    gameObject.destroy()
     gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
   }
 }

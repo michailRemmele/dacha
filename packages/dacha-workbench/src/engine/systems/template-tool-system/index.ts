@@ -6,7 +6,6 @@ import type {
   LevelConfig,
   GameObject,
   GameObjectSpawner,
-  GameObjectDestroyer,
   GameObjectCreator,
   MouseControlEvent,
 } from 'remiz'
@@ -28,7 +27,6 @@ export class TemplateToolSystem extends System {
   private mainObject: GameObject
   private templateToolObject: GameObject
   private gameObjectSpawner: GameObjectSpawner
-  private gameObjectDestroyer: GameObjectDestroyer
   private previewSubsystem: PreviewSubsystem
 
   private selectedLevelId?: string
@@ -42,20 +40,17 @@ export class TemplateToolSystem extends System {
     const {
       scene,
       gameObjectSpawner,
-      gameObjectDestroyer,
     } = options
 
     this.scene = scene
-    this.configStore = this.scene.context.data.configStore as Store
-    this.mainObject = this.scene.context.data.mainObject as GameObject
-    this.templateToolObject = getTemplateToolObject(scene.context)
+    this.configStore = this.scene.data.configStore as Store
+    this.mainObject = this.scene.data.mainObject as GameObject
+    this.templateToolObject = getTemplateToolObject(scene)
     this.gameObjectSpawner = gameObjectSpawner
-    this.gameObjectDestroyer = gameObjectDestroyer
 
     this.previewSubsystem = new PreviewSubsystem({
       scene: this.scene,
-      gameObjectCreator: this.scene.context.data.gameObjectCreator as GameObjectCreator,
-      gameObjectDestroyer: this.gameObjectDestroyer,
+      gameObjectCreator: this.scene.data.gameObjectCreator as GameObjectCreator,
       gameObjectSpawner: this.gameObjectSpawner,
     })
 
@@ -112,10 +107,10 @@ export class TemplateToolSystem extends System {
       this.cursor,
       this.placementPosition,
       this.configStore,
-      this.scene.context,
+      this.scene,
     )
 
-    const tool = getTool(this.scene.context)
+    const tool = getTool(this.scene)
 
     const templateId = tool.features.templateId.value as string | undefined
     if (templateId === undefined) {
@@ -151,7 +146,7 @@ export class TemplateToolSystem extends System {
       this.cursor,
       this.placementPosition,
       this.configStore,
-      this.scene.context,
+      this.scene,
     )
 
     this.previewSubsystem?.update(this.placementPosition.x, this.placementPosition.y)

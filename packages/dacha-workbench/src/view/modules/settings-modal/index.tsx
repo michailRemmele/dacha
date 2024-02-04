@@ -38,7 +38,7 @@ export const SettingsModal: FC = () => {
 
   useEffect(() => {
     const handleSettingsUpdate = (): void => {
-      const mainObject = scene.context.data.mainObject as GameObject
+      const mainObject = scene.data.mainObject as GameObject
       const { data } = mainObject.getComponent(Settings)
 
       setSettings({ ...data })

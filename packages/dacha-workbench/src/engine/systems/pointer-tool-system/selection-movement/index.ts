@@ -5,7 +5,6 @@ import {
 import type {
   Scene,
   GameObject,
-  GameObjectObserver,
   MouseControlEvent,
 } from 'remiz'
 
@@ -31,13 +30,11 @@ export interface Position {
 
 interface SelectionMovementSubsystemOptions {
   scene: Scene
-  gameObjectObserver: GameObjectObserver
   selectedObject: SelectedObject
 }
 
 export class SelectionMovementSubsystem {
   private scene: Scene
-  private gameObjectObserver: GameObjectObserver
   private configStore: Store
 
   private pointerToolObject: GameObject
@@ -49,13 +46,11 @@ export class SelectionMovementSubsystem {
 
   constructor({
     scene,
-    gameObjectObserver,
     selectedObject,
   }: SelectionMovementSubsystemOptions) {
     this.scene = scene
-    this.gameObjectObserver = gameObjectObserver
-    this.pointerToolObject = getPointerToolObject(scene.context)
-    this.configStore = scene.context.data.configStore as Store
+    this.pointerToolObject = getPointerToolObject(scene)
+    this.configStore = scene.data.configStore as Store
     this.selectedObject = selectedObject
 
     this.isMoving = false
@@ -100,7 +95,7 @@ export class SelectionMovementSubsystem {
 
     const { x, y } = event
 
-    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
+    const selectedObject = this.scene.getGameObject(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }
@@ -130,7 +125,7 @@ export class SelectionMovementSubsystem {
 
     this.isMoving = false
 
-    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
+    const selectedObject = this.scene.getGameObject(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }
@@ -173,7 +168,7 @@ export class SelectionMovementSubsystem {
 
     const { x, y } = event
 
-    const selectedObject = this.gameObjectObserver.getById(this.selectedObject.objectId)
+    const selectedObject = this.scene.getGameObject(this.selectedObject.objectId)
     if (selectedObject === undefined) {
       return
     }
@@ -183,7 +178,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    const tool = getTool(this.scene.context)
+    const tool = getTool(this.scene)
     const snapToGrid = tool.features.grid.value as boolean
 
     const offsetX = this.selectionStart.x - this.pointerStart.x + x
@@ -192,7 +187,7 @@ export class SelectionMovementSubsystem {
     if (snapToGrid) {
       const sprite = selectedObject.getComponent(Sprite)
 
-      const gridStep = getGridStep(this.scene.context)
+      const gridStep = getGridStep(this.scene)
 
       transform.offsetX = getGridValue(offsetX, getSizeX(transform, sprite), gridStep)
       transform.offsetY = getGridValue(offsetY, getSizeY(transform, sprite), gridStep)

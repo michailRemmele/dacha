@@ -29,8 +29,8 @@ export class ZoomToolSystem extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = scene.context.data.mainObject as GameObject
-    this.zoomToolObject = getZoomToolObject(scene.context)
+    this.mainObject = scene.data.mainObject as GameObject
+    this.zoomToolObject = getZoomToolObject(scene)
   }
 
   mount(): void {
@@ -56,7 +56,7 @@ export class ZoomToolSystem extends System {
       screenY,
     } = event
 
-    const tool = getTool(this.scene.context)
+    const tool = getTool(this.scene)
     const zoomMode = tool.features.direction.value as ZoomMode
 
     const cameraComponent = this.mainObject.getComponent(Camera)
