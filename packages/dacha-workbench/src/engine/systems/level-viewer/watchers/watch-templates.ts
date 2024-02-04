@@ -11,7 +11,6 @@ export const watchTemplates: WatcherFn = ({
   path,
   store,
   gameObjectObserver,
-  gameObjectDestroyer,
   gameObjectCreator,
   gameObjectSpawner,
   templateCollection,
@@ -87,7 +86,7 @@ export const watchTemplates: WatcherFn = ({
     }
 
     if (templatesIdsToDelete.has(templateId)) {
-      gameObjectDestroyer.destroy(gameObject)
+      gameObject.destroy()
     }
     if (templatesToAdd.has(templateId)) {
       gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))

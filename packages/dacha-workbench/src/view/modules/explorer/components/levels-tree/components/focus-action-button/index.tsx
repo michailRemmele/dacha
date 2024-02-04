@@ -27,10 +27,9 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
     scene,
     pushAction,
     gameStateObserver,
-    gameObjectObserver,
   } = useContext(EngineContext)
 
-  const mainObject = scene.context.data.mainObject as GameObject
+  const mainObject = scene.data.mainObject as GameObject
 
   const gameObjectId = useMemo(() => path?.at(-1)?.split(':')[1], [path])
   const [selectedGameObject, setSelectedGameObject] = useState<GameObject | undefined>()
@@ -41,7 +40,7 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
     }
 
     const handleGameStateUpdate = (): void => {
-      const gameObject = gameObjectObserver.getById(gameObjectId)
+      const gameObject = scene.getGameObject(gameObjectId)
 
       if (!gameObject) {
         setSelectedGameObject(undefined)
@@ -63,7 +62,7 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
       setSelectedGameObject(undefined)
       gameStateObserver.unsubscribe(handleGameStateUpdate)
     }
-  }, [gameObjectId, gameStateObserver, gameObjectObserver])
+  }, [gameObjectId, gameStateObserver, scene])
 
   const handleClick = useCallback(() => {
     if (selectedGameObject === undefined) {

@@ -2,7 +2,6 @@ import { Transform } from 'remiz'
 import type {
   Scene,
   GameObjectCreator,
-  GameObjectDestroyer,
   GameObjectSpawner,
   GameObject,
   TemplateConfig,
@@ -19,14 +18,12 @@ import type { Store } from '../../../../store'
 interface PreviewSubsystemOptions {
   scene: Scene
   gameObjectCreator: GameObjectCreator
-  gameObjectDestroyer: GameObjectDestroyer
   gameObjectSpawner: GameObjectSpawner
 }
 
 export class PreviewSubsystem {
   private scene: Scene
   private gameObjectCreator: GameObjectCreator
-  private gameObjectDestroyer: GameObjectDestroyer
   private gameObjectSpawner: GameObjectSpawner
   private mainObject: GameObject
   private configStore: Store
@@ -38,16 +35,14 @@ export class PreviewSubsystem {
   constructor({
     scene,
     gameObjectCreator,
-    gameObjectDestroyer,
     gameObjectSpawner,
   }: PreviewSubsystemOptions) {
     this.scene = scene
     this.gameObjectCreator = gameObjectCreator
-    this.gameObjectDestroyer = gameObjectDestroyer
     this.gameObjectSpawner = gameObjectSpawner
 
-    this.mainObject = this.scene.context.data.mainObject as GameObject
-    this.configStore = this.scene.context.data.configStore as Store
+    this.mainObject = this.scene.data.mainObject as GameObject
+    this.configStore = this.scene.data.configStore as Store
   }
 
   mount(): void {
@@ -70,7 +65,7 @@ export class PreviewSubsystem {
     }
 
     const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
-    const tool = getTool(this.scene.context)
+    const tool = getTool(this.scene)
 
     if (tool.features.templateId.value === undefined && templates.length > 0) {
       tool.features.templateId.value = templates[0].id
@@ -82,7 +77,7 @@ export class PreviewSubsystem {
    * if selected template was changed
    */
   private handleTemplatesUpdate = (path: Array<string>): void => {
-    const tool = getTool(this.scene.context)
+    const tool = getTool(this.scene)
     if (tool.name !== TOOL_NAME || !includesArray(path, ['templates'])) {
       return
     }
@@ -112,7 +107,7 @@ export class PreviewSubsystem {
       return
     }
 
-    this.gameObjectDestroyer.destroy(this.preview)
+    this.preview.destroy()
     this.preview = undefined
   }
 
@@ -150,7 +145,7 @@ export class PreviewSubsystem {
   }
 
   update(x: number | null, y: number | null): void {
-    const tool = getTool(this.scene.context)
+    const tool = getTool(this.scene)
 
     if (tool.name !== TOOL_NAME || x === null || y === null) {
       this.deletePreview()

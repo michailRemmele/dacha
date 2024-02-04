@@ -32,7 +32,7 @@ export class ToolManager extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = this.scene.context.data.mainObject as GameObject
+    this.mainObject = this.scene.data.mainObject as GameObject
 
     this.rootNode = document.getElementById(CANVAS_ROOT) as HTMLElement
   }

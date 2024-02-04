@@ -32,8 +32,8 @@ export class HandToolSystem extends System {
 
     this.scene = scene
 
-    this.mainObject = scene.context.data.mainObject as GameObject
-    this.handToolObject = getHandToolObject(scene.context)
+    this.mainObject = scene.data.mainObject as GameObject
+    this.handToolObject = getHandToolObject(scene)
 
     this.isMoving = false
     this.anchor = new Vector2(0, 0)

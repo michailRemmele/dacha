@@ -31,12 +31,11 @@ export const Toolbar: FC = () => {
   const { t } = useTranslation()
   const {
     scene,
-    gameObjectObserver,
     gameStateObserver,
   } = useContext(EngineContext)
 
   const mainObjectId = useMemo<string>(
-    () => (scene.context.data.mainObject as GameObject).id,
+    () => (scene.data.mainObject as GameObject).id,
     [],
   )
 
@@ -52,7 +51,7 @@ export const Toolbar: FC = () => {
     }
 
     const handleUpdate = (): void => {
-      const mainObject = gameObjectObserver.getById(mainObjectId) as GameObject
+      const mainObject = scene.getGameObject(mainObjectId) as GameObject
       const toolController = mainObject.getComponent(ToolController)
       const toolObject = mainObject.getChildById(toolController.activeTool)
 
@@ -87,7 +86,7 @@ export const Toolbar: FC = () => {
       gameStateObserver.unsubscribe(handleUpdate)
     }
   }, [
-    gameObjectObserver,
+    scene,
     gameStateObserver,
     mainObjectId,
     selectedTool,

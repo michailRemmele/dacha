@@ -42,7 +42,7 @@ export class Commander extends System {
     const { scene } = options
 
     this.scene = scene
-    this.configStore = scene.context.data.configStore as Store
+    this.configStore = scene.data.configStore as Store
     this.commands = Object.keys(commands).reduce((acc: Record<string, Command>, key) => {
       const SomeCommand = commands[key]
       acc[key] = new SomeCommand(this.configStore)

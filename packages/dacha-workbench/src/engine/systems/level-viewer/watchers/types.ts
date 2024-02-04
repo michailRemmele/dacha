@@ -1,7 +1,6 @@
 import type {
   LevelConfig,
   GameObjectObserver,
-  GameObjectDestroyer,
   GameObjectCreator,
   GameObjectSpawner,
   TemplateCollection,
@@ -12,7 +11,6 @@ export interface WatcherOptions {
   path: Array<string>,
   store: Store,
   gameObjectObserver: GameObjectObserver,
-  gameObjectDestroyer: GameObjectDestroyer,
   gameObjectCreator: GameObjectCreator,
   gameObjectSpawner: GameObjectSpawner,
   templateCollection: TemplateCollection,
