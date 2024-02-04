@@ -14,7 +14,7 @@ export class CoordinatesProjector {
     const { scene } = options;
 
     this.scene = scene;
-    this.cameraService = scene.context.getService(CameraService);
+    this.cameraService = scene.getService(CameraService);
   }
 
   mount(): void {

@@ -11,33 +11,34 @@ export const LoadLevel = 'LoadLevel';
 export const AddComponent = 'AddComponent';
 export const RemoveComponent = 'RemoveComponent';
 
-export type UpdateComponentEvent = GameObjectEvent<{
-  componentName: string
-}>;
+export const Destroy = 'Destroy';
 
-export type UpdateGameObjectEvent = SceneEvent<{
-  gameObject: GameObject
-}>;
+export type AddComponentEvent = GameObjectEvent<{ componentName: string }>;
+export type RemoveComponentEvent = GameObjectEvent<{ componentName: string }>;
+
+export type AddGameObjectEvent = SceneEvent<{ gameObject: GameObject }>;
+export type RemoveGameObjectEvent = SceneEvent<{ gameObject: GameObject }>;
 
 export type LoadSceneEvent = SceneEvent<SceneLoadOptions>;
 
 export type LoadLevelEvent = SceneEvent<LevelLoadOptions>;
 
 export interface GameObjectObserverEventMap {
-  [AddGameObject]: UpdateGameObjectEvent
-  [RemoveGameObject]: UpdateGameObjectEvent
+  [AddGameObject]: AddGameObjectEvent
+  [RemoveGameObject]: RemoveGameObjectEvent
 }
 
 declare module '../../types/events' {
   export interface SceneEventMap {
     [LoadScene]: LoadSceneEvent
     [LoadLevel]: LoadLevelEvent
-    [AddGameObject]: UpdateGameObjectEvent
-    [RemoveGameObject]: UpdateGameObjectEvent
+    [AddGameObject]: AddGameObjectEvent
+    [RemoveGameObject]: RemoveGameObjectEvent
   }
 
   export interface GameObjectEventMap {
-    [AddComponent]: UpdateComponentEvent
-    [RemoveComponent]: UpdateComponentEvent
+    [AddComponent]: AddComponentEvent
+    [RemoveComponent]: RemoveComponentEvent
+    [Destroy]: GameObjectEvent
   }
 }

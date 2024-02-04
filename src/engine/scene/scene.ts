@@ -5,13 +5,11 @@ import { System } from '../system';
 import {
   GameObject,
   GameObjectSpawner,
-  GameObjectDestroyer,
   GameObjectCreator,
 } from '../game-object';
 import { EventTarget } from '../event-target';
-import { AddGameObject, RemoveGameObject } from '../events';
-
-import { SceneContext } from './context';
+import { AddGameObject, RemoveGameObject, Destroy } from '../events';
+import type { Constructor } from '../../types/utils';
 
 interface SceneOptions extends SceneConfig {
   gameObjects: Array<GameObjectConfig>
@@ -23,15 +21,15 @@ interface SceneOptions extends SceneConfig {
 }
 
 export class Scene extends EventTarget {
-  private gameObjects: Record<string, GameObject>;
+  private gameObjectMap: Record<string, GameObject>;
   private gameObjectCreator: GameObjectCreator;
   private systems: Array<System>;
   private availableSystemsMap: Record<string, SystemConstructor>;
+  private services: Record<string, unknown>;
 
   public templateCollection: TemplateCollection;
   public gameObjectSpawner: GameObjectSpawner;
-  public gameObjectDestroyer: GameObjectDestroyer;
-  public context: SceneContext;
+  public data: Record<string, unknown>;
 
   readonly id: string;
   readonly name: string;
@@ -51,12 +49,13 @@ export class Scene extends EventTarget {
 
     this.id = id;
     this.name = name;
-    this.gameObjects = {};
+    this.gameObjectMap = {};
     this.gameObjectCreator = gameObjectCreator;
     this.gameObjectSpawner = new GameObjectSpawner(this, this.gameObjectCreator);
-    this.gameObjectDestroyer = new GameObjectDestroyer(this);
-    this.context = new SceneContext(this.name);
     this.templateCollection = templateCollection;
+
+    this.data = {};
+    this.services = {};
 
     gameObjects.forEach((gameObjectOptions) => {
       this.addGameObject(this.gameObjectCreator.create(gameObjectOptions));
@@ -71,7 +70,6 @@ export class Scene extends EventTarget {
       ...config.options,
       templateCollection: this.templateCollection,
       gameObjectSpawner: this.gameObjectSpawner,
-      gameObjectDestroyer: this.gameObjectDestroyer,
       scene: this,
       resources: resources[config.name],
       globalOptions,
@@ -112,13 +110,13 @@ export class Scene extends EventTarget {
   }
 
   addGameObject(gameObject: GameObject): void {
-    const id = gameObject.getId();
-
-    if (this.gameObjects[id]) {
-      throw new Error(`The game object with same id already exists: ${id}`);
+    if (this.gameObjectMap[gameObject.id]) {
+      throw new Error(`The game object with same id already exists: ${gameObject.id}`);
     }
 
-    this.gameObjects[id] = gameObject;
+    gameObject.addEventListener(Destroy, () => this.removeGameObject(gameObject.id));
+
+    this.gameObjectMap[gameObject.id] = gameObject;
 
     this.emit(AddGameObject, { gameObject });
 
@@ -127,21 +125,39 @@ export class Scene extends EventTarget {
     });
   }
 
-  removeGameObject(gameObject: GameObject): void {
-    gameObject.removeAllListeners();
-    this.gameObjects = Object.keys(this.gameObjects)
-      .reduce((acc: Record<string, GameObject>, key) => {
-        if (key !== gameObject.getId()) {
-          acc[key] = this.gameObjects[key];
-        }
+  removeGameObject(id: string): void {
+    const gameObject = this.gameObjectMap[id];
 
-        return acc;
-      }, {});
+    if (!gameObject) {
+      return;
+    }
+
+    delete this.gameObjectMap[id];
 
     this.emit(RemoveGameObject, { gameObject });
   }
 
+  getGameObject(id: string): GameObject | undefined {
+    return this.gameObjectMap[id];
+  }
+
   getGameObjects(): Array<GameObject> {
-    return Object.values(this.gameObjects);
+    return Object.values(this.gameObjectMap);
+  }
+
+  addService(service: object): void {
+    this.services[service.constructor.name] = service;
+  }
+
+  removeService<T>(serviceClass: Constructor<T>): void {
+    delete this.services[serviceClass.name];
+  }
+
+  getService<T>(serviceClass: Constructor<T>): T {
+    if (this.services[serviceClass.name] === undefined) {
+      throw new Error(`Can't find service with the following name: ${serviceClass.name}`);
+    }
+
+    return this.services[serviceClass.name] as T;
   }
 }

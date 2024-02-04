@@ -11,7 +11,6 @@ export type {
 export type {
   GameObjectObserverFilter,
   GameObjectSpawner,
-  GameObjectDestroyer,
 } from './engine/game-object';
 export type {
   EventTarget,
@@ -20,7 +19,7 @@ export type {
   EventPayload,
   ListenerFn,
 } from './engine/event-target';
-export type { Scene, SceneContext } from './engine/scene';
+export type { Scene } from './engine/scene';
 
 export * as Animation from './contrib/components/animatable/types';
 

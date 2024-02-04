@@ -4,14 +4,11 @@ import type {
   UpdateOptions,
 } from '../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type {
-  GameObjectSpawner,
-  GameObjectDestroyer,
-} from '../../../engine/game-object';
+import type { GameObjectSpawner } from '../../../engine/game-object';
 import type { Scene } from '../../../engine/scene';
 import { ScriptBundle } from '../../components';
 import { AddGameObject, RemoveGameObject } from '../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../engine/events';
+import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../engine/events';
 
 import { Script } from './types';
 import type { ScriptOptions, ScriptConstructor } from './types';
@@ -19,10 +16,8 @@ import type { ScriptOptions, ScriptConstructor } from './types';
 export { Script, ScriptOptions, ScriptConstructor };
 
 export class ScriptSystem extends System {
-  private gameObjectObserver: GameObjectObserver;
   private scriptsObserver: GameObjectObserver;
   private gameObjectSpawner: GameObjectSpawner;
-  private gameObjectDestroyer: GameObjectDestroyer;
   private scripts: Record<string, ScriptConstructor>;
   private scene: Scene;
   private activeScripts: Record<string, Array<Script>>;
@@ -32,20 +27,17 @@ export class ScriptSystem extends System {
 
     const {
       gameObjectSpawner,
-      gameObjectDestroyer,
       scene,
       resources = {},
     } = options;
 
     this.scene = scene;
-    this.gameObjectObserver = new GameObjectObserver(scene);
     this.scriptsObserver = new GameObjectObserver(scene, {
       components: [
         ScriptBundle,
       ],
     });
     this.gameObjectSpawner = gameObjectSpawner;
-    this.gameObjectDestroyer = gameObjectDestroyer;
     this.scripts = (resources as Array<ScriptConstructor>).reduce((acc, script) => {
       if (script.scriptName === undefined) {
         throw new Error(`Missing scriptName field for ${script.name} script.`);
@@ -70,7 +62,7 @@ export class ScriptSystem extends System {
     this.scriptsObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
-  private handleGameObjectAdd = (value: UpdateGameObjectEvent | GameObject): void => {
+  private handleGameObjectAdd = (value: AddGameObjectEvent | GameObject): void => {
     const gameObject = value instanceof GameObject ? value : value.gameObject;
 
     const { scripts } = gameObject.getComponent(ScriptBundle);
@@ -79,15 +71,13 @@ export class ScriptSystem extends System {
       return new ScriptClass({
         ...script.options,
         gameObject,
-        gameObjectObserver: this.gameObjectObserver,
         gameObjectSpawner: this.gameObjectSpawner,
-        gameObjectDestroyer: this.gameObjectDestroyer,
         scene: this.scene,
       });
     });
   };
 
-  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
     const { gameObject } = event;
     this.activeScripts[gameObject.id].forEach((script) => script.destroy?.());
     delete this.activeScripts[gameObject.id];

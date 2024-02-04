@@ -3,7 +3,7 @@
 import { GameObject } from '../game-object';
 import { Component } from '../../component';
 import { AddComponent, RemoveComponent } from '../../events';
-import type { UpdateComponentEvent } from '../../events';
+import type { AddComponentEvent, RemoveComponentEvent } from '../../events';
 
 class TestComponent1 extends Component {
   static componentName = 'TestComponent1';
@@ -127,9 +127,9 @@ describe('Engine -> GameObject', () => {
       id: '0',
       name: 'gameObject',
     });
-    const subscription1 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
-    const subscription2 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
-    const subscription3 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
+    const subscription1 = jest.fn() as jest.Mock<void, [AddComponentEvent]>;
+    const subscription2 = jest.fn() as jest.Mock<void, [AddComponentEvent]>;
+    const subscription3 = jest.fn() as jest.Mock<void, [RemoveComponentEvent]>;
 
     gameObject.addEventListener(AddComponent, subscription1);
     gameObject.addEventListener(RemoveComponent, subscription3);
@@ -171,10 +171,9 @@ describe('Engine -> GameObject', () => {
       id: '0',
       name: 'gameObject',
     });
-    const subscription1 = jest.fn() as jest.Mock<void, [UpdateComponentEvent]>;
-    const wrappedSubscription1 = (event: UpdateComponentEvent): void => { subscription1(event); };
+    const subscription1 = jest.fn() as jest.Mock<void, [AddComponentEvent]>;
 
-    gameObject.addEventListener(AddComponent, wrappedSubscription1);
+    gameObject.addEventListener(AddComponent, subscription1);
 
     gameObject.setComponent(new TestComponent1());
 

@@ -4,7 +4,7 @@ import type { GameObject } from '../../../../../engine/game-object';
 import type { Scene } from '../../../../../engine/scene';
 import { Transform, ColliderContainer } from '../../../../components';
 import { RemoveGameObject } from '../../../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../../../engine/events';
+import type { RemoveGameObjectEvent } from '../../../../../engine/events';
 import { Collision } from '../../../../events';
 
 import { coordinatesCalculators } from './coordinates-calculators';
@@ -80,7 +80,7 @@ export class CollisionDetectionSubsystem {
     this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
-  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
     const { id } = event.gameObject;
 
     Object.values(AXIS).forEach((axis) => {

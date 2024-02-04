@@ -1,14 +1,10 @@
-import type {
-  GameObjectSpawner,
-  GameObjectDestroyer,
-} from '../game-object';
+import type { GameObjectSpawner } from '../game-object';
 import type { TemplateCollection } from '../template';
 import type { Scene } from '../scene';
 import type { Constructor } from '../../types/utils';
 
 export interface SystemOptions extends Record<string, unknown> {
   gameObjectSpawner: GameObjectSpawner
-  gameObjectDestroyer: GameObjectDestroyer
   resources?: unknown
   globalOptions: Record<string, unknown>
   scene: Scene

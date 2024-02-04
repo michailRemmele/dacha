@@ -55,7 +55,7 @@ export class CameraSystem extends System {
     }
 
     this.cameraService = new CameraService({ camera: currentCamera });
-    scene.context.registerService(this.cameraService);
+    scene.addService(this.cameraService);
 
     this.setCamera(currentCamera);
   }

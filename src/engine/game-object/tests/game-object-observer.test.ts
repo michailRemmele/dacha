@@ -227,8 +227,8 @@ describe('Engine -> GameObjectObserver', () => {
     }]);
     expect(gameObjectObserver.size()).toEqual(3);
 
-    scene.removeGameObject(gameObject3);
-    scene.removeGameObject(gameObject4);
+    scene.removeGameObject(gameObject3.id);
+    scene.removeGameObject(gameObject4.id);
     gameObject5.removeComponent(TestComponent1);
 
     expect(testFn1.mock.calls.length).toEqual(3);

@@ -10,7 +10,7 @@ import {
 } from 'three/src/Three';
 
 import { AddGameObject, RemoveGameObject } from '../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../engine/events';
+import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../engine/events';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../engine/game-object';
@@ -123,14 +123,14 @@ export class SpriteRenderer extends System {
     this.spriteCache = {};
     this.textureMap = {};
 
-    scene.context.registerService(new SpriteRendererService({
+    scene.addService(new SpriteRendererService({
       scene: this.renderScene,
       camera: this.currentCamera,
       window: this.window,
       sortFn: this.sortFn,
     }));
 
-    this.cameraService = scene.context.getService(CameraService);
+    this.cameraService = scene.getService(CameraService);
 
     this.gameObjectObserver.forEach(this.handleGameObjectAdd);
   }
@@ -232,7 +232,7 @@ export class SpriteRenderer extends System {
     return imagesToLoad;
   }
 
-  private handleGameObjectAdd = (value: UpdateGameObjectEvent | GameObject): void => {
+  private handleGameObjectAdd = (value: AddGameObjectEvent | GameObject): void => {
     const gameObject = value instanceof GameObject ? value : value.gameObject;
 
     const sprite = gameObject.getComponent(Sprite);
@@ -247,7 +247,7 @@ export class SpriteRenderer extends System {
     this.renderScene.add(object);
   };
 
-  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
     const { gameObject } = event;
     const object = this.renderScene.getObjectById(this.gameObjectsMap[gameObject.id]);
 

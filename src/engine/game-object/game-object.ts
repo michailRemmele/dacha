@@ -2,7 +2,7 @@ import { EventTarget } from '../event-target';
 import type { Component, ComponentConstructor } from '../component';
 import { filterByKey } from '../utils';
 import type { GameObjectEventMap } from '../../types/events';
-import { AddComponent, RemoveComponent } from '../events';
+import { AddComponent, RemoveComponent, Destroy } from '../events';
 
 export interface GameObjectOptions {
   id: string
@@ -114,5 +114,17 @@ export class GameObject extends EventTarget<GameObjectEventMap> {
     this.components = filterByKey(this.components, componentName);
 
     this.emit(RemoveComponent, { componentName });
+  }
+
+  destroy(): void {
+    this.emit(Destroy);
+
+    this.removeAllListeners();
+
+    if (this.parent) {
+      this.parent.removeChild(this);
+    }
+
+    this.children.forEach((gameObject) => gameObject.destroy());
   }
 }

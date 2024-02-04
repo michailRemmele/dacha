@@ -1,5 +1,5 @@
 import { RemoveGameObject } from '../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../engine/events';
+import type { RemoveGameObjectEvent } from '../../../engine/events';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../engine/game-object';
@@ -178,7 +178,7 @@ export class RenderSystem extends System {
 
     this.resourceLoader = new ResourceLoader();
 
-    this.cameraService = scene.context.getService(CameraService);
+    this.cameraService = scene.getService(CameraService);
   }
 
   mount(): void {
@@ -230,7 +230,7 @@ export class RenderSystem extends System {
     this.textureAtlasSize.height = this.textureAtlas.height;
   }
 
-  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
     this._geometry[event.gameObject.id] = null;
   };
 

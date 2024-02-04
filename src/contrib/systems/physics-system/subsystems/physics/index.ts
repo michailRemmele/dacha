@@ -11,7 +11,7 @@ import {
 } from '../../../../events';
 import type { AddForceEvent, AddImpulseEvent } from '../../../../events';
 import { AddGameObject, RemoveGameObject } from '../../../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../../../engine/events';
+import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../../../engine/events';
 import type { GameObjectEvent } from '../../../../../types/events';
 
 const DIRECTION_VECTOR = {
@@ -58,7 +58,7 @@ export class PhysicsSubsystem {
     this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
-  private handleGameObjectAdd = (value: UpdateGameObjectEvent | GameObject): void => {
+  private handleGameObjectAdd = (value: AddGameObjectEvent | GameObject): void => {
     const gameObject = value instanceof GameObject ? value : value.gameObject;
 
     this.gameObjectsVelocity[gameObject.id] = new Vector2(0, 0);
@@ -70,7 +70,7 @@ export class PhysicsSubsystem {
     gameObject.addEventListener(AddImpulse, this.handleAddImpulse);
   };
 
-  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
     const { gameObject } = event;
 
     delete this.gameObjectsVelocity[gameObject.id];

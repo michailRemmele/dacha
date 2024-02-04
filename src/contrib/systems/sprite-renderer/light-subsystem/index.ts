@@ -6,7 +6,7 @@ import { filterByKey } from '../../../../engine/utils';
 import { GameObject } from '../../../../engine/game-object';
 import type { GameObjectObserver } from '../../../../engine/game-object';
 import { AddGameObject, RemoveGameObject } from '../../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../../engine/events';
+import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../../engine/events';
 
 import { createLight, updateLight } from './light-factory';
 
@@ -34,7 +34,7 @@ export class LightSubsystem {
     this.lightsObserver.removeEventListener(RemoveGameObject, this.handleLightRemove);
   }
 
-  private handleLightAdd = (value: UpdateGameObjectEvent | GameObject): void => {
+  private handleLightAdd = (value: AddGameObjectEvent | GameObject): void => {
     const gameObject = value instanceof GameObject ? value : value.gameObject;
     const { type } = gameObject.getComponent(Light);
 
@@ -46,7 +46,7 @@ export class LightSubsystem {
     this.renderScene.add(light);
   };
 
-  private handleLightRemove = (event: UpdateGameObjectEvent): void => {
+  private handleLightRemove = (event: RemoveGameObjectEvent): void => {
     const { gameObject } = event;
     const gameObjectId = gameObject.getId();
     const object = this.renderScene.getObjectById(this.lightsMap[gameObjectId]);

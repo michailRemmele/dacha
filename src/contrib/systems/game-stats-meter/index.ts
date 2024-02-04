@@ -1,6 +1,5 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions, UpdateOptions } from '../../../engine/system';
-import { GameObjectObserver } from '../../../engine/game-object';
 import type { Scene } from '../../../engine/scene';
 import { GameStatsUpdate } from '../../events';
 
@@ -11,7 +10,6 @@ interface GameStatsMeterOptions extends SystemOptions {
 }
 
 export class GameStatsMeter extends System {
-  private gameObjectObserver: GameObjectObserver;
   private scene: Scene;
   private frequency: number;
   private fps: number;
@@ -25,7 +23,6 @@ export class GameStatsMeter extends System {
       frequency,
     } = options as GameStatsMeterOptions;
 
-    this.gameObjectObserver = new GameObjectObserver(scene);
     this.scene = scene;
     this.frequency = frequency || MS_IN_SEC;
 
@@ -42,7 +39,7 @@ export class GameStatsMeter extends System {
     if (this.time >= this.frequency) {
       this.scene.emit(GameStatsUpdate, {
         fps: (this.fps * MS_IN_SEC) / this.time,
-        gameObjectsCount: this.gameObjectObserver.size(),
+        gameObjectsCount: this.scene.getGameObjects().length,
       });
 
       this.fps = 0;

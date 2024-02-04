@@ -7,7 +7,7 @@ import type { IndividualState } from '../../components/animatable/individual-sta
 import type { GroupState } from '../../components/animatable/group-state';
 import type { Substate } from '../../components/animatable/substate';
 import { AddGameObject, RemoveGameObject } from '../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../engine/events';
+import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../engine/events';
 
 import type { ConditionController } from './condition-controllers/condition-controller';
 import type { Picker } from './substate-pickers/picker';
@@ -51,11 +51,11 @@ export class Animator extends System {
     this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
   }
 
-  private handleGameObjectAdd = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectAdd = (event: AddGameObjectEvent): void => {
     this.setUpConditionControllers(event.gameObject);
   };
 
-  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
     delete this.gameObjectConditions[event.gameObject.id];
   };
 

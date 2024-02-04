@@ -1,6 +1,5 @@
 import { Scene } from '../../../engine/scene';
 import { System } from '../../../engine/system';
-import { GameObjectObserver } from '../../../engine/game-object';
 import type {
   SystemOptions,
   UpdateOptions,
@@ -12,7 +11,6 @@ import { Observer } from './observer';
 interface ActionFnOptions {
   scene: Scene
   gameObjectSpawner: unknown
-  gameObjectDestroyer: unknown
   deltaTime: number
 }
 
@@ -21,7 +19,6 @@ type ActionFn = (options: ActionFnOptions) => void;
 export interface UiInitFnOptions {
   scene: Scene
   templateCollection: TemplateCollection
-  gameObjectObserver: GameObjectObserver
   gameStateObserver: Observer
   pushAction: (action: ActionFn) => void
 }
@@ -35,9 +32,7 @@ interface UiBridgeResources {
 }
 
 export class UiBridge extends System {
-  private gameObjectObserver: GameObjectObserver;
   private gameObjectSpawner: unknown;
-  private gameObjectDestroyer: unknown;
   private scene: Scene;
   private loadUiApp: LoadUiAppFn;
   private templateCollection: TemplateCollection;
@@ -51,7 +46,6 @@ export class UiBridge extends System {
 
     const {
       gameObjectSpawner,
-      gameObjectDestroyer,
       resources,
       scene,
       templateCollection,
@@ -66,9 +60,7 @@ export class UiBridge extends System {
     this.loadUiApp = loadUiApp;
 
     this.scene = scene;
-    this.gameObjectObserver = new GameObjectObserver(scene);
     this.gameObjectSpawner = gameObjectSpawner;
-    this.gameObjectDestroyer = gameObjectDestroyer;
     this.templateCollection = templateCollection;
 
     this.gameStateObserver = new Observer();
@@ -89,7 +81,6 @@ export class UiBridge extends System {
         scene: this.scene,
         templateCollection: this.templateCollection,
         gameStateObserver: this.gameStateObserver,
-        gameObjectObserver: this.gameObjectObserver,
         pushAction: this.pushAction.bind(this),
       });
     }
@@ -115,7 +106,6 @@ export class UiBridge extends System {
         scene: this.scene,
         deltaTime,
         gameObjectSpawner: this.gameObjectSpawner,
-        gameObjectDestroyer: this.gameObjectDestroyer,
       });
     });
     this.actionsQueue = [];

@@ -1,5 +1,5 @@
 import { AddGameObject, RemoveGameObject } from '../../../../engine/events';
-import type { UpdateGameObjectEvent } from '../../../../engine/events';
+import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../../engine/events';
 import type {
   GameObjectObserver,
   GameObject,
@@ -24,12 +24,12 @@ export class ShaderProvider {
     return this.shadingIdMap[gameObjectId];
   }
 
-  private handleGameObjectAdd = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectAdd = (event: AddGameObjectEvent): void => {
     const { gameObject } = event;
     this.shadingIdMap[gameObject.id] = this.calculateShadingId(gameObject);
   };
 
-  private handleGameObjectRemove = (event: UpdateGameObjectEvent): void => {
+  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
     const { gameObject } = event;
     this.shadingIdMap = Object.keys(this.shadingIdMap)
       .reduce((acc: Record<string, string>, key) => {

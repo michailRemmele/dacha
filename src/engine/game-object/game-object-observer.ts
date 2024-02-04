@@ -5,7 +5,11 @@ import {
   AddGameObject,
   RemoveGameObject,
 } from '../events';
-import type { UpdateComponentEvent, GameObjectObserverEventMap } from '../events';
+import type {
+  AddComponentEvent,
+  RemoveComponentEvent,
+  GameObjectObserverEventMap,
+} from '../events';
 import type { Scene } from '../scene';
 import type { ComponentConstructor } from '../component';
 
@@ -56,7 +60,7 @@ export class GameObjectObserver extends EventTarget<GameObjectObserverEventMap> 
     });
   }
 
-  private handleGameObjectUpdate = (event: UpdateComponentEvent): void => {
+  private handleGameObjectUpdate = (event: AddComponentEvent | RemoveComponentEvent): void => {
     const { target } = event;
 
     if (this._test(target)) {
