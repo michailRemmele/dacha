@@ -1,14 +1,14 @@
 import type {
-  GameObject,
-  GameObjectSpawner,
-} from '../../../engine/game-object';
+  Actor,
+  ActorSpawner,
+} from '../../../engine/actor';
 import type { Scene } from '../../../engine/scene';
 import type { Constructor } from '../../../types/utils';
 
 export interface ScriptOptions {
   scene: Scene
-  gameObject: GameObject
-  gameObjectSpawner: GameObjectSpawner
+  actor: Actor
+  actorSpawner: ActorSpawner
 }
 
 interface UpdateOptions {

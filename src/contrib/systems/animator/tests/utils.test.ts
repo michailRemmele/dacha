@@ -1,5 +1,5 @@
 import { Component } from '../../../../engine/component';
-import { GameObject } from '../../../../engine/game-object/game-object';
+import { Actor } from '../../../../engine/actor/actor';
 import { getValue, setValue } from '../utils';
 
 interface TestComponentConfig extends Record<string, unknown> {
@@ -25,189 +25,189 @@ class TestComponent extends Component {
 
 describe('Contrib -> Animator -> utils', () => {
   describe('getValue()', () => {
-    it('Returns gameObject component value', () => {
-      const gameObject = new GameObject({
+    it('Returns actor component value', () => {
+      const actor = new Actor({
         id: '1',
-        name: 'game-object-1',
+        name: 'actor-1',
       });
 
       const component = new TestComponent({ testField: 'testFieldValue' });
-      gameObject.setComponent(component);
+      actor.setComponent(component);
 
-      expect(getValue(gameObject, ['components', 'TestComponent', 'testField'])).toBe('testFieldValue');
-      expect(getValue(gameObject, ['components', 'TestComponent', 'notExistField'])).toBeUndefined();
+      expect(getValue(actor, ['components', 'TestComponent', 'testField'])).toBe('testFieldValue');
+      expect(getValue(actor, ['components', 'TestComponent', 'notExistField'])).toBeUndefined();
     });
 
     it('Returns child component value', () => {
-      const gameObject1 = new GameObject({
+      const actor1 = new Actor({
         id: '1',
-        name: 'game-object-1',
+        name: 'actor-1',
       });
-      const gameObject2 = new GameObject({
+      const actor2 = new Actor({
         id: '2',
-        name: 'game-object-2',
+        name: 'actor-2',
       });
 
-      gameObject1.appendChild(gameObject2);
+      actor1.appendChild(actor2);
 
       const component = new TestComponent({ testField: 'testFieldValue2' });
-      gameObject2.setComponent(component);
+      actor2.setComponent(component);
 
       expect(
         getValue(
-          gameObject1,
-          ['children', 'game-object-2', 'components', 'TestComponent', 'testField'],
+          actor1,
+          ['children', 'actor-2', 'components', 'TestComponent', 'testField'],
         ),
       ).toBe('testFieldValue2');
       expect(
         getValue(
-          gameObject1,
-          ['children', 'game-object-2', 'components', 'NotExistComponent', 'testField'],
+          actor1,
+          ['children', 'actor-2', 'components', 'NotExistComponent', 'testField'],
         ),
       ).toBeUndefined();
     });
 
     it('Returns grandchild component value', () => {
-      const gameObject1 = new GameObject({
+      const actor1 = new Actor({
         id: '1',
-        name: 'game-object-1',
+        name: 'actor-1',
       });
-      const gameObject2 = new GameObject({
+      const actor2 = new Actor({
         id: '2',
-        name: 'game-object-2',
+        name: 'actor-2',
       });
-      const gameObject3 = new GameObject({
+      const actor3 = new Actor({
         id: '3',
-        name: 'game-object-3',
+        name: 'actor-3',
       });
 
-      gameObject1.appendChild(gameObject2);
-      gameObject2.appendChild(gameObject3);
+      actor1.appendChild(actor2);
+      actor2.appendChild(actor3);
 
       const component = new TestComponent({ testField: 'testFieldValue3' });
-      gameObject3.setComponent(component);
+      actor3.setComponent(component);
 
       expect(
         getValue(
-          gameObject1,
-          ['children', 'game-object-2', 'children', 'game-object-3', 'components', 'TestComponent', 'testField'],
+          actor1,
+          ['children', 'actor-2', 'children', 'actor-3', 'components', 'TestComponent', 'testField'],
         ),
       ).toBe('testFieldValue3');
       expect(
         getValue(
-          gameObject1,
-          ['children', 'game-object-2', 'children', 'notExistGameObject', 'components', 'TestComponent', 'testField'],
+          actor1,
+          ['children', 'actor-2', 'children', 'notExistActor', 'components', 'TestComponent', 'testField'],
         ),
       ).toBeUndefined();
     });
   });
 
   describe('setValue()', () => {
-    it('Updates gameObject component value', () => {
-      const gameObject = new GameObject({
+    it('Updates actor component value', () => {
+      const actor = new Actor({
         id: '1',
-        name: 'game-object-1',
+        name: 'actor-1',
       });
 
       const component = new TestComponent({ testField: 'testFieldValue' });
-      gameObject.setComponent(component);
+      actor.setComponent(component);
 
-      setValue(gameObject, ['components', 'TestComponent', 'testField'], 'updatedValue');
+      setValue(actor, ['components', 'TestComponent', 'testField'], 'updatedValue');
 
-      expect((gameObject.getComponent(TestComponent)).testField).toBe('updatedValue');
+      expect((actor.getComponent(TestComponent)).testField).toBe('updatedValue');
     });
 
     it('Updates child component value', () => {
-      const gameObject1 = new GameObject({
+      const actor1 = new Actor({
         id: '1',
-        name: 'game-object-1',
+        name: 'actor-1',
       });
-      const gameObject2 = new GameObject({
+      const actor2 = new Actor({
         id: '2',
-        name: 'game-object-2',
+        name: 'actor-2',
       });
 
-      gameObject1.appendChild(gameObject2);
+      actor1.appendChild(actor2);
 
       const component = new TestComponent({ testField: 'testFieldValue2' });
-      gameObject2.setComponent(component);
+      actor2.setComponent(component);
 
       setValue(
-        gameObject1,
-        ['children', 'game-object-2', 'components', 'TestComponent', 'testField'],
+        actor1,
+        ['children', 'actor-2', 'components', 'TestComponent', 'testField'],
         'updatedValue2',
       );
 
-      expect((gameObject2.getComponent(TestComponent)).testField).toBe('updatedValue2');
+      expect((actor2.getComponent(TestComponent)).testField).toBe('updatedValue2');
     });
 
     it('Updates grandchild component value', () => {
-      const gameObject1 = new GameObject({
+      const actor1 = new Actor({
         id: '1',
-        name: 'game-object-1',
+        name: 'actor-1',
       });
-      const gameObject2 = new GameObject({
+      const actor2 = new Actor({
         id: '2',
-        name: 'game-object-2',
+        name: 'actor-2',
       });
-      const gameObject3 = new GameObject({
+      const actor3 = new Actor({
         id: '3',
-        name: 'game-object-3',
+        name: 'actor-3',
       });
 
-      gameObject1.appendChild(gameObject2);
-      gameObject2.appendChild(gameObject3);
+      actor1.appendChild(actor2);
+      actor2.appendChild(actor3);
 
       const component = new TestComponent({ testField: 'testFieldValue3' });
-      gameObject3.setComponent(component);
+      actor3.setComponent(component);
 
       setValue(
-        gameObject1,
-        ['children', 'game-object-2', 'children', 'game-object-3', 'components', 'TestComponent', 'testField'],
+        actor1,
+        ['children', 'actor-2', 'children', 'actor-3', 'components', 'TestComponent', 'testField'],
         'updatedValue3',
       );
 
-      expect((gameObject3.getComponent(TestComponent)).testField).toBe('updatedValue3');
+      expect((actor3.getComponent(TestComponent)).testField).toBe('updatedValue3');
     });
 
     it('Throws error if path is incorrect', () => {
-      const gameObject1 = new GameObject({
+      const actor1 = new Actor({
         id: '1',
-        name: 'game-object-1',
+        name: 'actor-1',
       });
-      const gameObject2 = new GameObject({
+      const actor2 = new Actor({
         id: '2',
-        name: 'game-object-2',
+        name: 'actor-2',
       });
-      const gameObject3 = new GameObject({
+      const actor3 = new Actor({
         id: '3',
-        name: 'game-object-3',
+        name: 'actor-3',
       });
 
-      gameObject1.appendChild(gameObject2);
-      gameObject2.appendChild(gameObject3);
+      actor1.appendChild(actor2);
+      actor2.appendChild(actor3);
 
       const component = new TestComponent({ testField: 'testFieldValue' });
-      gameObject3.setComponent(component);
+      actor3.setComponent(component);
 
       expect(() => {
         setValue(
-          gameObject1,
-          ['children', 'notExistGameObject', 'children', 'game-object-3', 'components', 'TestComponent', 'testField'],
+          actor1,
+          ['children', 'notExistActor', 'children', 'actor-3', 'components', 'TestComponent', 'testField'],
           'updatedValue',
         );
       }).toThrowError();
       expect(() => {
         setValue(
-          gameObject1,
-          ['children', 'game-object-2', 'children', 'notExistGameObject', 'components', 'TestComponent', 'testField'],
+          actor1,
+          ['children', 'actor-2', 'children', 'notExistActor', 'components', 'TestComponent', 'testField'],
           'updatedValue',
         );
       }).toThrowError();
       expect(() => {
         setValue(
-          gameObject1,
-          ['children', 'game-object-2', 'children', 'game-object-3', 'components', 'NotExistComponent', 'testField'],
+          actor1,
+          ['children', 'actor-2', 'children', 'actor-3', 'components', 'NotExistComponent', 'testField'],
           'updatedValue',
         );
       }).toThrowError();

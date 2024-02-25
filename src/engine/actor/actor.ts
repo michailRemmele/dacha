@@ -1,31 +1,31 @@
 import type { Scene } from '../scene';
 import type { Component, ComponentConstructor } from '../component';
 import { filterByKey } from '../utils';
-import type { GameObjectEventMap } from '../../types/events';
+import type { ActorEventMap } from '../../types/events';
 import { AddComponent, RemoveComponent } from '../events';
-import { BaseObject } from '../base-object';
-import type { BaseObjectOptions } from '../base-object';
+import { Entity } from '../entity';
+import type { EntityOptions } from '../entity';
 import type {
   EventType, Event, ListenerFn, EventPayload,
 } from '../event-target';
 
-type GameObjectListenerFn<T extends EventType> = (
-  event: T extends keyof GameObjectEventMap ? GameObjectEventMap[T] : Event
+type ActorListenerFn<T extends EventType> = (
+  event: T extends keyof ActorEventMap ? ActorEventMap[T] : Event
 ) => void;
 
-export interface GameObjectOptions extends BaseObjectOptions {
+export interface ActorOptions extends EntityOptions {
   templateId?: string
 }
 
-export class GameObject extends BaseObject {
+export class Actor extends Entity {
   private components: Record<string, Component>;
 
-  declare public readonly children: Array<GameObject>;
+  declare public readonly children: Array<Actor>;
   public readonly templateId?: string;
 
-  declare public parent: GameObject | Scene | null;
+  declare public parent: Actor | Scene | null;
 
-  constructor(options: GameObjectOptions) {
+  constructor(options: ActorOptions) {
     super(options);
 
     const { templateId } = options;
@@ -36,48 +36,48 @@ export class GameObject extends BaseObject {
 
   override addEventListener<T extends EventType>(
     type: T,
-    callback: GameObjectListenerFn<T>,
+    callback: ActorListenerFn<T>,
   ): void {
     super.addEventListener(type, callback as ListenerFn);
   }
 
   override removeEventListener<T extends EventType>(
     type: T,
-    callback: GameObjectListenerFn<T>,
+    callback: ActorListenerFn<T>,
   ): void {
     super.removeEventListener(type, callback as ListenerFn);
   }
 
   override emit<T extends EventType>(
     type: T,
-    ...payload: EventPayload<GameObjectEventMap, T>
+    ...payload: EventPayload<ActorEventMap, T>
   ): void {
     super.emit(type, ...payload);
   }
 
-  override appendChild(child: GameObject): void {
+  override appendChild(child: Actor): void {
     super.appendChild(child);
   }
 
-  override removeChild(child: GameObject): void {
+  override removeChild(child: Actor): void {
     super.removeChild(child);
   }
 
-  override getObjectById(id: string): GameObject | undefined {
-    return super.getObjectById(id) as GameObject | undefined;
+  override getEntityById(id: string): Actor | undefined {
+    return super.getEntityById(id) as Actor | undefined;
   }
 
-  override getObjectByName(name: string): GameObject | undefined {
-    return super.getObjectByName(name) as GameObject | undefined;
+  override getEntityByName(name: string): Actor | undefined {
+    return super.getEntityByName(name) as Actor | undefined;
   }
 
-  getAncestor(): GameObject | Scene {
-    const findAncestor = (gameObject: GameObject | Scene): GameObject | Scene => {
-      if (gameObject.parent) {
-        return findAncestor(gameObject.parent);
+  getAncestor(): Actor | Scene {
+    const findAncestor = (actor: Actor | Scene): Actor | Scene => {
+      if (actor.parent) {
+        return findAncestor(actor.parent);
       }
 
-      return gameObject;
+      return actor;
     };
 
     return findAncestor(this);
@@ -100,7 +100,7 @@ export class GameObject extends BaseObject {
     const { componentName } = (component.constructor as ComponentConstructor);
 
     this.components[componentName] = component;
-    component.gameObject = this;
+    component.actor = this;
 
     this.emit(AddComponent, { componentName });
   }
@@ -112,7 +112,7 @@ export class GameObject extends BaseObject {
       return;
     }
 
-    this.components[componentName].gameObject = void 0;
+    this.components[componentName].actor = void 0;
     this.components = filterByKey(this.components, componentName);
 
     this.emit(RemoveComponent, { componentName });

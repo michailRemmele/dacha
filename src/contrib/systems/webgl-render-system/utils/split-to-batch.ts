@@ -1,26 +1,26 @@
-import type { GameObject, GameObjectObserver } from '../../../../engine/game-object';
+import type { Actor, ActorCollection } from '../../../../engine/actor';
 import type { ShaderProvider } from '../shader-builder';
 
 export const splitToBatch = (
-  gameObjectObserver: GameObjectObserver,
+  actorCollection: ActorCollection,
   shaderProvider: ShaderProvider,
-): Array<Array<GameObject>> => {
-  if (!gameObjectObserver.size) {
+): Array<Array<Actor>> => {
+  if (!actorCollection.size) {
     return [];
   }
 
-  const batches: Array<Array<GameObject>> = [];
+  const batches: Array<Array<Actor>> = [];
   let prevShadingId: string;
 
-  gameObjectObserver.forEach((gameObject) => {
-    const shadingId = shaderProvider.getShadingId(gameObject.id);
+  actorCollection.forEach((actor) => {
+    const shadingId = shaderProvider.getShadingId(actor.id);
 
     const currentBatch = batches[batches.length - 1];
 
     if (shadingId === prevShadingId) {
-      currentBatch.push(gameObject);
+      currentBatch.push(actor);
     } else {
-      batches.push([gameObject]);
+      batches.push([actor]);
       prevShadingId = shadingId;
     }
   });

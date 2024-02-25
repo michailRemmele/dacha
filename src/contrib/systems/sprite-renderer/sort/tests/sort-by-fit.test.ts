@@ -1,5 +1,5 @@
 import { Sprite, SpriteConfig } from '../../../../components/sprite';
-import { GameObject } from '../../../../../engine/game-object/game-object';
+import { Actor } from '../../../../../engine/actor/actor';
 
 import { sortByFit } from '../sort-by-fit';
 
@@ -22,21 +22,21 @@ describe('Contrib -> RenderSystem -> Sort -> sortByFit()', () => {
   };
 
   it('Returns correct order of objects', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
+    const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
 
-    gameObject1.setComponent(new Sprite(baseSpriteProps));
-    gameObject2.setComponent(new Sprite(baseSpriteProps));
+    actor1.setComponent(new Sprite(baseSpriteProps));
+    actor2.setComponent(new Sprite(baseSpriteProps));
 
-    expect(sortByFit(gameObject1, gameObject2)).toBe(0);
+    expect(sortByFit(actor1, actor2)).toBe(0);
 
-    (gameObject2.getComponent(Sprite)).fit = 'repeat';
+    (actor2.getComponent(Sprite)).fit = 'repeat';
 
-    expect(sortByFit(gameObject1, gameObject2)).toBeGreaterThan(0);
+    expect(sortByFit(actor1, actor2)).toBeGreaterThan(0);
 
-    (gameObject2.getComponent(Sprite)).fit = 'stretch';
-    (gameObject1.getComponent(Sprite)).fit = 'repeat';
+    (actor2.getComponent(Sprite)).fit = 'stretch';
+    (actor1.getComponent(Sprite)).fit = 'repeat';
 
-    expect(sortByFit(gameObject1, gameObject2)).toBeLessThan(0);
+    expect(sortByFit(actor1, actor2)).toBeLessThan(0);
   });
 });

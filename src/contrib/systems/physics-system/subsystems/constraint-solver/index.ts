@@ -1,7 +1,7 @@
 import { Vector2 } from '../../../../../engine/mathLib';
-import { GameObjectObserver } from '../../../../../engine/game-object';
+import { ActorCollection } from '../../../../../engine/actor';
 import type { SystemOptions } from '../../../../../engine/system';
-import type { GameObject } from '../../../../../engine/game-object';
+import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { RigidBodyType } from '../../../../components/rigid-body';
@@ -15,13 +15,13 @@ const RIGID_BODY_TYPE = {
 };
 
 export class ConstraintSolver {
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private scene: Scene;
   private processedPairs: Record<string, Record<string, boolean>>;
   private mtvMap: Record<string, Record<string, Vector2>>;
 
   constructor(options: SystemOptions) {
-    this.gameObjectObserver = new GameObjectObserver(options.scene, {
+    this.actorCollection = new ActorCollection(options.scene, {
       components: [
         RigidBody,
         Transform,
@@ -42,11 +42,11 @@ export class ConstraintSolver {
 
   private handleCollision = (event: CollisionEvent): void => {
     const {
-      gameObject1, gameObject2, mtv1, mtv2,
+      actor1, actor2, mtv1, mtv2,
     } = event;
 
-    const id1 = gameObject1.id;
-    const id2 = gameObject2.id;
+    const id1 = actor1.id;
+    const id2 = actor2.id;
 
     if (this.processedPairs[id2] && this.processedPairs[id2][id1]) {
       return;
@@ -55,16 +55,16 @@ export class ConstraintSolver {
     this.processedPairs[id1] ??= {};
     this.processedPairs[id1][id2] = true;
 
-    if (!this.validateCollision(gameObject1, gameObject2)) {
+    if (!this.validateCollision(actor1, actor2)) {
       return;
     }
 
-    this.resolveCollision(gameObject1, gameObject2, mtv1, mtv2);
+    this.resolveCollision(actor1, actor2, mtv1, mtv2);
   };
 
-  private validateCollision(gameObject1: GameObject, gameObject2: GameObject): boolean {
-    const rigidBody1 = gameObject1.getComponent(RigidBody);
-    const rigidBody2 = gameObject2.getComponent(RigidBody);
+  private validateCollision(actor1: Actor, actor2: Actor): boolean {
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
 
     return rigidBody1 && !rigidBody1.ghost && !rigidBody1.isPermeable
       && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable
@@ -98,16 +98,16 @@ export class ConstraintSolver {
   }
 
   private resolveCollision(
-    gameObject1: GameObject,
-    gameObject2: GameObject,
+    actor1: Actor,
+    actor2: Actor,
     mtv1: Vector2,
     mtv2: Vector2,
   ): void {
-    const id1 = gameObject1.id;
-    const id2 = gameObject2.id;
+    const id1 = actor1.id;
+    const id2 = actor2.id;
 
-    const rigidBody1 = gameObject1.getComponent(RigidBody);
-    const rigidBody2 = gameObject2.getComponent(RigidBody);
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
       this.setMtv(id2, mtv2.x, mtv2.y, rigidBody1.type);
@@ -121,8 +121,8 @@ export class ConstraintSolver {
 
   update(): void {
     Object.keys(this.mtvMap).forEach((id) => {
-      const gameObject = this.gameObjectObserver.getById(id) as GameObject;
-      const transform = gameObject.getComponent(Transform);
+      const actor = this.actorCollection.getById(id) as Actor;
+      const transform = actor.getComponent(Transform);
 
       const mtvs = Object.keys(this.mtvMap[id]);
 

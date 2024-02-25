@@ -1,44 +1,44 @@
-import type { SceneConfig, GameObjectConfig } from '../types';
+import type { SceneConfig, ActorConfig } from '../types';
 import type { TemplateCollection } from '../template';
 import type { SystemConstructor } from '../system';
 import { System } from '../system';
 import {
-  GameObject,
-  GameObjectSpawner,
-  GameObjectCreator,
-} from '../game-object';
-import { BaseObject } from '../base-object';
-import type { BaseObjectOptions } from '../base-object';
+  Actor,
+  ActorSpawner,
+  ActorCreator,
+} from '../actor';
+import { Entity } from '../entity';
+import type { EntityOptions } from '../entity';
 import type {
   EventType, Event, ListenerFn, EventPayload,
 } from '../event-target';
-import type { SceneEventMap, GameObjectEventMap } from '../../types/events';
+import type { SceneEventMap, ActorEventMap } from '../../types/events';
 import type { Constructor } from '../../types/utils';
 
 type SceneObjectListenerFn<T extends EventType> = (
   event: T extends keyof SceneEventMap
     ? SceneEventMap[T]
-    : T extends keyof GameObjectEventMap ? GameObjectEventMap[T] : Event
+    : T extends keyof ActorEventMap ? ActorEventMap[T] : Event
 ) => void;
 
-interface SceneOptions extends BaseObjectOptions, SceneConfig {
-  gameObjects: Array<GameObjectConfig>
+interface SceneOptions extends EntityOptions, SceneConfig {
+  actors: Array<ActorConfig>
   availableSystems: Array<SystemConstructor>
   resources: Record<string, unknown>
   globalOptions: Record<string, unknown>
-  gameObjectCreator: GameObjectCreator
+  actorCreator: ActorCreator
   templateCollection: TemplateCollection
 }
 
-export class Scene extends BaseObject {
-  private gameObjectCreator: GameObjectCreator;
-  private systems: Array<System>;
+export class Scene extends Entity {
+  private actorCreator: ActorCreator;
   private availableSystemsMap: Record<string, SystemConstructor>;
   private services: Record<string, unknown>;
 
-  declare public readonly children: Array<GameObject>;
+  declare public readonly children: Array<Actor>;
+  public systems: Array<System>;
   public templateCollection: TemplateCollection;
-  public gameObjectSpawner: GameObjectSpawner;
+  public actorSpawner: ActorSpawner;
   public data: Record<string, unknown>;
 
   declare public parent: null;
@@ -47,24 +47,24 @@ export class Scene extends BaseObject {
     super(options);
 
     const {
-      gameObjects,
+      actors,
       systems,
       resources,
       globalOptions,
-      gameObjectCreator,
+      actorCreator,
       availableSystems,
       templateCollection,
     } = options;
 
-    this.gameObjectCreator = gameObjectCreator;
-    this.gameObjectSpawner = new GameObjectSpawner(this.gameObjectCreator);
+    this.actorCreator = actorCreator;
+    this.actorSpawner = new ActorSpawner(this.actorCreator);
     this.templateCollection = templateCollection;
 
     this.data = {};
     this.services = {};
 
-    gameObjects.forEach((gameObjectOptions) => {
-      this.appendChild(this.gameObjectCreator.create(gameObjectOptions));
+    actors.forEach((actorOptions) => {
+      this.appendChild(this.actorCreator.create(actorOptions));
     });
 
     this.availableSystemsMap = availableSystems.reduce((acc, AvailableSystem) => {
@@ -75,7 +75,7 @@ export class Scene extends BaseObject {
     this.systems = systems.map((config) => new this.availableSystemsMap[config.name]({
       ...config.options,
       templateCollection: this.templateCollection,
-      gameObjectSpawner: this.gameObjectSpawner,
+      actorSpawner: this.actorSpawner,
       scene: this,
       resources: resources[config.name],
       globalOptions,
@@ -103,20 +103,20 @@ export class Scene extends BaseObject {
     super.emit(type, ...payload);
   }
 
-  override appendChild(child: GameObject): void {
+  override appendChild(child: Actor): void {
     super.appendChild(child);
   }
 
-  override removeChild(child: GameObject): void {
+  override removeChild(child: Actor): void {
     super.removeChild(child);
   }
 
-  override getObjectById(id: string): GameObject | undefined {
-    return super.getObjectById(id) as GameObject | undefined;
+  override getEntityById(id: string): Actor | undefined {
+    return super.getEntityById(id) as Actor | undefined;
   }
 
-  override getObjectByName(name: string): GameObject | undefined {
-    return super.getObjectByName(name) as GameObject | undefined;
+  override getEntityByName(name: string): Actor | undefined {
+    return super.getEntityByName(name) as Actor | undefined;
   }
 
   load(): Promise<Array<void>> | undefined {
@@ -146,10 +146,6 @@ export class Scene extends BaseObject {
         system.unmount();
       }
     });
-  }
-
-  getSystems(): Array<System> {
-    return this.systems;
   }
 
   addService(service: object): void {

@@ -1,5 +1,5 @@
 import { System } from '../../../engine/system';
-import { GameObjectObserver } from '../../../engine/game-object';
+import { ActorCollection } from '../../../engine/actor';
 import type { SystemOptions } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
 import { MouseControl } from '../../components/mouse-control';
@@ -7,13 +7,13 @@ import { MouseInput } from '../../events';
 import type { MouseInputEvent } from '../../events';
 
 export class MouseControlSystem extends System {
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private scene: Scene;
 
   constructor(options: SystemOptions) {
     super();
 
-    this.gameObjectObserver = new GameObjectObserver(options.scene, {
+    this.actorCollection = new ActorCollection(options.scene, {
       components: [
         MouseControl,
       ],
@@ -30,8 +30,8 @@ export class MouseControlSystem extends System {
   }
 
   private handleMouseInput = (event: MouseInputEvent): void => {
-    this.gameObjectObserver.forEach((gameObject) => {
-      const control = gameObject.getComponent(MouseControl);
+    this.actorCollection.forEach((actor) => {
+      const control = actor.getComponent(MouseControl);
       const eventBinding = control.inputEventBindings[event.eventType]?.[event.button];
 
       if (eventBinding) {
@@ -39,7 +39,7 @@ export class MouseControlSystem extends System {
           throw new Error(`The event type is not specified for input event: ${event.eventType}`);
         }
 
-        gameObject.emit(eventBinding.eventType, {
+        actor.emit(eventBinding.eventType, {
           ...eventBinding.attrs,
           x: event.x,
           y: event.y,

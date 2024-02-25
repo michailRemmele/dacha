@@ -1,39 +1,39 @@
-import { AddGameObject, RemoveGameObject } from '../../../../engine/events';
-import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../../engine/events';
+import { AddActor, RemoveActor } from '../../../../engine/events';
+import type { AddActorEvent, RemoveActorEvent } from '../../../../engine/events';
 import type {
-  GameObjectObserver,
-  GameObject,
-} from '../../../../engine/game-object';
+  ActorCollection,
+  Actor,
+} from '../../../../engine/actor';
 import { Renderable } from '../../../components/renderable';
 
 export class ShaderProvider {
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private shadingIdMap: Record<string, string>;
 
-  constructor(gameObjectObserver: GameObjectObserver) {
-    this.gameObjectObserver = gameObjectObserver;
+  constructor(actorCollection: ActorCollection) {
+    this.actorCollection = actorCollection;
 
     this.shadingIdMap = {};
 
     // TODO: Remove listeners on system unmount
-    this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
-    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
+    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
+    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
-  getShadingId(gameObjectId: string): string {
-    return this.shadingIdMap[gameObjectId];
+  getShadingId(actorId: string): string {
+    return this.shadingIdMap[actorId];
   }
 
-  private handleGameObjectAdd = (event: AddGameObjectEvent): void => {
-    const { gameObject } = event;
-    this.shadingIdMap[gameObject.id] = this.calculateShadingId(gameObject);
+  private handleActorAdd = (event: AddActorEvent): void => {
+    const { actor } = event;
+    this.shadingIdMap[actor.id] = this.calculateShadingId(actor);
   };
 
-  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
-    const { gameObject } = event;
+  private handleActorRemove = (event: RemoveActorEvent): void => {
+    const { actor } = event;
     this.shadingIdMap = Object.keys(this.shadingIdMap)
       .reduce((acc: Record<string, string>, key) => {
-        if (key !== gameObject.id) {
+        if (key !== actor.id) {
           acc[key] = this.shadingIdMap[key];
         }
 
@@ -41,8 +41,8 @@ export class ShaderProvider {
       }, {});
   };
 
-  private calculateShadingId(gameObject: GameObject): string {
-    const renderable = gameObject.getComponent(Renderable);
+  private calculateShadingId(actor: Actor): string {
+    const renderable = actor.getComponent(Renderable);
 
     return `${renderable.fit}`;
   }

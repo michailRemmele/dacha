@@ -1,6 +1,6 @@
 import { filterByKey } from '../utils';
 import type { SceneConfig, LevelConfig, GlobalOption } from '../types';
-import type { GameObjectCreator } from '../game-object';
+import type { ActorCreator } from '../actor';
 import type { SystemConstructor } from '../system';
 import type { TemplateCollection } from '../template';
 
@@ -13,7 +13,7 @@ interface SceneProviderOptions {
   systems: Array<SystemConstructor>
   resources: Record<string, unknown>
   globalOptions: Array<GlobalOption>
-  gameObjectCreator: GameObjectCreator
+  actorCreator: ActorCreator
   templateCollection: TemplateCollection
 }
 
@@ -40,7 +40,7 @@ export class SceneProvider {
   private sceneContainer: Record<string, Scene>;
   private currentSceneId?: string;
   private loadedScene?: Scene;
-  private gameObjectCreator: GameObjectCreator;
+  private actorCreator: ActorCreator;
   private templateCollection: TemplateCollection;
 
   constructor({
@@ -50,7 +50,7 @@ export class SceneProvider {
     loaders,
     resources,
     globalOptions,
-    gameObjectCreator,
+    actorCreator,
     templateCollection,
   }: SceneProviderOptions) {
     this.sceneContainer = {};
@@ -74,7 +74,7 @@ export class SceneProvider {
       return acc;
     }, {});
     this.loadedScene = void 0;
-    this.gameObjectCreator = gameObjectCreator;
+    this.actorCreator = actorCreator;
     this.templateCollection = templateCollection;
   }
 
@@ -84,13 +84,13 @@ export class SceneProvider {
         const loaderConfig = this.availableLoaders[id];
         acc[id] = new Scene({
           ...loaderConfig,
-          gameObjects: loaderConfig.levelId
-            ? this.availableLevels[loaderConfig.levelId].gameObjects
+          actors: loaderConfig.levelId
+            ? this.availableLevels[loaderConfig.levelId].actors
             : [],
           availableSystems: this.systems,
           resources: this.resources,
           globalOptions: this.globalOptions,
-          gameObjectCreator: this.gameObjectCreator,
+          actorCreator: this.actorCreator,
           templateCollection: this.templateCollection,
         });
         return acc;
@@ -142,11 +142,11 @@ export class SceneProvider {
 
       scene = new Scene({
         ...this.availableScenes[sceneId],
-        gameObjects: selectedLevelId ? this.availableLevels[selectedLevelId].gameObjects : [],
+        actors: selectedLevelId ? this.availableLevels[selectedLevelId].actors : [],
         availableSystems: this.systems,
         resources: this.resources,
         globalOptions: this.globalOptions,
-        gameObjectCreator: this.gameObjectCreator,
+        actorCreator: this.actorCreator,
         templateCollection: this.templateCollection,
       });
 

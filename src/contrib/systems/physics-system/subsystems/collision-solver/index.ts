@@ -1,6 +1,6 @@
 import { Vector2 } from '../../../../../engine/mathLib';
 import type { SystemOptions } from '../../../../../engine/system';
-import type { GameObject } from '../../../../../engine/game-object';
+import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { PhysicsSystemOptions } from '../../types';
@@ -30,34 +30,34 @@ export class CollisionSolver {
   }
 
   private handleCollision = (event: CollisionEvent): void => {
-    const { gameObject1, gameObject2, mtv1 } = event;
+    const { actor1, actor2, mtv1 } = event;
 
-    if (!this.validateCollision(gameObject1, gameObject2)) {
+    if (!this.validateCollision(actor1, actor2)) {
       return;
     }
 
-    this.addReactionForce(gameObject1, mtv1);
+    this.addReactionForce(actor1, mtv1);
   };
 
-  private validateCollision(gameObject1: GameObject, gameObject2: GameObject): boolean {
-    const rigidBody1 = gameObject1.getComponent(RigidBody);
-    const rigidBody2 = gameObject2.getComponent(RigidBody);
+  private validateCollision(actor1: Actor, actor2: Actor): boolean {
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
 
     return rigidBody1 && !rigidBody1.ghost && rigidBody2 && !rigidBody2.ghost;
   }
 
-  private addReactionForce(gameObject: GameObject, mtv: Vector2): void {
-    const rigidBody = gameObject.getComponent(RigidBody);
+  private addReactionForce(actor: Actor, mtv: Vector2): void {
+    const rigidBody = actor.getComponent(RigidBody);
     const { useGravity, mass } = rigidBody;
 
     if (useGravity && mtv.y && Math.sign(mtv.y) === -1 && !mtv.x) {
       const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
       reactionForce.multiplyNumber(mass * this.gravitationalAcceleration);
 
-      gameObject.emit(AddForce, {
+      actor.emit(AddForce, {
         value: reactionForce,
       });
-      gameObject.emit(StopMovement);
+      actor.emit(StopMovement);
     }
   }
 }

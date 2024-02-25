@@ -1,11 +1,11 @@
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor } from '../../../../engine/actor';
 import type { Substate } from '../../../components/animatable/substate';
 import type { OneDimensionalProps } from '../../../components/animatable/one-dimensional-props';
 import type { TwoDimensionalProps } from '../../../components/animatable/two-dimensional-props';
 
 export interface Picker {
   getSubstate(
-    gameObject: GameObject,
+    actor: Actor,
     substates: Array<Substate>,
     props: OneDimensionalProps | TwoDimensionalProps,
   ): Substate

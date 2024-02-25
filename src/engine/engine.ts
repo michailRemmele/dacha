@@ -2,7 +2,7 @@ import type { SystemConstructor } from './system';
 import type { ComponentConstructor } from './component';
 import type { Config } from './types';
 import { SceneProvider } from './scene/scene-provider';
-import { GameObjectCreator } from './game-object';
+import { ActorCreator } from './actor';
 import { TemplateCollection } from './template';
 import { GameLoop } from './game-loop';
 import { SceneController } from './controllers';
@@ -85,7 +85,7 @@ export class Engine {
       templateCollection.register(templates[i]);
     }
 
-    const gameObjectCreator = new GameObjectCreator(components, templateCollection);
+    const actorCreator = new ActorCreator(components, templateCollection);
 
     this.sceneProvider = new SceneProvider({
       scenes,
@@ -94,7 +94,7 @@ export class Engine {
       systems,
       resources,
       globalOptions,
-      gameObjectCreator,
+      actorCreator,
       templateCollection,
     });
 

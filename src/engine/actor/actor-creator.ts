@@ -7,19 +7,19 @@ import type {
   TemplateCollection,
 } from '../template';
 
-import { GameObject } from './game-object';
+import { Actor } from './actor';
 
-export interface GameObjectOptions {
+export interface ActorOptions {
   id?: string
   name?: string
-  children?: Array<GameObjectOptions>
+  children?: Array<ActorOptions>
   components?: Array<ComponentConfig>
   fromTemplate?: boolean
   templateId?: string
   isNew?: boolean
 }
 
-export class GameObjectCreator {
+export class ActorCreator {
   private components: Record<string, ComponentConstructor>;
   private templateCollection: TemplateCollection;
 
@@ -34,7 +34,7 @@ export class GameObjectCreator {
     this.templateCollection = templateCollection;
   }
 
-  private buildFromTemplate(options: GameObjectOptions, template: Template): GameObject {
+  private buildFromTemplate(options: ActorOptions, template: Template): Actor {
     const {
       templateId = void '',
       components = [],
@@ -47,11 +47,11 @@ export class GameObjectCreator {
     name = name || id;
 
     if (!template) {
-      throw new Error(`Can't create game object ${name} from template. `
+      throw new Error(`Can't create actor ${name} from template. `
         + `The template with id ${String(templateId)} is null.`);
     }
 
-    const gameObject = new GameObject({
+    const actor = new Actor({
       id,
       name,
       templateId,
@@ -66,8 +66,8 @@ export class GameObjectCreator {
           isNew,
         };
 
-        const gameObjectChild = this.build(childOptions, templateChild);
-        gameObject.appendChild(gameObjectChild);
+        const actorChild = this.build(childOptions, templateChild);
+        actor.appendChild(actorChild);
       });
     } else {
       const templateChildrenMap = template.children
@@ -83,24 +83,24 @@ export class GameObjectCreator {
         const templateChild = fromTemplate
           ? templateChildrenMap[childTemplateId as string]
           : void 0;
-        const gameObjectChild = this.build(childOptions, templateChild);
-        gameObject.appendChild(gameObjectChild);
+        const actorChild = this.build(childOptions, templateChild);
+        actor.appendChild(actorChild);
       });
     }
 
     template.getComponents().forEach((component) => {
-      gameObject.setComponent(component);
+      actor.setComponent(component);
     });
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      gameObject.setComponent(new Component(componentOptions.config));
+      actor.setComponent(new Component(componentOptions.config));
     });
 
-    return gameObject;
+    return actor;
   }
 
-  private buildFromScratch(options: GameObjectOptions): GameObject {
+  private buildFromScratch(options: ActorOptions): Actor {
     const {
       name,
       components = [],
@@ -110,25 +110,25 @@ export class GameObjectCreator {
 
     id = id || uuid();
 
-    const gameObject = new GameObject({
+    const actor = new Actor({
       id,
       name: name as string,
     });
 
     children.forEach((child) => {
-      const gameObjectChild = this.build(child);
-      gameObject.appendChild(gameObjectChild);
+      const actorChild = this.build(child);
+      actor.appendChild(actorChild);
     });
 
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
-      gameObject.setComponent(new Component(componentOptions.config));
+      actor.setComponent(new Component(componentOptions.config));
     });
 
-    return gameObject;
+    return actor;
   }
 
-  private build(options: GameObjectOptions, template?: Template): GameObject {
+  private build(options: ActorOptions, template?: Template): Actor {
     const { templateId, fromTemplate } = options;
 
     if (fromTemplate) {
@@ -140,7 +140,7 @@ export class GameObjectCreator {
     return this.buildFromScratch(options);
   }
 
-  create(options: GameObjectOptions): GameObject {
+  create(options: ActorOptions): Actor {
     return this.build(options);
   }
 }

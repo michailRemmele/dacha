@@ -9,11 +9,11 @@ import {
   Color,
 } from 'three/src/Three';
 
-import { AddGameObject, RemoveGameObject } from '../../../engine/events';
-import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../engine/events';
+import { AddActor, RemoveActor } from '../../../engine/events';
+import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
-import { GameObject, GameObjectObserver } from '../../../engine/game-object';
+import { Actor, ActorCollection } from '../../../engine/actor';
 import type { TemplateCollection } from '../../../engine/template';
 import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
@@ -51,7 +51,7 @@ interface RendererOptions extends SystemOptions {
 }
 
 export class SpriteRenderer extends System {
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private window: HTMLElement;
   private renderScene: Scene;
   private currentCamera: OrthographicCamera;
@@ -59,7 +59,7 @@ export class SpriteRenderer extends System {
   private imageCache: Record<string, HTMLImageElement | undefined | null>;
   private spriteCache: Record<string, Record<number, Array<Texture>>>;
   private textureMap: Record<string, Array<Texture>>;
-  private gameObjectsMap: Record<string, number>;
+  private actorsMap: Record<string, number>;
   private sortFn: SortFn;
   private lightSubsystem: LightSubsystem;
   private viewWidth: number;
@@ -79,7 +79,7 @@ export class SpriteRenderer extends System {
       scene,
     } = options as RendererOptions;
 
-    this.gameObjectObserver = new GameObjectObserver(scene, {
+    this.actorCollection = new ActorCollection(scene, {
       components: [
         Sprite,
         Transform,
@@ -97,7 +97,7 @@ export class SpriteRenderer extends System {
       sortByFit,
     ]);
 
-    this.gameObjectsMap = {};
+    this.actorsMap = {};
     this.viewWidth = 0;
     this.viewHeight = 0;
 
@@ -108,7 +108,7 @@ export class SpriteRenderer extends System {
 
     this.lightSubsystem = new LightSubsystem(
       this.renderScene,
-      new GameObjectObserver(scene, {
+      new ActorCollection(scene, {
         components: [
           Light,
           Transform,
@@ -132,7 +132,7 @@ export class SpriteRenderer extends System {
 
     this.cameraService = scene.getService(CameraService);
 
-    this.gameObjectObserver.forEach(this.handleGameObjectAdd);
+    this.actorCollection.forEach(this.handleActorAdd);
   }
 
   async load(): Promise<void> {
@@ -192,8 +192,8 @@ export class SpriteRenderer extends System {
     this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
 
-    this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
-    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
+    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
+    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
 
     this.lightSubsystem.mount();
 
@@ -203,8 +203,8 @@ export class SpriteRenderer extends System {
   unmount(): void {
     window.removeEventListener('resize', this.handleWindowResize);
 
-    this.gameObjectObserver.removeEventListener(AddGameObject, this.handleGameObjectAdd);
-    this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
+    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.lightSubsystem.unmount();
 
@@ -218,8 +218,8 @@ export class SpriteRenderer extends System {
       (template) => getImagesFromTemplates(imagesToLoad, template),
     );
 
-    this.gameObjectObserver.forEach((gameObject) => {
-      const sprite = gameObject.getComponent(Sprite);
+    this.actorCollection.forEach((actor) => {
+      const sprite = actor.getComponent(Sprite);
 
       if (!imagesToLoad[sprite.src]) {
         imagesToLoad[sprite.src] = sprite;
@@ -229,30 +229,30 @@ export class SpriteRenderer extends System {
     return imagesToLoad;
   }
 
-  private handleGameObjectAdd = (value: AddGameObjectEvent | GameObject): void => {
-    const gameObject = value instanceof GameObject ? value : value.gameObject;
+  private handleActorAdd = (value: AddActorEvent | Actor): void => {
+    const actor = value instanceof Actor ? value : value.actor;
 
-    const sprite = gameObject.getComponent(Sprite);
+    const sprite = actor.getComponent(Sprite);
 
     const material = createMaterial(sprite.material.type);
     const geometry = new PlaneGeometry(sprite.width, sprite.height);
     const object = new Mesh(geometry, material);
 
-    object.userData.gameObject = gameObject;
-    this.gameObjectsMap[gameObject.id] = object.id;
+    object.userData.actor = actor;
+    this.actorsMap[actor.id] = object.id;
 
     this.renderScene.add(object);
   };
 
-  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
-    const { gameObject } = event;
-    const object = this.renderScene.getObjectById(this.gameObjectsMap[gameObject.id]);
+  private handleActorRemove = (event: RemoveActorEvent): void => {
+    const { actor } = event;
+    const object = this.renderScene.getObjectById(this.actorsMap[actor.id]);
 
     if (object) {
       this.renderScene.remove(object);
     }
 
-    delete this.gameObjectsMap[gameObject.id];
+    delete this.actorsMap[actor.id];
   };
 
   private handleWindowResize = (): void => {
@@ -281,13 +281,13 @@ export class SpriteRenderer extends System {
     this.currentCamera.updateProjectionMatrix();
   }
 
-  private updateGameObjects(): void {
-    this.gameObjectObserver.forEach((gameObject, index) => {
-      const transform = gameObject.getComponent(Transform);
-      const sprite = gameObject.getComponent(Sprite);
+  private updateActors(): void {
+    this.actorCollection.forEach((actor, index) => {
+      const transform = actor.getComponent(Transform);
+      const sprite = actor.getComponent(Sprite);
 
       const object = this.renderScene.getObjectById(
-        this.gameObjectsMap[gameObject.id],
+        this.actorsMap[actor.id],
       ) as Mesh;
 
       if (!object) {
@@ -322,8 +322,8 @@ export class SpriteRenderer extends System {
 
     this.lightSubsystem.update();
 
-    this.gameObjectObserver.sort(this.sortFn);
-    this.updateGameObjects();
+    this.actorCollection.sort(this.sortFn);
+    this.updateActors();
 
     this.renderer.render(this.renderScene, this.currentCamera);
   }

@@ -2,7 +2,7 @@ import { System } from '../../../engine/system';
 import type { SystemOptions, UpdateOptions } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
 import { GameStatsUpdate } from '../../events';
-import { GameObjectObserver } from '../../../engine/game-object';
+import { ActorCollection } from '../../../engine/actor';
 
 const MS_IN_SEC = 1000;
 
@@ -12,7 +12,7 @@ interface GameStatsMeterOptions extends SystemOptions {
 
 export class GameStatsMeter extends System {
   private scene: Scene;
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private frequency: number;
   private fps: number;
   private time: number;
@@ -26,7 +26,7 @@ export class GameStatsMeter extends System {
     } = options as GameStatsMeterOptions;
 
     this.scene = scene;
-    this.gameObjectObserver = new GameObjectObserver(scene);
+    this.actorCollection = new ActorCollection(scene);
     this.frequency = frequency || MS_IN_SEC;
 
     this.fps = 0;
@@ -42,7 +42,7 @@ export class GameStatsMeter extends System {
     if (this.time >= this.frequency) {
       this.scene.emit(GameStatsUpdate, {
         fps: (this.fps * MS_IN_SEC) / this.time,
-        gameObjectsCount: this.gameObjectObserver.size,
+        actorsCount: this.actorCollection.size,
       });
 
       this.fps = 0;

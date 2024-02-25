@@ -9,9 +9,9 @@ export type {
   UpdateOptions,
 } from './engine/system';
 export type {
-  GameObjectObserverFilter,
-  GameObjectSpawner,
-} from './engine/game-object';
+  ActorCollectionFilter,
+  ActorSpawner,
+} from './engine/actor';
 export type {
   EventTarget,
   Event,
@@ -23,7 +23,7 @@ export type { Scene } from './engine/scene';
 
 export * as Animation from './contrib/components/animatable/types';
 
-export { GameObject, GameObjectObserver, GameObjectCreator } from './engine/game-object';
+export { Actor, ActorCollection, ActorCreator } from './engine/actor';
 export { TemplateCollection } from './engine/template';
 
 export * from './types/events';

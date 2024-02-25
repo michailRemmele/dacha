@@ -29,7 +29,7 @@ export class GameLoop {
       deltaTime: elapsed,
     };
 
-    currentScene?.getSystems().forEach((system) => {
+    currentScene?.systems.forEach((system) => {
       system.update?.(options);
     });
 

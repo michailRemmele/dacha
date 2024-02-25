@@ -1,5 +1,5 @@
 import type { SystemOptions } from '../../../../../engine/system';
-import type { GameObject } from '../../../../../engine/game-object';
+import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { Camera, Transform } from '../../../../components';
 import { MouseInput } from '../../../../events';
@@ -25,14 +25,14 @@ export class CoordinatesProjector {
     this.scene.removeEventListener(MouseInput, this.handleMouseInput);
   }
 
-  private getProjectedX(inputX: number, camera: GameObject): number {
+  private getProjectedX(inputX: number, camera: Actor): number {
     const { windowSizeX, zoom } = camera.getComponent(Camera);
     const { offsetX: cameraOffsetX } = camera.getComponent(Transform);
 
     return ((inputX - (windowSizeX / 2)) / zoom) + cameraOffsetX;
   }
 
-  private getProjectedY(inputY: number, camera: GameObject): number {
+  private getProjectedY(inputY: number, camera: Actor): number {
     const { windowSizeY, zoom } = camera.getComponent(Camera);
     const { offsetY: cameraOffsetY } = camera.getComponent(Transform);
 

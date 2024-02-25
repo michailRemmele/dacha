@@ -1,13 +1,13 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions, UpdateOptions } from '../../../engine/system';
-import { GameObject, GameObjectObserver } from '../../../engine/game-object';
+import { Actor, ActorCollection } from '../../../engine/actor';
 import { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
 import type { IndividualState } from '../../components/animatable/individual-state';
 import type { GroupState } from '../../components/animatable/group-state';
 import type { Substate } from '../../components/animatable/substate';
-import { AddGameObject, RemoveGameObject } from '../../../engine/events';
-import type { AddGameObjectEvent, RemoveGameObjectEvent } from '../../../engine/events';
+import { AddActor, RemoveActor } from '../../../engine/events';
+import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 
 import type { ConditionController } from './condition-controllers/condition-controller';
 import type { Picker } from './substate-pickers/picker';
@@ -18,15 +18,15 @@ import { setValue } from './utils';
 const FRAME_RATE = 100;
 
 export class Animator extends System {
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private substatePickers: Record<string, Picker>;
 
-  private gameObjectConditions: Record<string, Record<string, Record<string, ConditionController>>>;
+  private actorConditions: Record<string, Record<string, Record<string, ConditionController>>>;
 
   constructor(options: SystemOptions) {
     super();
 
-    this.gameObjectObserver = new GameObjectObserver(options.scene, {
+    this.actorCollection = new ActorCollection(options.scene, {
       components: [Animatable],
     });
     this.substatePickers = Object.keys(substatePickers)
@@ -36,65 +36,65 @@ export class Animator extends System {
         return storage;
       }, {});
 
-    this.gameObjectConditions = {};
+    this.actorConditions = {};
 
-    this.gameObjectObserver.forEach((gameObject) => this.setUpConditionControllers(gameObject));
+    this.actorCollection.forEach((actor) => this.setUpConditionControllers(actor));
   }
 
   mount(): void {
-    this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
-    this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
+    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
+    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   unmount(): void {
-    this.gameObjectObserver.removeEventListener(AddGameObject, this.handleGameObjectAdd);
-    this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
+    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
   }
 
-  private handleGameObjectAdd = (event: AddGameObjectEvent): void => {
-    this.setUpConditionControllers(event.gameObject);
+  private handleActorAdd = (event: AddActorEvent): void => {
+    this.setUpConditionControllers(event.actor);
   };
 
-  private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
-    delete this.gameObjectConditions[event.gameObject.id];
+  private handleActorRemove = (event: RemoveActorEvent): void => {
+    delete this.actorConditions[event.actor.id];
   };
 
-  private setUpConditionControllers(gameObject: GameObject): void {
-    this.gameObjectConditions[gameObject.id] = {};
+  private setUpConditionControllers(actor: Actor): void {
+    this.actorConditions[actor.id] = {};
 
-    const animatable = gameObject.getComponent(Animatable);
+    const animatable = actor.getComponent(Animatable);
     animatable.currentState?.transitions.forEach((transition) => {
-      this.gameObjectConditions[gameObject.id][transition.id] ??= {};
-      const transitionMap = this.gameObjectConditions[gameObject.id][transition.id];
+      this.actorConditions[actor.id][transition.id] ??= {};
+      const transitionMap = this.actorConditions[actor.id][transition.id];
 
       transition.conditions.forEach((condition) => {
         const ConditionController = conditionControllers[condition.type];
         transitionMap[condition.id] = new ConditionController(
           condition.props,
-          gameObject,
+          actor,
         );
       });
     });
   }
 
-  private updateFrame(gameObject: GameObject, frame: Frame): void {
+  private updateFrame(actor: Actor, frame: Frame): void {
     Object.keys(frame).forEach((fieldName) => setValue(
-      gameObject,
+      actor,
       frame[fieldName].path,
       frame[fieldName].value,
     ));
   }
 
-  private pickSubstate(gameObject: GameObject, state: GroupState): Substate {
+  private pickSubstate(actor: Actor, state: GroupState): Substate {
     const substatePicker = this.substatePickers[state.pickMode];
-    return substatePicker.getSubstate(gameObject, state.substates, state.pickProps);
+    return substatePicker.getSubstate(actor, state.substates, state.pickProps);
   }
 
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
-    this.gameObjectObserver.forEach((gameObject) => {
-      const animatable = gameObject.getComponent(Animatable);
+    this.actorCollection.forEach((actor) => {
+      const animatable = actor.getComponent(Animatable);
 
       if (animatable.currentState === void 0) {
         return;
@@ -103,7 +103,7 @@ export class Animator extends System {
       let { timeline } = animatable.currentState as IndividualState;
 
       if ((animatable.currentState as GroupState).substates) {
-        const substate = this.pickSubstate(gameObject, animatable.currentState as GroupState);
+        const substate = this.pickSubstate(actor, animatable.currentState as GroupState);
         timeline = substate.timeline;
       }
 
@@ -117,7 +117,7 @@ export class Animator extends System {
         ? Math.trunc((animatable.duration % 1) * framesCount)
         : framesCount - 1;
 
-      this.updateFrame(gameObject, timeline.frames[currentFrame]);
+      this.updateFrame(actor, timeline.frames[currentFrame]);
 
       const nextTransition = animatable.currentState.transitions.find((transition) => {
         if (transition.time && animatable.duration < transition.time) {
@@ -125,7 +125,7 @@ export class Animator extends System {
         }
 
         return transition.conditions.every((condition) => {
-          return this.gameObjectConditions[gameObject.id][transition.id][condition.id].check();
+          return this.actorConditions[actor.id][transition.id][condition.id].check();
         });
       });
 
@@ -133,7 +133,7 @@ export class Animator extends System {
         animatable.setCurrentState(nextTransition.state);
         animatable.duration = 0;
 
-        this.setUpConditionControllers(gameObject);
+        this.setUpConditionControllers(actor);
       }
     });
   }

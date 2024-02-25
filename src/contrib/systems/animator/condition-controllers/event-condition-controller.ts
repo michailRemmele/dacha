@@ -1,4 +1,4 @@
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor } from '../../../../engine/actor';
 import type { EventConditionProps } from '../../../components/animatable/event-condition-props';
 import type { Event } from '../../../../engine/event-target';
 
@@ -9,22 +9,22 @@ export class EventConditionController implements ConditionController {
 
   constructor(
     props: EventConditionProps,
-    gameObject: GameObject,
+    actor: Actor,
   ) {
     this.isEventFired = false;
 
     const { eventType } = props;
 
     const handleEvent = (event: Event): void => {
-      if (event.target !== gameObject) {
+      if (event.target !== actor) {
         return;
       }
 
       this.isEventFired = true;
-      gameObject.removeEventListener(eventType, handleEvent);
+      actor.removeEventListener(eventType, handleEvent);
     };
 
-    gameObject.addEventListener(eventType, handleEvent);
+    actor.addEventListener(eventType, handleEvent);
   }
 
   check(): boolean {

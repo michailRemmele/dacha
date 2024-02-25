@@ -1,7 +1,7 @@
 import { System } from '../../../engine/system';
-import { GameObjectObserver } from '../../../engine/game-object';
+import { ActorCollection } from '../../../engine/actor';
 import type { SystemOptions } from '../../../engine/system';
-import type { GameObject } from '../../../engine/game-object';
+import type { Actor } from '../../../engine/actor';
 import type { Scene } from '../../../engine/scene';
 import { KeyboardControl } from '../../components/keyboard-control';
 import type { KeyboardEventBind } from '../../components/keyboard-control';
@@ -9,7 +9,7 @@ import { KeyboardInput } from '../../events';
 import type { KeyboardInputEvent } from '../../events';
 
 export class KeyboardControlSystem extends System {
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private scene: Scene;
 
   private pressedKeys: Set<string>;
@@ -18,7 +18,7 @@ export class KeyboardControlSystem extends System {
   constructor(options: SystemOptions) {
     super();
 
-    this.gameObjectObserver = new GameObjectObserver(options.scene, {
+    this.actorCollection = new ActorCollection(options.scene, {
       components: [
         KeyboardControl,
       ],
@@ -41,12 +41,12 @@ export class KeyboardControlSystem extends System {
     this.events.push(event);
   };
 
-  private sendEvent(gameObject: GameObject, eventBinding: KeyboardEventBind, code: string): void {
+  private sendEvent(actor: Actor, eventBinding: KeyboardEventBind, code: string): void {
     if (!eventBinding.eventType) {
       throw new Error(`The event type is not specified for input key: ${code}`);
     }
 
-    gameObject.emit(eventBinding.eventType, {
+    actor.emit(eventBinding.eventType, {
       ...eventBinding.attrs,
     });
   }
@@ -58,14 +58,14 @@ export class KeyboardControlSystem extends System {
       }
     });
 
-    this.gameObjectObserver.forEach((gameObject) => {
-      const control = gameObject.getComponent(KeyboardControl);
+    this.actorCollection.forEach((actor) => {
+      const control = actor.getComponent(KeyboardControl);
 
       // Resend control event when key is pressed without actual event if keepEmit is set to true
       this.pressedKeys.forEach((key) => {
         const inputBinding = control.inputEventBindings[key]?.pressed;
         if (inputBinding !== undefined && inputBinding.keepEmit) {
-          this.sendEvent(gameObject, inputBinding, key);
+          this.sendEvent(actor, inputBinding, key);
         }
       });
 
@@ -74,7 +74,7 @@ export class KeyboardControlSystem extends System {
         const { key, pressed } = event;
         const inputBinding = control.inputEventBindings[key]?.[pressed ? 'pressed' : 'released'];
         if (inputBinding !== undefined && !this.pressedKeys.has(key)) {
-          this.sendEvent(gameObject, inputBinding, key);
+          this.sendEvent(actor, inputBinding, key);
         }
       });
     });

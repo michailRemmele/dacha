@@ -1,7 +1,7 @@
 
 {
   "id": "001",
-  "name": "gameObjectExample",
+  "name": "actorExample",
   "children": [
     {
       "id": "002", 

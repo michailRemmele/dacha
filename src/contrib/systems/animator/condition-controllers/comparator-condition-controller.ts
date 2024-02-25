@@ -1,4 +1,4 @@
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor } from '../../../../engine/actor';
 import type { ComparatorConditionProps } from '../../../components/animatable/comparator-condition-props';
 import type { ComparatorConditionComponentValue } from '../../../components/animatable/comparator-condition-component-value';
 import type { ComparatorConditionSimpleValue } from '../../../components/animatable/comparator-condition-number-value';
@@ -19,23 +19,23 @@ const operations: Record<string, OperationFn> = {
 };
 
 export class ComparatorConditionController implements ConditionController {
-  private gameObject: GameObject;
+  private actor: Actor;
   private props: ComparatorConditionProps;
 
   constructor(
     props: ComparatorConditionProps,
-    gameObject: GameObject,
+    actor: Actor,
   ) {
-    this.gameObject = gameObject;
+    this.actor = actor;
     this.props = props;
   }
 
   private getValue(
-    gameObject: GameObject,
+    actor: Actor,
     arg: ComparatorConditionComponentValue | ComparatorConditionSimpleValue,
   ): ComparatorValue {
     if (arg.type === 'componentValue') {
-      return getComponentValue(gameObject, arg.value as Array<string>) as ComparatorValue;
+      return getComponentValue(actor, arg.value as Array<string>) as ComparatorValue;
     }
 
     return arg.value as ComparatorValue;
@@ -48,8 +48,8 @@ export class ComparatorConditionController implements ConditionController {
       throw new Error(`Unknown operation type: ${operation}`);
     }
 
-    const arg1 = this.getValue(this.gameObject, this.props.arg1);
-    const arg2 = this.getValue(this.gameObject, this.props.arg2);
+    const arg1 = this.getValue(this.actor, this.props.arg1);
+    const arg2 = this.getValue(this.actor, this.props.arg2);
 
     return operations[operation](arg1, arg2);
   }

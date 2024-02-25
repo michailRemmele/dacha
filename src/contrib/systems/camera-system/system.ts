@@ -2,8 +2,8 @@ import { MathOps } from '../../../engine/mathLib';
 import { System } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
 import type { SystemOptions } from '../../../engine/system';
-import type { GameObject } from '../../../engine/game-object';
-import { GameObjectObserver } from '../../../engine/game-object';
+import type { Actor } from '../../../engine/actor';
+import { ActorCollection } from '../../../engine/actor';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
 import { SetCamera } from '../../events';
@@ -20,7 +20,7 @@ interface CameraSystemOptions extends SystemOptions {
 }
 
 export class CameraSystem extends System {
-  private gameObjectObserver: GameObjectObserver;
+  private actorCollection: ActorCollection;
   private scene: Scene;
   private window: Window & HTMLElement;
   private scaleSensitivity: number;
@@ -38,7 +38,7 @@ export class CameraSystem extends System {
 
     const windowNode = getWindowNode(windowNodeId);
 
-    this.gameObjectObserver = new GameObjectObserver(scene, {
+    this.actorCollection = new ActorCollection(scene, {
       components: [
         Camera,
       ],
@@ -48,7 +48,7 @@ export class CameraSystem extends System {
 
     this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1);
 
-    const currentCamera = this.gameObjectObserver.getById(initialCamera);
+    const currentCamera = this.actorCollection.getById(initialCamera);
 
     if (!currentCamera) {
       throw new Error(`Could not set camera with id ${initialCamera} for the scene`);
@@ -72,11 +72,11 @@ export class CameraSystem extends System {
   }
 
   private handleSetCamera = (event: SetCameraEvent): void => {
-    const { gameObjectId } = event;
-    const newCamera = this.gameObjectObserver.getById(gameObjectId);
+    const { actorId } = event;
+    const newCamera = this.actorCollection.getById(actorId);
 
     if (!newCamera) {
-      throw new Error(`Could not set camera with id ${gameObjectId} for the scene`);
+      throw new Error(`Could not set camera with id ${actorId} for the scene`);
     }
 
     this.setCamera(newCamera);
@@ -113,7 +113,7 @@ export class CameraSystem extends System {
     cameraComponent.screenScale = normalizedSize / STD_SCREEN_SIZE;
   }
 
-  private setCamera(camera: GameObject): void {
+  private setCamera(camera: Actor): void {
     this.cameraService.setCurrentCamera(camera);
     this.handleCameraUpdate();
   }

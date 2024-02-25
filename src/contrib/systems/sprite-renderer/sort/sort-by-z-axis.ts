@@ -1,9 +1,9 @@
-import { GameObject } from '../../../../engine/game-object';
+import { Actor } from '../../../../engine/actor';
 import { Transform } from '../../../components/transform';
 
 import type { SortFn } from './types';
 
-export const sortByZAxis: SortFn = (a: GameObject, b: GameObject): number => {
+export const sortByZAxis: SortFn = (a: Actor, b: Actor): number => {
   const aTransform = a.getComponent(Transform);
   const bTransform = b.getComponent(Transform);
 

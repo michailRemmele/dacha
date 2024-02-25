@@ -10,7 +10,7 @@ import { Observer } from './observer';
 
 interface ActionFnOptions {
   scene: Scene
-  gameObjectSpawner: unknown
+  actorSpawner: unknown
   deltaTime: number
 }
 
@@ -32,7 +32,7 @@ interface UiBridgeResources {
 }
 
 export class UiBridge extends System {
-  private gameObjectSpawner: unknown;
+  private actorSpawner: unknown;
   private scene: Scene;
   private loadUiApp: LoadUiAppFn;
   private templateCollection: TemplateCollection;
@@ -45,7 +45,7 @@ export class UiBridge extends System {
     super();
 
     const {
-      gameObjectSpawner,
+      actorSpawner,
       resources,
       scene,
       templateCollection,
@@ -60,7 +60,7 @@ export class UiBridge extends System {
     this.loadUiApp = loadUiApp;
 
     this.scene = scene;
-    this.gameObjectSpawner = gameObjectSpawner;
+    this.actorSpawner = actorSpawner;
     this.templateCollection = templateCollection;
 
     this.gameStateObserver = new Observer();
@@ -105,7 +105,7 @@ export class UiBridge extends System {
       action({
         scene: this.scene,
         deltaTime,
-        gameObjectSpawner: this.gameObjectSpawner,
+        actorSpawner: this.actorSpawner,
       });
     });
     this.actionsQueue = [];

@@ -1,15 +1,15 @@
 import type { Component, ComponentConstructor } from '../component';
-import { BaseObject } from '../base-object';
-import type { BaseObjectOptions } from '../base-object';
+import { Entity } from '../entity';
+import type { EntityOptions } from '../entity';
 
-export class Template extends BaseObject {
+export class Template extends Entity {
   private components: Record<string, Component>;
 
   declare public readonly children: Array<Template>;
 
   declare public parent: Template | null;
 
-  constructor(options: BaseObjectOptions) {
+  constructor(options: EntityOptions) {
     super(options);
 
     this.components = {};
@@ -23,12 +23,12 @@ export class Template extends BaseObject {
     super.removeChild(child);
   }
 
-  override getObjectById(id: string): Template | undefined {
-    return super.getObjectById(id) as Template | undefined;
+  override getEntityById(id: string): Template | undefined {
+    return super.getEntityById(id) as Template | undefined;
   }
 
-  override getObjectByName(name: string): Template | undefined {
-    return super.getObjectByName(name) as Template | undefined;
+  override getEntityByName(name: string): Template | undefined {
+    return super.getEntityByName(name) as Template | undefined;
   }
 
   setComponent(component: Component): void {

@@ -1,10 +1,10 @@
-import type { GameObjectSpawner } from '../game-object';
+import type { ActorSpawner } from '../actor';
 import type { TemplateCollection } from '../template';
 import type { Scene } from '../scene';
 import type { Constructor } from '../../types/utils';
 
 export interface SystemOptions extends Record<string, unknown> {
-  gameObjectSpawner: GameObjectSpawner
+  actorSpawner: ActorSpawner
   resources?: unknown
   globalOptions: Record<string, unknown>
   scene: Scene

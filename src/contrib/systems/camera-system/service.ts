@@ -1,21 +1,21 @@
-import type { GameObject } from '../../../engine/game-object';
+import type { Actor } from '../../../engine/actor';
 
 interface CameraServiceOptions {
-  camera: GameObject
+  camera: Actor
 }
 
 export class CameraService {
-  private camera: GameObject;
+  private camera: Actor;
 
   constructor({ camera }: CameraServiceOptions) {
     this.camera = camera;
   }
 
-  setCurrentCamera(camera: GameObject): void {
+  setCurrentCamera(camera: Actor): void {
     this.camera = camera;
   }
 
-  getCurrentCamera(): GameObject {
+  getCurrentCamera(): Actor {
     return this.camera;
   }
 }
