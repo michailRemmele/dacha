@@ -1,58 +1,73 @@
-import type { SceneEventMap } from '../../types/events';
-
 import type {
+  Event,
   EventType,
-  EventPayload,
-  EventMap,
   ListenerFn,
 } from './types';
 
-export class EventTarget<T extends EventMap<T> = SceneEventMap> {
-  // comment: To avoid type checking errors inside implementation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private listenersMap: Map<EventType, Array<ListenerFn<any, any, any>>>;
+export class EventTarget {
+  public parent: EventTarget | null;
+
+  private listenersMap: Map<EventType, Array<ListenerFn>>;
 
   constructor() {
     this.listenersMap = new Map();
+
+    this.parent = null;
   }
 
-  addEventListener<K extends EventType>(
-    eventName: K,
-    callback: ListenerFn<T, this, K>,
-  ): void {
-    if (!this.listenersMap.has(eventName)) {
-      this.listenersMap.set(eventName, []);
+  addEventListener(type: EventType, callback: ListenerFn): void {
+    if (!this.listenersMap.has(type)) {
+      this.listenersMap.set(type, []);
     }
 
-    this.listenersMap.get(eventName)?.push(callback);
+    this.listenersMap.get(type)?.push(callback);
   }
 
-  removeEventListener<K extends EventType>(
-    eventName: K,
-    callback: ListenerFn<T, this, K>,
-  ): void {
-    if (!this.listenersMap.has(eventName)) {
+  getEventListeners(type: EventType): Array<ListenerFn> | undefined {
+    return this.listenersMap.get(type);
+  }
+
+  removeEventListener(type: EventType, callback: ListenerFn): void {
+    if (!this.listenersMap.has(type)) {
       return;
     }
 
-    const nextListeners = this.listenersMap.get(eventName)!.filter(
+    const nextListeners = this.listenersMap.get(type)!.filter(
       (listener) => listener !== callback,
     );
 
     if (nextListeners.length === 0) {
-      this.listenersMap.delete(eventName);
+      this.listenersMap.delete(type);
     } else {
-      this.listenersMap.set(eventName, nextListeners);
+      this.listenersMap.set(type, nextListeners);
     }
   }
 
-  emit<K extends EventType>(type: K, ...payload: EventPayload<T, K>): void {
-    const event = {
-      ...payload[0],
+  emit(type: EventType, payload?: Record<string, unknown>): void {
+    let isPropagationStopped = false;
+
+    const stopPropagation = (): void => {
+      isPropagationStopped = true;
+    };
+
+    const event: Event = {
+      ...payload,
       type,
       target: this,
+      currentTarget: this,
+      stopPropagation,
     };
-    this.listenersMap.get(type)?.forEach((listener) => listener(event));
+
+    let target: EventTarget | null = this;
+
+    while (target !== null && !isPropagationStopped) {
+      event.currentTarget = target;
+
+      const listeners = target.getEventListeners(type) as Array<ListenerFn>;
+      listeners?.forEach((listener) => listener(event));
+
+      target = target.parent;
+    }
   }
 
   removeAllListeners(): void {

@@ -527,7 +527,6 @@ export class RenderSystem extends System {
 
   private setUpVertexData(gameObject: GameObject): void {
     const vertexData = this._vertexData;
-    const gameObjectId = gameObject.getId();
     const renderable = gameObject.getComponent(Renderable);
 
     // TODO: Filter hidden object while frustum culling step and remove that
@@ -541,11 +540,11 @@ export class RenderSystem extends System {
     const texture = this.textureAtlasDescriptor[renderable.src];
     const textureInfo = this.textureHandlers[renderable.type].handle(texture, renderable);
 
-    const geometry = this._geometry[gameObjectId] || {
+    const geometry = this._geometry[gameObject.id] || {
       position: new Rectangle(renderable.width, renderable.height).toArray(),
       texCoord: new Rectangle(textureInfo.width, textureInfo.height).toArray(),
     };
-    this._geometry[gameObjectId] = geometry;
+    this._geometry[gameObject.id] = geometry;
 
     const { position, texCoord } = geometry;
 
@@ -600,7 +599,7 @@ export class RenderSystem extends System {
     this._gameObjectObserver.sort(this.sortFn);
 
     const batches = splitToBatch(
-      this._gameObjectObserver.getList(),
+      this._gameObjectObserver,
       this.shaderProvider,
     );
 

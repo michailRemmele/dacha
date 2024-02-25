@@ -43,19 +43,17 @@ export class CollisionBroadcastSubsystem {
     const {
       gameObject1, gameObject2, mtv1, mtv2,
     } = event;
-    const gameObject1Id = gameObject1.getId();
-    const gameObject2Id = gameObject2.getId();
 
-    this.collisionMap[gameObject1Id] = this.collisionMap[gameObject1Id] || {};
+    this.collisionMap[gameObject1.id] = this.collisionMap[gameObject1.id] || {};
 
-    if (!this.collisionMap[gameObject1Id][gameObject2Id]) {
+    if (!this.collisionMap[gameObject1.id][gameObject2.id]) {
       const collision = new Collision(gameObject1, gameObject2, mtv1, mtv2);
-      this.collisionMap[gameObject1Id][gameObject2Id] = collision;
+      this.collisionMap[gameObject1.id][gameObject2.id] = collision;
       this.activeCollisions.push(collision);
     } else {
-      this.collisionMap[gameObject1Id][gameObject2Id].mtv1 = mtv1;
-      this.collisionMap[gameObject1Id][gameObject2Id].mtv2 = mtv2;
-      this.collisionMap[gameObject1Id][gameObject2Id].signal();
+      this.collisionMap[gameObject1.id][gameObject2.id].mtv1 = mtv1;
+      this.collisionMap[gameObject1.id][gameObject2.id].mtv2 = mtv2;
+      this.collisionMap[gameObject1.id][gameObject2.id].signal();
     }
   };
 

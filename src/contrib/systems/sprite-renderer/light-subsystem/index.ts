@@ -41,30 +41,29 @@ export class LightSubsystem {
     const light = createLight(type);
 
     light.userData.gameObject = gameObject;
-    this.lightsMap[gameObject.getId()] = light.id;
+    this.lightsMap[gameObject.id] = light.id;
 
     this.renderScene.add(light);
   };
 
   private handleLightRemove = (event: RemoveGameObjectEvent): void => {
     const { gameObject } = event;
-    const gameObjectId = gameObject.getId();
-    const object = this.renderScene.getObjectById(this.lightsMap[gameObjectId]);
+    const object = this.renderScene.getObjectById(this.lightsMap[gameObject.id]);
 
     if (object) {
       this.renderScene.remove(object);
     }
 
-    this.lightsMap = filterByKey(this.lightsMap, gameObjectId);
+    this.lightsMap = filterByKey(this.lightsMap, gameObject.id);
   };
 
   update(): void {
-    this.lightsObserver.getList().forEach((gameObject) => {
+    this.lightsObserver.forEach((gameObject) => {
       const transform = gameObject.getComponent(Transform);
       const { type, options } = gameObject.getComponent(Light);
 
       const light = this.renderScene.getObjectById(
-        this.lightsMap[gameObject.getId()],
+        this.lightsMap[gameObject.id],
       ) as ThreeJSLight;
 
       if (!light) {

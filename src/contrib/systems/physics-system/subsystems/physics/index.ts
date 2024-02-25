@@ -1,6 +1,7 @@
 import { Vector2 } from '../../../../../engine/mathLib';
 import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
 import { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
+import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { PhysicsSystemOptions } from '../../types';
@@ -22,6 +23,7 @@ const DIRECTION_VECTOR = {
 };
 
 export class PhysicsSubsystem {
+  private scene: Scene;
   private gameObjectObserver: GameObjectObserver;
   private gravitationalAcceleration: number;
   private gameObjectsVelocity: Record<string, Vector2>;
@@ -33,6 +35,7 @@ export class PhysicsSubsystem {
       gravitationalAcceleration, scene,
     } = options as PhysicsSystemOptions;
 
+    this.scene = scene;
     this.gameObjectObserver = new GameObjectObserver(scene, {
       components: [
         RigidBody,
@@ -51,11 +54,19 @@ export class PhysicsSubsystem {
   mount(): void {
     this.gameObjectObserver.addEventListener(AddGameObject, this.handleGameObjectAdd);
     this.gameObjectObserver.addEventListener(RemoveGameObject, this.handleGameObjectRemove);
+
+    this.scene.addEventListener(StopMovement, this.handleStopMovement);
+    this.scene.addEventListener(AddForce, this.handleAddForce);
+    this.scene.addEventListener(AddImpulse, this.handleAddImpulse);
   }
 
   unmount(): void {
     this.gameObjectObserver.removeEventListener(AddGameObject, this.handleGameObjectAdd);
     this.gameObjectObserver.removeEventListener(RemoveGameObject, this.handleGameObjectRemove);
+
+    this.scene.removeEventListener(StopMovement, this.handleStopMovement);
+    this.scene.removeEventListener(AddForce, this.handleAddForce);
+    this.scene.removeEventListener(AddImpulse, this.handleAddImpulse);
   }
 
   private handleGameObjectAdd = (value: AddGameObjectEvent | GameObject): void => {
@@ -64,10 +75,6 @@ export class PhysicsSubsystem {
     this.gameObjectsVelocity[gameObject.id] = new Vector2(0, 0);
     this.gameObjectsForceVector[gameObject.id] = new Vector2(0, 0);
     this.gameObjectsImpulseVector[gameObject.id] = new Vector2(0, 0);
-
-    gameObject.addEventListener(StopMovement, this.handleStopMovement);
-    gameObject.addEventListener(AddForce, this.handleAddForce);
-    gameObject.addEventListener(AddImpulse, this.handleAddImpulse);
   };
 
   private handleGameObjectRemove = (event: RemoveGameObjectEvent): void => {
@@ -76,10 +83,6 @@ export class PhysicsSubsystem {
     delete this.gameObjectsVelocity[gameObject.id];
     delete this.gameObjectsForceVector[gameObject.id];
     delete this.gameObjectsImpulseVector[gameObject.id];
-
-    gameObject.removeEventListener(StopMovement, this.handleStopMovement);
-    gameObject.removeEventListener(AddForce, this.handleAddForce);
-    gameObject.removeEventListener(AddImpulse, this.handleAddImpulse);
   };
 
   private handleStopMovement = (event: GameObjectEvent): void => {
@@ -100,8 +103,7 @@ export class PhysicsSubsystem {
 
   private applyDragForce(gameObject: GameObject, deltaTime: number): void {
     const { mass, drag } = gameObject.getComponent(RigidBody);
-    const gameObjectId = gameObject.getId();
-    const velocity = this.gameObjectsVelocity[gameObjectId];
+    const velocity = this.gameObjectsVelocity[gameObject.id];
 
     if (!drag || !velocity || (!velocity.x && !velocity.y)) {
       return;
@@ -145,7 +147,6 @@ export class PhysicsSubsystem {
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
 
     this.gameObjectObserver.forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
       const rigidBody = gameObject.getComponent(RigidBody);
       const transform = gameObject.getComponent(Transform);
       const { mass } = rigidBody;
@@ -155,7 +156,7 @@ export class PhysicsSubsystem {
 
       const impulseVector = this.gameObjectsImpulseVector[gameObject.id];
 
-      const velocityVector = this.gameObjectsVelocity[gameObjectId];
+      const velocityVector = this.gameObjectsVelocity[gameObject.id];
 
       if (forceVector.x || forceVector.y) {
         forceVector.multiplyNumber(deltaTimeInSeconds / mass);

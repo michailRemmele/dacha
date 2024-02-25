@@ -7,11 +7,21 @@ import {
   GameObjectSpawner,
   GameObjectCreator,
 } from '../game-object';
-import { EventTarget } from '../event-target';
-import { AddGameObject, RemoveGameObject, Destroy } from '../events';
+import { BaseObject } from '../base-object';
+import type { BaseObjectOptions } from '../base-object';
+import type {
+  EventType, Event, ListenerFn, EventPayload,
+} from '../event-target';
+import type { SceneEventMap, GameObjectEventMap } from '../../types/events';
 import type { Constructor } from '../../types/utils';
 
-interface SceneOptions extends SceneConfig {
+type SceneObjectListenerFn<T extends EventType> = (
+  event: T extends keyof SceneEventMap
+    ? SceneEventMap[T]
+    : T extends keyof GameObjectEventMap ? GameObjectEventMap[T] : Event
+) => void;
+
+interface SceneOptions extends BaseObjectOptions, SceneConfig {
   gameObjects: Array<GameObjectConfig>
   availableSystems: Array<SystemConstructor>
   resources: Record<string, unknown>
@@ -20,45 +30,41 @@ interface SceneOptions extends SceneConfig {
   templateCollection: TemplateCollection
 }
 
-export class Scene extends EventTarget {
-  private gameObjectMap: Record<string, GameObject>;
+export class Scene extends BaseObject {
   private gameObjectCreator: GameObjectCreator;
   private systems: Array<System>;
   private availableSystemsMap: Record<string, SystemConstructor>;
   private services: Record<string, unknown>;
 
+  declare public readonly children: Array<GameObject>;
   public templateCollection: TemplateCollection;
   public gameObjectSpawner: GameObjectSpawner;
   public data: Record<string, unknown>;
 
-  readonly id: string;
-  readonly name: string;
+  declare public parent: null;
 
-  constructor({
-    id,
-    name,
-    gameObjects,
-    systems,
-    resources,
-    globalOptions,
-    gameObjectCreator,
-    availableSystems,
-    templateCollection,
-  }: SceneOptions) {
-    super();
+  constructor(options: SceneOptions) {
+    super(options);
 
-    this.id = id;
-    this.name = name;
-    this.gameObjectMap = {};
+    const {
+      gameObjects,
+      systems,
+      resources,
+      globalOptions,
+      gameObjectCreator,
+      availableSystems,
+      templateCollection,
+    } = options;
+
     this.gameObjectCreator = gameObjectCreator;
-    this.gameObjectSpawner = new GameObjectSpawner(this, this.gameObjectCreator);
+    this.gameObjectSpawner = new GameObjectSpawner(this.gameObjectCreator);
     this.templateCollection = templateCollection;
 
     this.data = {};
     this.services = {};
 
     gameObjects.forEach((gameObjectOptions) => {
-      this.addGameObject(this.gameObjectCreator.create(gameObjectOptions));
+      this.appendChild(this.gameObjectCreator.create(gameObjectOptions));
     });
 
     this.availableSystemsMap = availableSystems.reduce((acc, AvailableSystem) => {
@@ -74,6 +80,43 @@ export class Scene extends EventTarget {
       resources: resources[config.name],
       globalOptions,
     }));
+  }
+
+  override addEventListener<T extends EventType>(
+    type: T,
+    callback: SceneObjectListenerFn<T>,
+  ): void {
+    super.addEventListener(type, callback as ListenerFn);
+  }
+
+  override removeEventListener<T extends EventType>(
+    type: T,
+    callback: SceneObjectListenerFn<T>,
+  ): void {
+    super.removeEventListener(type, callback as ListenerFn);
+  }
+
+  override emit<T extends EventType>(
+    type: T,
+    ...payload: EventPayload<SceneEventMap, T>
+  ): void {
+    super.emit(type, ...payload);
+  }
+
+  override appendChild(child: GameObject): void {
+    super.appendChild(child);
+  }
+
+  override removeChild(child: GameObject): void {
+    super.removeChild(child);
+  }
+
+  override getObjectById(id: string): GameObject | undefined {
+    return super.getObjectById(id) as GameObject | undefined;
+  }
+
+  override getObjectByName(name: string): GameObject | undefined {
+    return super.getObjectByName(name) as GameObject | undefined;
   }
 
   load(): Promise<Array<void>> | undefined {
@@ -107,42 +150,6 @@ export class Scene extends EventTarget {
 
   getSystems(): Array<System> {
     return this.systems;
-  }
-
-  addGameObject(gameObject: GameObject): void {
-    if (this.gameObjectMap[gameObject.id]) {
-      throw new Error(`The game object with same id already exists: ${gameObject.id}`);
-    }
-
-    gameObject.addEventListener(Destroy, () => this.removeGameObject(gameObject.id));
-
-    this.gameObjectMap[gameObject.id] = gameObject;
-
-    this.emit(AddGameObject, { gameObject });
-
-    gameObject.getChildren().forEach((child) => {
-      this.addGameObject(child);
-    });
-  }
-
-  removeGameObject(id: string): void {
-    const gameObject = this.gameObjectMap[id];
-
-    if (!gameObject) {
-      return;
-    }
-
-    delete this.gameObjectMap[id];
-
-    this.emit(RemoveGameObject, { gameObject });
-  }
-
-  getGameObject(id: string): GameObject | undefined {
-    return this.gameObjectMap[id];
-  }
-
-  getGameObjects(): Array<GameObject> {
-    return Object.values(this.gameObjectMap);
   }
 
   addService(service: object): void {

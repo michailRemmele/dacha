@@ -2,8 +2,16 @@
 /* eslint-disable max-classes-per-file */
 import { GameObject } from '../game-object';
 import { Component } from '../../component';
-import { AddComponent, RemoveComponent } from '../../events';
-import type { AddComponentEvent, RemoveComponentEvent } from '../../events';
+import {
+  RemoveChildObject,
+  AddComponent,
+  RemoveComponent,
+} from '../../events';
+import type {
+  RemoveChildObjectEvent,
+  AddComponentEvent,
+  RemoveComponentEvent,
+} from '../../events';
 
 class TestComponent1 extends Component {
   static componentName = 'TestComponent1';
@@ -22,22 +30,6 @@ class TestComponent2 extends Component {
 }
 
 describe('Engine -> GameObject', () => {
-  it('Returns correct id and name', () => {
-    const gameObject1 = new GameObject({
-      id: '1',
-      name: 'game-object-1',
-    });
-    const gameObject2 = new GameObject({
-      id: '2',
-      name: 'game-object-2',
-    });
-
-    expect(gameObject1.getId()).toEqual('1');
-    expect(gameObject2.getId()).toEqual('2');
-    expect(gameObject1.name).toEqual('game-object-1');
-    expect(gameObject2.name).toEqual('game-object-2');
-  });
-
   it('Returns correct list of component names', () => {
     const gameObject = new GameObject({
       id: '0',
@@ -143,23 +135,23 @@ describe('Engine -> GameObject', () => {
     expect(subscription1.mock.calls.length).toEqual(2);
     expect(subscription2.mock.calls.length).toEqual(1);
 
-    expect(subscription1.mock.calls[0][0]).toStrictEqual({
+    expect(subscription1.mock.calls[0][0]).toMatchObject({
       type: AddComponent,
       componentName: 'TestComponent1',
       target: gameObject,
     });
-    expect(subscription1.mock.calls[1][0]).toStrictEqual({
+    expect(subscription1.mock.calls[1][0]).toMatchObject({
       type: AddComponent,
       componentName: 'TestComponent2',
       target: gameObject,
     });
-    expect(subscription3.mock.calls[0][0]).toStrictEqual({
+    expect(subscription3.mock.calls[0][0]).toMatchObject({
       type: RemoveComponent,
       componentName: 'TestComponent1',
       target: gameObject,
     });
 
-    expect(subscription2.mock.calls[0][0]).toStrictEqual({
+    expect(subscription2.mock.calls[0][0]).toMatchObject({
       type: AddComponent,
       componentName: 'TestComponent2',
       target: gameObject,
@@ -185,7 +177,7 @@ describe('Engine -> GameObject', () => {
     expect(subscription1.mock.calls.length).toEqual(1);
   });
 
-  it('Returns added game object as child by id', () => {
+  it('Removes child from parent with notification', () => {
     const gameObject1 = new GameObject({
       id: '1',
       name: 'game-object-1',
@@ -199,82 +191,21 @@ describe('Engine -> GameObject', () => {
       name: 'game-object-3',
     });
 
-    gameObject3.appendChild(gameObject2);
-    gameObject2.appendChild(gameObject1);
-
-    expect(gameObject3.getChildById('2')).toEqual(gameObject2);
-    expect(gameObject3.getChildById('1')).toBeUndefined();
-    expect(gameObject2.getChildById('1')).toEqual(gameObject1);
-
-    gameObject3.removeChild(gameObject2);
-
-    expect(gameObject3.getChildById('2')).toBeUndefined();
-  });
-
-  it('Returns added game object as child by name', () => {
-    const gameObject1 = new GameObject({
-      id: '1',
-      name: 'game-object-1',
-    });
-    const gameObject2 = new GameObject({
-      id: '2',
-      name: 'game-object-2',
-    });
-    const gameObject3 = new GameObject({
-      id: '3',
-      name: 'game-object-3',
-    });
-
-    gameObject3.appendChild(gameObject2);
-    gameObject2.appendChild(gameObject1);
-
-    expect(gameObject3.getChildrenByName('game-object-2')).toEqual([gameObject2]);
-    expect(gameObject3.getChildrenByName('game-object-1')).toEqual([]);
-    expect(gameObject2.getChildrenByName('game-object-1')).toEqual([gameObject1]);
-
-    gameObject3.removeChild(gameObject2);
-
-    expect(gameObject3.getChildrenByName('game-object-2')).toEqual([]);
-  });
-
-  it('Returns multiple game objects if there are few of them with same name', () => {
-    const gameObject1 = new GameObject({
-      id: '1',
-      name: 'game-object-1',
-    });
-    const gameObject2 = new GameObject({
-      id: '2',
-      name: 'game-object-2',
-    });
-    const gameObject3 = new GameObject({
-      id: '3',
-      name: 'game-object-2',
-    });
+    const listener = jest.fn() as jest.Mock<void, [RemoveChildObjectEvent]>;
+    gameObject1.addEventListener(RemoveChildObject, listener);
 
     gameObject1.appendChild(gameObject2);
-    gameObject1.appendChild(gameObject3);
+    gameObject2.appendChild(gameObject3);
 
-    expect(gameObject1.getChildrenByName('game-object-2')).toEqual([gameObject2, gameObject3]);
-  });
+    gameObject3.remove();
 
-  it('Throws error if child with same id already exists', () => {
-    const gameObject1 = new GameObject({
-      id: '1',
-      name: 'game-object-1',
-    });
-    const gameObject2 = new GameObject({
-      id: '2',
-      name: 'game-object-2',
-    });
-    const gameObject3 = new GameObject({
-      id: '2',
-      name: 'game-object-3',
+    expect(listener.mock.calls.length).toEqual(1);
+    expect(listener.mock.calls[0][0]).toMatchObject({
+      type: RemoveChildObject,
+      target: gameObject2,
+      child: gameObject3,
     });
 
-    gameObject1.appendChild(gameObject2);
-
-    expect(() => {
-      gameObject1.appendChild(gameObject3);
-    }).toThrowError('Can\'t add child with id: 2. Child with same name already exists');
+    expect(gameObject1.getObjectById('game-object-3')).toBeUndefined();
   });
 });

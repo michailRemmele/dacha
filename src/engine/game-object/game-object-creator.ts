@@ -58,7 +58,7 @@ export class GameObjectCreator {
     });
 
     if (isNew) {
-      template.getChildren().forEach((templateChild) => {
+      template.children.forEach((templateChild) => {
         const childOptions = {
           name: templateChild.name,
           templateId: templateChild.id,
@@ -70,7 +70,7 @@ export class GameObjectCreator {
         gameObject.appendChild(gameObjectChild);
       });
     } else {
-      const templateChildrenMap = template.getChildren()
+      const templateChildrenMap = template.children
         .reduce((storage: Record<string, Template>, templateChild) => {
           storage[templateChild.id] = templateChild;
 

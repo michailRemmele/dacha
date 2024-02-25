@@ -218,16 +218,13 @@ export class SpriteRenderer extends System {
       (template) => getImagesFromTemplates(imagesToLoad, template),
     );
 
-    this.gameObjectObserver.getList()
-      .reduce((acc: Record<string, Sprite>, gameObject) => {
-        const sprite = gameObject.getComponent(Sprite);
+    this.gameObjectObserver.forEach((gameObject) => {
+      const sprite = gameObject.getComponent(Sprite);
 
-        if (!acc[sprite.src]) {
-          acc[sprite.src] = sprite;
-        }
-
-        return acc;
-      }, imagesToLoad);
+      if (!imagesToLoad[sprite.src]) {
+        imagesToLoad[sprite.src] = sprite;
+      }
+    });
 
     return imagesToLoad;
   }
@@ -242,7 +239,7 @@ export class SpriteRenderer extends System {
     const object = new Mesh(geometry, material);
 
     object.userData.gameObject = gameObject;
-    this.gameObjectsMap[gameObject.getId()] = object.id;
+    this.gameObjectsMap[gameObject.id] = object.id;
 
     this.renderScene.add(object);
   };
@@ -285,12 +282,12 @@ export class SpriteRenderer extends System {
   }
 
   private updateGameObjects(): void {
-    this.gameObjectObserver.getList().forEach((gameObject, index) => {
+    this.gameObjectObserver.forEach((gameObject, index) => {
       const transform = gameObject.getComponent(Transform);
       const sprite = gameObject.getComponent(Sprite);
 
       const object = this.renderScene.getObjectById(
-        this.gameObjectsMap[gameObject.getId()],
+        this.gameObjectsMap[gameObject.id],
       ) as Mesh;
 
       if (!object) {
@@ -325,7 +322,7 @@ export class SpriteRenderer extends System {
 
     this.lightSubsystem.update();
 
-    this.gameObjectObserver.getList().sort(this.sortFn);
+    this.gameObjectObserver.sort(this.sortFn);
     this.updateGameObjects();
 
     this.renderer.render(this.renderScene, this.currentCamera);

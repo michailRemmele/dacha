@@ -34,7 +34,7 @@ export const getImagesFromTemplates = (
   images: Record<string, Sprite>,
   template: Template,
 ): void => {
-  template.getChildren().forEach((childTemplate) => getImagesFromTemplates(images, childTemplate));
+  template.children.forEach((childTemplate) => getImagesFromTemplates(images, childTemplate));
 
   const sprite = template.getComponent(Sprite);
 

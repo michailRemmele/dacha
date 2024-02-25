@@ -93,11 +93,11 @@ describe('Engine -> GameObjectCreator', () => {
     expect(gameObject.id).toBe('001');
     expect(gameObject.name).toBe('gameObjectExample');
 
-    expect(gameObject.getChildren()[0].id).toBe('002');
-    expect(gameObject.getChildren()[0].name).toBe('childExample');
+    expect(gameObject.children[0].id).toBe('002');
+    expect(gameObject.children[0].name).toBe('childExample');
 
-    expect(gameObject.getChildren().length).toBe(1);
-    expect(gameObject.getChildren()[0].parent).toBe(gameObject);
+    expect(gameObject.children.length).toBe(1);
+    expect(gameObject.children[0].parent).toBe(gameObject);
 
     expect(gameObject.getComponents()).toStrictEqual([
       gameObject.getComponent(TestComponent1),
@@ -112,11 +112,11 @@ describe('Engine -> GameObjectCreator', () => {
     expect((gameObject.getComponent(TestComponent2)).testField5).toBe(false);
     expect((gameObject.getComponent(TestComponent2)).testField6).toBe(300);
 
-    expect(gameObject.getChildren()[0].getComponent(TestComponent1)).toBeUndefined();
+    expect(gameObject.children[0].getComponent(TestComponent1)).toBeUndefined();
 
-    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
-    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField5).toBe(true);
-    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField6).toBe(450);
+    expect((gameObject.children[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
+    expect((gameObject.children[0].getComponent(TestComponent2)).testField5).toBe(true);
+    expect((gameObject.children[0].getComponent(TestComponent2)).testField6).toBe(450);
   });
 
   it('Creates game object from template', () => {
@@ -128,17 +128,17 @@ describe('Engine -> GameObjectCreator', () => {
     expect(gameObject.name).toBe('gameObjectFromTemplateExample');
     expect(gameObject.templateId).toBe('000');
 
-    expect(gameObject.getChildren()[0].id).toBe('004');
-    expect(gameObject.getChildren()[0].name).toBe('childFromTemplateExample1');
-    expect(gameObject.getChildren()[0].templateId).toBe('001');
+    expect(gameObject.children[0].id).toBe('004');
+    expect(gameObject.children[0].name).toBe('childFromTemplateExample1');
+    expect(gameObject.children[0].templateId).toBe('001');
 
-    expect(gameObject.getChildren()[1].id).toBe('005');
-    expect(gameObject.getChildren()[1].name).toBe('childFromTemplateExample2');
-    expect(gameObject.getChildren()[1].templateId).toBeUndefined();
+    expect(gameObject.children[1].id).toBe('005');
+    expect(gameObject.children[1].name).toBe('childFromTemplateExample2');
+    expect(gameObject.children[1].templateId).toBeUndefined();
 
-    expect(gameObject.getChildren().length).toBe(2);
-    expect(gameObject.getChildren()[0].parent).toBe(gameObject);
-    expect(gameObject.getChildren()[1].parent).toBe(gameObject);
+    expect(gameObject.children.length).toBe(2);
+    expect(gameObject.children[0].parent).toBe(gameObject);
+    expect(gameObject.children[1].parent).toBe(gameObject);
 
     expect(gameObject.getComponents()).toStrictEqual([
       gameObject.getComponent(TestComponent2),
@@ -153,17 +153,17 @@ describe('Engine -> GameObjectCreator', () => {
     expect((gameObject.getComponent(TestComponent2)).testField5).toBe(true);
     expect((gameObject.getComponent(TestComponent2)).testField6).toBe(200);
 
-    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
-    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField2).toBe(false);
-    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField3).toBe(350);
+    expect((gameObject.children[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
+    expect((gameObject.children[0].getComponent(TestComponent1)).testField2).toBe(false);
+    expect((gameObject.children[0].getComponent(TestComponent1)).testField3).toBe(350);
 
-    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
-    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField5).toBe(true);
-    expect((gameObject.getChildren()[0].getComponent(TestComponent2)).testField6).toBe(750);
+    expect((gameObject.children[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
+    expect((gameObject.children[0].getComponent(TestComponent2)).testField5).toBe(true);
+    expect((gameObject.children[0].getComponent(TestComponent2)).testField6).toBe(750);
 
-    expect((gameObject.getChildren()[1].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
-    expect((gameObject.getChildren()[1].getComponent(TestComponent1)).testField2).toBe(false);
-    expect((gameObject.getChildren()[1].getComponent(TestComponent1)).testField3).toBe(950);
+    expect((gameObject.children[1].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
+    expect((gameObject.children[1].getComponent(TestComponent1)).testField2).toBe(false);
+    expect((gameObject.children[1].getComponent(TestComponent1)).testField3).toBe(950);
   });
 
   it('Creates game object from template without game object options', () => {
@@ -179,12 +179,12 @@ describe('Engine -> GameObjectCreator', () => {
     expect(gameObject.name).toBeDefined();
     expect(gameObject.templateId).toBe('000');
 
-    expect(gameObject.getChildren()[0].id).toBeDefined();
-    expect(gameObject.getChildren()[0].name).toBe('childTemplateExample');
-    expect(gameObject.getChildren()[0].templateId).toBe('001');
+    expect(gameObject.children[0].id).toBeDefined();
+    expect(gameObject.children[0].name).toBe('childTemplateExample');
+    expect(gameObject.children[0].templateId).toBe('001');
 
-    expect(gameObject.getChildren().length).toBe(1);
-    expect(gameObject.getChildren()[0].parent).toBe(gameObject);
+    expect(gameObject.children.length).toBe(1);
+    expect(gameObject.children[0].parent).toBe(gameObject);
 
     expect(gameObject.getComponents()).toStrictEqual([
       gameObject.getComponent(TestComponent2),
@@ -194,8 +194,8 @@ describe('Engine -> GameObjectCreator', () => {
     expect((gameObject.getComponent(TestComponent2)).testField5).toBe(true);
     expect((gameObject.getComponent(TestComponent2)).testField6).toBe(200);
 
-    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
-    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField2).toBe(false);
-    expect((gameObject.getChildren()[0].getComponent(TestComponent1)).testField3).toBe(350);
+    expect((gameObject.children[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
+    expect((gameObject.children[0].getComponent(TestComponent1)).testField2).toBe(false);
+    expect((gameObject.children[0].getComponent(TestComponent1)).testField3).toBe(350);
   });
 });

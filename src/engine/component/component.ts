@@ -1,3 +1,4 @@
+import { Scene } from '../scene';
 import type { GameObject } from '../game-object';
 import type { Constructor } from '../../types/utils';
 
@@ -8,7 +9,7 @@ export const findParentComponent = (
   gameObject: GameObject,
   componentClass: ComponentConstructor,
 ): Component | void => {
-  if (!gameObject.parent) {
+  if (!gameObject.parent || gameObject.parent instanceof Scene) {
     return void 0;
   }
 

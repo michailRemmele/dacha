@@ -92,8 +92,7 @@ export class CollisionDetectionSubsystem {
   };
 
   private checkOnReorientation(gameObject: GameObject): boolean {
-    const gameObjectId = gameObject.getId();
-    const previousTransform = this.lastProcessedGameObjects[gameObjectId];
+    const previousTransform = this.lastProcessedGameObjects[gameObject.id];
 
     if (!previousTransform) {
       return true;
@@ -117,12 +116,11 @@ export class CollisionDetectionSubsystem {
   private updateAxisSortedList(entry: SortedEntry, axis: Axis): void {
     const { gameObject, aabb, coordinates } = entry;
 
-    const gameObjectId = gameObject.getId();
     const sortedListCoordinates = [aabb.min[axis], aabb.max[axis]];
     const { sortedList } = this.axis[axis];
 
     for (let i = 0; i < sortedList.length; i += 1) {
-      if (gameObjectId === sortedList[i].entry.gameObject.getId()) {
+      if (gameObject.id === sortedList[i].entry.gameObject.id) {
         sortedList[i].value = sortedListCoordinates.shift() as number;
         sortedList[i].entry.aabb = aabb;
         sortedList[i].entry.coordinates = coordinates;
@@ -134,10 +132,8 @@ export class CollisionDetectionSubsystem {
   }
 
   private removeFromSortedList(gameObject: GameObject, axis: Axis): void {
-    const gameObjectId = gameObject.getId();
-
     this.axis[axis].sortedList = this.axis[axis].sortedList.filter(
-      (item) => gameObjectId !== item.entry.gameObject.getId(),
+      (item) => gameObject.id !== item.entry.gameObject.id,
     );
   }
 
@@ -239,7 +235,6 @@ export class CollisionDetectionSubsystem {
         return;
       }
 
-      const gameObjectId = gameObject.getId();
       const transform = gameObject.getComponent(Transform);
       const colliderContainer = gameObject.getComponent(ColliderContainer);
 
@@ -254,7 +249,7 @@ export class CollisionDetectionSubsystem {
 
       Object.values(AXIS).forEach((axis) => {
         const average = (aabb.min[axis] + aabb.max[axis]) * 0.5;
-        this.axis[axis].dispersionCalculator.addToSample(gameObjectId, average);
+        this.axis[axis].dispersionCalculator.addToSample(gameObject.id, average);
 
         const entry = {
           gameObject,
@@ -262,14 +257,14 @@ export class CollisionDetectionSubsystem {
           coordinates,
         };
 
-        if (!this.lastProcessedGameObjects[gameObjectId]) {
+        if (!this.lastProcessedGameObjects[gameObject.id]) {
           this.addToAxisSortedList(entry, axis);
         } else {
           this.updateAxisSortedList(entry, axis);
         }
       });
 
-      this.lastProcessedGameObjects[gameObjectId] = transform.clone();
+      this.lastProcessedGameObjects[gameObject.id] = transform.clone();
     });
 
     this.sweepAndPrune(this.getSortingAxis()).forEach((pair) => {

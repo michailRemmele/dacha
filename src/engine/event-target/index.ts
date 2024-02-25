@@ -3,6 +3,5 @@ export type {
   Event,
   EventType,
   EventPayload,
-  EventMap,
   ListenerFn,
 } from './types';

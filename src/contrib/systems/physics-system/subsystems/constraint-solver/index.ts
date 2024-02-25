@@ -103,8 +103,8 @@ export class ConstraintSolver {
     mtv1: Vector2,
     mtv2: Vector2,
   ): void {
-    const id1 = gameObject1.getId();
-    const id2 = gameObject2.getId();
+    const id1 = gameObject1.id;
+    const id2 = gameObject2.id;
 
     const rigidBody1 = gameObject1.getComponent(RigidBody);
     const rigidBody2 = gameObject2.getComponent(RigidBody);

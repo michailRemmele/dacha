@@ -96,21 +96,17 @@ describe('Engine -> GameObjectObserver', () => {
       components: [TestComponent1, TestComponent2],
     });
 
-    scene.addGameObject(gameObject1);
-    scene.addGameObject(gameObject2);
-    scene.addGameObject(gameObject3);
-    scene.addGameObject(gameObject4);
-    scene.addGameObject(gameObject5);
+    scene.appendChild(gameObject1);
+    scene.appendChild(gameObject2);
+    scene.appendChild(gameObject3);
+    scene.appendChild(gameObject4);
+    scene.appendChild(gameObject5);
 
-    expect(gameObjectObserver.size()).toEqual(2);
-
-    const [id4, id5] = gameObjectObserver.map((gameObject) => gameObject.getId());
-    expect(id4).toEqual('4');
-    expect(id5).toEqual('5');
+    expect(gameObjectObserver.size).toEqual(2);
 
     const expectedIds = ['4', '5'];
     gameObjectObserver.forEach((gameObject, index) => {
-      expect(gameObject.getId()).toEqual(expectedIds[index]);
+      expect(gameObject.id).toEqual(expectedIds[index]);
     });
   });
 
@@ -124,70 +120,70 @@ describe('Engine -> GameObjectObserver', () => {
     gameObjectObserver.addEventListener(AddGameObject, testFn1);
     gameObjectObserver.addEventListener(AddGameObject, testFn2);
 
-    scene.addGameObject(gameObject1);
+    scene.appendChild(gameObject1);
 
     expect(testFn1.mock.calls.length).toEqual(1);
-    expect(testFn1.mock.calls[0]).toEqual([{
+    expect(testFn1.mock.calls[0]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject1,
     }]);
     expect(testFn2.mock.calls.length).toEqual(1);
-    expect(testFn2.mock.calls[0]).toEqual([{
+    expect(testFn2.mock.calls[0]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject1,
     }]);
-    expect(gameObjectObserver.size()).toEqual(1);
+    expect(gameObjectObserver.size).toEqual(1);
 
-    scene.addGameObject(gameObject3);
+    scene.appendChild(gameObject3);
 
     expect(testFn1.mock.calls.length).toEqual(1);
     expect(testFn2.mock.calls.length).toEqual(1);
-    expect(gameObjectObserver.size()).toEqual(1);
+    expect(gameObjectObserver.size).toEqual(1);
 
     gameObject3.setComponent(new TestComponent1());
 
     expect(testFn1.mock.calls.length).toEqual(2);
-    expect(testFn1.mock.calls[1]).toEqual([{
+    expect(testFn1.mock.calls[1]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject3,
     }]);
     expect(testFn2.mock.calls.length).toEqual(2);
-    expect(testFn2.mock.calls[1]).toEqual([{
+    expect(testFn2.mock.calls[1]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject3,
     }]);
-    expect(gameObjectObserver.size()).toEqual(2);
+    expect(gameObjectObserver.size).toEqual(2);
 
-    scene.addGameObject(gameObject4);
-    scene.addGameObject(gameObject5);
+    scene.appendChild(gameObject4);
+    scene.appendChild(gameObject5);
 
     expect(testFn1.mock.calls.length).toEqual(4);
-    expect(testFn1.mock.calls[2]).toEqual([{
+    expect(testFn1.mock.calls[2]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject4,
     }]);
-    expect(testFn1.mock.calls[3]).toEqual([{
+    expect(testFn1.mock.calls[3]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject5,
     }]);
     expect(testFn2.mock.calls.length).toEqual(4);
-    expect(testFn2.mock.calls[2]).toEqual([{
+    expect(testFn2.mock.calls[2]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject4,
     }]);
-    expect(testFn2.mock.calls[3]).toEqual([{
+    expect(testFn2.mock.calls[3]).toMatchObject([{
       type: AddGameObject,
       target: gameObjectObserver,
       gameObject: gameObject5,
     }]);
-    expect(gameObjectObserver.size()).toEqual(4);
+    expect(gameObjectObserver.size).toEqual(4);
   });
 
   it('Correct subscribe on new game objects removes', () => {
@@ -201,59 +197,59 @@ describe('Engine -> GameObjectObserver', () => {
     gameObjectObserver.addEventListener(RemoveGameObject, testFn1);
     gameObjectObserver.addEventListener(RemoveGameObject, testFn2);
 
-    scene.addGameObject(gameObject1);
-    scene.addGameObject(gameObject2);
-    scene.addGameObject(gameObject3);
-    scene.addGameObject(gameObject4);
-    scene.addGameObject(gameObject5);
+    scene.appendChild(gameObject1);
+    scene.appendChild(gameObject2);
+    scene.appendChild(gameObject3);
+    scene.appendChild(gameObject4);
+    scene.appendChild(gameObject5);
 
     expect(testFn1.mock.calls.length).toEqual(0);
     expect(testFn2.mock.calls.length).toEqual(0);
-    expect(gameObjectObserver.size()).toEqual(4);
+    expect(gameObjectObserver.size).toEqual(4);
 
     gameObject1.removeComponent(TestComponent1);
 
     expect(testFn1.mock.calls.length).toEqual(1);
-    expect(testFn1.mock.calls[0]).toEqual([{
+    expect(testFn1.mock.calls[0]).toMatchObject([{
       type: RemoveGameObject,
       target: gameObjectObserver,
       gameObject: gameObject1,
     }]);
     expect(testFn2.mock.calls.length).toEqual(1);
-    expect(testFn2.mock.calls[0]).toEqual([{
+    expect(testFn2.mock.calls[0]).toMatchObject([{
       type: RemoveGameObject,
       target: gameObjectObserver,
       gameObject: gameObject1,
     }]);
-    expect(gameObjectObserver.size()).toEqual(3);
+    expect(gameObjectObserver.size).toEqual(3);
 
-    scene.removeGameObject(gameObject3.id);
-    scene.removeGameObject(gameObject4.id);
+    scene.removeChild(gameObject3);
+    scene.removeChild(gameObject4);
     gameObject5.removeComponent(TestComponent1);
 
     expect(testFn1.mock.calls.length).toEqual(3);
-    expect(testFn1.mock.calls[1]).toEqual([{
+    expect(testFn1.mock.calls[1]).toMatchObject([{
       type: RemoveGameObject,
       target: gameObjectObserver,
       gameObject: gameObject4,
     }]);
-    expect(testFn1.mock.calls[2]).toEqual([{
+    expect(testFn1.mock.calls[2]).toMatchObject([{
       type: RemoveGameObject,
       target: gameObjectObserver,
       gameObject: gameObject5,
     }]);
     expect(testFn2.mock.calls.length).toEqual(3);
-    expect(testFn2.mock.calls[1]).toEqual([{
+    expect(testFn2.mock.calls[1]).toMatchObject([{
       type: RemoveGameObject,
       target: gameObjectObserver,
       gameObject: gameObject4,
     }]);
-    expect(testFn2.mock.calls[2]).toEqual([{
+    expect(testFn2.mock.calls[2]).toMatchObject([{
       type: RemoveGameObject,
       target: gameObjectObserver,
       gameObject: gameObject5,
     }]);
-    expect(gameObjectObserver.size()).toEqual(1);
+    expect(gameObjectObserver.size).toEqual(1);
   });
 
   it('Correct unsubscribe from game object observer events', () => {
@@ -265,13 +261,13 @@ describe('Engine -> GameObjectObserver', () => {
 
     gameObjectObserver.addEventListener(AddGameObject, testFn);
 
-    scene.addGameObject(gameObject1);
+    scene.appendChild(gameObject1);
 
     expect(testFn.mock.calls.length).toEqual(1);
 
     gameObjectObserver.removeEventListener(AddGameObject, testFn);
 
-    scene.addGameObject(gameObject4);
+    scene.appendChild(gameObject4);
 
     expect(testFn.mock.calls.length).toEqual(1);
   });
@@ -281,14 +277,11 @@ describe('Engine -> GameObjectObserver', () => {
       components: [TestComponent1, TestComponent2],
     });
 
-    scene.addGameObject(gameObject1);
-    scene.addGameObject(gameObject2);
-    scene.addGameObject(gameObject3);
-    scene.addGameObject(gameObject4);
-    scene.addGameObject(gameObject5);
-
-    expect(gameObjectObserver.getByIndex(0)).toEqual(gameObject4);
-    expect(gameObjectObserver.getByIndex(1)).toEqual(gameObject5);
+    scene.appendChild(gameObject1);
+    scene.appendChild(gameObject2);
+    scene.appendChild(gameObject3);
+    scene.appendChild(gameObject4);
+    scene.appendChild(gameObject5);
 
     expect(gameObjectObserver.getById('4')).toEqual(gameObject4);
     expect(gameObjectObserver.getById('5')).toEqual(gameObject5);
@@ -303,26 +296,68 @@ describe('Engine -> GameObjectObserver', () => {
       components: [TestComponent1],
     });
 
-    scene.addGameObject(gameObject5);
-    scene.addGameObject(gameObject4);
-    scene.addGameObject(gameObject2);
-    scene.addGameObject(gameObject3);
-    scene.addGameObject(gameObject1);
+    scene.appendChild(gameObject5);
+    scene.appendChild(gameObject4);
+    scene.appendChild(gameObject2);
+    scene.appendChild(gameObject3);
+    scene.appendChild(gameObject1);
 
     const unsortedIds = ['5', '4', '2', '1'];
     gameObjectObserver.forEach((gameObject, index) => {
-      expect(gameObject.getId()).toEqual(unsortedIds[index]);
+      expect(gameObject.id).toEqual(unsortedIds[index]);
     });
 
     gameObjectObserver.sort((a, b) => {
-      if (a.getId() < b.getId()) { return -1; }
-      if (a.getId() > b.getId()) { return 1; }
+      if (a.id < b.id) { return -1; }
+      if (a.id > b.id) { return 1; }
       return 0;
     });
 
     const sortedIds = ['1', '2', '4', '5'];
     gameObjectObserver.forEach((gameObject, index) => {
-      expect(gameObject.getId()).toEqual(sortedIds[index]);
+      expect(gameObject.id).toEqual(sortedIds[index]);
     });
+  });
+
+  it('Correctly adds all incoming child objects', () => {
+    scene.appendChild(gameObject1);
+
+    gameObject1.appendChild(gameObject2);
+    gameObject1.appendChild(gameObject3);
+    gameObject2.appendChild(gameObject4);
+    gameObject3.appendChild(gameObject5);
+
+    const gameObjectObserver = new GameObjectObserver(scene, {
+      components: [TestComponent1],
+    });
+
+    expect(gameObjectObserver.size).toEqual(4);
+
+    expect(gameObjectObserver.getById('1')).toEqual(gameObject1);
+    expect(gameObjectObserver.getById('2')).toEqual(gameObject2);
+    expect(gameObjectObserver.getById('3')).toBeUndefined();
+    expect(gameObjectObserver.getById('4')).toEqual(gameObject4);
+    expect(gameObjectObserver.getById('5')).toEqual(gameObject5);
+  });
+
+  it('Correctly adds all incoming child objects', () => {
+    const gameObjectObserver = new GameObjectObserver(scene, {
+      components: [TestComponent1],
+    });
+
+    scene.appendChild(gameObject1);
+
+    gameObject1.appendChild(gameObject2);
+    gameObject1.appendChild(gameObject3);
+    gameObject2.appendChild(gameObject4);
+    gameObject3.appendChild(gameObject5);
+
+    expect(gameObjectObserver.size).toEqual(4);
+
+    expect(gameObjectObserver.getById('1')).toEqual(gameObject1);
+    expect(gameObjectObserver.getById('2')).toEqual(gameObject2);
+    expect(gameObjectObserver.getById('3')).toBeUndefined();
+    expect(gameObjectObserver.getById('4')).toEqual(gameObject4);
+    expect(gameObjectObserver.getById('5')).toEqual(gameObject5);
   });
 });
