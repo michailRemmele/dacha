@@ -71,18 +71,6 @@ export class Actor extends Entity {
     return super.getEntityByName(name) as Actor | undefined;
   }
 
-  getAncestor(): Actor | Scene {
-    const findAncestor = (actor: Actor | Scene): Actor | Scene => {
-      if (actor.parent) {
-        return findAncestor(actor.parent);
-      }
-
-      return actor;
-    };
-
-    return findAncestor(this);
-  }
-
   getComponents(): Array<Component> {
     return Object.values(this.components);
   }

@@ -68,52 +68,6 @@ describe('Engine -> Actor', () => {
     expect(actor.getComponent(TestComponent2)).toBeUndefined();
   });
 
-  it('Returns correct ancestor', () => {
-    const actor1 = new Actor({
-      id: '1',
-      name: 'actor-1',
-    });
-    const actor2 = new Actor({
-      id: '2',
-      name: 'actor-2',
-    });
-    const actor3 = new Actor({
-      id: '3',
-      name: 'actor-3',
-    });
-
-    actor3.appendChild(actor2);
-    actor2.appendChild(actor1);
-
-    expect(actor1.getAncestor()).toEqual(actor3);
-    expect(actor2.getAncestor()).toEqual(actor3);
-    expect(actor3.getAncestor()).toEqual(actor3);
-  });
-
-  it('Returns correct ancestor after deletion relations', () => {
-    const actor1 = new Actor({
-      id: '1',
-      name: 'actor-1',
-    });
-    const actor2 = new Actor({
-      id: '2',
-      name: 'actor-2',
-    });
-    const actor3 = new Actor({
-      id: '3',
-      name: 'actor-3',
-    });
-
-    actor3.appendChild(actor2);
-    actor2.appendChild(actor1);
-
-    actor3.removeChild(actor2);
-
-    expect(actor1.getAncestor()).toEqual(actor2);
-    expect(actor2.getAncestor()).toEqual(actor2);
-    expect(actor3.getAncestor()).toEqual(actor3);
-  });
-
   it('Calls all subscription callbacks on component add/remove', () => {
     const actor = new Actor({
       id: '0',
