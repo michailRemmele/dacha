@@ -26,9 +26,9 @@ export class PhysicsSubsystem {
   private scene: Scene;
   private actorCollection: ActorCollection;
   private gravitationalAcceleration: number;
-  private actorsVelocity: Record<string, Vector2>;
-  private actorsForceVector: Record<string, Vector2>;
-  private actorsImpulseVector: Record<string, Vector2>;
+  private actorsVelocity: Record<string, Vector2 | undefined>;
+  private actorsForceVector: Record<string, Vector2 | undefined>;
+  private actorsImpulseVector: Record<string, Vector2 | undefined>;
 
   constructor(options: SystemOptions) {
     const {
@@ -86,19 +86,17 @@ export class PhysicsSubsystem {
   };
 
   private handleStopMovement = (event: ActorEvent): void => {
-    if (this.actorsVelocity[event.target.id]) {
-      this.actorsVelocity[event.target.id].multiplyNumber(0);
-    }
+    this.actorsVelocity[event.target.id]?.multiplyNumber(0);
   };
 
   private handleAddForce = (event: AddForceEvent): void => {
     const { target, value } = event;
-    this.actorsForceVector[target.id].add(value);
+    this.actorsForceVector[target.id]?.add(value);
   };
 
   private handleAddImpulse = (event: AddImpulseEvent): void => {
     const { target, value } = event;
-    this.actorsImpulseVector[target.id].add(value);
+    this.actorsImpulseVector[target.id]?.add(value);
   };
 
   private applyDragForce(actor: Actor, deltaTime: number): void {
@@ -151,12 +149,11 @@ export class PhysicsSubsystem {
       const transform = actor.getComponent(Transform);
       const { mass } = rigidBody;
 
-      const forceVector = this.actorsForceVector[actor.id];
+      const forceVector = this.actorsForceVector[actor.id]!;
+      const impulseVector = this.actorsImpulseVector[actor.id]!;
+      const velocityVector = this.actorsVelocity[actor.id]!;
+
       forceVector.add(this.getGravityForce(rigidBody));
-
-      const impulseVector = this.actorsImpulseVector[actor.id];
-
-      const velocityVector = this.actorsVelocity[actor.id];
 
       if (forceVector.x || forceVector.y) {
         forceVector.multiplyNumber(deltaTimeInSeconds / mass);
@@ -173,8 +170,8 @@ export class PhysicsSubsystem {
       transform.offsetX += velocityVector.x * deltaTimeInSeconds;
       transform.offsetY += velocityVector.y * deltaTimeInSeconds;
 
-      this.actorsForceVector[actor.id].multiplyNumber(0);
-      this.actorsImpulseVector[actor.id].multiplyNumber(0);
+      forceVector.multiplyNumber(0);
+      impulseVector.multiplyNumber(0);
     });
   }
 }
