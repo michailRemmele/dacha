@@ -4,9 +4,8 @@ import type {
   SystemOptions,
   TemplateConfig,
   LevelConfig,
-  GameObject,
-  GameObjectSpawner,
-  GameObjectCreator,
+  ActorSpawner,
+  ActorCreator,
   MouseControlEvent,
 } from 'remiz'
 
@@ -18,15 +17,13 @@ import type { Store } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
 import { createFromTemplate, updatePlacementPosition } from './utils'
-import { getTool, getTemplateToolObject } from '../../../utils/get-tool'
+import { getTool } from '../../../utils/get-tool'
 import type { Position } from './types'
 
 export class TemplateToolSystem extends System {
   private scene: Scene
   private configStore: Store
-  private mainObject: GameObject
-  private templateToolObject: GameObject
-  private gameObjectSpawner: GameObjectSpawner
+  private actorSpawner: ActorSpawner
   private previewSubsystem: PreviewSubsystem
 
   private selectedLevelId?: string
@@ -39,19 +36,17 @@ export class TemplateToolSystem extends System {
 
     const {
       scene,
-      gameObjectSpawner,
+      actorSpawner,
     } = options
 
     this.scene = scene
     this.configStore = this.scene.data.configStore as Store
-    this.mainObject = this.scene.data.mainObject as GameObject
-    this.templateToolObject = getTemplateToolObject(scene)
-    this.gameObjectSpawner = gameObjectSpawner
+    this.actorSpawner = actorSpawner
 
     this.previewSubsystem = new PreviewSubsystem({
       scene: this.scene,
-      gameObjectCreator: this.scene.data.gameObjectCreator as GameObjectCreator,
-      gameObjectSpawner: this.gameObjectSpawner,
+      actorCreator: this.scene.data.actorCreator as ActorCreator,
+      actorSpawner: this.actorSpawner,
     })
 
     this.cursor = { x: 0, y: 0 }
@@ -60,21 +55,18 @@ export class TemplateToolSystem extends System {
 
   mount(): void {
     this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.mainObject.addEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
-    this.mainObject.addEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
-    this.templateToolObject.addEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
+    this.scene.addEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
+    this.scene.addEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
+    this.scene.addEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
 
     this.previewSubsystem.mount()
   }
 
   unmount(): void {
     this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.mainObject.removeEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
-    this.mainObject.removeEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
-    this.templateToolObject.removeEventListener(
-      EventType.AddFromTemplate,
-      this.handleAddFromTemplate,
-    )
+    this.scene.removeEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
+    this.scene.removeEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
+    this.scene.removeEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
 
     this.previewSubsystem.unmount()
   }
@@ -120,7 +112,7 @@ export class TemplateToolSystem extends System {
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
     const level = this.configStore.get(['levels', `id:${this.selectedLevelId}`]) as LevelConfig
 
-    const gameObject = createFromTemplate(
+    const actor = createFromTemplate(
       template,
       level,
       this.placementPosition.x || 0,
@@ -131,8 +123,8 @@ export class TemplateToolSystem extends System {
       command: ADD,
       scope: ROOT_SCOPE,
       options: {
-        path: ['levels', `id:${this.selectedLevelId}`, 'gameObjects'],
-        value: gameObject,
+        path: ['levels', `id:${this.selectedLevelId}`, 'actors'],
+        value: actor,
       },
     })
   }

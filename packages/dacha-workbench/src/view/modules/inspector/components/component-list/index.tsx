@@ -1,6 +1,6 @@
 import { useContext, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { GameObjectConfig } from 'remiz'
+import type { ActorConfig } from 'remiz'
 
 import { EntityList } from '../entity-list'
 import { SelectedEntityContext, SchemasContext } from '../../../../providers'
@@ -12,7 +12,7 @@ export const ComponentList: FC = () => {
   const { path = [] } = useContext(SelectedEntityContext)
   const { components: availableComponents } = useContext(SchemasContext)
 
-  const { components = [] } = useConfig(path) as GameObjectConfig
+  const { components = [] } = useConfig(path) as ActorConfig
 
   const addedComponents = useMemo(() => components.reduce(
     (acc, component) => acc.add(component.name),

@@ -16,7 +16,7 @@ import {
   AimOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import type { GameObject } from 'remiz'
+import type { Actor } from 'remiz'
 
 import { EngineContext } from '../../providers'
 import { Tool, ToolController } from '../../../engine/components'
@@ -34,8 +34,8 @@ export const Toolbar: FC = () => {
     gameStateObserver,
   } = useContext(EngineContext)
 
-  const mainObjectId = useMemo<string>(
-    () => (scene.data.mainObject as GameObject).id,
+  const mainActorId = useMemo<string>(
+    () => (scene.data.mainActor as Actor).id,
     [],
   )
 
@@ -51,18 +51,18 @@ export const Toolbar: FC = () => {
     }
 
     const handleUpdate = (): void => {
-      const mainObject = scene.getGameObject(mainObjectId) as GameObject
-      const toolController = mainObject.getComponent(ToolController)
-      const toolObject = mainObject.getChildById(toolController.activeTool)
+      const mainActor = scene.getEntityById(mainActorId) as Actor
+      const toolController = mainActor.getComponent(ToolController)
+      const toolActor = mainActor.getEntityById(toolController.activeTool)
 
-      if (!toolObject) {
+      if (!toolActor) {
         return
       }
 
       const {
         name,
         features: currentFeatures,
-      } = toolObject.getComponent(Tool)
+      } = toolActor.getComponent(Tool)
 
       if (name !== selectedTool) {
         setSelectedTool(name)
@@ -88,7 +88,7 @@ export const Toolbar: FC = () => {
   }, [
     scene,
     gameStateObserver,
-    mainObjectId,
+    mainActorId,
     selectedTool,
     toolFeatures,
   ])

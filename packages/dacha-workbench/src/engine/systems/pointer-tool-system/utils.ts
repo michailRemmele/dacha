@@ -1,23 +1,27 @@
-import { MathOps, Transform, Sprite } from 'remiz'
-import type { GameObject } from 'remiz'
+import {
+  MathOps,
+  Transform,
+  Sprite,
+  Actor,
+} from 'remiz'
 
 import { Shape } from '../../components/shape'
 import type { RectangleShape } from '../../components/shape'
 
-const accumulatePath = (gameObject: GameObject, path: Array<string>): void => {
-  path.unshift(`id:${gameObject.id}`)
+const accumulatePath = (actor: Actor, path: Array<string>): void => {
+  path.unshift(`id:${actor.id}`)
 
-  if (gameObject.parent !== undefined) {
+  if (actor.parent instanceof Actor) {
     path.unshift('children')
-    accumulatePath(gameObject.parent, path)
+    accumulatePath(actor.parent, path)
   }
 }
 
-export const buildGameObjectPath = (gameObject: GameObject, levelId: string): Array<string> => {
+export const buildActorPath = (actor: Actor, levelId: string): Array<string> => {
   const path: Array<string> = []
 
-  accumulatePath(gameObject, path)
-  path.unshift('levels', `id:${levelId}`, 'gameObjects')
+  accumulatePath(actor, path)
+  path.unshift('levels', `id:${levelId}`, 'actors')
 
   return path
 }
@@ -29,9 +33,9 @@ const getAngle = (rotation: number): number => {
   return MathOps.degToRad(acuteAngle)
 }
 
-export const updateFrameSize = (frame: GameObject, gameObject: GameObject): void => {
-  const sprite = gameObject.getComponent(Sprite)
-  const transform = gameObject.getComponent(Transform)
+export const updateFrameSize = (frame: Actor, actor: Actor): void => {
+  const sprite = actor.getComponent(Sprite)
+  const transform = actor.getComponent(Transform)
 
   let offsetX = 0
   let offsetY = 0

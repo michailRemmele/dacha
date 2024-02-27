@@ -7,16 +7,16 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Input, Button, Space } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
-import type { GameObjectConfig, TemplateConfig } from 'remiz'
+import type { ActorConfig, TemplateConfig } from 'remiz'
 
 import { Labelled } from '../../components'
 import { useConfig, useStore } from '../../../../hooks'
 import { EngineContext } from '../../../../providers'
 import { EventType } from '../../../../../events'
 
-import { SpaceCompactCSS, ButtonCSS } from './game-object-form.style'
+import { SpaceCompactCSS, ButtonCSS } from './actor-form.style'
 
-const GAME_OBJECT_PATH_START = 3
+const ACTOR_PATH_START = 3
 
 interface TemplateFieldProps {
   path: Array<string>
@@ -36,13 +36,13 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
     const copyPath = path.slice(0)
     const resultPath = []
 
-    while (copyPath.length > GAME_OBJECT_PATH_START) {
-      const entity = store.get(copyPath) as GameObjectConfig | GameObjectConfig['children']
+    while (copyPath.length > ACTOR_PATH_START) {
+      const entity = store.get(copyPath) as ActorConfig | ActorConfig['children']
 
       if (Array.isArray(entity)) {
         resultPath.unshift('children')
       } else {
-        resultPath.unshift(`id:${(entity as GameObjectConfig).templateId as string}`)
+        resultPath.unshift(`id:${(entity as ActorConfig).templateId as string}`)
       }
       copyPath.pop()
     }
@@ -58,7 +58,7 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
 
   return (
     <Labelled
-      label={t('inspector.gameObjectForm.field.templateName.label')}
+      label={t('inspector.actorForm.field.templateName.label')}
     >
       <Space.Compact
         css={SpaceCompactCSS}

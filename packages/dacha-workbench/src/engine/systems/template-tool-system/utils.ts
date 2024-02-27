@@ -3,7 +3,7 @@ import {
   Sprite,
 } from 'remiz'
 import type {
-  GameObjectConfig,
+  ActorConfig,
   TemplateConfig,
   LevelConfig,
   Scene,
@@ -21,13 +21,13 @@ import type { Store } from '../../../store'
 import { TOOL_NAME } from './consts'
 import type { Position } from './types'
 
-const buildGameObject = (template: TemplateConfig, index?: number): GameObjectConfig => ({
+const buildActor = (template: TemplateConfig, index?: number): ActorConfig => ({
   id: uuidv4(),
   templateId: template.id,
   fromTemplate: true,
   name: index ? `${template.name} ${index}` : template.name,
   components: [],
-  children: (template.children ?? []).map((child) => buildGameObject(child)),
+  children: (template.children ?? []).map((child) => buildActor(child)),
 })
 
 export const createFromTemplate = (
@@ -35,14 +35,14 @@ export const createFromTemplate = (
   level: LevelConfig,
   x: number,
   y: number,
-): GameObjectConfig => {
+): ActorConfig => {
   const templateCopy = structuredClone(template)
 
-  const { gameObjects } = level
-  const sameTemplateObjects = gameObjects
-    .filter((gameObject) => gameObject.templateId === template.id)
+  const { actors } = level
+  const sameTemplateObjects = actors
+    .filter((actor) => actor.templateId === template.id)
 
-  const gameObject = buildGameObject(templateCopy, sameTemplateObjects.length)
+  const actor = buildActor(templateCopy, sameTemplateObjects.length)
 
   const transform = templateCopy.components
     ?.find((component) => component.name === Transform.componentName)
@@ -51,10 +51,10 @@ export const createFromTemplate = (
     transform.config.offsetX = x
     transform.config.offsetY = y
 
-    gameObject.components?.push(transform)
+    actor.components?.push(transform)
   }
 
-  return gameObject
+  return actor
 }
 
 const getSizeX = (transform: ComponentConfig, sprite?: ComponentConfig): number => {

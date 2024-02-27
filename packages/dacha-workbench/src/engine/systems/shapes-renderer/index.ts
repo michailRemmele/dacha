@@ -2,7 +2,7 @@ import {
   System,
   Transform,
   CameraService,
-  GameObjectObserver,
+  ActorCollection,
 } from 'remiz'
 import type { SystemOptions } from 'remiz'
 
@@ -16,7 +16,7 @@ interface ShapesRendererOptions extends SystemOptions {
 }
 
 export class ShapesRenderer extends System {
-  private gameObjectObserver: GameObjectObserver
+  private actorCollection: ActorCollection
   private cameraService: CameraService
   private window: HTMLCanvasElement
   private context: CanvasRenderingContext2D
@@ -33,7 +33,7 @@ export class ShapesRenderer extends System {
       windowNodeId,
     } = options as ShapesRendererOptions
 
-    this.gameObjectObserver = new GameObjectObserver(scene, {
+    this.actorCollection = new ActorCollection(scene, {
       components: [
         Transform,
         Shape,
@@ -86,9 +86,9 @@ export class ShapesRenderer extends System {
 
     this.transformer.setCamera(currentCamera)
 
-    this.gameObjectObserver.forEach((gameObject) => {
-      const transform = gameObject.getComponent(Transform)
-      const shape = gameObject.getComponent(Shape)
+    this.actorCollection.forEach((actor) => {
+      const transform = actor.getComponent(Transform)
+      const shape = actor.getComponent(Shape)
 
       const paintShape = painters[shape.type]
       paintShape(this.context, this.transformer, shape.properties, transform)

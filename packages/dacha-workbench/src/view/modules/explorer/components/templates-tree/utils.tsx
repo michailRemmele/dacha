@@ -1,4 +1,4 @@
-import type { LevelConfig, TemplateConfig, GameObjectConfig } from 'remiz'
+import type { LevelConfig, TemplateConfig, ActorConfig } from 'remiz'
 import { FileOutlined } from '@ant-design/icons'
 
 import { ExplorerDataNode } from '../../../../../types/tree-node'
@@ -46,25 +46,25 @@ export const getKey = (entity?: unknown, path?: Array<string>): string | undefin
   return (entity as TemplateConfig).id
 }
 
-export const filterGameObjects = (
-  gameObjects: Array<GameObjectConfig>,
+export const filterActors = (
+  actors: Array<ActorConfig>,
   templateId: string,
-): Array<GameObjectConfig> => gameObjects.reduce((acc, gameObject) => {
-  if (gameObject.templateId !== templateId) {
-    acc.push(gameObject)
+): Array<ActorConfig> => actors.reduce((acc, actor) => {
+  if (actor.templateId !== templateId) {
+    acc.push(actor)
   }
 
-  if (gameObject.children !== undefined) {
-    gameObject.children = filterGameObjects(gameObject.children, templateId)
+  if (actor.children !== undefined) {
+    actor.children = filterActors(actor.children, templateId)
   }
 
   return acc
-}, [] as Array<GameObjectConfig>)
+}, [] as Array<ActorConfig>)
 
 export const filterLevels = (
   levels: Array<LevelConfig>,
   templateId: string,
 ): Array<LevelConfig> => levels.map((level) => ({
   ...level,
-  gameObjects: filterGameObjects(level.gameObjects, templateId),
+  actors: filterActors(level.actors, templateId),
 }))

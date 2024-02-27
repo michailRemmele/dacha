@@ -4,18 +4,17 @@ import {
 } from 'remiz'
 import type {
   Scene,
-  GameObject,
   MouseControlEvent,
 } from 'remiz'
 
 import { EventType } from '../../../../events'
 import { SET } from '../../../../command-types'
 import { ROOT_SCOPE } from '../../../../consts/command-scopes'
-import { buildGameObjectPath } from '../utils'
-import { getTool, getPointerToolObject } from '../../../../utils/get-tool'
+import { buildActorPath } from '../utils'
+import { getTool } from '../../../../utils/get-tool'
 import { getGridValue, getGridStep } from '../../../../utils/grid'
 import type { Store } from '../../../../store'
-import type { SelectedObject } from '../types'
+import type { SelectedActor } from '../types'
 
 import {
   isFloatEqual,
@@ -30,28 +29,26 @@ export interface Position {
 
 interface SelectionMovementSubsystemOptions {
   scene: Scene
-  selectedObject: SelectedObject
+  selectedActor: SelectedActor
 }
 
 export class SelectionMovementSubsystem {
   private scene: Scene
   private configStore: Store
 
-  private pointerToolObject: GameObject
   private isMoving: boolean
   private selectionStart: Position
   private pointerStart: Position
 
-  private selectedObject: SelectedObject
+  private selectedActor: SelectedActor
 
   constructor({
     scene,
-    selectedObject,
+    selectedActor,
   }: SelectionMovementSubsystemOptions) {
     this.scene = scene
-    this.pointerToolObject = getPointerToolObject(scene)
     this.configStore = scene.data.configStore as Store
-    this.selectedObject = selectedObject
+    this.selectedActor = selectedActor
 
     this.isMoving = false
     this.selectionStart = { x: 0, y: 0 }
@@ -59,48 +56,30 @@ export class SelectionMovementSubsystem {
   }
 
   mount(): void {
-    this.pointerToolObject.addEventListener(
-      EventType.SelectionMoveStart,
-      this.handleSelectionMoveStart,
-    )
-    this.pointerToolObject.addEventListener(
-      EventType.SelectionMoveEnd,
-      this.handleSelectionMoveEnd,
-    )
-    this.pointerToolObject.addEventListener(
-      EventType.SelectionMove,
-      this.handleSelectionMove,
-    )
+    this.scene.addEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
+    this.scene.addEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
+    this.scene.addEventListener(EventType.SelectionMove, this.handleSelectionMove)
   }
 
   unmount(): void {
-    this.pointerToolObject.removeEventListener(
-      EventType.SelectionMoveStart,
-      this.handleSelectionMoveStart,
-    )
-    this.pointerToolObject.removeEventListener(
-      EventType.SelectionMoveEnd,
-      this.handleSelectionMoveEnd,
-    )
-    this.pointerToolObject.removeEventListener(
-      EventType.SelectionMove,
-      this.handleSelectionMove,
-    )
+    this.scene.removeEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
+    this.scene.removeEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
+    this.scene.removeEventListener(EventType.SelectionMove, this.handleSelectionMove)
   }
 
   private handleSelectionMoveStart = (event: MouseControlEvent): void => {
-    if (this.selectedObject.objectId === undefined) {
+    if (this.selectedActor.actorId === undefined) {
       return
     }
 
     const { x, y } = event
 
-    const selectedObject = this.scene.getGameObject(this.selectedObject.objectId)
-    if (selectedObject === undefined) {
+    const selectedActor = this.scene.getEntityById(this.selectedActor.actorId)
+    if (selectedActor === undefined) {
       return
     }
 
-    const transform = selectedObject.getComponent(Transform)
+    const transform = selectedActor.getComponent(Transform)
     if (transform === undefined) {
       return
     }
@@ -117,23 +96,23 @@ export class SelectionMovementSubsystem {
   private handleSelectionMoveEnd = (): void => {
     if (
       !this.isMoving
-      || this.selectedObject.objectId === undefined
-      || this.selectedObject.levelId === undefined
+      || this.selectedActor.actorId === undefined
+      || this.selectedActor.levelId === undefined
     ) {
       return
     }
 
     this.isMoving = false
 
-    const selectedObject = this.scene.getGameObject(this.selectedObject.objectId)
-    if (selectedObject === undefined) {
+    const selectedActor = this.scene.getEntityById(this.selectedActor.actorId)
+    if (selectedActor === undefined) {
       return
     }
 
-    const objectPath = buildGameObjectPath(selectedObject, this.selectedObject.levelId)
-    const transformPath = objectPath.concat('components', `name:${Transform.componentName}`, 'config')
+    const actorPath = buildActorPath(selectedActor, this.selectedActor.levelId)
+    const transformPath = actorPath.concat('components', `name:${Transform.componentName}`, 'config')
 
-    const transform = selectedObject.getComponent(Transform)
+    const transform = selectedActor.getComponent(Transform)
     if (transform === undefined) {
       return
     }
@@ -162,18 +141,18 @@ export class SelectionMovementSubsystem {
   }
 
   private handleSelectionMove = (event: MouseControlEvent): void => {
-    if (!this.isMoving || this.selectedObject.objectId === undefined) {
+    if (!this.isMoving || this.selectedActor.actorId === undefined) {
       return
     }
 
     const { x, y } = event
 
-    const selectedObject = this.scene.getGameObject(this.selectedObject.objectId)
-    if (selectedObject === undefined) {
+    const selectedActor = this.scene.getEntityById(this.selectedActor.actorId)
+    if (selectedActor === undefined) {
       return
     }
 
-    const transform = selectedObject.getComponent(Transform)
+    const transform = selectedActor.getComponent(Transform)
     if (transform === undefined) {
       return
     }
@@ -185,7 +164,7 @@ export class SelectionMovementSubsystem {
     const offsetY = this.selectionStart.y - this.pointerStart.y + y
 
     if (snapToGrid) {
-      const sprite = selectedObject.getComponent(Sprite)
+      const sprite = selectedActor.getComponent(Sprite)
 
       const gridStep = getGridStep(this.scene)
 

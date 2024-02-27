@@ -1,9 +1,9 @@
 import { Transform } from 'remiz'
 import type {
   Scene,
-  GameObjectCreator,
-  GameObjectSpawner,
-  GameObject,
+  ActorCreator,
+  ActorSpawner,
+  Actor,
   TemplateConfig,
 } from 'remiz'
 
@@ -17,31 +17,28 @@ import type { Store } from '../../../../store'
 
 interface PreviewSubsystemOptions {
   scene: Scene
-  gameObjectCreator: GameObjectCreator
-  gameObjectSpawner: GameObjectSpawner
+  actorCreator: ActorCreator
+  actorSpawner: ActorSpawner
 }
 
 export class PreviewSubsystem {
   private scene: Scene
-  private gameObjectCreator: GameObjectCreator
-  private gameObjectSpawner: GameObjectSpawner
-  private mainObject: GameObject
+  private actorCreator: ActorCreator
+  private mainActor: Actor
   private configStore: Store
 
-  private preview?: GameObject
+  private preview?: Actor
 
   private unsubscribe?: () => void
 
   constructor({
     scene,
-    gameObjectCreator,
-    gameObjectSpawner,
+    actorCreator,
   }: PreviewSubsystemOptions) {
     this.scene = scene
-    this.gameObjectCreator = gameObjectCreator
-    this.gameObjectSpawner = gameObjectSpawner
+    this.actorCreator = actorCreator
 
-    this.mainObject = this.scene.data.mainObject as GameObject
+    this.mainActor = this.scene.data.mainActor as Actor
     this.configStore = this.scene.data.configStore as Store
   }
 
@@ -107,19 +104,19 @@ export class PreviewSubsystem {
       return
     }
 
-    this.preview.destroy()
+    this.preview.remove()
     this.preview = undefined
   }
 
-  // TODO: Simplify after gameObject/template creation refactoring
-  private spawnPreview(templateId: string): GameObject {
-    const preview = this.gameObjectCreator.create({
+  // TODO: Simplify after actor/template creation refactoring
+  private spawnPreview(templateId: string): Actor {
+    const preview = this.actorCreator.create({
       templateId,
       fromTemplate: true,
       isNew: true,
     })
-    this.gameObjectSpawner.spawn(preview)
-    this.mainObject.appendChild(preview)
+    this.scene.appendChild(preview)
+    this.mainActor.appendChild(preview)
 
     return preview
   }

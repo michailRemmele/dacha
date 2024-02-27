@@ -12,14 +12,14 @@ import {
   CopyOutlined,
 } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
-import type { GameObjectConfig, LevelConfig } from 'remiz'
+import type { ActorConfig, LevelConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
 import { addValue, deleteValue } from '../../../../commands'
 import { SelectedEntityContext } from '../../../../providers'
 import {
-  duplicateGameObject,
+  duplicateActor,
   duplicateLevel,
 } from '../../utils'
 
@@ -32,21 +32,21 @@ export const ActionBar: FC = () => {
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
 
   const levels = useConfig('levels') as Array<LevelConfig>
-  const selectedEntity = useConfig(selectedEntityPath) as GameObjectConfig | LevelConfig | undefined
+  const selectedEntity = useConfig(selectedEntityPath) as ActorConfig | LevelConfig | undefined
 
-  const handleAddGameObject = useCallback(() => {
+  const handleAddActor = useCallback(() => {
     if (!selectedEntity || !selectedEntityPath) {
       return
     }
 
-    const pathToAdd = selectedEntityPath.concat(type === 'level' ? 'gameObjects' : 'children')
+    const pathToAdd = selectedEntityPath.concat(type === 'level' ? 'actors' : 'children')
     const index = type === 'level'
-      ? (selectedEntity as LevelConfig).gameObjects?.length
-      : (selectedEntity as GameObjectConfig).children?.length
+      ? (selectedEntity as LevelConfig).actors?.length
+      : (selectedEntity as ActorConfig).children?.length
 
-    dispatch(addValue<GameObjectConfig>(pathToAdd, {
+    dispatch(addValue<ActorConfig>(pathToAdd, {
       id: uuidv4(),
-      name: t('explorer.levels.actionBar.gameObject.new.title', { index }),
+      name: t('explorer.levels.actionBar.actor.new.title', { index }),
       components: [],
       children: [],
     }))
@@ -56,7 +56,7 @@ export const ActionBar: FC = () => {
     dispatch(addValue<LevelConfig>(['levels'], {
       id: uuidv4(),
       name: t('explorer.levels.actionBar.level.new.title', { index: levels.length }),
-      gameObjects: [],
+      actors: [],
     }))
   }, [dispatch, levels])
 
@@ -65,10 +65,10 @@ export const ActionBar: FC = () => {
   }, [dispatch, selectedEntityPath])
 
   const handleDuplicate = useCallback(() => {
-    let duplicate: GameObjectConfig | LevelConfig | undefined
+    let duplicate: ActorConfig | LevelConfig | undefined
 
-    if (type === 'gameObject') {
-      duplicate = duplicateGameObject(selectedEntity as GameObjectConfig)
+    if (type === 'actor') {
+      duplicate = duplicateActor(selectedEntity as ActorConfig)
     }
     if (type === 'level') {
       duplicate = duplicateLevel(selectedEntity as LevelConfig)
@@ -85,9 +85,9 @@ export const ActionBar: FC = () => {
         css={ButtonCSS}
         icon={<FileAddOutlined />}
         size="small"
-        onClick={handleAddGameObject}
-        title={t('explorer.levels.actionBar.addGameObject.button.title')}
-        disabled={type !== 'gameObject' && type !== 'level'}
+        onClick={handleAddActor}
+        title={t('explorer.levels.actionBar.addActor.button.title')}
+        disabled={type !== 'actor' && type !== 'level'}
       />
       <Button
         css={ButtonCSS}
@@ -104,9 +104,9 @@ export const ActionBar: FC = () => {
         title={
           type === 'level'
             ? t('explorer.levels.actionBar.duplicateLevel.button.title')
-            : t('explorer.levels.actionBar.duplicateGameObject.button.title')
+            : t('explorer.levels.actionBar.duplicateActor.button.title')
         }
-        disabled={type !== 'gameObject' && type !== 'level'}
+        disabled={type !== 'actor' && type !== 'level'}
       />
       <Button
         css={ButtonCSS}
@@ -116,14 +116,14 @@ export const ActionBar: FC = () => {
         title={
           type === 'level'
             ? t('explorer.levels.actionBar.deleteLevel.button.title')
-            : t('explorer.levels.actionBar.deleteGameObject.button.title')
+            : t('explorer.levels.actionBar.deleteActor.button.title')
         }
-        disabled={type !== 'gameObject' && type !== 'level'}
+        disabled={type !== 'actor' && type !== 'level'}
       />
 
       <AdditionalSectionStyled>
         <FocusActionButton
-          path={type === 'gameObject' ? selectedEntityPath : undefined}
+          path={type === 'actor' ? selectedEntityPath : undefined}
         />
       </AdditionalSectionStyled>
     </ActionBarStyled>

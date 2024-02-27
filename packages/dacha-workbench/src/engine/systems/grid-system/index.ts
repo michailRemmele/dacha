@@ -6,7 +6,7 @@ import {
 import type {
   Scene,
   SystemOptions,
-  GameObject,
+  Actor,
 } from 'remiz'
 
 import { EventType } from '../../../events'
@@ -17,7 +17,7 @@ import { Settings } from '../../components'
 export class GridSystem extends System {
   private scene: Scene
 
-  private mainObject: GameObject
+  private mainActor: Actor
   private selectedLevelId?: string
   private gridNode: HTMLDivElement
 
@@ -29,7 +29,7 @@ export class GridSystem extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = scene.data.mainObject as GameObject
+    this.mainActor = scene.data.mainActor as Actor
     this.gridNode = document.getElementById(GRID_ROOT) as HTMLDivElement
 
     this.showGrid = false
@@ -51,7 +51,7 @@ export class GridSystem extends System {
   update(): void {
     const {
       data: { gridStep, showGrid, gridColor },
-    } = this.mainObject.getComponent(Settings)
+    } = this.mainActor.getComponent(Settings)
 
     if (this.selectedLevelId === undefined || !showGrid) {
       if (this.showGrid) {
@@ -63,8 +63,8 @@ export class GridSystem extends System {
 
     this.showGrid = true
 
-    const transform = this.mainObject.getComponent(Transform)
-    const { zoom } = this.mainObject.getComponent(Camera)
+    const transform = this.mainActor.getComponent(Transform)
+    const { zoom } = this.mainActor.getComponent(Camera)
 
     const offsetX = ((gridStep as number) / 2 - transform.offsetX) * zoom
     const offsetY = ((gridStep as number) / 2 - transform.offsetY) * zoom

@@ -26,7 +26,7 @@ export const getEditorConfig = ({
           name: 'CameraSystem',
           options: {
             windowNodeId: 'canvas-root',
-            initialCamera: 'main-object',
+            initialCamera: 'main-actor',
             scaleSensitivity: 0.5,
           },
         },
@@ -48,7 +48,7 @@ export const getEditorConfig = ({
         {
           name: 'LevelViewer',
           options: {
-            mainObjectId: 'main-object',
+            mainActorId: 'main-actor',
           },
         },
         {
@@ -110,9 +110,9 @@ export const getEditorConfig = ({
     {
       id: 'cd42a993-f3c0-4921-b867-108c81028a26',
       name: 'level-viewer',
-      gameObjects: [
+      actors: [
         {
-          id: 'main-object',
+          id: 'main-actor',
           name: 'mainCamera',
           children: [
             {

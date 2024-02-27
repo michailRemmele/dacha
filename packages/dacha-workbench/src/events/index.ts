@@ -65,7 +65,7 @@ declare module 'remiz' {
     [EventType.SaveProject]: SceneEvent
   }
 
-  export interface GameObjectEventMap {
+  export interface ActorEventMap {
     [EventType.ToolCursorMove]: MouseControlEvent
     [EventType.ToolCursorLeave]: MouseControlEvent
     [EventType.CameraZoom]: MouseControlEvent

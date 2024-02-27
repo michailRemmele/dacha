@@ -6,12 +6,12 @@ import {
 import type {
   Scene,
   SystemOptions,
-  GameObject,
+  Actor,
   MouseControlEvent,
 } from 'remiz'
 
 import { EventType } from '../../../events'
-import { getTool, getZoomToolObject } from '../../../utils/get-tool'
+import { getTool } from '../../../utils/get-tool'
 
 const ZOOM_FACTOR = 1.5
 const DEFAULT_ZOOM = 1
@@ -20,8 +20,7 @@ type ZoomMode = 'in' | 'out'
 
 export class ZoomToolSystem extends System {
   private scene: Scene
-  private mainObject: GameObject
-  private zoomToolObject: GameObject
+  private mainActor: Actor
 
   constructor(options: SystemOptions) {
     super()
@@ -29,22 +28,21 @@ export class ZoomToolSystem extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = scene.data.mainObject as GameObject
-    this.zoomToolObject = getZoomToolObject(scene)
+    this.mainActor = scene.data.mainActor as Actor
   }
 
   mount(): void {
     this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.zoomToolObject.addEventListener(EventType.CameraZoom, this.handleCameraZoom)
+    this.scene.addEventListener(EventType.CameraZoom, this.handleCameraZoom)
   }
 
   unmount(): void {
     this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.zoomToolObject.removeEventListener(EventType.CameraZoom, this.handleCameraZoom)
+    this.scene.removeEventListener(EventType.CameraZoom, this.handleCameraZoom)
   }
 
   private handleSelectLevel = (): void => {
-    const cameraComponent = this.mainObject.getComponent(Camera)
+    const cameraComponent = this.mainActor.getComponent(Camera)
     cameraComponent.zoom = DEFAULT_ZOOM
   }
 
@@ -59,8 +57,8 @@ export class ZoomToolSystem extends System {
     const tool = getTool(this.scene)
     const zoomMode = tool.features.direction.value as ZoomMode
 
-    const cameraComponent = this.mainObject.getComponent(Camera)
-    const transform = this.mainObject.getComponent(Transform)
+    const cameraComponent = this.mainActor.getComponent(Camera)
+    const transform = this.mainActor.getComponent(Transform)
 
     if (zoomMode === 'in') {
       cameraComponent.zoom *= ZOOM_FACTOR

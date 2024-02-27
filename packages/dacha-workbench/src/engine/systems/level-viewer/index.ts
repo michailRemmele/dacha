@@ -1,13 +1,13 @@
 import {
   System,
-  GameObjectObserver,
-  GameObjectCreator,
+  ActorCollection,
+  ActorCreator,
   TemplateCollection,
 } from 'remiz'
 import type {
   Scene,
   SystemOptions,
-  GameObjectSpawner,
+  ActorSpawner,
   TemplateConfig,
   LevelConfig,
 } from 'remiz'
@@ -17,27 +17,28 @@ import type { SelectLevelEvent } from '../../../events'
 import type { EditorConfig } from '../../../types/global'
 import type { Store, ListenerFn } from '../../../store'
 import { includesArray } from '../../../utils/includes-array'
+import { getAncestor } from '../../../utils/get-ancestor'
 
 import { ALLOWED_COMPONENTS } from './consts'
 import { omit } from './utils'
 import {
   watchTemplates,
-  watchGameObjects,
+  watchActors,
 } from './watchers'
 import type { WatcherOptions } from './watchers'
 
 interface LevelViewerOptions extends SystemOptions {
-  mainObjectId: string;
+  mainActorId: string;
 }
 
 export class LevelViewer extends System {
   scene: Scene
-  gameObjectSpawner: GameObjectSpawner
-  gameObjectObserver: GameObjectObserver
-  mainObjectId: string
+  actorSpawner: ActorSpawner
+  actorCollection: ActorCollection
+  mainActorId: string
   configStore: Store
   editorConfig: EditorConfig
-  gameObjectCreator: GameObjectCreator
+  actorCreator: ActorCreator
   currentLevel?: string
   templateCollection: TemplateCollection
   subscription?: () => void
@@ -48,25 +49,25 @@ export class LevelViewer extends System {
 
     const {
       scene,
-      gameObjectSpawner,
-      mainObjectId,
+      actorSpawner,
+      mainActorId,
     } = options as LevelViewerOptions
 
     this.scene = scene
-    this.gameObjectSpawner = gameObjectSpawner
-    this.gameObjectObserver = new GameObjectObserver(scene)
-    this.mainObjectId = mainObjectId
+    this.actorSpawner = actorSpawner
+    this.actorCollection = new ActorCollection(scene)
+    this.mainActorId = mainActorId
 
     this.configStore = scene.data.configStore as Store
     this.editorConfig = scene.data.editorConfig as EditorConfig
 
-    const mainObject = this.gameObjectObserver.getById(this.mainObjectId)
+    const mainActor = this.actorCollection.getById(this.mainActorId)
 
-    if (!mainObject) {
-      throw new Error('Can\'t find the main object')
+    if (!mainActor) {
+      throw new Error('Can\'t find the main actor')
     }
 
-    this.scene.data.mainObject = mainObject
+    this.scene.data.mainActor = mainActor
 
     const templateCollection = new TemplateCollection(ALLOWED_COMPONENTS)
     const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
@@ -76,9 +77,9 @@ export class LevelViewer extends System {
     })
 
     this.templateCollection = templateCollection
-    this.gameObjectCreator = new GameObjectCreator(ALLOWED_COMPONENTS, templateCollection)
+    this.actorCreator = new ActorCreator(ALLOWED_COMPONENTS, templateCollection)
 
-    this.scene.data.gameObjectCreator = this.gameObjectCreator
+    this.scene.data.actorCreator = this.actorCreator
   }
 
   mount(): void {
@@ -99,9 +100,9 @@ export class LevelViewer extends System {
       const options: WatcherOptions = {
         path,
         store: this.configStore,
-        gameObjectObserver: this.gameObjectObserver,
-        gameObjectCreator: this.gameObjectCreator,
-        gameObjectSpawner: this.gameObjectSpawner,
+        scene: this.scene,
+        actorCollection: this.actorCollection,
+        actorCreator: this.actorCreator,
         templateCollection: this.templateCollection,
         level,
         prevLevel: this.prevLevel,
@@ -111,7 +112,7 @@ export class LevelViewer extends System {
         watchTemplates(options)
       }
       if (this.currentLevel && includesArray(path, ['levels'])) {
-        watchGameObjects(options)
+        watchActors(options)
       }
 
       this.prevLevel = level
@@ -127,20 +128,20 @@ export class LevelViewer extends System {
       return
     }
 
-    this.gameObjectObserver.forEach((gameObject) => {
-      if (gameObject.getAncestor().id !== this.mainObjectId) {
-        gameObject.destroy()
+    this.actorCollection.forEach((actor) => {
+      if (getAncestor(actor).id !== this.mainActorId) {
+        actor.remove()
       }
     })
 
     const levels = this.configStore.get(['levels']) as Array<LevelConfig>
     const selectedLevel = levels.find((level) => level.id === levelId)
 
-    const { gameObjectCreator } = this
+    const { actorCreator } = this
 
-    if (selectedLevel && gameObjectCreator) {
-      selectedLevel.gameObjects.forEach((gameObjectConfig) => {
-        this.gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
+    if (selectedLevel && actorCreator) {
+      selectedLevel.actors.forEach((actorConfig) => {
+        this.scene.appendChild(actorCreator.create(omit(actorConfig)))
       })
     }
 

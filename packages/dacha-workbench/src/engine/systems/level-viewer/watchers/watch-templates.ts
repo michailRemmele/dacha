@@ -10,9 +10,9 @@ const TEMPLATE_PATH_LENGTH = 2
 export const watchTemplates: WatcherFn = ({
   path,
   store,
-  gameObjectObserver,
-  gameObjectCreator,
-  gameObjectSpawner,
+  scene,
+  actorCollection,
+  actorCreator,
   templateCollection,
   level,
 }): void => {
@@ -67,10 +67,10 @@ export const watchTemplates: WatcherFn = ({
     return
   }
 
-  const { gameObjects } = level
+  const { actors } = level
 
-  gameObjects.forEach((gameObjectConfig) => {
-    const { id, templateId } = gameObjectConfig
+  actors.forEach((actorConfig) => {
+    const { id, templateId } = actorConfig
 
     if (templateId === undefined) {
       return
@@ -79,17 +79,17 @@ export const watchTemplates: WatcherFn = ({
       return
     }
 
-    const gameObject = gameObjectObserver.getById(id)
+    const actor = actorCollection.getById(id)
 
-    if (gameObject === undefined) {
+    if (actor === undefined) {
       return
     }
 
     if (templatesIdsToDelete.has(templateId)) {
-      gameObject.destroy()
+      actor.remove()
     }
     if (templatesToAdd.has(templateId)) {
-      gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
+      scene.appendChild(actorCreator.create(omit(actorConfig)))
     }
   })
 }
