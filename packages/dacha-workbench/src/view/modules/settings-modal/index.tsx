@@ -6,7 +6,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { GameObject } from 'remiz'
+import type { Actor } from 'remiz'
 
 import { Modal } from '../../components'
 import { EngineContext } from '../../providers'
@@ -38,8 +38,8 @@ export const SettingsModal: FC = () => {
 
   useEffect(() => {
     const handleSettingsUpdate = (): void => {
-      const mainObject = scene.data.mainObject as GameObject
-      const { data } = mainObject.getComponent(Settings)
+      const mainActor = scene.data.mainActor as Actor
+      const { data } = mainActor.getComponent(Settings)
 
       setSettings({ ...data })
     }

@@ -2,7 +2,7 @@ import { System } from 'remiz'
 import type {
   Scene,
   SystemOptions,
-  GameObject,
+  Actor,
 } from 'remiz'
 
 import { EventType } from '../../../events'
@@ -12,7 +12,7 @@ import { Settings } from '../../components'
 export class SettingsSystem extends System {
   private scene: Scene
 
-  private mainObject: GameObject
+  private mainActor: Actor
 
   constructor(options: SystemOptions) {
     super()
@@ -20,7 +20,7 @@ export class SettingsSystem extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = scene.data.mainObject as GameObject
+    this.mainActor = scene.data.mainActor as Actor
   }
 
   mount(): void {
@@ -34,7 +34,7 @@ export class SettingsSystem extends System {
   private handleSetSettingsValue = (event: SetSettingsValueEvent): void => {
     const { name, value } = event
 
-    const settings = this.mainObject.getComponent(Settings)
+    const settings = this.mainActor.getComponent(Settings)
     settings.data[name] = value
   }
 }

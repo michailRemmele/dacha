@@ -2,7 +2,7 @@ import { System, MouseControl } from 'remiz'
 import type {
   Scene,
   SystemOptions,
-  GameObject,
+  Actor,
 } from 'remiz'
 
 import { EventType } from '../../../events'
@@ -23,7 +23,7 @@ const getFeatureClassName = (
 
 export class ToolManager extends System {
   private scene: Scene
-  private mainObject: GameObject
+  private mainActor: Actor
   private rootNode: HTMLElement
 
   constructor(options: SystemOptions) {
@@ -32,7 +32,7 @@ export class ToolManager extends System {
     const { scene } = options
 
     this.scene = scene
-    this.mainObject = this.scene.data.mainObject as GameObject
+    this.mainActor = this.scene.data.mainActor as Actor
 
     this.rootNode = document.getElementById(CANVAS_ROOT) as HTMLElement
   }
@@ -50,22 +50,22 @@ export class ToolManager extends System {
   }
 
   private selectTool(id: string): void {
-    const toolController = this.mainObject.getComponent(ToolController)
+    const toolController = this.mainActor.getComponent(ToolController)
     toolController.activeTool = id
 
-    const toolObject = this.mainObject.getChildById(id)
+    const toolActor = this.mainActor.getEntityById(id)
 
-    if (toolObject === undefined) {
+    if (toolActor === undefined) {
       console.error(`Not found tool with same id: ${id}`)
       return
     }
 
-    const { features, inputBindings } = toolObject.getComponent(Tool)
+    const { features, inputBindings } = toolActor.getComponent(Tool)
 
     const mouseControl = new MouseControl({
       inputEventBindings: inputBindings,
     })
-    toolObject.setComponent(mouseControl)
+    toolActor.setComponent(mouseControl)
 
     this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${id}`)
 
@@ -78,13 +78,13 @@ export class ToolManager extends System {
   }
 
   private removeCurrentTool(): void {
-    const toolController = this.mainObject.getComponent(ToolController)
-    const toolObject = this.mainObject.getChildById(toolController.activeTool)
+    const toolController = this.mainActor.getComponent(ToolController)
+    const toolActor = this.mainActor.getEntityById(toolController.activeTool)
 
-    if (toolObject) {
-      const { name, features } = toolObject.getComponent(Tool)
+    if (toolActor) {
+      const { name, features } = toolActor.getComponent(Tool)
 
-      toolObject.removeComponent(MouseControl)
+      toolActor.removeComponent(MouseControl)
       this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${name}`)
 
       Object.keys(features).forEach((key) => {
@@ -97,11 +97,11 @@ export class ToolManager extends System {
   }
 
   private setToolFeatureValue(name: string, value: FeatureValue): void {
-    const toolController = this.mainObject.getComponent(ToolController)
-    const toolObject = this.mainObject.getChildById(toolController.activeTool)
+    const toolController = this.mainActor.getComponent(ToolController)
+    const toolActor = this.mainActor.getEntityById(toolController.activeTool)
 
-    if (toolObject) {
-      const { features } = toolObject.getComponent(Tool)
+    if (toolActor) {
+      const { features } = toolActor.getComponent(Tool)
       const feature = features[name]
 
       if (feature.withClassName) {

@@ -2,7 +2,7 @@ import {
   Transform,
   Camera,
 } from 'remiz'
-import type { GameObject } from 'remiz'
+import type { Actor } from 'remiz'
 
 export class CoordinatesTransformer {
   private cameraScale: number
@@ -21,7 +21,7 @@ export class CoordinatesTransformer {
     this.viewportHeight = 0
   }
 
-  setCamera(camera: GameObject): void {
+  setCamera(camera: Actor): void {
     const {
       offsetX,
       offsetY,

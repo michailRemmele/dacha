@@ -7,11 +7,10 @@ import {
 import type {
   Scene,
   SystemOptions,
-  GameObject,
+  Actor,
   MouseControlEvent,
 } from 'remiz'
 
-import { getHandToolObject } from '../../../utils/get-tool'
 import { EventType } from '../../../events'
 
 const DEFAULT_POS_X = 0
@@ -19,8 +18,7 @@ const DEFAULT_POS_Y = 0
 
 export class HandToolSystem extends System {
   private scene: Scene
-  private mainObject: GameObject
-  private handToolObject: GameObject
+  private mainActor: Actor
 
   private isMoving: boolean
   private anchor: Vector2
@@ -32,8 +30,7 @@ export class HandToolSystem extends System {
 
     this.scene = scene
 
-    this.mainObject = scene.data.mainObject as GameObject
-    this.handToolObject = getHandToolObject(scene)
+    this.mainActor = scene.data.mainActor as Actor
 
     this.isMoving = false
     this.anchor = new Vector2(0, 0)
@@ -41,20 +38,20 @@ export class HandToolSystem extends System {
 
   mount(): void {
     this.scene.addEventListener(EventType.SelectLevel, this.handleLevelChange)
-    this.handToolObject.addEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
-    this.handToolObject.addEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
-    this.handToolObject.addEventListener(EventType.CameraMove, this.handleCameraMove)
+    this.scene.addEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.scene.addEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.scene.addEventListener(EventType.CameraMove, this.handleCameraMove)
   }
 
   unmount(): void {
     this.scene.removeEventListener(EventType.SelectLevel, this.handleLevelChange)
-    this.handToolObject.removeEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
-    this.handToolObject.removeEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
-    this.handToolObject.removeEventListener(EventType.CameraMove, this.handleCameraMove)
+    this.scene.removeEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.scene.removeEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.scene.removeEventListener(EventType.CameraMove, this.handleCameraMove)
   }
 
   private handleLevelChange = (): void => {
-    const transform = this.mainObject.getComponent(Transform)
+    const transform = this.mainActor.getComponent(Transform)
     transform.offsetX = DEFAULT_POS_X
     transform.offsetY = DEFAULT_POS_Y
   }
@@ -78,8 +75,8 @@ export class HandToolSystem extends System {
 
     const { screenX, screenY } = event
 
-    const transform = this.mainObject.getComponent(Transform)
-    const { zoom } = this.mainObject.getComponent(Camera)
+    const transform = this.mainActor.getComponent(Transform)
+    const { zoom } = this.mainActor.getComponent(Camera)
 
     transform.offsetX += (this.anchor.x - screenX) / zoom
     transform.offsetY += (this.anchor.y - screenY) / zoom

@@ -1,6 +1,6 @@
 import type {
   Scene,
-  GameObject,
+  Actor,
 } from 'remiz'
 
 import { Settings } from '../engine/components'
@@ -12,8 +12,8 @@ export const getGridValue = (
 ): number => Math.floor((value - (size - gridStep) / 2) / gridStep) * gridStep + size / 2
 
 export const getGridStep = (scene: Scene): number => {
-  const mainObject = scene.data.mainObject as GameObject
-  const settings = mainObject.getComponent(Settings)
+  const mainActor = scene.data.mainActor as Actor
+  const settings = mainActor.getComponent(Settings)
 
   return settings.data.gridStep as number
 }

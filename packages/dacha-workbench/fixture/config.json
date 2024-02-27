@@ -68,7 +68,7 @@
   "levels": [
     {
       "name": "space-level",
-      "gameObjects": [
+      "actors": [
         {
           "id": "1",
           "name": "background_1",
@@ -227,7 +227,7 @@
     },
     {
       "name": "island-level",
-      "gameObjects": [
+      "actors": [
         {
           "id": "4",
           "name": "background",

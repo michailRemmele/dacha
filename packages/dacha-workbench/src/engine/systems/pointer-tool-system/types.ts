@@ -1,4 +1,4 @@
-export interface SelectedObject {
-  objectId?: string
+export interface SelectedActor {
+  actorId?: string
   levelId?: string
 }
