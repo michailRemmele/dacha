@@ -54,10 +54,10 @@ export class CollisionSolver {
       const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
       reactionForce.multiplyNumber(mass * this.gravitationalAcceleration);
 
-      actor.emit(AddForce, {
+      actor.dispatchEvent(AddForce, {
         value: reactionForce,
       });
-      actor.emit(StopMovement);
+      actor.dispatchEvent(StopMovement);
     }
   }
 }

@@ -1,6 +1,6 @@
-import { Engine } from './engine';
-import { Component } from './engine/component';
-import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
+export { Engine } from './engine';
+export { Component } from './engine/component';
+export { VectorOps, MathOps, Vector2 } from './engine/mathLib';
 
 export * from './engine/types';
 export { System } from './engine/system';
@@ -27,15 +27,5 @@ export { Actor, ActorCollection, ActorCreator } from './engine/actor';
 export { TemplateCollection } from './engine/template';
 
 export * from './types/events';
-export * from './engine/events';
 export * from './contrib/systems';
 export * from './contrib/components';
-export * from './contrib/events';
-
-export {
-  Engine,
-  Component,
-  VectorOps,
-  MathOps,
-  Vector2,
-};

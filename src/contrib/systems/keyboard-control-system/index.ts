@@ -46,7 +46,7 @@ export class KeyboardControlSystem extends System {
       throw new Error(`The event type is not specified for input key: ${code}`);
     }
 
-    actor.emit(eventBinding.eventType, {
+    actor.dispatchEvent(eventBinding.eventType, {
       ...eventBinding.attrs,
     });
   }

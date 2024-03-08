@@ -1,5 +1,6 @@
 import type { SceneProvider } from './scene';
 import type { Controller } from './controllers';
+import { eventQueue } from './event-target';
 
 export class GameLoop {
   private sceneProvider: SceneProvider;
@@ -19,6 +20,8 @@ export class GameLoop {
   }
 
   private tick(): void {
+    eventQueue.update();
+
     const current = performance.now();
 
     const elapsed = current - this.previous;

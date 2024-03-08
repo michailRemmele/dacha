@@ -11,9 +11,15 @@ import {
   StopMovement,
 } from '../../../../events';
 import type { AddForceEvent, AddImpulseEvent } from '../../../../events';
-import { AddActor, RemoveActor } from '../../../../../engine/events';
-import type { AddActorEvent, RemoveActorEvent } from '../../../../../engine/events';
+import { RemoveActor } from '../../../../../engine/events';
+import type { RemoveActorEvent } from '../../../../../engine/events';
 import type { ActorEvent } from '../../../../../types/events';
+
+interface ActorVectors {
+  velocity: Vector2
+  force: Vector2
+  impulse: Vector2
+}
 
 const DIRECTION_VECTOR = {
   UP: new Vector2(0, -1),
@@ -26,9 +32,7 @@ export class PhysicsSubsystem {
   private scene: Scene;
   private actorCollection: ActorCollection;
   private gravitationalAcceleration: number;
-  private actorsVelocity: Record<string, Vector2 | undefined>;
-  private actorsForceVector: Record<string, Vector2 | undefined>;
-  private actorsImpulseVector: Record<string, Vector2 | undefined>;
+  private actorVectors: Record<string, ActorVectors | undefined>;
 
   constructor(options: SystemOptions) {
     const {
@@ -44,15 +48,10 @@ export class PhysicsSubsystem {
     });
     this.gravitationalAcceleration = gravitationalAcceleration;
 
-    this.actorsVelocity = {};
-    this.actorsForceVector = {};
-    this.actorsImpulseVector = {};
-
-    this.actorCollection.forEach(this.handleActorAdd);
+    this.actorVectors = {};
   }
 
   mount(): void {
-    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
 
     this.scene.addEventListener(StopMovement, this.handleStopMovement);
@@ -61,7 +60,6 @@ export class PhysicsSubsystem {
   }
 
   unmount(): void {
-    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.scene.removeEventListener(StopMovement, this.handleStopMovement);
@@ -69,39 +67,53 @@ export class PhysicsSubsystem {
     this.scene.removeEventListener(AddImpulse, this.handleAddImpulse);
   }
 
-  private handleActorAdd = (value: AddActorEvent | Actor): void => {
-    const actor = value instanceof Actor ? value : value.actor;
-
-    this.actorsVelocity[actor.id] = new Vector2(0, 0);
-    this.actorsForceVector[actor.id] = new Vector2(0, 0);
-    this.actorsImpulseVector[actor.id] = new Vector2(0, 0);
-  };
-
   private handleActorRemove = (event: RemoveActorEvent): void => {
     const { actor } = event;
 
-    delete this.actorsVelocity[actor.id];
-    delete this.actorsForceVector[actor.id];
-    delete this.actorsImpulseVector[actor.id];
+    delete this.actorVectors[actor.id];
   };
 
   private handleStopMovement = (event: ActorEvent): void => {
-    this.actorsVelocity[event.target.id]?.multiplyNumber(0);
+    const { target } = event;
+
+    if (!this.actorVectors[target.id]) {
+      this.setUpVectors(target);
+    }
+
+    this.actorVectors[target.id]!.velocity.multiplyNumber(0);
   };
 
   private handleAddForce = (event: AddForceEvent): void => {
     const { target, value } = event;
-    this.actorsForceVector[target.id]?.add(value);
+
+    if (!this.actorVectors[target.id]) {
+      this.setUpVectors(target);
+    }
+
+    this.actorVectors[target.id]!.force.add(value);
   };
 
   private handleAddImpulse = (event: AddImpulseEvent): void => {
     const { target, value } = event;
-    this.actorsImpulseVector[target.id]?.add(value);
+
+    if (!this.actorVectors[target.id]) {
+      this.setUpVectors(target);
+    }
+
+    this.actorVectors[target.id]!.impulse.add(value);
   };
+
+  private setUpVectors(actor: Actor): void {
+    this.actorVectors[actor.id] = {
+      velocity: new Vector2(0, 0),
+      force: new Vector2(0, 0),
+      impulse: new Vector2(0, 0),
+    };
+  }
 
   private applyDragForce(actor: Actor, deltaTime: number): void {
     const { mass, drag } = actor.getComponent(RigidBody);
-    const velocity = this.actorsVelocity[actor.id];
+    const velocity = this.actorVectors[actor.id]?.velocity;
 
     if (!drag || !velocity || (!velocity.x && !velocity.y)) {
       return;
@@ -149,29 +161,31 @@ export class PhysicsSubsystem {
       const transform = actor.getComponent(Transform);
       const { mass } = rigidBody;
 
-      const forceVector = this.actorsForceVector[actor.id]!;
-      const impulseVector = this.actorsImpulseVector[actor.id]!;
-      const velocityVector = this.actorsVelocity[actor.id]!;
-
-      forceVector.add(this.getGravityForce(rigidBody));
-
-      if (forceVector.x || forceVector.y) {
-        forceVector.multiplyNumber(deltaTimeInSeconds / mass);
-        velocityVector.add(forceVector);
+      if (!this.actorVectors[actor.id]) {
+        this.setUpVectors(actor);
       }
 
-      if (impulseVector.x || impulseVector.y) {
-        impulseVector.multiplyNumber(1 / mass);
-        velocityVector.add(impulseVector);
+      const { velocity, force, impulse } = this.actorVectors[actor.id]!;
+
+      force.add(this.getGravityForce(rigidBody));
+
+      if (force.x || force.y) {
+        force.multiplyNumber(deltaTimeInSeconds / mass);
+        velocity.add(force);
+      }
+
+      if (impulse.x || impulse.y) {
+        impulse.multiplyNumber(1 / mass);
+        velocity.add(impulse);
       }
 
       this.applyDragForce(actor, deltaTimeInSeconds);
 
-      transform.offsetX += velocityVector.x * deltaTimeInSeconds;
-      transform.offsetY += velocityVector.y * deltaTimeInSeconds;
+      transform.offsetX += velocity.x * deltaTimeInSeconds;
+      transform.offsetY += velocity.y * deltaTimeInSeconds;
 
-      forceVector.multiplyNumber(0);
-      impulseVector.multiplyNumber(0);
+      force.multiplyNumber(0);
+      impulse.multiplyNumber(0);
     });
   }
 }

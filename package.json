@@ -3,6 +3,18 @@
   "version": "0.11.2",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./build/index.js",
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
+    },
+    "./events": {
+      "require": "./build/events/index.js",
+      "import": "./build/events/index.js",
+      "types": "./build/events/index.d.ts"
+    }
+  },
   "dependencies": {
     "three": "0.151.3",
     "uuid-random": "1.0.9"

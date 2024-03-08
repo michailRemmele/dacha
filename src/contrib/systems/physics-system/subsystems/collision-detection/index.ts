@@ -220,7 +220,7 @@ export class CollisionDetectionSubsystem {
         actor1: actor2, actor2: actor1, mtv1: mtv2, mtv2: mtv1,
       },
     ].forEach((entry) => {
-      this.scene.emit(Collision, {
+      this.scene.dispatchEventImmediately(Collision, {
         actor1: entry.actor1,
         actor2: entry.actor2,
         mtv1: entry.mtv1,

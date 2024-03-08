@@ -101,7 +101,7 @@ export class ActorCollection extends EventTarget {
     );
     delete this.acceptedActorsMap[actor.id];
 
-    this.emit(RemoveActor, { actor });
+    this.dispatchEventImmediately(RemoveActor, { actor });
   }
 
   private test(actor: Actor): boolean {
@@ -122,7 +122,7 @@ export class ActorCollection extends EventTarget {
     this.acceptedActors.push(actor);
     this.acceptedActorsMap[actor.id] = actor;
 
-    this.emit(AddActor, { actor });
+    this.dispatchEventImmediately(AddActor, { actor });
   }
 
   private decline(actor: Actor): void {
@@ -135,7 +135,7 @@ export class ActorCollection extends EventTarget {
     );
     delete this.acceptedActorsMap[actor.id];
 
-    this.emit(RemoveActor, { actor });
+    this.dispatchEventImmediately(RemoveActor, { actor });
   }
 
   get size(): number {

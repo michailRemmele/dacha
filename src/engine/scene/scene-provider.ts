@@ -1,4 +1,3 @@
-import { filterByKey } from '../utils';
 import type { SceneConfig, LevelConfig, GlobalOption } from '../types';
 import type { ActorCreator } from '../actor';
 import type { SystemConstructor } from '../system';
@@ -220,6 +219,6 @@ export class SceneProvider {
   }
 
   private removeScene(id: string): void {
-    this.sceneContainer = filterByKey(this.sceneContainer, id);
+    delete this.sceneContainer[id];
   }
 }

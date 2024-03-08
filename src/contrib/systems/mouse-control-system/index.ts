@@ -39,7 +39,7 @@ export class MouseControlSystem extends System {
           throw new Error(`The event type is not specified for input event: ${event.eventType}`);
         }
 
-        actor.emit(eventBinding.eventType, {
+        actor.dispatchEvent(eventBinding.eventType, {
           ...eventBinding.attrs,
           x: event.x,
           y: event.y,

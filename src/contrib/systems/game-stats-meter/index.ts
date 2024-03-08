@@ -40,7 +40,7 @@ export class GameStatsMeter extends System {
     this.time += deltaTime;
 
     if (this.time >= this.frequency) {
-      this.scene.emit(GameStatsUpdate, {
+      this.scene.dispatchEvent(GameStatsUpdate, {
         fps: (this.fps * MS_IN_SEC) / this.time,
         actorsCount: this.actorCollection.size,
       });

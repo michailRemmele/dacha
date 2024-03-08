@@ -6,8 +6,8 @@ import type { Frame } from '../../components/animatable/timeline';
 import type { IndividualState } from '../../components/animatable/individual-state';
 import type { GroupState } from '../../components/animatable/group-state';
 import type { Substate } from '../../components/animatable/substate';
-import { AddActor, RemoveActor } from '../../../engine/events';
-import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
+import { RemoveActor } from '../../../engine/events';
+import type { RemoveActorEvent } from '../../../engine/events';
 
 import type { ConditionController } from './condition-controllers/condition-controller';
 import type { Picker } from './substate-pickers/picker';
@@ -37,23 +37,15 @@ export class Animator extends System {
       }, {});
 
     this.actorConditions = {};
-
-    this.actorCollection.forEach((actor) => this.setUpConditionControllers(actor));
   }
 
   mount(): void {
-    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   unmount(): void {
-    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
   }
-
-  private handleActorAdd = (event: AddActorEvent): void => {
-    this.setUpConditionControllers(event.actor);
-  };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
     delete this.actorConditions[event.actor.id];
@@ -98,6 +90,10 @@ export class Animator extends System {
 
       if (animatable.currentState === void 0) {
         return;
+      }
+
+      if (!this.actorConditions[actor.id]) {
+        this.setUpConditionControllers(actor);
       }
 
       let { timeline } = animatable.currentState as IndividualState;

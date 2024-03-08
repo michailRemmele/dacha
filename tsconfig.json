@@ -5,8 +5,8 @@
 
         "declaration": true,
 
-        "module": "esnext",
-        "moduleResolution": "node",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
 
         "strict": true,
         "allowJs": true,

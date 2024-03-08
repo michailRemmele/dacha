@@ -41,7 +41,7 @@ export class KeyboardInputSystem extends System {
 
   update(): void {
     this.inputListener.getEvents().forEach((event) => {
-      this.scene.emit(KeyboardInput, event);
+      this.scene.dispatchEvent(KeyboardInput, event);
     });
 
     this.inputListener.clear();

@@ -9,8 +9,8 @@ import {
   Color,
 } from 'three/src/Three';
 
-import { AddActor, RemoveActor } from '../../../engine/events';
-import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
+import { RemoveActor } from '../../../engine/events';
+import type { RemoveActorEvent } from '../../../engine/events';
 import { System } from '../../../engine/system';
 import type { SystemOptions } from '../../../engine/system';
 import { Actor, ActorCollection } from '../../../engine/actor';
@@ -131,8 +131,6 @@ export class SpriteRenderer extends System {
     }));
 
     this.cameraService = scene.getService(CameraService);
-
-    this.actorCollection.forEach(this.handleActorAdd);
   }
 
   async load(): Promise<void> {
@@ -192,7 +190,6 @@ export class SpriteRenderer extends System {
     this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
 
-    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
 
     this.lightSubsystem.mount();
@@ -203,7 +200,6 @@ export class SpriteRenderer extends System {
   unmount(): void {
     window.removeEventListener('resize', this.handleWindowResize);
 
-    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.lightSubsystem.unmount();
@@ -228,21 +224,6 @@ export class SpriteRenderer extends System {
 
     return imagesToLoad;
   }
-
-  private handleActorAdd = (value: AddActorEvent | Actor): void => {
-    const actor = value instanceof Actor ? value : value.actor;
-
-    const sprite = actor.getComponent(Sprite);
-
-    const material = createMaterial(sprite.material.type);
-    const geometry = new PlaneGeometry(sprite.width, sprite.height);
-    const object = new Mesh(geometry, material);
-
-    object.userData.actor = actor;
-    this.actorsMap[actor.id] = object.id;
-
-    this.renderScene.add(object);
-  };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
     const { actor } = event;
@@ -269,6 +250,19 @@ export class SpriteRenderer extends System {
     this.renderer.setSize(this.viewWidth, this.viewHeight);
   };
 
+  private setUpActor(actor: Actor): void {
+    const sprite = actor.getComponent(Sprite);
+
+    const material = createMaterial(sprite.material.type);
+    const geometry = new PlaneGeometry(sprite.width, sprite.height);
+    const object = new Mesh(geometry, material);
+
+    object.userData.actor = actor;
+    this.actorsMap[actor.id] = object.id;
+
+    this.renderScene.add(object);
+  }
+
   private updateCamera(): void {
     const currentCamera = this.cameraService.getCurrentCamera();
     const transform = currentCamera.getComponent(Transform);
@@ -285,6 +279,10 @@ export class SpriteRenderer extends System {
     this.actorCollection.forEach((actor, index) => {
       const transform = actor.getComponent(Transform);
       const sprite = actor.getComponent(Sprite);
+
+      if (!this.actorsMap[actor.id]) {
+        this.setUpActor(actor);
+      }
 
       const object = this.renderScene.getObjectById(
         this.actorsMap[actor.id],

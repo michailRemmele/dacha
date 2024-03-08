@@ -1,4 +1,5 @@
-import { EventTarget } from '../index';
+import { EventTarget } from '../event-target';
+import { eventQueue } from '../event-queue';
 import type { Event } from '../types';
 
 interface TestEvents {}
@@ -25,14 +26,20 @@ describe('Engine -> EventTarget', () => {
     eventTarget.addEventListener('test-event-2', mockFn2);
     eventTarget.addEventListener('test-event-3', mockFn3);
 
-    eventTarget.emit('test-event-1');
-    eventTarget.emit('test-event-2');
-    eventTarget.emit('test-event-3', {
+    eventTarget.dispatchEvent('test-event-1');
+    eventTarget.dispatchEvent('test-event-2');
+    eventTarget.dispatchEvent('test-event-3', {
       field1: 123,
     });
-    eventTarget.emit('test-event-3', {
+    eventTarget.dispatchEvent('test-event-3', {
       field1: 321,
     });
+
+    expect(mockFn1.mock.calls.length).toEqual(0);
+    expect(mockFn2.mock.calls.length).toEqual(0);
+    expect(mockFn3.mock.calls.length).toEqual(0);
+
+    eventQueue.update();
 
     expect(mockFn1.mock.calls.length).toEqual(1);
     expect(mockFn2.mock.calls.length).toEqual(1);
@@ -57,11 +64,13 @@ describe('Engine -> EventTarget', () => {
 
     eventTarget.removeEventListener('test-event-2', mockFn2);
 
-    eventTarget.emit('test-event-1');
-    eventTarget.emit('test-event-2');
-    eventTarget.emit('test-event-3', { field1: 213 });
-    eventTarget.emit('test-event-3', { field1: 213 });
-    eventTarget.emit('test-event-3', { field1: 213 });
+    eventTarget.dispatchEvent('test-event-1');
+    eventTarget.dispatchEvent('test-event-2');
+    eventTarget.dispatchEvent('test-event-3', { field1: 213 });
+    eventTarget.dispatchEvent('test-event-3', { field1: 213 });
+    eventTarget.dispatchEvent('test-event-3', { field1: 213 });
+
+    eventQueue.update();
 
     expect(mockFn1.mock.calls.length).toEqual(1);
     expect(mockFn2.mock.calls.length).toEqual(0);
@@ -69,8 +78,10 @@ describe('Engine -> EventTarget', () => {
 
     eventTarget.removeEventListener('test-event-1', mockFn1);
 
-    eventTarget.emit('test-event-2');
-    eventTarget.emit('test-event-2');
+    eventTarget.dispatchEvent('test-event-2');
+    eventTarget.dispatchEvent('test-event-2');
+
+    eventQueue.update();
 
     expect(mockFn1.mock.calls.length).toEqual(1);
     expect(mockFn2.mock.calls.length).toEqual(0);
@@ -88,11 +99,10 @@ describe('Engine -> EventTarget', () => {
 
     superParent.addEventListener('test-event-1', mockFn1);
 
-    child.emit('test-event-1');
+    child.dispatchEvent('test-event-1');
+    parent.dispatchEvent('test-event-1');
 
-    expect(mockFn1.mock.calls.length).toEqual(1);
-
-    parent.emit('test-event-1');
+    eventQueue.update();
 
     expect(mockFn1.mock.calls.length).toEqual(2);
   });
@@ -119,16 +129,43 @@ describe('Engine -> EventTarget', () => {
     parent.addEventListener('test-event-1', mockFn2Wrapper);
     superParent.addEventListener('test-event-1', mockFn3);
 
-    child.emit('test-event-1');
+    child.dispatchEvent('test-event-1');
+
+    eventQueue.update();
 
     expect(mockFn1.mock.calls.length).toEqual(1);
     expect(mockFn2.mock.calls.length).toEqual(1);
     expect(mockFn3.mock.calls.length).toEqual(0);
 
-    parent.emit('test-event-1');
+    parent.dispatchEvent('test-event-1');
+
+    eventQueue.update();
 
     expect(mockFn1.mock.calls.length).toEqual(1);
     expect(mockFn2.mock.calls.length).toEqual(2);
     expect(mockFn3.mock.calls.length).toEqual(0);
+  });
+
+  it('Should handle event sent during another event handle', () => {
+    const target = new EventTarget();
+
+    const mockFn = jest.fn();
+
+    const listener1 = (event: Event): void => {
+      event.target.dispatchEvent('test-event-2');
+      mockFn();
+    };
+    const listener2 = (): void => {
+      mockFn();
+    };
+
+    target.addEventListener('test-event-1', listener1);
+    target.addEventListener('test-event-2', listener2);
+
+    target.dispatchEvent('test-event-1');
+
+    eventQueue.update();
+
+    expect(mockFn.mock.calls.length).toEqual(2);
   });
 });

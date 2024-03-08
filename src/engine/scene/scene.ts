@@ -96,11 +96,18 @@ export class Scene extends Entity {
     super.removeEventListener(type, callback as ListenerFn);
   }
 
-  override emit<T extends EventType>(
+  override dispatchEvent<T extends EventType>(
     type: T,
     ...payload: EventPayload<SceneEventMap, T>
   ): void {
-    super.emit(type, ...payload);
+    super.dispatchEvent(type, ...payload);
+  }
+
+  override dispatchEventImmediately<T extends EventType>(
+    type: T,
+    ...payload: EventPayload<SceneEventMap, T>
+  ): void {
+    super.dispatchEventImmediately(type, ...payload);
   }
 
   override appendChild(child: Actor): void {

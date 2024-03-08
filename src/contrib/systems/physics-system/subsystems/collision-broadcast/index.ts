@@ -62,7 +62,7 @@ export class CollisionBroadcastSubsystem {
       actor1, actor2, mtv1,
     } = collision;
 
-    actor1.emit(STATE_TO_EVENT[collision.getState()], {
+    actor1.dispatchEvent(STATE_TO_EVENT[collision.getState()], {
       actor: actor2,
       mtv: mtv1,
     });

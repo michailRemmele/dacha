@@ -3,6 +3,7 @@ import type {
   EventType,
   ListenerFn,
 } from './types';
+import { eventQueue } from './event-queue';
 
 export class EventTarget {
   public parent: EventTarget | null;
@@ -43,7 +44,11 @@ export class EventTarget {
     }
   }
 
-  emit(type: EventType, payload?: Record<string, unknown>): void {
+  removeAllListeners(): void {
+    this.listenersMap.clear();
+  }
+
+  private handleEvent(type: EventType, payload?: Record<string, unknown>): void {
     let isPropagationStopped = false;
 
     const stopPropagation = (): void => {
@@ -70,7 +75,11 @@ export class EventTarget {
     }
   }
 
-  removeAllListeners(): void {
-    this.listenersMap.clear();
+  dispatchEvent(type: EventType, payload?: Record<string, unknown>): void {
+    eventQueue.add(this.handleEvent.bind(this, type, payload));
+  }
+
+  dispatchEventImmediately(type: EventType, payload?: Record<string, unknown>): void {
+    this.handleEvent(type, payload);
   }
 }

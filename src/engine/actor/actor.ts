@@ -1,6 +1,5 @@
 import type { Scene } from '../scene';
 import type { Component, ComponentConstructor } from '../component';
-import { filterByKey } from '../utils';
 import type { ActorEventMap } from '../../types/events';
 import { AddComponent, RemoveComponent } from '../events';
 import { Entity } from '../entity';
@@ -48,11 +47,18 @@ export class Actor extends Entity {
     super.removeEventListener(type, callback as ListenerFn);
   }
 
-  override emit<T extends EventType>(
+  override dispatchEvent<T extends EventType>(
     type: T,
     ...payload: EventPayload<ActorEventMap, T>
   ): void {
-    super.emit(type, ...payload);
+    super.dispatchEvent(type, ...payload);
+  }
+
+  override dispatchEventImmediately<T extends EventType>(
+    type: T,
+    ...payload: EventPayload<ActorEventMap, T>
+  ): void {
+    super.dispatchEventImmediately(type, ...payload);
   }
 
   override appendChild(child: Actor): void {
@@ -90,7 +96,7 @@ export class Actor extends Entity {
     this.components[componentName] = component;
     component.actor = this;
 
-    this.emit(AddComponent, { componentName });
+    this.dispatchEventImmediately(AddComponent, { componentName });
   }
 
   removeComponent(componentClass: ComponentConstructor): void {
@@ -101,8 +107,8 @@ export class Actor extends Entity {
     }
 
     this.components[componentName].actor = void 0;
-    this.components = filterByKey(this.components, componentName);
+    delete this.components[componentName];
 
-    this.emit(RemoveComponent, { componentName });
+    this.dispatchEventImmediately(RemoveComponent, { componentName });
   }
 }

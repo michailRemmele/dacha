@@ -11,7 +11,7 @@ export interface EntityOptions {
 export class Entity extends EventTarget {
   public readonly id: string;
   public readonly name: string;
-  public readonly children: Array<Entity>;
+  public children: Array<Entity>;
 
   declare public parent: Entity | null;
 
@@ -27,7 +27,7 @@ export class Entity extends EventTarget {
     child.parent = this;
     this.children.push(child);
 
-    this.emit(AddChildEntity, { child });
+    this.dispatchEventImmediately(AddChildEntity, { child });
   }
 
   removeChild(child: Entity): void {
@@ -39,7 +39,7 @@ export class Entity extends EventTarget {
     child.parent = null;
     this.children.splice(index, 1);
 
-    this.emit(RemoveChildEntity, { child });
+    this.dispatchEventImmediately(RemoveChildEntity, { child });
   }
 
   remove(): void {

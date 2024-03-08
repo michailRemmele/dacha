@@ -35,7 +35,7 @@ export const setValue = (actor: Actor, path: Array<string>, value: unknown): voi
   const soughtValue: unknown = _getValue(actor, path, path.length - 1);
 
   if (!soughtValue) {
-    throw new Error(`Can't set frame value for path: ${path.join('.')}. Make sure that path is correct`);
+    return;
   }
   if (soughtValue instanceof Actor) {
     throw new Error(`Can't set frame value for path: ${path.join('.')}. Setting value as actor property is restricted`);

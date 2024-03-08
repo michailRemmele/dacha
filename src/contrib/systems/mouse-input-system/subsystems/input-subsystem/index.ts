@@ -38,7 +38,7 @@ export class InputSubsystem {
 
   update(): void {
     this.inputListener.getFiredEvents().forEach((inputEvent) => {
-      this.scene.emit(MouseInput, inputEvent);
+      this.scene.dispatchEvent(MouseInput, inputEvent);
     });
     this.inputListener.clearFiredEvents();
   }

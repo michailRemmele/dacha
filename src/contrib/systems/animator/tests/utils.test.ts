@@ -169,48 +169,5 @@ describe('Contrib -> Animator -> utils', () => {
 
       expect((actor3.getComponent(TestComponent)).testField).toBe('updatedValue3');
     });
-
-    it('Throws error if path is incorrect', () => {
-      const actor1 = new Actor({
-        id: '1',
-        name: 'actor-1',
-      });
-      const actor2 = new Actor({
-        id: '2',
-        name: 'actor-2',
-      });
-      const actor3 = new Actor({
-        id: '3',
-        name: 'actor-3',
-      });
-
-      actor1.appendChild(actor2);
-      actor2.appendChild(actor3);
-
-      const component = new TestComponent({ testField: 'testFieldValue' });
-      actor3.setComponent(component);
-
-      expect(() => {
-        setValue(
-          actor1,
-          ['children', 'notExistActor', 'children', 'actor-3', 'components', 'TestComponent', 'testField'],
-          'updatedValue',
-        );
-      }).toThrowError();
-      expect(() => {
-        setValue(
-          actor1,
-          ['children', 'actor-2', 'children', 'notExistActor', 'components', 'TestComponent', 'testField'],
-          'updatedValue',
-        );
-      }).toThrowError();
-      expect(() => {
-        setValue(
-          actor1,
-          ['children', 'actor-2', 'children', 'actor-3', 'components', 'NotExistComponent', 'testField'],
-          'updatedValue',
-        );
-      }).toThrowError();
-    });
   });
 });
