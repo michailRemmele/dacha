@@ -18,7 +18,7 @@ export const ListWrapper: FC<ListWrapperProps> = ({ children }) => {
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
-      scene.emit(EventType.InspectEntity, {
+      scene.dispatchEvent(EventType.InspectEntity, {
         path: undefined,
       })
     }

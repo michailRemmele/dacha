@@ -115,7 +115,6 @@ export class PreviewSubsystem {
       fromTemplate: true,
       isNew: true,
     })
-    this.scene.appendChild(preview)
     this.mainActor.appendChild(preview)
 
     return preview

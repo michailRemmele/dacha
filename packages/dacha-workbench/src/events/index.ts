@@ -1,7 +1,5 @@
-import type {
-  SceneEvent,
-  MouseControlEvent,
-} from 'remiz'
+import type { SceneEvent } from 'remiz'
+import type { MouseControlEvent } from 'remiz/events'
 
 import type { SettingsConfig } from '../engine/components/settings'
 

@@ -33,7 +33,7 @@ export const List: FC<ListProps> = ({ isLoaders = false }) => {
       return
     }
 
-    scene.emit(EventType.InspectEntity, {
+    scene.dispatchEvent(EventType.InspectEntity, {
       path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
     })
   }, [])

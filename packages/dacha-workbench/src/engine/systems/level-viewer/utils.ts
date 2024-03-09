@@ -1,4 +1,4 @@
-import type { ActorConfig, TemplateConfig } from 'remiz'
+import type { ActorConfig, TemplateConfig, Scene } from 'remiz'
 
 import { ALLOWED_COMPONENTS } from './consts'
 
@@ -12,3 +12,14 @@ export const omit = <T extends ActorConfig | TemplateConfig>(entity: T): T => ({
   children: entity.children?.map(omit),
   components: entity.components?.filter((component) => ALLOWED_COMPONENT_NAMES.has(component.name)),
 })
+
+export const removeAllChildren = (scene: Scene, mainActorId: string): void => {
+  let index = 0
+  while (index < scene.children.length) {
+    if (scene.children[index].id !== mainActorId) {
+      scene.children[index].remove()
+    } else {
+      index += 1
+    }
+  }
+}

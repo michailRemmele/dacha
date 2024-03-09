@@ -7,8 +7,8 @@ import type {
   SystemOptions,
   Actor,
   ActorSpawner,
-  MouseControlEvent,
 } from 'remiz'
+import type { MouseControlEvent } from 'remiz/events'
 
 import { EventType } from '../../../events'
 import type { InspectEntityEvent, SelectLevelEvent } from '../../../events'
@@ -96,7 +96,7 @@ export class PointerToolSystem extends System {
       .intersectsWithPoint(screenX, screenY)
       .find((actor) => getAncestor(actor).id !== this.mainActor.id)
 
-    this.scene.emit(EventType.InspectEntity, {
+    this.scene.dispatchEvent(EventType.InspectEntity, {
       path: selectedActor !== undefined
         ? buildActorPath(selectedActor, this.selectedActor.levelId)
         : undefined,

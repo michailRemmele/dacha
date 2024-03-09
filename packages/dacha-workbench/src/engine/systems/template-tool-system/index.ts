@@ -6,8 +6,8 @@ import type {
   LevelConfig,
   ActorSpawner,
   ActorCreator,
-  MouseControlEvent,
 } from 'remiz'
+import type { MouseControlEvent } from 'remiz/events'
 
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'
@@ -119,7 +119,7 @@ export class TemplateToolSystem extends System {
       this.placementPosition.y || 0,
     )
 
-    this.scene.emit(EventType.Command, {
+    this.scene.dispatchEvent(EventType.Command, {
       command: ADD,
       scope: ROOT_SCOPE,
       options: {

@@ -46,7 +46,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
         path,
         type: getEntityType(path),
       })
-      scene.emit(EventType.InspectedEntityChange, {
+      scene.dispatchEvent(EventType.InspectedEntityChange, {
         path,
       })
     }
@@ -75,7 +75,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
           path: undefined,
           type: undefined,
         })
-        scene.emit(EventType.InspectedEntityChange, {
+        scene.dispatchEvent(EventType.InspectedEntityChange, {
           path: undefined,
         })
       }

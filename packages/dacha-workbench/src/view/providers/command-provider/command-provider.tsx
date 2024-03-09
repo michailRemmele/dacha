@@ -35,13 +35,13 @@ export const CommandProvider = ({
     const { scene } = engineContext
 
     const handleUndo = (): void => {
-      scene.emit(EventType.CommandUndo, {
+      scene.dispatchEvent(EventType.CommandUndo, {
         scope: activeScope,
       })
     }
 
     const handleRedo = (): void => {
-      scene.emit(EventType.CommandRedo, {
+      scene.dispatchEvent(EventType.CommandRedo, {
         scope: activeScope,
       })
     }

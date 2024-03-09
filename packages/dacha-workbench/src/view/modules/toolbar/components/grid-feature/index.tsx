@@ -23,7 +23,7 @@ export const GridFeature: FC<GridFeatureProps> = ({ value }) => {
   const { scene } = useContext(EngineContext)
 
   const handleChange = useCallback((event: CheckboxChangeEvent): void => {
-    scene.emit(EventType.SetToolFeatureValue, {
+    scene.dispatchEvent(EventType.SetToolFeatureValue, {
       name: GRID_FEATURE_NAME,
       value: event.target.checked,
     })
