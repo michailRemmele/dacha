@@ -52,7 +52,11 @@ export class ActorCollection extends EventTarget {
     });
 
     scene.addEventListener(AddChildEntity, (event) => {
-      traverseEntity(event.child, (entity) => this.add(entity as Actor));
+      traverseEntity(event.child, (entity) => {
+        if (entity instanceof Actor && this.test(entity)) {
+          this.add(entity);
+        }
+      });
     });
     scene.addEventListener(RemoveChildEntity, (event) => {
       traverseEntity(event.child, (entity) => this.remove(entity as Actor));
@@ -79,30 +83,11 @@ export class ActorCollection extends EventTarget {
     const { target } = event;
 
     if (this.test(target)) {
-      this.accept(target);
+      this.add(target);
     } else {
-      this.decline(target);
+      this.remove(target);
     }
   };
-
-  private add(actor: Actor): void {
-    if (this.test(actor)) {
-      this.accept(actor);
-    }
-  }
-
-  private remove(actor: Actor): void {
-    if (!this.acceptedActorsMap[actor.id]) {
-      return;
-    }
-
-    this.acceptedActors = this.acceptedActors.filter(
-      (acceptedActor) => actor.id !== acceptedActor.id,
-    );
-    delete this.acceptedActorsMap[actor.id];
-
-    this.dispatchEventImmediately(RemoveActor, { actor });
-  }
 
   private test(actor: Actor): boolean {
     return this.components.every((component) => {
@@ -114,7 +99,7 @@ export class ActorCollection extends EventTarget {
     });
   }
 
-  private accept(actor: Actor): void {
+  private add(actor: Actor): void {
     if (this.acceptedActorsMap[actor.id]) {
       return;
     }
@@ -125,7 +110,7 @@ export class ActorCollection extends EventTarget {
     this.dispatchEventImmediately(AddActor, { actor });
   }
 
-  private decline(actor: Actor): void {
+  private remove(actor: Actor): void {
     if (!this.acceptedActorsMap[actor.id]) {
       return;
     }
