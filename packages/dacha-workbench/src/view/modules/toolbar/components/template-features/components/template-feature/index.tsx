@@ -38,7 +38,7 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
   })), [templates])
 
   const handleChange = useCallback((selectedValue: string) => {
-    scene.emit(EventType.SetToolFeatureValue, {
+    scene.dispatchEvent(EventType.SetToolFeatureValue, {
       name: TEMPLATE_FEATURE_NAME,
       value: selectedValue,
     })

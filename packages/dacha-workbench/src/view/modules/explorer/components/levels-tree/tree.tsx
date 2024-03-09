@@ -33,7 +33,7 @@ export const Tree: FC<TreeProps> = ({ className }) => {
   useEffect(() => {
     const isDeleted = levels.every((level) => level.id !== selectedLevel)
     if (isDeleted) {
-      scene.emit(EventType.SelectLevel, {
+      scene.dispatchEvent(EventType.SelectLevel, {
         levelId: undefined,
       })
       setSelectedLevel(undefined)
@@ -65,13 +65,13 @@ export const Tree: FC<TreeProps> = ({ className }) => {
     const levelId = entityPath[0] === 'levels' ? entityPath[1].split(':')[1] : undefined
 
     if (levelId !== undefined && levelId !== selectedLevel) {
-      scene.emit(EventType.SelectLevel, {
+      scene.dispatchEvent(EventType.SelectLevel, {
         levelId,
       })
       setSelectedLevel(levelId)
     }
 
-    scene.emit(EventType.InspectEntity, {
+    scene.dispatchEvent(EventType.InspectEntity, {
       path: entityPath,
     })
   }, [selectedLevel])

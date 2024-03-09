@@ -77,7 +77,7 @@ export class ProjectLoader extends System {
     const projectConfig = (this.scene.data.configStore as Store).get([]) as Config
     window.electron.saveProjectConfig(projectConfig)
 
-    this.scene.emit(EventType.SaveProject)
+    this.scene.dispatchEvent(EventType.SaveProject)
   }
 
   mount(): void {

@@ -94,7 +94,7 @@ export const Toolbar: FC = () => {
   ])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
-    scene.emit(EventType.SelectTool, {
+    scene.dispatchEvent(EventType.SelectTool, {
       name: event.target.value as string,
     })
   }, [])

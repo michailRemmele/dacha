@@ -7,8 +7,8 @@ import type {
   Scene,
   SystemOptions,
   Actor,
-  MouseControlEvent,
 } from 'remiz'
+import type { MouseControlEvent } from 'remiz/events'
 
 import { EventType } from '../../../events'
 import { getTool } from '../../../utils/get-tool'

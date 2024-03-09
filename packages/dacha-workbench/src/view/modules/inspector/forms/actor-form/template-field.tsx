@@ -51,7 +51,7 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
   const { name } = useConfig(templatePath) as TemplateConfig
 
   const handleTemplateInspect = useCallback(() => {
-    scene.emit(EventType.InspectEntity, {
+    scene.dispatchEvent(EventType.InspectEntity, {
       path: templatePath,
     })
   }, [templatePath])

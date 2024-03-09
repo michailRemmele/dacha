@@ -24,7 +24,7 @@ export const useCommander: UseCommanderHook = () => {
   const scope = useContext(CommandScopeContext)
 
   const dispatch = useCallback((command: Command, options?: DispatchOptions) => {
-    scene.emit(EventType.Command, {
+    scene.dispatchEvent(EventType.Command, {
       scope,
       isEffect: options?.isEffect,
       ...command,

@@ -17,10 +17,9 @@ import type { SelectLevelEvent } from '../../../events'
 import type { EditorConfig } from '../../../types/global'
 import type { Store, ListenerFn } from '../../../store'
 import { includesArray } from '../../../utils/includes-array'
-import { getAncestor } from '../../../utils/get-ancestor'
 
 import { ALLOWED_COMPONENTS } from './consts'
-import { omit } from './utils'
+import { omit, removeAllChildren } from './utils'
 import {
   watchTemplates,
   watchActors,
@@ -128,11 +127,7 @@ export class LevelViewer extends System {
       return
     }
 
-    this.actorCollection.forEach((actor) => {
-      if (getAncestor(actor).id !== this.mainActorId) {
-        actor.remove()
-      }
-    })
+    removeAllChildren(this.scene, this.mainActorId)
 
     const levels = this.configStore.get(['levels']) as Array<LevelConfig>
     const selectedLevel = levels.find((level) => level.id === levelId)

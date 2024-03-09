@@ -2,10 +2,8 @@ import {
   Transform,
   Sprite,
 } from 'remiz'
-import type {
-  Scene,
-  MouseControlEvent,
-} from 'remiz'
+import type { Scene } from 'remiz'
+import type { MouseControlEvent } from 'remiz/events'
 
 import { EventType } from '../../../../events'
 import { SET } from '../../../../command-types'
@@ -126,7 +124,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    this.scene.emit(EventType.Command, {
+    this.scene.dispatchEvent(EventType.Command, {
       command: SET,
       scope: ROOT_SCOPE,
       options: {

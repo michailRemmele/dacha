@@ -40,7 +40,7 @@ export const CommandScopeProvider: FC<CommandScopeProps> = ({
     const { scene } = engineContext
 
     return () => {
-      scene.emit(EventType.CommandClean, {
+      scene.dispatchEvent(EventType.CommandClean, {
         scope: name,
       })
     }

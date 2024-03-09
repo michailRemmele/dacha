@@ -36,7 +36,7 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
   }, [features])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
-    scene.emit(EventType.SetToolFeatureValue, {
+    scene.dispatchEvent(EventType.SetToolFeatureValue, {
       name: event.target.name as string,
       value: event.target.value as string,
     })

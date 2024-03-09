@@ -22,7 +22,7 @@ export const PreviewFeature: FC<PreviewFeatureProps> = ({ value }) => {
   const { scene } = useContext(EngineContext)
 
   const handleChange = useCallback((event: CheckboxChangeEvent): void => {
-    scene.emit(EventType.SetToolFeatureValue, {
+    scene.dispatchEvent(EventType.SetToolFeatureValue, {
       name: PREVIEW_FEATURE_NAME,
       value: event.target.checked,
     })
