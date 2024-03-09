@@ -1,4 +1,4 @@
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor } from '../../../../engine/actor';
 import type { Substate } from '../../../components/animatable/substate';
 import type { TwoDimensionalProps } from '../../../components/animatable/two-dimensional-props';
 import { MathOps } from '../../../../engine/mathLib';
@@ -12,7 +12,7 @@ export class TwoDimensionalPicker implements Picker {
   }
 
   getSubstate(
-    gameObject: GameObject,
+    actor: Actor,
     substates: Array<Substate>,
     props: TwoDimensionalProps,
   ): Substate {
@@ -24,8 +24,8 @@ export class TwoDimensionalPicker implements Picker {
       return substates[0];
     }
 
-    const x = getValue(gameObject, props.x) as number;
-    const y = getValue(gameObject, props.y) as number;
+    const x = getValue(actor, props.x) as number;
+    const y = getValue(actor, props.y) as number;
 
     let pickedSubstate = substates[0];
     let minDistance = this.getDistance(x, pickedSubstate.x, y, pickedSubstate.y);

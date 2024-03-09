@@ -5,8 +5,8 @@
 
         "declaration": true,
 
-        "module": "esnext",
-        "moduleResolution": "node",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
 
         "strict": true,
         "allowJs": true,
@@ -14,7 +14,12 @@
         "target": "es6",
         "esModuleInterop": true,
 
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+         
+        "typeRoots": [
+            "src/types",
+            "node_modules/@types"
+        ]
     },
     "include": [
         "src/**/*"

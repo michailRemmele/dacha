@@ -1,6 +1,5 @@
 import { System } from '../../../engine/system';
 import type { SystemOptions, UpdateOptions } from '../../../engine/system';
-import type { MessageBus } from '../../../engine/message-bus';
 
 import {
   PhysicsSubsystem,
@@ -10,15 +9,7 @@ import {
   ConstraintSolver,
 } from './subsystems';
 
-const COLLISION_MESSAGES = [
-  'COLLISION_ENTER',
-  'COLLISION_STAY',
-  'COLLISION_LEAVE',
-];
-
 export class PhysicsSystem extends System {
-  private messageBus: MessageBus;
-
   private physicsSubsystem: PhysicsSubsystem;
   private collisionDetectionSubsystem: CollisionDetectionSubsystem;
   private collisionBroadcastSubsystem: CollisionBroadcastSubsystem;
@@ -27,8 +18,6 @@ export class PhysicsSystem extends System {
 
   constructor(options: SystemOptions) {
     super();
-
-    this.messageBus = options.messageBus;
 
     this.physicsSubsystem = new PhysicsSubsystem(options);
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
@@ -40,25 +29,24 @@ export class PhysicsSystem extends System {
   mount(): void {
     this.physicsSubsystem.mount();
     this.collisionDetectionSubsystem.mount();
+    this.collisionSolver.mount();
+    this.constraintSolver.mount();
     this.collisionBroadcastSubsystem.mount();
   }
 
   unmount(): void {
-    this.physicsSubsystem.unmount?.();
-    this.collisionDetectionSubsystem.unmount?.();
-    this.collisionBroadcastSubsystem.unmount?.();
+    this.physicsSubsystem.unmount();
+    this.collisionDetectionSubsystem.unmount();
+    this.collisionSolver.unmount();
+    this.constraintSolver.unmount();
+    this.collisionBroadcastSubsystem.unmount();
   }
 
   update(options: UpdateOptions): void {
-    COLLISION_MESSAGES.forEach((message) => {
-      this.messageBus.delete(message);
-    });
-
     this.physicsSubsystem.update(options);
     this.collisionDetectionSubsystem.update();
-    this.collisionBroadcastSubsystem.update();
-    this.collisionSolver.update();
     this.constraintSolver.update();
+    this.collisionBroadcastSubsystem.update();
   }
 }
 

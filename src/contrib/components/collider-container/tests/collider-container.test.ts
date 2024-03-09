@@ -80,6 +80,7 @@ describe('Contrib -> components -> ColliderContainer', () => {
 
   it('Throws error if type of collider unexpected ', () => {
     expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const incorrectColliderContainer = new ColliderContainer({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore: For test to throw error

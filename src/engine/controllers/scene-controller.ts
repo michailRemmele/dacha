@@ -1,36 +1,53 @@
-import type { SceneProvider, SceneLoadOptions, LevelLoadOptions } from '../scene';
-import type { Message } from '../message-bus';
+import type {
+  SceneProvider, Scene,
+} from '../scene';
+import { LoadLevel, LoadScene } from '../events';
+import type { LoadLevelEvent, LoadSceneEvent } from '../events';
 
 import type { Controller, ControllerOptions } from './controller';
 
-const LOAD_SCENE_MSG = 'LOAD_SCENE';
-const LOAD_LEVEL_MSG = 'LOAD_LEVEL';
-
-interface LoadSceneMessage extends Message, SceneLoadOptions {}
-
-interface LoadLevelMessage extends Message, LevelLoadOptions {}
-
 export class SceneController implements Controller {
   private sceneProvider: SceneProvider;
+  private currentScene?: Scene;
+
+  private nextSceneEvent?: LoadSceneEvent;
+  private nextLevelEvent?: LoadLevelEvent;
 
   constructor({ sceneProvider }: ControllerOptions) {
     this.sceneProvider = sceneProvider;
   }
 
+  private handleLoadScene = (event: LoadSceneEvent): void => {
+    this.nextSceneEvent = event;
+  };
+
+  private handleLoadLevel = (event: LoadLevelEvent): void => {
+    this.nextLevelEvent = event;
+  };
+
   update(): void {
     const currentScene = this.sceneProvider.getCurrentScene();
 
-    const messageBus = currentScene?.getMessageBus();
+    if (this.currentScene !== currentScene) {
+      this.currentScene?.removeEventListener(LoadScene, this.handleLoadScene);
+      this.currentScene?.removeEventListener(LoadLevel, this.handleLoadLevel);
 
-    const loadSceneMessages = messageBus?.get(LOAD_SCENE_MSG) || [];
-    if (loadSceneMessages.length) {
+      if (currentScene !== undefined) {
+        currentScene?.addEventListener(LoadScene, this.handleLoadScene);
+        currentScene?.addEventListener(LoadLevel, this.handleLoadLevel);
+      }
+
+      this.currentScene = currentScene;
+    }
+
+    if (this.nextSceneEvent !== undefined) {
       const {
         sceneId,
         loaderId,
         levelId,
         clean,
         unloadCurrent,
-      } = loadSceneMessages[loadSceneMessages.length - 1] as LoadSceneMessage;
+      } = this.nextSceneEvent;
 
       void this.sceneProvider.loadScene({
         sceneId,
@@ -39,19 +56,20 @@ export class SceneController implements Controller {
         clean,
         unloadCurrent,
       });
+      this.nextSceneEvent = undefined;
     }
 
-    const loadLevelMessages = messageBus?.get(LOAD_LEVEL_MSG) || [];
-    if (loadLevelMessages.length) {
+    if (this.nextLevelEvent !== undefined) {
       const {
         levelId,
         loaderId,
-      } = loadLevelMessages[loadLevelMessages.length - 1] as LoadLevelMessage;
+      } = this.nextLevelEvent;
 
       void this.sceneProvider.loadLevel({
         levelId,
         loaderId,
       });
+      this.nextLevelEvent = undefined;
     }
 
     if (this.sceneProvider.isLoaded()) {

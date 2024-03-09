@@ -1,43 +1,34 @@
 import type { Component, ComponentConstructor } from '../component';
+import { Entity } from '../entity';
+import type { EntityOptions } from '../entity';
 
-interface TemplateOptions {
-  id: string
-  name: string
-}
-
-export class Template {
-  readonly id: string;
-  readonly name: string;
-
+export class Template extends Entity {
   private components: Record<string, Component>;
-  private parent?: Template;
-  private children: Array<Template>;
 
-  constructor(options: TemplateOptions) {
-    const { id, name } = options;
+  declare public readonly children: Array<Template>;
 
-    this.id = id;
-    this.name = name;
+  declare public parent: Template | null;
+
+  constructor(options: EntityOptions) {
+    super(options);
 
     this.components = {};
-    this.parent = void 0;
-    this.children = [];
   }
 
-  setParent(parent: Template): void {
-    this.parent = parent;
+  override appendChild(child: Template): void {
+    super.appendChild(child);
   }
 
-  getParent(): Template | undefined {
-    return this.parent;
+  override removeChild(child: Template): void {
+    super.removeChild(child);
   }
 
-  appendChild(child: Template): void {
-    this.children.push(child);
+  override getEntityById(id: string): Template | undefined {
+    return super.getEntityById(id) as Template | undefined;
   }
 
-  getChildren(): Array<Template> {
-    return this.children;
+  override getEntityByName(name: string): Template | undefined {
+    return super.getEntityByName(name) as Template | undefined;
   }
 
   setComponent(component: Component): void {
@@ -61,9 +52,7 @@ export class Template {
     });
 
     this.children.forEach((child) => {
-      const childTemplate = child.clone();
-      childTemplate.setParent(template);
-      template.appendChild(childTemplate);
+      template.appendChild(child.clone());
     });
 
     Object.keys(this.components).forEach((name) => {

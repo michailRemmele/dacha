@@ -1,5 +1,5 @@
 import { Sprite, SpriteConfig } from '../../../../components/sprite';
-import { GameObject } from '../../../../../engine/game-object/game-object';
+import { Actor } from '../../../../../engine/actor/actor';
 
 import { createSortByLayer } from '../sort-by-layer';
 
@@ -22,25 +22,25 @@ describe('Contrib -> RenderSystem -> Sort -> sortByLayer()', () => {
   };
 
   it('Returns correct order of objects', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
+    const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
 
     const layers = ['layer-1', 'layer-2', 'layer-3'];
 
-    gameObject1.setComponent(new Sprite(baseSpriteProps));
-    gameObject2.setComponent(new Sprite(baseSpriteProps));
+    actor1.setComponent(new Sprite(baseSpriteProps));
+    actor2.setComponent(new Sprite(baseSpriteProps));
 
-    (gameObject1.getComponent(Sprite)).sortingLayer = 'layer-1';
-    (gameObject2.getComponent(Sprite)).sortingLayer = 'layer-2';
+    (actor1.getComponent(Sprite)).sortingLayer = 'layer-1';
+    (actor2.getComponent(Sprite)).sortingLayer = 'layer-2';
 
-    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(-1);
+    expect(createSortByLayer(layers)(actor1, actor2)).toBe(-1);
 
-    (gameObject1.getComponent(Sprite)).sortingLayer = 'layer-3';
+    (actor1.getComponent(Sprite)).sortingLayer = 'layer-3';
 
-    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(1);
+    expect(createSortByLayer(layers)(actor1, actor2)).toBe(1);
 
-    (gameObject1.getComponent(Sprite)).sortingLayer = 'layer-2';
+    (actor1.getComponent(Sprite)).sortingLayer = 'layer-2';
 
-    expect(createSortByLayer(layers)(gameObject1, gameObject2)).toBe(0);
+    expect(createSortByLayer(layers)(actor1, actor2)).toBe(0);
   });
 });

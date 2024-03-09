@@ -1,6 +1,6 @@
-import { Engine } from './engine';
-import { Component } from './engine/component';
-import { VectorOps, MathOps, Vector2 } from './engine/mathLib';
+export { Engine } from './engine';
+export { Component } from './engine/component';
+export { VectorOps, MathOps, Vector2 } from './engine/mathLib';
 
 export * from './engine/types';
 export { System } from './engine/system';
@@ -9,27 +9,23 @@ export type {
   UpdateOptions,
 } from './engine/system';
 export type {
-  GameObjectObserver,
-  GameObjectObserverFilter,
-  GameObjectSpawner,
-  GameObjectDestroyer,
-} from './engine/game-object';
-export type { MessageBus, Message } from './engine/message-bus';
-export type { SceneContext } from './engine/scene';
-export type { GameObjectScript, GameObjectScriptOptions } from './contrib/systems/script-system';
-export type { UiInitFnOptions, UiInitFn, UiDestroyFn } from './contrib/systems/ui-bridge';
+  ActorCollectionFilter,
+  ActorSpawner,
+} from './engine/actor';
+export type {
+  EventTarget,
+  Event,
+  EventType,
+  EventPayload,
+  ListenerFn,
+} from './engine/event-target';
+export type { Scene } from './engine/scene';
+
 export * as Animation from './contrib/components/animatable/types';
 
-export { GameObject, GameObjectCreator } from './engine/game-object';
+export { Actor, ActorCollection, ActorCreator } from './engine/actor';
 export { TemplateCollection } from './engine/template';
 
+export * from './types/events';
 export * from './contrib/systems';
 export * from './contrib/components';
-
-export {
-  Engine,
-  Component,
-  VectorOps,
-  MathOps,
-  Vector2,
-};

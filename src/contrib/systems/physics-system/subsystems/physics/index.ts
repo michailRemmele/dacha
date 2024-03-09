@@ -1,16 +1,25 @@
-import {
-  ADD_FORCE_MSG,
-  ADD_IMPULSE_MSG,
-  STOP_MOVEMENT_MSG,
-} from '../../consts';
 import { Vector2 } from '../../../../../engine/mathLib';
-import { filterByKey } from '../../../../../engine/utils';
 import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../../../engine/game-object';
-import type { MessageBus, Message } from '../../../../../engine/message-bus';
+import { Actor, ActorCollection } from '../../../../../engine/actor';
+import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { PhysicsSystemOptions } from '../../types';
+import {
+  AddForce,
+  AddImpulse,
+  StopMovement,
+} from '../../../../events';
+import type { AddForceEvent, AddImpulseEvent } from '../../../../events';
+import { RemoveActor } from '../../../../../engine/events';
+import type { RemoveActorEvent } from '../../../../../engine/events';
+import type { ActorEvent } from '../../../../../types/events';
+
+interface ActorVectors {
+  velocity: Vector2
+  force: Vector2
+  impulse: Vector2
+}
 
 const DIRECTION_VECTOR = {
   UP: new Vector2(0, -1),
@@ -19,57 +28,92 @@ const DIRECTION_VECTOR = {
   DOWN: new Vector2(0, 1),
 };
 
-interface AddForceMessage extends Message {
-  value: Vector2
-}
-
-interface AddImpulseMessage extends Message {
-  value: Vector2
-}
-
-interface StopMovementMessage extends Message {
-  gameObject: GameObject
-}
-
 export class PhysicsSubsystem {
-  private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private scene: Scene;
+  private actorCollection: ActorCollection;
   private gravitationalAcceleration: number;
-  private gameObjectsVelocity: Record<string, Vector2>;
+  private actorVectors: Record<string, ActorVectors | undefined>;
 
   constructor(options: SystemOptions) {
     const {
-      gravitationalAcceleration, createGameObjectObserver, messageBus,
+      gravitationalAcceleration, scene,
     } = options as PhysicsSystemOptions;
 
-    this.gameObjectObserver = createGameObjectObserver({
+    this.scene = scene;
+    this.actorCollection = new ActorCollection(scene, {
       components: [
         RigidBody,
         Transform,
       ],
     });
-    this.messageBus = messageBus;
     this.gravitationalAcceleration = gravitationalAcceleration;
 
-    this.gameObjectsVelocity = {};
+    this.actorVectors = {};
   }
 
   mount(): void {
-    this.gameObjectObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
+
+    this.scene.addEventListener(StopMovement, this.handleStopMovement);
+    this.scene.addEventListener(AddForce, this.handleAddForce);
+    this.scene.addEventListener(AddImpulse, this.handleAddImpulse);
   }
 
   unmount(): void {
-    this.gameObjectObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
+
+    this.scene.removeEventListener(StopMovement, this.handleStopMovement);
+    this.scene.removeEventListener(AddForce, this.handleAddForce);
+    this.scene.removeEventListener(AddImpulse, this.handleAddImpulse);
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    this.gameObjectsVelocity = filterByKey(this.gameObjectsVelocity, gameObject.getId());
+  private handleActorRemove = (event: RemoveActorEvent): void => {
+    const { actor } = event;
+
+    delete this.actorVectors[actor.id];
   };
 
-  private applyDragForce(gameObject: GameObject, deltaTime: number): void {
-    const { mass, drag } = gameObject.getComponent(RigidBody);
-    const gameObjectId = gameObject.getId();
-    const velocity = this.gameObjectsVelocity[gameObjectId];
+  private handleStopMovement = (event: ActorEvent): void => {
+    const { target } = event;
+
+    if (!this.actorVectors[target.id]) {
+      this.setUpVectors(target);
+    }
+
+    this.actorVectors[target.id]!.velocity.multiplyNumber(0);
+  };
+
+  private handleAddForce = (event: AddForceEvent): void => {
+    const { target, value } = event;
+
+    if (!this.actorVectors[target.id]) {
+      this.setUpVectors(target);
+    }
+
+    this.actorVectors[target.id]!.force.add(value);
+  };
+
+  private handleAddImpulse = (event: AddImpulseEvent): void => {
+    const { target, value } = event;
+
+    if (!this.actorVectors[target.id]) {
+      this.setUpVectors(target);
+    }
+
+    this.actorVectors[target.id]!.impulse.add(value);
+  };
+
+  private setUpVectors(actor: Actor): void {
+    this.actorVectors[actor.id] = {
+      velocity: new Vector2(0, 0),
+      force: new Vector2(0, 0),
+      impulse: new Vector2(0, 0),
+    };
+  }
+
+  private applyDragForce(actor: Actor, deltaTime: number): void {
+    const { mass, drag } = actor.getComponent(RigidBody);
+    const velocity = this.actorVectors[actor.id]?.velocity;
 
     if (!drag || !velocity || (!velocity.x && !velocity.y)) {
       return;
@@ -107,85 +151,41 @@ export class PhysicsSubsystem {
     return gravityVector;
   }
 
-  private getForceVector(gameObject: GameObject): Vector2 {
-    const gameObjectId = gameObject.getId();
-    const rigidBody = gameObject.getComponent(RigidBody);
-
-    const forceVector = new Vector2(0, 0);
-
-    forceVector.add(this.getGravityForce(rigidBody));
-
-    const addForceMessages = (
-      this.messageBus.getById(ADD_FORCE_MSG, gameObjectId) || []
-    ) as Array<AddForceMessage>;
-    addForceMessages.forEach((message) => forceVector.add(message.value));
-
-    return forceVector;
-  }
-
-  private getImpulseVector(gameObject: GameObject): Vector2 {
-    const gameObjectId = gameObject.getId();
-    const addImpulseMessages = (
-      this.messageBus.getById(ADD_IMPULSE_MSG, gameObjectId) || []
-    ) as Array<AddImpulseMessage>;
-
-    return addImpulseMessages.reduce((vector, message) => {
-      vector.add(message.value);
-
-      return vector;
-    }, new Vector2(0, 0));
-  }
-
-  private processConstraints(): void {
-    const stopMovementMessages = this.messageBus.get(STOP_MOVEMENT_MSG) || [];
-
-    stopMovementMessages.forEach((message) => {
-      const { gameObject } = message as StopMovementMessage;
-      const gameObjectId = gameObject.getId();
-
-      if (this.gameObjectsVelocity[gameObjectId]) {
-        this.gameObjectsVelocity[gameObjectId].multiplyNumber(0);
-      }
-    });
-  }
-
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
     const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
 
-    this.gameObjectObserver.fireEvents();
-
-    this.processConstraints();
-
-    this.gameObjectObserver.forEach((gameObject) => {
-      const gameObjectId = gameObject.getId();
-      const rigidBody = gameObject.getComponent(RigidBody);
-      const transform = gameObject.getComponent(Transform);
+    this.actorCollection.forEach((actor) => {
+      const rigidBody = actor.getComponent(RigidBody);
+      const transform = actor.getComponent(Transform);
       const { mass } = rigidBody;
 
-      const forceVector = this.getForceVector(gameObject);
-      const impulseVector = this.getImpulseVector(gameObject);
-
-      this.gameObjectsVelocity[gameObjectId] = this.gameObjectsVelocity[gameObjectId]
-        || new Vector2(0, 0);
-
-      const velocityVector = this.gameObjectsVelocity[gameObjectId];
-
-      if (forceVector.x || forceVector.y) {
-        forceVector.multiplyNumber(deltaTimeInSeconds / mass);
-        velocityVector.add(forceVector);
+      if (!this.actorVectors[actor.id]) {
+        this.setUpVectors(actor);
       }
 
-      if (impulseVector.x || impulseVector.y) {
-        impulseVector.multiplyNumber(1 / mass);
-        velocityVector.add(impulseVector);
+      const { velocity, force, impulse } = this.actorVectors[actor.id]!;
+
+      force.add(this.getGravityForce(rigidBody));
+
+      if (force.x || force.y) {
+        force.multiplyNumber(deltaTimeInSeconds / mass);
+        velocity.add(force);
       }
 
-      this.applyDragForce(gameObject, deltaTimeInSeconds);
+      if (impulse.x || impulse.y) {
+        impulse.multiplyNumber(1 / mass);
+        velocity.add(impulse);
+      }
 
-      transform.offsetX += velocityVector.x * deltaTimeInSeconds;
-      transform.offsetY += velocityVector.y * deltaTimeInSeconds;
+      this.applyDragForce(actor, deltaTimeInSeconds);
+
+      transform.offsetX += velocity.x * deltaTimeInSeconds;
+      transform.offsetY += velocity.y * deltaTimeInSeconds;
+
+      force.multiplyNumber(0);
+      impulse.multiplyNumber(0);
     });
   }
 }

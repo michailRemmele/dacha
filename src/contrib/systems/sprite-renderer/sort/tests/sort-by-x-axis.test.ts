@@ -1,6 +1,6 @@
 import { Sprite, SpriteConfig } from '../../../../components/sprite';
 import { Transform, TransformConfig } from '../../../../components/transform';
-import { GameObject } from '../../../../../engine/game-object/game-object';
+import { Actor } from '../../../../../engine/actor/actor';
 
 import { sortByXAxis } from '../sort-by-x-axis';
 
@@ -31,50 +31,50 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
   };
 
   it('Returns correct order of objects while equals width', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
+    const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
 
-    gameObject1.setComponent(new Sprite(baseSpriteProps));
-    gameObject1.setComponent(new Transform(baseTransformProps));
+    actor1.setComponent(new Sprite(baseSpriteProps));
+    actor1.setComponent(new Transform(baseTransformProps));
 
-    gameObject2.setComponent(new Sprite(baseSpriteProps));
-    gameObject2.setComponent(new Transform(baseTransformProps));
+    actor2.setComponent(new Sprite(baseSpriteProps));
+    actor2.setComponent(new Transform(baseTransformProps));
 
-    expect(sortByXAxis(gameObject1, gameObject2)).toBe(0);
+    expect(sortByXAxis(actor1, actor2)).toBe(0);
 
-    (gameObject2.getComponent(Transform)).offsetX = 50;
+    (actor2.getComponent(Transform)).offsetX = 50;
 
-    expect(sortByXAxis(gameObject1, gameObject2)).toBeLessThan(0);
+    expect(sortByXAxis(actor1, actor2)).toBeLessThan(0);
 
-    (gameObject1.getComponent(Transform)).offsetX = 100;
+    (actor1.getComponent(Transform)).offsetX = 100;
 
-    expect(sortByXAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
+    expect(sortByXAxis(actor1, actor2)).toBeGreaterThan(0);
   });
 
   it('Returns correct order of objects while different width', () => {
-    const gameObject1 = new GameObject({ id: '1', name: 'mock-game-object-1' });
-    const gameObject2 = new GameObject({ id: '2', name: 'mock-game-object-2' });
+    const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
+    const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
 
-    gameObject1.setComponent(new Sprite(baseSpriteProps));
-    gameObject1.setComponent(new Transform(baseTransformProps));
+    actor1.setComponent(new Sprite(baseSpriteProps));
+    actor1.setComponent(new Transform(baseTransformProps));
 
-    gameObject2.setComponent(new Sprite(baseSpriteProps));
-    gameObject2.setComponent(new Transform(baseTransformProps));
+    actor2.setComponent(new Sprite(baseSpriteProps));
+    actor2.setComponent(new Transform(baseTransformProps));
 
-    (gameObject1.getComponent(Transform)).offsetX = 100;
-    (gameObject2.getComponent(Transform)).offsetX = 50;
+    (actor1.getComponent(Transform)).offsetX = 100;
+    (actor2.getComponent(Transform)).offsetX = 50;
 
-    (gameObject1.getComponent(Sprite)).width = 10;
-    (gameObject2.getComponent(Sprite)).width = 100;
+    (actor1.getComponent(Sprite)).width = 10;
+    (actor2.getComponent(Sprite)).width = 100;
 
-    expect(sortByXAxis(gameObject1, gameObject2)).toBeGreaterThan(0);
+    expect(sortByXAxis(actor1, actor2)).toBeGreaterThan(0);
 
-    (gameObject2.getComponent(Sprite)).width = 110;
+    (actor2.getComponent(Sprite)).width = 110;
 
-    expect(sortByXAxis(gameObject1, gameObject2)).toBe(0);
+    expect(sortByXAxis(actor1, actor2)).toBe(0);
 
-    (gameObject2.getComponent(Sprite)).width = 130;
+    (actor2.getComponent(Sprite)).width = 130;
 
-    expect(sortByXAxis(gameObject1, gameObject2)).toBeLessThan(0);
+    expect(sortByXAxis(actor1, actor2)).toBeLessThan(0);
   });
 });

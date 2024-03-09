@@ -1,5 +1,6 @@
 import type { SceneProvider } from './scene';
 import type { Controller } from './controllers';
+import { eventQueue } from './event-target';
 
 export class GameLoop {
   private sceneProvider: SceneProvider;
@@ -19,29 +20,25 @@ export class GameLoop {
   }
 
   private tick(): void {
+    eventQueue.update();
+
     const current = performance.now();
 
     const elapsed = current - this.previous;
 
     const currentScene = this.sceneProvider.getCurrentScene();
 
-    const messageBus = currentScene?.getMessageBus();
-
-    messageBus?.sendDelayed();
-
     const options = {
       deltaTime: elapsed,
     };
 
-    currentScene?.getSystems().forEach((system) => {
-      system.update(options);
+    currentScene?.systems.forEach((system) => {
+      system.update?.(options);
     });
 
     this.controllers.forEach((controller) => {
       controller.update();
     });
-
-    messageBus?.clear();
 
     this.previous = current;
 

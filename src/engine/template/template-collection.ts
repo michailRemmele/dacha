@@ -27,7 +27,7 @@ export class TemplateCollection {
 
     children.forEach((child) => {
       const childTemplate = this.buildTemplate(child);
-      childTemplate.setParent(template);
+      childTemplate.parent = template;
       template.appendChild(childTemplate);
     });
 

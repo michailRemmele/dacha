@@ -8,7 +8,7 @@ describe('Contrib -> components -> KeyboardControl', () => {
           key: 'KeyW',
           pressed: true,
           keepEmit: true,
-          messageType: 'RUN',
+          eventType: 'RUN',
           attrs: [
             {
               name: 'angle',
@@ -20,21 +20,21 @@ describe('Contrib -> components -> KeyboardControl', () => {
         {
           key: 'KeyI',
           pressed: false,
-          messageType: 'INVENTORY_OPEN',
+          eventType: 'INVENTORY_OPEN',
           attrs: [],
         },
       ],
     }).clone();
 
     expect(keyboardControl.inputEventBindings.KeyW.pressed).toStrictEqual({
-      messageType: 'RUN',
+      eventType: 'RUN',
       keepEmit: true,
       attrs: {
         angle: 270,
       },
     });
     expect(keyboardControl.inputEventBindings.KeyI.released).toStrictEqual({
-      messageType: 'INVENTORY_OPEN',
+      eventType: 'INVENTORY_OPEN',
       keepEmit: false,
       attrs: {},
     });
@@ -47,7 +47,7 @@ describe('Contrib -> components -> KeyboardControl', () => {
           key: 'KeyW',
           pressed: true,
           keepEmit: true,
-          messageType: 'WALK',
+          eventType: 'WALK',
           attrs: [
             {
               name: 'angle',

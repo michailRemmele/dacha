@@ -4,6 +4,7 @@ const commonRules = {
   'lines-between-class-members': 0,
   'import/prefer-default-export': 0,
   'no-void': 0,
+  'arrow-body-style': 0,
   'import/extensions': [
     'error',
     'ignorePackages',
@@ -55,6 +56,7 @@ module.exports = {
       ],
       rules: {
         ...commonRules,
+        '@typescript-eslint/no-this-alias': 0,
         '@typescript-eslint/lines-between-class-members': 0,
         '@typescript-eslint/explicit-function-return-type': 'warn',
       },

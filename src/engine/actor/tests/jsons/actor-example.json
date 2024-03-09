@@ -1,0 +1,40 @@
+
+{
+  "id": "001",
+  "name": "actorExample",
+  "children": [
+    {
+      "id": "002", 
+      "name": "childExample",
+      "children": [],
+      "components": [
+        {
+          "name": "TestComponent2",
+          "config": {
+            "testField4": "testField4ValueChild",
+            "testField5": true,
+            "testField6": 450
+          }
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "TestComponent1",
+      "config": {
+        "testField1": "testField1Value",
+        "testField2": true,
+        "testField3": 100
+      }
+    },
+    {
+      "name": "TestComponent2",
+      "config": {
+        "testField4": "testField4Value",
+        "testField5": false,
+        "testField6": 300
+      }
+    }
+  ]
+}

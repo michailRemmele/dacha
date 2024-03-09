@@ -1,7 +1,7 @@
 import { Raycaster, Vector2 } from 'three/src/Three';
 import type { Scene, Camera } from 'three/src/Three';
 
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor } from '../../../../engine/actor';
 import type { SortFn } from '../sort';
 
 interface SpriteRendererServiceOptions {
@@ -41,17 +41,17 @@ export class SpriteRendererService {
     );
   }
 
-  intersectsWithPoint(x: number, y: number): Array<GameObject> {
+  intersectsWithPoint(x: number, y: number): Array<Actor> {
     this.raycaster.setFromCamera(this.getNormalizedCoordinates(x, y), this.camera);
     const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
-    const gameObjects = intersects.map(
-      (intersect) => intersect.object.userData.gameObject as GameObject,
+    const actors = intersects.map(
+      (intersect) => intersect.object.userData.actor as Actor,
     );
 
     // TODO: Find more efficient way to return intersected objects in right order
     // according to posititon and sorting layer
-    return gameObjects
+    return actors
       .sort(this.sortFn)
       .reverse();
   }

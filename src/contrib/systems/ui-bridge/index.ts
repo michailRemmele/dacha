@@ -1,31 +1,25 @@
+import { Scene } from '../../../engine/scene';
 import { System } from '../../../engine/system';
 import type {
   SystemOptions,
   UpdateOptions,
 } from '../../../engine/system';
-import type { GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus, Message } from '../../../engine/message-bus';
-import type { SceneContext } from '../../../engine/scene';
 import type { TemplateCollection } from '../../../engine/template';
 
 import { Observer } from './observer';
 
 interface ActionFnOptions {
-  messageBus: MessageBus
-  gameObjectSpawner: unknown
-  gameObjectDestroyer: unknown
+  scene: Scene
+  actorSpawner: unknown
   deltaTime: number
 }
 
 type ActionFn = (options: ActionFnOptions) => void;
 
 export interface UiInitFnOptions {
-  messageBus: MessageBus
-  sceneContext: SceneContext
+  scene: Scene
   templateCollection: TemplateCollection
-  gameObjectObserver: GameObjectObserver
   gameStateObserver: Observer
-  pushMessage: (message: Message) => void
   pushAction: (action: ActionFn) => void
 }
 
@@ -38,15 +32,11 @@ interface UiBridgeResources {
 }
 
 export class UiBridge extends System {
-  private sceneContext: SceneContext;
-  private gameObjectObserver: GameObjectObserver;
-  private gameObjectSpawner: unknown;
-  private gameObjectDestroyer: unknown;
-  private messageBus: MessageBus;
+  private actorSpawner: unknown;
+  private scene: Scene;
   private loadUiApp: LoadUiAppFn;
   private templateCollection: TemplateCollection;
   private gameStateObserver: Observer;
-  private messageQueue: Array<Message>;
   private actionsQueue: Array<ActionFn>;
   private onUiInit?: UiInitFn;
   private onUiDestroy?: UiDestroyFn;
@@ -55,12 +45,9 @@ export class UiBridge extends System {
     super();
 
     const {
-      createGameObjectObserver,
-      gameObjectSpawner,
-      gameObjectDestroyer,
-      messageBus,
+      actorSpawner,
       resources,
-      sceneContext,
+      scene,
       templateCollection,
     } = options;
 
@@ -72,16 +59,12 @@ export class UiBridge extends System {
 
     this.loadUiApp = loadUiApp;
 
-    this.sceneContext = sceneContext;
-    this.gameObjectObserver = createGameObjectObserver({});
-    this.gameObjectSpawner = gameObjectSpawner;
-    this.gameObjectDestroyer = gameObjectDestroyer;
-    this.messageBus = messageBus;
+    this.scene = scene;
+    this.actorSpawner = actorSpawner;
     this.templateCollection = templateCollection;
 
     this.gameStateObserver = new Observer();
 
-    this.messageQueue = [];
     this.actionsQueue = [];
   }
 
@@ -95,12 +78,9 @@ export class UiBridge extends System {
   mount(): void {
     if (this.onUiInit) {
       this.onUiInit({
-        messageBus: this.messageBus,
-        sceneContext: this.sceneContext,
+        scene: this.scene,
         templateCollection: this.templateCollection,
         gameStateObserver: this.gameStateObserver,
-        gameObjectObserver: this.gameObjectObserver,
-        pushMessage: this.pushMessage.bind(this),
         pushAction: this.pushAction.bind(this),
       });
     }
@@ -116,26 +96,16 @@ export class UiBridge extends System {
     this.actionsQueue.push(action);
   }
 
-  private pushMessage(message: Message): void {
-    this.messageQueue.push(message);
-  }
-
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
     this.gameStateObserver.next();
 
-    this.messageQueue.forEach((message) => {
-      this.messageBus.send(message, true);
-    });
-    this.messageQueue = [];
-
     this.actionsQueue.forEach((action) => {
       action({
-        messageBus: this.messageBus,
+        scene: this.scene,
         deltaTime,
-        gameObjectSpawner: this.gameObjectSpawner,
-        gameObjectDestroyer: this.gameObjectDestroyer,
+        actorSpawner: this.actorSpawner,
       });
     });
     this.actionsQueue = [];

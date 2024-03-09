@@ -1,20 +1,17 @@
 import { MathOps } from '../../../engine/mathLib';
 import { System } from '../../../engine/system';
+import type { Scene } from '../../../engine/scene';
 import type { SystemOptions } from '../../../engine/system';
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus, Message } from '../../../engine/message-bus';
+import type { Actor } from '../../../engine/actor';
+import { ActorCollection } from '../../../engine/actor';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
+import { SetCamera } from '../../events';
+import type { SetCameraEvent } from '../../events';
 
 import { CameraService } from './service';
 
-const SET_CAMERA_MESSAGE = 'SET_CAMERA';
-
 export const STD_SCREEN_SIZE = 1080;
-
-interface SetCameraMessage extends Message {
-  gameObjectId: string
-}
 
 interface CameraSystemOptions extends SystemOptions {
   initialCamera: string
@@ -23,8 +20,8 @@ interface CameraSystemOptions extends SystemOptions {
 }
 
 export class CameraSystem extends System {
-  private gameObjectObserver: GameObjectObserver;
-  private messageBus: MessageBus;
+  private actorCollection: ActorCollection;
+  private scene: Scene;
   private window: Window & HTMLElement;
   private scaleSensitivity: number;
   private cameraService: CameraService;
@@ -36,31 +33,29 @@ export class CameraSystem extends System {
       initialCamera,
       windowNodeId,
       scaleSensitivity,
-      createGameObjectObserver,
-      messageBus,
-      sceneContext,
+      scene,
     } = options as CameraSystemOptions;
 
     const windowNode = getWindowNode(windowNodeId);
 
-    this.gameObjectObserver = createGameObjectObserver({
+    this.actorCollection = new ActorCollection(scene, {
       components: [
         Camera,
       ],
     });
-    this.messageBus = messageBus;
+    this.scene = scene;
     this.window = windowNode as (Window & HTMLElement);
 
     this.scaleSensitivity = MathOps.clamp(scaleSensitivity, 0, 1);
 
-    const currentCamera = this.gameObjectObserver.getById(initialCamera);
+    const currentCamera = this.actorCollection.getById(initialCamera);
 
     if (!currentCamera) {
       throw new Error(`Could not set camera with id ${initialCamera} for the scene`);
     }
 
     this.cameraService = new CameraService({ camera: currentCamera });
-    sceneContext.registerService(this.cameraService);
+    scene.addService(this.cameraService);
 
     this.setCamera(currentCamera);
   }
@@ -68,11 +63,24 @@ export class CameraSystem extends System {
   mount(): void {
     this.handleCameraUpdate();
     window.addEventListener('resize', this.handleCameraUpdate);
+    this.scene.addEventListener(SetCamera, this.handleSetCamera);
   }
 
   unmount(): void {
     window.removeEventListener('resize', this.handleCameraUpdate);
+    this.scene.removeEventListener(SetCamera, this.handleSetCamera);
   }
+
+  private handleSetCamera = (event: SetCameraEvent): void => {
+    const { actorId } = event;
+    const newCamera = this.actorCollection.getById(actorId);
+
+    if (!newCamera) {
+      throw new Error(`Could not set camera with id ${actorId} for the scene`);
+    }
+
+    this.setCamera(newCamera);
+  };
 
   private handleCameraUpdate = (): void => {
     const width = this.window.innerWidth || this.window.clientWidth;
@@ -105,23 +113,9 @@ export class CameraSystem extends System {
     cameraComponent.screenScale = normalizedSize / STD_SCREEN_SIZE;
   }
 
-  private setCamera(camera: GameObject): void {
+  private setCamera(camera: Actor): void {
     this.cameraService.setCurrentCamera(camera);
     this.handleCameraUpdate();
-  }
-
-  update(): void {
-    const messages = this.messageBus.get(SET_CAMERA_MESSAGE);
-    if (messages) {
-      const { gameObjectId } = messages[messages.length - 1] as SetCameraMessage;
-      const newCamera = this.gameObjectObserver.getById(gameObjectId);
-
-      if (!newCamera) {
-        throw new Error(`Could not set camera with id ${gameObjectId} for the scene`);
-      }
-
-      this.setCamera(newCamera);
-    }
   }
 }
 

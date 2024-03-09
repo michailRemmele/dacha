@@ -7,7 +7,7 @@ describe('Contrib -> components -> MouseControl', () => {
         {
           event: 'mousedown',
           button: 0,
-          messageType: 'ATTACK',
+          eventType: 'ATTACK',
           attrs: [
             {
               name: 'someOption',
@@ -19,7 +19,7 @@ describe('Contrib -> components -> MouseControl', () => {
         {
           event: 'mousedown',
           button: 2,
-          messageType: 'BLOCK',
+          eventType: 'BLOCK',
           attrs: [
             {
               name: 'someOption',
@@ -32,13 +32,13 @@ describe('Contrib -> components -> MouseControl', () => {
     }).clone();
 
     expect(mouseControl.inputEventBindings.mousedown[0]).toStrictEqual({
-      messageType: 'ATTACK',
+      eventType: 'ATTACK',
       attrs: {
         someOption: 10,
       },
     });
     expect(mouseControl.inputEventBindings.mousedown[2]).toStrictEqual({
-      messageType: 'BLOCK',
+      eventType: 'BLOCK',
       attrs: {
         someOption: 20,
       },
@@ -51,7 +51,7 @@ describe('Contrib -> components -> MouseControl', () => {
         {
           event: 'mousedown',
           button: 0,
-          messageType: 'ATTACK',
+          eventType: 'ATTACK',
           attrs: [
             {
               name: 'someOption',
@@ -66,7 +66,7 @@ describe('Contrib -> components -> MouseControl', () => {
     mouseControl.inputEventBindings = {
       mousedown: {
         0: {
-          messageType: 'BLOCK',
+          eventType: 'BLOCK',
           attrs: {
             someOption: 20,
           },
@@ -75,7 +75,7 @@ describe('Contrib -> components -> MouseControl', () => {
     };
 
     expect(mouseControl.inputEventBindings.mousedown[0]).toStrictEqual({
-      messageType: 'BLOCK',
+      eventType: 'BLOCK',
       attrs: {
         someOption: 20,
       },
@@ -87,7 +87,7 @@ describe('Contrib -> components -> MouseControl', () => {
       inputEventBindings: [
         {
           event: 'dblclick',
-          messageType: 'ATTACK',
+          eventType: 'ATTACK',
           attrs: [
             {
               name: 'someOption',

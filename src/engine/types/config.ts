@@ -17,10 +17,10 @@ export interface TemplateConfig {
   children?: Array<TemplateConfig>
 }
 
-export interface GameObjectConfig {
+export interface ActorConfig {
   id: string
   name: string
-  children?: Array<GameObjectConfig>
+  children?: Array<ActorConfig>
   components?: Array<ComponentConfig>
   fromTemplate?: boolean
   templateId?: string
@@ -29,7 +29,7 @@ export interface GameObjectConfig {
 export interface LevelConfig {
   id: string
   name: string
-  gameObjects: Array<GameObjectConfig>
+  actors: Array<ActorConfig>
 }
 
 export interface SystemConfig {

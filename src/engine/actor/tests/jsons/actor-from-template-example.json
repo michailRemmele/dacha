@@ -1,0 +1,51 @@
+
+{
+  "id": "003",
+  "name": "actorFromTemplateExample",
+  "fromTemplate": true,
+  "templateId": "000",
+  "children": [
+    {
+      "id": "004",
+      "name": "childFromTemplateExample1",
+      "fromTemplate": true,
+      "templateId": "001",
+      "children": [],
+      "components": [
+        {
+          "name": "TestComponent2",
+          "config": {
+            "testField4": "testField4ValueChild",
+            "testField5": true,
+            "testField6": 750
+          }
+        }
+      ]
+    },
+    {
+      "id": "005",
+      "name": "childFromTemplateExample2",
+      "children": [],
+      "components": [
+        {
+          "name": "TestComponent1",
+          "config": {
+            "testField1": "testField1ValueChild",
+            "testField2": false,
+            "testField3": 950
+          }
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "TestComponent1",
+      "config": {
+        "testField1": "testField1ValueFromTemplate",
+        "testField2": false,
+        "testField3": 100
+      }
+    }
+  ]
+}

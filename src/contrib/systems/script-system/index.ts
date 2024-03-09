@@ -3,98 +3,87 @@ import type {
   SystemOptions,
   UpdateOptions,
 } from '../../../engine/system';
-import type { GameObjectObserver, GameObject } from '../../../engine/game-object';
-import type { MessageBus } from '../../../engine/message-bus';
-import { Script } from '../../components/script';
+import { Actor, ActorCollection } from '../../../engine/actor';
+import type { ActorSpawner } from '../../../engine/actor';
+import type { Scene } from '../../../engine/scene';
+import { ScriptBundle } from '../../components';
+import { RemoveActor } from '../../../engine/events';
+import type { RemoveActorEvent } from '../../../engine/events';
 
-import type { GameObjectScript, GameObjectScriptOptions } from './types';
+import { Script } from './types';
+import type { ScriptOptions, ScriptConstructor } from './types';
 
-export { GameObjectScript, GameObjectScriptOptions };
-
-export interface GameObjectScriptClass {
-  new(options: GameObjectScriptOptions): GameObjectScript
-}
+export { Script, ScriptOptions, ScriptConstructor };
 
 export class ScriptSystem extends System {
-  private gameObjectObserver: GameObjectObserver;
-  private scriptsObserver: GameObjectObserver;
-  private gameObjectSpawner: unknown;
-  private gameObjectDestroyer: unknown;
-  private scripts: Record<string, GameObjectScriptClass>;
-  private messageBus: MessageBus;
-  private activeScripts: Record<string, GameObjectScript>;
+  private scriptsCollection: ActorCollection;
+  private actorSpawner: ActorSpawner;
+  private scripts: Record<string, ScriptConstructor>;
+  private scene: Scene;
+  private activeScripts: Record<string, Array<Script>>;
 
   constructor(options: SystemOptions) {
     super();
 
     const {
-      createGameObjectObserver,
-      gameObjectSpawner,
-      gameObjectDestroyer,
-      messageBus,
+      actorSpawner,
+      scene,
       resources = {},
     } = options;
 
-    this.gameObjectObserver = createGameObjectObserver({});
-    this.scriptsObserver = createGameObjectObserver({
+    this.scene = scene;
+    this.scriptsCollection = new ActorCollection(scene, {
       components: [
-        Script,
+        ScriptBundle,
       ],
     });
-    this.gameObjectSpawner = gameObjectSpawner;
-    this.gameObjectDestroyer = gameObjectDestroyer;
-    this.scripts = resources as Record<string, GameObjectScriptClass>;
-    this.messageBus = messageBus;
+    this.actorSpawner = actorSpawner;
+    this.scripts = (resources as Array<ScriptConstructor>).reduce((acc, script) => {
+      if (script.scriptName === undefined) {
+        throw new Error(`Missing scriptName field for ${script.name} script.`);
+      }
+
+      acc[script.scriptName] = script;
+      return acc;
+    }, {} as Record<string, ScriptConstructor>);
 
     this.activeScripts = {};
   }
 
   mount(): void {
-    this.scriptsObserver.subscribe('onremove', this.handleGameObjectRemove);
+    this.scriptsCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   unmount(): void {
-    this.scriptsObserver.unsubscribe('onremove', this.handleGameObjectRemove);
+    this.scriptsCollection.removeEventListener(RemoveActor, this.handleActorRemove);
   }
 
-  private handleGameObjectRemove = (gameObject: GameObject): void => {
-    const gameObjectId = gameObject.getId();
-
-    this.activeScripts = Object.keys(this.activeScripts)
-      .reduce((acc: Record<string, GameObjectScript>, key) => {
-        if (key !== gameObjectId) {
-          acc[key] = this.activeScripts[key];
-        }
-
-        return acc;
-      }, {});
+  private handleActorRemove = (event: RemoveActorEvent): void => {
+    const { actor } = event;
+    this.activeScripts[actor.id].forEach((script) => script.destroy?.());
+    delete this.activeScripts[actor.id];
   };
 
+  private setUpScript(actor: Actor): void {
+    const { scripts } = actor.getComponent(ScriptBundle);
+    this.activeScripts[actor.id] = scripts.map((script) => {
+      const ScriptClass = this.scripts[script.name];
+      return new ScriptClass({
+        ...script.options,
+        actor,
+        actorSpawner: this.actorSpawner,
+        scene: this.scene,
+      });
+    });
+  }
+
   update(options: UpdateOptions): void {
-    const { deltaTime } = options;
+    this.scriptsCollection.forEach((actor) => {
+      if (!this.activeScripts[actor.id]) {
+        this.setUpScript(actor);
+      }
 
-    this.scriptsObserver.fireEvents();
-
-    this.scriptsObserver.forEach((gameObject) => {
-      const id = gameObject.getId();
-      const {
-        name,
-        options: scriptOptions,
-      } = gameObject.getComponent(Script);
-
-      const SelectedGameObjectScript = this.scripts[name];
-
-      this.activeScripts[id] = this.activeScripts[id]
-        || new SelectedGameObjectScript({
-          gameObject,
-          gameObjectObserver: this.gameObjectObserver,
-          messageBus: this.messageBus,
-          spawner: this.gameObjectSpawner,
-          destroyer: this.gameObjectDestroyer,
-          ...scriptOptions,
-        });
-
-      this.activeScripts[id].update(deltaTime);
+      this.activeScripts[actor.id].forEach((script) => script.update?.(options));
     });
   }
 }

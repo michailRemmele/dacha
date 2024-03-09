@@ -1,14 +1,24 @@
-import type { GameObject, GameObjectObserver } from '../../../engine/game-object';
-import type { MessageBus } from '../../../engine/message-bus';
+import type {
+  Actor,
+  ActorSpawner,
+} from '../../../engine/actor';
+import type { Scene } from '../../../engine/scene';
+import type { Constructor } from '../../../types/utils';
 
-export interface GameObjectScriptOptions {
-  gameObject: GameObject
-  messageBus: MessageBus
-  gameObjectObserver: GameObjectObserver
-  spawner: unknown
-  destroyer: unknown
+export interface ScriptOptions {
+  scene: Scene
+  actor: Actor
+  actorSpawner: ActorSpawner
 }
 
-export interface GameObjectScript {
-  update(deltaTime: number): void
+interface UpdateOptions {
+  deltaTime: number
 }
+
+export abstract class Script {
+  static scriptName: string;
+  destroy?(): void;
+  update?(options: UpdateOptions): void;
+}
+
+export type ScriptConstructor = Constructor<Script> & { scriptName: string };

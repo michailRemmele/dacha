@@ -1,5 +1,5 @@
 import { Sprite } from '../../../components/sprite';
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor } from '../../../../engine/actor';
 
 import type { SortFn } from './types';
 
@@ -9,7 +9,7 @@ export const createSortByLayer = (sortingLayers: Array<string>): SortFn => {
     return storage;
   }, {});
 
-  return (a: GameObject, b: GameObject): number => {
+  return (a: Actor, b: Actor): number => {
     const aSprite = a.getComponent(Sprite);
     const bSprite = b.getComponent(Sprite);
     const aSortingLayerOrder = sortingLayer[aSprite.sortingLayer];

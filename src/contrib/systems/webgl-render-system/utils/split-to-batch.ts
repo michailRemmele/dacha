@@ -1,33 +1,29 @@
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor, ActorCollection } from '../../../../engine/actor';
 import type { ShaderProvider } from '../shader-builder';
 
-interface BatchSplitterAcc {
-  batches: Array<Array<GameObject>>
-  prevShadingId?: string
-}
-
 export const splitToBatch = (
-  gameObjects: Array<GameObject>,
+  actorCollection: ActorCollection,
   shaderProvider: ShaderProvider,
-): Array<Array<GameObject>> => {
-  if (!gameObjects.length) {
+): Array<Array<Actor>> => {
+  if (!actorCollection.size) {
     return [];
   }
 
-  const { batches } = gameObjects.reduce((acc: BatchSplitterAcc, gameObject) => {
-    const shadingId = shaderProvider.getShadingId(gameObject.getId());
+  const batches: Array<Array<Actor>> = [];
+  let prevShadingId: string;
 
-    const currentBatch = acc.batches[acc.batches.length - 1];
+  actorCollection.forEach((actor) => {
+    const shadingId = shaderProvider.getShadingId(actor.id);
 
-    if (shadingId === acc.prevShadingId) {
-      currentBatch.push(gameObject);
+    const currentBatch = batches[batches.length - 1];
+
+    if (shadingId === prevShadingId) {
+      currentBatch.push(actor);
     } else {
-      acc.batches.push([gameObject]);
-      acc.prevShadingId = shadingId;
+      batches.push([actor]);
+      prevShadingId = shadingId;
     }
-
-    return acc;
-  }, { batches: [[]], prevShadingId: shaderProvider.getShadingId(gameObjects[0].getId()) });
+  });
 
   return batches;
 };

@@ -1,5 +1,5 @@
 import type { Vector2 } from '../../../../../engine/mathLib';
-import type { GameObject } from '../../../../../engine/game-object';
+import type { Actor } from '../../../../../engine/actor';
 import type { AABB } from './aabb-builders';
 import type { DispersionCalculator } from './dispersion-calculator';
 
@@ -21,7 +21,7 @@ export interface Coordinates {
 }
 
 export interface SortedEntry {
-  gameObject: GameObject
+  actor: Actor
   aabb: AABB
   coordinates: Coordinates
 }

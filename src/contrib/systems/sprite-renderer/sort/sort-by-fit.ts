@@ -1,9 +1,9 @@
 import { Sprite } from '../../../components/sprite';
-import type { GameObject } from '../../../../engine/game-object';
+import type { Actor } from '../../../../engine/actor';
 
 import type { SortFn } from './types';
 
-export const sortByFit: SortFn = (a: GameObject, b: GameObject): number => {
+export const sortByFit: SortFn = (a: Actor, b: Actor): number => {
   const aSprite = a.getComponent(Sprite);
   const bSprite = b.getComponent(Sprite);
 
