@@ -16,7 +16,7 @@ import type { ScriptOptions, ScriptConstructor } from './types';
 export { Script, ScriptOptions, ScriptConstructor };
 
 export class ScriptSystem extends System {
-  private scriptsObserver: ActorCollection;
+  private scriptsCollection: ActorCollection;
   private actorSpawner: ActorSpawner;
   private scripts: Record<string, ScriptConstructor>;
   private scene: Scene;
@@ -32,7 +32,7 @@ export class ScriptSystem extends System {
     } = options;
 
     this.scene = scene;
-    this.scriptsObserver = new ActorCollection(scene, {
+    this.scriptsCollection = new ActorCollection(scene, {
       components: [
         ScriptBundle,
       ],
@@ -51,11 +51,11 @@ export class ScriptSystem extends System {
   }
 
   mount(): void {
-    this.scriptsObserver.addEventListener(RemoveActor, this.handleActorRemove);
+    this.scriptsCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   unmount(): void {
-    this.scriptsObserver.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.scriptsCollection.removeEventListener(RemoveActor, this.handleActorRemove);
   }
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
@@ -78,7 +78,7 @@ export class ScriptSystem extends System {
   }
 
   update(options: UpdateOptions): void {
-    this.scriptsObserver.forEach((actor) => {
+    this.scriptsCollection.forEach((actor) => {
       if (!this.activeScripts[actor.id]) {
         this.setUpScript(actor);
       }

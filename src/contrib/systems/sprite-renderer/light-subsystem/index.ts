@@ -11,22 +11,22 @@ import { createLight, updateLight } from './light-factory';
 
 export class LightSubsystem {
   private renderScene: Scene;
-  private lightsObserver: ActorCollection;
+  private lightsCollection: ActorCollection;
   private lightsMap: Record<string, number>;
 
-  constructor(renderScene: Scene, lightsObserver: ActorCollection) {
+  constructor(renderScene: Scene, lightsCollection: ActorCollection) {
     this.renderScene = renderScene;
-    this.lightsObserver = lightsObserver;
+    this.lightsCollection = lightsCollection;
 
     this.lightsMap = {};
   }
 
   mount(): void {
-    this.lightsObserver.addEventListener(RemoveActor, this.handleLightRemove);
+    this.lightsCollection.addEventListener(RemoveActor, this.handleLightRemove);
   }
 
   unmount(): void {
-    this.lightsObserver.removeEventListener(RemoveActor, this.handleLightRemove);
+    this.lightsCollection.removeEventListener(RemoveActor, this.handleLightRemove);
   }
 
   private handleLightRemove = (event: RemoveActorEvent): void => {
@@ -52,7 +52,7 @@ export class LightSubsystem {
   }
 
   update(): void {
-    this.lightsObserver.forEach((actor) => {
+    this.lightsCollection.forEach((actor) => {
       const transform = actor.getComponent(Transform);
       const { type, options } = actor.getComponent(Light);
 
