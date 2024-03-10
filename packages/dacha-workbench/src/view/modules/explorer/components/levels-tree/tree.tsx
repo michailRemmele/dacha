@@ -74,7 +74,7 @@ export const Tree: FC<TreeProps> = ({ className }) => {
     scene.dispatchEvent(EventType.InspectEntity, {
       path: entityPath,
     })
-  }, [selectedLevel])
+  }, [selectedLevel, scene])
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath)
 

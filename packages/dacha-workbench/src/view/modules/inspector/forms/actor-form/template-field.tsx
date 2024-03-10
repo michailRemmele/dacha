@@ -54,7 +54,7 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
     scene.dispatchEvent(EventType.InspectEntity, {
       path: templatePath,
     })
-  }, [templatePath])
+  }, [templatePath, scene])
 
   return (
     <Labelled

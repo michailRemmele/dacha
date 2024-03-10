@@ -40,7 +40,7 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
       name: event.target.name as string,
       value: event.target.value as string,
     })
-  }, [])
+  }, [scene])
 
   return (
     <ToolFeaturesStyled>

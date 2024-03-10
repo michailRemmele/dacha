@@ -22,7 +22,7 @@ export const ListWrapper: FC<ListWrapperProps> = ({ children }) => {
         path: undefined,
       })
     }
-  }, [])
+  }, [scene])
 
   return (
     <ListWrapperStyled

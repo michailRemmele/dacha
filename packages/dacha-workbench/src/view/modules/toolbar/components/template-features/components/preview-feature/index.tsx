@@ -26,7 +26,7 @@ export const PreviewFeature: FC<PreviewFeatureProps> = ({ value }) => {
       name: PREVIEW_FEATURE_NAME,
       value: event.target.checked,
     })
-  }, [])
+  }, [scene])
 
   return (
     <ToolFeature>
