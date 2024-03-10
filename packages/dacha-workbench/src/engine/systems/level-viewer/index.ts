@@ -1,47 +1,43 @@
 import {
   System,
-  GameObjectCreator,
+  ActorCollection,
+  ActorCreator,
   TemplateCollection,
 } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
-  GameObjectSpawner,
-  GameObjectDestroyer,
-  GameObjectObserver,
+  ActorSpawner,
   TemplateConfig,
   LevelConfig,
-  MessageBus,
-  SceneContext,
 } from 'remiz'
 
+import { EventType } from '../../../events'
+import type { SelectLevelEvent } from '../../../events'
 import type { EditorConfig } from '../../../types/global'
 import type { Store, ListenerFn } from '../../../store'
-import type { SelectLevelMessage } from '../../../types/messages'
-import { SELECT_LEVEL_MSG } from '../../../consts/message-types'
 import { includesArray } from '../../../utils/includes-array'
 
 import { ALLOWED_COMPONENTS } from './consts'
-import { omit } from './utils'
+import { omit, removeAllChildren } from './utils'
 import {
   watchTemplates,
-  watchGameObjects,
+  watchActors,
 } from './watchers'
 import type { WatcherOptions } from './watchers'
 
 interface LevelViewerOptions extends SystemOptions {
-  mainObjectId: string;
+  mainActorId: string;
 }
 
 export class LevelViewer extends System {
-  messageBus: MessageBus
-  sceneContext: SceneContext
-  gameObjectSpawner: GameObjectSpawner
-  gameObjectDestroyer: GameObjectDestroyer
-  gameObjectObserver: GameObjectObserver
-  mainObjectId: string
+  scene: Scene
+  actorSpawner: ActorSpawner
+  actorCollection: ActorCollection
+  mainActorId: string
   configStore: Store
   editorConfig: EditorConfig
-  gameObjectCreator: GameObjectCreator
+  actorCreator: ActorCreator
   currentLevel?: string
   templateCollection: TemplateCollection
   subscription?: () => void
@@ -51,31 +47,26 @@ export class LevelViewer extends System {
     super()
 
     const {
-      messageBus,
-      sceneContext,
-      gameObjectSpawner,
-      gameObjectDestroyer,
-      createGameObjectObserver,
-      mainObjectId,
+      scene,
+      actorSpawner,
+      mainActorId,
     } = options as LevelViewerOptions
 
-    this.messageBus = messageBus
-    this.sceneContext = sceneContext
-    this.gameObjectSpawner = gameObjectSpawner
-    this.gameObjectDestroyer = gameObjectDestroyer
-    this.gameObjectObserver = createGameObjectObserver({})
-    this.mainObjectId = mainObjectId
+    this.scene = scene
+    this.actorSpawner = actorSpawner
+    this.actorCollection = new ActorCollection(scene)
+    this.mainActorId = mainActorId
 
-    this.configStore = this.sceneContext.data.configStore as Store
-    this.editorConfig = sceneContext.data.editorConfig as EditorConfig
+    this.configStore = scene.data.configStore as Store
+    this.editorConfig = scene.data.editorConfig as EditorConfig
 
-    const mainObject = this.gameObjectObserver.getById(this.mainObjectId)
+    const mainActor = this.actorCollection.getById(this.mainActorId)
 
-    if (!mainObject) {
-      throw new Error('Can\'t find the main object')
+    if (!mainActor) {
+      throw new Error('Can\'t find the main actor')
     }
 
-    this.sceneContext.data.mainObject = mainObject
+    this.scene.data.mainActor = mainActor
 
     const templateCollection = new TemplateCollection(ALLOWED_COMPONENTS)
     const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
@@ -85,16 +76,18 @@ export class LevelViewer extends System {
     })
 
     this.templateCollection = templateCollection
-    this.gameObjectCreator = new GameObjectCreator(ALLOWED_COMPONENTS, templateCollection)
+    this.actorCreator = new ActorCreator(ALLOWED_COMPONENTS, templateCollection)
 
-    this.sceneContext.data.gameObjectCreator = this.gameObjectCreator
+    this.scene.data.actorCreator = this.actorCreator
   }
 
   mount(): void {
+    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
     this.watchStore()
   }
 
   unmount(): void {
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
     this.subscription?.()
   }
 
@@ -106,10 +99,9 @@ export class LevelViewer extends System {
       const options: WatcherOptions = {
         path,
         store: this.configStore,
-        gameObjectObserver: this.gameObjectObserver,
-        gameObjectDestroyer: this.gameObjectDestroyer,
-        gameObjectCreator: this.gameObjectCreator,
-        gameObjectSpawner: this.gameObjectSpawner,
+        scene: this.scene,
+        actorCollection: this.actorCollection,
+        actorCreator: this.actorCreator,
         templateCollection: this.templateCollection,
         level,
         prevLevel: this.prevLevel,
@@ -119,7 +111,7 @@ export class LevelViewer extends System {
         watchTemplates(options)
       }
       if (this.currentLevel && includesArray(path, ['levels'])) {
-        watchGameObjects(options)
+        watchActors(options)
       }
 
       this.prevLevel = level
@@ -128,42 +120,28 @@ export class LevelViewer extends System {
     this.subscription = this.configStore.subscribe(listener)
   }
 
-  private updateLevels(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
-
-    if (!messages) {
-      return
-    }
-
-    const { levelId } = messages[messages.length - 1]
+  private handleSelectLevel = (event: SelectLevelEvent): void => {
+    const { levelId } = event
 
     if (this.currentLevel === levelId) {
       return
     }
 
-    this.gameObjectObserver.getList().forEach((gameObject) => {
-      if (gameObject.getAncestor().id !== this.mainObjectId) {
-        this.gameObjectDestroyer.destroy(gameObject)
-      }
-    })
+    removeAllChildren(this.scene, this.mainActorId)
 
     const levels = this.configStore.get(['levels']) as Array<LevelConfig>
     const selectedLevel = levels.find((level) => level.id === levelId)
 
-    const { gameObjectCreator } = this
+    const { actorCreator } = this
 
-    if (selectedLevel && gameObjectCreator) {
-      selectedLevel.gameObjects.forEach((gameObjectConfig) => {
-        this.gameObjectSpawner.spawn(gameObjectCreator.create(omit(gameObjectConfig)))
+    if (selectedLevel && actorCreator) {
+      selectedLevel.actors.forEach((actorConfig) => {
+        this.scene.appendChild(actorCreator.create(omit(actorConfig)))
       })
     }
 
     this.prevLevel = selectedLevel
     this.currentLevel = levelId
-  }
-
-  update(): void {
-    this.updateLevels()
   }
 }
 

@@ -1,29 +1,29 @@
-import type { LevelConfig, GameObjectConfig } from 'remiz'
+import type { LevelConfig, ActorConfig } from 'remiz'
 import { FileOutlined } from '@ant-design/icons'
 
 import type { ExplorerDataNode } from '../../../../../types/tree-node'
 
-const parseGameObject = (
-  gameObject: GameObjectConfig,
+const parseActor = (
+  actor: ActorConfig,
   path: Array<string>,
   parent?: ExplorerDataNode,
 ): ExplorerDataNode => {
-  const isLeaf = !gameObject?.children?.length
-  const gameObjectPath = path.concat(`id:${gameObject.id}`)
+  const isLeaf = !actor?.children?.length
+  const actorPath = path.concat(`id:${actor.id}`)
 
   const node: ExplorerDataNode = {
-    key: gameObject.id,
-    title: gameObject.name,
-    path: gameObjectPath,
+    key: actor.id,
+    title: actor.name,
+    path: actorPath,
     parent,
     icon: <FileOutlined />,
     isLeaf,
   }
 
   if (!isLeaf) {
-    const childPath = gameObjectPath.concat('children')
-    node.children = gameObject.children?.map(
-      (child) => parseGameObject(child, childPath, node),
+    const childPath = actorPath.concat('children')
+    node.children = actor.children?.map(
+      (child) => parseActor(child, childPath, node),
     )
   }
 
@@ -41,8 +41,8 @@ export const parseLevels = (
     className: inactiveSelectedLevelId === level.id ? 'levels-tree__level_inactive' : undefined,
   }
 
-  node.children = level.gameObjects.map(
-    (gameObject) => parseGameObject(gameObject, ['levels', `id:${level.id}`, 'gameObjects'], node),
+  node.children = level.actors.map(
+    (actor) => parseActor(actor, ['levels', `id:${level.id}`, 'actors'], node),
   )
 
   return node
@@ -57,5 +57,5 @@ export const getKey = (entity?: unknown, path?: Array<string>): string | undefin
     return void ''
   }
 
-  return (entity as GameObjectConfig | LevelConfig).id
+  return (entity as ActorConfig | LevelConfig).id
 }

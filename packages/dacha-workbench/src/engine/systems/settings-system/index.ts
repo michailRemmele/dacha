@@ -1,45 +1,41 @@
 import { System } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
-  MessageBus,
-  GameObject,
+  Actor,
 } from 'remiz'
 
+import { EventType } from '../../../events'
+import type { SetSettingsValueEvent } from '../../../events'
 import { Settings } from '../../components'
-import { SET_SETTINGS_VALUE_MSG } from '../../../consts/message-types'
-import type { SetSettingsValueMessage } from '../../../types/messages'
 
 export class SettingsSystem extends System {
-  private messageBus: MessageBus
+  private scene: Scene
 
-  private mainObject: GameObject
+  private mainActor: Actor
 
   constructor(options: SystemOptions) {
     super()
 
-    const {
-      messageBus,
-      sceneContext,
-    } = options
+    const { scene } = options
 
-    this.messageBus = messageBus
-    this.mainObject = sceneContext.data.mainObject as GameObject
+    this.scene = scene
+    this.mainActor = scene.data.mainActor as Actor
   }
 
-  update(): void {
-    const messages = this.messageBus.get(
-      SET_SETTINGS_VALUE_MSG,
-    ) as Array<SetSettingsValueMessage> | undefined
+  mount(): void {
+    this.scene.addEventListener(EventType.SetSettingsValue, this.handleSetSettingsValue)
+  }
 
-    if (!messages) {
-      return
-    }
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SetSettingsValue, this.handleSetSettingsValue)
+  }
 
-    const settings = this.mainObject.getComponent(Settings)
+  private handleSetSettingsValue = (event: SetSettingsValueEvent): void => {
+    const { name, value } = event
 
-    messages.forEach(({ name, value }) => {
-      settings.data[name] = value
-    })
+    const settings = this.mainActor.getComponent(Settings)
+    settings.data[name] = value
   }
 }
 

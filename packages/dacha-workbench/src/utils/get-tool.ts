@@ -1,15 +1,12 @@
-import type {
-  SceneContext,
-  GameObject,
-} from 'remiz'
+import type { Actor, Scene } from 'remiz'
 
 import { Tool, ToolController } from '../engine/components'
 
-export const getTool = (sceneContext: SceneContext): Tool => {
-  const mainObject = sceneContext.data.mainObject as GameObject
+export const getTool = (scene: Scene): Tool => {
+  const mainActor = scene.data.mainActor as Actor
 
-  const toolController = mainObject.getComponent(ToolController)
-  const toolObject = mainObject.getChildById(toolController.activeTool) as GameObject
+  const toolController = mainActor.getComponent(ToolController)
+  const toolActor = mainActor.getEntityById(toolController.activeTool) as Actor
 
-  return toolObject.getComponent(Tool)
+  return toolActor.getComponent(Tool)
 }

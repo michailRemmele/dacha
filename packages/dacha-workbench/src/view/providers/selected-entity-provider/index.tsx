@@ -6,10 +6,10 @@ import React, {
 } from 'react'
 
 import { EngineContext } from '../engine-provider'
-import { INSPECT_ENTITY_MSG, INSPECTED_ENTITY_CHANGE_MSG } from '../../../consts/message-types'
 import { useStore } from '../../hooks'
 import { includesArray } from '../../../utils/includes-array'
-import type { InspectEntityMessage } from '../../../types/messages'
+import { EventType } from '../../../events'
+import type { InspectEntityEvent } from '../../../events'
 
 import { getEntityType, EntityType } from './get-entity-type'
 
@@ -24,43 +24,40 @@ interface SelectedEntityProviderProps {
 
 export const SelectedEntityContext = React.createContext<SelectedEntityData>({})
 
+// Provider to store selected entity details and sync selection update to avoid issues
+// when entity was deleted but state has not updated yet
 export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
   children,
 }): JSX.Element => {
   const [entityData, setEntityData] = useState<SelectedEntityData>({})
   const store = useStore()
 
-  const { gameStateObserver, pushMessage, messageBus } = useContext(EngineContext) || {}
+  const { scene } = useContext(EngineContext) || {}
 
   useEffect(() => {
-    if (!gameStateObserver) {
+    if (!scene) {
       return () => void 0
     }
 
-    const handleGameStateUpdate = (): void => {
-      const messages = messageBus.get(INSPECT_ENTITY_MSG) as Array<InspectEntityMessage> | undefined
+    const handleInspectEntity = (event: InspectEntityEvent): void => {
+      const { path } = event
 
-      if (messages?.length) {
-        const { path } = messages[messages.length - 1]
-
-        setEntityData({
-          path,
-          type: getEntityType(path),
-        })
-        pushMessage({
-          type: INSPECTED_ENTITY_CHANGE_MSG,
-          path,
-        })
-      }
+      setEntityData({
+        path,
+        type: getEntityType(path),
+      })
+      scene.dispatchEvent(EventType.InspectedEntityChange, {
+        path,
+      })
     }
 
-    gameStateObserver.subscribe(handleGameStateUpdate)
+    scene.addEventListener(EventType.InspectEntity, handleInspectEntity)
 
     return (): void => {
       setEntityData({})
-      gameStateObserver.unsubscribe(handleGameStateUpdate)
+      scene.removeEventListener(EventType.InspectEntity, handleInspectEntity)
     }
-  }, [gameStateObserver, messageBus])
+  }, [scene])
 
   useEffect(() => {
     const { path } = entityData
@@ -78,8 +75,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
           path: undefined,
           type: undefined,
         })
-        pushMessage({
-          type: INSPECTED_ENTITY_CHANGE_MSG,
+        scene.dispatchEvent(EventType.InspectedEntityChange, {
           path: undefined,
         })
       }

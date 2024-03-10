@@ -9,11 +9,13 @@ export const PICK_MODE = {
 }
 
 export const COMPARATOR_VALUE = {
+  STRING: 'string',
   NUMBER: 'number',
+  BOOLEAN: 'boolean',
   COMPONENT_VALUE: 'componentValue',
 }
 
 export const CONDITION_TYPE = {
-  MESSAGE: 'message',
+  EVENT: 'event',
   COMPARATOR: 'comparator',
 }

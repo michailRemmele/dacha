@@ -5,28 +5,20 @@ import {
   Vector2,
 } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
-  GameObject,
-  MessageBus,
+  Actor,
 } from 'remiz'
+import type { MouseControlEvent } from 'remiz/events'
 
-import {
-  CAMERA_MOVE_START_MSG,
-  CAMERA_MOVE_END_MSG,
-  CAMERA_MOVE_MSG,
-  SELECT_LEVEL_MSG,
-} from '../../../consts/message-types'
-import type {
-  SelectLevelMessage,
-  MouseInputMessage,
-} from '../../../types/messages'
+import { EventType } from '../../../events'
 
 const DEFAULT_POS_X = 0
 const DEFAULT_POS_Y = 0
 
 export class HandToolSystem extends System {
-  private messageBus: MessageBus
-  private mainObject: GameObject
+  private scene: Scene
+  private mainActor: Actor
 
   private isMoving: boolean
   private anchor: Vector2
@@ -34,87 +26,63 @@ export class HandToolSystem extends System {
   constructor(options: SystemOptions) {
     super()
 
-    const { messageBus, sceneContext } = options
+    const { scene } = options
 
-    this.messageBus = messageBus
+    this.scene = scene
 
-    this.mainObject = sceneContext.data.mainObject as GameObject
+    this.mainActor = scene.data.mainActor as Actor
 
     this.isMoving = false
     this.anchor = new Vector2(0, 0)
   }
 
-  private handleLevelChange(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
+  mount(): void {
+    this.scene.addEventListener(EventType.SelectLevel, this.handleLevelChange)
+    this.scene.addEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.scene.addEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.scene.addEventListener(EventType.CameraMove, this.handleCameraMove)
+  }
 
-    if (!messages) {
-      return
-    }
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleLevelChange)
+    this.scene.removeEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.scene.removeEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.scene.removeEventListener(EventType.CameraMove, this.handleCameraMove)
+  }
 
-    const transform = this.mainObject.getComponent(Transform)
+  private handleLevelChange = (): void => {
+    const transform = this.mainActor.getComponent(Transform)
     transform.offsetX = DEFAULT_POS_X
     transform.offsetY = DEFAULT_POS_Y
   }
 
-  private handleMoveStartMessages(): void {
-    const startMoveMessages = (this.messageBus.get(CAMERA_MOVE_START_MSG) || [])
-
-    if (!startMoveMessages.length) {
-      return
-    }
-
-    const {
-      screenX,
-      screenY,
-    } = startMoveMessages[startMoveMessages.length - 1] as MouseInputMessage
+  private handleCameraMoveStart = (event: MouseControlEvent): void => {
+    const { screenX, screenY } = event
 
     this.isMoving = true
     this.anchor.x = screenX
     this.anchor.y = screenY
   }
 
-  private handleMoveEndMessages(): void {
-    const endMoveMessages = (this.messageBus.get(CAMERA_MOVE_END_MSG) || [])
-
-    if (!endMoveMessages.length) {
-      return
-    }
-
+  private handleCameraMoveEnd = (): void => {
     this.isMoving = false
   }
 
-  private handleMoveMessages(): void {
+  private handleCameraMove = (event: MouseControlEvent): void => {
     if (!this.isMoving) {
       return
     }
 
-    const moveMessages = (this.messageBus.get(CAMERA_MOVE_MSG) || [])
+    const { screenX, screenY } = event
 
-    if (!moveMessages.length) {
-      return
-    }
-
-    const {
-      screenX,
-      screenY,
-    } = moveMessages[moveMessages.length - 1] as MouseInputMessage
-
-    const transform = this.mainObject.getComponent(Transform)
-    const { zoom } = this.mainObject.getComponent(Camera)
+    const transform = this.mainActor.getComponent(Transform)
+    const { zoom } = this.mainActor.getComponent(Camera)
 
     transform.offsetX += (this.anchor.x - screenX) / zoom
     transform.offsetY += (this.anchor.y - screenY) / zoom
 
     this.anchor.x = screenX
     this.anchor.y = screenY
-  }
-
-  update(): void {
-    this.handleLevelChange()
-
-    this.handleMoveStartMessages()
-    this.handleMoveEndMessages()
-    this.handleMoveMessages()
   }
 }
 

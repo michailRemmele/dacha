@@ -1,5 +1,5 @@
 import { useMemo, FC } from 'react'
-import type { SceneConfig, LevelConfig, GameObjectConfig } from 'remiz'
+import type { SceneConfig, LevelConfig, ActorConfig } from 'remiz'
 
 import type { References, WidgetProps } from '../../../../../../types/widget-schema'
 import { Widget } from '../../../components/widget'
@@ -8,16 +8,16 @@ import { useConfig } from '../../../../../hooks'
 const SCENE_PATH_LENGTH = 2
 
 const getItems = (
-  gameObjects: Array<GameObjectConfig>,
-  parent?: GameObjectConfig,
-): Array<{ title: string, value: string }> => gameObjects.reduce((acc, gameObject) => {
+  actors: Array<ActorConfig>,
+  parent?: ActorConfig,
+): Array<{ title: string, value: string }> => actors.reduce((acc, actor) => {
   acc.push({
-    title: parent ? `${parent.name}.${gameObject.name}` : gameObject.name,
-    value: gameObject.id,
+    title: parent ? `${parent.name}.${actor.name}` : actor.name,
+    value: actor.id,
   })
 
-  if (gameObject.children?.length) {
-    acc.push(...getItems(gameObject.children, gameObject))
+  if (actor.children?.length) {
+    acc.push(...getItems(actor.children, actor))
   }
 
   return acc
@@ -26,13 +26,13 @@ const getItems = (
 export const CameraSystemWidget: FC<WidgetProps> = ({ fields, path, references }) => {
   const scene = useConfig(path.slice(0, SCENE_PATH_LENGTH)) as SceneConfig
   const level = useConfig(typeof scene.levelId === 'string' ? ['levels', `id:${scene.levelId}`] : void 0) as LevelConfig
-  const gameObjects = level?.gameObjects || []
+  const actors = level?.actors || []
 
-  const items = useMemo(() => getItems(gameObjects), [gameObjects])
+  const items = useMemo(() => getItems(actors), [actors])
 
   const extReferences: References = useMemo(() => ({
     ...references,
-    gameObjects: {
+    actors: {
       items,
     },
   }), [references])

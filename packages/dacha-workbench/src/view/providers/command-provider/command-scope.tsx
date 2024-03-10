@@ -6,7 +6,7 @@ import React, {
 
 import { EngineContext } from '../engine-provider'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
-import { COMMAND_CLEAN_MSG } from '../../../consts/message-types'
+import { EventType } from '../../../events'
 
 import { CommandContext } from './command-provider'
 
@@ -37,11 +37,10 @@ export const CommandScopeProvider: FC<CommandScopeProps> = ({
       return () => {}
     }
 
-    const { pushMessage } = engineContext
+    const { scene } = engineContext
 
     return () => {
-      pushMessage({
-        type: COMMAND_CLEAN_MSG,
+      scene.dispatchEvent(EventType.CommandClean, {
         scope: name,
       })
     }
