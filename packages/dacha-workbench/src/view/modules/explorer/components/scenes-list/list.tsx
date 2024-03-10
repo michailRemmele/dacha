@@ -11,8 +11,8 @@ import type { SceneConfig } from 'remiz'
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
-import { INSPECT_ENTITY_MSG } from '../../../../../consts/message-types'
 import type { ExplorerDataNode, SelectFn } from '../../../../../types/tree-node'
+import { EventType } from '../../../../../events'
 
 import { parseScenes, getKey } from './utils'
 
@@ -21,7 +21,7 @@ interface ListProps {
 }
 
 export const List: FC<ListProps> = ({ isLoaders = false }) => {
-  const { pushMessage } = useContext(EngineContext)
+  const { scene } = useContext(EngineContext)
   const { path: selectedEntityPath } = useContext(SelectedEntityContext)
 
   const scenes = useConfig(isLoaders ? 'loaders' : 'scenes') as Array<SceneConfig>
@@ -33,11 +33,10 @@ export const List: FC<ListProps> = ({ isLoaders = false }) => {
       return
     }
 
-    pushMessage({
-      type: INSPECT_ENTITY_MSG,
+    scene.dispatchEvent(EventType.InspectEntity, {
       path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
     })
-  }, [pushMessage])
+  }, [scene])
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath, isLoaders)
 

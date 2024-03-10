@@ -1,26 +1,20 @@
 import { System, MouseControl } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
-  GameObject,
-  MessageBus,
-  Message,
-  SceneContext,
+  Actor,
 } from 'remiz'
 
-import { SELECT_TOOL_MSG, SET_TOOL_FEATURE_VALUE_MSG } from '../../../consts/message-types'
+import { EventType } from '../../../events'
+import type { SelectToolEvent, SetToolFeatureValueEvent } from '../../../events'
+import { HAND_TOOL } from '../../../consts/tools'
 import { CANVAS_ROOT } from '../../../consts/root-nodes'
 import { Tool, ToolController } from '../../components'
 import type { FeatureValue } from '../../components/tool'
-import type { SelectToolMessage } from '../../../types/messages'
 
-const DEFAULT_TOOL_NAME = 'hand'
+const DEFAULT_TOOL_NAME = HAND_TOOL
 const TOOL_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_tool_`
 const FEATURE_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_feature-`
-
-interface SetToolFeatureValueMessage extends Message {
-  name: string
-  value: string
-}
 
 const getFeatureClassName = (
   name: string,
@@ -28,45 +22,50 @@ const getFeatureClassName = (
 ): string => `${FEATURE_CLASS_NAME_PREFIX}${name}_${String(value)}`
 
 export class ToolManager extends System {
-  private messageBus: MessageBus
-  private sceneContext: SceneContext
-  private mainObject: GameObject
+  private scene: Scene
+  private mainActor: Actor
   private rootNode: HTMLElement
 
   constructor(options: SystemOptions) {
     super()
 
-    const { messageBus, sceneContext } = options
+    const { scene } = options
 
-    this.messageBus = messageBus
-    this.sceneContext = sceneContext
-
-    this.mainObject = this.sceneContext.data.mainObject as GameObject
+    this.scene = scene
+    this.mainActor = this.scene.data.mainActor as Actor
 
     this.rootNode = document.getElementById(CANVAS_ROOT) as HTMLElement
   }
 
   mount(): void {
+    this.scene.addEventListener(EventType.SelectTool, this.handleSelectTool)
+    this.scene.addEventListener(EventType.SetToolFeatureValue, this.handleSetToolFeatureValue)
+
     this.selectTool(DEFAULT_TOOL_NAME)
   }
 
+  unmount(): void {
+    this.scene.removeEventListener(EventType.SelectTool, this.handleSelectTool)
+    this.scene.removeEventListener(EventType.SetToolFeatureValue, this.handleSetToolFeatureValue)
+  }
+
   private selectTool(id: string): void {
-    const toolController = this.mainObject.getComponent(ToolController)
+    const toolController = this.mainActor.getComponent(ToolController)
     toolController.activeTool = id
 
-    const toolObject = this.mainObject.getChildById(id)
+    const toolActor = this.mainActor.getEntityById(id)
 
-    if (toolObject === undefined) {
+    if (toolActor === undefined) {
       console.error(`Not found tool with same id: ${id}`)
       return
     }
 
-    const { features, inputBindings } = toolObject.getComponent(Tool)
+    const { features, inputBindings } = toolActor.getComponent(Tool)
 
     const mouseControl = new MouseControl({
       inputEventBindings: inputBindings,
     })
-    toolObject.setComponent(mouseControl)
+    toolActor.setComponent(mouseControl)
 
     this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${id}`)
 
@@ -79,13 +78,13 @@ export class ToolManager extends System {
   }
 
   private removeCurrentTool(): void {
-    const toolController = this.mainObject.getComponent(ToolController)
-    const toolObject = this.mainObject.getChildById(toolController.activeTool)
+    const toolController = this.mainActor.getComponent(ToolController)
+    const toolActor = this.mainActor.getEntityById(toolController.activeTool)
 
-    if (toolObject) {
-      const { name, features } = toolObject.getComponent(Tool)
+    if (toolActor) {
+      const { name, features } = toolActor.getComponent(Tool)
 
-      toolObject.removeComponent(MouseControl)
+      toolActor.removeComponent(MouseControl)
       this.rootNode.classList.toggle(`${TOOL_CLASS_NAME_PREFIX}${name}`)
 
       Object.keys(features).forEach((key) => {
@@ -97,12 +96,12 @@ export class ToolManager extends System {
     }
   }
 
-  private setToolFeatureValue(name: string, value: string): void {
-    const toolController = this.mainObject.getComponent(ToolController)
-    const toolObject = this.mainObject.getChildById(toolController.activeTool)
+  private setToolFeatureValue(name: string, value: FeatureValue): void {
+    const toolController = this.mainActor.getComponent(ToolController)
+    const toolActor = this.mainActor.getEntityById(toolController.activeTool)
 
-    if (toolObject) {
-      const { features } = toolObject.getComponent(Tool)
+    if (toolActor) {
+      const { features } = toolActor.getComponent(Tool)
       const feature = features[name]
 
       if (feature.withClassName) {
@@ -114,38 +113,17 @@ export class ToolManager extends System {
     }
   }
 
-  private handleSelectToolMessages(): void {
-    const selectToolMessages = (
-      this.messageBus.get(SELECT_TOOL_MSG) || []
-    ) as Array<SelectToolMessage>
-
-    if (!selectToolMessages.length) {
-      return
-    }
-
-    const { name } = selectToolMessages[selectToolMessages.length - 1]
+  private handleSelectTool = (event: SelectToolEvent): void => {
+    const { name } = event
 
     this.removeCurrentTool()
     this.selectTool(name)
   }
 
-  private handleSetToolFeatureValue(): void {
-    const setToolFeatureValueMessages = (
-      this.messageBus.get(SET_TOOL_FEATURE_VALUE_MSG) || []
-    ) as Array<SetToolFeatureValueMessage>
-
-    if (!setToolFeatureValueMessages.length) {
-      return
-    }
-
-    const { name, value } = setToolFeatureValueMessages[setToolFeatureValueMessages.length - 1]
+  private handleSetToolFeatureValue = (event: SetToolFeatureValueEvent): void => {
+    const { name, value } = event
 
     this.setToolFeatureValue(name, value)
-  }
-
-  update(): void {
-    this.handleSelectToolMessages()
-    this.handleSetToolFeatureValue()
   }
 }
 

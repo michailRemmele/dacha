@@ -1,9 +1,8 @@
 import type {
   LevelConfig,
-  GameObjectObserver,
-  GameObjectDestroyer,
-  GameObjectCreator,
-  GameObjectSpawner,
+  Scene,
+  ActorCollection,
+  ActorCreator,
   TemplateCollection,
 } from 'remiz'
 import type { Store } from '../../../../store'
@@ -11,10 +10,9 @@ import type { Store } from '../../../../store'
 export interface WatcherOptions {
   path: Array<string>,
   store: Store,
-  gameObjectObserver: GameObjectObserver,
-  gameObjectDestroyer: GameObjectDestroyer,
-  gameObjectCreator: GameObjectCreator,
-  gameObjectSpawner: GameObjectSpawner,
+  scene: Scene,
+  actorCollection: ActorCollection,
+  actorCreator: ActorCreator,
   templateCollection: TemplateCollection,
   level?: LevelConfig,
   prevLevel?: LevelConfig,

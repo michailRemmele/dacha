@@ -22,18 +22,18 @@ const buildNameToIdMap = (template, map) => {
 const nameToIdMap = {}
 config.templates.forEach((template) => buildNameToIdMap(template, nameToIdMap))
 
-const fixGameObject = (gameObject, map) => {
-  if (gameObject.fromTemplate) {
-    const { id, children } = map[gameObject.templateName]
-    gameObject.templateId = id
-    delete gameObject.templateName
+const fixActor = (actor, map) => {
+  if (actor.fromTemplate) {
+    const { id, children } = map[actor.templateName]
+    actor.templateId = id
+    delete actor.templateName
 
-    gameObject.children?.forEach((child) => fixGameObject(child, children))
+    actor.children?.forEach((child) => fixActor(child, children))
   }
 }
 
 config.levels.forEach((level) => {
-  level.gameObjects.forEach((gameObject) => fixGameObject(gameObject, nameToIdMap))
+  level.actors.forEach((actor) => fixActor(actor, nameToIdMap))
 })
 
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2))

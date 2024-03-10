@@ -1,7 +1,7 @@
 import { useEffect, useContext, useRef } from 'react'
 
+import { EventType } from '../../../events'
 import { useConfig } from '../use-config'
-import { SAVE_PROJECT_MSG } from '../../../consts/message-types'
 import { EngineContext } from '../../providers'
 
 // Listens for project changes and notifies main process if there are any unsaved changes or not
@@ -42,18 +42,17 @@ export const useUnsavedChanges = (): void => {
       return () => {}
     }
 
-    const { gameStateObserver, messageBus } = context
+    const { scene } = context
 
     const handleGameStateUpdate = (): void => {
-      const saveMessages = messageBus.get(SAVE_PROJECT_MSG)
-      if (saveMessages?.length && unsavedChangesRef.current) {
+      if (unsavedChangesRef.current) {
         window.electron.setUnsavedChanges(false)
         unsavedChangesRef.current = false
       }
     }
 
-    gameStateObserver.subscribe(handleGameStateUpdate)
+    scene.addEventListener(EventType.SaveProject, handleGameStateUpdate)
 
-    return () => gameStateObserver.unsubscribe(handleGameStateUpdate)
+    return () => scene.removeEventListener(EventType.SaveProject, handleGameStateUpdate)
   }, [context])
 }

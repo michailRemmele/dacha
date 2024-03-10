@@ -1,29 +1,18 @@
 import { System } from 'remiz'
 import type {
+  Scene,
   SystemOptions,
-  MessageBus,
-  SceneContext,
   TemplateConfig,
   LevelConfig,
-  GameObjectSpawner,
-  GameObjectDestroyer,
-  GameObjectCreator,
+  ActorSpawner,
+  ActorCreator,
 } from 'remiz'
+import type { MouseControlEvent } from 'remiz/events'
 
-import {
-  SELECT_LEVEL_MSG,
-  ADD_FROM_TEMPLATE_MSG,
-  COMMAND_MSG,
-  TOOL_CURSOR_MOVE_MSG,
-  TOOL_CURSOR_LEAVE_MSG,
-} from '../../../consts/message-types'
+import { EventType } from '../../../events'
+import type { SelectLevelEvent } from '../../../events'
 import { ADD } from '../../../command-types'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
-import type {
-  SelectLevelMessage,
-  MouseInputMessage,
-  CommandMessage,
-} from '../../../types/messages'
 import type { Store } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
@@ -32,12 +21,10 @@ import { getTool } from '../../../utils/get-tool'
 import type { Position } from './types'
 
 export class TemplateToolSystem extends System {
-  private messageBus: MessageBus
-  private sceneContext: SceneContext
+  private scene: Scene
   private configStore: Store
-  private gameObjectSpawner: GameObjectSpawner
-  private gameObjectDestroyer: GameObjectDestroyer
-  private previewSubsystem?: PreviewSubsystem
+  private actorSpawner: ActorSpawner
+  private previewSubsystem: PreviewSubsystem
 
   private selectedLevelId?: string
 
@@ -48,85 +35,74 @@ export class TemplateToolSystem extends System {
     super()
 
     const {
-      messageBus,
-      sceneContext,
-      gameObjectSpawner,
-      gameObjectDestroyer,
+      scene,
+      actorSpawner,
     } = options
 
-    this.messageBus = messageBus
-    this.sceneContext = sceneContext
-    this.configStore = this.sceneContext.data.configStore as Store
-    this.gameObjectSpawner = gameObjectSpawner
-    this.gameObjectDestroyer = gameObjectDestroyer
+    this.scene = scene
+    this.configStore = this.scene.data.configStore as Store
+    this.actorSpawner = actorSpawner
+
+    this.previewSubsystem = new PreviewSubsystem({
+      scene: this.scene,
+      actorCreator: this.scene.data.actorCreator as ActorCreator,
+      actorSpawner: this.actorSpawner,
+    })
 
     this.cursor = { x: 0, y: 0 }
     this.placementPosition = { x: 0, y: 0 }
   }
 
   mount(): void {
-    this.previewSubsystem = new PreviewSubsystem({
-      gameObjectCreator: this.sceneContext.data.gameObjectCreator as GameObjectCreator,
-      gameObjectDestroyer: this.gameObjectDestroyer,
-      gameObjectSpawner: this.gameObjectSpawner,
-      sceneContext: this.sceneContext,
-      messageBus: this.messageBus,
-    })
+    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.scene.addEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
+    this.scene.addEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
+    this.scene.addEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
+
+    this.previewSubsystem.mount()
   }
 
   unmount(): void {
-    this.previewSubsystem?.unmount()
+    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.scene.removeEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
+    this.scene.removeEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
+    this.scene.removeEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
+
+    this.previewSubsystem.unmount()
   }
 
-  private handleLevelChange(): void {
-    const messages = this.messageBus.get(SELECT_LEVEL_MSG) as Array<SelectLevelMessage> | undefined
-    if (!messages) {
-      return
-    }
-
-    const { levelId } = messages[0]
-
+  private handleSelectLevel = (event: SelectLevelEvent): void => {
+    const { levelId } = event
     this.selectedLevelId = levelId
   }
 
-  private handleCursorMoveMessages(): void {
-    const messages = this.messageBus.get(TOOL_CURSOR_MOVE_MSG)
-    if (!messages?.length) {
-      return
-    }
-
-    const { x, y } = messages.at(-1) as MouseInputMessage
+  private handleToolCursorMove = (event: MouseControlEvent): void => {
+    const { x, y } = event
     this.cursor.x = x
     this.cursor.y = y
   }
 
-  private handleCursorLeaveMessages(): void {
-    const messages = this.messageBus.get(TOOL_CURSOR_LEAVE_MSG)
-    if (!messages?.length) {
-      return
-    }
-
+  private handleToolCursorLeave = (): void => {
     this.cursor.x = null
     this.cursor.y = null
   }
 
-  private handleAddMessages(levelId: string): void {
-    const messages = this.messageBus.get(ADD_FROM_TEMPLATE_MSG)
-    if (!messages?.length) {
+  private handleAddFromTemplate = (event: MouseControlEvent): void => {
+    if (this.selectedLevelId === undefined) {
       return
     }
 
-    const { x, y } = messages.at(-1) as MouseInputMessage
+    const { x, y } = event
     this.cursor.x = x
     this.cursor.y = y
     updatePlacementPosition(
       this.cursor,
       this.placementPosition,
       this.configStore,
-      this.sceneContext,
+      this.scene,
     )
 
-    const tool = getTool(this.sceneContext)
+    const tool = getTool(this.scene)
 
     const templateId = tool.features.templateId.value as string | undefined
     if (templateId === undefined) {
@@ -134,34 +110,27 @@ export class TemplateToolSystem extends System {
     }
 
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
-    const level = this.configStore.get(['levels', `id:${levelId}`]) as LevelConfig
+    const level = this.configStore.get(['levels', `id:${this.selectedLevelId}`]) as LevelConfig
 
-    const gameObject = createFromTemplate(
+    const actor = createFromTemplate(
       template,
       level,
       this.placementPosition.x || 0,
       this.placementPosition.y || 0,
     )
 
-    const commandMessage: CommandMessage = {
-      type: COMMAND_MSG,
+    this.scene.dispatchEvent(EventType.Command, {
       command: ADD,
       scope: ROOT_SCOPE,
       options: {
-        path: ['levels', `id:${levelId}`, 'gameObjects'],
-        value: gameObject,
+        path: ['levels', `id:${this.selectedLevelId}`, 'actors'],
+        value: actor,
       },
-    }
-    this.messageBus.send(commandMessage)
+    })
   }
 
   update(): void {
-    this.handleLevelChange()
-    this.handleCursorMoveMessages()
-    this.handleCursorLeaveMessages()
-
-    const levelId = this.selectedLevelId
-    if (levelId === undefined) {
+    if (this.selectedLevelId === undefined) {
       return
     }
 
@@ -169,12 +138,10 @@ export class TemplateToolSystem extends System {
       this.cursor,
       this.placementPosition,
       this.configStore,
-      this.sceneContext,
+      this.scene,
     )
 
     this.previewSubsystem?.update(this.placementPosition.x, this.placementPosition.y)
-
-    this.handleAddMessages(levelId)
   }
 }
 

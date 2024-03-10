@@ -45,7 +45,7 @@ export const InputBind: FC<InputBindProps> = ({
   const keyPath = useMemo(() => bindPath.concat('key'), [bindPath])
   const pressedPath = useMemo(() => bindPath.concat('pressed'), [bindPath])
   const keepEmitPath = useMemo(() => bindPath.concat('keepEmit'), [bindPath])
-  const messageTypePath = useMemo(() => bindPath.concat('messageType'), [bindPath])
+  const eventTypePath = useMemo(() => bindPath.concat('eventType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
 
   const handleKeyChange = useCallback((value: string) => {
@@ -79,9 +79,9 @@ export const InputBind: FC<InputBindProps> = ({
         dependencyValue={KEEP_EMIT_DEPENDENCY_VALUE}
       />
       <Field
-        path={messageTypePath}
+        path={eventTypePath}
         component={LabelledTextInput}
-        label={t('components.keyboardControl.bind.messageType.title')}
+        label={t('components.keyboardControl.bind.eventType.title')}
       />
       <SectionHeaderStyled>
         {t('components.keyboardControl.bind.attributes.title')}

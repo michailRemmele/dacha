@@ -5,15 +5,15 @@
     "tab.scenes": "Scenes",
     "tab.loaders": "Loaders",
 
-    "levels.actionBar.addGameObject.button.title": "Add New Game Object",
+    "levels.actionBar.addActor.button.title": "Add New Actor",
     "levels.actionBar.addLevel.button.title": "Add New Level",
-    "levels.actionBar.duplicateGameObject.button.title": "Duplicate Game Object",
+    "levels.actionBar.duplicateActor.button.title": "Duplicate Actor",
     "levels.actionBar.duplicateLevel.button.title": "Duplicate Level",
-    "levels.actionBar.deleteGameObject.button.title": "Delete Game Object",
+    "levels.actionBar.deleteActor.button.title": "Delete Actor",
     "levels.actionBar.deleteLevel.button.title": "Delete Level",
-    "levels.actionBar.focusGameObject.button.title": "Focus Game Object",
+    "levels.actionBar.focusActor.button.title": "Focus Actor",
 
-    "levels.actionBar.gameObject.new.title": "New Game Object {{index}}",
+    "levels.actionBar.actor.new.title": "New Actor {{index}}",
     "levels.actionBar.level.new.title": "New Level {{index}}",
 
     "levels.actionBar.addTemplate.button.title": "Add New Template",
@@ -53,7 +53,7 @@
     "tab.projectSettings": "Project settings",
 
     "entityInspector.level.title": "Level",
-    "entityInspector.gameObject.title": "Game Object",
+    "entityInspector.actor.title": "Actor",
     "entityInspector.template.title": "Template",
     "entityInspector.scene.title": "Scene",
     "entityInspector.loader.title": "Loader",
@@ -67,8 +67,8 @@
 
     "templateForm.field.name.label": "Name",
 
-    "gameObjectForm.field.name.label": "Name",
-    "gameObjectForm.field.templateName.label": "Template",
+    "actorForm.field.name.label": "Name",
+    "actorForm.field.templateName.label": "Template",
 
     "projectSettings.field.startScene.label": "Start Scene",
     "projectSettings.field.startLoader.label": "Start Loader",
@@ -149,7 +149,7 @@
 
   "components.animatable.editor.condition.title": "Condition {{index}}",
   "components.animatable.editor.condition.type.title": "Type",
-  "components.animatable.editor.condition.message.title": "Message",
+  "components.animatable.editor.condition.eventType.title": "Event Type",
   "components.animatable.editor.condition.operation.title": "Operation",
   "components.animatable.editor.condition.arg1.type.title": "Arg1 Type",
   "components.animatable.editor.condition.arg1.value.title": "Arg1 Value",
@@ -176,7 +176,7 @@
   "components.keyboardControl.bind.key.title": "Key",
   "components.keyboardControl.bind.pressed.title": "Pressed",
   "components.keyboardControl.bind.keepEmit.title": "Keep Emit",
-  "components.keyboardControl.bind.messageType.title": "Message Type",
+  "components.keyboardControl.bind.eventType.title": "Event Type",
   "components.keyboardControl.bind.attributes.title": "Attributes",
   "components.keyboardControl.bind.addNew.title": "Add New Bind",
 
@@ -192,7 +192,7 @@
   "components.mouseControl.bind.title": "Event Bind {{index}}",
   "components.mouseControl.bind.event.title": "Event",
   "components.mouseControl.bind.button.title": "Button",
-  "components.mouseControl.bind.messageType.title": "Message Type",
+  "components.mouseControl.bind.eventType.title": "Event Type",
   "components.mouseControl.bind.attributes.title": "Attributes",
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
@@ -233,8 +233,10 @@
   "components.rigidBody.types.dynamic.title": "Dynamic",
   "components.rigidBody.types.static.title": "Static",
 
-  "components.script.title": "Script",
-  "components.script.name.title": "Name",
+  "components.scriptBundle.title": "Script Bundle",
+  "components.scriptBundle.script.name.title": "Name",
+  "components.scriptBundle.script.title": "Script {{index}}",
+  "components.scriptBundle.script.addNew.title": "Add New Script",
 
   "components.transform.title": "Transform",
   "components.transform.offsetX.title": "Offset X",

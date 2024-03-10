@@ -14,7 +14,7 @@ export const cameraSystem: WidgetSchema = {
       name: 'initialCamera',
       title: 'systems.cameraSystem.initialCamera.title',
       type: 'select',
-      referenceId: 'gameObjects',
+      referenceId: 'actors',
     },
     {
       name: 'scaleSensitivity',

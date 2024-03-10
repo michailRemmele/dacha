@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 import { AimOutlined } from '@ant-design/icons'
 import { Transform } from 'remiz'
-import type { GameObject } from 'remiz'
+import type { Actor } from 'remiz'
 
 import { EngineContext } from '../../../../../../providers'
 import { ButtonCSS } from '../../../../explorer.style'
@@ -24,60 +24,59 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
 }) => {
   const { t } = useTranslation()
   const {
-    sceneContext,
+    scene,
     pushAction,
     gameStateObserver,
-    gameObjectObserver,
   } = useContext(EngineContext)
 
-  const mainObject = sceneContext.data.mainObject as GameObject
+  const mainActor = scene.data.mainActor as Actor
 
-  const gameObjectId = useMemo(() => path?.at(-1)?.split(':')[1], [path])
-  const [selectedGameObject, setSelectedGameObject] = useState<GameObject | undefined>()
+  const actorId = useMemo(() => path?.at(-1)?.split(':')[1], [path])
+  const [selectedActor, setSelectedActor] = useState<Actor | undefined>()
 
   useEffect(() => {
-    if (gameObjectId === undefined) {
+    if (actorId === undefined) {
       return () => {}
     }
 
     const handleGameStateUpdate = (): void => {
-      const gameObject = gameObjectObserver.getById(gameObjectId)
+      const actor = scene.getEntityById(actorId)
 
-      if (!gameObject) {
-        setSelectedGameObject(undefined)
+      if (!actor) {
+        setSelectedActor(undefined)
         return
       }
 
-      const transform = gameObject.getComponent(Transform)
+      const transform = actor.getComponent(Transform)
       if (transform === undefined) {
-        setSelectedGameObject(undefined)
+        setSelectedActor(undefined)
         return
       }
 
-      setSelectedGameObject(gameObject)
+      setSelectedActor(actor)
     }
 
     gameStateObserver.subscribe(handleGameStateUpdate)
 
     return () => {
-      setSelectedGameObject(undefined)
+      setSelectedActor(undefined)
       gameStateObserver.unsubscribe(handleGameStateUpdate)
     }
-  }, [gameObjectId, gameStateObserver, gameObjectObserver])
+  }, [actorId, gameStateObserver, scene])
 
   const handleClick = useCallback(() => {
-    if (selectedGameObject === undefined) {
+    if (selectedActor === undefined) {
       return
     }
 
     pushAction(() => {
-      const mainObjectTransform = mainObject.getComponent(Transform)
-      const transform = selectedGameObject.getComponent(Transform)
+      const mainActorTransform = mainActor.getComponent(Transform)
+      const transform = selectedActor.getComponent(Transform)
 
-      mainObjectTransform.offsetX = transform.offsetX
-      mainObjectTransform.offsetY = transform.offsetY
+      mainActorTransform.offsetX = transform.offsetX
+      mainActorTransform.offsetY = transform.offsetY
     })
-  }, [pushAction, mainObject, selectedGameObject])
+  }, [pushAction, mainActor, selectedActor])
 
   return (
     <Button
@@ -85,8 +84,8 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
       icon={<AimOutlined />}
       size="small"
       onClick={handleClick}
-      title={t('explorer.levels.actionBar.focusGameObject.button.title')}
-      disabled={selectedGameObject === undefined}
+      title={t('explorer.levels.actionBar.focusActor.button.title')}
+      disabled={selectedActor === undefined}
     />
   )
 }
