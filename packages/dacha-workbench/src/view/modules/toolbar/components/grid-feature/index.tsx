@@ -27,7 +27,7 @@ export const GridFeature: FC<GridFeatureProps> = ({ value }) => {
       name: GRID_FEATURE_NAME,
       value: event.target.checked,
     })
-  }, [])
+  }, [scene])
 
   return (
     <ToolFeature>

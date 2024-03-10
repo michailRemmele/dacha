@@ -38,7 +38,7 @@ export const Tree: FC = () => {
     scene.dispatchEvent(EventType.InspectEntity, {
       path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
     })
-  }, [])
+  }, [scene])
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath)
 

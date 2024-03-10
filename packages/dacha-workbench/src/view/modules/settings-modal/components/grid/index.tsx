@@ -21,21 +21,21 @@ export const Grid: FC<ModalComponentProps> = ({ settings }) => {
       name: 'gridStep',
       value,
     })
-  }, [])
+  }, [scene])
 
   const handleColorChange = useCallback((value: string): void => {
     scene.dispatchEvent(EventType.SetSettingsValue, {
       name: 'gridColor',
       value,
     })
-  }, [])
+  }, [scene])
 
   const handleGridShowChange = useCallback((checked: boolean): void => {
     scene.dispatchEvent(EventType.SetSettingsValue, {
       name: 'showGrid',
       value: checked,
     })
-  }, [])
+  }, [scene])
 
   return (
     <GridSettingsStyled>

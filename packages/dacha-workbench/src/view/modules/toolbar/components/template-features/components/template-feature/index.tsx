@@ -42,7 +42,7 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
       name: TEMPLATE_FEATURE_NAME,
       value: selectedValue,
     })
-  }, [])
+  }, [scene])
 
   const handleFilter = useCallback(
     (input: string, option?: SelectOption) => option !== undefined

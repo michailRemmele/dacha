@@ -36,7 +36,7 @@ export const Toolbar: FC = () => {
 
   const mainActorId = useMemo<string>(
     () => (scene.data.mainActor as Actor).id,
-    [],
+    [scene],
   )
 
   const [selectedTool, setSelectedTool] = useState('')
@@ -97,7 +97,7 @@ export const Toolbar: FC = () => {
     scene.dispatchEvent(EventType.SelectTool, {
       name: event.target.value as string,
     })
-  }, [])
+  }, [scene])
 
   return (
     <ToolbarStyled>
