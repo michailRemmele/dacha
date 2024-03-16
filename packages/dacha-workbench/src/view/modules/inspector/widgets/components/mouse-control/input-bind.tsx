@@ -12,7 +12,7 @@ import { MultiField } from '../../../components/multi-field'
 import { Field } from '../../../components/field'
 import { DependencyField } from '../../../components/dependency-field'
 import { Panel } from '../../../components/panel'
-import { useCommander } from '../../../../../hooks'
+import { useCommander, useExtension } from '../../../../../hooks'
 import { deleteValue } from '../../../../../commands'
 
 import {
@@ -37,12 +37,15 @@ export const InputBind: FC<InputBindProps> = ({
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
+  const { globalReferences } = useExtension()
 
   const bindPath = useMemo(() => path.concat('inputEventBindings', `event:${value}`), [path, value])
   const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
   const buttonPath = useMemo(() => bindPath.concat('button'), [bindPath])
   const eventTypePath = useMemo(() => bindPath.concat('eventType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
+
+  const controlEvents = globalReferences.controlEvents?.items
 
   const inputEvents = useMemo(
     () => options.filter(
@@ -76,8 +79,9 @@ export const InputBind: FC<InputBindProps> = ({
       />
       <Field
         path={eventTypePath}
-        component={LabelledTextInput}
+        component={controlEvents ? LabelledSelect : LabelledTextInput}
         label={t('components.mouseControl.bind.eventType.title')}
+        options={controlEvents}
       />
       <SectionHeaderStyled>
         {t('components.mouseControl.bind.attributes.title')}
