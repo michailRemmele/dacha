@@ -7,11 +7,12 @@ import { useTranslation } from 'react-i18next'
 
 import { LabelledCheckbox } from '../../../components/checkbox'
 import { LabelledTextInput } from '../../../components/text-input'
+import { LabelledSelect } from '../../../components/select'
 import { MultiField } from '../../../components/multi-field'
 import { DependencyField } from '../../../components/dependency-field'
 import { Field } from '../../../components/field'
 import { Panel } from '../../../components/panel'
-import { useCommander } from '../../../../../hooks'
+import { useCommander, useExtension } from '../../../../../hooks'
 import { deleteValue, setValue } from '../../../../../commands'
 
 import { KeyPicker } from './key-picker'
@@ -37,6 +38,7 @@ export const InputBind: FC<InputBindProps> = ({
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
+  const { globalReferences } = useExtension()
 
   const bindPath = useMemo(
     () => path.concat('inputEventBindings', `id:${id}`),
@@ -47,6 +49,8 @@ export const InputBind: FC<InputBindProps> = ({
   const keepEmitPath = useMemo(() => bindPath.concat('keepEmit'), [bindPath])
   const eventTypePath = useMemo(() => bindPath.concat('eventType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
+
+  const controlEvents = globalReferences.controlEvents?.items
 
   const handleKeyChange = useCallback((value: string) => {
     dispatch(setValue(keyPath, value))
@@ -80,8 +84,9 @@ export const InputBind: FC<InputBindProps> = ({
       />
       <Field
         path={eventTypePath}
-        component={LabelledTextInput}
+        component={controlEvents ? LabelledSelect : LabelledTextInput}
         label={t('components.keyboardControl.bind.eventType.title')}
+        options={controlEvents}
       />
       <SectionHeaderStyled>
         {t('components.keyboardControl.bind.attributes.title')}
