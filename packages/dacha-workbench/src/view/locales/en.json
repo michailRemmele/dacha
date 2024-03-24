@@ -94,10 +94,8 @@
     "grid.modal.field.showGrid.label": "Show Grid",
     "grid.modal.field.color.label": "Color"
   },
-  "system": {
-    "notification.reload.message": "Reload Required",
-    "notification.reload.description": "To apply changes, the editor should be reloaded. Do you want to reload now?",
-    "notification.reload.button.title": "Reload"
+  "bottomBar": {
+    "reloadWarning.button.title": "Reload Required"
   },
 
   "components.animatable.title": "Animatable",

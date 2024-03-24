@@ -10,12 +10,14 @@ import {
   Explorer,
   Inspector,
   Toolbar,
+  BottomBar,
   SettingsModal,
 } from './modules'
-import { useUnsavedChanges, useNeedsReload } from './hooks'
+import { useUnsavedChanges } from './hooks'
 import { EngineContext } from './providers'
 import {
   EditorStyled,
+  EditorMainStyled,
   ExplorerStyled,
   CanvasStyled,
   ToolbarStyled,
@@ -27,30 +29,32 @@ export const App = (): JSX.Element => {
   const context = useContext(EngineContext)
 
   useUnsavedChanges()
-  useNeedsReload()
 
   return (
     <EditorStyled>
-      <ExplorerStyled>
-        {context && <Explorer />}
-      </ExplorerStyled>
-      <CanvasStyled>
-        <ToolbarStyled>
-          {context && <Toolbar />}
-        </ToolbarStyled>
-        <div id={CANVAS_ROOT} />
-        <div
-          id={GRID_ROOT}
-          css={HelperCanvasRootCSS}
-        />
-        <canvas
-          id={SHAPE_CANVAS_ROOT}
-          css={HelperCanvasRootCSS}
-        />
-      </CanvasStyled>
-      <InspectorStyled>
-        {context && <Inspector />}
-      </InspectorStyled>
+      <EditorMainStyled>
+        <ExplorerStyled>
+          {context && <Explorer />}
+        </ExplorerStyled>
+        <CanvasStyled>
+          <ToolbarStyled>
+            {context && <Toolbar />}
+          </ToolbarStyled>
+          <div id={CANVAS_ROOT} />
+          <div
+            id={GRID_ROOT}
+            css={HelperCanvasRootCSS}
+          />
+          <canvas
+            id={SHAPE_CANVAS_ROOT}
+            css={HelperCanvasRootCSS}
+          />
+        </CanvasStyled>
+        <InspectorStyled>
+          {context && <Inspector />}
+        </InspectorStyled>
+      </EditorMainStyled>
+      <BottomBar />
 
       {context && <SettingsModal />}
     </EditorStyled>

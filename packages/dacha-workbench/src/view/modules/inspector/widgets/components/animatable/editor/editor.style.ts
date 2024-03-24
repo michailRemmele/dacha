@@ -27,13 +27,13 @@ export const StateTreeStyled = styled.section`
 export const FooterStyled = styled.footer(({ theme }) => css`
   width: 100%;
 
-  border-top: 1px solid ${theme.colorBorderSecondary};
+  border-top: 1px solid ${theme.colorBorder};
 `)
 
 export const AsideStyled = styled.aside(({ theme }) => css`
   width: 33%;
 
-  border-left: 1px solid ${theme.colorBorderSecondary};
+  border-left: 1px solid ${theme.colorBorder};
 `)
 
 export const TransitionListCSS = css`
@@ -47,14 +47,14 @@ export const TransitionListCSS = css`
 export const StateListCSS = (): SerializedStyles => {
   const theme = useTheme()
   return css`
-    border-right: 1px solid ${theme.colorBorderSecondary};
+    border-right: 1px solid ${theme.colorBorder};
 
     ${TransitionListCSS}
   `
 }
 
 export const ActionBarStyled = styled.header(({ theme }) => css`
-  border-bottom: 1px solid ${theme.colorBorderSecondary};
+  border-bottom: 1px solid ${theme.colorBorder};
   padding: 5px;
 
   height: 34px;
