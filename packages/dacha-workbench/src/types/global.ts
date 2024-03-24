@@ -5,12 +5,13 @@ import type { GlobalToken } from 'antd'
 import type { CustomToken } from '../view/themes/types'
 import '../events'
 
-import type { WidgetSchema, WidgetPartSchema } from './widget-schema'
+import type { WidgetSchema, WidgetPartSchema, References } from './widget-schema'
 
 export interface Extension {
   componentsSchema?: Record<string, WidgetSchema | undefined>
   systemsSchema?: Record<string, WidgetSchema | undefined>
   resourcesSchema?: Record<string, Record<string, WidgetPartSchema | undefined> | undefined>
+  globalReferences?: References
   locales?: Resource
 }
 

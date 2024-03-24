@@ -37,6 +37,7 @@ export class ProjectLoader extends System {
       componentsSchema = {},
       systemsSchema = {},
       resourcesSchema = {},
+      globalReferences = {},
       locales = {},
     } = extension
 
@@ -44,6 +45,7 @@ export class ProjectLoader extends System {
       componentsSchema,
       systemsSchema,
       resourcesSchema,
+      globalReferences,
       locales,
     }
   }

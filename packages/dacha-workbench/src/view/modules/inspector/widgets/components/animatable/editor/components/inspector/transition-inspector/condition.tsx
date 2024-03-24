@@ -12,7 +12,7 @@ import {
   LabelledSelect,
   Panel,
 } from '../../../../../../../components'
-import { useConfig, useCommander } from '../../../../../../../../../hooks'
+import { useConfig, useCommander, useExtension } from '../../../../../../../../../hooks'
 import { deleteValue, setValue } from '../../../../../../../../../commands'
 import { COMPARATOR_VALUE, CONDITION_TYPE } from '../../../const'
 
@@ -39,6 +39,7 @@ export const Condition: FC<ConditionProps> = ({
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
+  const { globalReferences } = useExtension()
 
   const conditionPath = useMemo(() => path.concat(`id:${id}`), [id, path])
   const typePath = useMemo(() => conditionPath.concat('type'), [conditionPath])
@@ -52,6 +53,8 @@ export const Condition: FC<ConditionProps> = ({
 
   const condition = useConfig(conditionPath) as Animation.ConditionConfig
   const { arg1, arg2 } = condition.props as unknown as Animation.ComparatorConditionPropsConfig
+
+  const events = globalReferences.events?.items
 
   const handleTypeChange = useCallback((value: unknown) => {
     const { props, ...otherCondition } = condition
@@ -109,8 +112,9 @@ export const Condition: FC<ConditionProps> = ({
 
       <DependencyField
         path={eventTypePath}
-        component={LabelledTextInput}
+        component={events ? LabelledSelect : LabelledTextInput}
         label={t('components.animatable.editor.condition.eventType.title')}
+        options={events}
         dependencyPath={typePath}
         dependencyValue={CONDITION_TYPE.EVENT}
         deleteOnHide={false}
