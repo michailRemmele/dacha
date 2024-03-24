@@ -1,4 +1,5 @@
 export { Explorer } from './explorer'
 export { Inspector } from './inspector'
 export { Toolbar } from './toolbar'
+export { BottomBar } from './bottom-bar'
 export { SettingsModal } from './settings-modal'

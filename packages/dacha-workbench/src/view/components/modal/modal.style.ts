@@ -11,7 +11,7 @@ export const ModalStyled = styled(Modal)(({ theme }) => css`
     padding: 5px 10px;
     margin: 0;
 
-    border-bottom: 1px solid ${theme.colorBorderSecondary};
+    border-bottom: 1px solid ${theme.colorBorder};
   }
 
   & .ant-modal-close {

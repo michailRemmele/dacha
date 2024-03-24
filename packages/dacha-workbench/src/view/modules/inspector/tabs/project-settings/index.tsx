@@ -2,12 +2,14 @@ import {
   useMemo,
   useEffect,
   useRef,
+  useContext,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SceneConfig } from 'remiz'
 
-import { useConfig, useReloadNotification } from '../../../../hooks'
+import { useConfig } from '../../../../hooks'
+import { NeedsReloadContext } from '../../../../providers'
 import {
   Field,
   LabelledSelect,
@@ -24,14 +26,14 @@ export const ProjectSettings: FC = () => {
 
   const prevGlobalOptions = useRef(globalOptions)
 
-  const showReloadNotification = useReloadNotification()
+  const { setNeedsReload } = useContext(NeedsReloadContext)
 
   useEffect(() => {
     if (globalOptions === prevGlobalOptions.current) {
       return
     }
 
-    showReloadNotification()
+    setNeedsReload(true)
     prevGlobalOptions.current = globalOptions
   }, [globalOptions])
 

@@ -1,11 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Tabs } from 'antd'
 
+import { TabsCSS } from '../../common-styles/tabs.style'
+
 import { LevelsTree, TemplatesTree, ScenesList } from './components'
-import {
-  ExplorerStyled,
-  TabsCSS,
-} from './explorer.style'
+import { ExplorerStyled } from './explorer.style'
 
 export const Explorer = (): JSX.Element => {
   const { t } = useTranslation()
