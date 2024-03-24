@@ -95,6 +95,7 @@
     "grid.modal.field.color.label": "Color"
   },
   "bottomBar": {
+    "reloadWarning.button.tooltip": "To apply changes, the editor should be reloaded.",
     "reloadWarning.button.title": "Reload Required"
   },
 
