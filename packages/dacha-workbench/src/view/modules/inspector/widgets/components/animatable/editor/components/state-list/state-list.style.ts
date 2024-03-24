@@ -20,7 +20,7 @@ export const TreeCSS = (isInactive: boolean): SerializedStyles => {
     ${isInactive && css`
       &.ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before,
       &.ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
-        background: ${theme.colorBorderSecondary};
+        background: ${theme.colorBorder};
       }
 
       &.ant-tree.ant-tree-directory .ant-tree-treenode .ant-tree-node-content-wrapper.ant-tree-node-selected,

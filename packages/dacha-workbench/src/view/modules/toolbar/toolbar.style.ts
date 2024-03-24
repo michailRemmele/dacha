@@ -10,7 +10,7 @@ export const ToolbarStyled = styled.div(({ theme }) => css`
   height: 35px;
   padding: 0 5px;
 
-  border-bottom: 1px solid ${theme.colorBorderSecondary};
+  border-bottom: 1px solid ${theme.colorBorder};
 `)
 
 export const RadioGroupCSS = css`

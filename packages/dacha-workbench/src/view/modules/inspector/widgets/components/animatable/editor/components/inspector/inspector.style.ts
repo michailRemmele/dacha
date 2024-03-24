@@ -12,7 +12,7 @@ export const HeaderStyled = styled.header(({ theme }) => `
   height: 34px;
 
   padding: 5px 10px;
-  border-bottom: 1px solid ${theme.colorBorderSecondary};
+  border-bottom: 1px solid ${theme.colorBorder};
 `)
 
 export const InspectorContentStyled = styled.div`

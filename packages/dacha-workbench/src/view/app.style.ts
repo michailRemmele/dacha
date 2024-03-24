@@ -6,13 +6,21 @@ import { CANVAS_ROOT } from '../consts/root-nodes'
 
 export const EditorStyled = styled.div(({ theme }) => css`
   display: flex;
+  flex-direction: column;
 
   width: 100%;
   height: 100%;
 
   background-color: ${theme.colorBgContainer};
-  border-top: 1px solid ${theme.colorBorderSecondary};
+  border-top: 1px solid ${theme.colorBorder};
 `)
+
+export const EditorMainStyled = styled.div`
+  display: flex;
+
+  width: 100%;
+  height: calc(100% - 25px);
+`
 
 export const ExplorerStyled = styled.div`
   width: 25%;

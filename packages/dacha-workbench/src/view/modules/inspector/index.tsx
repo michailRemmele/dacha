@@ -6,12 +6,12 @@ import { Tabs } from 'antd'
 import { SchemasProvider } from '../../providers'
 import { useExtension } from '../../hooks'
 import { NAMESPACE_EXTENSION } from '../../providers/schemas-provider/consts'
+import { TabsCSS } from '../../common-styles/tabs.style'
 
 import { EntityInspector, ProjectSettings } from './tabs'
 import {
   InspectorStyled,
   TabContentStyled,
-  TabsCSS,
 } from './inspector.style'
 
 export const Inspector = (): JSX.Element => {

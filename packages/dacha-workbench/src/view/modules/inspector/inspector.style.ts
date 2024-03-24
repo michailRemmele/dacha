@@ -6,7 +6,7 @@ export const InspectorStyled = styled.div(({ theme }) => css`
 
   height: 100%;
 
-  border-left: 1px solid ${theme.colorBorderSecondary};
+  border-left: 1px solid ${theme.colorBorder};
 `)
 
 export const TabContentStyled = styled.div`
@@ -16,24 +16,8 @@ export const TabContentStyled = styled.div`
   overflow-y: scroll;
 `
 
-export const TabsCSS = css`
-  &,
-  & .ant-tabs-content,
-  & .ant-tabs-tabpane {
-    height: 100%;
-  }
-
-  &.ant-tabs-top .ant-tabs-nav {
-    margin: 0;
-  }
-
-  & .ant-tabs-nav .ant-tabs-tab {
-    padding: 4px 8px;
-  }
-`
-
 export const ActionBarStyled = styled.header(({ theme }) => css`
-  border-bottom: 1px solid ${theme.colorBorderSecondary};
+  border-bottom: 1px solid ${theme.colorBorder};
   padding: 5px;
 
   height: 34px;

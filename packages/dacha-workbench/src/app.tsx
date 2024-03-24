@@ -9,6 +9,7 @@ import {
   SelectedEntityProvider,
   ThemeProvider,
   NotificationProvider,
+  NeedsReloadProvider,
   CommandProvider,
   CommandScopeProvider,
 } from './view/providers'
@@ -38,7 +39,9 @@ root.render(
         <CommandScopeProvider name={ROOT_SCOPE}>
           <SelectedEntityProvider>
             <NotificationProvider>
-              <App />
+              <NeedsReloadProvider>
+                <App />
+              </NeedsReloadProvider>
             </NotificationProvider>
           </SelectedEntityProvider>
         </CommandScopeProvider>
