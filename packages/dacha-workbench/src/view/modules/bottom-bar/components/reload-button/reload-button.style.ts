@@ -5,13 +5,13 @@ export const ReloadButtonCSS = (): SerializedStyles => {
   const theme = useTheme()
 
   return css`
-    color: ${theme.colorWarning};
+    color: ${theme.colorWarningText};
 
     &.ant-btn:hover {
-      color: ${theme.colorWarningHover};
+      color: ${theme.colorWarningTextHover};
     }
     &.ant-btn:active {
-      color: ${theme.colorWarningActive};
+      color: ${theme.colorWarningTextActive};
     }
   `
 }
