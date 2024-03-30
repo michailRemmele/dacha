@@ -54,7 +54,7 @@ export const App = (): JSX.Element => {
           {context && <Inspector />}
         </InspectorStyled>
       </EditorMainStyled>
-      <BottomBar />
+      {context && <BottomBar />}
 
       {context && <SettingsModal />}
     </EditorStyled>
