@@ -4,16 +4,19 @@ import type { SerializedStyles } from '@emotion/react'
 
 import { CANVAS_ROOT } from '../consts/root-nodes'
 
-export const EditorStyled = styled.div(({ theme }) => css`
-  display: flex;
-  flex-direction: column;
+export const EditorCSS = (): SerializedStyles => {
+  const theme = useTheme()
+  return css`
+    display: flex;
+    flex-direction: column;
 
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 
-  background-color: ${theme.colorBgContainer};
-  border-top: 1px solid ${theme.colorBorder};
-`)
+    background-color: ${theme.colorBgContainer};
+    border-top: 1px solid ${theme.colorBorder};
+  `
+}
 
 export const EditorMainStyled = styled.div`
   display: flex;

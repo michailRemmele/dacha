@@ -11,10 +11,6 @@ export const BottomBarStyled = styled.div(({ theme }) => css`
   padding: 0 10px;
 
   border-top: 1px solid ${theme.colorBorder};
-
-  font-family: ${theme.fontFamily};
-  font-size: ${theme.fontSize}px;
-  color: ${theme.colorText};
 `)
 
 export const LeftSectionStyled = styled.div`
