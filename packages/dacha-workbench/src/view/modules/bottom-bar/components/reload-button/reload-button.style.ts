@@ -1,17 +1,23 @@
-import { css, useTheme } from '@emotion/react'
-import type { SerializedStyles } from '@emotion/react'
+import styled from '@emotion/styled'
+import { css } from '@emotion/react'
 
-export const ReloadButtonCSS = (): SerializedStyles => {
-  const theme = useTheme()
+export const ReloadButtonStyled = styled.button(({ theme }) => css`
+  padding: 0;
+  border: none;
+  background: transparent;
 
-  return css`
-    color: ${theme.colorWarningText};
+  cursor: pointer;
 
-    &.ant-btn:hover {
-      color: ${theme.colorWarningTextHover};
-    }
-    &.ant-btn:active {
-      color: ${theme.colorWarningTextActive};
-    }
-  `
-}
+  color: ${theme.colorWarningText};
+
+  &:hover {
+    color: ${theme.colorWarningTextHover};
+  }
+  &:active {
+    color: ${theme.colorWarningTextActive};
+  }
+`)
+
+export const IconCSS = css`
+  margin-right: 4px;
+`

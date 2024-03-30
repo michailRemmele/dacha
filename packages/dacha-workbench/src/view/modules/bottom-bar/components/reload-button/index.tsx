@@ -4,13 +4,13 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { WarningOutlined } from '@ant-design/icons'
 
 import { useSaveProject } from '../../../../hooks/use-save-project'
 import { NeedsReloadContext } from '../../../../providers'
 
-import { ReloadButtonCSS } from './reload-button.style'
+import { ReloadButtonStyled, IconCSS } from './reload-button.style'
 
 export const ReloadButton: FC = () => {
   const { t } = useTranslation()
@@ -28,15 +28,10 @@ export const ReloadButton: FC = () => {
 
   return (
     <Tooltip title={t('bottomBar.reloadWarning.button.tooltip')}>
-      <Button
-        css={ReloadButtonCSS}
-        size="small"
-        type="link"
-        icon={<WarningOutlined />}
-        onClick={handleClick}
-      >
+      <ReloadButtonStyled onClick={handleClick}>
+        <WarningOutlined css={IconCSS} />
         {t('bottomBar.reloadWarning.button.title')}
-      </Button>
+      </ReloadButtonStyled>
     </Tooltip>
   )
 }
