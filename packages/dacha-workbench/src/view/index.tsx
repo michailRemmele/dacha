@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { App as DSApp } from 'antd'
 
 import {
   CANVAS_ROOT,
@@ -16,7 +17,7 @@ import {
 import { useUnsavedChanges } from './hooks'
 import { EngineContext } from './providers'
 import {
-  EditorStyled,
+  EditorCSS,
   EditorMainStyled,
   ExplorerStyled,
   CanvasStyled,
@@ -31,7 +32,7 @@ export const App = (): JSX.Element => {
   useUnsavedChanges()
 
   return (
-    <EditorStyled>
+    <DSApp css={EditorCSS}>
       <EditorMainStyled>
         <ExplorerStyled>
           {context && <Explorer />}
@@ -54,9 +55,9 @@ export const App = (): JSX.Element => {
           {context && <Inspector />}
         </InspectorStyled>
       </EditorMainStyled>
-      <BottomBar />
+      {context && <BottomBar />}
 
       {context && <SettingsModal />}
-    </EditorStyled>
+    </DSApp>
   )
 }

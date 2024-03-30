@@ -8,7 +8,7 @@ export const BottomBarStyled = styled.div(({ theme }) => css`
   background-color: ${theme.colorFillQuaternary};
 
   height: 25px;
-  padding: 0 5px;
+  padding: 0 10px;
 
   border-top: 1px solid ${theme.colorBorder};
 `)
