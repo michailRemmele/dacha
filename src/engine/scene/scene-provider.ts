@@ -160,6 +160,8 @@ export class SceneProvider {
           this.loadedScene = scene;
         });
       }
+
+      this.sceneContainer[scene.id] = scene;
     } else {
       scene = this.sceneContainer[sceneId];
     }
