@@ -8,11 +8,7 @@ import type { RigidBodyType } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import { Collision } from '../../../../events';
 import type { CollisionEvent } from '../../../../events';
-
-const RIGID_BODY_TYPE = {
-  STATIC: 'static',
-  DYNAMIC: 'dynamic',
-};
+import { RIGID_BODY_TYPE } from '../../consts';
 
 export class ConstraintSolver {
   private actorCollection: ActorCollection;
@@ -63,12 +59,23 @@ export class ConstraintSolver {
   };
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
-    const rigidBody1 = actor1.getComponent(RigidBody);
-    const rigidBody2 = actor2.getComponent(RigidBody);
+    const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
+    const rigidBody2 = actor2.getComponent(RigidBody) as RigidBody | undefined;
 
-    return rigidBody1 && !rigidBody1.ghost && !rigidBody1.isPermeable
-      && rigidBody2 && !rigidBody2.ghost && !rigidBody2.isPermeable
-      && (rigidBody1.type !== RIGID_BODY_TYPE.STATIC || rigidBody2.type !== RIGID_BODY_TYPE.STATIC);
+    if (!rigidBody1 || !rigidBody2) {
+      return false;
+    }
+
+    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC && rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
+      return false;
+    }
+
+    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC || rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
+      return !rigidBody1.ghost && !rigidBody2.ghost;
+    }
+
+    return !rigidBody1.ghost && !rigidBody1.isPermeable
+      && !rigidBody2.ghost && !rigidBody2.isPermeable;
   }
 
   private setMtv(id: string, mtvX: number, mtvY: number, type: RigidBodyType): void {

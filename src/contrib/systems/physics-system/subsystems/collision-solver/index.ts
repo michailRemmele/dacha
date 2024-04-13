@@ -6,6 +6,7 @@ import { RigidBody } from '../../../../components/rigid-body';
 import type { PhysicsSystemOptions } from '../../types';
 import { Collision, AddForce, StopMovement } from '../../../../events';
 import type { CollisionEvent } from '../../../../events';
+import { RIGID_BODY_TYPE } from '../../consts';
 
 const REACTION_FORCE_VECTOR_X = 0;
 const REACTION_FORCE_VECTOR_Y = -1;
@@ -40,10 +41,18 @@ export class CollisionSolver {
   };
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
-    const rigidBody1 = actor1.getComponent(RigidBody);
-    const rigidBody2 = actor2.getComponent(RigidBody);
+    const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
+    const rigidBody2 = actor2.getComponent(RigidBody) as RigidBody | undefined;
 
-    return rigidBody1 && !rigidBody1.ghost && rigidBody2 && !rigidBody2.ghost;
+    if (!rigidBody1 || !rigidBody2) {
+      return false;
+    }
+    if (rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
+      return !rigidBody1.ghost && !rigidBody2.ghost;
+    }
+
+    return !rigidBody1.ghost && !rigidBody1.isPermeable
+      && !rigidBody2.ghost && !rigidBody2.isPermeable;
   }
 
   private addReactionForce(actor: Actor, mtv: Vector2): void {
