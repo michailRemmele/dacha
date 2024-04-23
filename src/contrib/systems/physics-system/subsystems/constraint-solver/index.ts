@@ -6,8 +6,8 @@ import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { RigidBodyType } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
-import { Collision } from '../../../../events';
-import type { CollisionEvent } from '../../../../events';
+import { Collision, CollisionLeave } from '../../../../events';
+import type { CollisionEvent, CollisionLeaveEvent } from '../../../../events';
 import { RIGID_BODY_TYPE } from '../../consts';
 
 export class ConstraintSolver {
@@ -15,6 +15,8 @@ export class ConstraintSolver {
   private scene: Scene;
   private processedPairs: Record<string, Record<string, boolean>>;
   private mtvMap: Record<string, Record<string, Vector2>>;
+
+  private passingThroughPlatform: Array<[string, string]>;
 
   constructor(options: SystemOptions) {
     this.actorCollection = new ActorCollection(options.scene, {
@@ -26,15 +28,30 @@ export class ConstraintSolver {
     this.scene = options.scene;
     this.processedPairs = {};
     this.mtvMap = {};
+
+    this.passingThroughPlatform = [];
   }
 
   mount(): void {
     this.scene.addEventListener(Collision, this.handleCollision);
+
+    this.scene.addEventListener(CollisionLeave, this.handleCollisionLeave);
   }
 
   unmount(): void {
     this.scene.removeEventListener(Collision, this.handleCollision);
+
+    this.scene.removeEventListener(CollisionLeave, this.handleCollisionLeave);
   }
+
+  private handleCollisionLeave = (event: CollisionLeaveEvent): void => {
+    const rigidBody = event.actor.getComponent(RigidBody);
+    if (rigidBody && rigidBody.isPlatform) {
+      this.passingThroughPlatform = this.passingThroughPlatform.filter(
+        (pair) => pair[0] !== event.target.id || pair[1] !== event.actor.id,
+      );
+    }
+  };
 
   private handleCollision = (event: CollisionEvent): void => {
     const {
@@ -58,6 +75,12 @@ export class ConstraintSolver {
     this.resolveCollision(actor1, actor2, mtv1, mtv2);
   };
 
+  private isPassingThroughPlatform(actor1: Actor, actor2: Actor): boolean {
+    return this.passingThroughPlatform.some(
+      (pair) => pair[0] === actor1.id && pair[1] === actor2.id,
+    );
+  }
+
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
     const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
     const rigidBody2 = actor2.getComponent(RigidBody) as RigidBody | undefined;
@@ -67,6 +90,33 @@ export class ConstraintSolver {
     }
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC && rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
+      return false;
+    }
+
+    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC
+      && rigidBody1.isPlatform
+      && this.isPassingThroughPlatform(actor2, actor1)) {
+      return false;
+    }
+
+    if (rigidBody2.type === RIGID_BODY_TYPE.STATIC
+      && rigidBody2.isPlatform
+      && this.isPassingThroughPlatform(actor1, actor2)) {
+      return false;
+    }
+
+    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC
+      && rigidBody1.isPlatform
+      && rigidBody2.velocity?.y && rigidBody2.velocity?.y < 0
+    ) {
+      this.passingThroughPlatform.push([actor2.id, actor1.id]);
+      return false;
+    }
+
+    if (rigidBody2.type === RIGID_BODY_TYPE.STATIC
+      && rigidBody2.isPlatform
+      && rigidBody1.velocity?.y && rigidBody1.velocity?.y < 0) {
+      this.passingThroughPlatform.push([actor1.id, actor2.id]);
       return false;
     }
 

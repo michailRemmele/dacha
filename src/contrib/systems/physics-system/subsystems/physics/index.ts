@@ -109,6 +109,9 @@ export class PhysicsSubsystem {
       force: new Vector2(0, 0),
       impulse: new Vector2(0, 0),
     };
+
+    const rigidBody = actor.getComponent(RigidBody);
+    rigidBody.velocity = this.actorVectors[actor.id]?.velocity;
   }
 
   private applyDragForce(actor: Actor, deltaTime: number): void {

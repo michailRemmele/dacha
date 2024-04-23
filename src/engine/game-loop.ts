@@ -1,6 +1,10 @@
+import { PhysicsSystem } from '../contrib/systems';
+
 import type { SceneProvider } from './scene';
 import type { Controller } from './controllers';
 import { eventQueue } from './event-target';
+
+const MS_PER_UPDATE = 1000 / 50;
 
 export class GameLoop {
   private sceneProvider: SceneProvider;
@@ -8,6 +12,8 @@ export class GameLoop {
   private gameLoopId: number;
   private previous: number;
   private bindedTick: () => void;
+
+  private lag: number;
 
   constructor(sceneProvider: SceneProvider, controllers: Array<Controller>) {
     this.sceneProvider = sceneProvider;
@@ -17,6 +23,8 @@ export class GameLoop {
     this.previous = 0;
 
     this.bindedTick = this.tick.bind(this);
+
+    this.lag = 0;
   }
 
   private tick(): void {
@@ -25,6 +33,7 @@ export class GameLoop {
     const current = performance.now();
 
     const elapsed = current - this.previous;
+    this.lag += elapsed;
 
     const currentScene = this.sceneProvider.getCurrentScene();
 
@@ -33,7 +42,16 @@ export class GameLoop {
     };
 
     currentScene?.systems.forEach((system) => {
-      system.update?.(options);
+      if (system instanceof PhysicsSystem) {
+        const fixedUpdateOptions = { deltaTime: MS_PER_UPDATE };
+
+        while (this.lag >= MS_PER_UPDATE) {
+          system.update?.(fixedUpdateOptions);
+          this.lag -= MS_PER_UPDATE;
+        }
+      } else {
+        system.update?.(options);
+      }
     });
 
     this.controllers.forEach((controller) => {
@@ -47,6 +65,8 @@ export class GameLoop {
 
   run(): void {
     this.previous = performance.now();
+
+    this.lag = 0;
 
     this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
