@@ -6,7 +6,6 @@ const MESSAGES = require('./electron/messages')
 const getEditorConfig = require('./electron/utils/get-editor-config')
 
 const editorConfig = getEditorConfig()
-const isDev = process.env.NODE_ENV === 'development'
 
 contextBridge.exposeInMainWorld('electron', {
   getProjectConfig: () => {
@@ -20,7 +19,7 @@ contextBridge.exposeInMainWorld('electron', {
   saveProjectConfig: (config) => {
     fs.writeFileSync(
       path.resolve(editorConfig.projectConfig),
-      JSON.stringify(config, null, isDev ? 2 : 0),
+      JSON.stringify(config, null, 2),
     )
   },
   setUnsavedChanges: (unsavedChanges) => {
