@@ -21,6 +21,7 @@ export abstract class System {
   mount?(): void;
   unmount?(): void;
   update?(options: UpdateOptions): void;
+  fixedUpdate?(options: UpdateOptions): void;
 }
 
 export type SystemConstructor = Constructor<System> & { systemName: string };
