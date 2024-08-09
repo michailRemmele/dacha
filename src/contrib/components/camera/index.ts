@@ -1,6 +1,6 @@
 import { Component } from '../../../engine/component';
 
-interface CameraConfig extends Record<string, unknown> {
+export interface CameraConfig {
   zoom: number;
 }
 
@@ -11,12 +11,10 @@ export class Camera extends Component {
 
   private _zoom: number;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: CameraConfig) {
     super();
 
-    const cameraConfig = config as CameraConfig;
-
-    this._zoom = cameraConfig.zoom;
+    this._zoom = config.zoom;
     this.windowSizeX = 0;
     this.windowSizeY = 0;
 

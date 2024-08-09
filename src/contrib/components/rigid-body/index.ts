@@ -2,7 +2,7 @@ import { Component } from '../../../engine/component';
 
 export type RigidBodyType = 'dynamic' | 'static';
 
-export interface RigidBodyConfig extends Record<string, unknown> {
+export interface RigidBodyConfig {
   type: RigidBodyType
   mass: number
   useGravity: boolean
@@ -19,17 +19,15 @@ export class RigidBody extends Component {
   ghost: boolean;
   drag: number;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: RigidBodyConfig) {
     super();
 
-    const rigidBodyConfig = config as RigidBodyConfig;
-
-    this.type = rigidBodyConfig.type;
-    this.mass = rigidBodyConfig.mass;
-    this.useGravity = rigidBodyConfig.useGravity;
-    this.isPermeable = rigidBodyConfig.isPermeable;
-    this.ghost = rigidBodyConfig.ghost;
-    this.drag = rigidBodyConfig.drag;
+    this.type = config.type;
+    this.mass = config.mass;
+    this.useGravity = config.useGravity;
+    this.isPermeable = config.isPermeable;
+    this.ghost = config.ghost;
+    this.drag = config.drag;
   }
 
   clone(): RigidBody {

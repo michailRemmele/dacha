@@ -32,10 +32,10 @@ export interface KeyboardControlConfig extends Record<string, unknown> {
 export class KeyboardControl extends Component {
   inputEventBindings: InputEventBindings;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: KeyboardControlConfig) {
     super();
 
-    const { inputEventBindings } = config as KeyboardControlConfig;
+    const { inputEventBindings } = config;
 
     this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
       acc[bind.key] ??= {};
