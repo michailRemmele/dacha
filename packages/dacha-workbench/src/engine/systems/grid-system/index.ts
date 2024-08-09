@@ -9,6 +9,7 @@ import type {
   Actor,
 } from 'remiz'
 
+import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'
 import { GRID_ROOT } from '../../../consts/root-nodes'
@@ -31,6 +32,7 @@ export class GridSystem extends System {
     this.scene = scene
     this.mainActor = scene.data.mainActor as Actor
     this.gridNode = document.getElementById(GRID_ROOT) as HTMLDivElement
+    this.selectedLevelId = persistentStorage.get('selectedLevel')
 
     this.showGrid = false
   }

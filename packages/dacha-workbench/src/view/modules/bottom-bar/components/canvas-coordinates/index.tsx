@@ -7,6 +7,7 @@ import {
 import type { MouseControlEvent } from 'remiz/events'
 import { PlusOutlined, BorderInnerOutlined } from '@ant-design/icons'
 
+import { persistentStorage } from '../../../../../persistent-storage'
 import { throttle } from '../../../../../utils/throttle'
 import { getGridStep } from '../../../../../utils/grid'
 import { EngineContext } from '../../../../providers'
@@ -22,7 +23,7 @@ export const CanvasCoordinates: FC = () => {
   const { scene } = useContext(EngineContext)
 
   const [isCursor, setIsCursor] = useState(false)
-  const [isLevel, setIsLevel] = useState(false)
+  const [isLevel, setIsLevel] = useState(Boolean(persistentStorage.get('selectedLevel')))
 
   const [cursorX, setCursorX] = useState(0)
   const [cursorY, setCursorY] = useState(0)

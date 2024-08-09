@@ -8,6 +8,7 @@ import {
   TEMPLATE_TOOL,
 } from '../consts/tools'
 import { EventType } from '../events'
+import { persistentStorage } from '../persistent-storage'
 
 interface EditorConfigOptions {
   globalOptions: Array<GlobalOption>
@@ -168,7 +169,7 @@ export const getEditorConfig = ({
                     name: 'zoom',
                     features: {
                       direction: {
-                        value: 'in',
+                        value: persistentStorage.get('canvas.mainActor.tools.zoom.features.direction', 'in'),
                         withClassName: true,
                       },
                     },
@@ -196,7 +197,7 @@ export const getEditorConfig = ({
                     name: 'pointer',
                     features: {
                       grid: {
-                        value: false,
+                        value: persistentStorage.get('canvas.mainActor.tools.pointer.features.grid', false),
                         withClassName: false,
                       },
                     },
@@ -243,15 +244,15 @@ export const getEditorConfig = ({
                     name: 'template',
                     features: {
                       preview: {
-                        value: true,
+                        value: persistentStorage.get('canvas.mainActor.tools.template.features.preview', true),
                         withClassName: false,
                       },
                       grid: {
-                        value: false,
+                        value: persistentStorage.get('canvas.mainActor.tools.template.features.grid', false),
                         withClassName: false,
                       },
                       templateId: {
-                        value: undefined,
+                        value: persistentStorage.get('canvas.mainActor.tools.template.features.templateId', undefined),
                         withClassName: false,
                       },
                     },
@@ -272,8 +273,8 @@ export const getEditorConfig = ({
             {
               name: 'Transform',
               config: {
-                offsetX: 0,
-                offsetY: 0,
+                offsetX: persistentStorage.get('canvas.mainActor.transform.offsetX', 0),
+                offsetY: persistentStorage.get('canvas.mainActor.transform.offsetY', 0),
                 offsetZ: 1,
                 rotation: 0,
               },
@@ -281,7 +282,7 @@ export const getEditorConfig = ({
             {
               name: 'Camera',
               config: {
-                zoom: 1,
+                zoom: persistentStorage.get('canvas.mainActor.camera.zoom', 1),
               },
             },
             {
@@ -306,15 +307,15 @@ export const getEditorConfig = ({
             {
               name: 'ToolController',
               config: {
-                activeTool: HAND_TOOL,
+                activeTool: persistentStorage.get('canvas.mainActor.toolController.activeTool', HAND_TOOL),
               },
             },
             {
               name: 'Settings',
               config: {
-                showGrid: false,
-                gridStep: 16,
-                gridColor: '#1890FF',
+                showGrid: persistentStorage.get('canvas.mainActor.settings.showGrid', false),
+                gridStep: persistentStorage.get('canvas.mainActor.settings.gridStep', 16),
+                gridColor: persistentStorage.get('canvas.mainActor.settings.gridColor', '#1890FF'),
               },
             },
           ],

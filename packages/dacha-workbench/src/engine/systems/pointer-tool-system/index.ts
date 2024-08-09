@@ -10,13 +10,13 @@ import type {
 } from 'remiz'
 import type { MouseControlEvent } from 'remiz/events'
 
+import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { InspectEntityEvent, SelectLevelEvent } from '../../../events'
 import { getAncestor } from '../../../utils/get-ancestor'
 
 import { SelectionMovementSubsystem } from './selection-movement'
-import { buildActorPath, updateFrameSize } from './utils'
-import { LEVEL_PATH_LEGTH } from './consts'
+import { buildActorPath, updateFrameSize, getIdByPath } from './utils'
 import type { SelectedActor } from './types'
 
 export class PointerToolSystem extends System {
@@ -44,7 +44,10 @@ export class PointerToolSystem extends System {
 
     this.mainActor = scene.data.mainActor as Actor
 
-    this.selectedActor = {}
+    this.selectedActor = {
+      actorId: getIdByPath(persistentStorage.get('selectedEntity')),
+      levelId: persistentStorage.get('selectedLevel'),
+    }
 
     this.selectionMovementSubsystem = new SelectionMovementSubsystem({
       scene,
@@ -69,18 +72,11 @@ export class PointerToolSystem extends System {
   }
 
   private handleSelectLevel = (event: SelectLevelEvent): void => {
-    const { levelId } = event
-    this.selectedActor.levelId = levelId
+    this.selectedActor.levelId = event.levelId
   }
 
   private handleInspectEntity = (event: InspectEntityEvent): void => {
-    const { path } = event
-
-    if (path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH) {
-      this.selectedActor.actorId = path.at(-1)?.split(':').at(-1)
-    } else {
-      this.selectedActor.actorId = undefined
-    }
+    this.selectedActor.actorId = getIdByPath(event.path)
   }
 
   private handleSelectionMoveStart = (event: MouseControlEvent): void => {

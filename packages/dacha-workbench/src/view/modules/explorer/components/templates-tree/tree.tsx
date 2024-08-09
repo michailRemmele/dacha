@@ -24,7 +24,7 @@ export const Tree: FC = () => {
   const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseTemplates(templates), [templates])
 
-  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData)
+  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, 'explorer.tab.templates.expandedKeys')
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)

@@ -4,6 +4,9 @@ const fs = require('fs')
 
 const MESSAGES = require('./electron/messages')
 const getEditorConfig = require('./electron/utils/get-editor-config')
+const normalizePath = require('./electron/utils/normilize-path')
+
+const EDITOR_CACHE_PATH = '.remiz/cache.json'
 
 const editorConfig = getEditorConfig()
 
@@ -42,5 +45,21 @@ contextBridge.exposeInMainWorld('electron', {
   onRedo: (callback) => {
     ipcRenderer.on(MESSAGES.REDO, callback)
     return () => ipcRenderer.removeListener(MESSAGES.REDO, callback)
+  },
+  loadPersistentStorage: () => {
+    const cachePath = normalizePath(EDITOR_CACHE_PATH)
+    const cache = fs.existsSync(cachePath) ? fs.readFileSync(cachePath) : undefined
+
+    return cache ? JSON.parse(cache) : {}
+  },
+  savePersistentStorage: (state) => {
+    const cachePath = normalizePath(EDITOR_CACHE_PATH)
+    const dirname = path.dirname(cachePath)
+
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname)
+    }
+
+    fs.writeFileSync(cachePath, JSON.stringify(state, null, 2))
   },
 })
