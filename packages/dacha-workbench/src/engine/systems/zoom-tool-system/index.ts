@@ -12,6 +12,7 @@ import type { MouseControlEvent } from 'remiz/events'
 
 import { EventType } from '../../../events'
 import { getTool } from '../../../utils/get-tool'
+import { persistentStorage } from '../../../persistent-storage'
 
 const ZOOM_FACTOR = 1.5
 const DEFAULT_ZOOM = 1
@@ -44,6 +45,8 @@ export class ZoomToolSystem extends System {
   private handleSelectLevel = (): void => {
     const cameraComponent = this.mainActor.getComponent(Camera)
     cameraComponent.zoom = DEFAULT_ZOOM
+
+    persistentStorage.set('canvas.mainActor.camera.zoom', cameraComponent.zoom)
   }
 
   private handleCameraZoom = (event: MouseControlEvent): void => {
@@ -81,6 +84,10 @@ export class ZoomToolSystem extends System {
     // Move camera in direction of zoom
     transform.offsetX += x - nextX
     transform.offsetY += y - nextY
+
+    persistentStorage.set('canvas.mainActor.camera.zoom', cameraComponent.zoom)
+    persistentStorage.set('canvas.mainActor.transform.offsetX', transform.offsetX)
+    persistentStorage.set('canvas.mainActor.transform.offsetY', transform.offsetY)
   }
 }
 

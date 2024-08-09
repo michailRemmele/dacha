@@ -36,6 +36,8 @@ export interface ElectronAPI {
   onSwitchTheme: (callback: () => void) => () => void
   onUndo: (callback: () => void) => () => void
   onRedo: (callback: () => void) => () => void
+  loadPersistentStorage: () => Record<string, unknown>
+  savePersistentStorage: (state: Record<string, unknown>) => void
 }
 
 declare global {

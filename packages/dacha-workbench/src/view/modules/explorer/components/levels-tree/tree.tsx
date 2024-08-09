@@ -9,11 +9,13 @@ import {
 import { Tree as AntdTree } from 'antd'
 import type { LevelConfig } from 'remiz'
 
+import { persistentStorage } from '../../../../../persistent-storage'
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig, useTreeKeys } from '../../../../hooks'
 import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
 import { EventType } from '../../../../../events'
+import type { SelectLevelEvent } from '../../../../../events'
 
 import { parseLevels, getKey } from './utils'
 
@@ -28,17 +30,21 @@ export const Tree: FC<TreeProps> = ({ className }) => {
   const levels = useConfig('levels') as Array<LevelConfig>
   const selectedEntity = useConfig(selectedEntityPath)
 
-  const [selectedLevel, setSelectedLevel] = useState<string | undefined>()
+  const [selectedLevel, setSelectedLevel] = useState<string | undefined>(
+    () => persistentStorage.get('selectedLevel'),
+  )
 
   useEffect(() => {
-    const isDeleted = levels.every((level) => level.id !== selectedLevel)
-    if (isDeleted) {
-      scene.dispatchEvent(EventType.SelectLevel, {
-        levelId: undefined,
-      })
-      setSelectedLevel(undefined)
+    const handleLevelChange = (event: SelectLevelEvent): void => {
+      if (event.levelId !== selectedLevel) {
+        setSelectedLevel(event.levelId)
+      }
     }
-  }, [levels])
+
+    scene.addEventListener(EventType.SelectLevel, handleLevelChange)
+
+    return () => scene.removeEventListener(EventType.SelectLevel, handleLevelChange)
+  }, [selectedLevel])
 
   const currentEntityId = (selectedEntity as { id: string } | undefined)?.id
   const inactiveSelectedLevelId = selectedLevel && selectedLevel !== currentEntityId
@@ -50,7 +56,7 @@ export const Tree: FC<TreeProps> = ({ className }) => {
     [levels, inactiveSelectedLevelId],
   )
 
-  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData)
+  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, 'explorer.tab.levels.expandedKeys')
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
@@ -61,20 +67,8 @@ export const Tree: FC<TreeProps> = ({ className }) => {
       return
     }
 
-    const entityPath = node.path.slice(0)
-    const levelId = entityPath[0] === 'levels' ? entityPath[1].split(':')[1] : undefined
-
-    if (levelId !== undefined && levelId !== selectedLevel) {
-      scene.dispatchEvent(EventType.SelectLevel, {
-        levelId,
-      })
-      setSelectedLevel(levelId)
-    }
-
-    scene.dispatchEvent(EventType.InspectEntity, {
-      path: entityPath,
-    })
-  }, [selectedLevel, scene])
+    scene.dispatchEvent(EventType.InspectEntity, { path: node.path.slice(0) })
+  }, [scene])
 
   const selectedKey = getKey(selectedEntity, selectedEntityPath)
 

@@ -1,12 +1,6 @@
 const path = require('path')
 
-const normalizePath = (inputPath) => {
-  if (!inputPath || path.isAbsolute(inputPath)) {
-    return inputPath
-  }
-
-  return path.resolve(process.env.ORIGINAL_CWD, inputPath)
-}
+const normalizePath = require('./normilize-path')
 
 const getEditorConfig = () => {
   const config = require(path.resolve(process.env.EDITOR_CONFIG))

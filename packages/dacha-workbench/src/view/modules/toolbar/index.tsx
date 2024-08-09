@@ -18,6 +18,7 @@ import {
 } from '@ant-design/icons'
 import type { Actor } from 'remiz'
 
+import { persistentStorage } from '../../../persistent-storage'
 import { EngineContext } from '../../providers'
 import { Tool, ToolController } from '../../../engine/components'
 import type { FeatureValue } from '../../../engine/components/tool'
@@ -41,7 +42,7 @@ export const Toolbar: FC = () => {
 
   const [selectedTool, setSelectedTool] = useState('')
   const [toolFeatures, setToolFeatures] = useState<Record<string, FeatureValue>>({})
-  const [disabled, setDisabled] = useState(true)
+  const [disabled, setDisabled] = useState(() => !persistentStorage.get('selectedLevel'))
 
   const ToolFeatures = useMemo(() => features[selectedTool], [selectedTool])
 
