@@ -12,6 +12,7 @@ import type {
 import type { MouseControlEvent } from 'remiz/events'
 
 import { EventType } from '../../../events'
+import { persistentStorage } from '../../../persistent-storage'
 
 const DEFAULT_POS_X = 0
 const DEFAULT_POS_Y = 0
@@ -80,6 +81,9 @@ export class HandToolSystem extends System {
 
     transform.offsetX += (this.anchor.x - screenX) / zoom
     transform.offsetY += (this.anchor.y - screenY) / zoom
+
+    persistentStorage.set('canvas.mainActor.transform.offsetX', transform.offsetX)
+    persistentStorage.set('canvas.mainActor.transform.offsetY', transform.offsetY)
 
     this.anchor.x = screenX
     this.anchor.y = screenY

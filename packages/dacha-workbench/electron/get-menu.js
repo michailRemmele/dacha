@@ -5,8 +5,6 @@ const {
 
 const MESSAGES = require('./messages')
 
-const isDev = process.env.NODE_ENV === 'development'
-
 module.exports = (window) => Menu.buildFromTemplate([
   {
     label: app.name,
@@ -50,8 +48,8 @@ module.exports = (window) => Menu.buildFromTemplate([
   {
     role: 'viewMenu',
     submenu: [
-      isDev && { role: 'reload' },
-      isDev && { role: 'forceReload' },
+      { role: 'reload' },
+      { role: 'forceReload' },
       { role: 'toggleDevTools' },
 
       { type: 'separator' },

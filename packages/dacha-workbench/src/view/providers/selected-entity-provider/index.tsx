@@ -2,18 +2,22 @@ import React, {
   useEffect,
   useContext,
   useState,
+  useRef,
   FC,
 } from 'react'
+import type { LevelConfig } from 'remiz'
 
 import { EngineContext } from '../engine-provider'
-import { useStore } from '../../hooks'
+import { useStore, useConfig } from '../../hooks'
 import { includesArray } from '../../../utils/includes-array'
 import { EventType } from '../../../events'
+import { persistentStorage } from '../../../persistent-storage'
 import type { InspectEntityEvent } from '../../../events'
 
 import { getEntityType, EntityType } from './get-entity-type'
+import { getLevelId } from './get-level-id'
 
-interface SelectedEntityData {
+export interface SelectedEntityData {
   path?: Array<string>
   type?: EntityType
 }
@@ -29,10 +33,29 @@ export const SelectedEntityContext = React.createContext<SelectedEntityData>({})
 export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
   children,
 }): JSX.Element => {
-  const [entityData, setEntityData] = useState<SelectedEntityData>({})
-  const store = useStore()
+  const [entityData, setEntityData] = useState<SelectedEntityData>(() => ({
+    path: persistentStorage.get('selectedEntity'),
+    type: getEntityType(persistentStorage.get('selectedEntity')),
+  }))
+  const selectedLevelRef = useRef<string | undefined>(persistentStorage.get('selectedLevel'))
 
   const { scene } = useContext(EngineContext) || {}
+  const store = useStore()
+
+  const levels = useConfig('levels') as Array<LevelConfig> | undefined
+
+  useEffect(() => {
+    if (levels === undefined) {
+      return
+    }
+
+    const isDeleted = levels.every((level) => level.id !== selectedLevelRef.current)
+    if (isDeleted) {
+      scene.dispatchEvent(EventType.SelectLevel, { levelId: undefined })
+      selectedLevelRef.current = undefined
+      persistentStorage.set('selectedLevel', undefined)
+    }
+  }, [levels])
 
   useEffect(() => {
     if (!scene) {
@@ -42,19 +65,22 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
     const handleInspectEntity = (event: InspectEntityEvent): void => {
       const { path } = event
 
-      setEntityData({
-        path,
-        type: getEntityType(path),
-      })
-      scene.dispatchEvent(EventType.InspectedEntityChange, {
-        path,
-      })
+      const levelId = getLevelId(path)
+      if (levelId !== undefined && levelId !== selectedLevelRef.current) {
+        scene.dispatchEvent(EventType.SelectLevel, { levelId })
+        selectedLevelRef.current = levelId
+        persistentStorage.set('selectedLevel', levelId)
+      }
+
+      setEntityData({ path, type: getEntityType(path) })
+      scene.dispatchEvent(EventType.InspectedEntityChange, { path })
+
+      persistentStorage.set('selectedEntity', path)
     }
 
     scene.addEventListener(EventType.InspectEntity, handleInspectEntity)
 
     return (): void => {
-      setEntityData({})
       scene.removeEventListener(EventType.InspectEntity, handleInspectEntity)
     }
   }, [scene])
@@ -71,13 +97,10 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
       }
 
       if (store.get(path) === undefined) {
-        setEntityData({
-          path: undefined,
-          type: undefined,
-        })
-        scene.dispatchEvent(EventType.InspectedEntityChange, {
-          path: undefined,
-        })
+        setEntityData({ path: undefined, type: undefined })
+        scene.dispatchEvent(EventType.InspectedEntityChange, { path: undefined })
+
+        persistentStorage.set('selectedEntity', undefined)
       }
     })
 

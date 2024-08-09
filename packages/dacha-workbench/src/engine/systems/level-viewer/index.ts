@@ -12,6 +12,7 @@ import type {
   LevelConfig,
 } from 'remiz'
 
+import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'
 import type { EditorConfig } from '../../../types/global'
@@ -82,6 +83,7 @@ export class LevelViewer extends System {
   }
 
   mount(): void {
+    this.loadLevel(persistentStorage.get('selectedLevel'))
     this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
     this.watchStore()
   }
@@ -121,22 +123,21 @@ export class LevelViewer extends System {
   }
 
   private handleSelectLevel = (event: SelectLevelEvent): void => {
-    const { levelId } = event
-
-    if (this.currentLevel === levelId) {
+    if (this.currentLevel === event.levelId) {
       return
     }
 
     removeAllChildren(this.scene, this.mainActorId)
+    this.loadLevel(event.levelId)
+  }
 
+  private loadLevel(levelId?: string): void {
     const levels = this.configStore.get(['levels']) as Array<LevelConfig>
     const selectedLevel = levels.find((level) => level.id === levelId)
 
-    const { actorCreator } = this
-
-    if (selectedLevel && actorCreator) {
+    if (selectedLevel) {
       selectedLevel.actors.forEach((actorConfig) => {
-        this.scene.appendChild(actorCreator.create(omit(actorConfig)))
+        this.scene.appendChild(this.actorCreator.create(omit(actorConfig)))
       })
     }
 
