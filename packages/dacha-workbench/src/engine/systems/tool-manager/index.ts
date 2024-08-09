@@ -3,16 +3,16 @@ import type {
   Scene,
   SystemOptions,
   Actor,
+  MouseControlConfig,
 } from 'remiz'
 
 import { EventType } from '../../../events'
 import type { SelectToolEvent, SetToolFeatureValueEvent } from '../../../events'
-import { HAND_TOOL } from '../../../consts/tools'
 import { CANVAS_ROOT } from '../../../consts/root-nodes'
 import { Tool, ToolController } from '../../components'
+import { persistentStorage } from '../../../persistent-storage'
 import type { FeatureValue } from '../../components/tool'
 
-const DEFAULT_TOOL_NAME = HAND_TOOL
 const TOOL_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_tool_`
 const FEATURE_CLASS_NAME_PREFIX = `${CANVAS_ROOT}_feature-`
 
@@ -41,7 +41,8 @@ export class ToolManager extends System {
     this.scene.addEventListener(EventType.SelectTool, this.handleSelectTool)
     this.scene.addEventListener(EventType.SetToolFeatureValue, this.handleSetToolFeatureValue)
 
-    this.selectTool(DEFAULT_TOOL_NAME)
+    const toolController = this.mainActor.getComponent(ToolController)
+    this.selectTool(toolController.activeTool)
   }
 
   unmount(): void {
@@ -53,6 +54,8 @@ export class ToolManager extends System {
     const toolController = this.mainActor.getComponent(ToolController)
     toolController.activeTool = id
 
+    persistentStorage.set('canvas.mainActor.toolController.activeTool', id)
+
     const toolActor = this.mainActor.getEntityById(id)
 
     if (toolActor === undefined) {
@@ -63,7 +66,7 @@ export class ToolManager extends System {
     const { features, inputBindings } = toolActor.getComponent(Tool)
 
     const mouseControl = new MouseControl({
-      inputEventBindings: inputBindings,
+      inputEventBindings: inputBindings as MouseControlConfig['inputEventBindings'],
     })
     toolActor.setComponent(mouseControl)
 
@@ -97,8 +100,8 @@ export class ToolManager extends System {
   }
 
   private setToolFeatureValue(name: string, value: FeatureValue): void {
-    const toolController = this.mainActor.getComponent(ToolController)
-    const toolActor = this.mainActor.getEntityById(toolController.activeTool)
+    const { activeTool } = this.mainActor.getComponent(ToolController)
+    const toolActor = this.mainActor.getEntityById(activeTool)
 
     if (toolActor) {
       const { features } = toolActor.getComponent(Tool)
@@ -110,6 +113,8 @@ export class ToolManager extends System {
       }
 
       feature.value = value
+
+      persistentStorage.set(`canvas.mainActor.tools.${activeTool}.features.${name}`, value)
     }
   }
 

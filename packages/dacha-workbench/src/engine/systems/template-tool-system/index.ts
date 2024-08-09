@@ -9,6 +9,7 @@ import type {
 } from 'remiz'
 import type { MouseControlEvent } from 'remiz/events'
 
+import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'
 import { ADD } from '../../../command-types'
@@ -48,6 +49,8 @@ export class TemplateToolSystem extends System {
       actorCreator: this.scene.data.actorCreator as ActorCreator,
       actorSpawner: this.actorSpawner,
     })
+
+    this.selectedLevelId = persistentStorage.get('selectedLevel')
 
     this.cursor = { x: 0, y: 0 }
     this.placementPosition = { x: 0, y: 0 }

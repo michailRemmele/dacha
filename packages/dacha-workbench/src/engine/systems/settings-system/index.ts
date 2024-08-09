@@ -8,6 +8,7 @@ import type {
 import { EventType } from '../../../events'
 import type { SetSettingsValueEvent } from '../../../events'
 import { Settings } from '../../components'
+import { persistentStorage } from '../../../persistent-storage'
 
 export class SettingsSystem extends System {
   private scene: Scene
@@ -36,6 +37,8 @@ export class SettingsSystem extends System {
 
     const settings = this.mainActor.getComponent(Settings)
     settings.data[name] = value
+
+    persistentStorage.set(`canvas.mainActor.settings.${name}`, value)
   }
 }
 

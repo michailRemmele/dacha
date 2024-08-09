@@ -41,7 +41,7 @@ export const useConfig = (path?: Array<string> | string): unknown => {
     })
 
     return unsubscribe
-  }, [parsedPath])
+  }, [parsedPath, configStore])
 
   return valueRef.current
 }

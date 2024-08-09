@@ -8,6 +8,8 @@ import {
 import { Shape } from '../../components/shape'
 import type { RectangleShape } from '../../components/shape'
 
+import { LEVEL_PATH_LEGTH } from './consts'
+
 const accumulatePath = (actor: Actor, path: Array<string>): void => {
   path.unshift(`id:${actor.id}`)
 
@@ -65,4 +67,11 @@ export const updateFrameSize = (frame: Actor, actor: Actor): void => {
   frameTransform.offsetY = offsetY
   properties.width = Math.cos(rotation) * width + Math.sin(rotation) * height
   properties.height = Math.sin(rotation) * width + Math.cos(rotation) * height
+}
+
+export const getIdByPath = (path?: Array<string>): string | undefined => {
+  if (path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH) {
+    return path.at(-1)?.split(':').at(-1)
+  }
+  return undefined
 }
