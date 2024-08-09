@@ -4,6 +4,7 @@ export type InputEventAttributes = Record<string, AttributeValue>;
 
 export interface InputEventAttributeConfig {
   name: string
+  type?: string
   value: AttributeValue
 }
 

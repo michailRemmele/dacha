@@ -1,6 +1,6 @@
 import { Component } from '../../../engine/component';
 
-export interface TransformConfig extends Record<string, unknown> {
+export interface TransformConfig {
   offsetX: number
   offsetY: number
   offsetZ: number
@@ -17,17 +17,15 @@ export class Transform extends Component {
   relativeScaleX: number;
   relativeScaleY: number;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: TransformConfig) {
     super();
 
-    const transformConfig = config as TransformConfig;
-
-    this.relativeOffsetX = transformConfig.offsetX;
-    this.relativeOffsetY = transformConfig.offsetY;
-    this.relativeOffsetZ = transformConfig.offsetZ;
-    this.relativeRotation = transformConfig.rotation;
-    this.relativeScaleX = transformConfig.scaleX || 1;
-    this.relativeScaleY = transformConfig.scaleY || 1;
+    this.relativeOffsetX = config.offsetX;
+    this.relativeOffsetY = config.offsetY;
+    this.relativeOffsetZ = config.offsetZ;
+    this.relativeRotation = config.rotation;
+    this.relativeScaleX = config.scaleX || 1;
+    this.relativeScaleY = config.scaleY || 1;
   }
 
   _getPropertyFromParent(name: string, defaultValue: number): number {
