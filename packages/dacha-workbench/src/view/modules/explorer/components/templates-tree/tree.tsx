@@ -24,7 +24,9 @@ export const Tree: FC = () => {
   const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseTemplates(templates), [templates])
 
-  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, 'explorer.tab.templates.expandedKeys')
+  const selectedKey = getKey(selectedEntity, selectedEntityPath)
+
+  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, selectedKey, 'explorer.tab.templates.expandedKeys')
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
@@ -39,8 +41,6 @@ export const Tree: FC = () => {
       path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
     })
   }, [scene])
-
-  const selectedKey = getKey(selectedEntity, selectedEntityPath)
 
   return (
     <ListWrapper>

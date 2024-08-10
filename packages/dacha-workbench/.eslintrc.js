@@ -20,6 +20,7 @@ const commonRules = {
   'import/no-extraneous-dependencies': 0,
   'import/no-dynamic-require': 0,
   'global-require': 0,
+  'no-continue': 0,
 }
 
 const reactRules = {
