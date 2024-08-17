@@ -16,7 +16,7 @@ import { ExplorerStyled } from './explorer.style'
 
 export const Explorer = (): JSX.Element => {
   const { t } = useTranslation()
-  const { type } = useContext(SelectedEntityContext)
+  const { type, path } = useContext(SelectedEntityContext)
 
   const [activeTab, setActiveTab] = useState(() => persistentStorage.get('explorer.activeTab', 'levels'))
 
@@ -29,11 +29,11 @@ export const Explorer = (): JSX.Element => {
     if (type) {
       handleChange(type === 'actor' ? 'level' : type)
     }
-  }, [type])
+  }, [path])
 
   return (
     <ExplorerStyled>
-      <Tabs css={TabsCSS} type="card" activeKey={activeTab} onChange={handleChange}>
+      <Tabs css={TabsCSS} type="card" activeKey={activeTab} onChange={handleChange} destroyInactiveTabPane>
         <Tabs.TabPane tab={t('explorer.tab.levels')} key="level">
           <LevelsExplorer />
         </Tabs.TabPane>
