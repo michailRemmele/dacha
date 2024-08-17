@@ -20,6 +20,7 @@ const commonRules = {
   'import/no-extraneous-dependencies': 0,
   'import/no-dynamic-require': 0,
   'global-require': 0,
+  'no-continue': 0,
 }
 
 const reactRules = {
@@ -31,6 +32,7 @@ const reactRules = {
   'react/prop-types': 0,
   'jsx-a11y/label-has-associated-control': 0,
   'react/react-in-jsx-scope': 0,
+  'react/no-unstable-nested-components': ['error', { allowAsProps: true }],
 }
 
 module.exports = {
