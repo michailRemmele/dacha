@@ -63,6 +63,10 @@ export const useTreeKeys = <T extends DataNode>(
 
     const keysSet = new Set(expandedKeys)
     const path = findTreePath(tree, selectedKey)
+
+    // Don't need to expand selected node
+    path.pop()
+
     const isPathExpanded = path.every((key) => keysSet.has(key))
 
     if (!isPathExpanded) {
