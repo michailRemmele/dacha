@@ -1,35 +1,49 @@
-import { useCallback, useMemo } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useContext,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tabs } from 'antd'
 
+import { SelectedEntityContext } from '../../providers'
 import { persistentStorage } from '../../../persistent-storage'
 import { TabsCSS } from '../../common-styles/tabs.style'
 
-import { LevelsTree, TemplatesTree, ScenesList } from './components'
+import { LevelsExplorer, TemplatesExplorer, ScenesList } from './components'
 import { ExplorerStyled } from './explorer.style'
 
 export const Explorer = (): JSX.Element => {
   const { t } = useTranslation()
+  const { type, path } = useContext(SelectedEntityContext)
 
-  const initialActiveTab = useMemo(() => persistentStorage.get('explorer.activeTab', 'levels'), [])
+  const [activeTab, setActiveTab] = useState(() => persistentStorage.get('explorer.activeTab', 'levels'))
 
   const handleChange = useCallback((activeKey: string) => {
+    setActiveTab(activeKey)
     persistentStorage.set('explorer.activeTab', activeKey)
   }, [])
 
+  useEffect(() => {
+    if (type) {
+      handleChange(type === 'actor' ? 'level' : type)
+    }
+  }, [path])
+
   return (
     <ExplorerStyled>
-      <Tabs css={TabsCSS} type="card" defaultActiveKey={initialActiveTab} onChange={handleChange}>
-        <Tabs.TabPane tab={t('explorer.tab.levels')} key="levels">
-          <LevelsTree />
+      <Tabs css={TabsCSS} type="card" activeKey={activeTab} onChange={handleChange} destroyInactiveTabPane>
+        <Tabs.TabPane tab={t('explorer.tab.levels')} key="level">
+          <LevelsExplorer />
         </Tabs.TabPane>
-        <Tabs.TabPane tab={t('explorer.tab.templates')} key="templates">
-          <TemplatesTree />
+        <Tabs.TabPane tab={t('explorer.tab.templates')} key="template">
+          <TemplatesExplorer />
         </Tabs.TabPane>
-        <Tabs.TabPane tab={t('explorer.tab.scenes')} key="scenes">
+        <Tabs.TabPane tab={t('explorer.tab.scenes')} key="scene">
           <ScenesList />
         </Tabs.TabPane>
-        <Tabs.TabPane tab={t('explorer.tab.loaders')} key="loaders">
+        <Tabs.TabPane tab={t('explorer.tab.loaders')} key="loader">
           <ScenesList isLoaders />
         </Tabs.TabPane>
       </Tabs>

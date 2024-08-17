@@ -7,9 +7,8 @@ import type { DataNode } from 'antd/lib/tree'
 
 import { persistentStorage } from '../../../persistent-storage'
 
-interface TreeNode<T extends DataNode> extends DataNode {
-  parent?: TreeNode<T>
-}
+import { findTreePath } from './utils'
+import type { TreeNode } from './types'
 
 interface UseExpandedKeysReturnType {
   expandedKeys: Array<string>
@@ -20,6 +19,7 @@ interface UseExpandedKeysReturnType {
 // In addition, it observes tree changes and clean deleted nodes
 export const useTreeKeys = <T extends DataNode>(
   tree: Array<TreeNode<T>>,
+  selectedKey?: string,
   persistentStorageKey?: string,
 ): UseExpandedKeysReturnType => {
   const [expandedKeys, setExpandedKeys] = useState<Array<string>>(
@@ -55,6 +55,25 @@ export const useTreeKeys = <T extends DataNode>(
 
     handleSetExpandedKeys(expandedKeys.filter((key) => !keysToDelete.has(key)))
   }, [tree])
+
+  useEffect(() => {
+    if (!selectedKey) {
+      return
+    }
+
+    const keysSet = new Set(expandedKeys)
+    const path = findTreePath(tree, selectedKey)
+
+    // Don't need to expand selected node
+    path.pop()
+
+    const isPathExpanded = path.every((key) => keysSet.has(key))
+
+    if (!isPathExpanded) {
+      path.forEach((key) => keysSet.add(key))
+      handleSetExpandedKeys(Array.from(keysSet))
+    }
+  }, [selectedKey])
 
   return { expandedKeys, setExpandedKeys: handleSetExpandedKeys }
 }
