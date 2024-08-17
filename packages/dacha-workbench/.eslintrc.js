@@ -32,8 +32,7 @@ const reactRules = {
   'react/prop-types': 0,
   'jsx-a11y/label-has-associated-control': 0,
   'react/react-in-jsx-scope': 0,
-  'react/no-unstable-nested-components': ['error', { allowAsProps: true },
-  ],
+  'react/no-unstable-nested-components': ['error', { allowAsProps: true }],
 }
 
 module.exports = {
