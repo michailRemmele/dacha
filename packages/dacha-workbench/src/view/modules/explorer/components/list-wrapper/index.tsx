@@ -1,7 +1,7 @@
 import {
   useCallback,
   useContext,
-  FC,
+  forwardRef,
 } from 'react'
 
 import { EngineContext } from '../../../../providers'
@@ -13,7 +13,7 @@ interface ListWrapperProps {
   children: JSX.Element | Array<JSX.Element>
 }
 
-export const ListWrapper: FC<ListWrapperProps> = ({ children }) => {
+export const ListWrapper = forwardRef<HTMLDivElement, ListWrapperProps>(({ children }, ref) => {
   const { scene } = useContext(EngineContext)
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
@@ -26,10 +26,11 @@ export const ListWrapper: FC<ListWrapperProps> = ({ children }) => {
 
   return (
     <ListWrapperStyled
+      ref={ref}
       role="presentation"
       onClick={handleClick}
     >
       {children}
     </ListWrapperStyled>
   )
-}
+})

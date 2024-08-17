@@ -11,7 +11,7 @@ import { SelectedEntityContext } from '../../providers'
 import { persistentStorage } from '../../../persistent-storage'
 import { TabsCSS } from '../../common-styles/tabs.style'
 
-import { LevelsTree, TemplatesTree, ScenesList } from './components'
+import { LevelsExplorer, TemplatesExplorer, ScenesList } from './components'
 import { ExplorerStyled } from './explorer.style'
 
 export const Explorer = (): JSX.Element => {
@@ -35,10 +35,10 @@ export const Explorer = (): JSX.Element => {
     <ExplorerStyled>
       <Tabs css={TabsCSS} type="card" activeKey={activeTab} onChange={handleChange}>
         <Tabs.TabPane tab={t('explorer.tab.levels')} key="level">
-          <LevelsTree />
+          <LevelsExplorer />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('explorer.tab.templates')} key="template">
-          <TemplatesTree />
+          <TemplatesExplorer />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('explorer.tab.scenes')} key="scene">
           <ScenesList />

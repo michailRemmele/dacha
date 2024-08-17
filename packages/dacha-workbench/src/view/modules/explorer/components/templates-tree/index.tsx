@@ -1,11 +1,11 @@
 import type { FC } from 'react'
 
 import { ActionBar } from './action-bar'
-import { Tree } from './tree'
+import { TemplatesTree } from './tree'
 
-export const TemplatesTree: FC = () => (
+export const TemplatesExplorer: FC = () => (
   <>
     <ActionBar />
-    <Tree />
+    <TemplatesTree />
   </>
 )
