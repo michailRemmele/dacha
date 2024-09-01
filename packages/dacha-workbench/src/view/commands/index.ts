@@ -1,3 +1,3 @@
-export { setValue } from './set'
-export { deleteValue } from './delete'
-export { addValue } from './add'
+export { setValue } from './base/set'
+export { deleteValue } from './base/delete'
+export { addValue } from './base/add'

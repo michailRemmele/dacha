@@ -3,6 +3,7 @@ import {
   useCallback,
 } from 'react'
 
+import { useStore } from '../use-store'
 import { EngineContext, CommandScopeContext } from '../../providers'
 import { EventType } from '../../../events'
 
@@ -13,23 +14,34 @@ export interface DispatchOptions {
 export interface Command {
   command: string
   options: unknown
+  isEffect?: boolean
 }
 
+export type GetStateFn = (path: Array<string>) => unknown
+export type ThunkFn = (dispatch: DispatchFn, getState: GetStateFn) => void
+export type DispatchFn = (commandOrThunkFn: Command | ThunkFn) => void
+
 export type UseCommanderHook = () => {
-  dispatch: (command: Command, options?: DispatchOptions) => void
+  dispatch: DispatchFn
 }
 
 export const useCommander: UseCommanderHook = () => {
   const { scene } = useContext(EngineContext)
   const scope = useContext(CommandScopeContext)
 
-  const dispatch = useCallback((command: Command, options?: DispatchOptions) => {
+  const store = useStore()
+
+  const dispatch = useCallback<DispatchFn>((commandOrThunkFn) => {
+    if (typeof commandOrThunkFn === 'function') {
+      commandOrThunkFn(dispatch, (path) => store?.get(path))
+      return
+    }
+
     scene.dispatchEvent(EventType.Command, {
       scope,
-      isEffect: options?.isEffect,
-      ...command,
+      ...commandOrThunkFn,
     })
-  }, [scene, scope])
+  }, [scene, scope, store])
 
   return { dispatch }
 }
