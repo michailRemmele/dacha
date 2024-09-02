@@ -10,16 +10,12 @@ import {
   DeleteOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import { v4 as uuidv4 } from 'uuid'
-import type { TemplateConfig, LevelConfig } from 'remiz'
+import type { TemplateConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
-import { addValue, deleteValue, setValue } from '../../../../commands'
+import { addTemplate, deleteTemplate, duplicateTemplate } from '../../../../commands/templates'
 import { SelectedEntityContext } from '../../../../providers'
-import { duplicateTemplate } from '../../utils'
-
-import { filterLevels } from './utils'
 
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
@@ -28,7 +24,6 @@ export const ActionBar: FC = () => {
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
 
   const templates = useConfig('templates') as Array<TemplateConfig>
-  const levels = useConfig('levels') as Array<LevelConfig>
   const selectedEntity = useConfig(selectedEntityPath) as TemplateConfig | undefined
 
   const handleAdd = useCallback(() => {
@@ -39,12 +34,7 @@ export const ActionBar: FC = () => {
       ? templates.length
       : selectedEntity.children?.length
 
-    dispatch(addValue<TemplateConfig>(pathToAdd, {
-      id: uuidv4(),
-      name: t('explorer.levels.actionBar.template.new.title', { index }),
-      components: [],
-      children: [],
-    }))
+    dispatch(addTemplate(pathToAdd, t('explorer.levels.actionBar.template.new.title', { index })))
   }, [dispatch, selectedEntityPath, selectedEntity, templates, type])
 
   const handleDelete = useCallback(() => {
@@ -52,19 +42,15 @@ export const ActionBar: FC = () => {
       return
     }
 
-    dispatch(setValue(['levels'], filterLevels(levels, selectedEntity.id)))
-    dispatch(deleteValue(selectedEntityPath))
-  }, [dispatch, selectedEntityPath, selectedEntity, levels])
+    dispatch(deleteTemplate(selectedEntityPath, selectedEntity))
+  }, [dispatch, selectedEntityPath, selectedEntity])
 
   const handleDuplicate = useCallback(() => {
     if (selectedEntityPath === undefined) {
       return
     }
 
-    dispatch(addValue(
-      selectedEntityPath.slice(0, -1),
-      duplicateTemplate(selectedEntity as TemplateConfig),
-    ))
+    dispatch(duplicateTemplate(selectedEntityPath.slice(0, -1), selectedEntity as TemplateConfig))
   }, [dispatch, selectedEntityPath, selectedEntity])
 
   return (

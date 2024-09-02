@@ -5,7 +5,7 @@ import type { TemplateConfig } from 'remiz'
 import { addValue } from '..'
 import type { DispatchFn } from '../../hooks/use-commander'
 
-export const updateIds = (template: TemplateConfig): void => {
+const updateIds = (template: TemplateConfig): void => {
   template.id = uuidv4()
   template.children?.forEach(updateIds)
 }

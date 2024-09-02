@@ -11,17 +11,13 @@ import {
   DeleteOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import { v4 as uuidv4 } from 'uuid'
 import type { ActorConfig, LevelConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
-import { addValue, deleteValue } from '../../../../commands'
+import { addActor, deleteActor, duplicateActor } from '../../../../commands/actors'
+import { addLevel, deleteLevel, duplicateLevel } from '../../../../commands/levels'
 import { SelectedEntityContext } from '../../../../providers'
-import {
-  duplicateActor,
-  duplicateLevel,
-} from '../../utils'
 
 import { FocusActionButton } from './components'
 
@@ -44,38 +40,32 @@ export const ActionBar: FC = () => {
       ? (selectedEntity as LevelConfig).actors?.length
       : (selectedEntity as ActorConfig).children?.length
 
-    dispatch(addValue<ActorConfig>(pathToAdd, {
-      id: uuidv4(),
-      name: t('explorer.levels.actionBar.actor.new.title', { index }),
-      components: [],
-      children: [],
-    }))
+    dispatch(addActor(pathToAdd, t('explorer.levels.actionBar.actor.new.title', { index })))
   }, [dispatch, selectedEntityPath, selectedEntity, type])
 
   const handleAddLevel = useCallback(() => {
-    dispatch(addValue<LevelConfig>(['levels'], {
-      id: uuidv4(),
-      name: t('explorer.levels.actionBar.level.new.title', { index: levels.length }),
-      actors: [],
-    }))
+    dispatch(addLevel(t('explorer.levels.actionBar.level.new.title', { index: levels.length })))
   }, [dispatch, levels])
 
   const handleDelete = useCallback(() => {
-    dispatch(deleteValue(selectedEntityPath as Array<string>))
-  }, [dispatch, selectedEntityPath])
+    if (type === 'actor') {
+      dispatch(deleteActor(selectedEntityPath as Array<string>))
+    } else {
+      dispatch(deleteLevel(selectedEntityPath as Array<string>))
+    }
+  }, [dispatch, selectedEntityPath, type])
 
   const handleDuplicate = useCallback(() => {
-    let duplicate: ActorConfig | LevelConfig | undefined
+    if (selectedEntityPath === undefined) {
+      return
+    }
+
+    const path = selectedEntityPath.slice(0, -1)
 
     if (type === 'actor') {
-      duplicate = duplicateActor(selectedEntity as ActorConfig)
-    }
-    if (type === 'level') {
-      duplicate = duplicateLevel(selectedEntity as LevelConfig)
-    }
-
-    if (duplicate !== undefined && selectedEntityPath !== undefined) {
-      dispatch(addValue(selectedEntityPath.slice(0, -1), duplicate))
+      dispatch(duplicateActor(path, selectedEntity as ActorConfig))
+    } else {
+      dispatch(duplicateLevel(path, selectedEntity as LevelConfig))
     }
   }, [dispatch, selectedEntityPath, selectedEntity, type])
 

@@ -11,14 +11,12 @@ import {
   DeleteOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import { v4 as uuidv4 } from 'uuid'
 import type { SceneConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander, useConfig } from '../../../../hooks'
-import { addValue, deleteValue } from '../../../../commands'
+import { addScene, deleteScene, duplicateScene } from '../../../../commands/scenes'
 import { SelectedEntityContext } from '../../../../providers'
-import { duplicateScene } from '../../utils'
 
 interface ActionBarProps {
   isLoaders?: boolean
@@ -55,13 +53,7 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
 
   const handleAdd = useCallback(() => {
     const pathToAdd = isLoaders ? ['loaders'] : ['scenes']
-
-    dispatch(addValue<SceneConfig>(pathToAdd, {
-      id: uuidv4(),
-      name: t(translations.name, { index: scenes.length }),
-      systems: [],
-      levelId: null,
-    }))
+    dispatch(addScene(pathToAdd, t(translations.name, { index: scenes.length })))
   }, [dispatch, isLoaders, scenes, translations])
 
   const handleDelete = useCallback(() => {
@@ -69,7 +61,7 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
       return
     }
 
-    dispatch(deleteValue(selectedEntityPath))
+    dispatch(deleteScene(selectedEntityPath))
   }, [dispatch, selectedEntityPath])
 
   const handleDuplicate = useCallback(() => {
@@ -77,10 +69,7 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
       return
     }
 
-    dispatch(addValue(
-      selectedEntityPath.slice(0, -1),
-      duplicateScene(selectedEntity as SceneConfig),
-    ))
+    dispatch(duplicateScene(selectedEntityPath.slice(0, -1), selectedEntity as SceneConfig))
   }, [dispatch, selectedEntityPath, selectedEntity])
 
   return (
