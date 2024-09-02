@@ -11,13 +11,14 @@ const filterActors = (
   actors: Array<ActorConfig>,
   templateId: string,
 ): Array<ActorConfig> => actors.reduce((acc, actor) => {
-  if (actor.templateId !== templateId) {
-    acc.push(actor)
+  if (actor.templateId === templateId) {
+    return acc
   }
 
-  if (actor.children !== undefined) {
-    actor.children = filterActors(actor.children, templateId)
-  }
+  acc.push({
+    ...actor,
+    children: actor.children && filterActors(actor.children, templateId),
+  })
 
   return acc
 }, [] as Array<ActorConfig>)
