@@ -3,7 +3,7 @@ import i18next from 'i18next'
 import type { SceneConfig } from 'remiz'
 
 import { addValue } from '..'
-import type { DispatchFn } from '../../hooks/use-commander'
+import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 
 const getDuplicate = (scene: SceneConfig): SceneConfig => {
   const duplicate = structuredClone(scene)
@@ -14,13 +14,13 @@ const getDuplicate = (scene: SceneConfig): SceneConfig => {
 }
 
 export const duplicateScene = (
-  path: Array<string>,
-  scene: SceneConfig,
+  sourcePath: string[],
+  destinationPath: string[],
 ) => (
   dispatch: DispatchFn,
+  getState: GetStateFn,
 ): void => {
-  dispatch(addValue(
-    path,
-    getDuplicate(scene),
-  ))
+  const scene = getState(sourcePath) as SceneConfig
+
+  dispatch(addValue(destinationPath, getDuplicate(scene)))
 }

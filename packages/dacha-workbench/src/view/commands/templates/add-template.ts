@@ -1,19 +1,32 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { TemplateConfig } from 'remiz'
+import i18next from 'i18next'
+import type { TemplateConfig, LevelConfig } from 'remiz'
 
-import { addValue } from '..'
-import type { DispatchFn } from '../../hooks/use-commander'
+import { addValue, setValue } from '..'
+import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
+
+import { getUpdatedLevels } from './utils'
 
 export const addTemplate = (
-  path: Array<string>,
-  name: string,
+  destinationPath: string[],
 ) => (
   dispatch: DispatchFn,
+  getState: GetStateFn,
 ): void => {
-  dispatch(addValue<TemplateConfig>(path, {
+  const destination = getState(destinationPath) as TemplateConfig[]
+
+  const template: TemplateConfig = {
     id: uuidv4(),
-    name,
+    name: i18next.t('explorer.levels.actionBar.template.new.title', { index: destination.length }),
     components: [],
     children: [],
-  }))
+  }
+
+  dispatch(addValue<TemplateConfig>(destinationPath, template))
+
+  if (destinationPath.at(-1) === 'children') {
+    const parent = getState(destinationPath.slice(0, -1)) as TemplateConfig
+    const levels = getState(['levels']) as Array<LevelConfig>
+    dispatch(setValue(['levels'], getUpdatedLevels(levels, parent.id, template), true))
+  }
 }

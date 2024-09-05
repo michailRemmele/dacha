@@ -11,10 +11,9 @@ import {
   DeleteOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import type { ActorConfig, LevelConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
-import { useCommander, useConfig } from '../../../../hooks'
+import { useCommander } from '../../../../hooks'
 import { addActor, deleteActor, duplicateActor } from '../../../../commands/actors'
 import { addLevel, deleteLevel, duplicateLevel } from '../../../../commands/levels'
 import { SelectedEntityContext } from '../../../../providers'
@@ -27,25 +26,19 @@ export const ActionBar: FC = () => {
 
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
 
-  const levels = useConfig('levels') as Array<LevelConfig>
-  const selectedEntity = useConfig(selectedEntityPath) as ActorConfig | LevelConfig | undefined
-
   const handleAddActor = useCallback(() => {
-    if (!selectedEntity || !selectedEntityPath) {
+    if (!selectedEntityPath) {
       return
     }
 
     const pathToAdd = selectedEntityPath.concat(type === 'level' ? 'actors' : 'children')
-    const index = type === 'level'
-      ? (selectedEntity as LevelConfig).actors?.length
-      : (selectedEntity as ActorConfig).children?.length
 
-    dispatch(addActor(pathToAdd, t('explorer.levels.actionBar.actor.new.title', { index })))
-  }, [dispatch, selectedEntityPath, selectedEntity, type])
+    dispatch(addActor(pathToAdd))
+  }, [dispatch, selectedEntityPath, type])
 
   const handleAddLevel = useCallback(() => {
-    dispatch(addLevel(t('explorer.levels.actionBar.level.new.title', { index: levels.length })))
-  }, [dispatch, levels])
+    dispatch(addLevel())
+  }, [dispatch])
 
   const handleDelete = useCallback(() => {
     if (type === 'actor') {
@@ -60,14 +53,12 @@ export const ActionBar: FC = () => {
       return
     }
 
-    const path = selectedEntityPath.slice(0, -1)
-
     if (type === 'actor') {
-      dispatch(duplicateActor(path, selectedEntity as ActorConfig))
+      dispatch(duplicateActor(selectedEntityPath, selectedEntityPath.slice(0, -1)))
     } else {
-      dispatch(duplicateLevel(path, selectedEntity as LevelConfig))
+      dispatch(duplicateLevel(selectedEntityPath, selectedEntityPath.slice(0, -1)))
     }
-  }, [dispatch, selectedEntityPath, selectedEntity, type])
+  }, [dispatch, selectedEntityPath, type])
 
   return (
     <ActionBarStyled>

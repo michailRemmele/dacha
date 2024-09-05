@@ -3,7 +3,7 @@ import i18next from 'i18next'
 import type { ActorConfig } from 'remiz'
 
 import { addValue } from '..'
-import type { DispatchFn } from '../../hooks/use-commander'
+import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 
 export const updateIds = (actor: ActorConfig): void => {
   actor.id = uuidv4()
@@ -19,13 +19,13 @@ export const getDuplicate = (actor: ActorConfig): ActorConfig => {
 }
 
 export const duplicateActor = (
-  path: Array<string>,
-  actor: ActorConfig,
+  sourcePath: string[],
+  destinationPath: string[],
 ) => (
   dispatch: DispatchFn,
+  getState: GetStateFn,
 ): void => {
-  dispatch(addValue(
-    path,
-    getDuplicate(actor),
-  ))
+  const actor = getState(sourcePath) as ActorConfig
+
+  dispatch(addValue(destinationPath, getDuplicate(actor)))
 }

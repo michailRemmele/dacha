@@ -33,13 +33,13 @@ const filterLevels = (
 
 export const deleteTemplate = (
   path: Array<string>,
-  template: TemplateConfig,
 ) => (
   dispatch: DispatchFn,
   getState: GetStateFn,
 ): void => {
+  const template = getState(path) as TemplateConfig
   const levels = getState(['levels']) as Array<LevelConfig>
 
   dispatch(setValue(['levels'], filterLevels(levels, template.id)))
-  dispatch(deleteValue(path))
+  dispatch(deleteValue(path, true))
 }
