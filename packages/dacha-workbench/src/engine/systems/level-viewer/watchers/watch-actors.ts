@@ -10,17 +10,6 @@ import type { WatcherFn, WatcherOptions } from './types'
 const ACTOR_PATH_LENGTH = 4
 const LEVEL_OBJECTS_PATH_LENGTH = 3
 
-const getDiff = (
-  first: Array<ActorConfig>,
-  second: Array<ActorConfig>,
-): Array<ActorConfig> => {
-  const actorsMap = second
-    .reduce((acc, actor) => acc.add(actor.id), new Set<string>())
-
-  return first
-    .filter((actor) => !actorsMap.has(actor.id))
-}
-
 const syncActors = ({
   level,
   prevLevel,
@@ -31,14 +20,11 @@ const syncActors = ({
   const { actors } = level as LevelConfig
   const { actors: prevActors } = prevLevel as LevelConfig
 
-  const actorsToAdd = getDiff(actors, prevActors)
-  const actorsToDelete = getDiff(prevActors, actors)
-
-  actorsToDelete.forEach((actorConfig) => {
+  prevActors.forEach((actorConfig) => {
     const actor = actorCollection.getById(actorConfig.id)
     actor?.remove()
   })
-  actorsToAdd.forEach((actorConfig) => {
+  actors.forEach((actorConfig) => {
     scene.appendChild(actorCreator.create(omit(actorConfig)))
   })
 }
@@ -66,7 +52,8 @@ export const watchActors: WatcherFn = (options): void => {
   const actorConfig = store.get(actorPath) as ActorConfig | undefined
 
   if (actorConfig === undefined) {
-    syncActors(options)
+    const removedActor = actorCollection.getById((actorPath.at(-1) as string).split(':')[1])
+    removedActor?.remove()
     return
   }
 

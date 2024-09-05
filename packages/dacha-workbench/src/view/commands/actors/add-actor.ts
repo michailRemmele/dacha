@@ -1,18 +1,21 @@
 import { v4 as uuidv4 } from 'uuid'
+import i18next from 'i18next'
 import type { ActorConfig } from 'remiz'
 
 import { addValue } from '..'
-import type { DispatchFn } from '../../hooks/use-commander'
+import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 
 export const addActor = (
-  path: Array<string>,
-  name: string,
+  destinationPath: string[],
 ) => (
   dispatch: DispatchFn,
+  getState: GetStateFn,
 ): void => {
-  dispatch(addValue<ActorConfig>(path, {
+  const destination = getState(destinationPath) as ActorConfig[]
+
+  dispatch(addValue<ActorConfig>(destinationPath, {
     id: uuidv4(),
-    name,
+    name: i18next.t('explorer.levels.actionBar.actor.new.title', { index: destination.length }),
     components: [],
     children: [],
   }))

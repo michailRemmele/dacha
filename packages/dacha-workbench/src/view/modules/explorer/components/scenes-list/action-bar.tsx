@@ -11,10 +11,9 @@ import {
   DeleteOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import type { SceneConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
-import { useCommander, useConfig } from '../../../../hooks'
+import { useCommander } from '../../../../hooks'
 import { addScene, deleteScene, duplicateScene } from '../../../../commands/scenes'
 import { SelectedEntityContext } from '../../../../providers'
 
@@ -30,14 +29,12 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
     () => {
       if (isLoaders) {
         return {
-          name: 'explorer.levels.actionBar.loader.new.title',
           add: 'explorer.levels.actionBar.addLoader.button.title',
           delete: 'explorer.levels.actionBar.duplicateLoader.button.title',
           duplicate: 'explorer.levels.actionBar.deleteLoader.button.title',
         }
       }
       return {
-        name: 'explorer.levels.actionBar.scene.new.title',
         add: 'explorer.levels.actionBar.addScene.button.title',
         delete: 'explorer.levels.actionBar.duplicateScene.button.title',
         duplicate: 'explorer.levels.actionBar.deleteScene.button.title',
@@ -48,13 +45,9 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
 
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
 
-  const scenes = useConfig(isLoaders ? 'loaders' : 'scenes') as Array<SceneConfig>
-  const selectedEntity = useConfig(selectedEntityPath) as SceneConfig | undefined
-
   const handleAdd = useCallback(() => {
-    const pathToAdd = isLoaders ? ['loaders'] : ['scenes']
-    dispatch(addScene(pathToAdd, t(translations.name, { index: scenes.length })))
-  }, [dispatch, isLoaders, scenes, translations])
+    dispatch(addScene(isLoaders ? ['loaders'] : ['scenes']))
+  }, [dispatch, isLoaders])
 
   const handleDelete = useCallback(() => {
     if (!selectedEntityPath) {
@@ -69,8 +62,8 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
       return
     }
 
-    dispatch(duplicateScene(selectedEntityPath.slice(0, -1), selectedEntity as SceneConfig))
-  }, [dispatch, selectedEntityPath, selectedEntity])
+    dispatch(duplicateScene(selectedEntityPath, selectedEntityPath.slice(0, -1)))
+  }, [dispatch, selectedEntityPath])
 
   return (
     <ActionBarStyled>
