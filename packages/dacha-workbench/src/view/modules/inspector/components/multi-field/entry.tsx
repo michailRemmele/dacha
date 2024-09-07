@@ -78,8 +78,7 @@ export const Entry: FC<MultiFieldEntryProps> = ({
 
   const handleTypeChange = useCallback((newType: unknown) => {
     dispatch(
-      setValue(valuePath, TYPES_INITIAL_VALUES_MAP[newType as MultiFieldEntryType]),
-      { isEffect: true },
+      setValue(valuePath, TYPES_INITIAL_VALUES_MAP[newType as MultiFieldEntryType], true),
     )
   }, [dispatch, valuePath])
 

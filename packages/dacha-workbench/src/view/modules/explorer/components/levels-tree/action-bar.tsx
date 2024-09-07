@@ -11,17 +11,12 @@ import {
   DeleteOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import { v4 as uuidv4 } from 'uuid'
-import type { ActorConfig, LevelConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
-import { useCommander, useConfig } from '../../../../hooks'
-import { addValue, deleteValue } from '../../../../commands'
+import { useCommander } from '../../../../hooks'
+import { addActor, deleteActor, duplicateActor } from '../../../../commands/actors'
+import { addLevel, deleteLevel, duplicateLevel } from '../../../../commands/levels'
 import { SelectedEntityContext } from '../../../../providers'
-import {
-  duplicateActor,
-  duplicateLevel,
-} from '../../utils'
 
 import { FocusActionButton } from './components'
 
@@ -31,53 +26,39 @@ export const ActionBar: FC = () => {
 
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
 
-  const levels = useConfig('levels') as Array<LevelConfig>
-  const selectedEntity = useConfig(selectedEntityPath) as ActorConfig | LevelConfig | undefined
-
   const handleAddActor = useCallback(() => {
-    if (!selectedEntity || !selectedEntityPath) {
+    if (!selectedEntityPath) {
       return
     }
 
     const pathToAdd = selectedEntityPath.concat(type === 'level' ? 'actors' : 'children')
-    const index = type === 'level'
-      ? (selectedEntity as LevelConfig).actors?.length
-      : (selectedEntity as ActorConfig).children?.length
 
-    dispatch(addValue<ActorConfig>(pathToAdd, {
-      id: uuidv4(),
-      name: t('explorer.levels.actionBar.actor.new.title', { index }),
-      components: [],
-      children: [],
-    }))
-  }, [dispatch, selectedEntityPath, selectedEntity, type])
+    dispatch(addActor(pathToAdd))
+  }, [dispatch, selectedEntityPath, type])
 
   const handleAddLevel = useCallback(() => {
-    dispatch(addValue<LevelConfig>(['levels'], {
-      id: uuidv4(),
-      name: t('explorer.levels.actionBar.level.new.title', { index: levels.length }),
-      actors: [],
-    }))
-  }, [dispatch, levels])
+    dispatch(addLevel())
+  }, [dispatch])
 
   const handleDelete = useCallback(() => {
-    dispatch(deleteValue(selectedEntityPath as Array<string>))
-  }, [dispatch, selectedEntityPath])
+    if (type === 'actor') {
+      dispatch(deleteActor(selectedEntityPath as Array<string>))
+    } else {
+      dispatch(deleteLevel(selectedEntityPath as Array<string>))
+    }
+  }, [dispatch, selectedEntityPath, type])
 
   const handleDuplicate = useCallback(() => {
-    let duplicate: ActorConfig | LevelConfig | undefined
+    if (selectedEntityPath === undefined) {
+      return
+    }
 
     if (type === 'actor') {
-      duplicate = duplicateActor(selectedEntity as ActorConfig)
+      dispatch(duplicateActor(selectedEntityPath, selectedEntityPath.slice(0, -1)))
+    } else {
+      dispatch(duplicateLevel(selectedEntityPath, selectedEntityPath.slice(0, -1)))
     }
-    if (type === 'level') {
-      duplicate = duplicateLevel(selectedEntity as LevelConfig)
-    }
-
-    if (duplicate !== undefined && selectedEntityPath !== undefined) {
-      dispatch(addValue(selectedEntityPath.slice(0, -1), duplicate))
-    }
-  }, [dispatch, selectedEntityPath, selectedEntity, type])
+  }, [dispatch, selectedEntityPath, type])
 
   return (
     <ActionBarStyled>

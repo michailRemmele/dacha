@@ -18,7 +18,7 @@ export const Explorer = (): JSX.Element => {
   const { t } = useTranslation()
   const { type, path } = useContext(SelectedEntityContext)
 
-  const [activeTab, setActiveTab] = useState(() => persistentStorage.get('explorer.activeTab', 'levels'))
+  const [activeTab, setActiveTab] = useState(() => persistentStorage.get('explorer.activeTab', 'level'))
 
   const handleChange = useCallback((activeKey: string) => {
     setActiveTab(activeKey)
