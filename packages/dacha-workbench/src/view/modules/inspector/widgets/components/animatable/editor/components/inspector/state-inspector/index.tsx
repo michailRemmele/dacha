@@ -82,14 +82,12 @@ export const StateInspector: FC = () => {
 
     if (value === PICK_MODE.ONE_DIMENSIONAL) {
       dispatch(
-        setValue(substatesPath, substates.map(({ y, ...substate }) => substate)),
-        { isEffect: true },
+        setValue(substatesPath, substates.map(({ y, ...substate }) => substate), true),
       )
     }
     if (value === PICK_MODE.TWO_DIMENSIONAL) {
       dispatch(
-        setValue(substatesPath, substates.map((substate) => ({ ...substate, y: 0 }))),
-        { isEffect: true },
+        setValue(substatesPath, substates.map((substate) => ({ ...substate, y: 0 })), true),
       )
     }
   }, [dispatch, state, substatesPath])

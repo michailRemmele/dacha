@@ -47,7 +47,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
   const handleSelect = useCallback((newName: unknown) => {
     const nextPartSchema = resourcesSchema[ScriptSystem.systemName]?.[newName as string]
     if (nextPartSchema !== void 0) {
-      dispatch(setValue(optionsPath, nextPartSchema.getInitialState?.() ?? {}), { isEffect: true })
+      dispatch(setValue(optionsPath, nextPartSchema.getInitialState?.() ?? {}, true))
     }
   }, [resourcesSchema, optionsPath])
 

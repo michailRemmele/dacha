@@ -37,7 +37,7 @@ export const DependencyField: FC<DependencyFieldProps> = ({
   useEffect(() => {
     if (visibleRef.current !== visible) {
       if (!visible && deleteOnHide && value !== undefined) {
-        dispatch(deleteValue(path), { isEffect: true })
+        dispatch(deleteValue(path, true))
       }
       visibleRef.current = visible
     }

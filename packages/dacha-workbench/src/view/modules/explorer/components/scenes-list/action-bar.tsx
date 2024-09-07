@@ -11,14 +11,11 @@ import {
   DeleteOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import { v4 as uuidv4 } from 'uuid'
-import type { SceneConfig } from 'remiz'
 
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
-import { useCommander, useConfig } from '../../../../hooks'
-import { addValue, deleteValue } from '../../../../commands'
+import { useCommander } from '../../../../hooks'
+import { addScene, deleteScene, duplicateScene } from '../../../../commands/scenes'
 import { SelectedEntityContext } from '../../../../providers'
-import { duplicateScene } from '../../utils'
 
 interface ActionBarProps {
   isLoaders?: boolean
@@ -32,14 +29,12 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
     () => {
       if (isLoaders) {
         return {
-          name: 'explorer.levels.actionBar.loader.new.title',
           add: 'explorer.levels.actionBar.addLoader.button.title',
           delete: 'explorer.levels.actionBar.duplicateLoader.button.title',
           duplicate: 'explorer.levels.actionBar.deleteLoader.button.title',
         }
       }
       return {
-        name: 'explorer.levels.actionBar.scene.new.title',
         add: 'explorer.levels.actionBar.addScene.button.title',
         delete: 'explorer.levels.actionBar.duplicateScene.button.title',
         duplicate: 'explorer.levels.actionBar.deleteScene.button.title',
@@ -50,26 +45,16 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
 
   const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
 
-  const scenes = useConfig(isLoaders ? 'loaders' : 'scenes') as Array<SceneConfig>
-  const selectedEntity = useConfig(selectedEntityPath) as SceneConfig | undefined
-
   const handleAdd = useCallback(() => {
-    const pathToAdd = isLoaders ? ['loaders'] : ['scenes']
-
-    dispatch(addValue<SceneConfig>(pathToAdd, {
-      id: uuidv4(),
-      name: t(translations.name, { index: scenes.length }),
-      systems: [],
-      levelId: null,
-    }))
-  }, [dispatch, isLoaders, scenes, translations])
+    dispatch(addScene(isLoaders ? ['loaders'] : ['scenes']))
+  }, [dispatch, isLoaders])
 
   const handleDelete = useCallback(() => {
     if (!selectedEntityPath) {
       return
     }
 
-    dispatch(deleteValue(selectedEntityPath))
+    dispatch(deleteScene(selectedEntityPath))
   }, [dispatch, selectedEntityPath])
 
   const handleDuplicate = useCallback(() => {
@@ -77,11 +62,8 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
       return
     }
 
-    dispatch(addValue(
-      selectedEntityPath.slice(0, -1),
-      duplicateScene(selectedEntity as SceneConfig),
-    ))
-  }, [dispatch, selectedEntityPath, selectedEntity])
+    dispatch(duplicateScene(selectedEntityPath, selectedEntityPath.slice(0, -1)))
+  }, [dispatch, selectedEntityPath])
 
   return (
     <ActionBarStyled>
