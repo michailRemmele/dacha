@@ -42,7 +42,7 @@ export class PhysicsSystem extends System {
     this.collisionBroadcastSubsystem.unmount();
   }
 
-  update(options: UpdateOptions): void {
+  fixedUpdate(options: UpdateOptions): void {
     this.physicsSubsystem.update(options);
     this.collisionDetectionSubsystem.update();
     this.constraintSolver.update();

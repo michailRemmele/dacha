@@ -9,6 +9,7 @@ describe('Contrib -> components -> RigidBody', () => {
       isPermeable: false,
       ghost: false,
       drag: 1,
+      isPlatform: false,
     }).clone();
 
     expect(rigidBody.type).toEqual('dynamic');
@@ -27,6 +28,7 @@ describe('Contrib -> components -> RigidBody', () => {
       isPermeable: false,
       ghost: false,
       drag: 1,
+      isPlatform: false,
     }).clone();
 
     rigidBody.type = 'static';
@@ -52,6 +54,7 @@ describe('Contrib -> components -> RigidBody', () => {
       isPermeable: false,
       ghost: false,
       drag: 1,
+      isPlatform: false,
     });
     const cloneRigidBody = originalRigidBody.clone();
 

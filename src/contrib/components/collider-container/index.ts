@@ -3,7 +3,7 @@ import { Component } from '../../../engine/component';
 import { BoxCollider } from './box-collider';
 import { CircleCollider } from './circle-collider';
 
-interface ColliderContainerConfig extends Record<string, unknown> {
+export interface ColliderContainerConfig {
   type: 'boxCollider' | 'circleCollider'
   collider: Record<string, number>
 }
@@ -17,10 +17,10 @@ export class ColliderContainer extends Component {
   type: 'boxCollider' | 'circleCollider';
   collider: BoxCollider | CircleCollider;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: ColliderContainerConfig) {
     super();
 
-    const colliderContainerConfig = config as ColliderContainerConfig;
+    const colliderContainerConfig = config;
 
     this.type = colliderContainerConfig.type;
 

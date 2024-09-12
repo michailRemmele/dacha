@@ -4,19 +4,21 @@ import { IndividualState } from './individual-state';
 import { GroupState } from './group-state';
 import type { AnimatableConfig, GroupStateConfig, IndividualStateConfig } from './types';
 
+export type { AnimatableConfig };
+
 export class Animatable extends Component {
   states: Array<IndividualState | GroupState>;
   initialState: string;
   currentState?: IndividualState | GroupState;
   duration: number;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: AnimatableConfig) {
     super();
 
     const {
       initialState,
       states = [],
-    } = config as AnimatableConfig;
+    } = config;
 
     this.states = states
       .reduce((acc: Array<IndividualState | GroupState>, state) => {

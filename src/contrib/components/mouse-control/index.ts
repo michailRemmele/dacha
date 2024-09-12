@@ -33,17 +33,17 @@ export interface MouseEventBindConfig {
   attrs: Array<InputEventAttributeConfig>
 }
 
-export interface MouseControlConfig extends Record<string, unknown> {
+export interface MouseControlConfig {
   inputEventBindings: Array<MouseEventBindConfig>
 }
 
 export class MouseControl extends Component {
   inputEventBindings: InputEventBindings;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: MouseControlConfig) {
     super();
 
-    const { inputEventBindings } = config as MouseControlConfig;
+    const { inputEventBindings } = config;
 
     this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
       acc[bind.event] ??= {};

@@ -72,14 +72,16 @@ export class Scene extends Entity {
       return acc;
     }, {} as Record<string, SystemConstructor>);
 
-    this.systems = systems.map((config) => new this.availableSystemsMap[config.name]({
-      ...config.options,
-      templateCollection: this.templateCollection,
-      actorSpawner: this.actorSpawner,
-      scene: this,
-      resources: resources[config.name],
-      globalOptions,
-    }));
+    this.systems = systems
+      .filter((config) => this.availableSystemsMap[config.name])
+      .map((config) => new this.availableSystemsMap[config.name]({
+        ...config.options,
+        templateCollection: this.templateCollection,
+        actorSpawner: this.actorSpawner,
+        scene: this,
+        resources: resources[config.name],
+        globalOptions,
+      }));
   }
 
   override addEventListener<T extends EventType>(

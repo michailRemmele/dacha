@@ -6,7 +6,7 @@ type FitType = 'stretch' | 'repeat';
 
 export type { MaterialType, BasicMaterialOptions, BlendingMode } from './material';
 
-export interface SpriteConfig extends Record<string, unknown> {
+export interface SpriteConfig {
   src: string
   width: number
   height: number
@@ -36,24 +36,22 @@ export class Sprite extends Component {
   fit: FitType;
   material: Material;
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: SpriteConfig) {
     super();
 
-    const spriteConfig = config as SpriteConfig;
-
-    this.src = spriteConfig.src;
-    this.width = spriteConfig.width;
-    this.height = spriteConfig.height;
-    this.slice = spriteConfig.slice;
+    this.src = config.src;
+    this.width = config.width;
+    this.height = config.height;
+    this.slice = config.slice;
     this.currentFrame = 0;
-    this.rotation = spriteConfig.rotation;
-    this.flipX = spriteConfig.flipX;
-    this.flipY = spriteConfig.flipY;
-    this.disabled = spriteConfig.disabled;
-    this.sortingLayer = spriteConfig.sortingLayer;
-    this.sortCenter = spriteConfig.sortCenter;
-    this.fit = spriteConfig.fit;
-    this.material = new Material(spriteConfig.material);
+    this.rotation = config.rotation;
+    this.flipX = config.flipX;
+    this.flipY = config.flipY;
+    this.disabled = config.disabled;
+    this.sortingLayer = config.sortingLayer;
+    this.sortCenter = config.sortCenter;
+    this.fit = config.fit;
+    this.material = new Material(config.material);
   }
 
   clone(): Sprite {
