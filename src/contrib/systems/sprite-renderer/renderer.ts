@@ -105,6 +105,7 @@ export class SpriteRenderer extends System {
     this.currentCamera = new OrthographicCamera();
     this.renderer = new WebGLRenderer();
     this.renderer.setClearColor(new Color(backgroundColor), backgroundAlpha);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
 
     this.lightSubsystem = new LightSubsystem(
       this.renderScene,
