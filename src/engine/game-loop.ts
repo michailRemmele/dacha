@@ -59,8 +59,6 @@ export class GameLoop {
     this.previous = performance.now();
     this.lag = 0;
 
-    this.lag = 0;
-
     this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
 
