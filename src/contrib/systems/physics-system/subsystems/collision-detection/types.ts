@@ -1,4 +1,4 @@
-import type { Vector2 } from '../../../../../engine/mathLib';
+import type { Vector2 } from '../../../../../engine/math-lib';
 import type { Actor } from '../../../../../engine/actor';
 import type { AABB } from './aabb-builders';
 import type { DispersionCalculator } from './dispersion-calculator';

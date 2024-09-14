@@ -1,4 +1,4 @@
-import { VectorOps } from '../../../../../../engine/mathLib';
+import { VectorOps } from '../../../../../../engine/math-lib';
 import type {
   ColliderContainer,
   Transform,

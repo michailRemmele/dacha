@@ -27,12 +27,9 @@ module.exports = {
   extends: [
     'airbnb-base',
   ],
-  parser: '@babel/eslint-parser',
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 9,
-    ecmaFeatures: {
-      impliedStrict: true,
-    },
+    ecmaVersion: 'latest',
     sourceType: 'module',
   },
   globals: {

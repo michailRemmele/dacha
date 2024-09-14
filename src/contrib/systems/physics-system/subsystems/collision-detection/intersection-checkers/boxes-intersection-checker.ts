@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from '../../../../../../engine/mathLib';
+import { Vector2, VectorOps } from '../../../../../../engine/math-lib';
 import type { Coordinates } from '../types';
 
 import type {
