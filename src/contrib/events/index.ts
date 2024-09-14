@@ -1,5 +1,5 @@
 import type { Actor } from '../../engine/actor';
-import type { Vector2 } from '../../engine/mathLib';
+import type { Vector2 } from '../../engine/math-lib';
 import type { MouseEvent, KeyboardEvent } from '../types/input-events';
 import type { ActorEvent, SceneEvent } from '../../types/events';
 

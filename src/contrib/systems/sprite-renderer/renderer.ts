@@ -20,7 +20,7 @@ import { Sprite } from '../../components/sprite';
 import { Light } from '../../components/light';
 import { Camera } from '../../components/camera';
 import { CameraService } from '../camera-system';
-import { MathOps } from '../../../engine/mathLib';
+import { MathOps } from '../../../engine/math-lib';
 import { getWindowNode } from '../../utils/get-window-node';
 
 import { SpriteRendererService } from './service';

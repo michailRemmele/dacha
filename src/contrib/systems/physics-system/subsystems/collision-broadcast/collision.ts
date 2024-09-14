@@ -1,5 +1,5 @@
 import type { Actor } from '../../../../../engine/actor';
-import type { Vector2 } from '../../../../../engine/mathLib';
+import type { Vector2 } from '../../../../../engine/math-lib';
 
 const STATE: Record<number, CollisionState> = {
   2: 'enter',

@@ -1,4 +1,4 @@
-import type { Vector2 } from '../../../../../../engine/mathLib';
+import type { Vector2 } from '../../../../../../engine/math-lib';
 import type { ColliderContainer } from '../../../../../components';
 import type { Coordinates } from '../types';
 
