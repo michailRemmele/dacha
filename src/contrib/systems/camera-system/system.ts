@@ -1,4 +1,4 @@
-import { MathOps } from '../../../engine/mathLib';
+import { MathOps } from '../../../engine/math-lib';
 import { System } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
 import type { SystemOptions } from '../../../engine/system';

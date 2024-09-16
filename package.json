@@ -1,6 +1,6 @@
 {
   "name": "remiz",
-  "version": "0.12.7-alpha.0",
+  "version": "0.12.7",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "exports": {
@@ -20,14 +20,6 @@
     "uuid-random": "1.0.9"
   },
   "devDependencies": {
-    "@babel/cli": "7.16.8",
-    "@babel/core": "7.16.0",
-    "@babel/eslint-parser": "7.16.5",
-    "@babel/plugin-proposal-class-properties": "7.16.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.16.0",
-    "@babel/plugin-proposal-optional-chaining": "7.16.0",
-    "@babel/plugin-transform-typescript": "7.23.6",
-    "@babel/preset-typescript": "7.23.3",
     "@types/jest": "29.5.11",
     "@types/three": "0.150.2",
     "@typescript-eslint/eslint-plugin": "6.18.1",
@@ -49,10 +41,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:clean && npm run build:esm && npm run build:types",
+    "build": "npm run build:clean && npm run build:esm",
     "build:clean": "rm -rf build",
-    "build:esm": "npx babel src --out-dir build --extensions \".ts,.js\" --ignore \"src/**/*.test.ts,src/__mocks__\"",
-    "build:types": "tsc --project tsconfig.types.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
     "lint": "eslint .",
     "test": "jest",
     "prepare": "husky install",

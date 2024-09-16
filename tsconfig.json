@@ -5,13 +5,12 @@
 
         "declaration": true,
 
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
 
         "strict": true,
-        "allowJs": true,
 
-        "target": "es6",
+        "target": "ESNext",
         "esModuleInterop": true,
 
         "resolveJsonModule": true,

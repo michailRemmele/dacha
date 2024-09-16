@@ -1,4 +1,4 @@
-import { MathOps, Vector2 } from '../../../../../../engine/mathLib';
+import { MathOps, Vector2 } from '../../../../../../engine/math-lib';
 import type { CircleCollider } from '../../../../../components/collider-container/circle-collider';
 import type { BoxCollider } from '../../../../../components/collider-container/box-collider';
 

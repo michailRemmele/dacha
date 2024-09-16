@@ -1,5 +1,5 @@
 import { Component } from '../../../engine/component';
-import { Vector2 } from '../../../engine/mathLib';
+import { Vector2 } from '../../../engine/math-lib';
 
 export type RigidBodyType = 'dynamic' | 'static';
 

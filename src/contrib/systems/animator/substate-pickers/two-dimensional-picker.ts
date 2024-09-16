@@ -1,7 +1,7 @@
 import type { Actor } from '../../../../engine/actor';
 import type { Substate } from '../../../components/animatable/substate';
 import type { TwoDimensionalProps } from '../../../components/animatable/two-dimensional-props';
-import { MathOps } from '../../../../engine/mathLib';
+import { MathOps } from '../../../../engine/math-lib';
 import { getValue } from '../utils';
 
 import { Picker } from './picker';

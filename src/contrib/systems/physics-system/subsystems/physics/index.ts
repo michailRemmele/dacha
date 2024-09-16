@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../engine/mathLib';
+import { Vector2 } from '../../../../../engine/math-lib';
 import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
 import { Actor, ActorCollection } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
