@@ -16,7 +16,7 @@ import {
   getGridStep,
 } from '../../../utils/grid'
 import { getTool } from '../../../utils/get-tool'
-import type { Store } from '../../../store'
+import type { CommanderStore } from '../../../store'
 
 import { TOOL_NAME } from './consts'
 import type { Position } from './types'
@@ -73,7 +73,7 @@ const getSizeY = (transform: ComponentConfig, sprite?: ComponentConfig): number 
 export const updatePlacementPosition = (
   cursor: Position,
   placementPosition: Position,
-  store: Store,
+  store: CommanderStore,
   scene: Scene,
 ): void => {
   if (cursor.x === null || cursor.y === null) {

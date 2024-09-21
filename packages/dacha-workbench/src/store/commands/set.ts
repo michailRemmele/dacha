@@ -1,6 +1,6 @@
 import { Command } from './command'
 
-import type { DataValue } from '../../../../store/types'
+import type { DataValue } from '../types'
 
 interface SetCommandOptions {
   path: Array<string>

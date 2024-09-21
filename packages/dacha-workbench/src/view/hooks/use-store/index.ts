@@ -1,9 +1,9 @@
 import { useContext } from 'react'
 
-import { EngineContext } from '../../providers'
-import type { Store } from '../../../store'
+import { CommandContext } from '../../providers'
+import type { CommanderStore } from '../../../store'
 
-export const useStore = (): Store | undefined => {
-  const engineContext = useContext(EngineContext)
-  return engineContext?.scene?.data?.configStore as Store | undefined
+export const useStore = (): CommanderStore => {
+  const { store } = useContext(CommandContext)
+  return store
 }

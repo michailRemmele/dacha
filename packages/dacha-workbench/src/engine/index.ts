@@ -6,7 +6,6 @@ export {
   HandToolSystem,
   PointerToolSystem,
   TemplateToolSystem,
-  Commander,
   ShapesRenderer,
   GridSystem,
   SettingsSystem,

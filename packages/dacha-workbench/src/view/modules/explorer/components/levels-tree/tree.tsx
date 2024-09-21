@@ -7,12 +7,12 @@ import {
 } from 'react'
 import type { LevelConfig } from 'remiz'
 
-import { persistentStorage } from '../../../../../persistent-storage'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
-import { useConfig } from '../../../../hooks'
+import { useConfig, useStore } from '../../../../hooks'
 import { EventType } from '../../../../../events'
 import type { SelectLevelEvent } from '../../../../../events'
 import { Tree } from '../tree'
+import { getSavedSelectedLevelId } from '../../../../../utils/get-saved-selected-level-id'
 
 import { parseLevels, getKey } from './utils'
 
@@ -23,12 +23,13 @@ interface LevelsTreeProps {
 export const LevelsTree: FC<LevelsTreeProps> = ({ className }) => {
   const { scene } = useContext(EngineContext)
   const { path: selectedEntityPath } = useContext(SelectedEntityContext)
+  const store = useStore()
 
   const levels = useConfig('levels') as Array<LevelConfig>
   const selectedEntity = useConfig(selectedEntityPath)
 
   const [selectedLevel, setSelectedLevel] = useState<string | undefined>(
-    () => persistentStorage.get('selectedLevel'),
+    () => getSavedSelectedLevelId(store),
   )
 
   useEffect(() => {

@@ -12,12 +12,12 @@ import type {
   LevelConfig,
 } from 'remiz'
 
-import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'
 import type { EditorConfig } from '../../../types/global'
-import type { Store, ListenerFn } from '../../../store'
+import type { CommanderStore, ListenerFn } from '../../../store'
 import { includesArray } from '../../../utils/includes-array'
+import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
 
 import { ALLOWED_COMPONENTS } from './consts'
 import { omit, removeAllChildren } from './utils'
@@ -36,7 +36,7 @@ export class LevelViewer extends System {
   actorSpawner: ActorSpawner
   actorCollection: ActorCollection
   mainActorId: string
-  configStore: Store
+  configStore: CommanderStore
   editorConfig: EditorConfig
   actorCreator: ActorCreator
   currentLevel?: string
@@ -58,7 +58,7 @@ export class LevelViewer extends System {
     this.actorCollection = new ActorCollection(scene)
     this.mainActorId = mainActorId
 
-    this.configStore = scene.data.configStore as Store
+    this.configStore = scene.data.configStore as CommanderStore
     this.editorConfig = scene.data.editorConfig as EditorConfig
 
     const mainActor = this.actorCollection.getById(this.mainActorId)
@@ -83,7 +83,10 @@ export class LevelViewer extends System {
   }
 
   mount(): void {
-    this.loadLevel(persistentStorage.get('selectedLevel'))
+    const selectedLevelId = getSavedSelectedLevelId(this.configStore)
+    if (selectedLevelId) {
+      this.loadLevel(selectedLevelId)
+    }
     this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
     this.watchStore()
   }

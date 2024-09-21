@@ -23,14 +23,14 @@ export const useConfig = (path?: Array<string> | string): unknown => {
   const valueRef = useRef<unknown>(null)
 
   if (valueRef.current === null || parsedPath !== prevPath.current) {
-    valueRef.current = parsedPath ? configStore?.get(parsedPath) : undefined
+    valueRef.current = parsedPath ? configStore.get(parsedPath) : undefined
     prevPath.current = parsedPath
   }
 
   const [, setForceRerender] = useState(0)
 
   useEffect(() => {
-    const unsubscribe = configStore?.subscribe((updatePath, updateValue) => {
+    const unsubscribe = configStore.subscribe((updatePath, updateValue) => {
       if (isEqual(parsedPath, updatePath)) {
         valueRef.current = updateValue
         setForceRerender((forceRerender) => forceRerender + 1)

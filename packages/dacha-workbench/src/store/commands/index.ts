@@ -2,8 +2,8 @@ import {
   SET,
   DELETE,
   ADD,
-} from '../../../../command-types'
-import type { Store } from '../../../../store'
+} from '../../command-types'
+import type { Store } from '../store'
 
 import { Command } from './command'
 import { SetCmd } from './set'
