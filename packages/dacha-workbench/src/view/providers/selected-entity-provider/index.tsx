@@ -10,6 +10,8 @@ import type { LevelConfig } from 'remiz'
 import { EngineContext } from '../engine-provider'
 import { useStore, useConfig } from '../../hooks'
 import { includesArray } from '../../../utils/includes-array'
+import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedEntity } from '../../../utils/get-saved-selected-entity'
 import { EventType } from '../../../events'
 import { persistentStorage } from '../../../persistent-storage'
 import type { InspectEntityEvent } from '../../../events'
@@ -33,19 +35,19 @@ export const SelectedEntityContext = React.createContext<SelectedEntityData>({})
 export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
   children,
 }): JSX.Element => {
-  const [entityData, setEntityData] = useState<SelectedEntityData>(() => ({
-    path: persistentStorage.get('selectedEntity'),
-    type: getEntityType(persistentStorage.get('selectedEntity')),
-  }))
-  const selectedLevelRef = useRef<string | undefined>(persistentStorage.get('selectedLevel'))
-
   const { scene } = useContext(EngineContext) || {}
   const store = useStore()
+
+  const [entityData, setEntityData] = useState<SelectedEntityData>(() => ({
+    path: getSavedSelectedEntity(store),
+    type: getEntityType(getSavedSelectedEntity(store)),
+  }))
+  const selectedLevelRef = useRef<string | undefined>(getSavedSelectedLevelId(store))
 
   const levels = useConfig('levels') as Array<LevelConfig> | undefined
 
   useEffect(() => {
-    if (levels === undefined) {
+    if (scene === undefined || levels === undefined) {
       return
     }
 
@@ -55,7 +57,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
       selectedLevelRef.current = undefined
       persistentStorage.set('selectedLevel', undefined)
     }
-  }, [levels])
+  }, [scene, levels])
 
   useEffect(() => {
     if (!scene) {
@@ -87,7 +89,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
 
   useEffect(() => {
     const { path } = entityData
-    if (store === undefined || path === undefined) {
+    if (path === undefined) {
       return () => {}
     }
 

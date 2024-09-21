@@ -9,14 +9,16 @@ import type {
   Actor,
 } from 'remiz'
 
-import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'
 import { GRID_ROOT } from '../../../consts/root-nodes'
 import { Settings } from '../../components'
+import type { CommanderStore } from '../../../store'
+import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
 
 export class GridSystem extends System {
   private scene: Scene
+  private configStore: CommanderStore
 
   private mainActor: Actor
   private selectedLevelId?: string
@@ -30,9 +32,11 @@ export class GridSystem extends System {
     const { scene } = options
 
     this.scene = scene
+    this.configStore = scene.data.configStore as CommanderStore
     this.mainActor = scene.data.mainActor as Actor
     this.gridNode = document.getElementById(GRID_ROOT) as HTMLDivElement
-    this.selectedLevelId = persistentStorage.get('selectedLevel')
+
+    this.selectedLevelId = getSavedSelectedLevelId(this.configStore)
 
     this.showGrid = false
   }

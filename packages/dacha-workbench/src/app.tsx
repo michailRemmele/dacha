@@ -34,9 +34,9 @@ const root = createRoot(document.getElementById(APP_ROOT) as HTMLElement)
 
 root.render(
   <ThemeProvider>
-    <EngineProvider>
-      <CommandProvider>
-        <CommandScopeProvider name={ROOT_SCOPE}>
+    <CommandProvider>
+      <CommandScopeProvider name={ROOT_SCOPE}>
+        <EngineProvider>
           <SelectedEntityProvider>
             <NotificationProvider>
               <NeedsReloadProvider>
@@ -44,8 +44,8 @@ root.render(
               </NeedsReloadProvider>
             </NotificationProvider>
           </SelectedEntityProvider>
-        </CommandScopeProvider>
-      </CommandProvider>
-    </EngineProvider>
+        </EngineProvider>
+      </CommandScopeProvider>
+    </CommandProvider>
   </ThemeProvider>,
 )

@@ -29,10 +29,6 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
   const { scene } = useContext(EngineContext)
 
   const templatePath = useMemo(() => {
-    if (store === undefined) {
-      return undefined
-    }
-
     const copyPath = path.slice(0)
     const resultPath = []
 

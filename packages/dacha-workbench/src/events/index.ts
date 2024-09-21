@@ -29,25 +29,6 @@ export type InspectEntityEvent = SceneEvent<{
   path: Array<string> | undefined
 }>
 
-export type CommandEvent = SceneEvent<{
-  command: string
-  scope: string
-  isEffect?: boolean
-  options: unknown
-}>
-
-export type CommandUndoEvent = SceneEvent<{
-  scope: string
-}>
-
-export type CommandRedoEvent = SceneEvent<{
-  scope: string
-}>
-
-export type CommandCleanEvent = SceneEvent<{
-  scope: string
-}>
-
 declare module 'remiz' {
   export interface SceneEventMap {
     [EventType.SelectTool]: SelectToolEvent
@@ -56,10 +37,6 @@ declare module 'remiz' {
     [EventType.SelectLevel]: SelectLevelEvent
     [EventType.InspectEntity]: InspectEntityEvent
     [EventType.InspectedEntityChange]: InspectEntityEvent
-    [EventType.Command]: CommandEvent
-    [EventType.CommandUndo]: CommandUndoEvent
-    [EventType.CommandRedo]: CommandRedoEvent
-    [EventType.CommandClean]: CommandCleanEvent
     [EventType.SaveProject]: SceneEvent
   }
 

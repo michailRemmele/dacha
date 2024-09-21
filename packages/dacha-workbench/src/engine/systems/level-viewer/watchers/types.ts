@@ -5,11 +5,11 @@ import type {
   ActorCreator,
   TemplateCollection,
 } from 'remiz'
-import type { Store } from '../../../../store'
+import type { CommanderStore } from '../../../../store'
 
 export interface WatcherOptions {
   path: Array<string>,
-  store: Store,
+  store: CommanderStore,
   scene: Scene,
   actorCollection: ActorCollection,
   actorCreator: ActorCreator,

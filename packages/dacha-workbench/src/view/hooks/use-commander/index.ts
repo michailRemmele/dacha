@@ -4,8 +4,7 @@ import {
 } from 'react'
 
 import { useStore } from '../use-store'
-import { EngineContext, CommandScopeContext } from '../../providers'
-import { EventType } from '../../../events'
+import { CommandScopeContext } from '../../providers'
 
 export interface DispatchOptions {
   isEffect?: boolean
@@ -26,22 +25,21 @@ export type UseCommanderHook = () => {
 }
 
 export const useCommander: UseCommanderHook = () => {
-  const { scene } = useContext(EngineContext)
   const scope = useContext(CommandScopeContext)
 
   const store = useStore()
 
   const dispatch = useCallback<DispatchFn>((commandOrThunkFn) => {
     if (typeof commandOrThunkFn === 'function') {
-      commandOrThunkFn(dispatch, (path) => store?.get(path))
+      commandOrThunkFn(dispatch, (path) => store.get(path))
       return
     }
 
-    scene.dispatchEvent(EventType.Command, {
+    store.dispatch({
       scope,
       ...commandOrThunkFn,
     })
-  }, [scene, scope, store])
+  }, [scope, store])
 
   return { dispatch }
 }

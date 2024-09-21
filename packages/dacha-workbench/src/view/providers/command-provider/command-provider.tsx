@@ -1,19 +1,19 @@
 import React, {
   useEffect,
-  useContext,
   useMemo,
   useState,
 } from 'react'
 
-import { EngineContext } from '../engine-provider'
+import { CommanderStore } from '../../../store'
+import type { Data } from '../../../store'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
-import { EventType } from '../../../events'
 
 interface UndoRedoProviderProviderProps {
   children: JSX.Element | Array<JSX.Element>
 }
 
 interface CommandContextProps {
+  store: CommanderStore
   activeScope: string
   setActiveScope: (context: string) => void
 }
@@ -23,27 +23,20 @@ export const CommandContext = React.createContext<CommandContextProps>({} as Com
 export const CommandProvider = ({
   children,
 }: UndoRedoProviderProviderProps): JSX.Element => {
-  const engineContext = useContext(EngineContext)
+  const store = useMemo(() => {
+    const projectConfig = window.electron.getProjectConfig()
+    return new CommanderStore(projectConfig as unknown as Data)
+  }, [])
 
   const [activeScope, setActiveScope] = useState(ROOT_SCOPE)
 
   useEffect(() => {
-    if (engineContext === undefined) {
-      return () => {}
-    }
-
-    const { scene } = engineContext
-
     const handleUndo = (): void => {
-      scene.dispatchEvent(EventType.CommandUndo, {
-        scope: activeScope,
-      })
+      store.undo({ scope: activeScope })
     }
 
     const handleRedo = (): void => {
-      scene.dispatchEvent(EventType.CommandRedo, {
-        scope: activeScope,
-      })
+      store.redo({ scope: activeScope })
     }
 
     const undoUnsubscribe = window.electron.onUndo(handleUndo)
@@ -53,9 +46,10 @@ export const CommandProvider = ({
       undoUnsubscribe()
       redoUnsubscribe()
     }
-  }, [engineContext, activeScope])
+  }, [activeScope])
 
   const currentContext = useMemo(() => ({
+    store,
     activeScope,
     setActiveScope,
   }), [activeScope])
