@@ -4,9 +4,7 @@ import React, {
   FC,
 } from 'react'
 
-import { EngineContext } from '../engine-provider'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
-import { EventType } from '../../../events'
 
 import { CommandContext } from './command-provider'
 
@@ -21,8 +19,7 @@ export const CommandScopeProvider: FC<CommandScopeProps> = ({
   name = ROOT_SCOPE,
   children,
 }): JSX.Element => {
-  const engineContext = useContext(EngineContext)
-  const { setActiveScope } = useContext(CommandContext)
+  const { store, setActiveScope } = useContext(CommandContext)
 
   useEffect(() => {
     setActiveScope(name)
@@ -32,19 +29,9 @@ export const CommandScopeProvider: FC<CommandScopeProps> = ({
     }
   }, [name])
 
-  useEffect(() => {
-    if (engineContext === undefined) {
-      return () => {}
-    }
-
-    const { scene } = engineContext
-
-    return () => {
-      scene.dispatchEvent(EventType.CommandClean, {
-        scope: name,
-      })
-    }
-  }, [engineContext])
+  useEffect(() => () => {
+    store.clean({ scope: name })
+  }, [])
 
   return (
     <CommandScopeContext.Provider value={name}>

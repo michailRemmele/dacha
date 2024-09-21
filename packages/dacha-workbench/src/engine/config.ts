@@ -1,4 +1,4 @@
-import type { Config, GlobalOption } from 'remiz'
+import type { Config, GlobalOption, TemplateConfig } from 'remiz'
 
 import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
 import {
@@ -9,13 +9,26 @@ import {
 } from '../consts/tools'
 import { EventType } from '../events'
 import { persistentStorage } from '../persistent-storage'
+import type { CommanderStore } from '../store'
 
 interface EditorConfigOptions {
   globalOptions: Array<GlobalOption>
+  store: CommanderStore
+}
+
+const getTemplateId = (store: CommanderStore): string | undefined => {
+  const templateId = persistentStorage.get<string | undefined>('canvas.mainActor.tools.template.features.templateId')
+  if (!templateId) {
+    return undefined
+  }
+  return store.get(['templates', `id:${templateId}`])
+    ? templateId
+    : (store.get(['templates']) as TemplateConfig[])[0]?.id
 }
 
 export const getEditorConfig = ({
   globalOptions,
+  store,
 }: EditorConfigOptions): Config => ({
   scenes: [
     {
@@ -74,10 +87,6 @@ export const getEditorConfig = ({
         },
         {
           name: 'TemplateToolSystem',
-          options: {},
-        },
-        {
-          name: 'Commander',
           options: {},
         },
         {
@@ -252,7 +261,7 @@ export const getEditorConfig = ({
                         withClassName: false,
                       },
                       templateId: {
-                        value: persistentStorage.get('canvas.mainActor.tools.template.features.templateId', undefined),
+                        value: getTemplateId(store),
                         withClassName: false,
                       },
                     },
