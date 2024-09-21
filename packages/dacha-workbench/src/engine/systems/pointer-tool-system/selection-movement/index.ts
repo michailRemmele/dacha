@@ -11,7 +11,7 @@ import { ROOT_SCOPE } from '../../../../consts/command-scopes'
 import { buildActorPath } from '../utils'
 import { getTool } from '../../../../utils/get-tool'
 import { getGridValue, getGridStep } from '../../../../utils/grid'
-import type { Store } from '../../../../store'
+import type { CommanderStore } from '../../../../store'
 import type { SelectedActor } from '../types'
 
 import {
@@ -32,7 +32,7 @@ interface SelectionMovementSubsystemOptions {
 
 export class SelectionMovementSubsystem {
   private scene: Scene
-  private configStore: Store
+  private configStore: CommanderStore
 
   private isMoving: boolean
   private selectionStart: Position
@@ -45,7 +45,7 @@ export class SelectionMovementSubsystem {
     selectedActor,
   }: SelectionMovementSubsystemOptions) {
     this.scene = scene
-    this.configStore = scene.data.configStore as Store
+    this.configStore = scene.data.configStore as CommanderStore
     this.selectedActor = selectedActor
 
     this.isMoving = false
@@ -124,7 +124,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    this.scene.dispatchEvent(EventType.Command, {
+    this.configStore.dispatch({
       command: SET,
       scope: ROOT_SCOPE,
       options: {

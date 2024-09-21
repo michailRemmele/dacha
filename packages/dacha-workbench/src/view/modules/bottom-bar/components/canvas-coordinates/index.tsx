@@ -7,11 +7,12 @@ import {
 import type { MouseControlEvent } from 'remiz/events'
 import { PlusOutlined, BorderInnerOutlined } from '@ant-design/icons'
 
-import { persistentStorage } from '../../../../../persistent-storage'
 import { throttle } from '../../../../../utils/throttle'
+import { getSavedSelectedLevelId } from '../../../../../utils/get-saved-selected-level-id'
 import { getGridStep } from '../../../../../utils/grid'
 import { EngineContext } from '../../../../providers'
 import { EventType } from '../../../../../events'
+import { useStore } from '../../../../hooks/use-store'
 import type { SelectLevelEvent } from '../../../../../events'
 
 import { getGridSection } from './utils'
@@ -21,9 +22,10 @@ const DELAY = 50
 
 export const CanvasCoordinates: FC = () => {
   const { scene } = useContext(EngineContext)
+  const store = useStore()
 
   const [isCursor, setIsCursor] = useState(false)
-  const [isLevel, setIsLevel] = useState(Boolean(persistentStorage.get('selectedLevel')))
+  const [isLevel, setIsLevel] = useState(Boolean(getSavedSelectedLevelId(store)))
 
   const [cursorX, setCursorX] = useState(0)
   const [cursorY, setCursorY] = useState(0)

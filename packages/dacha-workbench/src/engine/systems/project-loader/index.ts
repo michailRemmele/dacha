@@ -7,11 +7,14 @@ import type {
 } from 'remiz'
 
 import { EventType } from '../../../events'
-import { Store } from '../../../store'
-import type { Data } from '../../../store'
+import { CommanderStore } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10_000
+
+interface ProjectLoaderResources {
+  store: CommanderStore
+}
 
 export class ProjectLoader extends System {
   private scene: Scene
@@ -25,8 +28,7 @@ export class ProjectLoader extends System {
     this.scene = options.scene
     this.editorCofig = window.electron.getEditorConfig()
 
-    const projectConfig = window.electron.getProjectConfig()
-    this.scene.data.configStore = new Store(projectConfig as unknown as Data)
+    this.scene.data.configStore = (options.resources as ProjectLoaderResources).store
     this.scene.data.editorConfig = this.editorCofig
 
     this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
@@ -76,7 +78,7 @@ export class ProjectLoader extends System {
   }
 
   private saveProjectConfig(): void {
-    const projectConfig = (this.scene.data.configStore as Store).get([]) as Config
+    const projectConfig = (this.scene.data.configStore as CommanderStore).get([]) as Config
     window.electron.saveProjectConfig(projectConfig)
 
     this.scene.dispatchEvent(EventType.SaveProject)

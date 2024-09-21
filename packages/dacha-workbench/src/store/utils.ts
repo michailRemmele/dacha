@@ -1,4 +1,4 @@
-import type { Store } from '.'
+import type { Store } from './store'
 import type { Data, DataValue, DataObjectValue } from './types'
 
 const KEY_DELIMETER = ':'

@@ -12,8 +12,8 @@ import type { SelectToolEvent } from '../../../../events'
 import { TOOL_NAME } from '../consts'
 import { getTool } from '../../../../utils/get-tool'
 import { includesArray } from '../../../../utils/includes-array'
-import type { Tool } from '../../../components'
-import type { Store } from '../../../../store'
+import { Tool } from '../../../components'
+import type { CommanderStore } from '../../../../store'
 
 interface PreviewSubsystemOptions {
   scene: Scene
@@ -25,7 +25,7 @@ export class PreviewSubsystem {
   private scene: Scene
   private actorCreator: ActorCreator
   private mainActor: Actor
-  private configStore: Store
+  private configStore: CommanderStore
 
   private preview?: Actor
 
@@ -39,7 +39,7 @@ export class PreviewSubsystem {
     this.actorCreator = actorCreator
 
     this.mainActor = this.scene.data.mainActor as Actor
-    this.configStore = this.scene.data.configStore as Store
+    this.configStore = this.scene.data.configStore as CommanderStore
   }
 
   mount(): void {

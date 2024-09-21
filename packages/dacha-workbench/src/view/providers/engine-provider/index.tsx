@@ -2,6 +2,7 @@ import React, {
   useState,
   useMemo,
   useEffect,
+  useContext,
   FC,
 } from 'react'
 import type { UiInitFnOptions } from 'remiz'
@@ -17,6 +18,7 @@ import {
   MouseControl,
 } from 'remiz'
 
+import { CommandContext } from '../command-provider'
 import { getEditorConfig } from '../../../engine/config'
 import {
   ProjectLoader,
@@ -26,7 +28,6 @@ import {
   HandToolSystem,
   PointerToolSystem,
   TemplateToolSystem,
-  Commander,
   ShapesRenderer,
   GridSystem,
   SettingsSystem,
@@ -47,6 +48,8 @@ interface EngineProviderProps {
 export const EngineContext = React.createContext<UiInitFnOptions>({} as UiInitFnOptions)
 
 export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Element => {
+  const { store } = useContext(CommandContext)
+
   const [context, setContext] = useState<UiInitFnOptions>()
 
   const globalOptions = useMemo(() => {
@@ -56,7 +59,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
   }, [])
 
   const editorEngine = useMemo(() => new Engine({
-    config: getEditorConfig({ globalOptions }),
+    config: getEditorConfig({ globalOptions, store }),
     systems: [
       MouseInputSystem,
       MouseControlSystem,
@@ -70,7 +73,6 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
       HandToolSystem,
       PointerToolSystem,
       TemplateToolSystem,
-      Commander,
       ShapesRenderer,
       GridSystem,
       SettingsSystem,
@@ -90,6 +92,9 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
           onInit: (options: UiInitFnOptions): void => setContext(options),
           onDestroy: (): void => setContext(void 0),
         }),
+      },
+      [ProjectLoader.systemName]: {
+        store,
       },
     },
   }), [globalOptions])

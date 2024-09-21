@@ -9,21 +9,21 @@ import type {
 } from 'remiz'
 import type { MouseControlEvent } from 'remiz/events'
 
-import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'
 import { ADD } from '../../../command-types'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
-import type { Store } from '../../../store'
+import type { CommanderStore } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
 import { createFromTemplate, updatePlacementPosition } from './utils'
 import { getTool } from '../../../utils/get-tool'
+import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
 import type { Position } from './types'
 
 export class TemplateToolSystem extends System {
   private scene: Scene
-  private configStore: Store
+  private configStore: CommanderStore
   private actorSpawner: ActorSpawner
   private previewSubsystem: PreviewSubsystem
 
@@ -41,7 +41,7 @@ export class TemplateToolSystem extends System {
     } = options
 
     this.scene = scene
-    this.configStore = this.scene.data.configStore as Store
+    this.configStore = this.scene.data.configStore as CommanderStore
     this.actorSpawner = actorSpawner
 
     this.previewSubsystem = new PreviewSubsystem({
@@ -50,7 +50,7 @@ export class TemplateToolSystem extends System {
       actorSpawner: this.actorSpawner,
     })
 
-    this.selectedLevelId = persistentStorage.get('selectedLevel')
+    this.selectedLevelId = getSavedSelectedLevelId(this.configStore)
 
     this.cursor = { x: 0, y: 0 }
     this.placementPosition = { x: 0, y: 0 }
@@ -122,7 +122,7 @@ export class TemplateToolSystem extends System {
       this.placementPosition.y || 0,
     )
 
-    this.scene.dispatchEvent(EventType.Command, {
+    this.configStore.dispatch({
       command: ADD,
       scope: ROOT_SCOPE,
       options: {

@@ -1,20 +1,7 @@
-import { System } from 'remiz'
-import type {
-  Scene,
-  SystemOptions,
-} from 'remiz'
-
-import { EventType } from '../../../events'
-import type {
-  CommandEvent,
-  CommandUndoEvent,
-  CommandRedoEvent,
-  CommandCleanEvent,
-} from '../../../events'
-import type { Store } from '../../../store'
-
+import { Store } from './store'
 import { commands } from './commands'
-import { Command } from './commands/command'
+import type { Command } from './commands/command'
+import type { Data, ListenerFn } from './types'
 
 const HISTORY_SIZE = 100
 
@@ -29,23 +16,28 @@ interface HistoryOperation {
   effects: Array<HistoryOperationEffect>
 }
 
-export class Commander extends System {
-  private scene: Scene
-  private configStore: Store
+interface CommandEvent {
+  command: string
+  scope: string
+  isEffect?: boolean
+  options: unknown
+}
+
+interface CommandControlEvent {
+  scope: string
+}
+
+export class CommanderStore {
+  private store: Store
   private commands: Record<string, Command>
   private undoHistory: Record<string, Array<HistoryOperation>>
   private redoHistory: Record<string, Array<HistoryOperation>>
 
-  constructor(options: SystemOptions) {
-    super()
-
-    const { scene } = options
-
-    this.scene = scene
-    this.configStore = scene.data.configStore as Store
+  constructor(data: Data) {
+    this.store = new Store(data)
     this.commands = Object.keys(commands).reduce((acc: Record<string, Command>, key) => {
       const SomeCommand = commands[key]
-      acc[key] = new SomeCommand(this.configStore)
+      acc[key] = new SomeCommand(this.store)
 
       return acc
     }, {})
@@ -53,21 +45,15 @@ export class Commander extends System {
     this.redoHistory = {}
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.Command, this.handleCommand)
-    this.scene.addEventListener(EventType.CommandUndo, this.handleCommandUndo)
-    this.scene.addEventListener(EventType.CommandRedo, this.handleCommandRedo)
-    this.scene.addEventListener(EventType.CommandClean, this.handleCommandClean)
+  get(path: Array<string>): unknown {
+    return this.store.get(path)
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.Command, this.handleCommand)
-    this.scene.removeEventListener(EventType.CommandUndo, this.handleCommandUndo)
-    this.scene.removeEventListener(EventType.CommandRedo, this.handleCommandRedo)
-    this.scene.removeEventListener(EventType.CommandClean, this.handleCommandClean)
+  subscribe(listener: ListenerFn): () => void {
+    return this.store.subscribe(listener)
   }
 
-  private handleCommand = (event: CommandEvent): void => {
+  dispatch(event: CommandEvent): void {
     const {
       command,
       scope,
@@ -105,7 +91,7 @@ export class Commander extends System {
     this.redoHistory[scope] = []
   }
 
-  private handleCommandUndo = (event: CommandUndoEvent): void => {
+  undo(event: CommandControlEvent): void {
     const { scope } = event
 
     if (this.undoHistory[scope]?.length > 0) {
@@ -121,7 +107,7 @@ export class Commander extends System {
     }
   }
 
-  private handleCommandRedo = (event: CommandRedoEvent): void => {
+  redo(event: CommandControlEvent): void {
     const { scope } = event
 
     if (this.redoHistory[scope]?.length > 0) {
@@ -134,12 +120,10 @@ export class Commander extends System {
     }
   }
 
-  private handleCommandClean = (event: CommandCleanEvent): void => {
+  clean(event: CommandControlEvent): void {
     const { scope } = event
 
     delete this.undoHistory[scope]
     delete this.redoHistory[scope]
   }
 }
-
-Commander.systemName = 'Commander'

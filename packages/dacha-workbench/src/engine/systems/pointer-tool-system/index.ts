@@ -10,10 +10,12 @@ import type {
 } from 'remiz'
 import type { MouseControlEvent } from 'remiz/events'
 
-import { persistentStorage } from '../../../persistent-storage'
 import { EventType } from '../../../events'
 import type { InspectEntityEvent, SelectLevelEvent } from '../../../events'
 import { getAncestor } from '../../../utils/get-ancestor'
+import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedEntity } from '../../../utils/get-saved-selected-entity'
+import type { CommanderStore } from '../../../store'
 
 import { SelectionMovementSubsystem } from './selection-movement'
 import { buildActorPath, updateFrameSize, getIdByPath } from './utils'
@@ -22,6 +24,7 @@ import type { SelectedActor } from './types'
 export class PointerToolSystem extends System {
   private scene: Scene
   private actorSpawner: ActorSpawner
+  private configStore: CommanderStore
 
   private mainActor: Actor
 
@@ -41,12 +44,13 @@ export class PointerToolSystem extends System {
 
     this.scene = scene
     this.actorSpawner = actorSpawner
+    this.configStore = scene.data.configStore as CommanderStore
 
     this.mainActor = scene.data.mainActor as Actor
 
     this.selectedActor = {
-      actorId: getIdByPath(persistentStorage.get('selectedEntity')),
-      levelId: persistentStorage.get('selectedLevel'),
+      actorId: getIdByPath(getSavedSelectedEntity(this.configStore)),
+      levelId: getSavedSelectedLevelId(this.configStore),
     }
 
     this.selectionMovementSubsystem = new SelectionMovementSubsystem({

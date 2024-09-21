@@ -18,12 +18,13 @@ import {
 } from '@ant-design/icons'
 import type { Actor } from 'remiz'
 
-import { persistentStorage } from '../../../persistent-storage'
 import { EngineContext } from '../../providers'
 import { Tool, ToolController } from '../../../engine/components'
 import type { FeatureValue } from '../../../engine/components/tool'
 import { EventType } from '../../../events'
+import { useStore } from '../../hooks/use-store'
 import type { SelectLevelEvent } from '../../../events'
+import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
 
 import { features } from './components'
 import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
@@ -34,6 +35,7 @@ export const Toolbar: FC = () => {
     scene,
     gameStateObserver,
   } = useContext(EngineContext)
+  const store = useStore()
 
   const mainActorId = useMemo<string>(
     () => (scene.data.mainActor as Actor).id,
@@ -42,7 +44,7 @@ export const Toolbar: FC = () => {
 
   const [selectedTool, setSelectedTool] = useState('')
   const [toolFeatures, setToolFeatures] = useState<Record<string, FeatureValue>>({})
-  const [disabled, setDisabled] = useState(() => !persistentStorage.get('selectedLevel'))
+  const [disabled, setDisabled] = useState(() => !getSavedSelectedLevelId(store))
 
   const ToolFeatures = useMemo(() => features[selectedTool], [selectedTool])
 

@@ -22,9 +22,4 @@ export const SelectLevel = 'SelectLevel'
 export const InspectEntity = 'InspectEntity'
 export const InspectedEntityChange = 'InspectedEntityChange'
 
-export const Command = 'Command'
-export const CommandUndo = 'CommandUndo'
-export const CommandRedo = 'CommandRedo'
-export const CommandClean = 'CommandClean'
-
 export const SaveProject = 'SaveProject'
