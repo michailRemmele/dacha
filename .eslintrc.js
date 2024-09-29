@@ -13,7 +13,7 @@ const commonRules = {
       ts: 'never',
     },
   ],
-  'no-param-reassign': 1,
+  'no-param-reassign': 0,
   'no-restricted-properties': 1,
   'prefer-destructuring': 'warn',
   'prefer-exponentiation-operator': 'warn',

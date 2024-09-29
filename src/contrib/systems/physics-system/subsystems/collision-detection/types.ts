@@ -20,14 +20,14 @@ export interface Coordinates {
   edges: Array<Edge>
 }
 
-export interface SortedEntry {
+export interface CollisionEntry {
   actor: Actor
   aabb: AABB
   coordinates: Coordinates
 }
 
 export interface SortedItem {
-  entry: SortedEntry
+  entry: CollisionEntry
   value: number
 }
 
@@ -43,4 +43,4 @@ export interface Axes {
   y: AxisEntry
 }
 
-export type CollisionPair = Array<SortedEntry>;
+export type CollisionPair = Array<CollisionEntry>;

@@ -6,6 +6,7 @@ import { Transform, ColliderContainer } from '../../../../components';
 import { RemoveActor } from '../../../../../engine/events';
 import type { RemoveActorEvent } from '../../../../../engine/events';
 import { Collision } from '../../../../events';
+import { insertionSort } from '../../../../../engine/data-lib';
 
 import { coordinatesCalculators } from './coordinates-calculators';
 import { aabbBuilders } from './aabb-builders';
@@ -15,7 +16,8 @@ import type { CoordinatesCalculator } from './coordinates-calculators';
 import type { AABBBuilder } from './aabb-builders';
 import type { IntersectionChecker, IntersectionEntry, Intersection } from './intersection-checkers';
 import type {
-  SortedEntry,
+  SortedItem,
+  CollisionEntry,
   Axis,
   Axes,
   CollisionPair,
@@ -34,6 +36,7 @@ export class CollisionDetectionSubsystem {
   private intersectionCheckers: Record<string, IntersectionChecker>;
   private axis: Axes;
   private lastProcessedActors: Record<string, Transform | undefined>;
+  private sortedEntriesMap: Record<string, Record<string, [SortedItem, SortedItem]>>;
 
   constructor(options: SystemOptions) {
     this.actorCollection = new ActorCollection(options.scene, {
@@ -70,6 +73,7 @@ export class CollisionDetectionSubsystem {
       },
     };
     this.lastProcessedActors = {};
+    this.sortedEntriesMap = {};
   }
 
   mount(): void {
@@ -88,6 +92,7 @@ export class CollisionDetectionSubsystem {
       this.removeFromSortedList(event.actor, axis);
     });
 
+    delete this.sortedEntriesMap[id];
     delete this.lastProcessedActors[id];
   };
 
@@ -104,31 +109,24 @@ export class CollisionDetectionSubsystem {
       || transform.offsetY !== previousTransform.offsetY;
   }
 
-  private addToAxisSortedList(entry: SortedEntry, axis: Axis): void {
-    [entry.aabb.min[axis], entry.aabb.max[axis]].forEach((value) => {
-      this.axis[axis].sortedList.push({
-        value,
-        entry,
-      });
-    });
+  private addToAxisSortedList(entry: CollisionEntry, axis: Axis): void {
+    const min = { value: entry.aabb.min[axis], entry };
+    const max = { value: entry.aabb.max[axis], entry };
+
+    this.axis[axis].sortedList.push(min, max);
+
+    this.sortedEntriesMap[entry.actor.id] ??= {};
+    this.sortedEntriesMap[entry.actor.id][axis] = [min, max];
   }
 
-  private updateAxisSortedList(entry: SortedEntry, axis: Axis): void {
-    const { actor, aabb, coordinates } = entry;
+  private updateAxisSortedList(entry: CollisionEntry, axis: Axis): void {
+    const [min, max] = this.sortedEntriesMap[entry.actor.id][axis];
 
-    const sortedListCoordinates = [aabb.min[axis], aabb.max[axis]];
-    const { sortedList } = this.axis[axis];
+    min.value = entry.aabb.min[axis];
+    min.entry = entry;
 
-    for (let i = 0; i < sortedList.length; i += 1) {
-      if (actor.id === sortedList[i].entry.actor.id) {
-        sortedList[i].value = sortedListCoordinates.shift() as number;
-        sortedList[i].entry.aabb = aabb;
-        sortedList[i].entry.coordinates = coordinates;
-        if (!sortedListCoordinates.length) {
-          break;
-        }
-      }
-    }
+    max.value = entry.aabb.max[axis];
+    max.entry = entry;
   }
 
   private removeFromSortedList(actor: Actor, axis: Axis): void {
@@ -148,15 +146,7 @@ export class CollisionDetectionSubsystem {
     const { sortedList } = this.axis[mainAxis];
     const additionalAxes = Object.values(AXIS).filter((axis) => mainAxis !== axis);
 
-    sortedList.sort((arg1, arg2) => {
-      if (arg1.value > arg2.value) {
-        return 1;
-      }
-      if (arg1.value < arg2.value) {
-        return -1;
-      }
-      return 0;
-    });
+    insertionSort(sortedList, (arg1, arg2) => arg1.value - arg2.value);
 
     let { collisions } = sortedList.reduce((storage, item) => {
       const { entry } = item;
@@ -171,7 +161,7 @@ export class CollisionDetectionSubsystem {
       }
 
       return storage;
-    }, { collisions: [] as Array<CollisionPair>, activeEntries: new Set<SortedEntry>() });
+    }, { collisions: [] as Array<CollisionPair>, activeEntries: new Set<CollisionEntry>() });
 
     additionalAxes.forEach((additionalAxis) => {
       collisions = collisions.filter((pair) => {
@@ -187,7 +177,7 @@ export class CollisionDetectionSubsystem {
   }
 
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
-    const getIntersectionEntry = (arg: SortedEntry): IntersectionEntry => {
+    const getIntersectionEntry = (arg: CollisionEntry): IntersectionEntry => {
       const colliderContainer = arg.actor.getComponent(ColliderContainer);
 
       return {
