@@ -12,6 +12,7 @@ import { coordinatesCalculators } from './coordinates-calculators';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
+import { PairTracker } from './pair-tracker';
 import type { CoordinatesCalculator } from './coordinates-calculators';
 import type { AABBBuilder } from './aabb-builders';
 import type { IntersectionChecker, IntersectionEntry, Intersection } from './intersection-checkers';
@@ -135,45 +136,35 @@ export class CollisionDetectionSubsystem {
     );
   }
 
-  private getSortingAxis(): Axis {
-    const xAxisDispersion = this.axis[AXIS.X].dispersionCalculator.getDispersion();
-    const yAxisDispersion = this.axis[AXIS.Y].dispersionCalculator.getDispersion();
+  private getAxes(): Axis[] {
+    const xDispersion = this.axis[AXIS.X].dispersionCalculator.getDispersion();
+    const yDispersion = this.axis[AXIS.Y].dispersionCalculator.getDispersion();
 
-    return xAxisDispersion >= yAxisDispersion ? AXIS.X : AXIS.Y;
+    return xDispersion >= yDispersion ? [AXIS.X, AXIS.Y] : [AXIS.Y, AXIS.X];
   }
 
-  private sweepAndPrune(mainAxis: Axis): Array<CollisionPair> {
-    const { sortedList } = this.axis[mainAxis];
-    const additionalAxes = Object.values(AXIS).filter((axis) => mainAxis !== axis);
+  private sweepAndPrune(axis: Axis, pairTracker: PairTracker): void {
+    const { sortedList } = this.axis[axis];
 
     insertionSort(sortedList, (arg1, arg2) => arg1.value - arg2.value);
 
-    let { collisions } = sortedList.reduce((storage, item) => {
+    const activeEntries = new Set<CollisionEntry>();
+    for (const item of sortedList) {
       const { entry } = item;
 
-      if (!storage.activeEntries.has(entry)) {
-        storage.activeEntries.forEach((activeEntry) => {
-          storage.collisions.push([entry, activeEntry]);
-        });
-        storage.activeEntries.add(entry);
-      } else {
-        storage.activeEntries.delete(entry);
+      if (!pairTracker.canCollide(entry)) {
+        continue;
       }
 
-      return storage;
-    }, { collisions: [] as Array<CollisionPair>, activeEntries: new Set<CollisionEntry>() });
-
-    additionalAxes.forEach((additionalAxis) => {
-      collisions = collisions.filter((pair) => {
-        const aabb1 = pair[0].aabb;
-        const aabb2 = pair[1].aabb;
-
-        return aabb1.max[additionalAxis] > aabb2.min[additionalAxis]
-          && aabb1.min[additionalAxis] < aabb2.max[additionalAxis];
-      });
-    });
-
-    return collisions;
+      if (!activeEntries.has(entry)) {
+        activeEntries.forEach((activeEntry) => {
+          pairTracker.add(activeEntry, entry);
+        });
+        activeEntries.add(entry);
+      } else {
+        activeEntries.delete(entry);
+      }
+    }
   }
 
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
@@ -237,15 +228,10 @@ export class CollisionDetectionSubsystem {
         coordinates,
       );
 
+      const entry = { actor, aabb, coordinates };
       Object.values(AXIS).forEach((axis) => {
         const average = (aabb.min[axis] + aabb.max[axis]) * 0.5;
         this.axis[axis].dispersionCalculator.addToSample(actor.id, average);
-
-        const entry = {
-          actor,
-          aabb,
-          coordinates,
-        };
 
         if (!this.lastProcessedActors[actor.id]) {
           this.addToAxisSortedList(entry, axis);
@@ -257,7 +243,14 @@ export class CollisionDetectionSubsystem {
       this.lastProcessedActors[actor.id] = transform.clone();
     });
 
-    this.sweepAndPrune(this.getSortingAxis()).forEach((pair) => {
+    const pairTracker = new PairTracker();
+    this.getAxes().forEach((axis, index) => {
+      if (index !== 0) {
+        pairTracker.swap();
+      }
+      this.sweepAndPrune(axis, pairTracker);
+    });
+    pairTracker.values().forEach((pair) => {
       const intersection = this.checkOnIntersection(pair);
       if (intersection) {
         this.sendCollisionEvent(

@@ -13,6 +13,8 @@ const commonRules = {
       ts: 'never',
     },
   ],
+  'no-continue': 0,
+  'no-restricted-syntax': 0,
   'no-param-reassign': 0,
   'no-restricted-properties': 1,
   'prefer-destructuring': 'warn',
