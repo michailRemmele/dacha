@@ -43,4 +43,4 @@ export interface Axes {
   y: AxisEntry
 }
 
-export type CollisionPair = Array<CollisionEntry>;
+export type CollisionPair = [CollisionEntry, CollisionEntry];

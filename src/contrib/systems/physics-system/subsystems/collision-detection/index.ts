@@ -12,7 +12,6 @@ import { coordinatesCalculators } from './coordinates-calculators';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
-import { PairTracker } from './pair-tracker';
 import type { CoordinatesCalculator } from './coordinates-calculators';
 import type { AABBBuilder } from './aabb-builders';
 import type { IntersectionChecker, IntersectionEntry, Intersection } from './intersection-checkers';
@@ -24,10 +23,7 @@ import type {
   CollisionPair,
 } from './types';
 
-const AXIS = {
-  X: 'x',
-  Y: 'y',
-} as const;
+const AXES = ['x', 'y'] as const;
 
 export class CollisionDetectionSubsystem {
   private actorCollection: ActorCollection;
@@ -64,11 +60,11 @@ export class CollisionDetectionSubsystem {
     }, {} as Record<string, IntersectionChecker>);
 
     this.axis = {
-      [AXIS.X]: {
+      [AXES[0]]: {
         sortedList: [],
         dispersionCalculator: new DispersionCalculator(),
       },
-      [AXIS.Y]: {
+      [AXES[1]]: {
         sortedList: [],
         dispersionCalculator: new DispersionCalculator(),
       },
@@ -88,7 +84,7 @@ export class CollisionDetectionSubsystem {
   private handleActorRemove = (event: RemoveActorEvent): void => {
     const { id } = event.actor;
 
-    Object.values(AXIS).forEach((axis) => {
+    AXES.forEach((axis) => {
       this.axis[axis].dispersionCalculator.removeFromSample(id);
       this.removeFromSortedList(event.actor, axis);
     });
@@ -137,34 +133,41 @@ export class CollisionDetectionSubsystem {
   }
 
   private getAxes(): Axis[] {
-    const xDispersion = this.axis[AXIS.X].dispersionCalculator.getDispersion();
-    const yDispersion = this.axis[AXIS.Y].dispersionCalculator.getDispersion();
+    const xDispersion = this.axis.x.dispersionCalculator.getDispersion();
+    const yDispersion = this.axis.y.dispersionCalculator.getDispersion();
 
-    return xDispersion >= yDispersion ? [AXIS.X, AXIS.Y] : [AXIS.Y, AXIS.X];
+    return xDispersion >= yDispersion ? [AXES[0], AXES[1]] : [AXES[1], AXES[0]];
   }
 
-  private sweepAndPrune(axis: Axis, pairTracker: PairTracker): void {
-    const { sortedList } = this.axis[axis];
+  private sweepAndPrune(): CollisionPair[] {
+    const [mainAxis, secondAxis] = this.getAxes();
+
+    const { sortedList } = this.axis[mainAxis];
 
     insertionSort(sortedList, (arg1, arg2) => arg1.value - arg2.value);
 
+    const collisions: CollisionPair[] = [];
     const activeEntries = new Set<CollisionEntry>();
     for (const item of sortedList) {
       const { entry } = item;
 
-      if (!pairTracker.canCollide(entry)) {
-        continue;
-      }
-
       if (!activeEntries.has(entry)) {
         activeEntries.forEach((activeEntry) => {
-          pairTracker.add(activeEntry, entry);
+          collisions.push([entry, activeEntry]);
         });
         activeEntries.add(entry);
       } else {
         activeEntries.delete(entry);
       }
     }
+
+    return collisions.filter((pair) => {
+      const aabb1 = pair[0].aabb;
+      const aabb2 = pair[1].aabb;
+
+      return aabb1.max[secondAxis] > aabb2.min[secondAxis]
+        && aabb1.min[secondAxis] < aabb2.max[secondAxis];
+    });
   }
 
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
@@ -193,20 +196,17 @@ export class CollisionDetectionSubsystem {
   ): void {
     const { mtv1, mtv2 } = intersection;
 
-    [
-      {
-        actor1, actor2, mtv1, mtv2,
-      },
-      {
-        actor1: actor2, actor2: actor1, mtv1: mtv2, mtv2: mtv1,
-      },
-    ].forEach((entry) => {
-      this.scene.dispatchEventImmediately(Collision, {
-        actor1: entry.actor1,
-        actor2: entry.actor2,
-        mtv1: entry.mtv1,
-        mtv2: entry.mtv2,
-      });
+    this.scene.dispatchEventImmediately(Collision, {
+      actor1,
+      actor2,
+      mtv1,
+      mtv2,
+    });
+    this.scene.dispatchEventImmediately(Collision, {
+      actor1: actor2,
+      actor2: actor1,
+      mtv1: mtv2,
+      mtv2: mtv1,
     });
   }
 
@@ -229,7 +229,7 @@ export class CollisionDetectionSubsystem {
       );
 
       const entry = { actor, aabb, coordinates };
-      Object.values(AXIS).forEach((axis) => {
+      AXES.forEach((axis) => {
         const average = (aabb.min[axis] + aabb.max[axis]) * 0.5;
         this.axis[axis].dispersionCalculator.addToSample(actor.id, average);
 
@@ -243,14 +243,7 @@ export class CollisionDetectionSubsystem {
       this.lastProcessedActors[actor.id] = transform.clone();
     });
 
-    const pairTracker = new PairTracker();
-    this.getAxes().forEach((axis, index) => {
-      if (index !== 0) {
-        pairTracker.swap();
-      }
-      this.sweepAndPrune(axis, pairTracker);
-    });
-    pairTracker.values().forEach((pair) => {
+    this.sweepAndPrune().forEach((pair) => {
       const intersection = this.checkOnIntersection(pair);
       if (intersection) {
         this.sendCollisionEvent(
