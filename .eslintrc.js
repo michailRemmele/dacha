@@ -58,6 +58,7 @@ module.exports = {
         '@typescript-eslint/no-this-alias': 0,
         '@typescript-eslint/lines-between-class-members': 0,
         '@typescript-eslint/explicit-function-return-type': 'warn',
+        '@typescript-eslint/no-loop-func': 0,
       },
     },
   ],

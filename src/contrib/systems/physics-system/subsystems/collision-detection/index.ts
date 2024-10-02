@@ -34,6 +34,7 @@ export class CollisionDetectionSubsystem {
   private axis: Axes;
   private lastProcessedActors: Record<string, Transform | undefined>;
   private sortedEntriesMap: Record<string, Record<string, [SortedItem, SortedItem]>>;
+  private collisionPairs: CollisionPair[];
 
   constructor(options: SystemOptions) {
     this.actorCollection = new ActorCollection(options.scene, {
@@ -71,6 +72,7 @@ export class CollisionDetectionSubsystem {
     };
     this.lastProcessedActors = {};
     this.sortedEntriesMap = {};
+    this.collisionPairs = [];
   }
 
   mount(): void {
@@ -139,21 +141,36 @@ export class CollisionDetectionSubsystem {
     return xDispersion >= yDispersion ? [AXES[0], AXES[1]] : [AXES[1], AXES[0]];
   }
 
-  private sweepAndPrune(): CollisionPair[] {
+  private testAABB(
+    entry1: CollisionEntry,
+    entry2: CollisionEntry,
+    axis: Axis,
+  ): boolean {
+    const aabb1 = entry1.aabb;
+    const aabb2 = entry2.aabb;
+
+    return aabb1.max[axis] > aabb2.min[axis] && aabb1.min[axis] < aabb2.max[axis];
+  }
+
+  private sweepAndPrune(): void {
     const [mainAxis, secondAxis] = this.getAxes();
 
     const { sortedList } = this.axis[mainAxis];
 
     insertionSort(sortedList, (arg1, arg2) => arg1.value - arg2.value);
 
-    const collisions: CollisionPair[] = [];
     const activeEntries = new Set<CollisionEntry>();
+
+    let collisionIndex = 0;
     for (const item of sortedList) {
       const { entry } = item;
 
       if (!activeEntries.has(entry)) {
         activeEntries.forEach((activeEntry) => {
-          collisions.push([entry, activeEntry]);
+          if (this.testAABB(entry, activeEntry, secondAxis)) {
+            this.collisionPairs[collisionIndex] = [entry, activeEntry];
+            collisionIndex += 1;
+          }
         });
         activeEntries.add(entry);
       } else {
@@ -161,13 +178,9 @@ export class CollisionDetectionSubsystem {
       }
     }
 
-    return collisions.filter((pair) => {
-      const aabb1 = pair[0].aabb;
-      const aabb2 = pair[1].aabb;
-
-      return aabb1.max[secondAxis] > aabb2.min[secondAxis]
-        && aabb1.min[secondAxis] < aabb2.max[secondAxis];
-    });
+    if (this.collisionPairs.length > collisionIndex) {
+      this.collisionPairs.length = collisionIndex;
+    }
   }
 
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
@@ -243,7 +256,8 @@ export class CollisionDetectionSubsystem {
       this.lastProcessedActors[actor.id] = transform.clone();
     });
 
-    this.sweepAndPrune().forEach((pair) => {
+    this.sweepAndPrune();
+    this.collisionPairs.forEach((pair) => {
       const intersection = this.checkOnIntersection(pair);
       if (intersection) {
         this.sendCollisionEvent(
