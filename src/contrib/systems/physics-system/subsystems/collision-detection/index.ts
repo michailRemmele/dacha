@@ -3,18 +3,16 @@ import type { SystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { Transform, ColliderContainer } from '../../../../components';
-import { RemoveActor } from '../../../../../engine/events';
-import type { RemoveActorEvent } from '../../../../../engine/events';
+import { AddActor, RemoveActor } from '../../../../../engine/events';
+import type { AddActorEvent, RemoveActorEvent } from '../../../../../engine/events';
 import { Collision } from '../../../../events';
 import { insertionSort } from '../../../../../engine/data-lib';
 
-import { coordinatesCalculators } from './coordinates-calculators';
+import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
-import type { CoordinatesCalculator } from './coordinates-calculators';
-import type { AABBBuilder } from './aabb-builders';
-import type { IntersectionChecker, IntersectionEntry, Intersection } from './intersection-checkers';
+import type { IntersectionEntry, Intersection } from './intersection-checkers';
 import type {
   SortedItem,
   CollisionEntry,
@@ -28,12 +26,9 @@ const AXES = ['x', 'y'] as const;
 export class CollisionDetectionSubsystem {
   private actorCollection: ActorCollection;
   private scene: Scene;
-  private coordinatesCalculators: Record<string, CoordinatesCalculator>;
-  private aabbBuilders: Record<string, AABBBuilder>;
-  private intersectionCheckers: Record<string, IntersectionChecker>;
   private axis: Axes;
-  private lastProcessedActors: Record<string, Transform | undefined>;
   private sortedEntriesMap: Record<string, Record<string, [SortedItem, SortedItem]>>;
+  private entriesMap: Map<string, CollisionEntry>;
   private collisionPairs: CollisionPair[];
 
   constructor(options: SystemOptions) {
@@ -44,71 +39,122 @@ export class CollisionDetectionSubsystem {
       ],
     });
     this.scene = options.scene;
-    this.coordinatesCalculators = Object.keys(coordinatesCalculators).reduce((storage, key) => {
-      const CoordinatesCalculator = coordinatesCalculators[key];
-      storage[key] = new CoordinatesCalculator();
-      return storage;
-    }, {} as Record<string, CoordinatesCalculator>);
-    this.aabbBuilders = Object.keys(aabbBuilders).reduce((storage, key) => {
-      const AABBBuilder = aabbBuilders[key];
-      storage[key] = new AABBBuilder();
-      return storage;
-    }, {} as Record<string, AABBBuilder>);
-    this.intersectionCheckers = Object.keys(intersectionCheckers).reduce((storage, key) => {
-      const IntersectionChecker = intersectionCheckers[key];
-      storage[key] = new IntersectionChecker();
-      return storage;
-    }, {} as Record<string, IntersectionChecker>);
 
     this.axis = {
       [AXES[0]]: {
         sortedList: [],
-        dispersionCalculator: new DispersionCalculator(),
+        dispersionCalculator: new DispersionCalculator(AXES[0]),
       },
       [AXES[1]]: {
         sortedList: [],
-        dispersionCalculator: new DispersionCalculator(),
+        dispersionCalculator: new DispersionCalculator(AXES[1]),
       },
     };
-    this.lastProcessedActors = {};
     this.sortedEntriesMap = {};
+    this.entriesMap = new Map();
     this.collisionPairs = [];
   }
 
   mount(): void {
+    this.actorCollection.forEach((actor) => this.addCollisionEntry(actor));
+
+    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   unmount(): void {
+    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
   }
 
+  private handleActorAdd = (event: AddActorEvent): void => {
+    this.addCollisionEntry(event.actor);
+  };
+
   private handleActorRemove = (event: RemoveActorEvent): void => {
-    const { id } = event.actor;
+    const entry = this.entriesMap.get(event.actor.id)!;
 
     AXES.forEach((axis) => {
-      this.axis[axis].dispersionCalculator.removeFromSample(id);
+      this.axis[axis].dispersionCalculator.removeFromSample(entry.aabb);
       this.removeFromSortedList(event.actor, axis);
     });
 
-    delete this.sortedEntriesMap[id];
-    delete this.lastProcessedActors[id];
+    delete this.sortedEntriesMap[event.actor.id];
+    this.entriesMap.delete(event.actor.id);
   };
 
   private checkOnReorientation(actor: Actor): boolean {
-    const previousTransform = this.lastProcessedActors[actor.id];
+    const entry = this.entriesMap.get(actor.id);
 
-    if (!previousTransform) {
+    if (!entry) {
       return true;
     }
 
     const transform = actor.getComponent(Transform);
 
-    return transform.offsetX !== previousTransform.offsetX
-      || transform.offsetY !== previousTransform.offsetY;
+    return transform.offsetX !== entry.position.offsetX
+      || transform.offsetY !== entry.position.offsetY;
   }
 
-  private addToAxisSortedList(entry: CollisionEntry, axis: Axis): void {
+  private addCollisionEntry(actor: Actor): void {
+    const transform = actor.getComponent(Transform);
+    const colliderContainer = actor.getComponent(ColliderContainer);
+
+    const geometry = geometryBuilders[colliderContainer.type](
+      colliderContainer,
+      transform,
+    );
+    const aabb = aabbBuilders[colliderContainer.type](
+      colliderContainer,
+      geometry,
+    );
+    const position = { offsetX: transform.offsetX, offsetY: transform.offsetY };
+
+    const entry = {
+      actor,
+      aabb,
+      geometry,
+      position,
+    };
+
+    AXES.forEach((axis) => {
+      this.axis[axis].dispersionCalculator.addToSample(aabb);
+      this.addToSortedList(entry, axis);
+    });
+
+    this.entriesMap.set(actor.id, entry);
+  }
+
+  private updateCollisionEntry(actor: Actor): void {
+    const transform = actor.getComponent(Transform);
+    const colliderContainer = actor.getComponent(ColliderContainer);
+
+    const geometry = geometryBuilders[colliderContainer.type](
+      colliderContainer,
+      transform,
+    );
+    const aabb = aabbBuilders[colliderContainer.type](
+      colliderContainer,
+      geometry,
+    );
+    const position = { offsetX: transform.offsetX, offsetY: transform.offsetY };
+
+    const entry = this.entriesMap.get(actor.id)!;
+    const prevAABB = entry.aabb;
+
+    entry.aabb = aabb;
+    entry.geometry = geometry;
+    entry.position = position;
+
+    AXES.forEach((axis) => {
+      this.axis[axis].dispersionCalculator.removeFromSample(prevAABB);
+      this.axis[axis].dispersionCalculator.addToSample(aabb);
+
+      this.updateSortedList(entry, axis);
+    });
+  }
+
+  private addToSortedList(entry: CollisionEntry, axis: Axis): void {
     const min = { value: entry.aabb.min[axis], entry };
     const max = { value: entry.aabb.max[axis], entry };
 
@@ -118,7 +164,7 @@ export class CollisionDetectionSubsystem {
     this.sortedEntriesMap[entry.actor.id][axis] = [min, max];
   }
 
-  private updateAxisSortedList(entry: CollisionEntry, axis: Axis): void {
+  private updateSortedList(entry: CollisionEntry, axis: Axis): void {
     const [min, max] = this.sortedEntriesMap[entry.actor.id][axis];
 
     min.value = entry.aabb.min[axis];
@@ -190,16 +236,14 @@ export class CollisionDetectionSubsystem {
       return {
         type: colliderContainer.type,
         collider: colliderContainer.collider,
-        coordinates: arg.coordinates,
+        geometry: arg.geometry,
       };
     };
 
     const arg1 = getIntersectionEntry(pair[0]);
     const arg2 = getIntersectionEntry(pair[1]);
 
-    const intersectionType = `${arg1.type}_${arg2.type}`;
-
-    return this.intersectionCheckers[intersectionType].check(arg1, arg2);
+    return intersectionCheckers[arg1.type][arg2.type](arg1, arg2);
   }
 
   private sendCollisionEvent(
@@ -229,34 +273,11 @@ export class CollisionDetectionSubsystem {
         return;
       }
 
-      const transform = actor.getComponent(Transform);
-      const colliderContainer = actor.getComponent(ColliderContainer);
-
-      const coordinates = this.coordinatesCalculators[colliderContainer.type].calc(
-        colliderContainer,
-        transform,
-      );
-      const aabb = this.aabbBuilders[colliderContainer.type].getAABB(
-        colliderContainer,
-        coordinates,
-      );
-
-      const entry = { actor, aabb, coordinates };
-      AXES.forEach((axis) => {
-        const average = (aabb.min[axis] + aabb.max[axis]) * 0.5;
-        this.axis[axis].dispersionCalculator.addToSample(actor.id, average);
-
-        if (!this.lastProcessedActors[actor.id]) {
-          this.addToAxisSortedList(entry, axis);
-        } else {
-          this.updateAxisSortedList(entry, axis);
-        }
-      });
-
-      this.lastProcessedActors[actor.id] = transform.clone();
+      this.updateCollisionEntry(actor);
     });
 
     this.sweepAndPrune();
+
     this.collisionPairs.forEach((pair) => {
       const intersection = this.checkOnIntersection(pair);
       if (intersection) {

@@ -1,11 +1,15 @@
 import type { Vector2 } from '../../../../../engine/math-lib';
 import type { Actor } from '../../../../../engine/actor';
-import type { AABB } from './aabb-builders';
 import type { DispersionCalculator } from './dispersion-calculator';
 
 export interface Point {
   x: number
   y: number
+}
+
+export interface AABB {
+  min: Point
+  max: Point
 }
 
 export interface Edge {
@@ -14,16 +18,22 @@ export interface Edge {
   normal: Vector2
 }
 
-export interface Coordinates {
+export interface Geometry {
   center: Point
   points: Array<Point>
   edges: Array<Edge>
 }
 
+export interface Position {
+  offsetX: number
+  offsetY: number
+}
+
 export interface CollisionEntry {
   actor: Actor
   aabb: AABB
-  coordinates: Coordinates
+  geometry: Geometry
+  position: Position
 }
 
 export interface SortedItem {

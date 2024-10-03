@@ -1,13 +1,22 @@
-import { BoxesIntersectionChecker } from './boxes-intersection-checker';
-import { CirclesIntersectionChecker } from './circles-intersection-checker';
-import { BoxAndCircleIntersectionChecker } from './box-and-circle-intersection-checker';
-import type { IntersectionChecker, IntersectionEntry, Intersection } from './intersection-checker';
+import { checkBoxAndCircleIntersection } from './check-box-and-circle-intersection';
+import { checkBoxesIntersection } from './check-boxes-intersection';
+import { checkCirclesIntersection } from './check-circles-intersection';
+import type { IntersectionEntry, Intersection } from './types';
 
-export type { IntersectionChecker, IntersectionEntry, Intersection };
+export type { IntersectionEntry, Intersection };
 
-export const intersectionCheckers: Record<string, { new(): IntersectionChecker }> = {
-  boxCollider_boxCollider: BoxesIntersectionChecker,
-  circleCollider_circleCollider: CirclesIntersectionChecker,
-  circleCollider_boxCollider: BoxAndCircleIntersectionChecker,
-  boxCollider_circleCollider: BoxAndCircleIntersectionChecker,
+export type CheckIntersectionFn = (
+  arg1: IntersectionEntry,
+  arg2: IntersectionEntry,
+) => Intersection | false;
+
+export const intersectionCheckers: Record<string, Record<string, CheckIntersectionFn>> = {
+  boxCollider: {
+    boxCollider: checkBoxesIntersection,
+    circleCollider: checkBoxAndCircleIntersection,
+  },
+  circleCollider: {
+    circleCollider: checkCirclesIntersection,
+    boxCollider: checkBoxAndCircleIntersection,
+  },
 };
