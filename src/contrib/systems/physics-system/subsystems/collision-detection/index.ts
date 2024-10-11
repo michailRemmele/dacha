@@ -2,7 +2,11 @@ import { ActorCollection } from '../../../../../engine/actor';
 import type { SystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
-import { Transform, ColliderContainer } from '../../../../components';
+import {
+  Transform,
+  ColliderContainer,
+  RigidBody,
+} from '../../../../components';
 import { AddActor, RemoveActor } from '../../../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../../../engine/events';
 import { Collision } from '../../../../events';
@@ -27,7 +31,6 @@ export class CollisionDetectionSubsystem {
   private actorCollection: ActorCollection;
   private scene: Scene;
   private axis: Axes;
-  private sortedEntriesMap: Record<string, Record<string, [SortedItem, SortedItem]>>;
   private entriesMap: Map<string, CollisionEntry>;
   private collisionPairs: CollisionPair[];
 
@@ -50,7 +53,6 @@ export class CollisionDetectionSubsystem {
         dispersionCalculator: new DispersionCalculator(AXES[1]),
       },
     };
-    this.sortedEntriesMap = {};
     this.entriesMap = new Map();
     this.collisionPairs = [];
   }
@@ -79,7 +81,6 @@ export class CollisionDetectionSubsystem {
       this.removeFromSortedList(event.actor, axis);
     });
 
-    delete this.sortedEntriesMap[event.actor.id];
     this.entriesMap.delete(event.actor.id);
   };
 
@@ -115,7 +116,7 @@ export class CollisionDetectionSubsystem {
       aabb,
       geometry,
       position,
-    };
+    } as CollisionEntry;
 
     AXES.forEach((axis) => {
       this.axis[axis].dispersionCalculator.addToSample(aabb);
@@ -160,12 +161,12 @@ export class CollisionDetectionSubsystem {
 
     this.axis[axis].sortedList.push(min, max);
 
-    this.sortedEntriesMap[entry.actor.id] ??= {};
-    this.sortedEntriesMap[entry.actor.id][axis] = [min, max];
+    entry.edges ??= {} as Record<Axis, [SortedItem, SortedItem]>;
+    entry.edges[axis] = [min, max];
   }
 
   private updateSortedList(entry: CollisionEntry, axis: Axis): void {
-    const [min, max] = this.sortedEntriesMap[entry.actor.id][axis];
+    const [min, max] = entry.edges[axis];
 
     min.value = entry.aabb.min[axis];
     min.entry = entry;
@@ -185,6 +186,16 @@ export class CollisionDetectionSubsystem {
     const yDispersion = this.axis.y.dispersionCalculator.getDispersion();
 
     return xDispersion >= yDispersion ? [AXES[0], AXES[1]] : [AXES[1], AXES[0]];
+  }
+
+  private areStaticBodies(entry1: CollisionEntry, entry2: CollisionEntry): boolean {
+    const { actor: actor1 } = entry1;
+    const { actor: actor2 } = entry2;
+
+    const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
+    const rigidBody2 = actor2.getComponent(RigidBody) as RigidBody | undefined;
+
+    return rigidBody1?.type === 'static' && rigidBody2?.type === 'static';
   }
 
   private testAABB(
@@ -213,10 +224,16 @@ export class CollisionDetectionSubsystem {
 
       if (!activeEntries.has(entry)) {
         activeEntries.forEach((activeEntry) => {
-          if (this.testAABB(entry, activeEntry, secondAxis)) {
-            this.collisionPairs[collisionIndex] = [entry, activeEntry];
-            collisionIndex += 1;
+          if (!this.testAABB(entry, activeEntry, secondAxis)) {
+            return;
           }
+
+          if (this.areStaticBodies(entry, activeEntry)) {
+            return;
+          }
+
+          this.collisionPairs[collisionIndex] = [entry, activeEntry];
+          collisionIndex += 1;
         });
         activeEntries.add(entry);
       } else {

@@ -34,6 +34,7 @@ export interface CollisionEntry {
   aabb: AABB
   geometry: Geometry
   position: Position
+  edges: Record<Axis, [SortedItem, SortedItem]>
 }
 
 export interface SortedItem {
