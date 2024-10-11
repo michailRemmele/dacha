@@ -1,6 +1,6 @@
 import type { Vector2 } from '../../../../../../engine/math-lib';
 import type { ColliderContainer } from '../../../../../components';
-import type { Coordinates } from '../types';
+import type { Geometry } from '../types';
 
 export interface Intersection {
   mtv1: Vector2
@@ -8,9 +8,5 @@ export interface Intersection {
 }
 
 export interface IntersectionEntry extends Pick<ColliderContainer, 'type' | 'collider'> {
-  coordinates: Coordinates
-}
-
-export interface IntersectionChecker {
-  check(arg1: IntersectionEntry, arg2: IntersectionEntry): Intersection | false
+  geometry: Geometry
 }

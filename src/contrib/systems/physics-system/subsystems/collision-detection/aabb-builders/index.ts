@@ -1,11 +1,12 @@
-import { BoxAABBBuilder } from './box-aabb-builder';
-import { CircleAABBBuilder } from './circle-aabb-builder';
-import type { AABBBuilder } from './aabb-builder';
+import type { ColliderContainer } from '../../../../../components';
+import type { AABB, Geometry } from '../types';
 
-export type { AABBBuilder };
-export type { AABB } from './aabb';
+import { buildBoxAABB } from './build-box-aabb';
+import { buildCircleAABB } from './build-circle-aabb';
 
-export const aabbBuilders: Record<string, { new(): AABBBuilder }> = {
-  boxCollider: BoxAABBBuilder,
-  circleCollider: CircleAABBBuilder,
+export type BuildAABBFn = (container: ColliderContainer, geometry: Geometry) => AABB;
+
+export const aabbBuilders: Record<string, BuildAABBFn> = {
+  boxCollider: buildBoxAABB,
+  circleCollider: buildCircleAABB,
 };
