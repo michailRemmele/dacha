@@ -25,14 +25,13 @@ import type {
   CollisionPair,
 } from './types';
 
-const AXES = ['x', 'y'] as const;
-
 export class CollisionDetectionSubsystem {
   private actorCollection: ActorCollection;
   private scene: Scene;
   private axis: Axes;
   private entriesMap: Map<string, CollisionEntry>;
   private collisionPairs: CollisionPair[];
+  private entriesToDelete: Set<string>;
 
   constructor(options: SystemOptions) {
     this.actorCollection = new ActorCollection(options.scene, {
@@ -44,17 +43,18 @@ export class CollisionDetectionSubsystem {
     this.scene = options.scene;
 
     this.axis = {
-      [AXES[0]]: {
+      x: {
         sortedList: [],
-        dispersionCalculator: new DispersionCalculator(AXES[0]),
+        dispersionCalculator: new DispersionCalculator('x'),
       },
-      [AXES[1]]: {
+      y: {
         sortedList: [],
-        dispersionCalculator: new DispersionCalculator(AXES[1]),
+        dispersionCalculator: new DispersionCalculator('y'),
       },
     };
     this.entriesMap = new Map();
     this.collisionPairs = [];
+    this.entriesToDelete = new Set();
   }
 
   mount(): void {
@@ -74,14 +74,7 @@ export class CollisionDetectionSubsystem {
   };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
-    const entry = this.entriesMap.get(event.actor.id)!;
-
-    AXES.forEach((axis) => {
-      this.axis[axis].dispersionCalculator.removeFromSample(entry.aabb);
-      this.removeFromSortedList(event.actor, axis);
-    });
-
-    this.entriesMap.delete(event.actor.id);
+    this.entriesToDelete.add(event.actor.id);
   };
 
   private checkOnReorientation(actor: Actor): boolean {
@@ -118,10 +111,11 @@ export class CollisionDetectionSubsystem {
       position,
     } as CollisionEntry;
 
-    AXES.forEach((axis) => {
-      this.axis[axis].dispersionCalculator.addToSample(aabb);
-      this.addToSortedList(entry, axis);
-    });
+    this.axis.x.dispersionCalculator.addToSample(aabb);
+    this.addToSortedList(entry, 'x');
+
+    this.axis.y.dispersionCalculator.addToSample(aabb);
+    this.addToSortedList(entry, 'y');
 
     this.entriesMap.set(actor.id, entry);
   }
@@ -147,12 +141,13 @@ export class CollisionDetectionSubsystem {
     entry.geometry = geometry;
     entry.position = position;
 
-    AXES.forEach((axis) => {
-      this.axis[axis].dispersionCalculator.removeFromSample(prevAABB);
-      this.axis[axis].dispersionCalculator.addToSample(aabb);
+    this.axis.x.dispersionCalculator.removeFromSample(prevAABB);
+    this.axis.x.dispersionCalculator.addToSample(aabb);
+    this.updateSortedList(entry, 'x');
 
-      this.updateSortedList(entry, axis);
-    });
+    this.axis.y.dispersionCalculator.removeFromSample(prevAABB);
+    this.axis.y.dispersionCalculator.addToSample(aabb);
+    this.updateSortedList(entry, 'y');
   }
 
   private addToSortedList(entry: CollisionEntry, axis: Axis): void {
@@ -175,9 +170,9 @@ export class CollisionDetectionSubsystem {
     max.entry = entry;
   }
 
-  private removeFromSortedList(actor: Actor, axis: Axis): void {
+  private clearSortedList(axis: Axis): void {
     this.axis[axis].sortedList = this.axis[axis].sortedList.filter(
-      (item) => actor.id !== item.entry.actor.id,
+      (item) => !this.entriesToDelete.has(item.entry.actor.id),
     );
   }
 
@@ -185,7 +180,7 @@ export class CollisionDetectionSubsystem {
     const xDispersion = this.axis.x.dispersionCalculator.getDispersion();
     const yDispersion = this.axis.y.dispersionCalculator.getDispersion();
 
-    return xDispersion >= yDispersion ? [AXES[0], AXES[1]] : [AXES[1], AXES[0]];
+    return xDispersion >= yDispersion ? ['x', 'y'] : ['y', 'x'];
   }
 
   private areStaticBodies(entry1: CollisionEntry, entry2: CollisionEntry): boolean {
@@ -284,7 +279,29 @@ export class CollisionDetectionSubsystem {
     });
   }
 
+  private clearDeletedEntries(): void {
+    if (this.entriesToDelete.size === 0) {
+      return;
+    }
+
+    this.clearSortedList('x');
+    this.clearSortedList('y');
+
+    this.entriesToDelete.forEach((id) => {
+      const entry = this.entriesMap.get(id)!;
+
+      this.axis.x.dispersionCalculator.removeFromSample(entry.aabb);
+      this.axis.y.dispersionCalculator.removeFromSample(entry.aabb);
+
+      this.entriesMap.delete(id);
+    });
+
+    this.entriesToDelete.clear();
+  }
+
   update(): void {
+    this.clearDeletedEntries();
+
     this.actorCollection.forEach((actor) => {
       if (!this.checkOnReorientation(actor)) {
         return;
