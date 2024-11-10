@@ -1,17 +1,12 @@
 import { Vector2, VectorOps } from '../../../../../../engine/math-lib';
-import type { Geometry } from '../types';
-
-import type {
-  IntersectionEntry,
-  Intersection,
-} from './types';
+import type { CollisionEntry, BoxGeometry, Intersection } from '../types';
 
 interface PolygonProjection {
   min: number
   max: number
 }
 
-const projectPolygon = (polygon: Geometry, axisVector: Vector2): PolygonProjection => {
+const projectPolygon = (polygon: BoxGeometry, axisVector: Vector2): PolygonProjection => {
   const initialProjectionValue = VectorOps.dotProduct(polygon.edges[0].point1, axisVector);
 
   const projection = {
@@ -35,24 +30,23 @@ const projectPolygon = (polygon: Geometry, axisVector: Vector2): PolygonProjecti
 /**
   * Checks boxes colliders at the intersection.
   * The SAT (separating axis theorem) is used to determine an intersection and mtvs.
-  * As both boxes are axis aligned, the algorithm was simplified.
-  * So only two edges of the one box are used to check objects at the intersection.
   */
 export const checkBoxesIntersection = (
-  arg1: IntersectionEntry,
-  arg2: IntersectionEntry,
+  arg1: CollisionEntry,
+  arg2: CollisionEntry,
 ): Intersection | false => {
-  let overlap: number | undefined;
+  let overlap = Infinity;
   let normal: Vector2 | undefined;
 
-  const { x: xArg1, y: yArg1 } = arg1.geometry.center;
-  const { x: xArg2, y: yArg2 } = arg2.geometry.center;
+  const geometry1 = arg1.geometry as BoxGeometry;
+  const geometry2 = arg2.geometry as BoxGeometry;
 
-  for (let j = 0; j < arg1.geometry.edges.length / 2; j += 1) {
-    const axis = arg1.geometry.edges[j].normal;
+  // Consider arg1 box normals as axes
+  for (const edge of geometry1.edges) {
+    const axis = edge.normal;
 
-    const aProjection = projectPolygon(arg1.geometry, axis);
-    const bProjection = projectPolygon(arg2.geometry, axis);
+    const aProjection = projectPolygon(geometry1, axis);
+    const bProjection = projectPolygon(geometry2, axis);
 
     const aDistance = aProjection.min - bProjection.max;
     const bDistance = bProjection.min - aProjection.max;
@@ -61,22 +55,39 @@ export const checkBoxesIntersection = (
       return false;
     }
 
-    const aOverlap = Math.abs(aDistance);
-    const bOverlap = Math.abs(bDistance);
-
-    if (overlap === undefined || aOverlap < overlap) {
-      overlap = aOverlap;
-      normal = axis;
-    }
-
-    if (overlap === undefined || bOverlap < overlap) {
-      overlap = bOverlap;
+    const axisOverlap = Math.min(Math.abs(aDistance), Math.abs(bDistance));
+    if (axisOverlap < overlap) {
+      overlap = axisOverlap;
       normal = axis;
     }
   }
 
+  // Consider arg2 box normals as axes
+  for (const edge of geometry2.edges) {
+    const axis = edge.normal;
+
+    const aProjection = projectPolygon(geometry1, axis);
+    const bProjection = projectPolygon(geometry2, axis);
+
+    const aDistance = aProjection.min - bProjection.max;
+    const bDistance = bProjection.min - aProjection.max;
+
+    if (aDistance > 0 || bDistance > 0) {
+      return false;
+    }
+
+    const axisOverlap = Math.min(Math.abs(aDistance), Math.abs(bDistance));
+    if (axisOverlap < overlap) {
+      overlap = axisOverlap;
+      normal = axis;
+    }
+  }
+
+  const { x: xArg1, y: yArg1 } = geometry1.center;
+  const { x: xArg2, y: yArg2 } = geometry2.center;
+
   const mtv = (normal as Vector2).clone();
-  mtv.multiplyNumber(overlap as number);
+  mtv.multiplyNumber(overlap);
 
   const positiveX = Math.abs(mtv.x);
   const negativeX = -Math.abs(mtv.x);

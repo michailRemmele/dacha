@@ -16,13 +16,13 @@ import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
-import type { IntersectionEntry, Intersection } from './intersection-checkers';
 import type {
   SortedItem,
   CollisionEntry,
   Axis,
   Axes,
   CollisionPair,
+  Intersection,
 } from './types';
 
 export class CollisionDetectionSubsystem {
@@ -98,10 +98,7 @@ export class CollisionDetectionSubsystem {
       colliderContainer,
       transform,
     );
-    const aabb = aabbBuilders[colliderContainer.type](
-      colliderContainer,
-      geometry,
-    );
+    const aabb = aabbBuilders[colliderContainer.type](geometry);
     const position = { offsetX: transform.offsetX, offsetY: transform.offsetY };
 
     const entry = {
@@ -128,10 +125,7 @@ export class CollisionDetectionSubsystem {
       colliderContainer,
       transform,
     );
-    const aabb = aabbBuilders[colliderContainer.type](
-      colliderContainer,
-      geometry,
-    );
+    const aabb = aabbBuilders[colliderContainer.type](geometry);
     const position = { offsetX: transform.offsetX, offsetY: transform.offsetY };
 
     const entry = this.entriesMap.get(actor.id)!;
@@ -242,20 +236,12 @@ export class CollisionDetectionSubsystem {
   }
 
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
-    const getIntersectionEntry = (arg: CollisionEntry): IntersectionEntry => {
-      const colliderContainer = arg.actor.getComponent(ColliderContainer);
+    const [arg1, arg2] = pair;
 
-      return {
-        type: colliderContainer.type,
-        collider: colliderContainer.collider,
-        geometry: arg.geometry,
-      };
-    };
+    const type1 = arg1.actor.getComponent(ColliderContainer).type;
+    const type2 = arg2.actor.getComponent(ColliderContainer).type;
 
-    const arg1 = getIntersectionEntry(pair[0]);
-    const arg2 = getIntersectionEntry(pair[1]);
-
-    return intersectionCheckers[arg1.type][arg2.type](arg1, arg2);
+    return intersectionCheckers[type1][type2](arg1, arg2);
   }
 
   private sendCollisionEvent(

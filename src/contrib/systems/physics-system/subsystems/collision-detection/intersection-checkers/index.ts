@@ -1,13 +1,12 @@
+import type { CollisionEntry, Intersection } from '../types';
+
 import { checkBoxAndCircleIntersection } from './check-box-and-circle-intersection';
 import { checkBoxesIntersection } from './check-boxes-intersection';
 import { checkCirclesIntersection } from './check-circles-intersection';
-import type { IntersectionEntry, Intersection } from './types';
-
-export type { IntersectionEntry, Intersection };
 
 export type CheckIntersectionFn = (
-  arg1: IntersectionEntry,
-  arg2: IntersectionEntry,
+  arg1: CollisionEntry,
+  arg2: CollisionEntry,
 ) => Intersection | false;
 
 export const intersectionCheckers: Record<string, Record<string, CheckIntersectionFn>> = {

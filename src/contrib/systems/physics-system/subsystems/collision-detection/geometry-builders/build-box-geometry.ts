@@ -4,39 +4,53 @@ import type {
   Transform,
 } from '../../../../../components';
 import type { BoxCollider } from '../../../../../components/collider-container/box-collider';
-import type { Geometry } from '../types';
+import type { BoxGeometry } from '../types';
 
-export const buildBoxGeometry = (container: ColliderContainer, transform: Transform): Geometry => {
-  const { offsetX, offsetY } = transform;
+export const buildBoxGeometry = (
+  container: ColliderContainer,
+  transform: Transform,
+): BoxGeometry => {
+  const {
+    offsetX,
+    offsetY,
+    scaleX,
+    scaleY,
+    rotation,
+  } = transform;
   let { centerX, centerY } = container.collider;
   const { sizeX, sizeY } = container.collider as BoxCollider;
+
+  const x1 = -(sizeX / 2);
+  const x2 = (sizeX / 2);
+  const y1 = -(sizeY / 2);
+  const y2 = (sizeY / 2);
+
+  const angle = (rotation * Math.PI) / 180;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
 
   centerX += offsetX;
   centerY += offsetY;
 
-  const x1 = -(sizeX / 2) + centerX;
-  const x2 = (sizeX / 2) + centerX;
-  const y1 = -(sizeY / 2) + centerY;
-  const y2 = (sizeY / 2) + centerY;
-
   const points = [
-    {
-      x: x1,
-      y: y1,
-    },
-    {
-      x: x1,
-      y: y2,
-    },
-    {
-      x: x2,
-      y: y2,
-    },
-    {
-      x: x2,
-      y: y1,
-    },
+    { x: x1, y: y1 },
+    { x: x1, y: y2 },
+    { x: x2, y: y2 },
+    { x: x2, y: y1 },
   ];
+
+  points.forEach((point) => {
+    const { x, y } = point;
+
+    const scaledX = x * scaleX;
+    const scaledY = y * scaleY;
+
+    const rotatedX = scaledX * cos - scaledY * sin;
+    const rotatedY = scaledX * sin + scaledY * cos;
+
+    point.x = rotatedX + centerX;
+    point.y = rotatedY + centerY;
+  });
 
   const edges = points.map((point1, index, array) => {
     const point2 = array[(index + 1) % array.length];

@@ -1,18 +1,11 @@
-import type { ColliderContainer } from '../../../../../components';
-import type { CircleCollider } from '../../../../../components/collider-container/circle-collider';
-import type { AABB, Geometry } from '../types';
+import type { AABB, Geometry, CircleGeometry } from '../types';
 
-export const buildCircleAABB = (container: ColliderContainer, geometry: Geometry): AABB => {
-  const { radius } = container.collider as CircleCollider;
+export const buildCircleAABB = (geometry: Geometry): AABB => {
+  const { radius } = geometry as CircleGeometry;
   const { x: centerX, y: centerY } = geometry.center;
 
-  const minX = centerX - radius;
-  const maxX = centerX + radius;
-  const minY = centerY - radius;
-  const maxY = centerY + radius;
-
   return {
-    min: { x: minX, y: minY },
-    max: { x: maxX, y: maxY },
+    min: { x: centerX - radius, y: centerY - radius },
+    max: { x: centerX + radius, y: centerY + radius },
   };
 };
