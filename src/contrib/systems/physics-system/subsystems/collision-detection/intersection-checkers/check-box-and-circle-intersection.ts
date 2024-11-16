@@ -12,7 +12,7 @@ import type {
 const getMtvs = (edge: Edge, overlap: number, point1: Point, point2: Point): Intersection => {
   const vector = new Vector2(
     edge.point2.x - edge.point1.x,
-    edge.point2.y - edge.point2.x,
+    edge.point2.y - edge.point1.y,
   );
   vector.multiplyNumber((1 / vector.magnitude) * overlap);
 
