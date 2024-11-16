@@ -100,25 +100,20 @@ export const checkBoxAndCircleIntersection = (
       edge.point2.y,
     );
 
-    let distance = distanceProjection;
-    let distanceEdge = { point1: circleCenter, point2: projectedPoint };
-
-    if (distance1 < distance) {
-      distance = distance1;
-      distanceEdge = { point1: circleCenter, point2: edge.point1 };
-    }
-    if (distance2 < distance) {
-      distance = distance2;
-      distanceEdge = { point1: circleCenter, point2: edge.point2 };
-    }
-
-    const isInsideCircle = distance < circle.radius;
-
+    const isInsideCircle = Math.min(distanceProjection, distance1, distance2) < circle.radius;
     isIntersection = isIntersection || isInsideCircle;
 
-    if (isInsideCircle && distance < minDistance) {
-      minDistance = distance;
-      minDistanceEdge = distanceEdge;
+    if (isPointOnEdge && distanceProjection < minDistance) {
+      minDistance = distanceProjection;
+      minDistanceEdge = { point1: circleCenter, point2: projectedPoint };
+    }
+    if (distance1 < minDistance) {
+      minDistance = distance1;
+      minDistanceEdge = { point1: circleCenter, point2: edge.point1 };
+    }
+    if (distance2 < minDistance) {
+      minDistance = distance2;
+      minDistanceEdge = { point1: circleCenter, point2: edge.point2 };
     }
   }
 
