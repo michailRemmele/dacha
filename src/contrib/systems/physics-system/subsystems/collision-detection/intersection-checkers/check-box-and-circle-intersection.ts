@@ -5,21 +5,16 @@ import type {
   BoxGeometry,
   CircleGeometry,
   Point,
-  Edge,
   Intersection,
 } from '../types';
 
-const getMtvs = (edge: Edge, overlap: number, point1: Point, point2: Point): Intersection => {
-  const vector = new Vector2(
-    edge.point2.x - edge.point1.x,
-    edge.point2.y - edge.point1.y,
-  );
-  vector.multiplyNumber((1 / vector.magnitude) * overlap);
+const getMtvs = (axis: Vector2, overlap: number, point1: Point, point2: Point): Intersection => {
+  axis.multiplyNumber((1 / axis.magnitude) * overlap);
 
-  const positiveX = Math.abs(vector.x);
-  const negativeX = -Math.abs(vector.x);
-  const positiveY = Math.abs(vector.y);
-  const negativeY = -Math.abs(vector.y);
+  const positiveX = Math.abs(axis.x);
+  const negativeX = -Math.abs(axis.x);
+  const positiveY = Math.abs(axis.y);
+  const negativeY = -Math.abs(axis.y);
 
   return {
     mtv1: new Vector2(
@@ -63,7 +58,7 @@ export const checkBoxAndCircleIntersection = (
 
   let isIntersection = false;
   let minDistance = Infinity;
-  let minDistanceEdge: Edge = box.edges[0];
+  let minDistanceAxis: Vector2;
 
   const { center: circleCenter } = circle;
 
@@ -105,15 +100,19 @@ export const checkBoxAndCircleIntersection = (
 
     if (isPointOnEdge && distanceProjection < minDistance) {
       minDistance = distanceProjection;
-      minDistanceEdge = { point1: circleCenter, point2: projectedPoint };
+      minDistanceAxis = edge.normal.clone();
     }
     if (distance1 < minDistance) {
       minDistance = distance1;
-      minDistanceEdge = { point1: circleCenter, point2: edge.point1 };
+      minDistanceAxis = minDistance !== 0
+        ? new Vector2(edge.point1.x - circleCenter.x, edge.point1.y - circleCenter.y)
+        : edge.normal.clone();
     }
     if (distance2 < minDistance) {
       minDistance = distance2;
-      minDistanceEdge = { point1: circleCenter, point2: edge.point2 };
+      minDistanceAxis = minDistance !== 0
+        ? new Vector2(edge.point2.x - circleCenter.x, edge.point2.y - circleCenter.y)
+        : edge.normal.clone();
     }
   }
 
@@ -124,7 +123,7 @@ export const checkBoxAndCircleIntersection = (
   }
 
   return getMtvs(
-    minDistanceEdge,
+    minDistanceAxis!,
     isInsidePolygon ? circle.radius + minDistance : circle.radius - minDistance,
     arg1.geometry.center,
     arg2.geometry.center,

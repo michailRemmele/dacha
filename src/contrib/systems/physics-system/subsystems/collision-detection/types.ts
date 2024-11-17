@@ -1,5 +1,6 @@
 import type { Vector2 } from '../../../../../engine/math-lib';
 import type { Actor } from '../../../../../engine/actor';
+
 import type { DispersionCalculator } from './dispersion-calculator';
 
 export interface Point {
@@ -34,16 +35,29 @@ export type CircleGeometry = {
 
 export type Geometry = BoxGeometry | CircleGeometry;
 
-export interface Position {
-  offsetX: number
-  offsetY: number
+export interface OrientationData {
+  transform: {
+    offsetX: number
+    offsetY: number
+    rotation: number
+    scaleX: number
+    scaleY: number
+  }
+  collider: {
+    type: string
+    centerX: number
+    centerY: number
+    radius?: number
+    sizeX?: number
+    sizeY?: number
+  }
 }
 
 export interface CollisionEntry {
   actor: Actor
   aabb: AABB
   geometry: Geometry
-  position: Position
+  orientationData: OrientationData
   edges: Record<Axis, [SortedItem, SortedItem]>
 }
 
