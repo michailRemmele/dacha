@@ -1,10 +1,5 @@
 import { Vector2 } from '../../../../../../engine/math-lib';
-import type { CircleCollider } from '../../../../../components/collider-container/circle-collider';
-
-import type {
-  IntersectionEntry,
-  Intersection,
-} from './types';
+import type { CollisionEntry, CircleGeometry, Intersection } from '../types';
 
 /**
   * Checks circles at the intersection.
@@ -16,11 +11,11 @@ import type {
   *  then circles centers used to get the axis.
   */
 export const checkCirclesIntersection = (
-  arg1: IntersectionEntry,
-  arg2: IntersectionEntry,
+  arg1: CollisionEntry,
+  arg2: CollisionEntry,
 ): Intersection | false => {
-  const { radius: rArg1 } = arg1.collider as CircleCollider;
-  const { radius: rArg2 } = arg2.collider as CircleCollider;
+  const { radius: rArg1 } = arg1.geometry as CircleGeometry;
+  const { radius: rArg2 } = arg2.geometry as CircleGeometry;
   const { x: xArg1, y: yArg1 } = arg1.geometry.center;
   const { x: xArg2, y: yArg2 } = arg2.geometry.center;
 

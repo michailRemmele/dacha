@@ -7,6 +7,8 @@ import {
   ColliderContainer,
   RigidBody,
 } from '../../../../components';
+import type { BoxCollider } from '../../../../components/collider-container/box-collider';
+import type { CircleCollider } from '../../../../components/collider-container/circle-collider';
 import { AddActor, RemoveActor } from '../../../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../../../engine/events';
 import { Collision } from '../../../../events';
@@ -16,13 +18,15 @@ import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
-import type { IntersectionEntry, Intersection } from './intersection-checkers';
+import { checkTransform, checkCollider } from './reorientation-checkers';
 import type {
   SortedItem,
   CollisionEntry,
   Axis,
   Axes,
   CollisionPair,
+  Intersection,
+  OrientationData,
 } from './types';
 
 export class CollisionDetectionSubsystem {
@@ -85,9 +89,35 @@ export class CollisionDetectionSubsystem {
     }
 
     const transform = actor.getComponent(Transform);
+    const colliderContainer = actor.getComponent(ColliderContainer);
 
-    return transform.offsetX !== entry.position.offsetX
-      || transform.offsetY !== entry.position.offsetY;
+    const transformOld = entry.orientationData.transform;
+    const colliderOld = entry.orientationData.collider;
+
+    return checkTransform(transform, transformOld) || checkCollider(colliderContainer, colliderOld);
+  }
+
+  private getOrientationData(actor: Actor): OrientationData {
+    const transform = actor.getComponent(Transform);
+    const colliderContainer = actor.getComponent(ColliderContainer);
+
+    return {
+      transform: {
+        offsetX: transform.offsetX,
+        offsetY: transform.offsetY,
+        rotation: transform.rotation,
+        scaleX: transform.scaleX,
+        scaleY: transform.scaleY,
+      },
+      collider: {
+        type: colliderContainer.type,
+        centerX: colliderContainer.collider.centerX,
+        centerY: colliderContainer.collider.centerY,
+        sizeX: (colliderContainer.collider as BoxCollider).sizeX,
+        sizeY: (colliderContainer.collider as BoxCollider).sizeY,
+        radius: (colliderContainer.collider as CircleCollider).radius,
+      },
+    };
   }
 
   private addCollisionEntry(actor: Actor): void {
@@ -98,17 +128,13 @@ export class CollisionDetectionSubsystem {
       colliderContainer,
       transform,
     );
-    const aabb = aabbBuilders[colliderContainer.type](
-      colliderContainer,
-      geometry,
-    );
-    const position = { offsetX: transform.offsetX, offsetY: transform.offsetY };
+    const aabb = aabbBuilders[colliderContainer.type](geometry);
 
     const entry = {
       actor,
       aabb,
       geometry,
-      position,
+      orientationData: this.getOrientationData(actor),
     } as CollisionEntry;
 
     this.axis.x.dispersionCalculator.addToSample(aabb);
@@ -128,18 +154,14 @@ export class CollisionDetectionSubsystem {
       colliderContainer,
       transform,
     );
-    const aabb = aabbBuilders[colliderContainer.type](
-      colliderContainer,
-      geometry,
-    );
-    const position = { offsetX: transform.offsetX, offsetY: transform.offsetY };
+    const aabb = aabbBuilders[colliderContainer.type](geometry);
 
     const entry = this.entriesMap.get(actor.id)!;
     const prevAABB = entry.aabb;
 
     entry.aabb = aabb;
     entry.geometry = geometry;
-    entry.position = position;
+    entry.orientationData = this.getOrientationData(actor);
 
     this.axis.x.dispersionCalculator.removeFromSample(prevAABB);
     this.axis.x.dispersionCalculator.addToSample(aabb);
@@ -242,20 +264,12 @@ export class CollisionDetectionSubsystem {
   }
 
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
-    const getIntersectionEntry = (arg: CollisionEntry): IntersectionEntry => {
-      const colliderContainer = arg.actor.getComponent(ColliderContainer);
+    const [arg1, arg2] = pair;
 
-      return {
-        type: colliderContainer.type,
-        collider: colliderContainer.collider,
-        geometry: arg.geometry,
-      };
-    };
+    const type1 = arg1.actor.getComponent(ColliderContainer).type;
+    const type2 = arg2.actor.getComponent(ColliderContainer).type;
 
-    const arg1 = getIntersectionEntry(pair[0]);
-    const arg2 = getIntersectionEntry(pair[1]);
-
-    return intersectionCheckers[arg1.type][arg2.type](arg1, arg2);
+    return intersectionCheckers[type1][type2](arg1, arg2);
   }
 
   private sendCollisionEvent(
