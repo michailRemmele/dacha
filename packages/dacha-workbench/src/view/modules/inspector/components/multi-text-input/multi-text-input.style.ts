@@ -3,9 +3,15 @@ import { css } from '@emotion/react'
 
 export const SelectCSS = css`
   width: 100%;
+
+  .ant-select-selection-overflow-item > span {
+    max-width: 100%;
+  }
 `
 
 export const TagStyled = styled.div(({ theme }) => css`
+  display: flex;
+
   height: 14px;
   line-height: 12px;
 
@@ -16,6 +22,12 @@ export const TagStyled = styled.div(({ theme }) => css`
   border-radius: ${theme.borderRadiusXS}px;
 
   cursor: grab;
+`)
+
+export const TagTextStyled = styled.span(() => css`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `)
 
 export const CloseIconStyled = styled.span(({ theme }) => css`

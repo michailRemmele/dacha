@@ -4,6 +4,7 @@ import {
   useContext,
   useState,
   useMemo,
+  useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18next from 'i18next'
@@ -27,6 +28,8 @@ export const Inspector = (): JSX.Element => {
 
   const { locales: extLocales } = useExtension()
 
+  const initialRenderRef = useRef(true)
+
   useMemo(() => Object.keys(extLocales).forEach((lng) => {
     i18next.addResourceBundle(lng, NAMESPACE_EXTENSION, extLocales[lng])
   }), [extLocales])
@@ -39,6 +42,11 @@ export const Inspector = (): JSX.Element => {
   }, [])
 
   useEffect(() => {
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false
+      return
+    }
+
     if (path) {
       handleChange('entityInspector')
     }
