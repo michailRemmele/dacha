@@ -1,6 +1,6 @@
 import { CloseOutlined } from '@ant-design/icons'
 
-import { TagStyled, CloseIconStyled } from './multi-text-input.style'
+import { TagStyled, TagTextStyled, CloseIconStyled } from './multi-text-input.style'
 
 export interface TagProps {
   value: string
@@ -8,10 +8,10 @@ export interface TagProps {
 }
 
 export const Tag = ({ value, onClose, ...props }: TagProps): JSX.Element => (
-  <TagStyled>
-    <span {...props}>
+  <TagStyled title={value}>
+    <TagTextStyled {...props}>
       {value}
-    </span>
+    </TagTextStyled>
     <CloseIconStyled>
       <CloseOutlined width="1em" height="1em" onClick={onClose} />
     </CloseIconStyled>
