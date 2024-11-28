@@ -144,7 +144,7 @@ export const sprite: WidgetSchema = {
     sortCenter: [0, 0],
     flipX: false,
     flipY: false,
-    sortingLayer: '',
+    sortingLayer: 'default',
     fit: 'stretch',
     material: {
       type: 'basic',
