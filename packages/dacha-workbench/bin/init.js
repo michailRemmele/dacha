@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs')
+const { v4: uuidv4 } = require('uuid')
 
 const DATA_FOLDER_NAME = 'data'
 const ASSETS_FOLDER_NAME = 'assets'
@@ -9,7 +10,14 @@ const INITIAL_DATA = {
   levels: [],
   templates: [],
   loaders: [],
-  globalOptions: [],
+  globalOptions: [
+    {
+      id: uuidv4(),
+      name: 'sortingLayers',
+      type: 'array',
+      value: ['default'],
+    },
+  ],
   startSceneId: null,
   startLoaderId: null,
 }

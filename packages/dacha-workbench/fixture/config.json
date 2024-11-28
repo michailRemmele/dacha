@@ -563,7 +563,8 @@
       "value": [
         "background",
         "terrain",
-        "units"
+        "units",
+        "default"
       ]
     }
   ],
