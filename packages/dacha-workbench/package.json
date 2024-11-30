@@ -1,6 +1,6 @@
 {
   "name": "remiz-editor",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "GUI editor for remiz game engine",
   "main": "./esm/index.js",
   "types": "./esm/index.d.ts",
