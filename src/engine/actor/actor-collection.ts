@@ -135,6 +135,25 @@ export class ActorCollection extends EventTarget {
     this.acceptedActors.forEach(callback);
   }
 
+  map<T>(callback: (actor: Actor, index: number) => T): T[] {
+    return this.acceptedActors.map<T>(callback);
+  }
+
+  reduce<T>(
+    callback: (previousValue: T, currentValue: Actor, index: number) => T,
+    initialValue: T,
+  ): T {
+    return this.acceptedActors.reduce(callback, initialValue);
+  }
+
+  find(callback: (actor: Actor, index: number) => boolean): Actor | undefined {
+    return this.acceptedActors.find(callback);
+  }
+
+  filter(callback: (actor: Actor, index: number) => boolean): Actor[] {
+    return this.acceptedActors.filter(callback);
+  }
+
   sort(compareFunction: (a: Actor, b: Actor) => number): void {
     this.acceptedActors.sort(compareFunction);
   }

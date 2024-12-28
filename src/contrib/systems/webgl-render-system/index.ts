@@ -481,15 +481,19 @@ export class RenderSystem extends System {
   private updateViewMatrix(): void {
     const gl = this.gl as WebGLRenderingContext;
     const currentCamera = this.cameraService.getCurrentCamera();
-    const transform = currentCamera.getComponent(Transform);
-    const { zoom } = currentCamera.getComponent(Camera);
+    const transform = currentCamera?.getComponent(Transform);
+    const camera = currentCamera?.getComponent(Camera);
+
+    const cameraOffsetX = transform?.offsetX ?? 0;
+    const cameraOffsetY = transform?.offsetY ?? 0;
+    const zoom = camera?.zoom ?? 1;
     const scale = zoom * this._screenScale;
 
     const prevStats = this._viewMatrixStats;
 
     if (
-      prevStats.x === transform.offsetX
-      && prevStats.y === transform.offsetY
+      prevStats.x === cameraOffsetX
+      && prevStats.y === cameraOffsetY
       && prevStats.width === this._viewWidth
       && prevStats.height === this._viewHeight
       && prevStats.scale === scale
@@ -499,7 +503,7 @@ export class RenderSystem extends System {
 
     const matrixTransformer = this._matrixTransformer;
     const viewMatrix = matrixTransformer.getIdentityMatrix();
-    matrixTransformer.translate(viewMatrix, -transform.offsetX, -transform.offsetY);
+    matrixTransformer.translate(viewMatrix, -cameraOffsetX, -cameraOffsetY);
     matrixTransformer.scale(viewMatrix, scale, scale);
     matrixTransformer.project(viewMatrix, this._viewWidth, this._viewHeight);
 
@@ -511,8 +515,8 @@ export class RenderSystem extends System {
 
     this._viewMatrixStats.width = this._viewWidth;
     this._viewMatrixStats.height = this._viewHeight;
-    this._viewMatrixStats.x = transform.offsetX;
-    this._viewMatrixStats.y = transform.offsetY;
+    this._viewMatrixStats.x = cameraOffsetX;
+    this._viewMatrixStats.y = cameraOffsetY;
     this._viewMatrixStats.scale = scale;
   }
 

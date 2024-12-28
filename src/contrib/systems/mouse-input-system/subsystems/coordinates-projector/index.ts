@@ -42,7 +42,7 @@ export class CoordinatesProjector {
   private handleMouseInput = (event: MouseInputEvent): void => {
     const currentCamera = this.cameraService.getCurrentCamera();
 
-    event.x = this.getProjectedX(event.x, currentCamera);
-    event.y = this.getProjectedY(event.y, currentCamera);
+    event.x = currentCamera ? this.getProjectedX(event.x, currentCamera) : event.x;
+    event.y = currentCamera ? this.getProjectedY(event.y, currentCamera) : event.y;
   };
 }
