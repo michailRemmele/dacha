@@ -266,12 +266,16 @@ export class SpriteRenderer extends System {
 
   private updateCamera(): void {
     const currentCamera = this.cameraService.getCurrentCamera();
-    const transform = currentCamera.getComponent(Transform);
-    const { zoom } = currentCamera.getComponent(Camera);
+    const transform = currentCamera?.getComponent(Transform);
+    const camera = currentCamera?.getComponent(Camera);
+
+    const offsetX = transform?.offsetX ?? 0;
+    const offsetY = transform?.offsetY ?? 0;
+    const zoom = camera?.zoom ?? 1;
 
     this.currentCamera.zoom = zoom;
     // TODO: Figure out how to set up camera correctly to avoid negative transform by y axis
-    this.currentCamera.position.set(transform.offsetX, -transform.offsetY, 1);
+    this.currentCamera.position.set(offsetX, -offsetY, 1);
 
     this.currentCamera.updateProjectionMatrix();
   }

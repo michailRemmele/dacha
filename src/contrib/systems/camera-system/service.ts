@@ -1,21 +1,37 @@
-import type { Actor } from '../../../engine/actor';
+import type { Actor, ActorCollection } from '../../../engine/actor';
+import { Camera } from '../../components';
 
 interface CameraServiceOptions {
-  camera: Actor
+  cameraCollection: ActorCollection
+  onCameraUpdate: () => void
 }
 
 export class CameraService {
-  private camera: Actor;
+  private cameraCollection: ActorCollection;
+  private onCameraUpdate: () => void;
 
-  constructor({ camera }: CameraServiceOptions) {
-    this.camera = camera;
+  constructor({ cameraCollection, onCameraUpdate }: CameraServiceOptions) {
+    this.cameraCollection = cameraCollection;
+    this.onCameraUpdate = onCameraUpdate;
   }
 
-  setCurrentCamera(camera: Actor): void {
-    this.camera = camera;
+  setCurrentCamera(actor: Actor): void {
+    if (!actor.getComponent(Camera)) {
+      throw new Error(`Can't set current camera. Actor with id: ${actor.id} doesn't contain Camera component.`);
+    }
+
+    this.cameraCollection.forEach((cameraActor) => {
+      const camera = cameraActor.getComponent(Camera);
+      camera.current = actor.id === cameraActor.id;
+    });
+
+    this.onCameraUpdate();
   }
 
-  getCurrentCamera(): Actor {
-    return this.camera;
+  getCurrentCamera(): Actor | undefined {
+    return this.cameraCollection.find((actor) => {
+      const camera = actor.getComponent(Camera);
+      return camera.current;
+    });
   }
 }
