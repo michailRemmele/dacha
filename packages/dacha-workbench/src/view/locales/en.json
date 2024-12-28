@@ -159,6 +159,7 @@
 
   "components.camera.title": "Camera",
   "components.camera.zoom.title": "Zoom",
+  "components.camera.current.title": "Current",
 
   "components.colliderContainer.title": "Collider Container",
   "components.colliderContainer.type.title": "Type",
@@ -250,8 +251,6 @@
 
   "systems.cameraSystem.title": "Camera System",
   "systems.cameraSystem.windowNodeId.title": "Window Node Id",
-  "systems.cameraSystem.initialCamera.title": "Initial Camera",
-  "systems.cameraSystem.scaleSensitivity.title": "Scale Sensitivity",
 
   "systems.gameStatsMeter.title": "Game Stats Meter",
   "systems.gameStatsMeter.frequency.title": "Frequency",
