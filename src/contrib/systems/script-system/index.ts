@@ -56,6 +56,11 @@ export class ScriptSystem extends System {
 
   unmount(): void {
     this.scriptsCollection.removeEventListener(RemoveActor, this.handleActorRemove);
+
+    this.scriptsCollection.forEach((actor) => {
+      this.activeScripts[actor.id].forEach((script) => script.destroy?.());
+      delete this.activeScripts[actor.id];
+    });
   }
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
