@@ -18,9 +18,7 @@
         {
           "name": "CameraSystem",
           "options": {
-            "windowNodeId": "root",
-            "initialCamera": "1.2",
-            "scaleSensitivity": 0.5
+            "windowNodeId": "root"
           }
         },
         {
@@ -134,7 +132,8 @@
                 {
                   "name": "Camera",
                   "config": {
-                    "zoom": 4
+                    "zoom": 4,
+                    "current": true
                   }
                 }
               ]

@@ -40,8 +40,6 @@ export const getEditorConfig = ({
           name: 'CameraSystem',
           options: {
             windowNodeId: 'canvas-root',
-            initialCamera: 'main-actor',
-            scaleSensitivity: 0.5,
           },
         },
         {
@@ -292,6 +290,7 @@ export const getEditorConfig = ({
               name: 'Camera',
               config: {
                 zoom: persistentStorage.get('canvas.mainActor.camera.zoom', 1),
+                current: true,
               },
             },
             {
