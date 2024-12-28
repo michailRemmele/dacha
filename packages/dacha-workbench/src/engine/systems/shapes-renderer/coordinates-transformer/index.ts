@@ -21,12 +21,10 @@ export class CoordinatesTransformer {
     this.viewportHeight = 0
   }
 
-  setCamera(camera: Actor): void {
-    const {
-      offsetX,
-      offsetY,
-    } = camera.getComponent(Transform)
-    const { zoom } = camera.getComponent(Camera)
+  setCamera(camera?: Actor): void {
+    const offsetX = camera?.getComponent(Transform).offsetX ?? 0
+    const offsetY = camera?.getComponent(Transform).offsetY ?? 0
+    const zoom = camera?.getComponent(Camera).zoom ?? 1
 
     this.cameraScale = zoom
     this.cameraOffsetX = offsetX
