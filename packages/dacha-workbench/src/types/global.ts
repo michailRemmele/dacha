@@ -32,7 +32,6 @@ export interface ElectronAPI {
   setUnsavedChanges: (unsavedChanges: boolean) => void
   onSave: (callback: () => void) => void
   onSettings: (callback: (type: string) => void) => void
-  onNeedsReload: (callback: () => void) => () => void
   onSwitchTheme: (callback: () => void) => () => void
   onUndo: (callback: () => void) => () => void
   onRedo: (callback: () => void) => () => void
