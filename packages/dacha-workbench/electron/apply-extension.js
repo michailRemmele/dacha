@@ -3,8 +3,6 @@ const middleware = require('webpack-dev-middleware')
 
 const getExtensionWebpackConfig = require('../webpack.extension.config')
 
-const MESSAGES = require('./messages')
-
 const applyExtension = (entry, app, window) => {
   const compiler = webpack(getExtensionWebpackConfig(entry))
 
@@ -17,7 +15,7 @@ const applyExtension = (entry, app, window) => {
 
     if (lastHash !== stats.hash) {
       lastHash = stats.hash
-      window.webContents.send(MESSAGES.NEEDS_RELOAD)
+      window.webContents.reload()
     }
   })
 

@@ -2,13 +2,16 @@ import { useEffect, useContext, useRef } from 'react'
 
 import { EventType } from '../../../events'
 import { useConfig } from '../use-config'
+import { useSaveProject } from '../use-save-project'
 import { EngineContext } from '../../providers'
+import { persistentStorage } from '../../../persistent-storage'
 
 // Listens for project changes and notifies main process if there are any unsaved changes or not
 export const useUnsavedChanges = (): void => {
   const context = useContext(EngineContext)
 
   const projectConfig = useConfig([])
+  const { save } = useSaveProject()
 
   const didMountRef = useRef(false)
   const unsavedChangesRef = useRef(false)
@@ -30,11 +33,22 @@ export const useUnsavedChanges = (): void => {
 
   useEffect(() => {
     const handleUnload = (): void => {
+      persistentStorage.saveImmediately()
       window.electron.setUnsavedChanges(false)
     }
 
     window.addEventListener('beforeunload', handleUnload)
     return () => window.removeEventListener('beforeunload', handleUnload)
+  }, [])
+
+  useEffect(() => {
+    const handleBlur = (): void => {
+      persistentStorage.saveImmediately()
+      save()
+    }
+
+    window.addEventListener('blur', handleBlur)
+    return () => window.removeEventListener('blur', handleBlur)
   }, [])
 
   useEffect(() => {
