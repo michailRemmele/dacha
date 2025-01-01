@@ -13,8 +13,9 @@ const handleCloseApp = require('./electron/handle-close-app')
 const MESSAGES = require('./electron/messages')
 const getEditorConfig = require('./electron/utils/get-editor-config')
 const applyExtension = require('./electron/apply-extension')
+const watchProjectConfig = require('./electron/watch-project-config')
 
-const { assets, extensionEntry } = getEditorConfig()
+const { assets, extensionEntry, projectConfig } = getEditorConfig()
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -65,6 +66,8 @@ const createWindow = () => {
   if (extensionEntry) {
     applyExtension(extensionEntry, expressApp, win)
   }
+
+  watchProjectConfig(projectConfig, win)
 }
 
 app.whenReady().then(() => {

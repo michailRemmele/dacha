@@ -24,6 +24,10 @@ class PeristentStorage {
 
     return this.storage[key] as T
   }
+
+  saveImmediately(): void {
+    window.electron.savePersistentStorage(this.storage)
+  }
 }
 
 export const persistentStorage = new PeristentStorage()

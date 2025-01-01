@@ -1,6 +1,5 @@
 import {
   createContext,
-  useEffect,
   useState,
   useMemo,
 } from 'react'
@@ -24,15 +23,6 @@ export const NeedsReloadProvider: FC<NeedsReloadProviderProps> = ({ children }) 
     needsReload,
     setNeedsReload,
   }), [needsReload, setNeedsReload])
-
-  useEffect(() => {
-    const handleNeedsReload = (): void => {
-      setNeedsReload(true)
-    }
-
-    const unsubscribe = window.electron.onNeedsReload(handleNeedsReload)
-    return () => unsubscribe()
-  }, [])
 
   return (
     <NeedsReloadContext.Provider value={providerValue}>
