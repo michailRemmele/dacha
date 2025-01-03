@@ -250,6 +250,10 @@ export const getEditorConfig = ({
                   config: {
                     name: 'template',
                     features: {
+                      nestToSelected: {
+                        value: persistentStorage.get('canvas.mainActor.tools.template.features.nestToSelected', true),
+                        withClassName: false,
+                      },
                       preview: {
                         value: persistentStorage.get('canvas.mainActor.tools.template.features.preview', true),
                         withClassName: false,
