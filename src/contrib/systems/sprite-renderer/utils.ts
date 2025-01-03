@@ -30,12 +30,10 @@ export const prepareSprite = (image: HTMLImageElement, sprite: Sprite): Array<Te
   return textures;
 };
 
-export const getImagesFromTemplates = (
+export const getImagesFromTemplate = (
   images: Record<string, Sprite>,
   template: Template,
 ): void => {
-  template.children.forEach((childTemplate) => getImagesFromTemplates(images, childTemplate));
-
   const sprite = template.getComponent(Sprite);
 
   if (!sprite || images[sprite.src]) {

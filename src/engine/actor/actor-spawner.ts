@@ -11,7 +11,6 @@ export class ActorSpawner {
   spawn(templateId: string): Actor {
     return this.actorCreator.create({
       templateId,
-      fromTemplate: true,
       isNew: true,
     });
   }

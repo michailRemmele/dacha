@@ -171,7 +171,6 @@ describe('Engine -> ActorCreator', () => {
 
     const actor = actorCreator.create({
       templateId: '000',
-      fromTemplate: true,
       isNew: true,
     });
 

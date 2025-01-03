@@ -22,7 +22,6 @@ export interface ActorConfig {
   name: string
   children?: Array<ActorConfig>
   components?: Array<ComponentConfig>
-  fromTemplate?: boolean
   templateId?: string
 }
 

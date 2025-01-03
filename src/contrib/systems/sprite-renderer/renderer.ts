@@ -39,7 +39,7 @@ import { createMaterial, updateMaterial } from './material-factory';
 import {
   loadImage,
   prepareSprite,
-  getImagesFromTemplates,
+  getImagesFromTemplate,
   getTextureMapKey,
   cloneTexture,
 } from './utils';
@@ -212,7 +212,7 @@ export class SpriteRenderer extends System {
     const imagesToLoad: Record<string, Sprite> = {};
 
     this.templateCollection.getAll().forEach(
-      (template) => getImagesFromTemplates(imagesToLoad, template),
+      (template) => getImagesFromTemplate(imagesToLoad, template),
     );
 
     this.actorCollection.forEach((actor) => {
