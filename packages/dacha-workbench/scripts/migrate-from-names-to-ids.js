@@ -23,7 +23,7 @@ const nameToIdMap = {}
 config.templates.forEach((template) => buildNameToIdMap(template, nameToIdMap))
 
 const fixActor = (actor, map) => {
-  if (actor.fromTemplate) {
+  if (actor.templateId) {
     const { id, children } = map[actor.templateName]
     actor.templateId = id
     delete actor.templateName

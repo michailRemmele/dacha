@@ -9,14 +9,14 @@ import { Input, Button, Space } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import type { ActorConfig, TemplateConfig } from 'remiz'
 
+import { findPathById } from '../../../../../utils/find-path-by-id'
 import { Labelled } from '../../components'
 import { useConfig, useStore } from '../../../../hooks'
 import { EngineContext } from '../../../../providers'
 import { EventType } from '../../../../../events'
 
+import { parseTemplatePath } from './utils'
 import { SpaceCompactCSS, ButtonCSS } from './actor-form.style'
-
-const ACTOR_PATH_START = 3
 
 interface TemplateFieldProps {
   path: Array<string>
@@ -29,21 +29,16 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
   const { scene } = useContext(EngineContext)
 
   const templatePath = useMemo(() => {
-    const copyPath = path.slice(0)
-    const resultPath = []
+    const actor = store.get(path) as ActorConfig
+    const templates = store.get(['templates']) as TemplateConfig[]
 
-    while (copyPath.length > ACTOR_PATH_START) {
-      const entity = store.get(copyPath) as ActorConfig | ActorConfig['children']
-
-      if (Array.isArray(entity)) {
-        resultPath.unshift('children')
-      } else {
-        resultPath.unshift(`id:${(entity as ActorConfig).templateId as string}`)
-      }
-      copyPath.pop()
-    }
-    return ['templates'].concat(resultPath)
+    return parseTemplatePath(findPathById(
+      templates,
+      actor.templateId as string,
+      (template) => template.id,
+    ))
   }, [path, store])
+
   const { name } = useConfig(templatePath) as TemplateConfig
 
   const handleTemplateInspect = useCallback(() => {

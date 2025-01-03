@@ -5,7 +5,6 @@ import {
 import type {
   ActorConfig,
   TemplateConfig,
-  LevelConfig,
   Scene,
   ComponentConfig,
 } from 'remiz'
@@ -18,13 +17,12 @@ import {
 import { getTool } from '../../../utils/get-tool'
 import type { CommanderStore } from '../../../store'
 
-import { TOOL_NAME } from './consts'
+import { TOOL_NAME, LEVEL_PATH_LEGTH } from './consts'
 import type { Position } from './types'
 
 const buildActor = (template: TemplateConfig, index?: number): ActorConfig => ({
   id: uuidv4(),
   templateId: template.id,
-  fromTemplate: true,
   name: index ? `${template.name} ${index}` : template.name,
   components: [],
   children: (template.children ?? []).map((child) => buildActor(child)),
@@ -32,13 +30,12 @@ const buildActor = (template: TemplateConfig, index?: number): ActorConfig => ({
 
 export const createFromTemplate = (
   template: TemplateConfig,
-  level: LevelConfig,
+  actors: ActorConfig[],
   x: number,
   y: number,
 ): ActorConfig => {
   const templateCopy = structuredClone(template)
 
-  const { actors } = level
   const sameTemplateObjects = actors
     .filter((actor) => actor.templateId === template.id)
 
@@ -119,3 +116,7 @@ export const updatePlacementPosition = (
     placementPosition.y = getGridValue(cursor.y, getSizeY(transform, sprite), gridStep)
   }
 }
+
+export const isActorPath = (
+  path?: string[],
+): boolean => path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH

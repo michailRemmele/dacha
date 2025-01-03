@@ -1,24 +1,27 @@
-import { System } from 'remiz'
+import { System, Transform } from 'remiz'
 import type {
   Scene,
   SystemOptions,
   TemplateConfig,
-  LevelConfig,
+  ActorConfig,
   ActorSpawner,
   ActorCreator,
 } from 'remiz'
 import type { MouseControlEvent } from 'remiz/events'
 
 import { EventType } from '../../../events'
-import type { SelectLevelEvent } from '../../../events'
+import type { SelectLevelEvent, InspectEntityEvent } from '../../../events'
 import { ADD } from '../../../command-types'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
 import type { CommanderStore } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
-import { createFromTemplate, updatePlacementPosition } from './utils'
 import { getTool } from '../../../utils/get-tool'
 import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedEntity } from '../../../utils/get-saved-selected-entity'
+import { getActorIdByPath } from '../../../utils/get-actor-id-by-path'
+
+import { createFromTemplate, updatePlacementPosition, isActorPath } from './utils'
 import type { Position } from './types'
 
 export class TemplateToolSystem extends System {
@@ -28,6 +31,7 @@ export class TemplateToolSystem extends System {
   private previewSubsystem: PreviewSubsystem
 
   private selectedLevelId?: string
+  private selectedActorPath?: string[]
 
   private cursor: Position
   private placementPosition: Position
@@ -52,12 +56,16 @@ export class TemplateToolSystem extends System {
 
     this.selectedLevelId = getSavedSelectedLevelId(this.configStore)
 
+    const entityPath = getSavedSelectedEntity(this.configStore)
+    this.selectedActorPath = isActorPath(entityPath) ? entityPath : undefined
+
     this.cursor = { x: 0, y: 0 }
     this.placementPosition = { x: 0, y: 0 }
   }
 
   mount(): void {
     this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.scene.addEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
     this.scene.addEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
     this.scene.addEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
     this.scene.addEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
@@ -67,6 +75,7 @@ export class TemplateToolSystem extends System {
 
   unmount(): void {
     this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
+    this.scene.removeEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
     this.scene.removeEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
     this.scene.removeEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
     this.scene.removeEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
@@ -77,6 +86,10 @@ export class TemplateToolSystem extends System {
   private handleSelectLevel = (event: SelectLevelEvent): void => {
     const { levelId } = event
     this.selectedLevelId = levelId
+  }
+
+  private handleInspectEntity = (event: InspectEntityEvent): void => {
+    this.selectedActorPath = isActorPath(event.path) ? event.path : undefined
   }
 
   private handleToolCursorMove = (event: MouseControlEvent): void => {
@@ -108,27 +121,38 @@ export class TemplateToolSystem extends System {
     const tool = getTool(this.scene)
 
     const templateId = tool.features.templateId.value as string | undefined
+    const nestToSelected = tool.features.nestToSelected.value as string | undefined
+
     if (templateId === undefined) {
       return
     }
 
     const template = this.configStore.get(['templates', `id:${templateId}`]) as TemplateConfig
-    const level = this.configStore.get(['levels', `id:${this.selectedLevelId}`]) as LevelConfig
 
-    const actor = createFromTemplate(
-      template,
-      level,
-      this.placementPosition.x || 0,
-      this.placementPosition.y || 0,
-    )
+    let actorOffsetX = this.placementPosition.x ?? 0
+    let actorOffsetY = this.placementPosition.y ?? 0
+
+    if (nestToSelected && this.selectedActorPath) {
+      const selectedActorId = getActorIdByPath(this.selectedActorPath) as string
+      const parentActor = this.scene.getEntityById(selectedActorId)
+      const parentTransform = parentActor?.getComponent(Transform)
+
+      actorOffsetX -= parentTransform?.offsetX ?? 0
+      actorOffsetY -= parentTransform?.offsetY ?? 0
+    }
+
+    const path = nestToSelected && this.selectedActorPath
+      ? this.selectedActorPath.concat('children')
+      : ['levels', `id:${this.selectedLevelId}`, 'actors']
+
+    const siblings = this.configStore.get(path) as ActorConfig[]
+
+    const actor = createFromTemplate(template, siblings, actorOffsetX, actorOffsetY)
 
     this.configStore.dispatch({
       command: ADD,
       scope: ROOT_SCOPE,
-      options: {
-        path: ['levels', `id:${this.selectedLevelId}`, 'actors'],
-        value: actor,
-      },
+      options: { path, value: actor },
     })
   }
 

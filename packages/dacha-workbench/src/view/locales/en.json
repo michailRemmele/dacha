@@ -45,6 +45,7 @@
     "template.title": "Template Tool",
     "template.features.template.title": "Template:",
     "template.features.preview.title": "Preview",
+    "template.features.nestToSelected.title": "Nesting",
 
     "common.features.grid.title": "Snap to Grid"
   },
