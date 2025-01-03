@@ -112,7 +112,6 @@ export class PreviewSubsystem {
   private spawnPreview(templateId: string): Actor {
     const preview = this.actorCreator.create({
       templateId,
-      fromTemplate: true,
       isNew: true,
     })
     this.mainActor.appendChild(preview)

@@ -6,8 +6,8 @@ import {
 import type { DataNode } from 'antd/lib/tree'
 
 import { persistentStorage } from '../../../persistent-storage'
+import { findPathById } from '../../../utils/find-path-by-id'
 
-import { findTreePath } from './utils'
 import type { TreeNode } from './types'
 
 interface UseExpandedKeysReturnType {
@@ -62,7 +62,7 @@ export const useTreeKeys = <T extends DataNode>(
     }
 
     const keysSet = new Set(expandedKeys)
-    const path = findTreePath(tree, selectedKey)
+    const path = findPathById(tree, selectedKey, (node) => String(node.key))
 
     // Don't need to expand selected node
     path.pop()
