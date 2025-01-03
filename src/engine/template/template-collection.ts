@@ -36,11 +36,12 @@ export class TemplateCollection {
       template.setComponent(new Component(componentOptions.config));
     });
 
+    this.storage[options.id] = template;
     return template;
   }
 
   register(options: TemplateConfig): void {
-    this.storage[options.id] = this.buildTemplate(options);
+    this.buildTemplate(options);
   }
 
   get(id: string): Template {
@@ -56,6 +57,9 @@ export class TemplateCollection {
   }
 
   delete(id: string): void {
+    const template = this.get(id);
+    template.children.forEach((child) => this.delete(child.id));
+
     delete this.storage[id];
   }
 }

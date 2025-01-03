@@ -2,13 +2,11 @@
 {
   "id": "003",
   "name": "actorFromTemplateExample",
-  "fromTemplate": true,
   "templateId": "000",
   "children": [
     {
       "id": "004",
       "name": "childFromTemplateExample1",
-      "fromTemplate": true,
       "templateId": "001",
       "children": [],
       "components": [

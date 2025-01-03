@@ -2,10 +2,7 @@ import uuid from 'uuid-random';
 
 import type { ComponentConfig } from '../types';
 import type { ComponentConstructor } from '../component';
-import type {
-  Template,
-  TemplateCollection,
-} from '../template';
+import type { TemplateCollection } from '../template';
 
 import { Actor } from './actor';
 
@@ -14,7 +11,6 @@ export interface ActorOptions {
   name?: string
   children?: Array<ActorOptions>
   components?: Array<ComponentConfig>
-  fromTemplate?: boolean
   templateId?: string
   isNew?: boolean
 }
@@ -34,9 +30,9 @@ export class ActorCreator {
     this.templateCollection = templateCollection;
   }
 
-  private buildFromTemplate(options: ActorOptions, template: Template): Actor {
+  private buildFromTemplate(options: ActorOptions): Actor {
     const {
-      templateId = void '',
+      templateId,
       components = [],
       children = [],
       isNew = false,
@@ -45,6 +41,8 @@ export class ActorCreator {
 
     id = id || uuid();
     name = name || id;
+
+    const template = templateId ? this.templateCollection.get(templateId) : undefined;
 
     if (!template) {
       throw new Error(`Can't create actor ${name} from template. `
@@ -62,28 +60,15 @@ export class ActorCreator {
         const childOptions = {
           name: templateChild.name,
           templateId: templateChild.id,
-          fromTemplate: true,
           isNew,
         };
 
-        const actorChild = this.build(childOptions, templateChild);
+        const actorChild = this.build(childOptions);
         actor.appendChild(actorChild);
       });
     } else {
-      const templateChildrenMap = template.children
-        .reduce((storage: Record<string, Template>, templateChild) => {
-          storage[templateChild.id] = templateChild;
-
-          return storage;
-        }, {});
-
       children.forEach((childOptions) => {
-        const { templateId: childTemplateId, fromTemplate } = childOptions;
-
-        const templateChild = fromTemplate
-          ? templateChildrenMap[childTemplateId as string]
-          : void 0;
-        const actorChild = this.build(childOptions, templateChild);
+        const actorChild = this.build(childOptions);
         actor.appendChild(actorChild);
       });
     }
@@ -128,13 +113,11 @@ export class ActorCreator {
     return actor;
   }
 
-  private build(options: ActorOptions, template?: Template): Actor {
-    const { templateId, fromTemplate } = options;
+  private build(options: ActorOptions): Actor {
+    const { templateId } = options;
 
-    if (fromTemplate) {
-      template = template || this.templateCollection.get(templateId as string);
-
-      return this.buildFromTemplate(options, template);
+    if (templateId) {
+      return this.buildFromTemplate(options);
     }
 
     return this.buildFromScratch(options);
