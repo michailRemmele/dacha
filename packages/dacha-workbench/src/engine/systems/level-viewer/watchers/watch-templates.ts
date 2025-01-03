@@ -26,7 +26,7 @@ export const watchTemplates: WatcherFn = ({
       new Set<string>(),
     )
 
-    const templates = templateCollection.getAll()
+    const templates = templateCollection.getAll().filter((template) => !template.parent)
     const templatesMap = templates.reduce(
       (acc, template) => acc.add(template.id),
       new Set<string>(),
@@ -70,26 +70,13 @@ export const watchTemplates: WatcherFn = ({
   const { actors } = level
 
   actors.forEach((actorConfig) => {
-    const { id, templateId } = actorConfig
-
-    if (templateId === undefined) {
-      return
-    }
-    if (!templatesToAdd.has(templateId) && !templatesIdsToDelete.has(templateId)) {
-      return
-    }
-
-    const actor = actorCollection.getById(id)
+    const actor = actorCollection.getById(actorConfig.id)
 
     if (actor === undefined) {
       return
     }
 
-    if (templatesIdsToDelete.has(templateId)) {
-      actor.remove()
-    }
-    if (templatesToAdd.has(templateId)) {
-      scene.appendChild(actorCreator.create(omit(actorConfig)))
-    }
+    actor.remove()
+    scene.appendChild(actorCreator.create(omit(actorConfig)))
   })
 }

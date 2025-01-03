@@ -89,7 +89,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
 
   useEffect(() => {
     const { path } = entityData
-    if (path === undefined) {
+    if (path === undefined || scene === undefined) {
       return () => {}
     }
 
@@ -109,7 +109,7 @@ export const SelectedEntityProvider: FC<SelectedEntityProviderProps> = ({
     return () => {
       unsubscribe()
     }
-  }, [store, entityData.path])
+  }, [scene, store, entityData.path])
 
   return (
     <SelectedEntityContext.Provider value={entityData}>

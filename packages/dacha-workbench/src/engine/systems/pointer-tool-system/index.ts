@@ -15,10 +15,11 @@ import type { InspectEntityEvent, SelectLevelEvent } from '../../../events'
 import { getAncestor } from '../../../utils/get-ancestor'
 import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
 import { getSavedSelectedEntity } from '../../../utils/get-saved-selected-entity'
+import { getActorIdByPath } from '../../../utils/get-actor-id-by-path'
 import type { CommanderStore } from '../../../store'
 
 import { SelectionMovementSubsystem } from './selection-movement'
-import { buildActorPath, updateFrameSize, getIdByPath } from './utils'
+import { buildActorPath, updateFrameSize } from './utils'
 import type { SelectedActor } from './types'
 
 export class PointerToolSystem extends System {
@@ -49,7 +50,7 @@ export class PointerToolSystem extends System {
     this.mainActor = scene.data.mainActor as Actor
 
     this.selectedActor = {
-      actorId: getIdByPath(getSavedSelectedEntity(this.configStore)),
+      actorId: getActorIdByPath(getSavedSelectedEntity(this.configStore)),
       levelId: getSavedSelectedLevelId(this.configStore),
     }
 
@@ -80,7 +81,7 @@ export class PointerToolSystem extends System {
   }
 
   private handleInspectEntity = (event: InspectEntityEvent): void => {
-    this.selectedActor.actorId = getIdByPath(event.path)
+    this.selectedActor.actorId = getActorIdByPath(event.path)
   }
 
   private handleSelectionMoveStart = (event: MouseControlEvent): void => {
