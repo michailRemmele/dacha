@@ -9,12 +9,12 @@ import type { EventDataNode } from 'antd/lib/tree'
 import type { SceneConfig } from 'dacha'
 
 import { ListWrapper } from '../list-wrapper'
-import { EngineContext, SelectedEntityContext } from '../../../../providers'
+import { EngineContext, EntitySelectionContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import type { ExplorerDataNode, SelectFn } from '../../../../../types/tree-node'
 import { EventType } from '../../../../../events'
 
-import { parseScenes, getKey } from './utils'
+import { parseScenes, getSelectedKeys } from './utils'
 
 interface ListProps {
   isLoaders?: boolean
@@ -22,28 +22,29 @@ interface ListProps {
 
 export const List: FC<ListProps> = ({ isLoaders = false }) => {
   const { scene } = useContext(EngineContext)
-  const { path: selectedEntityPath } = useContext(SelectedEntityContext)
+  const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
 
   const scenes = useConfig(isLoaders ? 'loaders' : 'scenes') as Array<SceneConfig>
-  const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseScenes(scenes, isLoaders), [scenes])
 
-  const handleSelect = useCallback<SelectFn>((keys, { node }) => {
-    if (node.selected) {
-      return
-    }
+  const handleSelect = useCallback<SelectFn>((keys, info) => {
+    const node = info.node as EventDataNode<ExplorerDataNode>
+    const selectedNodes = info.selectedNodes as EventDataNode<ExplorerDataNode>[]
 
+    scene.dispatchEvent(EventType.SelectEntities, {
+      paths: selectedNodes.map((selectedNode) => selectedNode.path.slice(0)),
+    })
     scene.dispatchEvent(EventType.InspectEntity, {
-      path: (node as EventDataNode<ExplorerDataNode>).path.slice(0),
+      path: selectedNodes.length ? node.path.slice(0) : undefined,
     })
   }, [scene])
-
-  const selectedKey = getKey(selectedEntity, selectedEntityPath, isLoaders)
 
   return (
     <ListWrapper>
       <Tree.DirectoryTree
-        selectedKeys={selectedKey ? [selectedKey] : []}
+        multiple
+        expandedKeys={[]}
+        selectedKeys={getSelectedKeys(selectedEntitiesPaths, isLoaders)}
         onSelect={handleSelect}
         treeData={treeData}
       />

@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext } from '../../../../providers'
 import type { SchemasDataEntry } from '../../../../providers'
 
 import { EntityListStyled } from './entity-list.style'
@@ -31,7 +31,7 @@ export const EntityList = ({
   draggable,
 }: EntityListProps): JSX.Element => {
   const { t } = useTranslation()
-  const { path = [] } = useContext(SelectedEntityContext)
+  const { path = [] } = useContext(InspectedEntityContext)
 
   const pathKey = useMemo(() => path.join('.'), [path])
 

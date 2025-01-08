@@ -18,7 +18,7 @@ import type { CommanderStore } from '../../../store'
 import { PreviewSubsystem } from './preview'
 import { getTool } from '../../../utils/get-tool'
 import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
-import { getSavedSelectedEntity } from '../../../utils/get-saved-selected-entity'
+import { getSavedInspectedEntity } from '../../../utils/get-saved-inspected-entity'
 import { getActorIdByPath } from '../../../utils/get-actor-id-by-path'
 
 import { createFromTemplate, updatePlacementPosition, isActorPath } from './utils'
@@ -56,7 +56,7 @@ export class TemplateToolSystem extends System {
 
     this.selectedLevelId = getSavedSelectedLevelId(this.configStore)
 
-    const entityPath = getSavedSelectedEntity(this.configStore)
+    const entityPath = getSavedInspectedEntity(this.configStore)
     this.selectedActorPath = isActorPath(entityPath) ? entityPath : undefined
 
     this.cursor = { x: 0, y: 0 }

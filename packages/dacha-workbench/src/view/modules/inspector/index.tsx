@@ -11,7 +11,7 @@ import i18next from 'i18next'
 import { Tabs } from 'antd'
 
 import { persistentStorage } from '../../../persistent-storage'
-import { SchemasProvider, SelectedEntityContext } from '../../providers'
+import { SchemasProvider, InspectedEntityContext } from '../../providers'
 import { useExtension } from '../../hooks'
 import { NAMESPACE_EXTENSION } from '../../providers/schemas-provider/consts'
 import { TabsCSS } from '../../common-styles/tabs.style'
@@ -24,7 +24,7 @@ import {
 
 export const Inspector = (): JSX.Element => {
   const { t } = useTranslation()
-  const { path } = useContext(SelectedEntityContext)
+  const { path } = useContext(InspectedEntityContext)
 
   const { locales: extLocales } = useExtension()
 

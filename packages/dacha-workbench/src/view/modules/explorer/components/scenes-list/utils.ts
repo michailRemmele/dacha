@@ -1,6 +1,7 @@
 import type { SceneConfig } from 'dacha'
 
 import { ExplorerDataNode } from '../../../../../types/tree-node'
+import { getIdByPath } from '../../../../../utils/get-id-by-path'
 
 export const parseScenes = (
   scenes: Array<SceneConfig>,
@@ -12,19 +13,10 @@ export const parseScenes = (
   isLeaf: true,
 }))
 
-export const getKey = (
-  entity?: unknown,
-  path?: Array<string>,
-  isLoaders?: boolean,
-): string | undefined => {
-  if (!entity || !path) {
-    return void ''
-  }
-
+export const getSelectedKeys = (paths: string[][], isLoaders?: boolean): string[] => {
   const rootPath = isLoaders ? 'loaders' : 'scenes'
-  if (path[0] !== rootPath) {
-    return void ''
-  }
 
-  return (entity as SceneConfig).id
+  return paths
+    .filter((path) => path[0] === rootPath)
+    .map((path) => getIdByPath(path))
 }

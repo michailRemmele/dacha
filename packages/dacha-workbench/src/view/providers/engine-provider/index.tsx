@@ -35,6 +35,7 @@ import {
   ToolController,
   Shape,
   Settings,
+  Frame,
 } from '../../../engine'
 
 const REQUIRED_GLOBAL_OPTIONS = [
@@ -85,6 +86,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
       ToolController,
       Shape,
       Settings,
+      Frame,
     ],
     resources: {
       [UiBridge.systemName]: {

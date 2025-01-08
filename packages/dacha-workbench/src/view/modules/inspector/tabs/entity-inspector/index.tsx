@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Button, Typography } from 'antd'
 import { CopyOutlined } from '@ant-design/icons'
 
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { forms } from '../../forms'
 
@@ -11,7 +11,7 @@ import { HeaderStyled } from './entity-inspector.style'
 
 export const EntityInspector = (): JSX.Element | null => {
   const { t } = useTranslation()
-  const { type, path } = useContext(SelectedEntityContext)
+  const { type, path } = useContext(InspectedEntityContext)
 
   const entity = useConfig(path) as { id: string } | undefined
   const handleCopyId = useCallback(() => {

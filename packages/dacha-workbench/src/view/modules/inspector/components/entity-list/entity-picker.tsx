@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { Button, Select } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext } from '../../../../providers'
 import { useCommander } from '../../../../hooks'
 import { addValue } from '../../../../commands'
 import type { SchemasDataEntry } from '../../../../providers'
@@ -38,7 +38,7 @@ export const EntityPicker: FC<EntityPickerProps> = ({
 }): JSX.Element => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const { path = [] } = useContext(SelectedEntityContext)
+  const { path = [] } = useContext(InspectedEntityContext)
 
   const rootPath = useMemo(() => path.concat(type), [path, type])
 

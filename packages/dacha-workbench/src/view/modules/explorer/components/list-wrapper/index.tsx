@@ -18,6 +18,9 @@ export const ListWrapper = forwardRef<HTMLDivElement, ListWrapperProps>(({ child
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
+      scene.dispatchEvent(EventType.SelectEntities, {
+        paths: [],
+      })
       scene.dispatchEvent(EventType.InspectEntity, {
         path: undefined,
       })

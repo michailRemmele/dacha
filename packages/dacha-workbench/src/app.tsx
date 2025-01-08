@@ -6,7 +6,7 @@ import 'antd/dist/reset.css'
 import { App } from './view'
 import {
   EngineProvider,
-  SelectedEntityProvider,
+  EntityExplorerProvider,
   ThemeProvider,
   NotificationProvider,
   NeedsReloadProvider,
@@ -37,13 +37,13 @@ root.render(
     <CommandProvider>
       <CommandScopeProvider name={ROOT_SCOPE}>
         <EngineProvider>
-          <SelectedEntityProvider>
+          <EntityExplorerProvider>
             <NotificationProvider>
               <NeedsReloadProvider>
                 <App />
               </NeedsReloadProvider>
             </NotificationProvider>
-          </SelectedEntityProvider>
+          </EntityExplorerProvider>
         </EngineProvider>
       </CommandScopeProvider>
     </CommandProvider>

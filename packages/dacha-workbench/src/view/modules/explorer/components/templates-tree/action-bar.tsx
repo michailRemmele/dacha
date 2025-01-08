@@ -14,37 +14,37 @@ import {
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
 import { addTemplate, deleteTemplate, duplicateTemplate } from '../../../../commands/templates'
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext } from '../../../../providers'
 
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
+  const { path: inspectedEntityPath, type } = useContext(InspectedEntityContext)
 
   const handleAdd = useCallback(() => {
-    const pathToAdd = !selectedEntityPath || type !== 'template'
+    const pathToAdd = !inspectedEntityPath || type !== 'template'
       ? ['templates']
-      : selectedEntityPath.concat('children')
+      : inspectedEntityPath.concat('children')
 
     dispatch(addTemplate(pathToAdd))
-  }, [dispatch, selectedEntityPath, type])
+  }, [dispatch, inspectedEntityPath, type])
 
   const handleDelete = useCallback(() => {
-    if (selectedEntityPath === undefined) {
+    if (inspectedEntityPath === undefined) {
       return
     }
 
-    dispatch(deleteTemplate(selectedEntityPath))
-  }, [dispatch, selectedEntityPath])
+    dispatch(deleteTemplate(inspectedEntityPath))
+  }, [dispatch, inspectedEntityPath])
 
   const handleDuplicate = useCallback(() => {
-    if (selectedEntityPath === undefined) {
+    if (inspectedEntityPath === undefined) {
       return
     }
 
-    dispatch(duplicateTemplate(selectedEntityPath, selectedEntityPath.slice(0, -1)))
-  }, [dispatch, selectedEntityPath])
+    dispatch(duplicateTemplate(inspectedEntityPath, inspectedEntityPath.slice(0, -1)))
+  }, [dispatch, inspectedEntityPath])
 
   return (
     <ActionBarStyled>

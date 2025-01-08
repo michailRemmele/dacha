@@ -1,5 +1,9 @@
 export { EngineContext, EngineProvider } from './engine-provider'
-export { SelectedEntityContext, SelectedEntityProvider } from './selected-entity-provider'
+export {
+  InspectedEntityContext,
+  EntityExplorerProvider,
+  EntitySelectionContext,
+} from './entity-explorer-provider'
 export { SchemasContext, SchemasProvider } from './schemas-provider'
 export type { SchemasDataEntry } from './schemas-provider'
 export { ThemeProvider } from './theme-provider'
