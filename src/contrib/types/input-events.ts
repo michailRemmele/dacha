@@ -8,16 +8,18 @@ export interface InputEventAttributeConfig {
   value: AttributeValue
 }
 
-export interface MouseEvent {
+export interface CustomMouseEvent {
   eventType: string
   button: number
   x: number
   y: number
   screenX: number
   screenY: number
+  nativeEvent: MouseEvent
 }
 
-export interface KeyboardEvent {
+export interface CustomKeyboardEvent {
   key: string
   pressed: boolean
+  nativeEvent: KeyboardEvent
 }

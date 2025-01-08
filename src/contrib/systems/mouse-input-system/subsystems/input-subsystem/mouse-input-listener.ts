@@ -1,4 +1,4 @@
-import type { MouseEvent as CustomMouseEvent } from '../../../../types/input-events';
+import type { CustomMouseEvent } from '../../../../types/input-events';
 
 const LISTENING_EVENTS = [
   'mousedown',
@@ -32,6 +32,7 @@ export class MouseInputListener {
       y: offsetY,
       screenX: offsetX,
       screenY: offsetY,
+      nativeEvent: event as MouseEvent,
     });
   };
 
