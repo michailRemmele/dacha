@@ -1,10 +1,9 @@
 import type { SystemOptions } from '../../../../../engine/system';
-import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
-import { Camera, Transform } from '../../../../components';
 import { MouseInput } from '../../../../events';
 import type { MouseInputEvent } from '../../../../events';
 import { CameraService } from '../../../camera-system';
+import { getProjectedX, getProjectedY } from '../../../../utils/coordinates-projection';
 
 export class CoordinatesProjector {
   private scene: Scene;
@@ -25,24 +24,10 @@ export class CoordinatesProjector {
     this.scene.removeEventListener(MouseInput, this.handleMouseInput);
   }
 
-  private getProjectedX(inputX: number, camera: Actor): number {
-    const { windowSizeX, zoom } = camera.getComponent(Camera);
-    const { offsetX: cameraOffsetX } = camera.getComponent(Transform);
-
-    return ((inputX - (windowSizeX / 2)) / zoom) + cameraOffsetX;
-  }
-
-  private getProjectedY(inputY: number, camera: Actor): number {
-    const { windowSizeY, zoom } = camera.getComponent(Camera);
-    const { offsetY: cameraOffsetY } = camera.getComponent(Transform);
-
-    return ((inputY - (windowSizeY / 2)) / zoom) + cameraOffsetY;
-  }
-
   private handleMouseInput = (event: MouseInputEvent): void => {
     const currentCamera = this.cameraService.getCurrentCamera();
 
-    event.x = currentCamera ? this.getProjectedX(event.x, currentCamera) : event.x;
-    event.y = currentCamera ? this.getProjectedY(event.y, currentCamera) : event.y;
+    event.x = currentCamera ? getProjectedX(event.x, currentCamera) : event.x;
+    event.y = currentCamera ? getProjectedY(event.y, currentCamera) : event.y;
   };
 }
