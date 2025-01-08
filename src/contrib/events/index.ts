@@ -1,6 +1,6 @@
 import type { Actor } from '../../engine/actor';
 import type { Vector2 } from '../../engine/math-lib';
-import type { MouseEvent, KeyboardEvent } from '../types/input-events';
+import type { CustomMouseEvent, CustomKeyboardEvent } from '../types/input-events';
 import type { ActorEvent, SceneEvent } from '../../types/events';
 
 export const SetCamera = 'SetCamera';
@@ -16,9 +16,9 @@ export const AddForce = 'AddForce';
 export const AddImpulse = 'AddImpulse';
 export const StopMovement = 'StopMovement';
 
-export type MouseInputEvent = SceneEvent<MouseEvent>;
+export type MouseInputEvent = SceneEvent<CustomMouseEvent>;
 
-export type KeyboardInputEvent = SceneEvent<KeyboardEvent>;
+export type KeyboardInputEvent = SceneEvent<CustomKeyboardEvent>;
 
 export type SetCameraEvent = SceneEvent<{
   actorId: string
@@ -37,7 +37,7 @@ export type CollisionEvent = SceneEvent<{
 }>;
 
 export type MouseControlEvent<T = Record<string, never>>
-  = ActorEvent<Pick<MouseEvent, 'x' | 'y' | 'screenX' | 'screenY'>> & T;
+  = ActorEvent<Pick<CustomMouseEvent, 'x' | 'y' | 'screenX' | 'screenY' | 'nativeEvent'>> & T;
 
 export type KeyboardControlEvent<T = Record<string, never>> = ActorEvent<T>;
 

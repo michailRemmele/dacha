@@ -1,4 +1,4 @@
-import type { KeyboardEvent as CustomKeyboardEvent } from '../../types/input-events';
+import type { CustomKeyboardEvent } from '../../types/input-events';
 
 export class InputListener {
   private windowNode: Window | HTMLElement;
@@ -13,6 +13,7 @@ export class InputListener {
     this.eventsQuery.push({
       key: (event as KeyboardEvent).code,
       pressed: true,
+      nativeEvent: event as KeyboardEvent,
     });
   };
 
@@ -20,6 +21,7 @@ export class InputListener {
     this.eventsQuery.push({
       key: (event as KeyboardEvent).code,
       pressed: false,
+      nativeEvent: event as KeyboardEvent,
     });
   };
 
