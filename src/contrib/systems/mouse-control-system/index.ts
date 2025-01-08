@@ -45,6 +45,7 @@ export class MouseControlSystem extends System {
           y: event.y,
           screenX: event.screenX,
           screenY: event.screenY,
+          nativeEvent: event.nativeEvent,
         });
       }
     });

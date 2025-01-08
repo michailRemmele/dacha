@@ -124,14 +124,15 @@ export class SpriteRenderer extends System {
     this.spriteCache = {};
     this.textureMap = {};
 
+    this.cameraService = scene.getService(CameraService);
+
     scene.addService(new SpriteRendererService({
-      scene: this.renderScene,
-      camera: this.currentCamera,
+      threeScene: this.renderScene,
+      threeCamera: this.currentCamera,
       window: this.window,
       sortFn: this.sortFn,
+      cameraService: this.cameraService,
     }));
-
-    this.cameraService = scene.getService(CameraService);
   }
 
   async load(): Promise<void> {
