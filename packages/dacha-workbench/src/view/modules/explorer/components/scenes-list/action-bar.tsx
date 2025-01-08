@@ -15,7 +15,7 @@ import {
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
 import { addScene, deleteScene, duplicateScene } from '../../../../commands/scenes'
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext } from '../../../../providers'
 
 interface ActionBarProps {
   isLoaders?: boolean
@@ -43,27 +43,27 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
     [isLoaders],
   )
 
-  const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
+  const { path: inspectedEntityPath, type } = useContext(InspectedEntityContext)
 
   const handleAdd = useCallback(() => {
     dispatch(addScene(isLoaders ? ['loaders'] : ['scenes']))
   }, [dispatch, isLoaders])
 
   const handleDelete = useCallback(() => {
-    if (!selectedEntityPath) {
+    if (!inspectedEntityPath) {
       return
     }
 
-    dispatch(deleteScene(selectedEntityPath))
-  }, [dispatch, selectedEntityPath])
+    dispatch(deleteScene(inspectedEntityPath))
+  }, [dispatch, inspectedEntityPath])
 
   const handleDuplicate = useCallback(() => {
-    if (selectedEntityPath === undefined) {
+    if (inspectedEntityPath === undefined) {
       return
     }
 
-    dispatch(duplicateScene(selectedEntityPath, selectedEntityPath.slice(0, -1)))
-  }, [dispatch, selectedEntityPath])
+    dispatch(duplicateScene(inspectedEntityPath, inspectedEntityPath.slice(0, -1)))
+  }, [dispatch, inspectedEntityPath])
 
   return (
     <ActionBarStyled>

@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next'
 import type { ActorConfig } from 'dacha'
 
 import { EntityList } from '../entity-list'
-import { SelectedEntityContext, SchemasContext } from '../../../../providers'
+import { InspectedEntityContext, SchemasContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 
 export const ComponentList: FC = () => {
   const { t } = useTranslation()
 
-  const { path = [] } = useContext(SelectedEntityContext)
+  const { path = [] } = useContext(InspectedEntityContext)
   const { components: availableComponents } = useContext(SchemasContext)
 
   const { components = [] } = useConfig(path) as ActorConfig

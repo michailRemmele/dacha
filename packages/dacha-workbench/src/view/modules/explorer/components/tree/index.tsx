@@ -23,7 +23,8 @@ interface TreeNodeTitleProps extends ExplorerDataNode {
 interface TreeProps {
   className?: string
   treeData: ExplorerDataNode[]
-  selectedKey?: string
+  selectedKeys?: string[]
+  inspectedKey?: string
   persistentStorageKey: string
 }
 
@@ -50,26 +51,35 @@ export const TreeNodeTitle: FC<TreeNodeTitleProps> = ({
 export const Tree: FC<TreeProps> = ({
   className,
   treeData,
-  selectedKey,
+  inspectedKey,
+  selectedKeys,
   persistentStorageKey,
 }) => {
   const { scene } = useContext(EngineContext)
 
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, selectedKey, `${persistentStorageKey}.expandedKeys`)
+  const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, inspectedKey, `${persistentStorageKey}.expandedKeys`)
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
   }, [])
 
-  const handleSelect = useCallback<SelectFn<ExplorerDataNode>>((keys, { node }) => {
-    if (node.selected) {
-      return
-    }
+  const handleSelect = useCallback<SelectFn<ExplorerDataNode>>((keys, info) => {
+    const { selectedNodes, node } = info
 
-    scene.dispatchEvent(EventType.InspectEntity, { path: node.path.slice(0) })
+    scene.dispatchEvent(EventType.SelectEntities, {
+      paths: selectedNodes.map((selectedNode) => selectedNode.path.slice(0)),
+    })
+    scene.dispatchEvent(EventType.InspectEntity, {
+      path: selectedNodes.length ? node.path.slice(0) : undefined,
+    })
   }, [scene])
+
+  const handleDrop = useCallback(() => {
+    // TODO: Implement Drag and Drop
+    console.log('drop')
+  }, [])
 
   const getContainer = useCallback(() => containerRef.current as HTMLDivElement, [])
 
@@ -78,15 +88,18 @@ export const Tree: FC<TreeProps> = ({
       <AntdTree.DirectoryTree
         className={className}
         expandedKeys={expandedKeys}
-        selectedKeys={selectedKey ? [selectedKey] : []}
+        selectedKeys={selectedKeys}
         onSelect={handleSelect}
         onExpand={handleExpand}
+        onDrop={handleDrop}
         treeData={treeData}
         expandAction="doubleClick"
+        draggable={{ icon: false }}
+        multiple
         titleRender={(nodeData): ReactNode => (
           <TreeNodeTitle
             {...nodeData}
-            selected={selectedKey === nodeData.key}
+            selected={selectedKeys?.includes(String(nodeData.key)) ?? false}
             getContainer={getContainer}
           />
         )}

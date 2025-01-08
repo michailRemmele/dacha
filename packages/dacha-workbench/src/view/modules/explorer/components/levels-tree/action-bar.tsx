@@ -16,7 +16,7 @@ import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explo
 import { useCommander } from '../../../../hooks'
 import { addActor, deleteActor, duplicateActor } from '../../../../commands/actors'
 import { addLevel, deleteLevel, duplicateLevel } from '../../../../commands/levels'
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext } from '../../../../providers'
 
 import { FocusActionButton } from './components'
 
@@ -24,17 +24,17 @@ export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
+  const { path: inspectedEntityPath, type } = useContext(InspectedEntityContext)
 
   const handleAddActor = useCallback(() => {
-    if (!selectedEntityPath) {
+    if (!inspectedEntityPath) {
       return
     }
 
-    const pathToAdd = selectedEntityPath.concat(type === 'level' ? 'actors' : 'children')
+    const pathToAdd = inspectedEntityPath.concat(type === 'level' ? 'actors' : 'children')
 
     dispatch(addActor(pathToAdd))
-  }, [dispatch, selectedEntityPath, type])
+  }, [dispatch, inspectedEntityPath, type])
 
   const handleAddLevel = useCallback(() => {
     dispatch(addLevel())
@@ -42,23 +42,23 @@ export const ActionBar: FC = () => {
 
   const handleDelete = useCallback(() => {
     if (type === 'actor') {
-      dispatch(deleteActor(selectedEntityPath as Array<string>))
+      dispatch(deleteActor(inspectedEntityPath as Array<string>))
     } else {
-      dispatch(deleteLevel(selectedEntityPath as Array<string>))
+      dispatch(deleteLevel(inspectedEntityPath as Array<string>))
     }
-  }, [dispatch, selectedEntityPath, type])
+  }, [dispatch, inspectedEntityPath, type])
 
   const handleDuplicate = useCallback(() => {
-    if (selectedEntityPath === undefined) {
+    if (inspectedEntityPath === undefined) {
       return
     }
 
     if (type === 'actor') {
-      dispatch(duplicateActor(selectedEntityPath, selectedEntityPath.slice(0, -1)))
+      dispatch(duplicateActor(inspectedEntityPath, inspectedEntityPath.slice(0, -1)))
     } else {
-      dispatch(duplicateLevel(selectedEntityPath, selectedEntityPath.slice(0, -1)))
+      dispatch(duplicateLevel(inspectedEntityPath, inspectedEntityPath.slice(0, -1)))
     }
-  }, [dispatch, selectedEntityPath, type])
+  }, [dispatch, inspectedEntityPath, type])
 
   return (
     <ActionBarStyled>
@@ -104,7 +104,7 @@ export const ActionBar: FC = () => {
 
       <AdditionalSectionStyled>
         <FocusActionButton
-          path={type === 'actor' ? selectedEntityPath : undefined}
+          path={type === 'actor' ? inspectedEntityPath : undefined}
         />
       </AdditionalSectionStyled>
     </ActionBarStyled>

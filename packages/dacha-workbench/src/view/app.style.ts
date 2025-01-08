@@ -43,7 +43,7 @@ export const CanvasRootCSS = (): SerializedStyles => {
     }
 
     &.canvas-root_tool_pointer {
-      cursor: pointer;
+      cursor: default;
     }
 
     &.canvas-root_tool_zoom.canvas-root_feature-direction_in {
@@ -87,4 +87,6 @@ export const HelperCanvasRootCSS = css`
   top: 35px;
 
   pointer-events: none;
+
+  image-rendering: pixelated;
 `
