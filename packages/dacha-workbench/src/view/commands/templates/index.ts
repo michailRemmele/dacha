@@ -1,3 +1,3 @@
 export { addTemplate } from './add-template'
-export { deleteTemplate } from './delete-template'
+export { deleteTemplates } from './delete-templates'
 export { duplicateTemplate } from './duplicate-template'

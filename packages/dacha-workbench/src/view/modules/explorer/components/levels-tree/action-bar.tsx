@@ -14,9 +14,10 @@ import {
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
-import { addActor, deleteActor, duplicateActor } from '../../../../commands/actors'
-import { addLevel, deleteLevel, duplicateLevel } from '../../../../commands/levels'
-import { InspectedEntityContext } from '../../../../providers'
+import { addActor, duplicateActor } from '../../../../commands/actors'
+import { addLevel, duplicateLevel } from '../../../../commands/levels'
+import { deleteByPaths } from '../../../../commands'
+import { InspectedEntityContext, EntitySelectionContext } from '../../../../providers'
 
 import { FocusActionButton } from './components'
 
@@ -25,6 +26,7 @@ export const ActionBar: FC = () => {
   const { dispatch } = useCommander()
 
   const { path: inspectedEntityPath, type } = useContext(InspectedEntityContext)
+  const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
 
   const handleAddActor = useCallback(() => {
     if (!inspectedEntityPath) {
@@ -41,12 +43,8 @@ export const ActionBar: FC = () => {
   }, [dispatch])
 
   const handleDelete = useCallback(() => {
-    if (type === 'actor') {
-      dispatch(deleteActor(inspectedEntityPath as Array<string>))
-    } else {
-      dispatch(deleteLevel(inspectedEntityPath as Array<string>))
-    }
-  }, [dispatch, inspectedEntityPath, type])
+    dispatch(deleteByPaths(selectedEntitiesPaths))
+  }, [dispatch, selectedEntitiesPaths, type])
 
   const handleDuplicate = useCallback(() => {
     if (inspectedEntityPath === undefined) {

@@ -1,23 +1,23 @@
 import type {
-  TemplateConfig,
   LevelConfig,
   ActorConfig,
 } from 'dacha'
 
-import { setValue, deleteValue } from '..'
+import { setValue, deleteByPaths } from '..'
+import { getIdByPath } from '../../../utils/get-id-by-path'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 
 const filterActors = (
   actors: Array<ActorConfig>,
-  templateId: string,
+  templateIds: Set<string>,
 ): Array<ActorConfig> => actors.reduce((acc, actor) => {
-  if (actor.templateId === templateId) {
+  if (actor.templateId && templateIds.has(actor.templateId)) {
     return acc
   }
 
   acc.push({
     ...actor,
-    children: actor.children && filterActors(actor.children, templateId),
+    children: actor.children && filterActors(actor.children, templateIds),
   })
 
   return acc
@@ -25,21 +25,21 @@ const filterActors = (
 
 const filterLevels = (
   levels: Array<LevelConfig>,
-  templateId: string,
+  templateIds: Set<string>,
 ): Array<LevelConfig> => levels.map((level) => ({
   ...level,
-  actors: filterActors(level.actors, templateId),
+  actors: filterActors(level.actors, templateIds),
 }))
 
-export const deleteTemplate = (
-  path: Array<string>,
+export const deleteTemplates = (
+  paths: string[][],
 ) => (
   dispatch: DispatchFn,
   getState: GetStateFn,
 ): void => {
-  const template = getState(path) as TemplateConfig
+  const templateIds = new Set(paths.map((path) => getIdByPath(path)))
   const levels = getState(['levels']) as Array<LevelConfig>
 
-  dispatch(setValue(['levels'], filterLevels(levels, template.id)))
-  dispatch(deleteValue(path, true))
+  dispatch(setValue(['levels'], filterLevels(levels, templateIds)))
+  dispatch(deleteByPaths(paths, true))
 }

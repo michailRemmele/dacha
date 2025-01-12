@@ -36,7 +36,7 @@ export const CanvasRootCSS = (): SerializedStyles => {
 
     flex: 1;
 
-    background-color: ${theme.colorBgLayout};
+    background-color: ${theme.colorFill};
 
     &.canvas-root_tool_hand {
       cursor: grab;
