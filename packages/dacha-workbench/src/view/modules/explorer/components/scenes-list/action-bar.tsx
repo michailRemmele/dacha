@@ -14,8 +14,9 @@ import {
 
 import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
-import { addScene, deleteScene, duplicateScene } from '../../../../commands/scenes'
-import { InspectedEntityContext } from '../../../../providers'
+import { addScene, duplicateScene } from '../../../../commands/scenes'
+import { deleteByPaths } from '../../../../commands'
+import { InspectedEntityContext, EntitySelectionContext } from '../../../../providers'
 
 interface ActionBarProps {
   isLoaders?: boolean
@@ -44,18 +45,15 @@ export const ActionBar: FC<ActionBarProps> = ({ isLoaders }) => {
   )
 
   const { path: inspectedEntityPath, type } = useContext(InspectedEntityContext)
+  const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
 
   const handleAdd = useCallback(() => {
     dispatch(addScene(isLoaders ? ['loaders'] : ['scenes']))
   }, [dispatch, isLoaders])
 
   const handleDelete = useCallback(() => {
-    if (!inspectedEntityPath) {
-      return
-    }
-
-    dispatch(deleteScene(inspectedEntityPath))
-  }, [dispatch, inspectedEntityPath])
+    dispatch(deleteByPaths(selectedEntitiesPaths))
+  }, [dispatch, selectedEntitiesPaths])
 
   const handleDuplicate = useCallback(() => {
     if (inspectedEntityPath === undefined) {
