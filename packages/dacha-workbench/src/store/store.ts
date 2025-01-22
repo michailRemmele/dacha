@@ -30,7 +30,7 @@ export class Store {
       return
     }
 
-    const key = path[path.length - 1]
+    const key = path.at(-1) as string
 
     if (Array.isArray(item)) {
       const index = findIndexByKey(item, key)
@@ -51,7 +51,7 @@ export class Store {
       return
     }
 
-    const key = path[path.length - 1]
+    const key = path.at(-1) as string
 
     if (Array.isArray(item)) {
       const index = findIndexByKey(item, key)
@@ -85,7 +85,7 @@ export class Store {
         continue
       }
 
-      const key = path[path.length - 1]
+      const key = path.at(-1) as string
 
       if (Array.isArray(item)) {
         const index = findIndexByKey(item, key)
@@ -98,6 +98,41 @@ export class Store {
     }
 
     this.listeners.forEach((listener) => listener(commonPath, subRoot as DataValue))
+  }
+
+  copyByPaths(
+    sourcePaths: string[][],
+    destinationPath: string[],
+    transformCallback?: (value: unknown, path: string[]) => DataValue,
+  ): void {
+    const destination = getImmutable(this.data, destinationPath, this, 'data')
+    if (typeof destination !== 'object' || destination === null) {
+      return
+    }
+
+    for (const path of sourcePaths) {
+      const key = path.at(-1) as string
+      const value = this.get(path) as DataValue
+      const transformedValue = transformCallback ? transformCallback(value, path) : value
+
+      if (Array.isArray(destination)) {
+        destination.push(transformedValue)
+      } else {
+        destination[key] = transformedValue
+      }
+    }
+
+    this.listeners.forEach((listener) => listener(destinationPath, destination as DataValue))
+  }
+
+  moveByPaths(sourcePaths: string[][], destinationPath: string[]): void {
+    const destination = get(this.data, destinationPath)
+    if (typeof destination !== 'object' || destination === null) {
+      return
+    }
+
+    this.copyByPaths(sourcePaths, destinationPath)
+    this.deleteByPaths(sourcePaths)
   }
 
   subscribe(listener: ListenerFn): () => void {

@@ -15,3 +15,4 @@ export {
   CommandScopeContext,
 } from './command-provider'
 export { NeedsReloadContext, NeedsReloadProvider } from './needs-reload-provider'
+export { HotkeysProvider, HotkeysContext } from './hotkeys-provider'

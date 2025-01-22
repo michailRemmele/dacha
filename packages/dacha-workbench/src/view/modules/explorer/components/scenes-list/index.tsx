@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { ActionBar } from './action-bar'
-import { List } from './list'
+import { SceneTree } from './tree'
 
 interface ScenesListProps {
   isLoaders?: boolean
@@ -10,6 +10,6 @@ interface ScenesListProps {
 export const ScenesList: FC<ScenesListProps> = ({ isLoaders }) => (
   <>
     <ActionBar isLoaders={isLoaders} />
-    <List isLoaders={isLoaders} />
+    <SceneTree isLoaders={isLoaders} />
   </>
 )

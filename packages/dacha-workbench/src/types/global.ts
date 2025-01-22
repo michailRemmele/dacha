@@ -35,6 +35,10 @@ export interface ElectronAPI {
   onSwitchTheme: (callback: () => void) => () => void
   onUndo: (callback: () => void) => () => void
   onRedo: (callback: () => void) => () => void
+  onCut: (callback: () => void) => () => void
+  onCopy: (callback: () => void) => () => void
+  onPaste: (callback: () => void) => () => void
+  onDelete: (callback: () => void) => () => void
   loadPersistentStorage: () => Record<string, unknown>
   savePersistentStorage: (state: Record<string, unknown>) => void
 }

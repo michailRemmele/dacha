@@ -5,12 +5,13 @@
     "tab.scenes": "Scenes",
     "tab.loaders": "Loaders",
 
+    "actionBar.cut.button.title": "Cut",
+    "actionBar.copy.button.title": "Copy",
+    "actionBar.paste.button.title": "Paste",
+    "actionBar.delete.button.title": "Delete",
+
     "levels.actionBar.addActor.button.title": "Add New Actor",
     "levels.actionBar.addLevel.button.title": "Add New Level",
-    "levels.actionBar.duplicateActor.button.title": "Duplicate Actor",
-    "levels.actionBar.duplicateLevel.button.title": "Duplicate Level",
-    "levels.actionBar.deleteActor.button.title": "Delete Actor",
-    "levels.actionBar.deleteLevel.button.title": "Delete Level",
     "levels.actionBar.focusActor.button.title": "Focus Actor",
 
     "levels.actionBar.actor.new.title": "New Actor {{index}}",

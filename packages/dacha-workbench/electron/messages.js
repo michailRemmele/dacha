@@ -6,4 +6,8 @@ module.exports = {
   ASSETS_DIALOG: 'ASSETS_DIALOG',
   UNDO: 'UNDO',
   REDO: 'REDO',
+  COPY: 'COPY',
+  CUT: 'CUT',
+  PASTE: 'PASTE',
+  DELETE: 'DELETE',
 }

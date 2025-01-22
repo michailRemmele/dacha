@@ -15,6 +15,9 @@ import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/
 import { EventType } from '../../../../../events'
 import { isScrolledIntoView } from '../../utils/is-scrolled-into-view'
 
+import { useTreeData } from './hooks/use-tree-data'
+import { TreeCSS } from './tree.style'
+
 interface TreeNodeTitleProps extends ExplorerDataNode {
   selected: boolean
   getContainer: () => HTMLDivElement
@@ -60,6 +63,7 @@ export const Tree: FC<TreeProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, inspectedKey, `${persistentStorageKey}.expandedKeys`)
+  const { treeData: parsedTreeData } = useTreeData(treeData)
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
@@ -86,13 +90,14 @@ export const Tree: FC<TreeProps> = ({
   return (
     <ListWrapper ref={containerRef}>
       <AntdTree.DirectoryTree
+        css={TreeCSS}
         className={className}
         expandedKeys={expandedKeys}
         selectedKeys={selectedKeys}
         onSelect={handleSelect}
         onExpand={handleExpand}
         onDrop={handleDrop}
-        treeData={treeData}
+        treeData={parsedTreeData}
         expandAction="doubleClick"
         draggable={{ icon: false }}
         multiple

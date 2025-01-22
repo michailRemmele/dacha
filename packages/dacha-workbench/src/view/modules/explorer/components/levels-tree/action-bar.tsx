@@ -8,16 +8,14 @@ import { Button } from 'antd'
 import {
   FileAddOutlined,
   FolderAddOutlined,
-  DeleteOutlined,
-  CopyOutlined,
 } from '@ant-design/icons'
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
-import { addActor, duplicateActor } from '../../../../commands/actors'
-import { addLevel, duplicateLevel } from '../../../../commands/levels'
-import { deleteByPaths } from '../../../../commands'
-import { InspectedEntityContext, EntitySelectionContext } from '../../../../providers'
+import { addActor } from '../../../../commands/actors'
+import { addLevel } from '../../../../commands/levels'
+import { InspectedEntityContext } from '../../../../providers'
+import { HotkeysBar } from '../hotkeys-bar'
 
 import { FocusActionButton } from './components'
 
@@ -26,7 +24,6 @@ export const ActionBar: FC = () => {
   const { dispatch } = useCommander()
 
   const { path: inspectedEntityPath, type } = useContext(InspectedEntityContext)
-  const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
 
   const handleAddActor = useCallback(() => {
     if (!inspectedEntityPath) {
@@ -41,22 +38,6 @@ export const ActionBar: FC = () => {
   const handleAddLevel = useCallback(() => {
     dispatch(addLevel())
   }, [dispatch])
-
-  const handleDelete = useCallback(() => {
-    dispatch(deleteByPaths(selectedEntitiesPaths))
-  }, [dispatch, selectedEntitiesPaths, type])
-
-  const handleDuplicate = useCallback(() => {
-    if (inspectedEntityPath === undefined) {
-      return
-    }
-
-    if (type === 'actor') {
-      dispatch(duplicateActor(inspectedEntityPath, inspectedEntityPath.slice(0, -1)))
-    } else {
-      dispatch(duplicateLevel(inspectedEntityPath, inspectedEntityPath.slice(0, -1)))
-    }
-  }, [dispatch, inspectedEntityPath, type])
 
   return (
     <ActionBarStyled>
@@ -75,30 +56,10 @@ export const ActionBar: FC = () => {
         onClick={handleAddLevel}
         title={t('explorer.levels.actionBar.addLevel.button.title')}
       />
-      <Button
-        css={ButtonCSS}
-        icon={<CopyOutlined />}
-        size="small"
-        onClick={handleDuplicate}
-        title={
-          type === 'level'
-            ? t('explorer.levels.actionBar.duplicateLevel.button.title')
-            : t('explorer.levels.actionBar.duplicateActor.button.title')
-        }
-        disabled={type !== 'actor' && type !== 'level'}
-      />
-      <Button
-        css={ButtonCSS}
-        icon={<DeleteOutlined />}
-        size="small"
-        onClick={handleDelete}
-        title={
-          type === 'level'
-            ? t('explorer.levels.actionBar.deleteLevel.button.title')
-            : t('explorer.levels.actionBar.deleteActor.button.title')
-        }
-        disabled={type !== 'actor' && type !== 'level'}
-      />
+
+      <AdditionalSectionStyled>
+        <HotkeysBar />
+      </AdditionalSectionStyled>
 
       <AdditionalSectionStyled>
         <FocusActionButton
