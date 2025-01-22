@@ -1,6 +1,6 @@
 module.exports = {
   transform: {
-    '^.+\\.(js|ts|tsx)$': 'ts-jest',
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
-  testEnvironment: 'jest-environment-jsdom',
+  testEnvironment: './FixJSDOMEnvironment.js',
 }

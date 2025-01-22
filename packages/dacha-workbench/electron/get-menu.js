@@ -27,21 +27,37 @@ module.exports = (window) => Menu.buildFromTemplate([
     submenu: [
       {
         label: 'Undo',
-        accelerator: process.platform === 'darwin' ? 'Cmd+Z' : 'Ctrl+Z',
+        accelerator: 'CmdOrCtrl+Z',
         click: () => window.webContents.send(MESSAGES.UNDO),
       },
       {
         label: 'Redo',
-        accelerator: process.platform === 'darwin' ? 'Cmd+Shift+Z' : 'Ctrl+Shift+Z',
+        accelerator: 'CmdOrCtrl+Shift+Z',
         click: () => window.webContents.send(MESSAGES.REDO),
       },
 
       { type: 'separator' },
 
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-      { role: 'delete' },
+      {
+        label: 'Cut',
+        accelerator: 'CmdOrCtrl+X',
+        click: () => window.webContents.send(MESSAGES.CUT),
+      },
+      {
+        label: 'Copy',
+        accelerator: 'CmdOrCtrl+C',
+        click: () => window.webContents.send(MESSAGES.COPY),
+      },
+      {
+        label: 'Paste',
+        accelerator: 'CmdOrCtrl+V',
+        click: () => window.webContents.send(MESSAGES.PASTE),
+      },
+      {
+        label: 'Delete',
+        accelerator: process.platform === 'darwin' ? 'Cmd+Backspace' : 'Delete',
+        click: () => window.webContents.send(MESSAGES.DELETE),
+      },
       { role: 'selectAll' },
     ],
   },

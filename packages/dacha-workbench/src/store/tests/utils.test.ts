@@ -19,7 +19,7 @@ const example = {
   },
 }
 
-describe('Mutator -> utils -> getImmutable()', () => {
+describe('Store -> utils -> getImmutable()', () => {
   it('Returns object and creates copies of objects and arrays', () => {
     const exampleCopy = { ...example }
     const object = getImmutable(example.a, ['c', 'name:abcd'], example, 'a')

@@ -32,4 +32,20 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.on(MESSAGES.REDO, callback)
     return () => ipcRenderer.removeListener(MESSAGES.REDO, callback)
   },
+  onCut: (callback) => {
+    ipcRenderer.on(MESSAGES.CUT, callback)
+    return () => ipcRenderer.removeListener(MESSAGES.CUT, callback)
+  },
+  onCopy: (callback) => {
+    ipcRenderer.on(MESSAGES.COPY, callback)
+    return () => ipcRenderer.removeListener(MESSAGES.COPY, callback)
+  },
+  onPaste: (callback) => {
+    ipcRenderer.on(MESSAGES.PASTE, callback)
+    return () => ipcRenderer.removeListener(MESSAGES.PASTE, callback)
+  },
+  onDelete: (callback) => {
+    ipcRenderer.on(MESSAGES.DELETE, callback)
+    return () => ipcRenderer.removeListener(MESSAGES.DELETE, callback)
+  },
 })
