@@ -3,7 +3,7 @@ import {
   Transform,
   Sprite,
   Actor,
-} from 'remiz'
+} from 'dacha'
 
 import { Shape } from '../../components/shape'
 import type { RectangleShape } from '../../components/shape'

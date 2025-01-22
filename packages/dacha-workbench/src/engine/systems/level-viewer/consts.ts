@@ -2,7 +2,7 @@ import {
   Transform,
   Sprite,
   Light,
-} from 'remiz'
+} from 'dacha'
 
 export const ALLOWED_COMPONENTS = [
   Transform,

@@ -26,7 +26,7 @@ const commands = {
   deleteValue,
 }
 
-window.RemizEditor = {
+window.DachaWorkbench = {
   EngineContext,
   SchemasContext,
 

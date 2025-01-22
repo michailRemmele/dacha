@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Input, Button, Space } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
-import type { ActorConfig, TemplateConfig } from 'remiz'
+import type { ActorConfig, TemplateConfig } from 'dacha'
 
 import { findPathById } from '../../../../../utils/find-path-by-id'
 import { Labelled } from '../../components'

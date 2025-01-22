@@ -1,11 +1,11 @@
-import { Transform } from 'remiz'
+import { Transform } from 'dacha'
 import type {
   Scene,
   ActorCreator,
   ActorSpawner,
   Actor,
   TemplateConfig,
-} from 'remiz'
+} from 'dacha'
 
 import { EventType } from '../../../../events'
 import type { SelectToolEvent } from '../../../../events'

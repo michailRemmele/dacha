@@ -1,4 +1,4 @@
-import { System, Transform } from 'remiz'
+import { System, Transform } from 'dacha'
 import type {
   Scene,
   SystemOptions,
@@ -6,8 +6,8 @@ import type {
   ActorConfig,
   ActorSpawner,
   ActorCreator,
-} from 'remiz'
-import type { MouseControlEvent } from 'remiz/events'
+} from 'dacha'
+import type { MouseControlEvent } from 'dacha/events'
 
 import { EventType } from '../../../events'
 import type { SelectLevelEvent, InspectEntityEvent } from '../../../events'

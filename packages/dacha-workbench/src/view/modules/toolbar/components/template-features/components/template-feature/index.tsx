@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Select } from 'antd'
-import type { TemplateConfig } from 'remiz'
+import type { TemplateConfig } from 'dacha'
 
 import { FeatureLabel } from '../../../feature-label'
 import { ToolFeature } from '../../../tool-feature'

@@ -1,14 +1,14 @@
 import {
   System,
   SpriteRendererService,
-} from 'remiz'
+} from 'dacha'
 import type {
   Scene,
   SystemOptions,
   Actor,
   ActorSpawner,
-} from 'remiz'
-import type { MouseControlEvent } from 'remiz/events'
+} from 'dacha'
+import type { MouseControlEvent } from 'dacha/events'
 
 import { EventType } from '../../../events'
 import type { InspectEntityEvent, SelectLevelEvent } from '../../../events'

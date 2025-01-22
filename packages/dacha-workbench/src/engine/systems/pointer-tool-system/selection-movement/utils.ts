@@ -1,7 +1,7 @@
 import type {
   Transform,
   Sprite,
-} from 'remiz'
+} from 'dacha'
 
 const TOLERANCE = 0.01
 

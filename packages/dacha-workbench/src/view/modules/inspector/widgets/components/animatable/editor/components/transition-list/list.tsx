@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tree } from 'antd'
-import type { Animation } from 'remiz'
+import type { Animation } from 'dacha'
 
 import { getKey } from '../../utils'
 import { TreeCSS } from '../../editor.style'

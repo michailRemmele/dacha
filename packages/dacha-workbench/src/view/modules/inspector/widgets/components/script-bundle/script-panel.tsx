@@ -4,7 +4,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
-import { ScriptSystem } from 'remiz'
+import { ScriptSystem } from 'dacha'
 
 import { Panel } from '../../../components/panel'
 import { Field } from '../../../components/field'

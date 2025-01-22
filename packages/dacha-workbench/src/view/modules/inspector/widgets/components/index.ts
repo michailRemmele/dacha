@@ -9,7 +9,7 @@ import {
   RigidBody,
   ScriptBundle,
   Transform,
-} from 'remiz'
+} from 'dacha'
 
 import type { WidgetSchema } from '../../../../../types/widget-schema'
 

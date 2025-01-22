@@ -1,4 +1,4 @@
-import type { TemplateConfig, ActorConfig, LevelConfig } from 'remiz'
+import type { TemplateConfig, ActorConfig, LevelConfig } from 'dacha'
 
 import { buildActorConfig } from '../../../utils/build-actor-config'
 

@@ -6,7 +6,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 import { v4 as uuidv4 } from 'uuid'
-import { ScriptSystem } from 'remiz'
+import { ScriptSystem } from 'dacha'
 
 import type { WidgetProps } from '../../../../../../types/widget-schema'
 import { useConfig, useCommander, useExtension } from '../../../../../hooks'

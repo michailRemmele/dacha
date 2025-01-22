@@ -4,7 +4,7 @@ import {
   useContext,
   FC,
 } from 'react'
-import type { MouseControlEvent } from 'remiz/events'
+import type { MouseControlEvent } from 'dacha/events'
 import { PlusOutlined, BorderInnerOutlined } from '@ant-design/icons'
 
 import { throttle } from '../../../../../utils/throttle'

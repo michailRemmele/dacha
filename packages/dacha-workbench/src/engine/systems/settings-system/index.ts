@@ -1,9 +1,9 @@
-import { System } from 'remiz'
+import { System } from 'dacha'
 import type {
   Scene,
   SystemOptions,
   Actor,
-} from 'remiz'
+} from 'dacha'
 
 import { EventType } from '../../../events'
 import type { SetSettingsValueEvent } from '../../../events'

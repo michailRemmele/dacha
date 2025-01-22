@@ -1,4 +1,4 @@
-import type { LevelConfig, TemplateConfig, ActorConfig } from 'remiz'
+import type { LevelConfig, TemplateConfig, ActorConfig } from 'dacha'
 import { FileOutlined } from '@ant-design/icons'
 
 import { ExplorerDataNode } from '../../../../../types/tree-node'

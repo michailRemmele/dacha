@@ -3,7 +3,7 @@ import {
   useMemo,
   FC,
 } from 'react'
-import type { TemplateConfig } from 'remiz'
+import type { TemplateConfig } from 'dacha'
 
 import { SelectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'

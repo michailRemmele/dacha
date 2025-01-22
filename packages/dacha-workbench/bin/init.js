@@ -34,7 +34,7 @@ const init = () => {
   }
 
   fs.writeFileSync(path.resolve(dataPath, 'data.json'), JSON.stringify(INITIAL_DATA, null, 2))
-  fs.writeFileSync(path.resolve('remiz-editor.config.js'), `module.exports = ${JSON.stringify({
+  fs.writeFileSync(path.resolve('dacha-workbench.config.js'), `module.exports = ${JSON.stringify({
     projectConfig: `${DATA_FOLDER_NAME}/data.json`,
     assets: `${DATA_FOLDER_NAME}/${ASSETS_FOLDER_NAME}`,
     autoSave: true,

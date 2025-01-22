@@ -5,7 +5,7 @@ import React, {
   useRef,
   FC,
 } from 'react'
-import type { LevelConfig } from 'remiz'
+import type { LevelConfig } from 'dacha'
 
 import { EngineContext } from '../engine-provider'
 import { useStore, useConfig } from '../../hooks'

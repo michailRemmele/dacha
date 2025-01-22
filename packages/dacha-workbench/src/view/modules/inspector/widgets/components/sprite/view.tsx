@@ -1,5 +1,5 @@
 import { useMemo, FC } from 'react'
-import type { GlobalOption } from 'remiz'
+import type { GlobalOption } from 'dacha'
 
 import type { References, WidgetProps } from '../../../../../../types/widget-schema'
 import { Widget } from '../../../components/widget'

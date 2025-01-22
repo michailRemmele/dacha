@@ -4,7 +4,7 @@ import {
   useMemo,
   FC,
 } from 'react'
-import type { Animation } from 'remiz'
+import type { Animation } from 'dacha'
 
 import { getKey } from '../../utils'
 import { AnimationEditorContext } from '../../providers'

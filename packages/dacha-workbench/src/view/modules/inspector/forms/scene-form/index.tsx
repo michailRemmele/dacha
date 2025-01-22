@@ -1,6 +1,6 @@
 import React, { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { LevelConfig } from 'remiz'
+import type { LevelConfig } from 'dacha'
 
 import { useConfig } from '../../../../hooks'
 import {

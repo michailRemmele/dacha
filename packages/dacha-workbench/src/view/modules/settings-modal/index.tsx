@@ -6,7 +6,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Actor } from 'remiz'
+import type { Actor } from 'dacha'
 
 import { Modal } from '../../components'
 import { EngineContext } from '../../providers'

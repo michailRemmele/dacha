@@ -1,4 +1,4 @@
-import type { SceneConfig } from 'remiz'
+import type { SceneConfig } from 'dacha'
 
 import { ExplorerDataNode } from '../../../../../types/tree-node'
 

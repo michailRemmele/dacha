@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 import { v4 as uuidv4 } from 'uuid'
-import type { Animation } from 'remiz'
+import type { Animation } from 'dacha'
 
 import { FormStyled, FooterStyled, ButtonCSS } from '../inspector.style'
 import {

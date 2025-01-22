@@ -10,7 +10,7 @@ import {
   ScriptSystem,
   SpriteRenderer,
   UiBridge,
-} from 'remiz'
+} from 'dacha'
 
 import type { WidgetSchema } from '../../../../../types/widget-schema'
 

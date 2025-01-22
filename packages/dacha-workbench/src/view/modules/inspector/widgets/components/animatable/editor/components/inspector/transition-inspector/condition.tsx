@@ -4,7 +4,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Animation } from 'remiz'
+import type { Animation } from 'dacha'
 
 import {
   DependencyField,

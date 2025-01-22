@@ -13,7 +13,7 @@ const isDev = process.env.NODE_ENV === 'development'
 const program = new Command()
 
 program
-  .description('CLI to GUI editor for remiz game engine')
+  .description('CLI to GUI editor for Dacha game engine')
 
 program
   .command('init')
@@ -21,7 +21,7 @@ program
   .action(init)
 
 program
-  .option('--config <string>', 'Path to configuration file for editor', path.resolve('remiz-editor.config.js'))
+  .option('--config <string>', 'Path to configuration file for editor', path.resolve('dacha-workbench.config.js'))
   .action((options) => {
     if (options.config === undefined || !fs.existsSync(options.config)) {
       console.error('Cannot find configuration file. Use --config option to specify path to configuration file.')

@@ -3,13 +3,13 @@ import {
   Transform,
   Camera,
   Vector2,
-} from 'remiz'
+} from 'dacha'
 import type {
   Scene,
   SystemOptions,
   Actor,
-} from 'remiz'
-import type { MouseControlEvent } from 'remiz/events'
+} from 'dacha'
+import type { MouseControlEvent } from 'dacha/events'
 
 import { EventType } from '../../../events'
 import { persistentStorage } from '../../../persistent-storage'

@@ -3,14 +3,14 @@ import {
   ActorCollection,
   ActorCreator,
   TemplateCollection,
-} from 'remiz'
+} from 'dacha'
 import type {
   Scene,
   SystemOptions,
   ActorSpawner,
   TemplateConfig,
   LevelConfig,
-} from 'remiz'
+} from 'dacha'
 
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'

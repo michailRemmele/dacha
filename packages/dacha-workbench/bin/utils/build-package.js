@@ -27,9 +27,9 @@ const INCLUDE_DEV_DEPS = [
 
 const buildPackage = () => {
   const appPackage = {
-    name: 'remiz-editor-app',
+    name: 'dacha-workbench-app',
     version: mainPackage.version,
-    productName: 'Remiz Editor',
+    productName: 'Dacha workbench',
     main: 'index.js',
     dependencies: Object.keys(mainPackage.dependencies).reduce((acc, name) => {
       if (!EXCLUDE_DEPS.includes(name)) {

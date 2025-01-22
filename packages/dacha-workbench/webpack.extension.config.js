@@ -17,7 +17,7 @@ module.exports = (entry) => ({
 
   externals: {
     ...baseConfig.externals,
-    'remiz-editor': 'RemizEditor',
+    'dacha-workbench': 'DachaWorkbench',
   },
 
   plugins: [

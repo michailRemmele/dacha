@@ -2,12 +2,12 @@ import {
   System,
   Transform,
   Camera,
-} from 'remiz'
+} from 'dacha'
 import type {
   Scene,
   SystemOptions,
   Actor,
-} from 'remiz'
+} from 'dacha'
 
 import { EventType } from '../../../events'
 import type { SelectLevelEvent } from '../../../events'

@@ -2,7 +2,7 @@ import type {
   TemplateConfig,
   LevelConfig,
   ActorConfig,
-} from 'remiz'
+} from 'dacha'
 
 import { setValue, deleteValue } from '..'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
