@@ -1,5 +1,5 @@
 {
-  "name": "remiz",
+  "name": "dacha",
   "version": "0.12.11",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -49,15 +49,15 @@
     "prepare": "husky install",
     "prepublishOnly": "npm run build"
   },
-  "description": "Remiz is a JavaScript game engine for building games in browser.",
+  "description": "dacha is a JavaScript game engine for building games in browser.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/michailRemmele/remiz.git"
+    "url": "git+https://github.com/michailRemmele/dacha.git"
   },
   "author": "Mikhail Remmele",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/michailRemmele/remiz/issues"
+    "url": "https://github.com/michailRemmele/dacha/issues"
   },
-  "homepage": "https://github.com/michailRemmele/remiz#readme"
+  "homepage": "https://github.com/michailRemmele/dacha#readme"
 }
