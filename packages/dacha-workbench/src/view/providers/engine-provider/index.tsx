@@ -5,7 +5,7 @@ import React, {
   useContext,
   FC,
 } from 'react'
-import type { UiInitFnOptions } from 'remiz'
+import type { UiInitFnOptions } from 'dacha'
 import {
   Engine,
   MouseInputSystem,
@@ -16,7 +16,7 @@ import {
   Transform,
   Camera,
   MouseControl,
-} from 'remiz'
+} from 'dacha'
 
 import { CommandContext } from '../command-provider'
 import { getEditorConfig } from '../../../engine/config'

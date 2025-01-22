@@ -1,4 +1,4 @@
-import type { Config, GlobalOption, TemplateConfig } from 'remiz'
+import type { Config, GlobalOption, TemplateConfig } from 'dacha'
 
 import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
 import {

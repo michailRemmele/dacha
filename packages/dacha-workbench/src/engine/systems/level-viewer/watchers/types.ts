@@ -4,7 +4,7 @@ import type {
   ActorCollection,
   ActorCreator,
   TemplateCollection,
-} from 'remiz'
+} from 'dacha'
 import type { CommanderStore } from '../../../../store'
 
 export interface WatcherOptions {

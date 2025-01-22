@@ -1,8 +1,8 @@
 import {
   Transform,
   Camera,
-} from 'remiz'
-import type { Actor } from 'remiz'
+} from 'dacha'
+import type { Actor } from 'dacha'
 
 export class CoordinatesTransformer {
   private cameraScale: number

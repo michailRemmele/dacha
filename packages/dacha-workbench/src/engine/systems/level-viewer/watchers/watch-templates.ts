@@ -1,4 +1,4 @@
-import type { TemplateConfig } from 'remiz'
+import type { TemplateConfig } from 'dacha'
 
 import { omit } from '../utils'
 

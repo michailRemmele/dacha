@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import i18next from 'i18next'
-import type { TemplateConfig, LevelConfig } from 'remiz'
+import type { TemplateConfig, LevelConfig } from 'dacha'
 
 import { addValue, setValue } from '..'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'

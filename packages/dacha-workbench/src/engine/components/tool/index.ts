@@ -1,4 +1,4 @@
-import { Component } from 'remiz'
+import { Component } from 'dacha'
 
 import { Feature } from './feature'
 import type { FeatureValue, FeatureConfig } from './feature'

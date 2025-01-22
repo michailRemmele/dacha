@@ -1,9 +1,9 @@
 import {
   Transform,
   Sprite,
-} from 'remiz'
-import type { Scene } from 'remiz'
-import type { MouseControlEvent } from 'remiz/events'
+} from 'dacha'
+import type { Scene } from 'dacha'
+import type { MouseControlEvent } from 'dacha/events'
 
 import { EventType } from '../../../../events'
 import { SET } from '../../../../command-types'

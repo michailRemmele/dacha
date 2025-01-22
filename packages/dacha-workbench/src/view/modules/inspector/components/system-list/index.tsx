@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { arrayMove } from '@dnd-kit/sortable'
-import type { SystemConfig } from 'remiz'
+import type { SystemConfig } from 'dacha'
 
 import { EntityList } from '../entity-list'
 import { SelectedEntityContext, SchemasContext } from '../../../../providers'

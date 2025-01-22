@@ -7,7 +7,7 @@ const getEditorConfig = require('./utils/get-editor-config')
 
 const { projectConfig } = getEditorConfig()
 
-const PROJECT_UPDATE_HASH_PATH = '.remiz/hash'
+const PROJECT_UPDATE_HASH_PATH = '.dacha/hash'
 
 const saveProjectConfig = (config) => {
   const data = JSON.stringify(config, null, 2)

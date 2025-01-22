@@ -3,8 +3,8 @@ import {
   Transform,
   CameraService,
   ActorCollection,
-} from 'remiz'
-import type { SystemOptions } from 'remiz'
+} from 'dacha'
+import type { SystemOptions } from 'dacha'
 
 import { Shape } from '../../components'
 

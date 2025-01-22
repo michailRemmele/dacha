@@ -1,4 +1,4 @@
-import type { Config } from 'remiz'
+import type { Config } from 'dacha'
 import type { Resource } from 'i18next'
 import type { GlobalToken } from 'antd'
 
@@ -43,7 +43,7 @@ declare global {
   interface Window {
     electron: ElectronAPI
     editorExtension?: Extension
-    RemizEditor: Record<string, unknown>
+    DachaWorkbench: Record<string, unknown>
   }
 }
 

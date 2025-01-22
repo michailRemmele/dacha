@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import type { Config } from 'remiz'
+import type { Config } from 'dacha'
 
 import { useStore } from '../use-store'
 

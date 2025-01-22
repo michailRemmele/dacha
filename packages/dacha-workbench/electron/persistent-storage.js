@@ -1,6 +1,6 @@
 const { saveFile, readFile } = require('./file-system')
 
-const EDITOR_CACHE_PATH = '.remiz/cache.json'
+const EDITOR_CACHE_PATH = '.dacha/cache.json'
 
 const savePersistentStorage = (state) => {
   saveFile(EDITOR_CACHE_PATH, JSON.stringify(state, null, 2))

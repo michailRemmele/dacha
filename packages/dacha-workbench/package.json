@@ -1,14 +1,14 @@
 {
-  "name": "remiz-editor",
+  "name": "dacha-workbench",
   "version": "0.0.21",
-  "description": "GUI editor for remiz game engine",
+  "description": "GUI editor for dacha game engine",
   "main": "./esm/index.js",
   "types": "./esm/index.d.ts",
   "bin": {
-    "remiz-editor": "./bin/index.js"
+    "dacha-workbench": "./bin/index.js"
   },
   "scripts": {
-    "start": "env NODE_ENV=development node './bin/index.js' --config 'fixture/remiz-editor.config.js'",
+    "start": "env NODE_ENV=development node './bin/index.js' --config 'fixture/dacha-workbench.config.js'",
     "build": "npm run build:clean && npm run build:app && npm run build:esm && npm run build:types",
     "build:clean": "rm -rf build && rm -rf esm",
     "build:app": "env NODE_ENV=production webpack --config webpack.config.js",
@@ -37,14 +37,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/michailRemmele/remiz-editor.git"
+    "url": "git+https://github.com/michailRemmele/dacha-workbench.git"
   },
   "author": "Mikhail Remmele",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/michailRemmele/remiz-editor/issues"
+    "url": "https://github.com/michailRemmele/dacha-workbench/issues"
   },
-  "homepage": "https://github.com/michailRemmele/remiz-editor#readme",
+  "homepage": "https://github.com/michailRemmele/dacha-workbench#readme",
   "devDependencies": {
     "@babel/cli": "7.17.10",
     "@babel/core": "7.17.10",
@@ -87,7 +87,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-i18next": "11.17.2",
-    "remiz": "0.12.10",
+    "dacha": "0.13.0",
     "style-loader": "3.3.1",
     "ts-jest": "27.1.4",
     "typescript": "4.9.5",

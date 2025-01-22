@@ -1,4 +1,4 @@
-import { Component } from 'remiz'
+import { Component } from 'dacha'
 
 export interface ToolControllerConfig extends Record<string, unknown> {
   activeTool: string;

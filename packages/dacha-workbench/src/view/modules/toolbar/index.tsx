@@ -16,7 +16,7 @@ import {
   AimOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import type { Actor } from 'remiz'
+import type { Actor } from 'dacha'
 
 import { EngineContext } from '../../providers'
 import { Tool, ToolController } from '../../../engine/components'

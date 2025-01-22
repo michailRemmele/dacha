@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { Animation } from 'remiz'
+import type { Animation } from 'dacha'
 import type { DataNode } from 'antd/lib/tree'
 
 import {

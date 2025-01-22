@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import i18next from 'i18next'
-import type { Animation } from 'remiz'
+import type { Animation } from 'dacha'
 
 export const duplicateSubstate = (substate: Animation.SubstateConfig): Animation.SubstateConfig => {
   const duplicate = structuredClone(substate)

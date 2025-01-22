@@ -1,2 +1,2 @@
-# Remiz Editor
-GUI editor for Remiz game engine
+# Dacha Workbench
+GUI editor for Dacha game engine

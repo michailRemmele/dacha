@@ -1,4 +1,4 @@
-import type { Transform } from 'remiz'
+import type { Transform } from 'dacha'
 
 import type { ShapeType, BaseShape } from '../../../components/shape'
 import type { CoordinatesTransformer } from '../coordinates-transformer'

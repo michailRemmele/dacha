@@ -6,7 +6,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { SceneConfig } from 'remiz'
+import type { SceneConfig } from 'dacha'
 
 import { useConfig } from '../../../../hooks'
 import { NeedsReloadContext } from '../../../../providers'

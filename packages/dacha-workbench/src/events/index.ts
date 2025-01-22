@@ -1,5 +1,5 @@
-import type { SceneEvent } from 'remiz'
-import type { MouseControlEvent } from 'remiz/events'
+import type { SceneEvent } from 'dacha'
+import type { MouseControlEvent } from 'dacha/events'
 
 import type { SettingsConfig } from '../engine/components/settings'
 
@@ -29,7 +29,7 @@ export type InspectEntityEvent = SceneEvent<{
   path: Array<string> | undefined
 }>
 
-declare module 'remiz' {
+declare module 'dacha' {
   export interface SceneEventMap {
     [EventType.SelectTool]: SelectToolEvent
     [EventType.SetToolFeatureValue]: SetToolFeatureValueEvent

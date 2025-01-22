@@ -1,6 +1,6 @@
 import { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { ActorConfig } from 'remiz'
+import type { ActorConfig } from 'dacha'
 
 import {
   Field,

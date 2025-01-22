@@ -1,4 +1,4 @@
-import type { ActorConfig, TemplateConfig, Scene } from 'remiz'
+import type { ActorConfig, TemplateConfig, Scene } from 'dacha'
 
 import { ALLOWED_COMPONENTS } from './consts'
 

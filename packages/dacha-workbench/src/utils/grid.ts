@@ -1,7 +1,7 @@
 import type {
   Scene,
   Actor,
-} from 'remiz'
+} from 'dacha'
 
 import { Settings } from '../engine/components'
 

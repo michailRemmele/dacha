@@ -1,13 +1,13 @@
 import {
   Transform,
   Sprite,
-} from 'remiz'
+} from 'dacha'
 import type {
   ActorConfig,
   TemplateConfig,
   Scene,
   ComponentConfig,
-} from 'remiz'
+} from 'dacha'
 import { v4 as uuidv4 } from 'uuid'
 
 import {

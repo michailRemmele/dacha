@@ -1,4 +1,4 @@
-import { Component } from 'remiz'
+import { Component } from 'dacha'
 
 import { RectangleShape } from './rectangle'
 import { CircleShape } from './circle'

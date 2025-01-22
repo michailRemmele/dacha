@@ -1,14 +1,14 @@
 const path = require('path')
 
 const binPaths = {
-  darwin: 'Remiz Editor.app/Contents/MacOS/Remiz Editor',
-  freebsd: 'Remiz Editor',
-  linux: 'Remiz Editor',
-  win32: 'Remiz Editor.exe',
+  darwin: 'Dacha Workbench.app/Contents/MacOS/Dacha Workbench',
+  freebsd: 'Dacha Workbench',
+  linux: 'Dacha Workbench',
+  win32: 'Dacha Workbench.exe',
 }
 
 const resourcesPaths = {
-  darwin: 'Remiz Editor.app/Contents/Resources/app',
+  darwin: 'Dacha Workbench.app/Contents/Resources/app',
   freebsd: path.join('resources', 'app'),
   linux: path.join('resources', 'app'),
   win32: path.join('resources', 'app'),

@@ -1,4 +1,4 @@
-import type { Actor, Scene } from 'remiz'
+import type { Actor, Scene } from 'dacha'
 
 import { Tool, ToolController } from '../engine/components'
 

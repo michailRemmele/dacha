@@ -1,10 +1,10 @@
-import { System } from 'remiz'
+import { System } from 'dacha'
 import type {
   Scene,
   Config,
   SystemOptions,
   UpdateOptions,
-} from 'remiz'
+} from 'dacha'
 
 import { EventType } from '../../../events'
 import { CommanderStore } from '../../../store'

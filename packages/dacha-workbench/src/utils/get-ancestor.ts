@@ -1,4 +1,4 @@
-import { Actor } from 'remiz'
+import { Actor } from 'dacha'
 
 export const getAncestor = (actor: Actor): Actor => {
   if (actor.parent instanceof Actor) {

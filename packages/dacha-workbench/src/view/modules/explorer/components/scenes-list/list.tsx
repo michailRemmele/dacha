@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { Tree } from 'antd'
 import type { EventDataNode } from 'antd/lib/tree'
-import type { SceneConfig } from 'remiz'
+import type { SceneConfig } from 'dacha'
 
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext, SelectedEntityContext } from '../../../../providers'

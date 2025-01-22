@@ -1,10 +1,10 @@
-import { System, MouseControl } from 'remiz'
+import { System, MouseControl } from 'dacha'
 import type {
   Scene,
   SystemOptions,
   Actor,
   MouseControlConfig,
-} from 'remiz'
+} from 'dacha'
 
 import { EventType } from '../../../events'
 import type { SelectToolEvent, SetToolFeatureValueEvent } from '../../../events'

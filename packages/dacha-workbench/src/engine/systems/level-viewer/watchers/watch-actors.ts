@@ -1,7 +1,7 @@
 import type {
   ActorConfig,
   LevelConfig,
-} from 'remiz'
+} from 'dacha'
 
 import { omit } from '../utils'
 

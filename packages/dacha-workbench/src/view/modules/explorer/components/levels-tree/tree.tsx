@@ -5,7 +5,7 @@ import {
   useEffect,
   FC,
 } from 'react'
-import type { LevelConfig } from 'remiz'
+import type { LevelConfig } from 'dacha'
 
 import { EngineContext, SelectedEntityContext } from '../../../../providers'
 import { useConfig, useStore } from '../../../../hooks'

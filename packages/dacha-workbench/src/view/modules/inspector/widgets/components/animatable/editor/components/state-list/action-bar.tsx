@@ -14,7 +14,7 @@ import {
   CopyOutlined,
 } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
-import type { Animation } from 'remiz'
+import type { Animation } from 'dacha'
 
 import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { duplicateState, duplicateSubstate } from '../../utils'
