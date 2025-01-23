@@ -4,7 +4,7 @@ import type { LevelConfig, ActorConfig } from 'dacha'
 
 import type { DispatchFn } from '../../hooks/use-commander'
 import { copyByPaths as copyByPathsBase } from '..'
-import { LEVELS_PATH_LEGTH } from '../../../consts/paths'
+import { LEVEL_PATH_LEGTH } from '../../../consts/paths'
 
 const updateIds = (actor: ActorConfig): void => {
   actor.id = uuidv4()
@@ -37,8 +37,8 @@ export const copyByPaths = (
   const isActorDestination = destinationPath.at(-1) !== 'levels'
 
   const filteredSourcePaths = isActorDestination
-    ? sourcePaths.filter((path) => path.length > LEVELS_PATH_LEGTH)
-    : sourcePaths.filter((path) => path.length === LEVELS_PATH_LEGTH)
+    ? sourcePaths.filter((path) => path.length > LEVEL_PATH_LEGTH)
+    : sourcePaths.filter((path) => path.length === LEVEL_PATH_LEGTH)
 
   dispatch(copyByPathsBase(
     filteredSourcePaths,

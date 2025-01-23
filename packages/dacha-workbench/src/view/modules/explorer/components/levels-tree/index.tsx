@@ -8,10 +8,13 @@ import {
   moveByPaths,
 } from '../../../../commands/levels'
 import { deleteByPaths } from '../../../../commands'
+import { CHILDREN_FIELD_MAP } from '../../consts'
 
 import { ActionBar } from './action-bar'
 import { LevelsTree } from './tree'
 import { TreeCSS } from './level-tree.style'
+
+const ROOT_PATH = ['levels']
 
 export const LevelsExplorer: FC = () => {
   const { paths: selectedPaths } = useContext(EntitySelectionContext)
@@ -30,6 +33,8 @@ export const LevelsExplorer: FC = () => {
 
   return (
     <HotkeysProvider
+      childrenFieldMap={CHILDREN_FIELD_MAP}
+      rootPath={ROOT_PATH}
       selectedPaths={selectedPaths}
       onCopyTo={handleCopyTo}
       onMoveTo={handleMoveTo}
