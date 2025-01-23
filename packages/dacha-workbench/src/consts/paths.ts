@@ -1,1 +1,1 @@
-export const LEVELS_PATH_LEGTH = 1
+export const LEVEL_PATH_LEGTH = 2

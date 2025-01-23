@@ -7,6 +7,8 @@ import {
 } from 'react'
 
 interface HotkeysProviderProps {
+  childrenFieldMap: Record<string, string | undefined>
+  rootPath: string[]
   selectedPaths: string[][]
   onMoveTo: (sourcePaths: string[][], destinationPath: string[]) => void
   onCopyTo: (sourcePaths: string[][], destinationPath: string[]) => void
@@ -33,6 +35,8 @@ export const HotkeysContext = createContext<HotkeysContextProps>({
 })
 
 export const HotkeysProvider = ({
+  childrenFieldMap,
+  rootPath,
   selectedPaths,
   onMoveTo,
   onCopyTo,
@@ -61,26 +65,32 @@ export const HotkeysProvider = ({
   }, [selectedPaths])
 
   const handlePaste = useCallback((): void => {
-    if (!clipboard || !selectedPaths.length) {
+    if (!clipboard) {
       return
     }
 
-    const destinationPath = selectedPaths.reduce((shortestPath, path) => {
-      if (path.length < shortestPath.length) {
-        return path
-      }
-      return shortestPath
-    }).slice(0, -1)
+    let destinationPath: string[] = rootPath
+
+    if (selectedPaths.length) {
+      const shortestPath = selectedPaths.reduce((acc, path) => {
+        if (path.length < acc.length) {
+          return path
+        }
+        return acc
+      })
+      const childrenField = childrenFieldMap[shortestPath.at(-2) as string]
+
+      destinationPath = childrenField ? shortestPath.concat(childrenField) : rootPath
+    }
 
     if (isCut) {
       onMoveTo(clipboard, destinationPath)
+      setClipboard(undefined)
+      setIsCut(false)
     } else {
       onCopyTo(clipboard, destinationPath)
     }
-
-    setClipboard(undefined)
-    setIsCut(false)
-  }, [clipboard, isCut, selectedPaths])
+  }, [clipboard, isCut, selectedPaths, childrenFieldMap, rootPath])
 
   const handleRemove = useCallback((): void => {
     onRemove(selectedPaths)
