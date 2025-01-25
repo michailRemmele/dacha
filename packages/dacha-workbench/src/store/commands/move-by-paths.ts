@@ -5,11 +5,16 @@ import type { DataValue } from '../types'
 interface MoveByPathsCommandOptions {
   sourcePaths: string[][]
   destinationPath: string[]
+  transformCallback?: (value: unknown, path: string[], parent: unknown) => DataValue
 }
 
 export class MoveByPathsCmd extends Command {
   execute(options: unknown): (() => void) | void {
-    const { sourcePaths, destinationPath } = options as MoveByPathsCommandOptions
+    const {
+      sourcePaths,
+      destinationPath,
+      transformCallback,
+    } = options as MoveByPathsCommandOptions
 
     const destination = this.store.get(destinationPath) as DataValue
 
@@ -20,7 +25,7 @@ export class MoveByPathsCmd extends Command {
 
     const undoParents = sourcePaths.map((path) => this.store.get(path.slice(0, -1)))
 
-    this.store.moveByPaths(sourcePaths, destinationPath)
+    this.store.moveByPaths(sourcePaths, destinationPath, transformCallback)
 
     return () => {
       sourcePaths.forEach((path, index) => {

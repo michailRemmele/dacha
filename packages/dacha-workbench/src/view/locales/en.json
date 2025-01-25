@@ -14,8 +14,8 @@
     "levels.actionBar.addLevel.button.title": "Add New Level",
     "levels.actionBar.focusActor.button.title": "Focus Actor",
 
-    "levels.actionBar.actor.new.title": "New Actor {{index}}",
-    "levels.actionBar.level.new.title": "New Level {{index}}",
+    "levels.actionBar.actor.new.title": "Actor",
+    "levels.actionBar.level.new.title": "Level",
 
     "levels.actionBar.addTemplate.button.title": "Add New Template",
     "levels.actionBar.duplicateTemplate.button.title": "Duplicate Template",

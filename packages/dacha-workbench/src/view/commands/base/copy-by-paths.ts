@@ -4,7 +4,7 @@ import type { Command } from '../../hooks/use-commander'
 export const copyByPaths = (
   sourcePaths: string[][],
   destinationPath: string[],
-  transformCallback?: (value: unknown, path: string[]) => unknown,
+  transformCallback?: (value: unknown, path: string[], parent: unknown) => unknown,
   isEffect?: boolean,
 ): Command => ({
   command: COPY_BY_PATHS,

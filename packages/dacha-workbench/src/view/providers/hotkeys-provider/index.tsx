@@ -6,6 +6,8 @@ import {
   createContext,
 } from 'react'
 
+import { filterNestedPaths } from '../../../utils/filter-nested-paths'
+
 interface HotkeysProviderProps {
   childrenFieldMap: Record<string, string | undefined>
   rootPath: string[]
@@ -51,7 +53,7 @@ export const HotkeysProvider = ({
       return
     }
 
-    setClipboard(selectedPaths)
+    setClipboard(filterNestedPaths(selectedPaths))
     setIsCut(true)
   }, [selectedPaths])
 
@@ -60,7 +62,7 @@ export const HotkeysProvider = ({
       return
     }
 
-    setClipboard(selectedPaths)
+    setClipboard(filterNestedPaths(selectedPaths))
     setIsCut(false)
   }, [selectedPaths])
 

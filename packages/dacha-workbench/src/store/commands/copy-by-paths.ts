@@ -5,7 +5,7 @@ import type { DataValue } from '../types'
 interface CopyByPathsCommandOptions {
   sourcePaths: string[][]
   destinationPath: string[]
-  transformCallback?: (value: unknown, path: string[]) => DataValue
+  transformCallback?: (value: unknown, path: string[], parent: unknown) => DataValue
 }
 
 export class CopyByPathsCmd extends Command {

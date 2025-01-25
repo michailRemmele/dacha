@@ -11,7 +11,7 @@ import type { MouseControlEvent } from 'dacha/events'
 
 import { EventType } from '../../../events'
 import type { SelectLevelEvent, InspectEntityEvent } from '../../../events'
-import { ADD } from '../../../command-types'
+import { ADD_VALUE } from '../../../command-types'
 import { ROOT_SCOPE } from '../../../consts/command-scopes'
 import type { CommanderStore } from '../../../store'
 
@@ -150,7 +150,7 @@ export class TemplateToolSystem extends System {
     const actor = createFromTemplate(template, siblings, actorOffsetX, actorOffsetY)
 
     this.configStore.dispatch({
-      command: ADD,
+      command: ADD_VALUE,
       scope: ROOT_SCOPE,
       options: { path, value: actor },
     })

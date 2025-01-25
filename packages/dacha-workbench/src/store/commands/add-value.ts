@@ -2,17 +2,15 @@ import { Command } from './command'
 
 import type { DataValue } from '../types'
 
-interface AddCommandOptions {
-  path: Array<string>
-  value: string | number | boolean
+interface AddValueCommandOptions {
+  path: string[]
+  value: unknown
 }
 
-export class AddCmd extends Command {
+export class AddValueCmd extends Command {
   execute(options: unknown): (() => void) | void {
-    const {
-      path,
-      value,
-    } = options as AddCommandOptions
+    const { path } = options as AddValueCommandOptions
+    const value = (options as AddValueCommandOptions).value as DataValue
 
     const array = this.store.get(path) as DataValue
 
