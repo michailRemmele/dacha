@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid'
-import i18next from 'i18next'
 import type { LevelConfig, ActorConfig } from 'dacha'
 
-import type { DispatchFn } from '../../hooks/use-commander'
-import { copyByPaths as copyByPathsBase } from '..'
+import type { ExplorerEntity } from '../../../types/explorer-entity'
+import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
+import { getUniqueName } from '../../../utils/get-unique-name'
+import { addValues } from '..'
 import { LEVEL_PATH_LEGTH } from '../../../consts/paths'
 
 const updateIds = (actor: ActorConfig): void => {
@@ -11,21 +12,28 @@ const updateIds = (actor: ActorConfig): void => {
   actor.children?.forEach(updateIds)
 }
 
-const getActorDuplicate = (actor: unknown): ActorConfig => {
+const getActorDuplicate = (actor: unknown, parent: unknown): ActorConfig => {
   const duplicate = structuredClone(actor as ActorConfig)
-  duplicate.name = `${duplicate.name} ${i18next.t('explorer.duplicate.appendix.title')}`
+  duplicate.name = getUniqueName(duplicate.name, parent as ExplorerEntity[])
   updateIds(duplicate)
 
   return duplicate
 }
 
-const getLevelDuplicate = (level: unknown): LevelConfig => {
+const getLevelDuplicate = (level: unknown, parent: unknown): LevelConfig => {
   const duplicate = structuredClone(level as LevelConfig)
-  duplicate.name = `${duplicate.name} ${i18next.t('explorer.duplicate.appendix.title')}`
+  duplicate.name = getUniqueName(duplicate.name, parent as ExplorerEntity[])
   duplicate.id = uuidv4()
   duplicate.actors.forEach(updateIds)
 
   return duplicate
+}
+
+const isPathCorrect = (path: string[], isActorDestination: boolean): boolean => {
+  if (isActorDestination) {
+    return path.length > LEVEL_PATH_LEGTH
+  }
+  return path.length === LEVEL_PATH_LEGTH
 }
 
 export const copyByPaths = (
@@ -33,16 +41,31 @@ export const copyByPaths = (
   destinationPath: string[],
 ) => (
   dispatch: DispatchFn,
+  getState: GetStateFn,
 ): void => {
   const isActorDestination = destinationPath.at(-1) !== 'levels'
+  const destination = getState(destinationPath)
+  if (!Array.isArray(destination)) {
+    return
+  }
 
-  const filteredSourcePaths = isActorDestination
-    ? sourcePaths.filter((path) => path.length > LEVEL_PATH_LEGTH)
-    : sourcePaths.filter((path) => path.length === LEVEL_PATH_LEGTH)
+  const { values } = sourcePaths.reduce((acc, path) => {
+    if (!isPathCorrect(path, isActorDestination)) {
+      return acc
+    }
+    const value = getState(path)
+    if (value) {
+      const duplicate = isActorDestination
+        ? getActorDuplicate(value, acc.parent)
+        : getLevelDuplicate(value, acc.parent)
 
-  dispatch(copyByPathsBase(
-    filteredSourcePaths,
-    destinationPath,
-    isActorDestination ? getActorDuplicate : getLevelDuplicate,
-  ))
+      acc.values.push(duplicate)
+      acc.parent.push(duplicate)
+    }
+    return acc
+  }, { values: [] as unknown[], parent: destination.slice(0) })
+
+  if (values.length) {
+    dispatch(addValues(destinationPath, values))
+  }
 }
