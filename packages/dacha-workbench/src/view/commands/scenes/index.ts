@@ -1,2 +1,2 @@
 export { addScene } from './add-scene'
-export { duplicateScene } from './duplicate-scene'
+export { copyByPaths } from './copy-by-paths'

@@ -5,7 +5,7 @@ import type { ExplorerEntity } from '../../../types/explorer-entity'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 import { getUniqueName } from '../../../utils/get-unique-name'
 import { addValues } from '..'
-import { LEVEL_PATH_LEGTH } from '../../../consts/paths'
+import { LEVEL_PATH_LENGTH } from '../../../consts/paths'
 
 const updateIds = (actor: ActorConfig): void => {
   actor.id = uuidv4()
@@ -31,9 +31,9 @@ const getLevelDuplicate = (level: unknown, parent: unknown): LevelConfig => {
 
 const isPathCorrect = (path: string[], isActorDestination: boolean): boolean => {
   if (isActorDestination) {
-    return path.length > LEVEL_PATH_LEGTH
+    return path.length > LEVEL_PATH_LENGTH
   }
-  return path.length === LEVEL_PATH_LEGTH
+  return path.length === LEVEL_PATH_LENGTH
 }
 
 export const copyByPaths = (

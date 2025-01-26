@@ -12,8 +12,7 @@ import {
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
-import { addActor } from '../../../../commands/actors'
-import { addLevel } from '../../../../commands/levels'
+import { addActor, addLevel } from '../../../../commands/levels'
 import { InspectedEntityContext } from '../../../../providers'
 import { HotkeysBar } from '../hotkeys-bar'
 

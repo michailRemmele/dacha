@@ -8,10 +8,15 @@ import type { TemplateConfig } from 'dacha'
 import { InspectedEntityContext, EntitySelectionContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { Tree } from '../tree'
+import { CHILDREN_FIELD_MAP } from '../../consts'
 
 import { parseTemplates, getInspectedKey, getSelectedPaths } from './utils'
 
-export const TemplatesTree: FC = () => {
+interface TemplatesTreeProps {
+  onDrop?: (sourcePaths: string[][], destinationPath: string[]) => void
+}
+
+export const TemplatesTree: FC<TemplatesTreeProps> = ({ onDrop }) => {
   const { path: inspectedEntityPath } = useContext(InspectedEntityContext)
   const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
 
@@ -24,6 +29,9 @@ export const TemplatesTree: FC = () => {
       inspectedKey={getInspectedKey(inspectedEntityPath)}
       selectedPaths={getSelectedPaths(selectedEntitiesPaths)}
       persistentStorageKey="explorer.tab.templates"
+      draggable
+      onDrop={onDrop}
+      childrenFieldMap={CHILDREN_FIELD_MAP}
     />
   )
 }
