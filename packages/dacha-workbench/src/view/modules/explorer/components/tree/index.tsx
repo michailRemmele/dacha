@@ -1,6 +1,7 @@
 import {
   useContext,
   useCallback,
+  useMemo,
   useEffect,
   useRef,
   FC,
@@ -11,9 +12,17 @@ import { Tree as AntdTree } from 'antd'
 import { ListWrapper } from '../list-wrapper'
 import { EngineContext } from '../../../../providers'
 import { useTreeKeys } from '../../../../hooks'
-import type { ExplorerDataNode, ExpandFn, SelectFn } from '../../../../../types/tree-node'
+import type {
+  ExplorerDataNode,
+  ExpandFn,
+  SelectFn,
+  DropFn,
+} from '../../../../../types/tree-node'
 import { EventType } from '../../../../../events'
 import { isScrolledIntoView } from '../../utils/is-scrolled-into-view'
+import { getIdByPath } from '../../../../../utils/get-id-by-path'
+import { filterNestedPaths } from '../../../../../utils/filter-nested-paths'
+import { arraysEqual } from '../../../../../utils/arrays-equal'
 
 import { useTreeData } from './hooks/use-tree-data'
 import { TreeCSS } from './tree.style'
@@ -26,9 +35,12 @@ interface TreeNodeTitleProps extends ExplorerDataNode {
 interface TreeProps {
   className?: string
   treeData: ExplorerDataNode[]
-  selectedKeys?: string[]
+  selectedPaths?: string[][]
   inspectedKey?: string
   persistentStorageKey: string
+  draggable?: boolean
+  onDrop?: (sourcePaths: string[][], destinationPath: string[]) => void
+  childrenFieldMap?: Record<string, string | undefined>
 }
 
 export const TreeNodeTitle: FC<TreeNodeTitleProps> = ({
@@ -55,8 +67,11 @@ export const Tree: FC<TreeProps> = ({
   className,
   treeData,
   inspectedKey,
-  selectedKeys,
+  selectedPaths,
   persistentStorageKey,
+  draggable,
+  onDrop,
+  childrenFieldMap,
 }) => {
   const { scene } = useContext(EngineContext)
 
@@ -64,6 +79,8 @@ export const Tree: FC<TreeProps> = ({
 
   const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData, inspectedKey, `${persistentStorageKey}.expandedKeys`)
   const { treeData: parsedTreeData } = useTreeData(treeData)
+
+  const selectedKeys = useMemo(() => selectedPaths?.map(getIdByPath), [selectedPaths])
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
@@ -80,10 +97,28 @@ export const Tree: FC<TreeProps> = ({
     })
   }, [scene])
 
-  const handleDrop = useCallback(() => {
-    // TODO: Implement Drag and Drop
-    console.log('drop')
-  }, [])
+  const handleDrop = useCallback<DropFn<ExplorerDataNode>>((info) => {
+    if (!onDrop || !childrenFieldMap) {
+      return
+    }
+    const { node, dragNode } = info
+
+    const isWithinSelection = selectedPaths?.some((path) => getIdByPath(path) === dragNode.key)
+    const paths = isWithinSelection ? selectedPaths as string[][] : [dragNode.path]
+
+    const sourcePaths = filterNestedPaths(paths)
+    const childrenField = childrenFieldMap[node.path.at(-2) as string]
+    if (!childrenField) {
+      return
+    }
+    const destinationPath = node.path.concat(childrenField)
+
+    if (sourcePaths.some((path) => arraysEqual(path.slice(0, -1), destinationPath))) {
+      return
+    }
+
+    onDrop(sourcePaths, destinationPath)
+  }, [selectedPaths, onDrop, childrenFieldMap])
 
   const getContainer = useCallback(() => containerRef.current as HTMLDivElement, [])
 
@@ -99,7 +134,7 @@ export const Tree: FC<TreeProps> = ({
         onDrop={handleDrop}
         treeData={parsedTreeData}
         expandAction="doubleClick"
-        draggable={{ icon: false }}
+        draggable={draggable ? { icon: false } : undefined}
         multiple
         titleRender={(nodeData): ReactNode => (
           <TreeNodeTitle

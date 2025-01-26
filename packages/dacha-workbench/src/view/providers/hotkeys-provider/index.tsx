@@ -7,6 +7,7 @@ import {
 } from 'react'
 
 import { filterNestedPaths } from '../../../utils/filter-nested-paths'
+import { arraysEqual } from '../../../utils/arrays-equal'
 
 interface HotkeysProviderProps {
   childrenFieldMap: Record<string, string | undefined>
@@ -86,7 +87,9 @@ export const HotkeysProvider = ({
     }
 
     if (isCut) {
-      onMoveTo(clipboard, destinationPath)
+      if (clipboard.every((path) => !arraysEqual(path.slice(0, -1), destinationPath))) {
+        onMoveTo(clipboard, destinationPath)
+      }
       setClipboard(undefined)
       setIsCut(false)
     } else {

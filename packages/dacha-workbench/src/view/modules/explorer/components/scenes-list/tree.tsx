@@ -9,7 +9,7 @@ import { Tree } from '../tree'
 import { EntitySelectionContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 
-import { parseScenes, getSelectedKeys } from './utils'
+import { parseScenes, getSelectedPaths } from './utils'
 
 interface SceneTreeProps {
   isLoaders?: boolean
@@ -24,7 +24,7 @@ export const SceneTree: FC<SceneTreeProps> = ({ isLoaders = false }) => {
   return (
     <Tree
       treeData={treeData}
-      selectedKeys={getSelectedKeys(selectedEntitiesPaths, isLoaders)}
+      selectedPaths={getSelectedPaths(selectedEntitiesPaths, isLoaders)}
       persistentStorageKey={isLoaders ? 'explorer.tab.loaders' : 'explorer.tab.scenes'}
     />
   )

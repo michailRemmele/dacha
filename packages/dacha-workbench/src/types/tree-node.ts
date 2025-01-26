@@ -7,3 +7,4 @@ export interface ExplorerDataNode extends DataNode {
 
 export type ExpandFn = Required<TreeProps>['onExpand']
 export type SelectFn<T extends DataNode = DataNode> = Required<TreeProps<T>>['onSelect']
+export type DropFn<T extends DataNode = DataNode> = Required<TreeProps<T>>['onDrop']
