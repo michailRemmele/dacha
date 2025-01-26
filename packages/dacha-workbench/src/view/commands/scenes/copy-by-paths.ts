@@ -1,52 +1,50 @@
+import { v4 as uuidv4 } from 'uuid'
+import type { SceneConfig } from 'dacha'
+
 import type { ExplorerEntity } from '../../../types/explorer-entity'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 import { getUniqueName } from '../../../utils/get-unique-name'
-import { addValues, deleteByPaths } from '..'
-import { LEVEL_PATH_LENGTH } from '../../../consts/paths'
+import { addValues } from '..'
+import { SCENES_PATH_LENGTH } from '../../../consts/paths'
 
-const getDuplicate = (entity: unknown, parent: unknown): unknown => {
-  const duplicate = structuredClone(entity as ExplorerEntity)
+const getDuplicate = (scene: SceneConfig, parent: SceneConfig[]): SceneConfig => {
+  const duplicate = structuredClone(scene)
+  duplicate.id = uuidv4()
   duplicate.name = getUniqueName(duplicate.name, parent as ExplorerEntity[])
 
   return duplicate
 }
 
-const isPathCorrect = (path: string[], isActorDestination: boolean): boolean => {
-  if (isActorDestination) {
-    return path.length > LEVEL_PATH_LENGTH
-  }
-  return path.length === LEVEL_PATH_LENGTH
-}
+const isPathCorrect = (path: string[]): boolean => path.length === SCENES_PATH_LENGTH
 
-export const moveByPaths = (
+export const copyByPaths = (
   sourcePaths: string[][],
   destinationPath: string[],
 ) => (
   dispatch: DispatchFn,
   getState: GetStateFn,
 ): void => {
-  const isActorDestination = destinationPath.at(-1) !== 'levels'
+  if (!isPathCorrect(destinationPath)) {
+    return
+  }
+
   const destination = getState(destinationPath)
   if (!Array.isArray(destination)) {
     return
   }
 
   const { values } = sourcePaths.reduce((acc, path) => {
-    if (!isPathCorrect(path, isActorDestination)) {
-      return acc
-    }
     const value = getState(path)
     if (value) {
-      const duplicate = getDuplicate(value, acc.parent)
+      const duplicate = getDuplicate(value as SceneConfig, acc.parent)
 
       acc.values.push(duplicate)
       acc.parent.push(duplicate)
     }
     return acc
-  }, { values: [] as unknown[], parent: destination.slice(0) })
+  }, { values: [] as SceneConfig[], parent: destination.slice(0) as SceneConfig[] })
 
   if (values.length) {
     dispatch(addValues(destinationPath, values))
-    dispatch(deleteByPaths(sourcePaths, true))
   }
 }

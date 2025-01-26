@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import i18next from 'i18next'
 import type { SceneConfig } from 'dacha'
 
+import { getUniqueName } from '../../../utils/get-unique-name'
 import { addValue } from '..'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 
@@ -16,10 +17,11 @@ export const addScene = (
 
   dispatch(addValue<SceneConfig>(destinationPath, {
     id: uuidv4(),
-    name: i18next.t(
-      `explorer.levels.actionBar.${isLoaderScene ? 'loader' : 'scene'}.new.title`,
-      { index: scenes.length },
-    ),
+    name: getUniqueName(i18next.t(
+      isLoaderScene
+        ? 'explorer.loaders.actionBar.loader.new.title'
+        : 'explorer.scenes.actionBar.scene.new.title',
+    ), scenes),
     systems: [],
     levelId: null,
   }))
