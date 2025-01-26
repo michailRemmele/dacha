@@ -14,14 +14,16 @@ import type { SelectLevelEvent } from '../../../../../events'
 import { Tree } from '../tree'
 import { getSavedSelectedLevelId } from '../../../../../utils/get-saved-selected-level-id'
 import { getIdByPath } from '../../../../../utils/get-id-by-path'
+import { CHILDREN_FIELD_MAP } from '../../consts'
 
-import { parseLevels, getInspectedKey, getSelectedKeys } from './utils'
+import { parseLevels, getInspectedKey, getSelectedPaths } from './utils'
 
 interface LevelsTreeProps {
   className?: string
+  onDrop?: (sourcePaths: string[][], destinationPath: string[]) => void
 }
 
-export const LevelsTree: FC<LevelsTreeProps> = ({ className }) => {
+export const LevelsTree: FC<LevelsTreeProps> = ({ className, onDrop }) => {
   const { scene } = useContext(EngineContext)
   const { path: inspectedEntityPath } = useContext(InspectedEntityContext)
   const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
@@ -62,8 +64,11 @@ export const LevelsTree: FC<LevelsTreeProps> = ({ className }) => {
       className={className}
       treeData={treeData}
       inspectedKey={getInspectedKey(inspectedEntityPath)}
-      selectedKeys={getSelectedKeys(selectedEntitiesPaths)}
+      selectedPaths={getSelectedPaths(selectedEntitiesPaths)}
       persistentStorageKey="explorer.tab.levels"
+      draggable
+      onDrop={onDrop}
+      childrenFieldMap={CHILDREN_FIELD_MAP}
     />
   )
 }

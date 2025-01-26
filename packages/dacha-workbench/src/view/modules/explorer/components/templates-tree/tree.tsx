@@ -9,7 +9,7 @@ import { InspectedEntityContext, EntitySelectionContext } from '../../../../prov
 import { useConfig } from '../../../../hooks'
 import { Tree } from '../tree'
 
-import { parseTemplates, getInspectedKey, getSelectedKeys } from './utils'
+import { parseTemplates, getInspectedKey, getSelectedPaths } from './utils'
 
 export const TemplatesTree: FC = () => {
   const { path: inspectedEntityPath } = useContext(InspectedEntityContext)
@@ -22,7 +22,7 @@ export const TemplatesTree: FC = () => {
     <Tree
       treeData={treeData}
       inspectedKey={getInspectedKey(inspectedEntityPath)}
-      selectedKeys={getSelectedKeys(selectedEntitiesPaths)}
+      selectedPaths={getSelectedPaths(selectedEntitiesPaths)}
       persistentStorageKey="explorer.tab.templates"
     />
   )

@@ -41,7 +41,7 @@ export const LevelsExplorer: FC = () => {
       onRemove={handleRemove}
     >
       <ActionBar />
-      <LevelsTree css={TreeCSS} />
+      <LevelsTree css={TreeCSS} onDrop={handleMoveTo} />
     </HotkeysProvider>
   )
 }

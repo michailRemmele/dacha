@@ -57,6 +57,5 @@ export const getInspectedKey = (path?: Array<string>): string | undefined => {
   return getIdByPath(path)
 }
 
-export const getSelectedKeys = (paths: string[][]): string[] => paths
+export const getSelectedPaths = (paths: string[][]): string[][] => paths
   .filter((path) => path[0] === 'levels')
-  .map((path) => getIdByPath(path))
