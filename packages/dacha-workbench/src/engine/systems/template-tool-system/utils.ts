@@ -15,15 +15,16 @@ import {
   getGridStep,
 } from '../../../utils/grid'
 import { getTool } from '../../../utils/get-tool'
+import { getUniqueName } from '../../../utils/get-unique-name'
 import type { CommanderStore } from '../../../store'
 
 import { TOOL_NAME, LEVEL_PATH_LEGTH } from './consts'
 import type { Position } from './types'
 
-const buildActor = (template: TemplateConfig, index?: number): ActorConfig => ({
+const buildActor = (template: TemplateConfig, actors?: ActorConfig[]): ActorConfig => ({
   id: uuidv4(),
   templateId: template.id,
-  name: index ? `${template.name} ${index}` : template.name,
+  name: actors ? getUniqueName(template.name, actors) : template.name,
   components: [],
   children: (template.children ?? []).map((child) => buildActor(child)),
 })
@@ -35,11 +36,7 @@ export const createFromTemplate = (
   y: number,
 ): ActorConfig => {
   const templateCopy = structuredClone(template)
-
-  const sameTemplateObjects = actors
-    .filter((actor) => actor.templateId === template.id)
-
-  const actor = buildActor(templateCopy, sameTemplateObjects.length)
+  const actor = buildActor(templateCopy, actors)
 
   const transform = templateCopy.components
     ?.find((component) => component.name === Transform.componentName)
