@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { Tree } from 'antd'
 import type { Animation } from 'dacha'
 
+import { getStatePath, getSubstatePath } from '../../utils/paths'
 import { getKey } from '../../utils'
 import { useConfig, useTreeKeys } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
@@ -21,12 +22,12 @@ export const List: FC = () => {
   const { t } = useTranslation()
   const {
     path,
-    selectedState,
-    selectedSubstate,
     selectedEntity,
-    selectState,
-    selectSubstate,
+    selectEntity,
   } = useContext(AnimationEditorContext)
+
+  const statePath = selectedEntity ? getStatePath(selectedEntity.path) : undefined
+  const substatePath = selectedEntity ? getSubstatePath(selectedEntity.path) : undefined
 
   const initialStatePath = useMemo(() => path.concat('initialState'), [path])
   const statesPath = useMemo(() => path.concat('states'), [path])
@@ -45,19 +46,14 @@ export const List: FC = () => {
   const { expandedKeys, setExpandedKeys } = useTreeKeys(treeData)
 
   const handleSelect = useCallback<SelectFn<StateDataNode>>((keys, { node }) => {
-    if (node.isLeaf) {
-      selectState(node.parent?.path as Array<string>)
-      selectSubstate(node.path)
-    } else {
-      selectState(node.path)
-    }
+    selectEntity(node.path)
   }, [])
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
     setExpandedKeys(keys as Array<string>)
   }, [])
 
-  const selectedKey = getKey(selectedSubstate ?? selectedState)
+  const selectedKey = getKey(substatePath ?? statePath)
   const isInactive = selectedKey !== getKey(selectedEntity?.path)
 
   return (

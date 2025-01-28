@@ -6,6 +6,7 @@ import {
 } from 'react'
 import type { Animation } from 'dacha'
 
+import { getStatePath, getSubstatePath } from '../../utils/paths'
 import { getKey } from '../../utils'
 import { AnimationEditorContext } from '../../providers'
 import { useConfig } from '../../../../../../../../hooks'
@@ -16,35 +17,36 @@ import { ListStyled, ListItemStyled } from './timeline.style'
 
 export const List: FC = () => {
   const {
-    selectedFrame,
-    selectedState,
-    selectedSubstate,
-    selectFrame,
+    selectedEntity,
+    selectEntity,
   } = useContext(AnimationEditorContext)
 
-  const statePath = selectedState as Array<string>
+  const statePath = getStatePath(selectedEntity?.path as string[]) as string[]
+  const substatePath = getSubstatePath(selectedEntity?.path as string[])
+  const framePath = selectedEntity?.type === 'frame' ? selectedEntity.path : undefined
+
   const state = useConfig(statePath) as Animation.StateConfig
 
   const framesPath = useMemo(() => {
     if (state.type === STATE_TYPE.INDIVIDUAL) {
       return statePath.concat('timeline', 'frames')
     }
-    if (!selectedSubstate) {
+    if (!substatePath) {
       return undefined
     }
-    return selectedSubstate.concat('timeline', 'frames')
-  }, [state, statePath, selectedSubstate])
+    return substatePath.concat('timeline', 'frames')
+  }, [state, statePath, substatePath])
   const frames = useConfig(framesPath) as Array<Animation.FrameConfig> | undefined
 
   const handleSelect = useCallback((path: Array<string>) => {
-    selectFrame(path)
+    selectEntity(path)
   }, [])
 
   if (framesPath === undefined || frames === undefined) {
     return null
   }
 
-  const selectedId = getKey(selectedFrame)
+  const selectedId = getKey(framePath)
 
   return (
     <ListStyled>

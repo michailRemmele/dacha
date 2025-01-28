@@ -16,6 +16,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'dacha'
 
+import { getStatePath, getSubstatePath } from '../../utils/paths'
 import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { duplicateState, duplicateSubstate } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
@@ -28,10 +29,11 @@ export const ActionBar: FC = () => {
   const { dispatch } = useCommander()
   const {
     path,
-    selectedState: statePath,
-    selectedSubstate: substatePath,
     selectedEntity,
   } = useContext(AnimationEditorContext)
+
+  const statePath = selectedEntity ? getStatePath(selectedEntity.path) : undefined
+  const substatePath = selectedEntity ? getSubstatePath(selectedEntity.path) : undefined
 
   const initialStatePath = useMemo(() => path.concat('initialState'), [path])
   const statesPath = useMemo(() => path.concat('states'), [path])

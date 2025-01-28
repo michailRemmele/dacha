@@ -3,6 +3,7 @@ import {
   FC,
 } from 'react'
 
+import { getStatePath } from '../../utils/paths'
 import { useConfig } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 
@@ -18,8 +19,9 @@ interface TimelineProps {
 export const Timeline: FC<TimelineProps> = ({
   className = '',
 }) => {
-  const { selectedState } = useContext(AnimationEditorContext)
-  const state = useConfig(selectedState)
+  const { selectedEntity } = useContext(AnimationEditorContext)
+  const statePath = selectedEntity ? getStatePath(selectedEntity.path) : undefined
+  const state = useConfig(statePath)
 
   return (
     <div className={className}>

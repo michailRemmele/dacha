@@ -14,12 +14,13 @@ import {
   LabelledNumberInput,
 } from '../../../../../../../components'
 import { AnimationEditorContext } from '../../../providers'
+import { getStatePath } from '../../../utils/paths'
 
 export const SubstateInspector: FC = () => {
   const { t } = useTranslation()
-  const { selectedState, selectedSubstate } = useContext(AnimationEditorContext)
-  const statePath = selectedState as Array<string>
-  const substatePath = selectedSubstate as Array<string>
+  const { selectedEntity } = useContext(AnimationEditorContext)
+  const substatePath = selectedEntity?.path as string[]
+  const statePath = getStatePath(substatePath) as string[]
 
   const namePath = useMemo(() => substatePath.concat('name'), [substatePath])
   const loopedPath = useMemo(() => substatePath.concat('timeline', 'looped'), [substatePath])
