@@ -26,10 +26,10 @@ import { ConditionsStyled, ConditionStyled } from './transition-inspector.style'
 export const TransitionInspector: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const { path, selectedTransition } = useContext(AnimationEditorContext)
+  const { path, selectedEntity } = useContext(AnimationEditorContext)
 
   const statesPath = useMemo(() => path.concat('states'), [path])
-  const transitionPath = selectedTransition as Array<string>
+  const transitionPath = selectedEntity?.path as string[]
 
   const stateTransitionPath = useMemo(() => transitionPath.concat('state'), [transitionPath])
   const timePath = useMemo(() => transitionPath.concat('time'), [transitionPath])

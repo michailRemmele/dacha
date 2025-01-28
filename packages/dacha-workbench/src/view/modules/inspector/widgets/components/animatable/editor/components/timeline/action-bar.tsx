@@ -10,6 +10,7 @@ import { DeleteOutlined, PlusOutlined, CopyOutlined } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'dacha'
 
+import { getStatePath, getSubstatePath } from '../../utils/paths'
 import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { duplicateFrame } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
@@ -20,11 +21,11 @@ import { STATE_TYPE } from '../../const'
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const {
-    selectedState: statePath,
-    selectedSubstate,
-    selectedFrame: framePath,
-  } = useContext(AnimationEditorContext)
+  const { selectedEntity } = useContext(AnimationEditorContext)
+
+  const statePath = selectedEntity ? getStatePath(selectedEntity.path) : undefined
+  const substatePath = selectedEntity ? getSubstatePath(selectedEntity.path) : undefined
+  const framePath = selectedEntity?.type === 'frame' ? selectedEntity.path : undefined
 
   const state = useConfig(statePath) as Animation.StateConfig | undefined
 
@@ -35,11 +36,11 @@ export const ActionBar: FC = () => {
     if (state.type === STATE_TYPE.INDIVIDUAL) {
       return statePath.concat('timeline', 'frames')
     }
-    if (!selectedSubstate) {
+    if (!substatePath) {
       return undefined
     }
-    return selectedSubstate.concat('timeline', 'frames')
-  }, [state, statePath, selectedSubstate])
+    return substatePath.concat('timeline', 'frames')
+  }, [state, statePath, substatePath])
 
   const frame = useConfig(framePath) as Animation.FrameConfig | undefined
 

@@ -3,6 +3,7 @@ import {
   FC,
 } from 'react'
 
+import { getStatePath } from '../../utils/paths'
 import { useConfig } from '../../../../../../../../hooks'
 import { AnimationEditorContext } from '../../providers'
 
@@ -16,8 +17,9 @@ interface TransitionListProps {
 export const TransitionList: FC<TransitionListProps> = ({
   className = '',
 }) => {
-  const { selectedState } = useContext(AnimationEditorContext)
-  const state = useConfig(selectedState)
+  const { selectedEntity } = useContext(AnimationEditorContext)
+  const statePath = selectedEntity ? getStatePath(selectedEntity.path) : undefined
+  const state = useConfig(statePath)
 
   return (
     <div className={className}>

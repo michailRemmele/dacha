@@ -10,6 +10,7 @@ import { DeleteOutlined, PlusOutlined, CopyOutlined } from '@ant-design/icons'
 import { v4 as uuidv4 } from 'uuid'
 import type { Animation } from 'dacha'
 
+import { getStatePath } from '../../utils/paths'
 import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { duplicateTransition } from '../../utils'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
@@ -19,10 +20,10 @@ import { AnimationEditorContext } from '../../providers'
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const {
-    selectedState: statePath,
-    selectedTransition: transitionPath,
-  } = useContext(AnimationEditorContext)
+  const { selectedEntity } = useContext(AnimationEditorContext)
+
+  const statePath = selectedEntity ? getStatePath(selectedEntity.path) : undefined
+  const transitionPath = selectedEntity?.type === 'transition' ? selectedEntity.path : undefined
 
   const transitionsPath = useMemo(() => statePath && statePath.concat('transitions'), [statePath])
   const transition = useConfig(transitionPath) as Animation.TransitionConfig | undefined

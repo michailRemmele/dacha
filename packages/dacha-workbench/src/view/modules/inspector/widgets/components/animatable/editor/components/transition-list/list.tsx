@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { Tree } from 'antd'
 import type { Animation } from 'dacha'
 
+import { getStatePath } from '../../utils/paths'
 import { getKey } from '../../utils'
 import { TreeCSS } from '../../editor.style'
 import { useConfig } from '../../../../../../../../hooks'
@@ -21,13 +22,14 @@ export const List: FC = () => {
   const { t } = useTranslation()
   const {
     path,
-    selectedState,
-    selectedTransition,
-    selectTransition,
+    selectedEntity,
+    selectEntity,
   } = useContext(AnimationEditorContext)
 
+  const statePath = getStatePath(selectedEntity?.path as string[]) as string[]
+  const transitionPath = selectedEntity?.type === 'transition' ? selectedEntity.path : undefined
+
   const statesPath = useMemo(() => path.concat('states'), [path])
-  const statePath = selectedState as Array<string>
   const transitionsPath = useMemo(() => statePath.concat('transitions'), [statePath])
 
   const statesConfigs = useConfig(statesPath) as Array<Animation.StateConfig>
@@ -51,10 +53,10 @@ export const List: FC = () => {
   )
 
   const handleSelect = useCallback<SelectFn<TransitionDataNode>>((keys, { node }) => {
-    selectTransition(node.path)
+    selectEntity(node.path)
   }, [])
 
-  const selectedKey = getKey(selectedTransition)
+  const selectedKey = getKey(transitionPath)
 
   return (
     <Tree.DirectoryTree
