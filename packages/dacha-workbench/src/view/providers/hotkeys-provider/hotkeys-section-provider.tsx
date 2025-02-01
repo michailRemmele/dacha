@@ -102,7 +102,7 @@ export const HotkeysSectionProvider = ({
     }
   }, [clipboard, isCut, selectedPaths, childrenFieldMap, rootPath])
 
-  const handleRemove = useCallback((): void => {
+  const handleDelete = useCallback((): void => {
     if (!selectedPaths.length) {
       return
     }
@@ -114,17 +114,17 @@ export const HotkeysSectionProvider = ({
     addHotkeyListener(scope, 'cut', handleCut)
     addHotkeyListener(scope, 'copy', handleCopy)
     addHotkeyListener(scope, 'paste', handlePaste)
-    addHotkeyListener(scope, 'remove', handleRemove)
+    addHotkeyListener(scope, 'delete', handleDelete)
 
     return () => {
       removeHotkeyListener(scope, 'cut', handleCut)
       removeHotkeyListener(scope, 'copy', handleCopy)
       removeHotkeyListener(scope, 'paste', handlePaste)
-      removeHotkeyListener(scope, 'remove', handleRemove)
+      removeHotkeyListener(scope, 'delete', handleDelete)
     }
   }, [
     scope, addHotkeyListener, removeHotkeyListener,
-    handleCut, handleCopy, handlePaste, handleRemove,
+    handleCut, handleCopy, handlePaste, handleDelete,
   ])
 
   const currentContext = useMemo(() => ({
@@ -133,8 +133,8 @@ export const HotkeysSectionProvider = ({
     cut: handleCut,
     copy: handleCopy,
     paste: handlePaste,
-    remove: handleRemove,
-  }), [clipboard, isCut, handleCut, handleCopy, handlePaste, handleRemove])
+    remove: handleDelete,
+  }), [clipboard, isCut, handleCut, handleCopy, handlePaste, handleDelete])
 
   return (
     <HotkeysSectionContext.Provider value={currentContext}>
