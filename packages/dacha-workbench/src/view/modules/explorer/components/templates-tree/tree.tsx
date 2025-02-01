@@ -5,26 +5,33 @@ import {
 } from 'react'
 import type { TemplateConfig } from 'dacha'
 
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext, EntitySelectionContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { Tree } from '../tree'
+import { CHILDREN_FIELD_MAP } from '../../consts'
 
-import { parseTemplates, getKey } from './utils'
+import { parseTemplates, getInspectedKey, getSelectedPaths } from './utils'
 
-export const TemplatesTree: FC = () => {
-  const { path: selectedEntityPath } = useContext(SelectedEntityContext)
+interface TemplatesTreeProps {
+  onDrop?: (sourcePaths: string[][], destinationPath: string[]) => void
+}
+
+export const TemplatesTree: FC<TemplatesTreeProps> = ({ onDrop }) => {
+  const { path: inspectedEntityPath } = useContext(InspectedEntityContext)
+  const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
 
   const templates = useConfig('templates') as Array<TemplateConfig>
-  const selectedEntity = useConfig(selectedEntityPath)
   const treeData = useMemo(() => parseTemplates(templates), [templates])
-
-  const selectedKey = getKey(selectedEntity, selectedEntityPath)
 
   return (
     <Tree
       treeData={treeData}
-      selectedKey={selectedKey}
+      inspectedKey={getInspectedKey(inspectedEntityPath)}
+      selectedPaths={getSelectedPaths(selectedEntitiesPaths)}
       persistentStorageKey="explorer.tab.templates"
+      draggable
+      onDrop={onDrop}
+      childrenFieldMap={CHILDREN_FIELD_MAP}
     />
   )
 }

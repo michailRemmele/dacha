@@ -17,3 +17,7 @@ export const parseTransitions = (
   isLeaf: true,
   path: path.concat('transitions', `id:${transition.id}`),
 }))
+
+export const getSelectedPaths = (
+  paths: string[][],
+): string[][] => paths.filter((path) => path.at(-2) === 'transitions')

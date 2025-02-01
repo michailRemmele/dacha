@@ -7,44 +7,27 @@ import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 import {
   FileAddOutlined,
-  DeleteOutlined,
-  CopyOutlined,
 } from '@ant-design/icons'
 
-import { ActionBarStyled, ButtonCSS } from '../../explorer.style'
+import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
-import { addTemplate, deleteTemplate, duplicateTemplate } from '../../../../commands/templates'
-import { SelectedEntityContext } from '../../../../providers'
+import { addTemplate } from '../../../../commands/templates'
+import { InspectedEntityContext } from '../../../../providers'
+import { HotkeysBar } from '../../../../components'
 
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const { path: selectedEntityPath, type } = useContext(SelectedEntityContext)
+  const { path: inspectedEntityPath, type } = useContext(InspectedEntityContext)
 
   const handleAdd = useCallback(() => {
-    const pathToAdd = !selectedEntityPath || type !== 'template'
+    const pathToAdd = !inspectedEntityPath || type !== 'template'
       ? ['templates']
-      : selectedEntityPath.concat('children')
+      : inspectedEntityPath.concat('children')
 
     dispatch(addTemplate(pathToAdd))
-  }, [dispatch, selectedEntityPath, type])
-
-  const handleDelete = useCallback(() => {
-    if (selectedEntityPath === undefined) {
-      return
-    }
-
-    dispatch(deleteTemplate(selectedEntityPath))
-  }, [dispatch, selectedEntityPath])
-
-  const handleDuplicate = useCallback(() => {
-    if (selectedEntityPath === undefined) {
-      return
-    }
-
-    dispatch(duplicateTemplate(selectedEntityPath, selectedEntityPath.slice(0, -1)))
-  }, [dispatch, selectedEntityPath])
+  }, [dispatch, inspectedEntityPath, type])
 
   return (
     <ActionBarStyled>
@@ -53,24 +36,12 @@ export const ActionBar: FC = () => {
         icon={<FileAddOutlined />}
         size="small"
         onClick={handleAdd}
-        title={t('explorer.levels.actionBar.addTemplate.button.title')}
+        title={t('explorer.templates.actionBar.addTemplate.button.title')}
       />
-      <Button
-        css={ButtonCSS}
-        icon={<CopyOutlined />}
-        size="small"
-        onClick={handleDuplicate}
-        title={t('explorer.levels.actionBar.duplicateTemplate.button.title')}
-        disabled={type !== 'template'}
-      />
-      <Button
-        css={ButtonCSS}
-        icon={<DeleteOutlined />}
-        size="small"
-        onClick={handleDelete}
-        title={t('explorer.levels.actionBar.deleteTemplate.button.title')}
-        disabled={type !== 'template'}
-      />
+
+      <AdditionalSectionStyled>
+        <HotkeysBar />
+      </AdditionalSectionStyled>
     </ActionBarStyled>
   )
 }

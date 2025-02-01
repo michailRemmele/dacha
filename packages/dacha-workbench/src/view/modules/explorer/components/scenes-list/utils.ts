@@ -12,19 +12,9 @@ export const parseScenes = (
   isLeaf: true,
 }))
 
-export const getKey = (
-  entity?: unknown,
-  path?: Array<string>,
-  isLoaders?: boolean,
-): string | undefined => {
-  if (!entity || !path) {
-    return void ''
-  }
-
+export const getSelectedPaths = (paths: string[][], isLoaders?: boolean): string[][] => {
   const rootPath = isLoaders ? 'loaders' : 'scenes'
-  if (path[0] !== rootPath) {
-    return void ''
-  }
 
-  return (entity as SceneConfig).id
+  return paths
+    .filter((path) => path[0] === rootPath)
 }

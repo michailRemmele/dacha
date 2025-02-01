@@ -9,9 +9,9 @@ import { MultiField } from '../../../../../../../components/multi-field'
 import { AnimationEditorContext } from '../../../providers'
 
 export const FrameInspector: FC = () => {
-  const { selectedFrame } = useContext(AnimationEditorContext)
+  const { inspectedEntity } = useContext(AnimationEditorContext)
 
-  const framePath = selectedFrame as Array<string>
+  const framePath = inspectedEntity?.path as string[]
   const fieldsPath = useMemo(() => framePath.concat('fields'), [framePath])
 
   return (

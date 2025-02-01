@@ -22,4 +22,7 @@ export const SelectLevel = 'SelectLevel'
 export const InspectEntity = 'InspectEntity'
 export const InspectedEntityChange = 'InspectedEntityChange'
 
+export const SelectEntities = 'SelectEntities'
+export const SelectEntitiesChange = 'SelectEntitiesChange'
+
 export const SaveProject = 'SaveProject'

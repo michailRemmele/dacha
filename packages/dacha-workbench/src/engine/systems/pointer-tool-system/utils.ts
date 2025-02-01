@@ -7,6 +7,10 @@ import {
 
 import { Shape } from '../../components/shape'
 import type { RectangleShape } from '../../components/shape'
+import { getIdByPath } from '../../../utils/get-id-by-path'
+
+import type { SelectionArea } from './types'
+import { LEVEL_PATH_LEGTH } from './consts'
 
 const accumulatePath = (actor: Actor, path: Array<string>): void => {
   path.unshift(`id:${actor.id}`)
@@ -65,4 +69,37 @@ export const updateFrameSize = (frame: Actor, actor: Actor): void => {
   frameTransform.offsetY = offsetY
   properties.width = Math.cos(rotation) * width + Math.sin(rotation) * height
   properties.height = Math.sin(rotation) * width + Math.cos(rotation) * height
+}
+
+export const updateAreaSize = (selectionArea: SelectionArea): void => {
+  const { sceneSize, area } = selectionArea
+
+  const transform = area.getComponent(Transform)
+  const shape = area.getComponent(Shape)
+  const properties = shape.properties as RectangleShape
+
+  transform.offsetX = (sceneSize.x0 + sceneSize.x1) / 2
+  transform.offsetY = (sceneSize.y0 + sceneSize.y1) / 2
+  properties.width = Math.abs(sceneSize.x0 - sceneSize.x1)
+  properties.height = Math.abs(sceneSize.y0 - sceneSize.y1)
+}
+
+export const getActorIdByPath = (
+  path: string[],
+  currentLevelId: string | undefined,
+): string | undefined => {
+  if (!currentLevelId) {
+    return undefined
+  }
+
+  if (path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH) {
+    const levelId = getIdByPath([path[1]])
+
+    if (levelId !== currentLevelId) {
+      return undefined
+    }
+
+    return getIdByPath(path)
+  }
+  return undefined
 }

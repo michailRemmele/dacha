@@ -28,9 +28,10 @@ export const ListItemStyled = styled.li`
 
 interface FrameButtonStyledProps {
   isSelected?: boolean
+  isCut?: boolean
 }
 
-export const FrameButtonStyled = styled.button<FrameButtonStyledProps>(({ theme, isSelected }) => css`
+export const FrameButtonStyled = styled.button<FrameButtonStyledProps>(({ theme, isSelected, isCut }) => css`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,10 +48,16 @@ export const FrameButtonStyled = styled.button<FrameButtonStyledProps>(({ theme,
 
   cursor: pointer;
 
+  user-select: none;
+
   ${isSelected && css`
     border: 1px solid ${theme.colorPrimary};
     background-color: ${theme.colorPrimary};
 
     color: ${theme.colorWhite};
+  `}
+
+  ${isCut && css`
+    opacity: 0.5;
   `}
 `)

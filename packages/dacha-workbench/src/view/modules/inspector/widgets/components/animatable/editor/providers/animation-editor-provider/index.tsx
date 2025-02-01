@@ -7,111 +7,121 @@ import {
   FC,
 } from 'react'
 
-import { useConfig } from '../../../../../../../../hooks'
-import type { SelectedEntity } from '../../types'
+import { useStore } from '../../../../../../../../hooks'
+import { includesArray } from '../../../../../../../../../utils/includes-array'
+import type { InspectedEntity } from '../../types'
 
-type ObservableEntry = [unknown, unknown, () => void]
+import { getEntityType } from './get-entity-type'
+import type { EntityType } from './get-entity-type'
+import { getParentState } from './get-parent-state'
+
+export interface EntitySelection {
+  paths: string[][]
+}
 
 interface AnimationEditorData {
-  path: Array<string>
-  selectedState?: Array<string>
-  selectedSubstate?: Array<string>
-  selectedTransition?: Array<string>
-  selectedFrame?: Array<string>
-  selectedEntity?: SelectedEntity
-
-  selectState: (path: Array<string>) => void
-  selectSubstate: (path: Array<string>) => void
-  selectTransition: (path: Array<string>) => void
-  selectFrame: (path: Array<string>) => void
+  path: string[]
+  inspectedEntity?: InspectedEntity
+  inspectEntity: (path: string[] | undefined) => void
+  selectEntities: (paths: string[][]) => void
+  entitySelection: EntitySelection
 }
 
 interface AnimationEditorProviderProps {
-  path: Array<string>
-  children: JSX.Element | Array<JSX.Element>
+  path: string[]
+  children: JSX.Element | JSX.Element[]
 }
 
 export const AnimationEditorContext = createContext<AnimationEditorData>({
   path: [],
-  selectState: () => void 0,
-  selectSubstate: () => void 0,
-  selectTransition: () => void 0,
-  selectFrame: () => void 0,
+  inspectEntity: () => {},
+  selectEntities: () => {},
+  entitySelection: { paths: [] },
 })
 
 export const AnimationEditorProvider: FC<AnimationEditorProviderProps> = ({
-  path,
+  path: rootPath,
   children,
 }): JSX.Element => {
-  const [selectedState, setState] = useState<Array<string> | undefined>()
-  const [selectedSubstate, setSubstate] = useState<Array<string> | undefined>()
-  const [selectedTransition, setTransition] = useState<Array<string> | undefined>()
-  const [selectedFrame, setFrame] = useState<Array<string> | undefined>()
-  const [selectedEntity, setEntity] = useState<SelectedEntity | undefined>()
+  const store = useStore()
 
-  const state = useConfig(selectedState)
-  const substate = useConfig(selectedSubstate)
-  const transition = useConfig(selectedTransition)
-  const frame = useConfig(selectedFrame)
+  const [inspectedEntity, setInspectedEntity] = useState<InspectedEntity | undefined>()
+  const [entitySelection, setEntitySelection] = useState<EntitySelection>(() => ({
+    paths: [],
+  }))
 
-  // Reset selection if entry was deleted from config
   useEffect(() => {
-    const items: Array<ObservableEntry> = [
-      [state, selectedState, (): void => setState(undefined)],
-      [substate, selectedSubstate, (): void => setSubstate(undefined)],
-      [transition, selectedTransition, (): void => setTransition(undefined)],
-      [frame, selectedFrame, (): void => setFrame(undefined)],
-    ]
+    const unsubscribe = store.subscribe((updatedPath) => {
+      const newSelection = entitySelection.paths.filter((path) => {
+        if (!includesArray(path, updatedPath)) {
+          return true
+        }
+        return store.get(path) !== undefined
+      })
 
-    items.forEach(([data, entry, resetEntry]) => {
-      if (data === undefined && entry !== undefined) {
-        resetEntry()
-        setEntity(undefined)
+      if (entitySelection.paths.length !== newSelection.length) {
+        setEntitySelection({ paths: newSelection })
+      }
+
+      // Try to pick parent state/substate if new selection is empty
+      // Otherwise update selection only if size has been changed
+      if (!newSelection.length && entitySelection.paths.length) {
+        const newEntityPath = getParentState(inspectedEntity?.path)
+        if (newEntityPath) {
+          newSelection.push(newEntityPath)
+          setEntitySelection({ paths: newSelection })
+        }
+      }
+
+      const path = inspectedEntity?.path
+      if (!path || !includesArray(path, updatedPath)) {
+        return
+      }
+
+      if (store.get(path) === undefined) {
+        const newPath = newSelection.at(-1)
+        const newType = getEntityType(newPath)
+        setInspectedEntity(
+          newPath && newType
+            ? { path: newPath, type: newType }
+            : undefined,
+        )
       }
     })
-  }, [state, substate, transition, frame])
 
-  const selectState = useCallback((statePath: Array<string>) => {
-    setEntity({ path: statePath, type: 'state' })
-    setState(statePath)
-    setTransition(undefined)
-    setFrame(undefined)
-    setSubstate(undefined)
-  }, [])
+    return () => {
+      unsubscribe()
+    }
+  }, [store, entitySelection, inspectedEntity])
 
-  const selectSubstate = useCallback((substatePath: Array<string>) => {
-    setEntity({ path: substatePath, type: 'substate' })
-    setSubstate(substatePath)
-    setTransition(undefined)
-    setFrame(undefined)
-  }, [])
+  const inspectEntity = useCallback((entityPath: string[] | undefined) => {
+    // Try to pick parent state/substate if new path is undefined
+    if (!entityPath) {
+      const newEntityPath = getParentState(inspectedEntity?.path)
+      if (newEntityPath) {
+        setEntitySelection({ paths: [newEntityPath] })
+        setInspectedEntity({
+          path: newEntityPath,
+          type: getEntityType(newEntityPath) as EntityType,
+        })
+        return
+      }
+    }
 
-  const selectTransition = useCallback((transitionPath: Array<string>) => {
-    setEntity({ path: transitionPath, type: 'transition' })
-    setTransition(transitionPath)
-    setFrame(undefined)
-    setSubstate(undefined)
-  }, [])
-
-  const selectFrame = useCallback((framePath: Array<string>) => {
-    setEntity({ path: framePath, type: 'frame' })
-    setFrame(framePath)
-    setTransition(undefined)
+    const type = getEntityType(entityPath)
+    setInspectedEntity(type && entityPath ? { path: entityPath, type } : undefined)
+  }, [inspectedEntity])
+  const selectEntities = useCallback((paths: string[][]) => {
+    setEntitySelection({ paths })
   }, [])
 
   const entityData = useMemo(() => ({
-    path,
-    selectedState,
-    selectedSubstate,
-    selectedTransition,
-    selectedFrame,
-    selectedEntity,
-
-    selectState,
-    selectSubstate,
-    selectTransition,
-    selectFrame,
-  }), [path, selectedState, selectedSubstate, selectedTransition, selectedFrame, selectedEntity])
+    path: rootPath,
+    inspectedEntity,
+    inspectEntity,
+    selectEntities,
+    entitySelection,
+  }), [rootPath, inspectedEntity, inspectEntity, selectEntities, entitySelection])
 
   return (
     <AnimationEditorContext.Provider value={entityData}>

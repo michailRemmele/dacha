@@ -14,6 +14,7 @@ const commonRules = {
     },
   ],
   'no-param-reassign': 0,
+  'no-restricted-syntax': 0,
   'no-restricted-properties': 1,
   'prefer-destructuring': 'warn',
   semi: ['error', 'never'],

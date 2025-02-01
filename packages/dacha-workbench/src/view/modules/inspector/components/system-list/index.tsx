@@ -9,7 +9,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import type { SystemConfig } from 'dacha'
 
 import { EntityList } from '../entity-list'
-import { SelectedEntityContext, SchemasContext } from '../../../../providers'
+import { InspectedEntityContext, SchemasContext } from '../../../../providers'
 import { useConfig, useCommander } from '../../../../hooks'
 import { setValue } from '../../../../commands'
 
@@ -17,7 +17,7 @@ export const SystemList: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const { path = [] } = useContext(SelectedEntityContext)
+  const { path = [] } = useContext(InspectedEntityContext)
   const { systems: availableSystems } = useContext(SchemasContext)
 
   const systemsPath = useMemo(() => path.concat('systems'), [path])

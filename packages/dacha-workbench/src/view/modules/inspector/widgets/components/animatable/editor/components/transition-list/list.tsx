@@ -5,29 +5,32 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Tree } from 'antd'
 import type { Animation } from 'dacha'
 
-import { getKey } from '../../utils'
+import { getStatePath } from '../../utils/paths'
+import { getIdByPath } from '../../../../../../../../../utils/get-id-by-path'
 import { TreeCSS } from '../../editor.style'
 import { useConfig } from '../../../../../../../../hooks'
+import { Tree } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
-import type { SelectFn } from '../../../../../../../../../types/tree-node'
+import { CHILDREN_FIELD_MAP } from '../../const'
 
-import { parseTransitions } from './utils'
-import type { TransitionDataNode } from './utils'
+import { parseTransitions, getSelectedPaths } from './utils'
 
 export const List: FC = () => {
   const { t } = useTranslation()
   const {
     path,
-    selectedState,
-    selectedTransition,
-    selectTransition,
+    inspectedEntity,
+    inspectEntity,
+    entitySelection,
+    selectEntities,
   } = useContext(AnimationEditorContext)
 
+  const statePath = getStatePath(inspectedEntity?.path as string[]) as string[]
+  const transitionPath = inspectedEntity?.type === 'transition' ? inspectedEntity.path : undefined
+
   const statesPath = useMemo(() => path.concat('states'), [path])
-  const statePath = selectedState as Array<string>
   const transitionsPath = useMemo(() => statePath.concat('transitions'), [statePath])
 
   const statesConfigs = useConfig(statesPath) as Array<Animation.StateConfig>
@@ -50,18 +53,29 @@ export const List: FC = () => {
     [transitions, statePath, stateConfig, statesNames],
   )
 
-  const handleSelect = useCallback<SelectFn<TransitionDataNode>>((keys, { node }) => {
-    selectTransition(node.path)
-  }, [])
-
-  const selectedKey = getKey(selectedTransition)
+  const handleInspect = useCallback((entityPath: string[] | undefined) => {
+    inspectEntity(entityPath)
+  }, [inspectEntity])
+  const handleSelect = useCallback((paths: string[][]) => {
+    selectEntities(paths)
+  }, [selectEntities])
+  const handleClickOutside = useCallback(() => {
+    if (inspectedEntity?.type === 'transition') {
+      selectEntities([])
+      inspectEntity(undefined)
+    }
+  }, [inspectedEntity])
 
   return (
-    <Tree.DirectoryTree
+    <Tree
       css={TreeCSS}
-      selectedKeys={selectedKey ? [selectedKey] : []}
-      onSelect={handleSelect}
       treeData={treeData}
+      selectedPaths={getSelectedPaths(entitySelection.paths)}
+      inspectedKey={transitionPath ? getIdByPath(transitionPath) : undefined}
+      childrenFieldMap={CHILDREN_FIELD_MAP}
+      onInspect={handleInspect}
+      onSelect={handleSelect}
+      onClickOutside={handleClickOutside}
       showIcon={false}
     />
   )

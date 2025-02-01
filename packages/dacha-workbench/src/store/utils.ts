@@ -64,24 +64,26 @@ export const get = (
 export const getImmutable = (
   data: DataValue | Data,
   path: Array<string>,
-  parent: DataObjectValue | Array<DataValue> | Data | Store,
-  parentKey: string | number,
+  parent?: DataObjectValue | Array<DataValue> | Data | Store,
+  parentKey?: string | number,
   index = 0,
 ): DataValue | Data | undefined => {
   let copyData = data
   const key = path[index]
 
-  if (Array.isArray(data)) {
-    /* comment: Need to update all objects and arrays on the way to value */
-    /* eslint-disable-next-line no-param-reassign */
-    (parent as Data)[parentKey] = [...data]
-  } else if (typeof data === 'object' && data !== null) {
-    /* comment: Need to update all objects and arrays on the way to value */
-    /* eslint-disable-next-line no-param-reassign */
-    (parent as Data)[parentKey] = { ...data as DataObjectValue }
-  }
+  if (parent !== undefined && parentKey !== undefined) {
+    if (Array.isArray(data)) {
+      /* comment: Need to update all objects and arrays on the way to value */
+      /* eslint-disable-next-line no-param-reassign */
+      (parent as Data)[parentKey] = [...data]
+    } else if (typeof data === 'object' && data !== null) {
+      /* comment: Need to update all objects and arrays on the way to value */
+      /* eslint-disable-next-line no-param-reassign */
+      (parent as Data)[parentKey] = { ...data as DataObjectValue }
+    }
 
-  copyData = (parent as Data)[parentKey] as DataValue | Data
+    copyData = (parent as Data)[parentKey] as DataValue | Data
+  }
 
   if (!key) {
     return copyData
@@ -98,4 +100,22 @@ export const getImmutable = (
   }
 
   return void 0
+}
+
+export const getCommonPath = (paths: string[][]): string[] => {
+  const commonPath: string[] = []
+
+  if (!paths.length) {
+    return commonPath
+  }
+
+  for (let i = 0; i < paths[0].length; i += 1) {
+    const segment = paths[0][i]
+    if (segment && paths.every((path) => path[i] === segment)) {
+      commonPath.push(segment)
+    } else {
+      break
+    }
+  }
+  return commonPath
 }

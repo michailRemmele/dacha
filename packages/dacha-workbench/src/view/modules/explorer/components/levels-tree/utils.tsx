@@ -2,6 +2,7 @@ import type { LevelConfig, ActorConfig } from 'dacha'
 import { FileOutlined } from '@ant-design/icons'
 
 import type { ExplorerDataNode } from '../../../../../types/tree-node'
+import { getIdByPath } from '../../../../../utils/get-id-by-path'
 
 const parseActor = (
   actor: ActorConfig,
@@ -48,14 +49,13 @@ export const parseLevels = (
   return node
 })
 
-export const getKey = (entity?: unknown, path?: Array<string>): string | undefined => {
-  if (!entity || !path) {
+export const getInspectedKey = (path?: Array<string>): string | undefined => {
+  if (!path || path[0] !== 'levels') {
     return void ''
   }
 
-  if (path[0] !== 'levels') {
-    return void ''
-  }
-
-  return (entity as ActorConfig | LevelConfig).id
+  return getIdByPath(path)
 }
+
+export const getSelectedPaths = (paths: string[][]): string[][] => paths
+  .filter((path) => path[0] === 'levels')

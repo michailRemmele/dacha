@@ -32,6 +32,6 @@ export const AdditionalSectionStyled = styled.div(({ theme }) => css`
   display: inline-block;
 
   margin-left: 3px;
-  padding-left: 8px;
+  padding: 0 8px;
   border-left: 1px solid ${theme.colorBorder};
 `)

@@ -2,6 +2,7 @@ import {
   get,
   getImmutable,
   findIndexByKey,
+  getCommonPath,
 } from './utils'
 import type {
   Data,
@@ -29,7 +30,7 @@ export class Store {
       return
     }
 
-    const key = path[path.length - 1]
+    const key = path.at(-1) as string
 
     if (Array.isArray(item)) {
       const index = findIndexByKey(item, key)
@@ -50,7 +51,7 @@ export class Store {
       return
     }
 
-    const key = path[path.length - 1]
+    const key = path.at(-1) as string
 
     if (Array.isArray(item)) {
       const index = findIndexByKey(item, key)
@@ -62,6 +63,41 @@ export class Store {
     }
 
     this.listeners.forEach((listener) => listener(path))
+  }
+
+  deleteByPaths(paths: string[][]): void {
+    if (!paths.length) {
+      return
+    }
+
+    const commonPath = getCommonPath(paths)
+    // Go one level upper to avoid issue when common path points to object in array
+    commonPath.pop()
+
+    const subRoot = getImmutable(this.data, commonPath, this, 'data')
+    if (!subRoot) {
+      return
+    }
+
+    for (const path of paths) {
+      const item = getImmutable(subRoot, path.slice(commonPath.length, -1))
+      if (typeof item !== 'object' || item === null) {
+        continue
+      }
+
+      const key = path.at(-1) as string
+
+      if (Array.isArray(item)) {
+        const index = findIndexByKey(item, key)
+        if (index !== -1) {
+          item.splice(index, 1)
+        }
+      } else {
+        delete item[key]
+      }
+    }
+
+    this.listeners.forEach((listener) => listener(commonPath, subRoot as DataValue))
   }
 
   subscribe(listener: ListenerFn): () => void {

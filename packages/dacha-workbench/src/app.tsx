@@ -6,15 +6,17 @@ import 'antd/dist/reset.css'
 import { App } from './view'
 import {
   EngineProvider,
-  SelectedEntityProvider,
+  EntityExplorerProvider,
   ThemeProvider,
   NotificationProvider,
   NeedsReloadProvider,
   CommandProvider,
   CommandScopeProvider,
+  HotkeysProvider,
+  HotkeysScopeProvider,
 } from './view/providers'
 import { APP_ROOT } from './consts/root-nodes'
-import { ROOT_SCOPE } from './consts/command-scopes'
+import { ROOT_SCOPE } from './consts/scopes'
 
 import en from './view/locales/en.json'
 import './export'
@@ -36,15 +38,19 @@ root.render(
   <ThemeProvider>
     <CommandProvider>
       <CommandScopeProvider name={ROOT_SCOPE}>
-        <EngineProvider>
-          <SelectedEntityProvider>
-            <NotificationProvider>
-              <NeedsReloadProvider>
-                <App />
-              </NeedsReloadProvider>
-            </NotificationProvider>
-          </SelectedEntityProvider>
-        </EngineProvider>
+        <HotkeysProvider>
+          <HotkeysScopeProvider name={ROOT_SCOPE}>
+            <EngineProvider>
+              <EntityExplorerProvider>
+                <NotificationProvider>
+                  <NeedsReloadProvider>
+                    <App />
+                  </NeedsReloadProvider>
+                </NotificationProvider>
+              </EntityExplorerProvider>
+            </EngineProvider>
+          </HotkeysScopeProvider>
+        </HotkeysProvider>
       </CommandScopeProvider>
     </CommandProvider>
   </ThemeProvider>,

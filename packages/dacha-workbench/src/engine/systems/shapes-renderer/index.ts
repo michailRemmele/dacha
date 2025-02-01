@@ -40,16 +40,16 @@ export class ShapesRenderer extends System {
       ],
     })
 
-    const window = document.getElementById(windowNodeId)
+    const windowNode = document.getElementById(windowNodeId)
 
-    if (!window) {
+    if (!windowNode) {
       throw new Error('Unable to load ShapesRenderer. Root canvas node not found')
     }
-    if (!(window instanceof HTMLCanvasElement)) {
+    if (!(windowNode instanceof HTMLCanvasElement)) {
       throw new Error('Unable to load ShapesRenderer. Root canvas node should be an instance of HTMLCanvasElement')
     }
 
-    this.window = window
+    this.window = windowNode
 
     this.context = this.window.getContext('2d') as CanvasRenderingContext2D
     this.canvasWidth = this.window.clientWidth
@@ -58,6 +58,7 @@ export class ShapesRenderer extends System {
     this.cameraService = scene.getService(CameraService)
 
     this.transformer = new CoordinatesTransformer()
+    this.transformer.setDevicePixelRatio(window.devicePixelRatio || 1)
   }
 
   mount(): void {
@@ -70,13 +71,13 @@ export class ShapesRenderer extends System {
   }
 
   private handleWindowResize = (): void => {
-    this.canvasWidth = this.window.clientWidth
-    this.canvasHeight = this.window.clientHeight
+    this.transformer.setViewport(this.window.clientWidth, this.window.clientHeight)
 
-    this.window.width = this.canvasWidth
-    this.window.height = this.canvasHeight
+    this.canvasWidth = this.transformer.getViewportWidth()
+    this.canvasHeight = this.transformer.getViewportHeight()
 
-    this.transformer.setViewport(this.canvasWidth, this.canvasHeight)
+    this.window.width = this.transformer.getViewportWidth()
+    this.window.height = this.transformer.getViewportHeight()
   }
 
   update(): void {

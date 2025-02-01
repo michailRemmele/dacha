@@ -4,7 +4,7 @@ import React, {
   FC,
 } from 'react'
 
-import { ROOT_SCOPE } from '../../../consts/command-scopes'
+import { ROOT_SCOPE } from '../../../consts/scopes'
 
 import { CommandContext } from './command-provider'
 

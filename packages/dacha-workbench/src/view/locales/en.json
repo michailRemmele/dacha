@@ -5,36 +5,25 @@
     "tab.scenes": "Scenes",
     "tab.loaders": "Loaders",
 
+    "actionBar.cut.button.title": "Cut",
+    "actionBar.copy.button.title": "Copy",
+    "actionBar.paste.button.title": "Paste",
+    "actionBar.delete.button.title": "Delete",
+
     "levels.actionBar.addActor.button.title": "Add New Actor",
     "levels.actionBar.addLevel.button.title": "Add New Level",
-    "levels.actionBar.duplicateActor.button.title": "Duplicate Actor",
-    "levels.actionBar.duplicateLevel.button.title": "Duplicate Level",
-    "levels.actionBar.deleteActor.button.title": "Delete Actor",
-    "levels.actionBar.deleteLevel.button.title": "Delete Level",
     "levels.actionBar.focusActor.button.title": "Focus Actor",
+    "levels.actionBar.actor.new.title": "Actor",
+    "levels.actionBar.level.new.title": "Level",
 
-    "levels.actionBar.actor.new.title": "New Actor {{index}}",
-    "levels.actionBar.level.new.title": "New Level {{index}}",
+    "templates.actionBar.addTemplate.button.title": "Add New Template",
+    "templates.actionBar.template.new.title": "Template",
 
-    "levels.actionBar.addTemplate.button.title": "Add New Template",
-    "levels.actionBar.duplicateTemplate.button.title": "Duplicate Template",
-    "levels.actionBar.deleteTemplate.button.title": "Delete Template",
+    "scenes.actionBar.addScene.button.title": "Add New Scene",
+    "scenes.actionBar.scene.new.title": "Scene",
 
-    "levels.actionBar.template.new.title": "New Template {{index}}",
-
-    "levels.actionBar.addScene.button.title": "Add New Scene",
-    "levels.actionBar.duplicateScene.button.title": "Duplicate Scene",
-    "levels.actionBar.deleteScene.button.title": "Delete Scene",
-
-    "levels.actionBar.scene.new.title": "New Scene {{index}}",
-
-    "levels.actionBar.addLoader.button.title": "Add New Loader",
-    "levels.actionBar.duplicateLoader.button.title": "Duplicate Loader",
-    "levels.actionBar.deleteLoader.button.title": "Delete Loader",
-
-    "levels.actionBar.loader.new.title": "New Loader {{index}}",
-
-    "duplicate.appendix.title": "copy"
+    "loaders.actionBar.addLoader.button.title": "Add New Loader",
+    "loaders.actionBar.loader.new.title": "Loader"
   },
   "toolbar": {
     "pointer.title": "Pointer Tool",
@@ -125,26 +114,18 @@
   "components.animatable.editor.state.initial.title": "(Initial State)",
   "components.animatable.editor.state.setInitial.button.title": "Set as initial",
   "components.animatable.editor.state.add.button.title": "Add New State",
-  "components.animatable.editor.state.delete.button.title": "Delete State",
-  "components.animatable.editor.state.duplicate.button.title": "Duplicate State",
-  "components.animatable.editor.state.new.title": "New State {{index}}",
+  "components.animatable.editor.state.new.title": "State",
 
   "components.animatable.editor.frame.add.button.title": "Add New Frame",
-  "components.animatable.editor.frame.delete.button.title": "Delete Frame",
-  "components.animatable.editor.frame.duplicate.button.title": "Duplicate Frame",
 
   "components.animatable.editor.substate.x.title": "X",
   "components.animatable.editor.substate.y.title": "Y",
   "components.animatable.editor.substate.add.button.title": "Add New Substate",
-  "components.animatable.editor.substate.delete.button.title": "Delete Substate",
-  "components.animatable.editor.substate.duplicate.button.title": "Duplicate Substate",
-  "components.animatable.editor.substate.new.title": "New Substate {{index}}",
+  "components.animatable.editor.substate.new.title": "Substate",
 
   "components.animatable.editor.transition.state.title": "State",
   "components.animatable.editor.transition.time.title": "Time",
   "components.animatable.editor.transition.add.button.title": "Add New Transition",
-  "components.animatable.editor.transition.delete.button.title": "Delete Transition",
-  "components.animatable.editor.transition.duplicate.button.title": "Duplicate Transition",
   "components.animatable.editor.transition.unknown.state.title": "DELETED",
 
   "components.animatable.editor.condition.title": "Condition {{index}}",
