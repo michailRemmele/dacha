@@ -9,7 +9,7 @@ import {
 
 import { ROOT_SCOPE } from '../../../consts/scopes'
 
-type HotkeyType = 'cut' | 'copy' | 'paste' | 'remove'
+type HotkeyType = 'cut' | 'copy' | 'paste' | 'delete'
 
 type HotkeyListeners = Record<string, Record<HotkeyType, (() => void)[]>>
 
@@ -43,7 +43,7 @@ export const HotkeysProvider = ({ children }: HotkeysProviderProps): JSX.Element
         cut: [],
         copy: [],
         paste: [],
-        remove: [],
+        delete: [],
       }
 
       hotkeyListeners[scope][hotkey].push(callback)
@@ -66,6 +66,12 @@ export const HotkeysProvider = ({ children }: HotkeysProviderProps): JSX.Element
 
   useEffect(() => {
     const handleHotkeyEvent = (hotkey: HotkeyType) => () => {
+      const { activeElement } = document
+      if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
+        document.execCommand(hotkey)
+        return
+      }
+
       const hotkeyListeners = listenersRef.current
       if (!hotkeyListeners[activeScope]) {
         return
@@ -77,13 +83,13 @@ export const HotkeysProvider = ({ children }: HotkeysProviderProps): JSX.Element
     const cutUnsubscribe = window.electron.onCut(handleHotkeyEvent('cut'))
     const copyUnsubscribe = window.electron.onCopy(handleHotkeyEvent('copy'))
     const pasteUnsubscribe = window.electron.onPaste(handleHotkeyEvent('paste'))
-    const removeUnsubscribe = window.electron.onDelete(handleHotkeyEvent('remove'))
+    const deleteUnsubscribe = window.electron.onDelete(handleHotkeyEvent('delete'))
 
     return () => {
       cutUnsubscribe()
       copyUnsubscribe()
       pasteUnsubscribe()
-      removeUnsubscribe()
+      deleteUnsubscribe()
     }
   }, [activeScope])
 
