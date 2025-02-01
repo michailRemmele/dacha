@@ -6,7 +6,7 @@ import React, {
 
 import { CommanderStore } from '../../../store'
 import type { Data } from '../../../store'
-import { ROOT_SCOPE } from '../../../consts/command-scopes'
+import { ROOT_SCOPE } from '../../../consts/scopes'
 
 interface UndoRedoProviderProviderProps {
   children: JSX.Element | Array<JSX.Element>

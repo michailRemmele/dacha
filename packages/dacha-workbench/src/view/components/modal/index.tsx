@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 
-import { CommandScopeProvider } from '../../providers'
-import { MODAL_SCOPE } from '../../../consts/command-scopes'
+import { CommandScopeProvider, HotkeysScopeProvider } from '../../providers'
+import { MODAL_SCOPE } from '../../../consts/scopes'
 
 import { ModalStyled } from './modal.style'
 
@@ -31,7 +31,9 @@ export const Modal: FC<ModalProps> = ({
     destroyOnClose
   >
     <CommandScopeProvider name={MODAL_SCOPE}>
-      {children}
+      <HotkeysScopeProvider name={MODAL_SCOPE}>
+        {children}
+      </HotkeysScopeProvider>
     </CommandScopeProvider>
   </ModalStyled>
 )

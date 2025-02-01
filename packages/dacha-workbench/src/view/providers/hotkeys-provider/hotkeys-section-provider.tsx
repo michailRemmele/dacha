@@ -3,15 +3,19 @@ import {
   useMemo,
   useState,
   useCallback,
+  useContext,
   createContext,
 } from 'react'
 
 import { filterNestedPaths } from '../../../utils/filter-nested-paths'
 import { arraysEqual } from '../../../utils/arrays-equal'
 
-interface HotkeysProviderProps {
+import { HotkeysContext } from './hotkeys-provider'
+import { HotkeysScopeContext } from './hotkeys-scope'
+
+interface HotkeysSectionProviderProps {
   childrenFieldMap: Record<string, string | undefined>
-  rootPath: string[]
+  rootPath?: string[]
   selectedPaths: string[][]
   onMoveTo: (sourcePaths: string[][], destinationPath: string[]) => void
   onCopyTo: (sourcePaths: string[][], destinationPath: string[]) => void
@@ -19,7 +23,7 @@ interface HotkeysProviderProps {
   children: JSX.Element | Array<JSX.Element>
 }
 
-interface HotkeysContextProps {
+interface HotkeysSectionContextProps {
   clipboard: string[][] | undefined
   isCut: boolean
   cut: () => void
@@ -28,7 +32,7 @@ interface HotkeysContextProps {
   remove: () => void
 }
 
-export const HotkeysContext = createContext<HotkeysContextProps>({
+export const HotkeysSectionContext = createContext<HotkeysSectionContextProps>({
   clipboard: undefined,
   isCut: false,
   cut: () => {},
@@ -37,7 +41,7 @@ export const HotkeysContext = createContext<HotkeysContextProps>({
   remove: () => {},
 })
 
-export const HotkeysProvider = ({
+export const HotkeysSectionProvider = ({
   childrenFieldMap,
   rootPath,
   selectedPaths,
@@ -45,25 +49,22 @@ export const HotkeysProvider = ({
   onCopyTo,
   onRemove,
   children,
-}: HotkeysProviderProps): JSX.Element => {
+}: HotkeysSectionProviderProps): JSX.Element => {
+  const scope = useContext(HotkeysScopeContext)
+  const { addHotkeyListener, removeHotkeyListener } = useContext(HotkeysContext)
+
   const [clipboard, setClipboard] = useState<string[][] | undefined>()
   const [isCut, setIsCut] = useState(false)
 
   const handleCut = useCallback((): void => {
-    if (!selectedPaths.length) {
-      return
-    }
-
-    setClipboard(filterNestedPaths(selectedPaths))
+    const paths = filterNestedPaths(selectedPaths)
+    setClipboard(paths.length ? paths : undefined)
     setIsCut(true)
   }, [selectedPaths])
 
   const handleCopy = useCallback((): void => {
-    if (!selectedPaths.length) {
-      return
-    }
-
-    setClipboard(filterNestedPaths(selectedPaths))
+    const paths = filterNestedPaths(selectedPaths)
+    setClipboard(paths.length ? paths : undefined)
     setIsCut(false)
   }, [selectedPaths])
 
@@ -72,7 +73,7 @@ export const HotkeysProvider = ({
       return
     }
 
-    let destinationPath: string[] = rootPath
+    let destinationPath = rootPath
 
     if (selectedPaths.length) {
       const shortestPath = selectedPaths.reduce((acc, path) => {
@@ -86,8 +87,12 @@ export const HotkeysProvider = ({
       destinationPath = childrenField ? shortestPath.concat(childrenField) : rootPath
     }
 
+    if (destinationPath === undefined) {
+      return
+    }
+
     if (isCut) {
-      if (clipboard.every((path) => !arraysEqual(path.slice(0, -1), destinationPath))) {
+      if (clipboard.every((path) => !arraysEqual(path.slice(0, -1), destinationPath!))) {
         onMoveTo(clipboard, destinationPath)
       }
       setClipboard(undefined)
@@ -98,22 +103,29 @@ export const HotkeysProvider = ({
   }, [clipboard, isCut, selectedPaths, childrenFieldMap, rootPath])
 
   const handleRemove = useCallback((): void => {
+    if (!selectedPaths.length) {
+      return
+    }
+
     onRemove(selectedPaths)
   }, [selectedPaths])
 
   useEffect(() => {
-    const cutUnsubscribe = window.electron.onCut(handleCut)
-    const copyUnsubscribe = window.electron.onCopy(handleCopy)
-    const pasteUnsubscribe = window.electron.onPaste(handlePaste)
-    const removeUnsubscribe = window.electron.onDelete(handleRemove)
+    addHotkeyListener(scope, 'cut', handleCut)
+    addHotkeyListener(scope, 'copy', handleCopy)
+    addHotkeyListener(scope, 'paste', handlePaste)
+    addHotkeyListener(scope, 'remove', handleRemove)
 
     return () => {
-      cutUnsubscribe()
-      copyUnsubscribe()
-      pasteUnsubscribe()
-      removeUnsubscribe()
+      removeHotkeyListener(scope, 'cut', handleCut)
+      removeHotkeyListener(scope, 'copy', handleCopy)
+      removeHotkeyListener(scope, 'paste', handlePaste)
+      removeHotkeyListener(scope, 'remove', handleRemove)
     }
-  }, [handleCut, handleCopy, handlePaste, handleRemove])
+  }, [
+    scope, addHotkeyListener, removeHotkeyListener,
+    handleCut, handleCopy, handlePaste, handleRemove,
+  ])
 
   const currentContext = useMemo(() => ({
     clipboard,
@@ -125,8 +137,8 @@ export const HotkeysProvider = ({
   }), [clipboard, isCut, handleCut, handleCopy, handlePaste, handleRemove])
 
   return (
-    <HotkeysContext.Provider value={currentContext}>
+    <HotkeysSectionContext.Provider value={currentContext}>
       {children}
-    </HotkeysContext.Provider>
+    </HotkeysSectionContext.Provider>
   )
 }

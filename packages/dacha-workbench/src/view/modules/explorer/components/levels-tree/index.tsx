@@ -2,7 +2,7 @@ import type { FC } from 'react'
 import { useCallback, useContext } from 'react'
 
 import { useCommander } from '../../../../hooks'
-import { EntitySelectionContext, HotkeysProvider } from '../../../../providers'
+import { EntitySelectionContext, HotkeysSectionProvider } from '../../../../providers'
 import {
   copyByPaths,
   moveByPaths,
@@ -10,6 +10,7 @@ import {
 import { deleteByPaths } from '../../../../commands'
 import { CHILDREN_FIELD_MAP } from '../../consts'
 
+import { getSelectedPaths } from './utils'
 import { ActionBar } from './action-bar'
 import { LevelsTree } from './tree'
 import { TreeCSS } from './level-tree.style'
@@ -32,16 +33,16 @@ export const LevelsExplorer: FC = () => {
   const handleRemove = useCallback((paths: string[][]) => dispatch(deleteByPaths(paths)), [])
 
   return (
-    <HotkeysProvider
+    <HotkeysSectionProvider
       childrenFieldMap={CHILDREN_FIELD_MAP}
       rootPath={ROOT_PATH}
-      selectedPaths={selectedPaths}
+      selectedPaths={getSelectedPaths(selectedPaths)}
       onCopyTo={handleCopyTo}
       onMoveTo={handleMoveTo}
       onRemove={handleRemove}
     >
       <ActionBar />
       <LevelsTree css={TreeCSS} onDrop={handleMoveTo} />
-    </HotkeysProvider>
+    </HotkeysSectionProvider>
   )
 }

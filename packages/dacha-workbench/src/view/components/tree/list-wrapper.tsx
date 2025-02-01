@@ -1,31 +1,24 @@
 import {
   useCallback,
-  useContext,
   forwardRef,
 } from 'react'
-
-import { EngineContext } from '../../../../providers'
-import { EventType } from '../../../../../events'
 
 import { ListWrapperStyled } from './list-wrapper.style'
 
 interface ListWrapperProps {
   children: JSX.Element | Array<JSX.Element>
+  onClickOutside?: () => void
 }
 
-export const ListWrapper = forwardRef<HTMLDivElement, ListWrapperProps>(({ children }, ref) => {
-  const { scene } = useContext(EngineContext)
-
+export const ListWrapper = forwardRef<HTMLDivElement, ListWrapperProps>(({
+  children,
+  onClickOutside,
+}, ref) => {
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
-      scene.dispatchEvent(EventType.SelectEntities, {
-        paths: [],
-      })
-      scene.dispatchEvent(EventType.InspectEntity, {
-        path: undefined,
-      })
+      onClickOutside?.()
     }
-  }, [scene])
+  }, [onClickOutside])
 
   return (
     <ListWrapperStyled

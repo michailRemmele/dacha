@@ -13,7 +13,7 @@ import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explo
 import { useCommander } from '../../../../hooks'
 import { addTemplate } from '../../../../commands/templates'
 import { InspectedEntityContext } from '../../../../providers'
-import { HotkeysBar } from '../hotkeys-bar'
+import { HotkeysBar } from '../../../../components'
 
 export const ActionBar: FC = () => {
   const { t } = useTranslation()

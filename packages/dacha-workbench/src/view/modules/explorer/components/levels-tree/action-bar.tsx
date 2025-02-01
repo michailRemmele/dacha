@@ -14,7 +14,7 @@ import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explo
 import { useCommander } from '../../../../hooks'
 import { addActor, addLevel } from '../../../../commands/levels'
 import { InspectedEntityContext } from '../../../../providers'
-import { HotkeysBar } from '../hotkeys-bar'
+import { HotkeysBar } from '../../../../components'
 
 import { FocusActionButton } from './components'
 

@@ -18,8 +18,8 @@ import { getStatePath } from '../../../utils/paths'
 
 export const SubstateInspector: FC = () => {
   const { t } = useTranslation()
-  const { selectedEntity } = useContext(AnimationEditorContext)
-  const substatePath = selectedEntity?.path as string[]
+  const { inspectedEntity } = useContext(AnimationEditorContext)
+  const substatePath = inspectedEntity?.path as string[]
   const statePath = getStatePath(substatePath) as string[]
 
   const namePath = useMemo(() => substatePath.concat('name'), [substatePath])

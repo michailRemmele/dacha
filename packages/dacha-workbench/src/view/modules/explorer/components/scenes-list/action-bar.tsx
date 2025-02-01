@@ -11,7 +11,7 @@ import {
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
 import { addScene } from '../../../../commands/scenes'
-import { HotkeysBar } from '../hotkeys-bar'
+import { HotkeysBar } from '../../../../components'
 
 interface ActionBarProps {
   isLoaders?: boolean

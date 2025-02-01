@@ -11,15 +11,16 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons'
 
-import { ButtonCSS } from '../../explorer.style'
-import { HotkeysContext } from '../../../../providers'
+import { HotkeysSectionContext } from '../../providers'
+
+import { ButtonCSS } from './hotkeys-bar.style'
 
 export const HotkeysBar: FC = () => {
   const { t } = useTranslation()
 
   const {
     cut, copy, paste, remove,
-  } = useContext(HotkeysContext)
+  } = useContext(HotkeysSectionContext)
 
   return (
     <>

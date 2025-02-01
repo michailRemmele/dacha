@@ -2,6 +2,9 @@ import type { ReactNode } from 'react'
 import type { Animation } from 'dacha'
 import type { DataNode } from 'antd/lib/tree'
 
+import type { InspectedEntity } from '../../types'
+import { getStatePath, getSubstatePath } from '../../utils/paths'
+
 import {
   ListItemInitialStyled,
   ListItemSuffixStyled,
@@ -59,3 +62,19 @@ export const parseStates = (
 
   return node
 })
+
+export const getSelectedPaths = (
+  paths: string[][],
+  inspectedEntity?: InspectedEntity,
+): string[][] => {
+  const selectedPaths = paths.filter((path) => path.at(-2) === 'states' || path.at(-2) === 'substates')
+
+  if (!selectedPaths.length && (inspectedEntity?.type === 'transition' || inspectedEntity?.type === 'frame')) {
+    const statePath = getStatePath(inspectedEntity.path)
+    const substatePath = getSubstatePath(inspectedEntity.path)
+    const selectedPath = substatePath ?? statePath
+    return selectedPath ? [selectedPath] : []
+  }
+
+  return selectedPaths
+}

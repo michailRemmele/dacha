@@ -19,3 +19,10 @@ export const CONDITION_TYPE = {
   EVENT: 'event',
   COMPARATOR: 'comparator',
 }
+
+export const CHILDREN_FIELD_MAP: Record<string, string | undefined> = {
+  states: 'substates',
+  substates: undefined,
+  transitions: undefined,
+  frames: undefined,
+}
