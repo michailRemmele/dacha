@@ -1,7 +1,7 @@
 import { Store } from '../store'
 import type { Data } from '../types'
 
-describe('Mutator -> Store', () => {
+describe('Store', () => {
   let example: Data
 
   beforeEach(() => {
@@ -21,6 +21,9 @@ describe('Mutator -> Store', () => {
       b: {
         e: 'abcd',
         f: 888,
+      },
+      g: {
+        h: [],
       },
     }
   })
@@ -67,6 +70,31 @@ describe('Mutator -> Store', () => {
     expect(store.get(['b'])).toBeUndefined()
 
     expect((object as { b: unknown }).b).toBeDefined()
+    expect((object as { a: { c: Array<unknown> } }).a.c.length).toBe(2)
+  })
+
+  it('Should correctly immutable delete multiple items by paths', () => {
+    const store = new Store(example)
+    const object = store.get([])
+
+    store.deleteByPaths([['a', 'c', 'id:item1'], ['b'], ['a', 'c']])
+
+    expect(store.get(['a', 'c', 'id:item1'])).toBeUndefined()
+    expect(store.get(['a', 'c'])).toBeUndefined()
+    expect(store.get(['b'])).toBeUndefined()
+
+    expect((object as { a: { c: Array<unknown> } }).a.c).toBeDefined()
+    expect((object as { a: { c: Array<unknown> } }).a.c.length).toBe(2)
+    expect((object as { b: unknown }).b).toBeDefined()
+  })
+
+  it('Should correctly immutable delete single item by paths', () => {
+    const store = new Store(example)
+    const object = store.get([])
+
+    store.deleteByPaths([['a', 'c', 'id:item1']])
+
+    expect(store.get(['a', 'c', 'id:item1'])).toBeUndefined()
     expect((object as { a: { c: Array<unknown> } }).a.c.length).toBe(2)
   })
 })

@@ -358,8 +358,41 @@ export const getEditorConfig = ({
               width: 0,
               height: 0,
               color: 'rgba(0, 0, 0, 0)',
-              strokeWidth: 2,
+              strokeWidth: 3,
               strokeColor: '#fff',
+            },
+          },
+        },
+        {
+          name: 'Frame',
+          config: {},
+        },
+      ],
+    },
+    {
+      id: 'selectionArea',
+      name: 'selectionArea',
+      children: [],
+      components: [
+        {
+          name: 'Transform',
+          config: {
+            offsetX: 0,
+            offsetY: 0,
+            offsetZ: 0,
+            rotation: 0,
+          },
+        },
+        {
+          name: 'Shape',
+          config: {
+            type: 'rectangle',
+            properties: {
+              width: 0,
+              height: 0,
+              color: 'rgba(24, 144, 255, 0.25)',
+              strokeWidth: 2,
+              strokeColor: '#1890FF',
             },
           },
         },

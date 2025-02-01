@@ -1,3 +1,5 @@
 export { setValue } from './base/set'
 export { deleteValue } from './base/delete'
-export { addValue } from './base/add'
+export { addValue } from './base/add-value'
+export { addValues } from './base/add-values'
+export { deleteByPaths } from './base/delete-by-paths'

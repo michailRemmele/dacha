@@ -29,6 +29,10 @@ export type InspectEntityEvent = SceneEvent<{
   path: Array<string> | undefined
 }>
 
+export type SelectEntitiesEvent = SceneEvent<{
+  paths: string[][]
+}>
+
 declare module 'dacha' {
   export interface SceneEventMap {
     [EventType.SelectTool]: SelectToolEvent
@@ -37,6 +41,8 @@ declare module 'dacha' {
     [EventType.SelectLevel]: SelectLevelEvent
     [EventType.InspectEntity]: InspectEntityEvent
     [EventType.InspectedEntityChange]: InspectEntityEvent
+    [EventType.SelectEntities]: SelectEntitiesEvent
+    [EventType.SelectEntitiesChange]: SelectEntitiesEvent
     [EventType.SaveProject]: SceneEvent
   }
 

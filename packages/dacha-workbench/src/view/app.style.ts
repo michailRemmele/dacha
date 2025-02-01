@@ -36,14 +36,14 @@ export const CanvasRootCSS = (): SerializedStyles => {
 
     flex: 1;
 
-    background-color: ${theme.colorBgLayout};
+    background-color: ${theme.colorFill};
 
     &.canvas-root_tool_hand {
       cursor: grab;
     }
 
     &.canvas-root_tool_pointer {
-      cursor: pointer;
+      cursor: default;
     }
 
     &.canvas-root_tool_zoom.canvas-root_feature-direction_in {
@@ -87,4 +87,6 @@ export const HelperCanvasRootCSS = css`
   top: 35px;
 
   pointer-events: none;
+
+  image-rendering: pixelated;
 `

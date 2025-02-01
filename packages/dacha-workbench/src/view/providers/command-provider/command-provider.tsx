@@ -6,7 +6,9 @@ import React, {
 
 import { CommanderStore } from '../../../store'
 import type { Data } from '../../../store'
-import { ROOT_SCOPE } from '../../../consts/command-scopes'
+import { ROOT_SCOPE } from '../../../consts/scopes'
+
+type OperationType = 'undo' | 'redo'
 
 interface UndoRedoProviderProviderProps {
   children: JSX.Element | Array<JSX.Element>
@@ -31,16 +33,18 @@ export const CommandProvider = ({
   const [activeScope, setActiveScope] = useState(ROOT_SCOPE)
 
   useEffect(() => {
-    const handleUndo = (): void => {
-      store.undo({ scope: activeScope })
+    const handleOperation = (operation: OperationType) => () => {
+      const { activeElement } = document
+      if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
+        document.execCommand(operation)
+        return
+      }
+
+      store[operation]({ scope: activeScope })
     }
 
-    const handleRedo = (): void => {
-      store.redo({ scope: activeScope })
-    }
-
-    const undoUnsubscribe = window.electron.onUndo(handleUndo)
-    const redoUnsubscribe = window.electron.onRedo(handleRedo)
+    const undoUnsubscribe = window.electron.onUndo(handleOperation('undo'))
+    const redoUnsubscribe = window.electron.onRedo(handleOperation('redo'))
 
     return () => {
       undoUnsubscribe()

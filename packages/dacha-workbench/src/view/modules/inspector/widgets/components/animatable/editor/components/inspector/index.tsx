@@ -21,25 +21,25 @@ import {
 
 export const Inspector: FC = () => {
   const { t } = useTranslation()
-  const { selectedEntity } = useContext(AnimationEditorContext)
+  const { inspectedEntity } = useContext(AnimationEditorContext)
 
-  const entity = useConfig(selectedEntity?.path)
+  const entity = useConfig(inspectedEntity?.path)
 
   return (
     <InspectorStyled>
       <HeaderStyled>
         {!!entity && (
           <Typography.Text strong>
-            {t(`components.animatable.editor.inspector.${selectedEntity?.type as string}.title`)}
+            {t(`components.animatable.editor.inspector.${inspectedEntity?.type as string}.title`)}
           </Typography.Text>
         )}
       </HeaderStyled>
       {!!entity && (
         <InspectorContentStyled>
-          {selectedEntity?.type === 'state' && <StateInspector />}
-          {selectedEntity?.type === 'transition' && <TransitionInspector />}
-          {selectedEntity?.type === 'frame' && <FrameInspector />}
-          {selectedEntity?.type === 'substate' && <SubstateInspector />}
+          {inspectedEntity?.type === 'state' && <StateInspector />}
+          {inspectedEntity?.type === 'transition' && <TransitionInspector />}
+          {inspectedEntity?.type === 'frame' && <FrameInspector />}
+          {inspectedEntity?.type === 'substate' && <SubstateInspector />}
         </InspectorContentStyled>
       )}
     </InspectorStyled>

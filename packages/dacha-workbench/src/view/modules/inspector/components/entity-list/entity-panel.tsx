@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo } from 'react'
 
 import { CollapsePanel } from '../collapse-panel'
-import { SelectedEntityContext } from '../../../../providers'
+import { InspectedEntityContext } from '../../../../providers'
 import { useCommander } from '../../../../hooks'
 import { deleteValue } from '../../../../commands'
 
@@ -20,7 +20,7 @@ export const EntityPanel = ({
   expandExtra,
 }: EntityPanelProps): JSX.Element => {
   const { dispatch } = useCommander()
-  const { path = [] } = useContext(SelectedEntityContext)
+  const { path = [] } = useContext(InspectedEntityContext)
 
   const entityPath = useMemo(() => path.concat(type, `name:${entity.data.name}`), [entity, path, type])
 

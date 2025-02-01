@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Tabs } from 'antd'
 
-import { SelectedEntityContext } from '../../providers'
+import { InspectedEntityContext } from '../../providers'
 import { persistentStorage } from '../../../persistent-storage'
 import { TabsCSS } from '../../common-styles/tabs.style'
 
@@ -16,7 +16,7 @@ import { ExplorerStyled } from './explorer.style'
 
 export const Explorer = (): JSX.Element => {
   const { t } = useTranslation()
-  const { type, path } = useContext(SelectedEntityContext)
+  const { type, path } = useContext(InspectedEntityContext)
 
   const [activeTab, setActiveTab] = useState(() => persistentStorage.get('explorer.activeTab', 'level'))
 

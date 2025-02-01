@@ -2,6 +2,7 @@ import type { LevelConfig, TemplateConfig, ActorConfig } from 'dacha'
 import { FileOutlined } from '@ant-design/icons'
 
 import { ExplorerDataNode } from '../../../../../types/tree-node'
+import { getIdByPath } from '../../../../../utils/get-id-by-path'
 
 const parseTemplate = (
   template: TemplateConfig,
@@ -34,17 +35,16 @@ export const parseTemplates = (
   templates: Array<TemplateConfig>,
 ): Array<ExplorerDataNode> => templates.map((template) => parseTemplate(template, ['templates']))
 
-export const getKey = (entity?: unknown, path?: Array<string>): string | undefined => {
-  if (!entity || !path) {
+export const getInspectedKey = (path?: Array<string>): string | undefined => {
+  if (!path || path[0] !== 'templates') {
     return void ''
   }
 
-  if (path[0] !== 'templates') {
-    return void ''
-  }
-
-  return (entity as TemplateConfig).id
+  return getIdByPath(path)
 }
+
+export const getSelectedPaths = (paths: string[][]): string[][] => paths
+  .filter((path) => path[0] === 'templates')
 
 export const filterActors = (
   actors: Array<ActorConfig>,

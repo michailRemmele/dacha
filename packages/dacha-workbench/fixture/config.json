@@ -441,6 +441,277 @@
               }
             }
           }
+        },
+        {
+          "name": "Animatable",
+          "config": {
+            "initialState": "ee05cb9f-f603-4be8-8c97-da5913359eaa",
+            "states": [
+              {
+                "id": "ee05cb9f-f603-4be8-8c97-da5913359eaa",
+                "name": "Idle",
+                "type": "group",
+                "speed": 1,
+                "transitions": [
+                  {
+                    "id": "e303400b-0de8-468a-a285-e8005d72bbe0",
+                    "state": "0b1a7bc4-c467-49a8-b379-b566fd275db4",
+                    "time": 0,
+                    "conditions": [
+                      {
+                        "id": "d9a06fe6-05ed-4ecb-b308-e794d421fc6a",
+                        "type": "comparator",
+                        "props": {
+                          "arg1": {
+                            "type": "componentValue",
+                            "value": "components.Movement.speed"
+                          },
+                          "arg2": {
+                            "type": "number",
+                            "value": 0
+                          },
+                          "operation": "notEquals"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "ed0f6f87-ab4c-4605-a5a4-8a9d54215438",
+                    "state": "bf4a0fda-8041-42c7-af1b-cb66b2619b53",
+                    "time": 0,
+                    "conditions": [
+                      {
+                        "id": "a1f5c74b-81e0-4dab-ae3e-f44d80dd3072",
+                        "type": "event",
+                        "props": {
+                          "eventType": "Death"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "substates": [
+                  {
+                    "id": "bb12ce87-03cb-46f9-8e53-7cfc517a64c5",
+                    "name": "Left",
+                    "timeline": {
+                      "frames": [
+                        {
+                          "id": "06d37972-c3c7-4591-9264-4d28bd881bba",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 0
+                            }
+                          ]
+                        },
+                        {
+                          "id": "3d105b8b-f6bf-4a92-b87b-15483e9b5399",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 1
+                            }
+                          ]
+                        },
+                        {
+                          "id": "21d36adc-8122-4a4a-adaa-8273019701c5",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 2
+                            }
+                          ]
+                        },
+                        {
+                          "id": "d8b7efaf-2a10-4ab6-b5e3-1bf179db7a37",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 3
+                            }
+                          ]
+                        }
+                      ],
+                      "looped": false
+                    },
+                    "x": -1
+                  },
+                  {
+                    "id": "c898eb21-6191-4cdf-a0f8-0ce9fb204e51",
+                    "name": "Right",
+                    "timeline": {
+                      "frames": [
+                        {
+                          "id": "06d37972-c3c7-4591-9264-4d28bd881bba",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 0
+                            }
+                          ]
+                        },
+                        {
+                          "id": "3d105b8b-f6bf-4a92-b87b-15483e9b5399",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 1
+                            }
+                          ]
+                        },
+                        {
+                          "id": "21d36adc-8122-4a4a-adaa-8273019701c5",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 2
+                            }
+                          ]
+                        },
+                        {
+                          "id": "d8b7efaf-2a10-4ab6-b5e3-1bf179db7a37",
+                          "fields": [
+                            {
+                              "id": "d9332aef-b87e-4626-938e-5b1b8731a493",
+                              "name": "components.Sprite.currentFrame",
+                              "type": "number",
+                              "value": 3
+                            }
+                          ]
+                        }
+                      ],
+                      "looped": false
+                    },
+                    "x": 1
+                  }
+                ],
+                "pickMode": "1D",
+                "pickProps": {
+                  "x": "components.Movement.viewDirection.x"
+                }
+              },
+              {
+                "id": "0b1a7bc4-c467-49a8-b379-b566fd275db4",
+                "name": "Run",
+                "type": "individual",
+                "speed": 1,
+                "timeline": {
+                  "frames": [
+                    {
+                      "id": "e0efc2ae-fa8c-4b95-8f79-056c0d3b2b8c",
+                      "fields": [
+                        {
+                          "id": "13f0d58e-3859-4852-acb5-9c9aee784116",
+                          "name": "components.Sprite.currentFrame",
+                          "type": "number",
+                          "value": 4
+                        }
+                      ]
+                    },
+                    {
+                      "id": "d95c03f5-c2c1-46ea-b59b-a9eab33b645d",
+                      "fields": [
+                        {
+                          "id": "13f0d58e-3859-4852-acb5-9c9aee784116",
+                          "name": "components.Sprite.currentFrame",
+                          "type": "number",
+                          "value": 5
+                        }
+                      ]
+                    },
+                    {
+                      "id": "50ce6a61-cbb7-4e74-a9eb-43363a226095",
+                      "fields": [
+                        {
+                          "id": "13f0d58e-3859-4852-acb5-9c9aee784116",
+                          "name": "components.Sprite.currentFrame",
+                          "type": "number",
+                          "value": 6
+                        }
+                      ]
+                    }
+                  ],
+                  "looped": false
+                },
+                "transitions": [
+                  {
+                    "id": "3d9b75e5-bbf7-41f6-b30a-d9b2d822f943",
+                    "state": "ee05cb9f-f603-4be8-8c97-da5913359eaa",
+                    "time": 0,
+                    "conditions": [
+                      {
+                        "id": "dfa19c75-5151-45ca-8118-61b1c41aae32",
+                        "type": "comparator",
+                        "props": {
+                          "arg1": {
+                            "type": "componentValue",
+                            "value": "components.Movement.speed"
+                          },
+                          "arg2": {
+                            "type": "number",
+                            "value": 0
+                          },
+                          "operation": "equals"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "971a02ba-76c8-4e1c-bec2-2245f23420d4",
+                    "state": "bf4a0fda-8041-42c7-af1b-cb66b2619b53",
+                    "time": 0,
+                    "conditions": [
+                      {
+                        "id": "01bce7b9-fd9f-4b1d-8b3f-6cff6819b809",
+                        "type": "event",
+                        "props": {
+                          "eventType": "Death"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "bf4a0fda-8041-42c7-af1b-cb66b2619b53",
+                "name": "Death",
+                "type": "individual",
+                "speed": 1,
+                "timeline": {
+                  "frames": [
+                    {
+                      "id": "700b0128-6e7b-4f85-ae9f-0c393fad216f",
+                      "fields": [
+                        {
+                          "id": "711d2f7d-302c-4ac7-bb79-f0a741bd257c",
+                          "name": "components.Sprite.currentFrame",
+                          "type": "number",
+                          "value": 7
+                        }
+                      ]
+                    }
+                  ],
+                  "looped": false
+                },
+                "transitions": []
+              }
+            ]
+          }
         }
       ],
       "id": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"

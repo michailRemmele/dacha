@@ -1,5 +1,9 @@
 export { EngineContext, EngineProvider } from './engine-provider'
-export { SelectedEntityContext, SelectedEntityProvider } from './selected-entity-provider'
+export {
+  InspectedEntityContext,
+  EntityExplorerProvider,
+  EntitySelectionContext,
+} from './entity-explorer-provider'
 export { SchemasContext, SchemasProvider } from './schemas-provider'
 export type { SchemasDataEntry } from './schemas-provider'
 export { ThemeProvider } from './theme-provider'
@@ -11,3 +15,11 @@ export {
   CommandScopeContext,
 } from './command-provider'
 export { NeedsReloadContext, NeedsReloadProvider } from './needs-reload-provider'
+export {
+  HotkeysProvider,
+  HotkeysContext,
+  HotkeysScopeProvider,
+  HotkeysScopeContext,
+  HotkeysSectionProvider,
+  HotkeysSectionContext,
+} from './hotkeys-provider'

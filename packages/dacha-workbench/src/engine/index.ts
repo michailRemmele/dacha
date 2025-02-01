@@ -16,4 +16,5 @@ export {
   ToolController,
   Shape,
   Settings,
+  Frame,
 } from './components'
