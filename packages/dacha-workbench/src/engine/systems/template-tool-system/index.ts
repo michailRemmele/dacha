@@ -12,7 +12,7 @@ import type { MouseControlEvent } from 'dacha/events'
 import { EventType } from '../../../events'
 import type { SelectLevelEvent, InspectEntityEvent } from '../../../events'
 import { ADD_VALUE } from '../../../command-types'
-import { ROOT_SCOPE } from '../../../consts/command-scopes'
+import { ROOT_SCOPE } from '../../../consts/scopes'
 import type { CommanderStore } from '../../../store'
 
 import { PreviewSubsystem } from './preview'

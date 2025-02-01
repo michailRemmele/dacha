@@ -114,26 +114,18 @@
   "components.animatable.editor.state.initial.title": "(Initial State)",
   "components.animatable.editor.state.setInitial.button.title": "Set as initial",
   "components.animatable.editor.state.add.button.title": "Add New State",
-  "components.animatable.editor.state.delete.button.title": "Delete State",
-  "components.animatable.editor.state.duplicate.button.title": "Duplicate State",
-  "components.animatable.editor.state.new.title": "New State {{index}}",
+  "components.animatable.editor.state.new.title": "State",
 
   "components.animatable.editor.frame.add.button.title": "Add New Frame",
-  "components.animatable.editor.frame.delete.button.title": "Delete Frame",
-  "components.animatable.editor.frame.duplicate.button.title": "Duplicate Frame",
 
   "components.animatable.editor.substate.x.title": "X",
   "components.animatable.editor.substate.y.title": "Y",
   "components.animatable.editor.substate.add.button.title": "Add New Substate",
-  "components.animatable.editor.substate.delete.button.title": "Delete Substate",
-  "components.animatable.editor.substate.duplicate.button.title": "Duplicate Substate",
-  "components.animatable.editor.substate.new.title": "New Substate {{index}}",
+  "components.animatable.editor.substate.new.title": "Substate",
 
   "components.animatable.editor.transition.state.title": "State",
   "components.animatable.editor.transition.time.title": "Time",
   "components.animatable.editor.transition.add.button.title": "Add New Transition",
-  "components.animatable.editor.transition.delete.button.title": "Delete Transition",
-  "components.animatable.editor.transition.duplicate.button.title": "Duplicate Transition",
   "components.animatable.editor.transition.unknown.state.title": "DELETED",
 
   "components.animatable.editor.condition.title": "Condition {{index}}",

@@ -2,11 +2,12 @@ import type { FC } from 'react'
 import { useCallback, useContext } from 'react'
 
 import { useCommander } from '../../../../hooks'
-import { EntitySelectionContext, HotkeysProvider } from '../../../../providers'
+import { EntitySelectionContext, HotkeysSectionProvider } from '../../../../providers'
 import { copyByPaths } from '../../../../commands/scenes'
 import { deleteByPaths } from '../../../../commands'
 import { CHILDREN_FIELD_MAP } from '../../consts'
 
+import { getSelectedPaths } from './utils'
 import { ActionBar } from './action-bar'
 import { SceneTree } from './tree'
 
@@ -31,16 +32,16 @@ export const ScenesList: FC<ScenesListProps> = ({ isLoaders }) => {
   const handleRemove = useCallback((paths: string[][]) => dispatch(deleteByPaths(paths)), [])
 
   return (
-    <HotkeysProvider
+    <HotkeysSectionProvider
       childrenFieldMap={CHILDREN_FIELD_MAP}
       rootPath={isLoaders ? LOADERS_ROOT_PATH : SCENES_ROOT_PATH}
-      selectedPaths={selectedPaths}
+      selectedPaths={getSelectedPaths(selectedPaths)}
       onCopyTo={handleCopyTo}
       onMoveTo={handleMoveTo}
       onRemove={handleRemove}
     >
       <ActionBar isLoaders={isLoaders} />
       <SceneTree isLoaders={isLoaders} />
-    </HotkeysProvider>
+    </HotkeysSectionProvider>
   )
 }

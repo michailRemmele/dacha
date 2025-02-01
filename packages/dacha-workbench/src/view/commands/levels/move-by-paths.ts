@@ -31,10 +31,9 @@ export const moveByPaths = (
     return
   }
 
-  const { values } = sourcePaths.reduce((acc, path) => {
-    if (!isPathCorrect(path, isActorDestination)) {
-      return acc
-    }
+  const filteredPaths = sourcePaths.filter((path) => isPathCorrect(path, isActorDestination))
+
+  const { values } = filteredPaths.reduce((acc, path) => {
     const value = getState(path)
     if (value) {
       const duplicate = getDuplicate(value, acc.parent)
@@ -47,6 +46,6 @@ export const moveByPaths = (
 
   if (values.length) {
     dispatch(addValues(destinationPath, values))
-    dispatch(deleteByPaths(sourcePaths, true))
+    dispatch(deleteByPaths(filteredPaths, true))
   }
 }

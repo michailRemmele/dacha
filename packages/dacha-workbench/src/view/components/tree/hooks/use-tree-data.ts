@@ -4,16 +4,16 @@ import {
   useContext,
 } from 'react'
 
-import { HotkeysContext } from '../../../../../providers'
-import { getIdByPath } from '../../../../../../utils/get-id-by-path'
-import type { ExplorerDataNode } from '../../../../../../types/tree-node'
+import { HotkeysSectionContext } from '../../../providers'
+import { getIdByPath } from '../../../../utils/get-id-by-path'
+import type { ExplorerDataNode } from '../../../../types/tree-node'
 
 interface UseTreeDataReturnType {
   treeData: ExplorerDataNode[]
 }
 
 export const useTreeData = (treeData: ExplorerDataNode[]): UseTreeDataReturnType => {
-  const { clipboard, isCut } = useContext(HotkeysContext)
+  const { clipboard, isCut } = useContext(HotkeysSectionContext)
 
   const cutKeys = useMemo(() => {
     const keysSet = new Set<string>()
