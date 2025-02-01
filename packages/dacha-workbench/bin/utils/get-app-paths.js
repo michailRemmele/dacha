@@ -1,14 +1,14 @@
 const path = require('path')
 
 const binPaths = {
-  darwin: 'Dacha Workbench.app/Contents/MacOS/Dacha Workbench',
-  freebsd: 'Dacha Workbench',
-  linux: 'Dacha Workbench',
-  win32: 'Dacha Workbench.exe',
+  darwin: 'Workbench.app/Contents/MacOS/Workbench',
+  freebsd: 'Workbench',
+  linux: 'Workbench',
+  win32: 'Workbench.exe',
 }
 
 const resourcesPaths = {
-  darwin: 'Dacha Workbench.app/Contents/Resources/app',
+  darwin: 'Workbench.app/Contents/Resources/app',
   freebsd: path.join('resources', 'app'),
   linux: path.join('resources', 'app'),
   win32: path.join('resources', 'app'),
