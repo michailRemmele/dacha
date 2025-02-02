@@ -23,6 +23,7 @@ import {
   isFloatEqual,
   getSizeX,
   getSizeY,
+  updateActorTransform,
 } from './utils'
 
 export interface Position {
@@ -155,27 +156,9 @@ export class SelectionMovementSubsystem {
     const actorsPath = ['levels', `id:${this.selectedActors.levelId}`, 'actors']
     const actorConfigs = this.configStore.get(actorsPath) as ActorConfig[]
 
-    const updatedActors = actorConfigs.map((actorConfig) => {
-      if (!newTransformMap.has(actorConfig.id)) {
-        return actorConfig
-      }
-
-      return {
-        ...actorConfig,
-        components: actorConfig.components?.map((component) => {
-          if (component.name !== Transform.componentName) {
-            return component
-          }
-          return {
-            ...component,
-            config: {
-              ...component.config,
-              ...newTransformMap.get(actorConfig.id),
-            },
-          }
-        }),
-      }
-    })
+    const updatedActors = actorConfigs.map(
+      (actorConfig) => updateActorTransform(actorConfig, newTransformMap),
+    )
 
     this.configStore.dispatch({
       command: SET,
