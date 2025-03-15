@@ -11,3 +11,4 @@ export type { ScriptOptions } from './script-system';
 export { SpriteRenderer, SpriteRendererService } from './sprite-renderer';
 export { UiBridge } from './ui-bridge';
 export type { UiInitFnOptions, UiInitFn, UiDestroyFn } from './ui-bridge';
+export { AudioSystem } from './audio-system';

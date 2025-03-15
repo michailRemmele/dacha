@@ -18,3 +18,5 @@ export { ScriptBundle } from './script-bundle';
 export type { ScriptBundleConfig } from './script-bundle';
 export { Light } from './light';
 export type { LightConfig } from './light';
+export { AudioSource } from './audio-source';
+export type { AudioSourceConfig } from './audio-source';
