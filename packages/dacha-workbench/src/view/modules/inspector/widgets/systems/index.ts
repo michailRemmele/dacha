@@ -10,6 +10,7 @@ import {
   ScriptSystem,
   SpriteRenderer,
   UiBridge,
+  AudioSystem,
 } from 'dacha'
 
 import type { WidgetSchema } from '../../../../../types/widget-schema'
@@ -25,6 +26,7 @@ import { physicsSystem } from './physics-system'
 import { scriptSystem } from './script-system'
 import { spriteRenderer } from './sprite-renderer'
 import { uiBridge } from './ui-bridge'
+import { audioSystem } from './audio-system'
 
 export const systemsSchema: Record<string, WidgetSchema> = {
   [Animator.systemName]: animator,
@@ -38,4 +40,5 @@ export const systemsSchema: Record<string, WidgetSchema> = {
   [ScriptSystem.systemName]: scriptSystem,
   [SpriteRenderer.systemName]: spriteRenderer,
   [UiBridge.systemName]: uiBridge,
+  [AudioSystem.systemName]: audioSystem,
 }
