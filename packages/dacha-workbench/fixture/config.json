@@ -58,6 +58,10 @@
               "MouseControl"
             ]
           }
+        },
+        {
+          "name": "AudioSystem",
+          "options": {}
         }
       ],
       "id": "076c54c9-503e-48b5-a793-0ce33c9265c3"
@@ -712,6 +716,16 @@
               }
             ]
           }
+        },
+        {
+          "name": "AudioSource",
+          "config": {
+            "src": "",
+            "volume": 0.5,
+            "looped": false,
+            "autoplay": false,
+            "group": "effects"
+          }
         }
       ],
       "id": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
@@ -820,15 +834,44 @@
   ],
   "globalOptions": [
     {
-      "id": "9bd6453a-75f5-42b2-8ad3-e7c7157d7e0a",
+      "name": "audioGroups",
+      "options": {
+        "groups": [
+          {
+            "id": "3feac4d8-e14a-4cb5-900b-47c865973bbb",
+            "name": "music",
+            "volume": 1
+          },
+          {
+            "id": "ef0968e2-1cde-4e79-a2f4-6c4616d8befb",
+            "name": "effects",
+            "volume": 1
+          }
+        ]
+      }
+    },
+    {
       "name": "sortingLayers",
-      "type": "array",
-      "value": [
-        "background",
-        "terrain",
-        "units",
-        "default"
-      ]
+      "options": {
+        "layers": [
+          {
+            "id": "3e260430-1938-452d-ad2e-fdf72cf49a0a",
+            "name": "background"
+          },
+          {
+            "id": "7983f381-a21a-4f89-893c-a75731ba5196",
+            "name": "terrain"
+          },
+          {
+            "id": "0ae8b9c8-9a9b-44c5-b097-1a4ac54bff25",
+            "name": "units"
+          },
+          {
+            "id": "fbb12d6c-2e39-4e42-9ab1-9b6f42a7fe62",
+            "name": "default"
+          }
+        ]
+      }
     }
   ],
   "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",

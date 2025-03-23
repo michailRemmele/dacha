@@ -14,8 +14,11 @@ import {
   Field,
   LabelledSelect,
   Form,
-  MultiField,
 } from '../../components'
+import {
+  SortingLayersWidget,
+  AudioGroupsWidget,
+} from '../../widgets/global-options'
 
 export const ProjectSettings: FC = () => {
   const { t } = useTranslation()
@@ -66,9 +69,9 @@ export const ProjectSettings: FC = () => {
       <div>
         {t('inspector.projectSettings.globalOptions.title')}
       </div>
-      <MultiField
-        path={['globalOptions']}
-      />
+
+      <SortingLayersWidget />
+      <AudioGroupsWidget />
     </Form>
   )
 }
