@@ -9,6 +9,7 @@ import {
   RigidBody,
   ScriptBundle,
   Transform,
+  AudioSource,
 } from 'dacha'
 
 import type { WidgetSchema } from '../../../../../types/widget-schema'
@@ -23,6 +24,7 @@ import { sprite } from './sprite'
 import { rigidBody } from './rigid-body'
 import { scriptBundle } from './script-bundle'
 import { transform } from './transform'
+import { audioSource } from './audio-source'
 
 export const componentsSchema: Record<string, WidgetSchema> = {
   [Animatable.componentName]: animatable,
@@ -35,4 +37,5 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [RigidBody.componentName]: rigidBody,
   [ScriptBundle.componentName]: scriptBundle,
   [Transform.componentName]: transform,
+  [AudioSource.componentName]: audioSource,
 }

@@ -20,7 +20,7 @@ export interface Reference {
 
 export type References = Record<string, Reference | undefined>
 
-export type FieldType = 'string' | 'number' | 'boolean' | 'select' | 'multitext' | 'multiselect' | 'color' | 'file'
+export type FieldType = 'string' | 'number' | 'boolean' | 'select' | 'multitext' | 'multiselect' | 'color' | 'file' | 'range'
 
 export interface Field {
   name: string

@@ -45,3 +45,11 @@ export interface ColorInputProps extends Omit<InputProps, 'defaultValue' | 'colo
 export interface FileInputProps extends InputProps {
   extensions?: Array<string>
 }
+
+export interface RangeInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'step'> {
+  value: number
+  onChange?: (value: number) => void
+  min: number
+  max: number
+  step: number
+}
