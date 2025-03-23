@@ -124,6 +124,10 @@ export class AudioSystem extends System {
     this.scene.removeEventListener(PlayAudio, this.handlePlayAudio);
     this.scene.removeEventListener(StopAudio, this.handleStopAudio);
     this.scene.removeEventListener(SetAudioVolume, this.handleSetAudioVolume);
+
+    window.removeEventListener('click', this.resumeIfSuspended);
+    window.removeEventListener('keydown', this.resumeIfSuspended);
+    window.removeEventListener('touchstart', this.resumeIfSuspended);
   }
 
   private handleActorAdd = (event: AddActorEvent): void => {
