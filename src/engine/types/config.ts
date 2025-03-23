@@ -1,8 +1,6 @@
 export interface GlobalOption {
-  id: string
   name: string
-  type: string
-  value: unknown
+  options: Record<string, unknown>
 }
 
 export interface ComponentConfig {
@@ -13,22 +11,22 @@ export interface ComponentConfig {
 export interface TemplateConfig {
   id: string
   name: string
-  components?: Array<ComponentConfig>
-  children?: Array<TemplateConfig>
+  components?: ComponentConfig[]
+  children?: TemplateConfig[]
 }
 
 export interface ActorConfig {
   id: string
   name: string
-  children?: Array<ActorConfig>
-  components?: Array<ComponentConfig>
+  children?: ActorConfig[]
+  components?: ComponentConfig[]
   templateId?: string
 }
 
 export interface LevelConfig {
   id: string
   name: string
-  actors: Array<ActorConfig>
+  actors: ActorConfig[]
 }
 
 export interface SystemConfig {
@@ -40,15 +38,15 @@ export interface SceneConfig {
   id: string
   name: string
   levelId: string | null
-  systems: Array<SystemConfig>
+  systems: SystemConfig[]
 }
 
 export interface Config {
-  scenes: Array<SceneConfig>
-  levels: Array<LevelConfig>
-  templates: Array<TemplateConfig>
-  loaders: Array<SceneConfig>
+  scenes: SceneConfig[]
+  levels: LevelConfig[]
+  templates: TemplateConfig[]
+  loaders: SceneConfig[]
   startSceneId: string | null
   startLoaderId: string | null
-  globalOptions: Array<GlobalOption>
+  globalOptions: GlobalOption[]
 }

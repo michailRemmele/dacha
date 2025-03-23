@@ -69,7 +69,7 @@ export class SceneProvider {
     this.systems = systems;
     this.resources = resources;
     this.globalOptions = globalOptions.reduce((acc: Record<string, unknown>, option) => {
-      acc[option.name] = option.value;
+      acc[option.name] = option.options;
       return acc;
     }, {});
     this.loadedScene = void 0;

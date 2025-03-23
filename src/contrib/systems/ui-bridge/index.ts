@@ -19,6 +19,7 @@ type ActionFn = (options: ActionFnOptions) => void;
 export interface UiInitFnOptions {
   scene: Scene
   templateCollection: TemplateCollection
+  globalOptions: Record<string, unknown>
   gameStateObserver: Observer
   pushAction: (action: ActionFn) => void
 }
@@ -36,6 +37,7 @@ export class UiBridge extends System {
   private scene: Scene;
   private loadUiApp: LoadUiAppFn;
   private templateCollection: TemplateCollection;
+  private globalOptions: Record<string, unknown>;
   private gameStateObserver: Observer;
   private actionsQueue: Array<ActionFn>;
   private onUiInit?: UiInitFn;
@@ -49,6 +51,7 @@ export class UiBridge extends System {
       resources,
       scene,
       templateCollection,
+      globalOptions,
     } = options;
 
     const loadUiApp = (resources as UiBridgeResources | undefined)?.loadUiApp;
@@ -62,6 +65,7 @@ export class UiBridge extends System {
     this.scene = scene;
     this.actorSpawner = actorSpawner;
     this.templateCollection = templateCollection;
+    this.globalOptions = globalOptions;
 
     this.gameStateObserver = new Observer();
 
@@ -80,6 +84,7 @@ export class UiBridge extends System {
       this.onUiInit({
         scene: this.scene,
         templateCollection: this.templateCollection,
+        globalOptions: this.globalOptions,
         gameStateObserver: this.gameStateObserver,
         pushAction: this.pushAction.bind(this),
       });

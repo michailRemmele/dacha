@@ -21,6 +21,9 @@ export {
   CollisionLeave,
   AddForce,
   AddImpulse,
+  PlayAudio,
+  StopAudio,
+  SetAudioVolume,
 } from '../contrib/events';
 export type {
   SetCameraEvent,
@@ -34,4 +37,6 @@ export type {
   CollisionLeaveEvent,
   AddForceEvent,
   AddImpulseEvent,
+  SetAudioGroupVolumeEvent,
+  SetAudioSourceVolumeEvent,
 } from '../contrib/events';
