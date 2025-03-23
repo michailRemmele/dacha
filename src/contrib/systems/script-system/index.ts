@@ -18,6 +18,7 @@ export { Script, ScriptOptions, ScriptConstructor };
 export class ScriptSystem extends System {
   private scriptsCollection: ActorCollection;
   private actorSpawner: ActorSpawner;
+  private globalOptions: Record<string, unknown>;
   private scripts: Record<string, ScriptConstructor>;
   private scene: Scene;
   private activeScripts: Record<string, Array<Script>>;
@@ -28,6 +29,7 @@ export class ScriptSystem extends System {
     const {
       actorSpawner,
       scene,
+      globalOptions,
       resources = {},
     } = options;
 
@@ -38,6 +40,7 @@ export class ScriptSystem extends System {
       ],
     });
     this.actorSpawner = actorSpawner;
+    this.globalOptions = globalOptions;
     this.scripts = (resources as Array<ScriptConstructor>).reduce((acc, script) => {
       if (script.scriptName === undefined) {
         throw new Error(`Missing scriptName field for ${script.name} script.`);
@@ -78,6 +81,7 @@ export class ScriptSystem extends System {
         actor,
         actorSpawner: this.actorSpawner,
         scene: this.scene,
+        globalOptions: this.globalOptions,
       });
     });
   }
