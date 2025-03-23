@@ -9,6 +9,7 @@ export interface ScriptOptions {
   scene: Scene
   actor: Actor
   actorSpawner: ActorSpawner
+  globalOptions: Record<string, unknown>
 }
 
 interface UpdateOptions {

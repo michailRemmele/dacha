@@ -15,6 +15,9 @@ export const CollisionLeave = 'CollisionLeave';
 export const AddForce = 'AddForce';
 export const AddImpulse = 'AddImpulse';
 export const StopMovement = 'StopMovement';
+export const PlayAudio = 'PlayAudio';
+export const StopAudio = 'StopAudio';
+export const SetAudioVolume = 'SetAudioVolume';
 
 export type MouseInputEvent = SceneEvent<CustomMouseEvent>;
 
@@ -34,6 +37,11 @@ export type CollisionEvent = SceneEvent<{
   actor2: Actor
   mtv1: Vector2
   mtv2: Vector2
+}>;
+
+export type SetAudioGroupVolumeEvent = SceneEvent<{
+  group: string
+  value: number
 }>;
 
 export type MouseControlEvent<T = Record<string, never>>
@@ -57,6 +65,10 @@ export type AddImpulseEvent = ActorEvent<{
   value: Vector2
 }>;
 
+export type SetAudioSourceVolumeEvent = ActorEvent<{
+  value: number
+}>;
+
 declare module '../../types/events' {
   export interface SceneEventMap {
     [MouseInput]: MouseInputEvent
@@ -64,6 +76,7 @@ declare module '../../types/events' {
     [SetCamera]: SetCameraEvent
     [GameStatsUpdate]: GameStatsUpdateEvent
     [Collision]: CollisionEvent
+    [SetAudioVolume]: SetAudioGroupVolumeEvent
   }
 
   export interface ActorEventMap {
@@ -73,5 +86,8 @@ declare module '../../types/events' {
     [AddForce]: AddForceEvent
     [AddImpulse]: AddImpulseEvent
     [StopMovement]: ActorEvent
+    [PlayAudio]: ActorEvent
+    [StopAudio]: ActorEvent
+    [SetAudioVolume]: SetAudioSourceVolumeEvent
   }
 }

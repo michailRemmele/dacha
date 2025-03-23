@@ -43,6 +43,7 @@ import {
   getTextureMapKey,
   cloneTexture,
 } from './utils';
+import type { SortingLayers } from './types';
 
 interface RendererOptions extends SystemOptions {
   windowNodeId: string
@@ -90,7 +91,7 @@ export class SpriteRenderer extends System {
     this.window = getWindowNode(windowNodeId);
 
     this.sortFn = composeSort([
-      createSortByLayer(parseSortingLayers(globalOptions.sortingLayers)),
+      createSortByLayer(parseSortingLayers((globalOptions.sortingLayers as SortingLayers)?.layers)),
       sortByYAxis,
       sortByXAxis,
       sortByZAxis,
