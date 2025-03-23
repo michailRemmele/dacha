@@ -17,18 +17,11 @@ import type {
 } from '../../../events';
 import type { ActorEvent } from '../../../types/events';
 
+import { audioLoader } from './audio-loader';
+import type { AudioGroups, AudioStateNode } from './types';
+
 const MASTER_GROUP = 'master';
 const VOLUME_TOLERANCE = 0.001;
-
-type AudioStateNode = {
-  sourceNode: AudioBufferSourceNode
-  gainNode: GainNode
-  properties: {
-    volume: number
-    group: string
-    endedListener: () => void
-  }
-};
 
 export class AudioSystem extends System {
   private templateCollection: TemplateCollection;
@@ -57,12 +50,19 @@ export class AudioSystem extends System {
 
     masterAudioGroup.connect(this.audioContext.destination);
 
-    const audioGroupNames = (globalOptions.audioGroups ?? []) as string[];
-    this.audioGroups = audioGroupNames.reduce((acc, name) => {
+    const audioGroupsOption = globalOptions.audioGroups as AudioGroups | undefined;
+    const audioGroupsSettings = audioGroupsOption?.groups ?? [];
+    this.audioGroups = audioGroupsSettings.reduce((acc, groupSettings) => {
+      if (groupSettings.name === MASTER_GROUP) {
+        return acc;
+      }
+
       const gainNode = new GainNode(this.audioContext);
+      gainNode.gain.value = groupSettings.volume;
+
       gainNode.connect(masterAudioGroup);
 
-      acc[name] = gainNode;
+      acc[groupSettings.name] = gainNode;
       return acc;
     }, { [MASTER_GROUP]: masterAudioGroup } as Record<string, GainNode | undefined>);
 
@@ -88,8 +88,7 @@ export class AudioSystem extends System {
     }
 
     try {
-      const response = await fetch(audioSourcePath);
-      const arrayBuffer = await response.arrayBuffer();
+      const arrayBuffer = await audioLoader.load(audioSourcePath);
       const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
       this.audioCache.set(audioSourcePath, audioBuffer);
     } catch (error: unknown) {
@@ -106,6 +105,10 @@ export class AudioSystem extends System {
     this.scene.addEventListener(PlayAudio, this.handlePlayAudio);
     this.scene.addEventListener(StopAudio, this.handleStopAudio);
     this.scene.addEventListener(SetAudioVolume, this.handleSetAudioVolume);
+
+    window.addEventListener('click', this.resumeIfSuspended, { once: true });
+    window.addEventListener('keydown', this.resumeIfSuspended, { once: true });
+    window.addEventListener('touchstart', this.resumeIfSuspended, { once: true });
   }
 
   unmount(): void {
@@ -158,6 +161,12 @@ export class AudioSystem extends System {
       }
 
       audioGroup.gain.value = event.value;
+    }
+  };
+
+  private resumeIfSuspended = (): void => {
+    if (this.audioContext.state === 'suspended') {
+      void this.audioContext.resume();
     }
   };
 
