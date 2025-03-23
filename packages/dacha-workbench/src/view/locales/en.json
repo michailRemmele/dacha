@@ -228,6 +228,12 @@
   "components.transform.scaleX.title": "Scale X",
   "components.transform.scaleY.title": "Scale Y",
 
+  "components.audioSource.title": "Audio Source",
+  "components.audioSource.src.title": "Source",
+  "components.audioSource.volume.title": "Volume",
+  "components.audioSource.looped.title": "Looped",
+  "components.audioSource.autoplay.title": "Autoplay",
+  "components.audioSource.group.title": "Group",
 
   "systems.animator.title": "Animator",
 
@@ -260,5 +266,17 @@
   "systems.spriteRenderer.sortingLayers.title": "Sorting Layers",
 
   "systems.uiBridge.title": "UI Bridge",
-  "systems.uiBridge.filterComponents.title": "Filtered Components"
+  "systems.uiBridge.filterComponents.title": "Filtered Components",
+
+  "systems.audioSystem.title": "Audio System",
+
+  "globalOptions.sortingLayers.title": "Sorting Layers",
+  "globalOptions.sortingLayers.addNew.title": "Add Layer",
+  "globalOptions.sortingLayers.name.title": "Layer",
+
+  "globalOptions.audioGroups.title": "Audio Groups",
+  "globalOptions.audioGroups.addNew.title": "Add Group",
+  "globalOptions.audioGroups.panel.name.title": "Group",
+  "globalOptions.audioGroups.name.title": "Name",
+  "globalOptions.audioGroups.volume.title": "Volume"
 }
