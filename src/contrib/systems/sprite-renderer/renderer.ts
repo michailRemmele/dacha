@@ -266,6 +266,15 @@ export class SpriteRenderer extends System {
     this.renderScene.add(object);
   }
 
+  private normalizeOffset(value: number): number {
+    const currentCamera = this.cameraService.getCurrentCamera();
+    const camera = currentCamera?.getComponent(Camera);
+    const zoom = camera?.zoom ?? 1;
+
+    const ratio = 1 / (window.devicePixelRatio * zoom);
+    return Math.round(value / ratio) * ratio;
+  }
+
   private updateCamera(): void {
     const currentCamera = this.cameraService.getCurrentCamera();
     const transform = currentCamera?.getComponent(Transform);
@@ -277,7 +286,11 @@ export class SpriteRenderer extends System {
 
     this.currentCamera.zoom = zoom;
     // TODO: Figure out how to set up camera correctly to avoid negative transform by y axis
-    this.currentCamera.position.set(offsetX, -offsetY, 1);
+    this.currentCamera.position.set(
+      this.normalizeOffset(offsetX),
+      -this.normalizeOffset(offsetY),
+      1,
+    );
 
     this.currentCamera.updateProjectionMatrix();
   }
@@ -310,7 +323,11 @@ export class SpriteRenderer extends System {
         1,
       );
       object.rotation.set(0, 0, MathOps.degToRad(transform.rotation + sprite.rotation));
-      object.position.set(transform.offsetX, transform.offsetY, 0);
+      object.position.set(
+        this.normalizeOffset(transform.offsetX),
+        this.normalizeOffset(transform.offsetY),
+        0,
+      );
       object.renderOrder = index;
 
       const material = object.material as MeshStandardMaterial;
