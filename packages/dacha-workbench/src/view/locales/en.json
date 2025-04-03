@@ -278,5 +278,9 @@
   "globalOptions.audioGroups.addNew.title": "Add Group",
   "globalOptions.audioGroups.panel.name.title": "Group",
   "globalOptions.audioGroups.name.title": "Name",
-  "globalOptions.audioGroups.volume.title": "Volume"
+  "globalOptions.audioGroups.volume.title": "Volume",
+
+  "globalOptions.performance.title": "Performance",
+  "globalOptions.performance.maxFPS.title": "Max FPS",
+  "globalOptions.performance.fixedUpdateRate.title": "Fixed Update Rate"
 }
