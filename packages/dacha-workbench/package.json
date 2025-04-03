@@ -1,6 +1,6 @@
 {
   "name": "dacha-workbench",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "GUI editor for dacha game engine",
   "main": "./esm/index.js",
   "types": "./esm/index.d.ts",
