@@ -25,13 +25,13 @@ export class GameLoop {
   constructor(
     sceneProvider: SceneProvider,
     controllers: Controller[],
-    settings?: PerformanceSettings,
+    performance?: PerformanceSettings,
   ) {
     this.sceneProvider = sceneProvider;
     this.controllers = controllers;
 
-    this.msPerUpdate = 1000 / (settings?.maxFPS || DEFAULT_MAX_FPS);
-    this.msPerFixedUpdate = 1000 / (settings?.fixedUpdateRate || DEFAULT_FIXED_UPDATE_RATE);
+    this.msPerUpdate = 1000 / (performance?.maxFPS || DEFAULT_MAX_FPS);
+    this.msPerFixedUpdate = 1000 / (performance?.fixedUpdateRate || DEFAULT_FIXED_UPDATE_RATE);
 
     this.gameLoopId = 0;
     this.previous = 0;
