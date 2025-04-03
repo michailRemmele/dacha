@@ -1,4 +1,4 @@
-import type { SceneConfig, LevelConfig, GlobalOption } from '../types';
+import type { SceneConfig, LevelConfig } from '../types';
 import type { ActorCreator } from '../actor';
 import type { SystemConstructor } from '../system';
 import type { TemplateCollection } from '../template';
@@ -11,7 +11,7 @@ interface SceneProviderOptions {
   levels: Array<LevelConfig>
   systems: Array<SystemConstructor>
   resources: Record<string, unknown>
-  globalOptions: Array<GlobalOption>
+  globalOptions: Record<string, unknown>
   actorCreator: ActorCreator
   templateCollection: TemplateCollection
 }
@@ -68,10 +68,7 @@ export class SceneProvider {
     }, {});
     this.systems = systems;
     this.resources = resources;
-    this.globalOptions = globalOptions.reduce((acc: Record<string, unknown>, option) => {
-      acc[option.name] = option.options;
-      return acc;
-    }, {});
+    this.globalOptions = globalOptions;
     this.loadedScene = void 0;
     this.actorCreator = actorCreator;
     this.templateCollection = templateCollection;
