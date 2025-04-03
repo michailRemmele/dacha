@@ -2,6 +2,7 @@ export { Engine } from './engine';
 export { Component } from './engine/component';
 export { VectorOps, MathOps, Vector2 } from './engine/math-lib';
 
+export * from './engine/consts';
 export * from './engine/types';
 export { System } from './engine/system';
 export type {

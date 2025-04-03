@@ -2,19 +2,36 @@ import type { SceneProvider } from './scene';
 import type { Controller } from './controllers';
 import { eventQueue } from './event-target';
 
-const MS_PER_UPDATE = 1000 / 50;
+const DEFAULT_FIXED_UPDATE_RATE = 50;
+const DEFAULT_MAX_FPS = Infinity;
+
+export interface PerformanceSettings {
+  maxFPS: number
+  fixedUpdateRate: number
+}
 
 export class GameLoop {
   private sceneProvider: SceneProvider;
-  private controllers: Array<Controller>;
+  private controllers: Controller[];
+
+  private msPerUpdate: number;
+  private msPerFixedUpdate: number;
+
   private gameLoopId: number;
   private previous: number;
   private lag: number;
   private bindedTick: () => void;
 
-  constructor(sceneProvider: SceneProvider, controllers: Array<Controller>) {
+  constructor(
+    sceneProvider: SceneProvider,
+    controllers: Controller[],
+    settings?: PerformanceSettings,
+  ) {
     this.sceneProvider = sceneProvider;
     this.controllers = controllers;
+
+    this.msPerUpdate = 1000 / (settings?.maxFPS || DEFAULT_MAX_FPS);
+    this.msPerFixedUpdate = 1000 / (settings?.fixedUpdateRate || DEFAULT_FIXED_UPDATE_RATE);
 
     this.gameLoopId = 0;
     this.previous = 0;
@@ -24,21 +41,27 @@ export class GameLoop {
   }
 
   private tick(): void {
-    eventQueue.update();
+    this.gameLoopId = requestAnimationFrame(this.bindedTick);
 
     const current = performance.now();
-
     const elapsed = current - this.previous;
+
+    if (elapsed < this.msPerUpdate) {
+      return;
+    }
+
     this.lag += elapsed;
+
+    eventQueue.update();
 
     const currentScene = this.sceneProvider.getCurrentScene();
 
-    const fixedUpdateOptions = { deltaTime: MS_PER_UPDATE };
-    while (this.lag >= MS_PER_UPDATE) {
+    const fixedUpdateOptions = { deltaTime: this.msPerFixedUpdate };
+    while (this.lag >= this.msPerFixedUpdate) {
       currentScene?.systems.forEach((system) => {
         system.fixedUpdate?.(fixedUpdateOptions);
       });
-      this.lag -= MS_PER_UPDATE;
+      this.lag -= this.msPerFixedUpdate;
     }
 
     const options = { deltaTime: elapsed };
@@ -51,8 +74,6 @@ export class GameLoop {
     });
 
     this.previous = current;
-
-    this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
 
   run(): void {
