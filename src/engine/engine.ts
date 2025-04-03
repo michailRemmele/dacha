@@ -5,6 +5,7 @@ import { SceneProvider } from './scene/scene-provider';
 import { ActorCreator } from './actor';
 import { TemplateCollection } from './template';
 import { GameLoop } from './game-loop';
+import type { PerformanceSettings } from './game-loop';
 import { SceneController } from './controllers';
 
 export interface EngineOptions {
@@ -56,7 +57,7 @@ export class Engine {
         loaders,
         startSceneId,
         startLoaderId,
-        globalOptions,
+        globalOptions: rawGlobalOptions,
       },
       systems,
       components,
@@ -87,6 +88,11 @@ export class Engine {
 
     const actorCreator = new ActorCreator(components, templateCollection);
 
+    const globalOptions = rawGlobalOptions.reduce((acc: Record<string, unknown>, option) => {
+      acc[option.name] = option.options;
+      return acc;
+    }, {});
+
     this.sceneProvider = new SceneProvider({
       scenes,
       levels,
@@ -116,6 +122,7 @@ export class Engine {
       [
         new SceneController({ sceneProvider: this.sceneProvider }),
       ],
+      globalOptions.performance as PerformanceSettings | undefined,
     );
 
     this.gameLoop.run();
