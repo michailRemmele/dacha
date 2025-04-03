@@ -18,6 +18,7 @@ import {
 import {
   SortingLayersWidget,
   AudioGroupsWidget,
+  PerformanceWidget,
 } from '../../widgets/global-options'
 
 export const ProjectSettings: FC = () => {
@@ -70,6 +71,7 @@ export const ProjectSettings: FC = () => {
         {t('inspector.projectSettings.globalOptions.title')}
       </div>
 
+      <PerformanceWidget />
       <SortingLayersWidget />
       <AudioGroupsWidget />
     </Form>
