@@ -872,6 +872,13 @@
           }
         ]
       }
+    },
+    {
+      "name": "performance",
+      "options": {
+        "maxFPS": 0,
+        "fixedUpdateRate": 50
+      }
     }
   ],
   "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",
