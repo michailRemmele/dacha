@@ -170,7 +170,11 @@ export class AudioSystem extends System {
 
   private resumeIfSuspended = (): void => {
     if (this.audioContext.state === 'suspended') {
-      void this.audioContext.resume();
+      void this.audioContext
+        .resume()
+        .catch((err: unknown) => {
+          console.warn('Cannot resume a audio context', err);
+        });
     }
   };
 
