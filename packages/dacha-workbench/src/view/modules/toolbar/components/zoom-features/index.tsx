@@ -18,7 +18,7 @@ import { EventType } from '../../../../../events'
 
 export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
   const { t } = useTranslation()
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
   const [values, setValues] = useState<Record<string, FeatureValue>>({
     direction: '',
@@ -36,11 +36,11 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
   }, [features])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
-    scene.dispatchEvent(EventType.SetToolFeatureValue, {
+    world.dispatchEvent(EventType.SetToolFeatureValue, {
       name: event.target.name as string,
       value: event.target.value as string,
     })
-  }, [scene])
+  }, [world])
 
   return (
     <ToolFeaturesStyled>

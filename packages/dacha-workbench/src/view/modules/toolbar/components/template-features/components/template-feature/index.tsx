@@ -28,7 +28,7 @@ interface TemplateFeatureProps {
 
 export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
   const { t } = useTranslation()
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
   const templates = useConfig('templates') as Array<TemplateConfig>
 
@@ -38,11 +38,11 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
   })), [templates])
 
   const handleChange = useCallback((selectedValue: string) => {
-    scene.dispatchEvent(EventType.SetToolFeatureValue, {
+    world.dispatchEvent(EventType.SetToolFeatureValue, {
       name: TEMPLATE_FEATURE_NAME,
       value: selectedValue,
     })
-  }, [scene])
+  }, [world])
 
   const handleFilter = useCallback(
     (input: string, option?: SelectOption) => option !== undefined

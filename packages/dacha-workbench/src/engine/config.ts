@@ -34,90 +34,6 @@ export const getEditorConfig = ({
     {
       id: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
       name: 'editor',
-      levelId: 'cd42a993-f3c0-4921-b867-108c81028a26',
-      systems: [
-        {
-          name: 'CameraSystem',
-          options: {
-            windowNodeId: 'canvas-root',
-          },
-        },
-        {
-          name: 'MouseInputSystem',
-          options: {
-            windowNodeId: 'canvas-root',
-            useWindow: false,
-          },
-        },
-        {
-          name: 'MouseControlSystem',
-          options: {},
-        },
-        {
-          name: 'ProjectLoader',
-          options: {},
-        },
-        {
-          name: 'LevelViewer',
-          options: {
-            mainActorId: 'main-actor',
-          },
-        },
-        {
-          name: 'SettingsSystem',
-          options: {},
-        },
-        {
-          name: 'ToolManager',
-          options: {},
-        },
-        {
-          name: 'ZoomToolSystem',
-          options: {},
-        },
-        {
-          name: 'HandToolSystem',
-          options: {},
-        },
-        {
-          name: 'PointerToolSystem',
-          options: {},
-        },
-        {
-          name: 'TemplateToolSystem',
-          options: {},
-        },
-        {
-          name: 'UiBridge',
-          options: {
-            filterComponents: [],
-          },
-        },
-        {
-          name: 'SpriteRenderer',
-          options: {
-            windowNodeId: 'canvas-root',
-            backgroundColor: '#ffffff',
-            backgroundAlpha: 0,
-          },
-        },
-        {
-          name: 'ShapesRenderer',
-          options: {
-            windowNodeId: SHAPE_CANVAS_ROOT,
-          },
-        },
-        {
-          name: 'GridSystem',
-          options: {},
-        },
-      ],
-    },
-  ],
-  levels: [
-    {
-      id: 'cd42a993-f3c0-4921-b867-108c81028a26',
-      name: 'level-viewer',
       actors: [
         {
           id: 'main-actor',
@@ -335,6 +251,81 @@ export const getEditorConfig = ({
       ],
     },
   ],
+  systems: [
+    {
+      name: 'ProjectLoader',
+      options: {},
+    },
+    {
+      name: 'CameraSystem',
+      options: {
+        windowNodeId: 'canvas-root',
+      },
+    },
+    {
+      name: 'MouseInputSystem',
+      options: {
+        windowNodeId: 'canvas-root',
+        useWindow: false,
+      },
+    },
+    {
+      name: 'MouseControlSystem',
+      options: {},
+    },
+    {
+      name: 'SceneViewer',
+      options: {
+        mainActorId: 'main-actor',
+      },
+    },
+    {
+      name: 'SettingsSystem',
+      options: {},
+    },
+    {
+      name: 'ToolManager',
+      options: {},
+    },
+    {
+      name: 'ZoomToolSystem',
+      options: {},
+    },
+    {
+      name: 'HandToolSystem',
+      options: {},
+    },
+    {
+      name: 'PointerToolSystem',
+      options: {},
+    },
+    {
+      name: 'TemplateToolSystem',
+      options: {},
+    },
+    {
+      name: 'UIBridge',
+      options: {},
+    },
+    {
+      name: 'SpriteRenderer',
+      options: {
+        windowNodeId: 'canvas-root',
+        backgroundColor: '#ffffff',
+        backgroundAlpha: 0,
+      },
+    },
+    {
+      name: 'ShapesRenderer',
+      options: {
+        windowNodeId: SHAPE_CANVAS_ROOT,
+      },
+    },
+    {
+      name: 'GridSystem',
+      options: {},
+    },
+  ],
   templates: [
     {
       id: 'frame',
@@ -399,10 +390,8 @@ export const getEditorConfig = ({
       ],
     },
   ],
-  loaders: [],
   globalOptions: [
     ...globalOptions,
   ],
   startSceneId: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
-  startLoaderId: null,
 })

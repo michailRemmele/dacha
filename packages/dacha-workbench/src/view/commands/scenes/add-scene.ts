@@ -6,23 +6,15 @@ import { getUniqueName } from '../../../utils/get-unique-name'
 import { addValue } from '..'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
 
-export const addScene = (
-  destinationPath: string[],
-) => (
+export const addScene = () => (
   dispatch: DispatchFn,
   getState: GetStateFn,
 ): void => {
-  const scenes = getState(destinationPath) as SceneConfig[]
-  const isLoaderScene = destinationPath.at(-1) === 'loaders'
+  const scenes = getState(['scenes']) as SceneConfig[]
 
-  dispatch(addValue<SceneConfig>(destinationPath, {
+  dispatch(addValue<SceneConfig>(['scenes'], {
     id: uuidv4(),
-    name: getUniqueName(i18next.t(
-      isLoaderScene
-        ? 'explorer.loaders.actionBar.loader.new.title'
-        : 'explorer.scenes.actionBar.scene.new.title',
-    ), scenes),
-    systems: [],
-    levelId: null,
+    name: getUniqueName(i18next.t('explorer.scenes.actionBar.scene.new.title'), scenes),
+    actors: [],
   }))
 }

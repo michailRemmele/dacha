@@ -1,57 +1,55 @@
 import {
-  System,
+  SceneSystem,
   Transform,
   Camera,
 } from 'dacha'
 import type {
-  Scene,
-  SystemOptions,
+  World,
+  SceneSystemOptions,
   Actor,
 } from 'dacha'
 
 import { EventType } from '../../../events'
-import type { SelectLevelEvent } from '../../../events'
+import type { SelectSceneEvent } from '../../../events'
 import { GRID_ROOT } from '../../../consts/root-nodes'
 import { Settings } from '../../components'
 import type { CommanderStore } from '../../../store'
-import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
 
-export class GridSystem extends System {
-  private scene: Scene
+export class GridSystem extends SceneSystem {
+  private world: World
   private configStore: CommanderStore
 
   private mainActor: Actor
-  private selectedLevelId?: string
+  private selectedSceneId?: string
   private gridNode: HTMLDivElement
 
   private showGrid: boolean
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
-    const { scene } = options
+    const { world } = options
 
-    this.scene = scene
-    this.configStore = scene.data.configStore as CommanderStore
-    this.mainActor = scene.data.mainActor as Actor
+    this.world = world
+    this.configStore = world.data.configStore as CommanderStore
+    this.mainActor = world.data.mainActor as Actor
     this.gridNode = document.getElementById(GRID_ROOT) as HTMLDivElement
 
-    this.selectedLevelId = getSavedSelectedLevelId(this.configStore)
+    this.selectedSceneId = getSavedSelectedSceneId(this.configStore)
 
     this.showGrid = false
+
+    this.world.addEventListener(EventType.SelectScene, this.handleSceneChange)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectLevel, this.handleLevelChange)
+  onSceneDestroy(): void {
+    this.world.removeEventListener(EventType.SelectScene, this.handleSceneChange)
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectLevel, this.handleLevelChange)
-  }
-
-  private handleLevelChange = (event: SelectLevelEvent): void => {
-    const { levelId } = event
-    this.selectedLevelId = levelId
+  private handleSceneChange = (event: SelectSceneEvent): void => {
+    const { sceneId } = event
+    this.selectedSceneId = sceneId
   }
 
   update(): void {
@@ -59,7 +57,7 @@ export class GridSystem extends System {
       data: { gridStep, showGrid, gridColor },
     } = this.mainActor.getComponent(Settings)
 
-    if (this.selectedLevelId === undefined || !showGrid) {
+    if (this.selectedSceneId === undefined || !showGrid) {
       if (this.showGrid) {
         this.gridNode.setAttribute('style', '')
         this.showGrid = false

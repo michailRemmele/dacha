@@ -1,4 +1,4 @@
-import type { LevelConfig, TemplateConfig, ActorConfig } from 'dacha'
+import type { SceneConfig, TemplateConfig, ActorConfig } from 'dacha'
 import { FileOutlined } from '@ant-design/icons'
 
 import { ExplorerDataNode } from '../../../../../types/tree-node'
@@ -61,10 +61,10 @@ export const filterActors = (
   return acc
 }, [] as Array<ActorConfig>)
 
-export const filterLevels = (
-  levels: Array<LevelConfig>,
+export const filterScenes = (
+  scenes: SceneConfig[],
   templateId: string,
-): Array<LevelConfig> => levels.map((level) => ({
-  ...level,
-  actors: filterActors(level.actors, templateId),
+): SceneConfig[] => scenes.map((scene) => ({
+  ...scene,
+  actors: filterActors(scene.actors, templateId),
 }))

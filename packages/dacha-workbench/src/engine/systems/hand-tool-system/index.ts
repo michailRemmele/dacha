@@ -1,12 +1,12 @@
 import {
-  System,
+  SceneSystem,
   Transform,
   Camera,
   Vector2,
 } from 'dacha'
 import type {
-  Scene,
-  SystemOptions,
+  World,
+  SceneSystemOptions,
   Actor,
 } from 'dacha'
 import type { MouseControlEvent } from 'dacha/events'
@@ -17,41 +17,38 @@ import { persistentStorage } from '../../../persistent-storage'
 const DEFAULT_POS_X = 0
 const DEFAULT_POS_Y = 0
 
-export class HandToolSystem extends System {
-  private scene: Scene
+export class HandToolSystem extends SceneSystem {
+  private world: World
   private mainActor: Actor
 
   private isMoving: boolean
   private anchor: Vector2
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
-    const { scene } = options
+    const { world } = options
 
-    this.scene = scene
-
-    this.mainActor = scene.data.mainActor as Actor
+    this.world = world
+    this.mainActor = world.data.mainActor as Actor
 
     this.isMoving = false
     this.anchor = new Vector2(0, 0)
+
+    this.world.addEventListener(EventType.SelectScene, this.handleSceneChange)
+    this.world.addEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.world.addEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.world.addEventListener(EventType.CameraMove, this.handleCameraMove)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectLevel, this.handleLevelChange)
-    this.scene.addEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
-    this.scene.addEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
-    this.scene.addEventListener(EventType.CameraMove, this.handleCameraMove)
+  onSceneDestroy(): void {
+    this.world.removeEventListener(EventType.SelectScene, this.handleSceneChange)
+    this.world.removeEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
+    this.world.removeEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
+    this.world.removeEventListener(EventType.CameraMove, this.handleCameraMove)
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectLevel, this.handleLevelChange)
-    this.scene.removeEventListener(EventType.CameraMoveStart, this.handleCameraMoveStart)
-    this.scene.removeEventListener(EventType.CameraMoveEnd, this.handleCameraMoveEnd)
-    this.scene.removeEventListener(EventType.CameraMove, this.handleCameraMove)
-  }
-
-  private handleLevelChange = (): void => {
+  private handleSceneChange = (): void => {
     const transform = this.mainActor.getComponent(Transform)
     transform.offsetX = DEFAULT_POS_X
     transform.offsetY = DEFAULT_POS_Y
