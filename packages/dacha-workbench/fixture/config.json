@@ -2,74 +2,12 @@
   "scenes": [
     {
       "name": "menu",
-      "levelId": null,
-      "systems": [
-        {
-          "name": "UiBridge",
-          "options": {}
-        }
-      ],
-      "id": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a"
+      "id": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",
+      "actors": []
     },
     {
-      "name": "game",
-      "levelId": "9e30cb58-130a-4732-a313-a459a2ad66b5",
-      "systems": [
-        {
-          "name": "CameraSystem",
-          "options": {
-            "windowNodeId": "root"
-          }
-        },
-        {
-          "name": "MouseInputSystem",
-          "options": {
-            "windowNodeId": "root",
-            "useWindow": false
-          }
-        },
-        {
-          "name": "MouseControlSystem",
-          "options": {}
-        },
-        {
-          "name": "KeyboardInputSystem",
-          "options": {
-            "windowNodeId": "root",
-            "useWindow": false
-          }
-        },
-        {
-          "name": "KeyboardControlSystem",
-          "options": {}
-        },
-        {
-          "name": "SpriteRenderer",
-          "options": {
-            "windowNodeId": "root",
-            "backgroundColor": "#000"
-          }
-        },
-        {
-          "name": "UiBridge",
-          "options": {
-            "filterComponents": [
-              "KeyboardControl",
-              "MouseControl"
-            ]
-          }
-        },
-        {
-          "name": "AudioSystem",
-          "options": {}
-        }
-      ],
-      "id": "076c54c9-503e-48b5-a793-0ce33c9265c3"
-    }
-  ],
-  "levels": [
-    {
       "name": "space-level",
+      "id": "076c54c9-503e-48b5-a793-0ce33c9265c3",
       "actors": [
         {
           "id": "1",
@@ -221,11 +159,11 @@
           ],
           "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5"
         }
-      ],
-      "id": "738d1d5d-19da-46ed-b1db-1792e9ce5cdd"
+      ]
     },
     {
       "name": "island-level",
+      "id": "9e30cb58-130a-4732-a313-a459a2ad66b5",
       "actors": [
         {
           "id": "4",
@@ -370,8 +308,52 @@
             }
           ]
         }
-      ],
-      "id": "9e30cb58-130a-4732-a313-a459a2ad66b5"
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "MouseInputSystem",
+      "options": {
+        "windowNodeId": "root",
+        "useWindow": false
+      }
+    },
+    {
+      "name": "MouseControlSystem",
+      "options": {}
+    },
+    {
+      "name": "KeyboardInputSystem",
+      "options": {
+        "windowNodeId": "root",
+        "useWindow": false
+      }
+    },
+    {
+      "name": "KeyboardControlSystem",
+      "options": {}
+    },
+    {
+      "name": "SpriteRenderer",
+      "options": {
+        "windowNodeId": "root",
+        "backgroundColor": "#000"
+      }
+    },
+    {
+      "name": "UIBridge",
+      "options": {}
+    },
+    {
+      "name": "AudioSystem",
+      "options": {}
+    },
+    {
+      "name": "CameraSystem",
+      "options": {
+        "windowNodeId": "root"
+      }
     }
   ],
   "templates": [
@@ -819,19 +801,6 @@
       "id": "02980f67-2d31-4500-9e4f-9062807e4af1"
     }
   ],
-  "loaders": [
-    {
-      "name": "loader",
-      "levelId": null,
-      "systems": [
-        {
-          "name": "UiBridge",
-          "options": {}
-        }
-      ],
-      "id": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
-    }
-  ],
   "globalOptions": [
     {
       "name": "audioGroups",
@@ -881,6 +850,5 @@
       }
     }
   ],
-  "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",
-  "startLoaderId": "ee6e5f53-764c-423a-8bf8-9dcc89cc346b"
+  "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a"
 }

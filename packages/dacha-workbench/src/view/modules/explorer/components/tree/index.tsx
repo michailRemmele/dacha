@@ -32,20 +32,20 @@ export const Tree: FC<TreeProps> = ({
   onDrop,
   childrenFieldMap,
 }) => {
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
   const handleSelect = useCallback((paths: string[][]) => {
-    scene.dispatchEvent(EventType.SelectEntities, { paths })
-  }, [scene])
+    world.dispatchEvent(EventType.SelectEntities, { paths })
+  }, [world])
 
   const handleInspect = useCallback((path: string[] | undefined) => {
-    scene.dispatchEvent(EventType.InspectEntity, { path })
-  }, [scene])
+    world.dispatchEvent(EventType.InspectEntity, { path })
+  }, [world])
 
   const handleClickOutside = useCallback(() => {
-    scene.dispatchEvent(EventType.SelectEntities, { paths: [] })
-    scene.dispatchEvent(EventType.InspectEntity, { path: undefined })
-  }, [scene])
+    world.dispatchEvent(EventType.SelectEntities, { paths: [] })
+    world.dispatchEvent(EventType.InspectEntity, { path: undefined })
+  }, [world])
 
   return (
     <BaseTree

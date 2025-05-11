@@ -7,9 +7,9 @@ import {
   MouseControlSystem,
   MouseInputSystem,
   PhysicsSystem,
-  ScriptSystem,
+  BehaviorSystem,
   SpriteRenderer,
-  UiBridge,
+  UIBridge,
   AudioSystem,
 } from 'dacha'
 
@@ -23,7 +23,7 @@ import { keyboardInputSystem } from './keyboard-input-system'
 import { mouseControlSystem } from './mouse-control-system'
 import { mouseInputSystem } from './mouse-input-system'
 import { physicsSystem } from './physics-system'
-import { scriptSystem } from './script-system'
+import { behaviorSystem } from './behavior-system'
 import { spriteRenderer } from './sprite-renderer'
 import { uiBridge } from './ui-bridge'
 import { audioSystem } from './audio-system'
@@ -37,8 +37,8 @@ export const systemsSchema: Record<string, WidgetSchema> = {
   [MouseControlSystem.systemName]: mouseControlSystem,
   [MouseInputSystem.systemName]: mouseInputSystem,
   [PhysicsSystem.systemName]: physicsSystem,
-  [ScriptSystem.systemName]: scriptSystem,
+  [BehaviorSystem.systemName]: behaviorSystem,
   [SpriteRenderer.systemName]: spriteRenderer,
-  [UiBridge.systemName]: uiBridge,
+  [UIBridge.systemName]: uiBridge,
   [AudioSystem.systemName]: audioSystem,
 }

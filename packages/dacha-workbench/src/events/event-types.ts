@@ -1,5 +1,6 @@
 export const SelectTool = 'SelectTool'
 export const SetToolFeatureValue = 'SetToolFeatureValue'
+export const ToolUpdated = 'ToolUpdated'
 
 export const SetSettingsValue = 'SetSettingsValue'
 
@@ -17,7 +18,7 @@ export const SelectionMove = 'SelectionMove'
 
 export const AddFromTemplate = 'AddFromTemplate'
 
-export const SelectLevel = 'SelectLevel'
+export const SelectScene = 'SelectScene'
 
 export const InspectEntity = 'InspectEntity'
 export const InspectedEntityChange = 'InspectedEntityChange'

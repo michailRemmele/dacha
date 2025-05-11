@@ -5,7 +5,7 @@ import {
 import type {
   ActorConfig,
   TemplateConfig,
-  Scene,
+  World,
   ComponentConfig,
 } from 'dacha'
 import { v4 as uuidv4 } from 'uuid'
@@ -18,7 +18,7 @@ import { getTool } from '../../../utils/get-tool'
 import { getUniqueName } from '../../../utils/get-unique-name'
 import type { CommanderStore } from '../../../store'
 
-import { TOOL_NAME, LEVEL_PATH_LEGTH } from './consts'
+import { TOOL_NAME, SCENE_PATH_LEGTH } from './consts'
 import type { Position } from './types'
 
 const buildActor = (template: TemplateConfig, actors?: ActorConfig[]): ActorConfig => ({
@@ -68,7 +68,7 @@ export const updatePlacementPosition = (
   cursor: Position,
   placementPosition: Position,
   store: CommanderStore,
-  scene: Scene,
+  world: World,
 ): void => {
   if (cursor.x === null || cursor.y === null) {
     // eslint-disable-next-line no-param-reassign
@@ -78,8 +78,8 @@ export const updatePlacementPosition = (
     return
   }
 
-  const tool = getTool(scene)
-  const gridStep = getGridStep(scene)
+  const tool = getTool(world)
+  const gridStep = getGridStep(world)
 
   if (tool.name !== TOOL_NAME) {
     return
@@ -116,4 +116,4 @@ export const updatePlacementPosition = (
 
 export const isActorPath = (
   path?: string[],
-): boolean => path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH
+): boolean => path !== undefined && path[0] === 'scenes' && path.length > SCENE_PATH_LEGTH

@@ -1,7 +1,6 @@
-import { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { CollapsePanel } from '../collapse-panel'
-import { InspectedEntityContext } from '../../../../providers'
 import { useCommander } from '../../../../hooks'
 import { deleteValue } from '../../../../commands'
 
@@ -9,18 +8,19 @@ import { EntityForm } from './entity-form'
 import type { Entity, EntityType } from './types'
 
 export interface EntityPanelProps {
+  path: string[]
   entity: Entity
   type: EntityType
   expandExtra?: JSX.Element | Array<JSX.Element>
 }
 
 export const EntityPanel = ({
+  path,
   entity,
   type,
   expandExtra,
 }: EntityPanelProps): JSX.Element => {
   const { dispatch } = useCommander()
-  const { path = [] } = useContext(InspectedEntityContext)
 
   const entityPath = useMemo(() => path.concat(type, `name:${entity.data.name}`), [entity, path, type])
 
@@ -34,7 +34,7 @@ export const EntityPanel = ({
       onDelete={handleDelete}
       expandExtra={expandExtra}
     >
-      <EntityForm {...entity} type={type} />
+      <EntityForm {...entity} path={path} type={type} />
     </CollapsePanel>
   )
 }

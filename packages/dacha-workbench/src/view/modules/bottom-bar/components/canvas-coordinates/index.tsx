@@ -8,12 +8,12 @@ import type { MouseControlEvent } from 'dacha/events'
 import { PlusOutlined, BorderInnerOutlined } from '@ant-design/icons'
 
 import { throttle } from '../../../../../utils/throttle'
-import { getSavedSelectedLevelId } from '../../../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedSceneId } from '../../../../../utils/get-saved-selected-scene-id'
 import { getGridStep } from '../../../../../utils/grid'
 import { EngineContext } from '../../../../providers'
 import { EventType } from '../../../../../events'
 import { useStore } from '../../../../hooks/use-store'
-import type { SelectLevelEvent } from '../../../../../events'
+import type { SelectSceneEvent } from '../../../../../events'
 
 import { getGridSection } from './utils'
 import { CanvasCoordinatesStyled, SectionStyled, IconsCSS } from './canvas-coordinates.style'
@@ -21,11 +21,11 @@ import { CanvasCoordinatesStyled, SectionStyled, IconsCSS } from './canvas-coord
 const DELAY = 50
 
 export const CanvasCoordinates: FC = () => {
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
   const store = useStore()
 
   const [isCursor, setIsCursor] = useState(false)
-  const [isLevel, setIsLevel] = useState(Boolean(getSavedSelectedLevelId(store)))
+  const [isScene, setIsScene] = useState(Boolean(getSavedSelectedSceneId(store)))
 
   const [cursorX, setCursorX] = useState(0)
   const [cursorY, setCursorY] = useState(0)
@@ -35,7 +35,7 @@ export const CanvasCoordinates: FC = () => {
 
   useEffect(() => {
     const updateCoordinates = throttle((x: number, y: number): void => {
-      const step = getGridStep(scene)
+      const step = getGridStep(world)
 
       setCursorX(Math.round(x))
       setCursorY(Math.round(y))
@@ -53,22 +53,22 @@ export const CanvasCoordinates: FC = () => {
       setIsCursor(false)
     }
 
-    const handleSelectLevel = (event: SelectLevelEvent): void => {
-      setIsLevel(Boolean(event.levelId))
+    const handleSelectScene = (event: SelectSceneEvent): void => {
+      setIsScene(Boolean(event.sceneId))
     }
 
-    scene.addEventListener(EventType.SelectLevel, handleSelectLevel)
-    scene.addEventListener(EventType.ToolCursorMove, handleCursorMove)
-    scene.addEventListener(EventType.ToolCursorLeave, handleCursorLeave)
+    world.addEventListener(EventType.SelectScene, handleSelectScene)
+    world.addEventListener(EventType.ToolCursorMove, handleCursorMove)
+    world.addEventListener(EventType.ToolCursorLeave, handleCursorLeave)
 
     return () => {
-      scene.removeEventListener(EventType.SelectLevel, handleSelectLevel)
-      scene.removeEventListener(EventType.ToolCursorMove, handleCursorMove)
-      scene.removeEventListener(EventType.ToolCursorLeave, handleCursorLeave)
+      world.removeEventListener(EventType.SelectScene, handleSelectScene)
+      world.removeEventListener(EventType.ToolCursorMove, handleCursorMove)
+      world.removeEventListener(EventType.ToolCursorLeave, handleCursorLeave)
     }
   }, [])
 
-  if (!isCursor || !isLevel) {
+  if (!isCursor || !isScene) {
     return null
   }
 

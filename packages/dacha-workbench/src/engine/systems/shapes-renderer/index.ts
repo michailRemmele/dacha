@@ -1,21 +1,21 @@
 import {
-  System,
+  SceneSystem,
   Transform,
   CameraService,
   ActorCollection,
 } from 'dacha'
-import type { SystemOptions } from 'dacha'
+import type { SceneSystemOptions } from 'dacha'
 
 import { Shape } from '../../components'
 
 import { CoordinatesTransformer } from './coordinates-transformer'
 import { painters } from './shape-painters'
 
-interface ShapesRendererOptions extends SystemOptions {
+interface ShapesRendererOptions extends SceneSystemOptions {
   windowNodeId: string
 }
 
-export class ShapesRenderer extends System {
+export class ShapesRenderer extends SceneSystem {
   private actorCollection: ActorCollection
   private cameraService: CameraService
   private window: HTMLCanvasElement
@@ -25,10 +25,11 @@ export class ShapesRenderer extends System {
 
   private transformer: CoordinatesTransformer
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
     const {
+      world,
       scene,
       windowNodeId,
     } = options as ShapesRendererOptions
@@ -55,18 +56,19 @@ export class ShapesRenderer extends System {
     this.canvasWidth = this.window.clientWidth
     this.canvasHeight = this.window.clientHeight
 
-    this.cameraService = scene.getService(CameraService)
+    this.cameraService = world.getService(CameraService)
 
     this.transformer = new CoordinatesTransformer()
     this.transformer.setDevicePixelRatio(window.devicePixelRatio || 1)
-  }
 
-  mount(): void {
-    this.handleWindowResize()
     window.addEventListener('resize', this.handleWindowResize)
   }
 
-  unmount(): void {
+  onSceneEnter(): void {
+    this.handleWindowResize()
+  }
+
+  onSceneDestroy(): void {
     window.removeEventListener('resize', this.handleWindowResize)
   }
 

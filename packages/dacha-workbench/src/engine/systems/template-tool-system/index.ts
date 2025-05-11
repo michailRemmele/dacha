@@ -1,7 +1,8 @@
-import { System, Transform } from 'dacha'
+import { SceneSystem, Transform } from 'dacha'
 import type {
+  World,
   Scene,
-  SystemOptions,
+  SceneSystemOptions,
   TemplateConfig,
   ActorConfig,
   ActorSpawner,
@@ -10,82 +11,81 @@ import type {
 import type { MouseControlEvent } from 'dacha/events'
 
 import { EventType } from '../../../events'
-import type { SelectLevelEvent, InspectEntityEvent } from '../../../events'
+import type { SelectSceneEvent, InspectEntityEvent } from '../../../events'
 import { ADD_VALUE } from '../../../command-types'
 import { ROOT_SCOPE } from '../../../consts/scopes'
 import type { CommanderStore } from '../../../store'
 
 import { PreviewSubsystem } from './preview'
 import { getTool } from '../../../utils/get-tool'
-import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
 import { getSavedInspectedEntity } from '../../../utils/get-saved-inspected-entity'
 import { getActorIdByPath } from '../../../utils/get-actor-id-by-path'
 
 import { createFromTemplate, updatePlacementPosition, isActorPath } from './utils'
 import type { Position } from './types'
 
-export class TemplateToolSystem extends System {
+export class TemplateToolSystem extends SceneSystem {
+  private world: World
   private scene: Scene
   private configStore: CommanderStore
   private actorSpawner: ActorSpawner
   private previewSubsystem: PreviewSubsystem
 
-  private selectedLevelId?: string
+  private selectedSceneId?: string
   private selectedActorPath?: string[]
 
   private cursor: Position
   private placementPosition: Position
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
     const {
+      world,
       scene,
       actorSpawner,
     } = options
 
+    this.world = world
     this.scene = scene
-    this.configStore = this.scene.data.configStore as CommanderStore
+    this.configStore = this.world.data.configStore as CommanderStore
     this.actorSpawner = actorSpawner
 
     this.previewSubsystem = new PreviewSubsystem({
-      scene: this.scene,
-      actorCreator: this.scene.data.actorCreator as ActorCreator,
+      world: this.world,
+      actorCreator: this.world.data.actorCreator as ActorCreator,
       actorSpawner: this.actorSpawner,
     })
 
-    this.selectedLevelId = getSavedSelectedLevelId(this.configStore)
+    this.selectedSceneId = getSavedSelectedSceneId(this.configStore)
 
     const entityPath = getSavedInspectedEntity(this.configStore)
     this.selectedActorPath = isActorPath(entityPath) ? entityPath : undefined
 
     this.cursor = { x: 0, y: 0 }
     this.placementPosition = { x: 0, y: 0 }
+
+    this.world.addEventListener(EventType.SelectScene, this.handleSelectScene)
+    this.world.addEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
+    this.world.addEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
+    this.world.addEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
+    this.world.addEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.scene.addEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
-    this.scene.addEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
-    this.scene.addEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
-    this.scene.addEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
+  onSceneDestroy(): void {
+    this.world.removeEventListener(EventType.SelectScene, this.handleSelectScene)
+    this.world.removeEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
+    this.world.removeEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
+    this.world.removeEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
+    this.world.removeEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
 
-    this.previewSubsystem.mount()
+    this.previewSubsystem.destroy()
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.scene.removeEventListener(EventType.InspectedEntityChange, this.handleInspectEntity)
-    this.scene.removeEventListener(EventType.ToolCursorMove, this.handleToolCursorMove)
-    this.scene.removeEventListener(EventType.ToolCursorLeave, this.handleToolCursorLeave)
-    this.scene.removeEventListener(EventType.AddFromTemplate, this.handleAddFromTemplate)
-
-    this.previewSubsystem.unmount()
-  }
-
-  private handleSelectLevel = (event: SelectLevelEvent): void => {
-    const { levelId } = event
-    this.selectedLevelId = levelId
+  private handleSelectScene = (event: SelectSceneEvent): void => {
+    const { sceneId } = event
+    this.selectedSceneId = sceneId
   }
 
   private handleInspectEntity = (event: InspectEntityEvent): void => {
@@ -104,7 +104,7 @@ export class TemplateToolSystem extends System {
   }
 
   private handleAddFromTemplate = (event: MouseControlEvent): void => {
-    if (this.selectedLevelId === undefined) {
+    if (this.selectedSceneId === undefined) {
       return
     }
 
@@ -115,10 +115,10 @@ export class TemplateToolSystem extends System {
       this.cursor,
       this.placementPosition,
       this.configStore,
-      this.scene,
+      this.world,
     )
 
-    const tool = getTool(this.scene)
+    const tool = getTool(this.world)
 
     const templateId = tool.features.templateId.value as string | undefined
     const nestToSelected = tool.features.nestToSelected.value as string | undefined
@@ -134,7 +134,7 @@ export class TemplateToolSystem extends System {
 
     if (nestToSelected && this.selectedActorPath) {
       const selectedActorId = getActorIdByPath(this.selectedActorPath) as string
-      const parentActor = this.scene.getEntityById(selectedActorId)
+      const parentActor = this.scene.findChildById(selectedActorId)
       const parentTransform = parentActor?.getComponent(Transform)
 
       actorOffsetX -= parentTransform?.offsetX ?? 0
@@ -143,7 +143,7 @@ export class TemplateToolSystem extends System {
 
     const path = nestToSelected && this.selectedActorPath
       ? this.selectedActorPath.concat('children')
-      : ['levels', `id:${this.selectedLevelId}`, 'actors']
+      : ['scenes', `id:${this.selectedSceneId}`, 'actors']
 
     const siblings = this.configStore.get(path) as ActorConfig[]
 
@@ -157,7 +157,7 @@ export class TemplateToolSystem extends System {
   }
 
   update(): void {
-    if (this.selectedLevelId === undefined) {
+    if (this.selectedSceneId === undefined) {
       return
     }
 
@@ -165,7 +165,7 @@ export class TemplateToolSystem extends System {
       this.cursor,
       this.placementPosition,
       this.configStore,
-      this.scene,
+      this.world,
     )
 
     this.previewSubsystem?.update(this.placementPosition.x, this.placementPosition.y)

@@ -5,12 +5,12 @@ import React, {
   useRef,
   FC,
 } from 'react'
-import type { LevelConfig } from 'dacha'
+import type { SceneConfig, UIOptions } from 'dacha'
 
 import { EngineContext } from '../engine-provider'
 import { useStore, useConfig } from '../../hooks'
 import { includesArray } from '../../../utils/includes-array'
-import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
 import { getSavedInspectedEntity } from '../../../utils/get-saved-inspected-entity'
 import { getSavedEntitySelection } from '../../../utils/get-saved-entity-selection'
 import { EventType } from '../../../events'
@@ -18,7 +18,7 @@ import { persistentStorage } from '../../../persistent-storage'
 import type { InspectEntityEvent, SelectEntitiesEvent } from '../../../events'
 
 import { getEntityType, EntityType } from './get-entity-type'
-import { getLevelId } from './get-level-id'
+import { getSceneId } from './get-scene-id'
 
 export interface InspectedEntity {
   path?: Array<string>
@@ -42,64 +42,64 @@ export const EntitySelectionContext = React.createContext<EntitySelection>({ pat
 export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
   children,
 }): JSX.Element => {
-  const { scene } = useContext(EngineContext) || {}
+  const { world } = useContext(EngineContext) as UIOptions | undefined ?? {}
   const store = useStore()
 
   const [entityData, setEntityData] = useState<InspectedEntity>(() => ({
     path: getSavedInspectedEntity(store),
     type: getEntityType(getSavedInspectedEntity(store)),
   }))
-  const selectedLevelRef = useRef<string | undefined>(getSavedSelectedLevelId(store))
+  const selectedSceneRef = useRef<string | undefined>(getSavedSelectedSceneId(store))
 
   const [entitySelection, setEntitySelection] = useState<EntitySelection>(() => ({
     paths: getSavedEntitySelection(store),
   }))
 
-  const levels = useConfig('levels') as Array<LevelConfig> | undefined
+  const scenes = useConfig('scenes') as SceneConfig[] | undefined
 
   useEffect(() => {
-    if (scene === undefined || levels === undefined) {
+    if (world === undefined || scenes === undefined) {
       return
     }
 
-    const isDeleted = levels.every((level) => level.id !== selectedLevelRef.current)
+    const isDeleted = scenes.every((scene) => scene.id !== selectedSceneRef.current)
     if (isDeleted) {
-      scene.dispatchEvent(EventType.SelectLevel, { levelId: undefined })
-      selectedLevelRef.current = undefined
-      persistentStorage.set('selectedLevel', undefined)
+      world.dispatchEvent(EventType.SelectScene, { sceneId: undefined })
+      selectedSceneRef.current = undefined
+      persistentStorage.set('selectedScene', undefined)
     }
-  }, [scene, levels])
+  }, [world, scenes])
 
   useEffect(() => {
-    if (!scene) {
+    if (!world) {
       return () => void 0
     }
 
     const handleInspectEntity = (event: InspectEntityEvent): void => {
       const { path } = event
 
-      const levelId = getLevelId(path)
-      if (levelId !== undefined && levelId !== selectedLevelRef.current) {
-        scene.dispatchEvent(EventType.SelectLevel, { levelId })
-        selectedLevelRef.current = levelId
-        persistentStorage.set('selectedLevel', levelId)
+      const sceneId = getSceneId(path)
+      if (sceneId !== undefined && sceneId !== selectedSceneRef.current) {
+        world.dispatchEvent(EventType.SelectScene, { sceneId })
+        selectedSceneRef.current = sceneId
+        persistentStorage.set('selectedScene', sceneId)
       }
 
       setEntityData({ path, type: getEntityType(path) })
-      scene.dispatchEvent(EventType.InspectedEntityChange, { path })
+      world.dispatchEvent(EventType.InspectedEntityChange, { path })
 
       persistentStorage.set('inspectedEntity', path)
     }
 
-    scene.addEventListener(EventType.InspectEntity, handleInspectEntity)
+    world.addEventListener(EventType.InspectEntity, handleInspectEntity)
 
     return (): void => {
-      scene.removeEventListener(EventType.InspectEntity, handleInspectEntity)
+      world.removeEventListener(EventType.InspectEntity, handleInspectEntity)
     }
-  }, [scene])
+  }, [world])
 
   useEffect(() => {
-    if (!scene) {
+    if (!world) {
       return () => void 0
     }
 
@@ -107,18 +107,18 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
       setEntitySelection({ paths: event.paths })
       persistentStorage.set('entitySelection', event.paths)
 
-      scene.dispatchEvent(EventType.SelectEntitiesChange, { paths: event.paths })
+      world.dispatchEvent(EventType.SelectEntitiesChange, { paths: event.paths })
     }
 
-    scene.addEventListener(EventType.SelectEntities, handleSelectEntities)
+    world.addEventListener(EventType.SelectEntities, handleSelectEntities)
 
     return (): void => {
-      scene.removeEventListener(EventType.SelectEntities, handleSelectEntities)
+      world.removeEventListener(EventType.SelectEntities, handleSelectEntities)
     }
-  }, [scene])
+  }, [world])
 
   useEffect(() => {
-    if (scene === undefined) {
+    if (world === undefined) {
       return () => {}
     }
 
@@ -132,7 +132,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
 
       if (entitySelection.paths.length !== newSelection.length) {
         setEntitySelection({ paths: newSelection })
-        scene.dispatchEvent(EventType.SelectEntitiesChange, { paths: newSelection })
+        world.dispatchEvent(EventType.SelectEntitiesChange, { paths: newSelection })
         persistentStorage.set('entitySelection', newSelection)
       }
 
@@ -144,7 +144,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
       if (store.get(path) === undefined) {
         const newPath = newSelection.at(-1)
         setEntityData({ path: newPath, type: getEntityType(newPath) })
-        scene.dispatchEvent(EventType.InspectedEntityChange, { path: newPath })
+        world.dispatchEvent(EventType.InspectedEntityChange, { path: newPath })
         persistentStorage.set('inspectedEntity', newPath)
       }
     })
@@ -152,7 +152,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
     return () => {
       unsubscribe()
     }
-  }, [scene, store, entitySelection, entityData.path])
+  }, [world, store, entitySelection, entityData.path])
 
   return (
     <EntitySelectionContext.Provider value={entitySelection}>

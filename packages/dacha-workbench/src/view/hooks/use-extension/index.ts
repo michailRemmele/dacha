@@ -4,7 +4,7 @@ import { EngineContext } from '../../providers'
 import type { Extension } from '../../../types/global'
 
 export const useExtension = (): Required<Extension> => {
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
-  return scene.data.extension as Required<Extension>
+  return world.data.extension as Required<Extension>
 }

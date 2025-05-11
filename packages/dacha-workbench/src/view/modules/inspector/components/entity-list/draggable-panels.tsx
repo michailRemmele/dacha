@@ -29,7 +29,12 @@ interface DraggablePanelsProps extends PanelsProps {
   onDragEntity?: (from: number, to: number) => void
 }
 
-export const DraggablePanels: FC<DraggablePanelsProps> = ({ panels, type, onDragEntity }) => {
+export const DraggablePanels: FC<DraggablePanelsProps> = ({
+  path,
+  panels,
+  type,
+  onDragEntity,
+}) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -74,13 +79,14 @@ export const DraggablePanels: FC<DraggablePanelsProps> = ({ panels, type, onDrag
         {draggablePanels.map((entity) => (
           <DraggableEntityPanel
             key={entity.id}
+            path={path}
             entity={entity}
             type={type}
           />
         ))}
       </SortableContext>
       <DragOverlay>
-        {activePanel ? <DragOverlayEntity entity={activePanel} type={type} /> : null}
+        {activePanel ? <DragOverlayEntity path={path} entity={activePanel} type={type} /> : null}
       </DragOverlay>
     </DndContext>
   )
