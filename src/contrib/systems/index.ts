@@ -6,9 +6,14 @@ export { KeyboardControlSystem } from './keyboard-control-system';
 export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
 export { PhysicsSystem } from './physics-system';
-export { ScriptSystem, Script } from './script-system';
-export type { ScriptOptions } from './script-system';
+export { BehaviorSystem, Behavior } from './behavior-system';
+export type { BehaviorOptions } from './behavior-system';
 export { SpriteRenderer, SpriteRendererService } from './sprite-renderer';
-export { UiBridge } from './ui-bridge';
-export type { UiInitFnOptions, UiInitFn, UiDestroyFn } from './ui-bridge';
+export { UIBridge } from './ui-bridge';
+export type {
+  UIOptions,
+  UIInitFn,
+  UIDestroyFn,
+  LoadUIFn,
+} from './ui-bridge';
 export { AudioSystem } from './audio-system';

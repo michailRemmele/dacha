@@ -1,5 +1,4 @@
-import type { SceneProvider } from './scene';
-import type { Controller } from './controllers';
+import type { SceneManager } from './scene';
 import { eventQueue } from './event-target';
 
 const DEFAULT_FIXED_UPDATE_RATE = 50;
@@ -11,8 +10,7 @@ export interface PerformanceSettings {
 }
 
 export class GameLoop {
-  private sceneProvider: SceneProvider;
-  private controllers: Controller[];
+  private sceneManager: SceneManager;
 
   private msPerUpdate: number;
   private msPerFixedUpdate: number;
@@ -23,12 +21,10 @@ export class GameLoop {
   private bindedTick: () => void;
 
   constructor(
-    sceneProvider: SceneProvider,
-    controllers: Controller[],
+    sceneManager: SceneManager,
     performance?: PerformanceSettings,
   ) {
-    this.sceneProvider = sceneProvider;
-    this.controllers = controllers;
+    this.sceneManager = sceneManager;
 
     this.msPerUpdate = 1000 / (performance?.maxFPS || DEFAULT_MAX_FPS);
     this.msPerFixedUpdate = 1000 / (performance?.fixedUpdateRate || DEFAULT_FIXED_UPDATE_RATE);
@@ -54,23 +50,19 @@ export class GameLoop {
 
     eventQueue.update();
 
-    const currentScene = this.sceneProvider.getCurrentScene();
+    const systems = this.sceneManager.getSystems();
 
     const fixedUpdateOptions = { deltaTime: this.msPerFixedUpdate };
     while (this.lag >= this.msPerFixedUpdate) {
-      currentScene?.systems.forEach((system) => {
+      systems.forEach((system) => {
         system.fixedUpdate?.(fixedUpdateOptions);
       });
       this.lag -= this.msPerFixedUpdate;
     }
 
     const options = { deltaTime: elapsed };
-    currentScene?.systems.forEach((system) => {
+    systems.forEach((system) => {
       system.update?.(options);
-    });
-
-    this.controllers.forEach((controller) => {
-      controller.update();
     });
 
     this.previous = current;

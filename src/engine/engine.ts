@@ -1,12 +1,10 @@
 import type { SystemConstructor } from './system';
 import type { ComponentConstructor } from './component';
 import type { Config } from './types';
-import { SceneProvider } from './scene/scene-provider';
-import { ActorCreator } from './actor';
+import { SceneManager } from './scene/scene-manager';
 import { TemplateCollection } from './template';
 import { GameLoop } from './game-loop';
 import type { PerformanceSettings } from './game-loop';
-import { SceneController } from './controllers';
 
 export interface EngineOptions {
   config: Config
@@ -18,7 +16,7 @@ export interface EngineOptions {
 export class Engine {
   private options: EngineOptions;
   private gameLoop?: GameLoop;
-  private sceneProvider?: SceneProvider;
+  private sceneManager?: SceneManager;
 
   constructor(options: EngineOptions) {
     this.options = options;
@@ -43,7 +41,7 @@ export class Engine {
   }
 
   async play(): Promise<void> {
-    if (this.sceneProvider !== undefined && this.gameLoop !== undefined) {
+    if (this.sceneManager !== undefined && this.gameLoop !== undefined) {
       this.gameLoop.run();
       this.addWindowListeners();
       return;
@@ -53,13 +51,11 @@ export class Engine {
       config: {
         templates,
         scenes,
-        levels,
-        loaders,
+        systems,
         startSceneId,
-        startLoaderId,
         globalOptions: rawGlobalOptions,
       },
-      systems,
+      systems: availableSystems,
       components,
       resources = {},
     } = this.options;
@@ -74,9 +70,9 @@ export class Engine {
       }
     }
 
-    for (let i = 0; i < systems.length; i += 1) {
-      if (systems[i].systemName === undefined) {
-        throw new Error(`Missing systemName field for ${systems[i].name} system.`);
+    for (let i = 0; i < availableSystems.length; i += 1) {
+      if (availableSystems[i].systemName === undefined) {
+        throw new Error(`Missing systemName field for ${availableSystems[i].name} system.`);
       }
     }
 
@@ -86,42 +82,26 @@ export class Engine {
       templateCollection.register(templates[i]);
     }
 
-    const actorCreator = new ActorCreator(components, templateCollection);
-
     const globalOptions = rawGlobalOptions.reduce((acc: Record<string, unknown>, option) => {
       acc[option.name] = option.options;
       return acc;
     }, {});
 
-    this.sceneProvider = new SceneProvider({
-      scenes,
-      levels,
-      loaders,
-      systems,
-      resources,
-      globalOptions,
-      actorCreator,
+    this.sceneManager = new SceneManager({
+      sceneConfigs: scenes,
+      systemConfigs: systems,
+      availableSystems,
+      components,
       templateCollection,
+      globalOptions,
+      resources,
     });
 
-    await this.sceneProvider.prepareLoaders();
-
-    const asyncLoading = this.sceneProvider.loadScene({
-      sceneId: startSceneId,
-      loaderId: startLoaderId,
-      levelId: null,
-    });
-
-    if (asyncLoading && !startLoaderId) {
-      await asyncLoading;
-      this.sceneProvider.moveToLoaded();
-    }
+    await this.sceneManager.loadWorld();
+    await this.sceneManager.loadScene(startSceneId, true);
 
     this.gameLoop = new GameLoop(
-      this.sceneProvider,
-      [
-        new SceneController({ sceneProvider: this.sceneProvider }),
-      ],
+      this.sceneManager,
       globalOptions.performance as PerformanceSettings | undefined,
     );
 
@@ -136,10 +116,10 @@ export class Engine {
 
   stop(): void {
     this.gameLoop?.stop();
-    this.sceneProvider?.leaveCurrentScene();
+    this.sceneManager?.destroyWorld();
     this.removeWindowListeners();
 
     this.gameLoop = undefined;
-    this.sceneProvider = undefined;
+    this.sceneManager = undefined;
   }
 }

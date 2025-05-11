@@ -8,7 +8,7 @@ export class SpriteCropper {
 
   constructor() {
     this.canvas = document.createElement('canvas');
-    this.canvasContext = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    this.canvasContext = this.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
   }
 
   crop(spriteTexture: HTMLImageElement, sprite: Sprite): Array<Texture> {

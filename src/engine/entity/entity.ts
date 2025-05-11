@@ -1,7 +1,7 @@
 import { EventTarget } from '../event-target';
 import { AddChildEntity, RemoveChildEntity } from '../events';
 
-import { findEntity } from './utils';
+import { findChild } from './utils';
 
 export interface EntityOptions {
   id: string
@@ -50,11 +50,15 @@ export class Entity extends EventTarget {
     this.parent.removeChild(this);
   }
 
-  getEntityById(id: string): Entity | undefined {
-    return findEntity(this, (entity) => entity.id === id);
+  findChild(predicate: (entity: Entity) => boolean, recursive = true): Entity | undefined {
+    return findChild(this, predicate, recursive);
   }
 
-  getEntityByName(name: string): Entity | undefined {
-    return findEntity(this, (entity) => entity.name === name);
+  findChildById(id: string, recursive = true): Entity | undefined {
+    return this.findChild((entity) => entity.id === id, recursive);
+  }
+
+  findChildByName(name: string, recursive = true): Entity | undefined {
+    return this.findChild((entity) => entity.name === name, recursive);
   }
 }

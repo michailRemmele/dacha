@@ -1,10 +1,12 @@
-import { System } from '../../../engine/system';
+import { WorldSystem } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
-import type { SystemOptions } from '../../../engine/system';
+import type { World } from '../../../engine/world';
+import type { WorldSystemOptions } from '../../../engine/system';
 import type { TemplateCollection } from '../../../engine/template';
 import { Actor, ActorCollection } from '../../../engine/actor';
 import { AddActor, RemoveActor } from '../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
+import { CacheStore } from '../../../engine/data-lib';
 import { AudioSource } from '../../components';
 import {
   PlayAudio,
@@ -17,32 +19,30 @@ import type {
 } from '../../../events';
 import type { ActorEvent } from '../../../types/events';
 
-import { audioLoader } from './audio-loader';
 import type { AudioGroups, AudioStateNode } from './types';
+import { getAllTemplateSources, loadAudio } from './utils';
 
 const MASTER_GROUP = 'master';
 const VOLUME_TOLERANCE = 0.001;
 
-export class AudioSystem extends System {
+export class AudioSystem extends WorldSystem {
   private templateCollection: TemplateCollection;
-  private actorCollection: ActorCollection;
-  private scene: Scene;
+  private world: World;
+  private scene?: Scene;
 
   private audioContext: AudioContext;
   private audioGroups: Record<string, GainNode | undefined>;
-  private audioCache: Map<string, AudioBuffer>;
+  private audioStore: CacheStore<AudioBuffer>;
   private audioState: Map<string, AudioStateNode>;
+  private actorCollections: Record<string, ActorCollection>;
 
-  constructor(options: SystemOptions) {
+  constructor(options: WorldSystemOptions) {
     super();
 
-    const { scene, globalOptions, templateCollection } = options;
+    const { world, globalOptions, templateCollection } = options;
 
     this.templateCollection = templateCollection;
-    this.actorCollection = new ActorCollection(scene, {
-      components: [AudioSource],
-    });
-    this.scene = scene;
+    this.world = world;
 
     this.audioContext = new AudioContext();
 
@@ -66,76 +66,117 @@ export class AudioSystem extends System {
       return acc;
     }, { [MASTER_GROUP]: masterAudioGroup } as Record<string, GainNode | undefined>);
 
-    this.audioCache = new Map();
+    this.audioStore = new CacheStore<AudioBuffer>();
     this.audioState = new Map();
-  }
+    this.actorCollections = {};
 
-  async load(): Promise<void> {
-    const templateSources = this.templateCollection.getAll()
-      .filter((template) => template.getComponent(AudioSource))
-      .map((template) => template.getComponent(AudioSource).src);
-
-    const sources = this.actorCollection.map((actor) => actor.getComponent(AudioSource).src);
-
-    const uniqueSources = [...new Set([...templateSources, ...sources])];
-
-    await Promise.all(uniqueSources.map((src) => this.loadAudio(src)));
-  }
-
-  private async loadAudio(audioSourcePath: string): Promise<void> {
-    if (this.audioCache.has(audioSourcePath)) {
-      return;
-    }
-
-    try {
-      const arrayBuffer = await audioLoader.load(audioSourcePath);
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      this.audioCache.set(audioSourcePath, audioBuffer);
-    } catch (error: unknown) {
-      console.error(`An error occurred during audio source loading: ${audioSourcePath}`, error);
-    }
-  }
-
-  mount(): void {
-    this.actorCollection.forEach((actor) => this.initAudio(actor));
-
-    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
-
-    this.scene.addEventListener(PlayAudio, this.handlePlayAudio);
-    this.scene.addEventListener(StopAudio, this.handleStopAudio);
-    this.scene.addEventListener(SetAudioVolume, this.handleSetAudioVolume);
+    this.world.addEventListener(PlayAudio, this.handlePlayAudio);
+    this.world.addEventListener(StopAudio, this.handleStopAudio);
+    this.world.addEventListener(SetAudioVolume, this.handleSetAudioVolume);
 
     window.addEventListener('click', this.resumeIfSuspended, { once: true });
     window.addEventListener('keydown', this.resumeIfSuspended, { once: true });
     window.addEventListener('touchstart', this.resumeIfSuspended, { once: true });
   }
 
-  unmount(): void {
+  async onSceneLoad(scene: Scene): Promise<void> {
+    this.actorCollections[scene.id] = new ActorCollection(scene, {
+      components: [AudioSource],
+    });
+
+    const allSources = [
+      ...getAllTemplateSources(this.templateCollection),
+      ...this.actorCollections[scene.id].map((actor) => actor.getComponent(AudioSource).src),
+    ];
+    const uniqueSources = [...new Set(allSources)];
+
+    const audioBuffers = await Promise.all(uniqueSources.map((src) => {
+      return !this.audioStore.has(src) ? this.loadAudio(src) : undefined;
+    }));
+
+    uniqueSources.forEach((src, index) => {
+      if (audioBuffers[index]) {
+        this.audioStore.add(src, audioBuffers[index]!);
+      }
+    });
+    allSources.forEach((src) => this.audioStore.retain(src));
+  }
+
+  onSceneEnter(scene: Scene): void {
+    this.scene = scene;
+
+    this.actorCollections[scene.id]?.forEach((actor) => this.initAudio(actor));
+
+    this.actorCollections[scene.id]?.addEventListener(AddActor, this.handleActorAdd);
+    this.actorCollections[scene.id]?.addEventListener(RemoveActor, this.handleActorRemove);
+  }
+
+  onSceneExit(scene: Scene): void {
     this.audioState.forEach((audioState) => {
       audioState.sourceNode.stop();
     });
 
+    this.actorCollections[scene.id]?.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorCollections[scene.id]?.removeEventListener(RemoveActor, this.handleActorRemove);
+
+    this.scene = undefined;
+  }
+
+  onSceneDestroy(scene: Scene): void {
+    const allSources = [
+      ...getAllTemplateSources(this.templateCollection),
+      ...this.actorCollections[scene.id].map((actor) => actor.getComponent(AudioSource).src),
+    ];
+
+    allSources.forEach((src) => this.audioStore.release(src));
+    this.audioStore.cleanReleased();
+
+    delete this.actorCollections[scene.id];
+  }
+
+  onWorldDestroy(): void {
     void this.audioContext.close();
 
-    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
-
-    this.scene.removeEventListener(PlayAudio, this.handlePlayAudio);
-    this.scene.removeEventListener(StopAudio, this.handleStopAudio);
-    this.scene.removeEventListener(SetAudioVolume, this.handleSetAudioVolume);
+    this.world.removeEventListener(PlayAudio, this.handlePlayAudio);
+    this.world.removeEventListener(StopAudio, this.handleStopAudio);
+    this.world.removeEventListener(SetAudioVolume, this.handleSetAudioVolume);
 
     window.removeEventListener('click', this.resumeIfSuspended);
     window.removeEventListener('keydown', this.resumeIfSuspended);
     window.removeEventListener('touchstart', this.resumeIfSuspended);
   }
 
+  private async loadAudio(src: string): Promise<AudioBuffer | undefined> {
+    if (!src) {
+      return undefined;
+    }
+
+    try {
+      const arrayBuffer = await loadAudio(src);
+      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      return audioBuffer;
+    } catch (error: unknown) {
+      console.error(`An error occurred during audio source loading: ${src}`, error);
+      return undefined;
+    }
+  }
+
   private handleActorAdd = (event: AddActorEvent): void => {
-    this.initAudio(event.actor);
+    const { actor } = event;
+
+    const { src } = actor.getComponent(AudioSource);
+    this.audioStore.retain(src);
+
+    this.initAudio(actor);
   };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
-    this.stopAudio(event.actor);
+    const { actor } = event;
+
+    const { src } = actor.getComponent(AudioSource);
+    this.audioStore.release(src);
+
+    this.stopAudio(actor);
   };
 
   private handlePlayAudio = (event: ActorEvent): void => {
@@ -197,7 +238,7 @@ export class AudioSystem extends System {
     } = audioSource;
     const audioGroupNode = this.audioGroups[group];
 
-    if (!audioGroupNode || !this.audioCache.has(src)) {
+    if (!audioGroupNode || !this.audioStore.has(src)) {
       return;
     }
 
@@ -209,7 +250,7 @@ export class AudioSystem extends System {
     }
 
     const sourceNode = new AudioBufferSourceNode(this.audioContext, {
-      buffer: this.audioCache.get(src),
+      buffer: this.audioStore.get(src),
       loop: looped,
     });
     const gainNode = new GainNode(this.audioContext, {
@@ -258,7 +299,11 @@ export class AudioSystem extends System {
   }
 
   update(): void {
-    this.actorCollection.forEach((actor) => {
+    if (!this.scene) {
+      return;
+    }
+
+    this.actorCollections[this.scene.id]?.forEach((actor) => {
       const audioSource = actor.getComponent(AudioSource);
       const audioState = this.audioState.get(actor.id);
 

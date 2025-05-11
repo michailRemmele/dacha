@@ -1,120 +1,77 @@
-import { Scene } from '../../../engine/scene';
-import { System } from '../../../engine/system';
-import type {
-  SystemOptions,
-  UpdateOptions,
-} from '../../../engine/system';
+import { World } from '../../../engine/world';
+import { WorldSystem } from '../../../engine/system';
+import type { WorldSystemOptions } from '../../../engine/system';
 import type { TemplateCollection } from '../../../engine/template';
+import type { ActorSpawner } from '../../../engine/actor';
 
-import { Observer } from './observer';
-
-interface ActionFnOptions {
-  scene: Scene
-  actorSpawner: unknown
-  deltaTime: number
-}
-
-type ActionFn = (options: ActionFnOptions) => void;
-
-export interface UiInitFnOptions {
-  scene: Scene
+export interface UIOptions {
+  world: World
   templateCollection: TemplateCollection
+  actorSpawner: ActorSpawner
   globalOptions: Record<string, unknown>
-  gameStateObserver: Observer
-  pushAction: (action: ActionFn) => void
 }
 
-export type UiInitFn = (options: UiInitFnOptions) => void;
-export type UiDestroyFn = () => void;
-export type LoadUiAppFn = () => Promise<{ onInit: UiInitFn, onDestroy: UiDestroyFn }>;
+export type UIInitFn = (options: UIOptions) => void;
+export type UIDestroyFn = () => void;
+export type LoadUIFn = () => Promise<{ onInit: UIInitFn, onDestroy: UIDestroyFn }>;
 
-interface UiBridgeResources {
-  loadUiApp?: LoadUiAppFn
+interface UIBridgeResources {
+  loadUI?: LoadUIFn
 }
 
-export class UiBridge extends System {
-  private actorSpawner: unknown;
-  private scene: Scene;
-  private loadUiApp: LoadUiAppFn;
+export class UIBridge extends WorldSystem {
+  private actorSpawner: ActorSpawner;
+  private world: World;
+  private loadUI: LoadUIFn;
   private templateCollection: TemplateCollection;
   private globalOptions: Record<string, unknown>;
-  private gameStateObserver: Observer;
-  private actionsQueue: Array<ActionFn>;
-  private onUiInit?: UiInitFn;
-  private onUiDestroy?: UiDestroyFn;
+  private onUIInit?: UIInitFn;
+  private onUIDestroy?: UIDestroyFn;
 
-  constructor(options: SystemOptions) {
+  constructor(options: WorldSystemOptions) {
     super();
 
     const {
+      world,
       actorSpawner,
-      resources,
-      scene,
       templateCollection,
+      resources,
       globalOptions,
     } = options;
 
-    const loadUiApp = (resources as UiBridgeResources | undefined)?.loadUiApp;
+    const loadUI = (resources as UIBridgeResources | undefined)?.loadUI;
 
-    if (loadUiApp === undefined) {
-      throw new Error('UiBridge requires a UI loader. Please specify the loader in the resources section.');
+    if (loadUI === undefined) {
+      throw new Error('UIBridge requires a UI loader. Please specify the loader in the resources section.');
     }
 
-    this.loadUiApp = loadUiApp;
+    this.loadUI = loadUI;
 
-    this.scene = scene;
+    this.world = world;
     this.actorSpawner = actorSpawner;
     this.templateCollection = templateCollection;
     this.globalOptions = globalOptions;
-
-    this.gameStateObserver = new Observer();
-
-    this.actionsQueue = [];
   }
 
-  async load(): Promise<void> {
-    const { onInit, onDestroy } = await this.loadUiApp();
+  async onWorldLoad(): Promise<void> {
+    const { onInit, onDestroy } = await this.loadUI();
 
-    this.onUiInit = onInit;
-    this.onUiDestroy = onDestroy;
+    this.onUIInit = onInit;
+    this.onUIDestroy = onDestroy;
   }
 
-  mount(): void {
-    if (this.onUiInit) {
-      this.onUiInit({
-        scene: this.scene,
-        templateCollection: this.templateCollection,
-        globalOptions: this.globalOptions,
-        gameStateObserver: this.gameStateObserver,
-        pushAction: this.pushAction.bind(this),
-      });
-    }
-  }
-
-  unmount(): void {
-    if (this.onUiDestroy) {
-      this.onUiDestroy();
-    }
-  }
-
-  private pushAction(action: ActionFn): void {
-    this.actionsQueue.push(action);
-  }
-
-  update(options: UpdateOptions): void {
-    const { deltaTime } = options;
-
-    this.gameStateObserver.next();
-
-    this.actionsQueue.forEach((action) => {
-      action({
-        scene: this.scene,
-        deltaTime,
-        actorSpawner: this.actorSpawner,
-      });
+  onWorldReady(): void {
+    this.onUIInit?.({
+      world: this.world,
+      templateCollection: this.templateCollection,
+      actorSpawner: this.actorSpawner,
+      globalOptions: this.globalOptions,
     });
-    this.actionsQueue = [];
+  }
+
+  onWorldDestroy(): void {
+    this.onUIDestroy?.();
   }
 }
 
-UiBridge.systemName = 'UiBridge';
+UIBridge.systemName = 'UIBridge';

@@ -3,7 +3,6 @@ import type { Vector2 } from '../../engine/math-lib';
 import type { CustomMouseEvent, CustomKeyboardEvent } from '../types/input-events';
 import type { ActorEvent, SceneEvent } from '../../types/events';
 
-export const SetCamera = 'SetCamera';
 export const GameStatsUpdate = 'GameStatsUpdate';
 export const Collision = 'Collision';
 export const KeyboardInput = 'KeyboardInput';
@@ -22,10 +21,6 @@ export const SetAudioVolume = 'SetAudioVolume';
 export type MouseInputEvent = SceneEvent<CustomMouseEvent>;
 
 export type KeyboardInputEvent = SceneEvent<CustomKeyboardEvent>;
-
-export type SetCameraEvent = SceneEvent<{
-  actorId: string
-}>;
 
 export type GameStatsUpdateEvent = SceneEvent<{
   fps: number
@@ -70,13 +65,15 @@ export type SetAudioSourceVolumeEvent = ActorEvent<{
 }>;
 
 declare module '../../types/events' {
-  export interface SceneEventMap {
+  export interface WorldEventMap {
     [MouseInput]: MouseInputEvent
     [KeyboardInput]: KeyboardInputEvent
-    [SetCamera]: SetCameraEvent
     [GameStatsUpdate]: GameStatsUpdateEvent
-    [Collision]: CollisionEvent
     [SetAudioVolume]: SetAudioGroupVolumeEvent
+  }
+
+  export interface SceneEventMap {
+    [Collision]: CollisionEvent
   }
 
   export interface ActorEventMap {

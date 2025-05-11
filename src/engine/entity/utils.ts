@@ -14,18 +14,21 @@ export const traverseEntity = <T extends Entity>(
 
     callback(currentEntity);
 
-    currentEntity.children.forEach((child) => {
-      queue.add(child as T);
-    });
+    currentEntity.children.forEach((child) => queue.add(child as T));
   }
 };
 
-export const findEntity = <T extends Entity>(
+export const findChild = <T extends Entity>(
   entity: T,
   predicate: (entity: T) => boolean,
+  recursive = true,
 ): T | undefined => {
+  if (!recursive) {
+    return (entity.children as T[]).find((child) => predicate(child));
+  }
+
   const queue = new Queue<T>();
-  queue.add(entity);
+  entity.children.forEach((child) => queue.add(child as T));
 
   while (queue.peek() !== null) {
     const currentEntity = queue.poll()!;
@@ -34,9 +37,7 @@ export const findEntity = <T extends Entity>(
       return currentEntity;
     }
 
-    currentEntity.children.forEach((child) => {
-      queue.add(child as T);
-    });
+    currentEntity.children.forEach((child) => queue.add(child as T));
   }
 
   return undefined;

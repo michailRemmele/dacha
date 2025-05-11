@@ -58,16 +58,16 @@ describe('Engine -> Entity', () => {
     entity1.appendChild(entity2);
     entity2.appendChild(entity3);
 
-    expect(entity1.getEntityById('2')).toEqual(entity2);
-    expect(entity1.getEntityById('3')).toEqual(entity3);
+    expect(entity1.findChildById('2')).toEqual(entity2);
+    expect(entity1.findChildById('3')).toEqual(entity3);
 
-    expect(entity2.getEntityById('3')).toEqual(entity3);
+    expect(entity2.findChildById('3')).toEqual(entity3);
 
-    expect(entity3.getEntityById('1')).toBeUndefined();
+    expect(entity3.findChildById('1')).toBeUndefined();
 
     entity1.removeChild(entity2);
 
-    expect(entity1.getEntityById('3')).toBeUndefined();
+    expect(entity1.findChildById('3')).toBeUndefined();
   });
 
   it('Returns added entity as child by name', () => {
@@ -87,16 +87,16 @@ describe('Engine -> Entity', () => {
     entity1.appendChild(entity2);
     entity2.appendChild(entity3);
 
-    expect(entity1.getEntityByName('entity-2')).toEqual(entity2);
-    expect(entity1.getEntityByName('entity-3')).toEqual(entity3);
+    expect(entity1.findChildByName('entity-2')).toEqual(entity2);
+    expect(entity1.findChildByName('entity-3')).toEqual(entity3);
 
-    expect(entity2.getEntityByName('entity-3')).toEqual(entity3);
+    expect(entity2.findChildByName('entity-3')).toEqual(entity3);
 
-    expect(entity3.getEntityByName('entity-1')).toBeUndefined();
+    expect(entity3.findChildByName('entity-1')).toBeUndefined();
 
     entity1.removeChild(entity2);
 
-    expect(entity1.getEntityByName('entity-3')).toBeUndefined();
+    expect(entity1.findChildByName('entity-3')).toBeUndefined();
   });
 
   it('Returns first added entity if there are few of them with same name', () => {
@@ -116,6 +116,6 @@ describe('Engine -> Entity', () => {
     entity1.appendChild(entity2);
     entity1.appendChild(entity3);
 
-    expect(entity1.getEntityByName('entity-2')).toEqual(entity2);
+    expect(entity1.findChildByName('entity-2')).toEqual(entity2);
   });
 });
