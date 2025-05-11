@@ -1,6 +1,6 @@
 export {
   ProjectLoader,
-  LevelViewer,
+  SceneViewer,
   ToolManager,
   ZoomToolSystem,
   HandToolSystem,

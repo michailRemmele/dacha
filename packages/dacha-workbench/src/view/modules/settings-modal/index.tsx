@@ -17,7 +17,7 @@ import { modals } from './components'
 
 export const SettingsModal: FC = () => {
   const { t } = useTranslation()
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<string>()
@@ -38,7 +38,7 @@ export const SettingsModal: FC = () => {
 
   useEffect(() => {
     const handleSettingsUpdate = (): void => {
-      const mainActor = scene.data.mainActor as Actor
+      const mainActor = world.data.mainActor as Actor
       const { data } = mainActor.getComponent(Settings)
 
       setSettings({ ...data })
@@ -46,9 +46,9 @@ export const SettingsModal: FC = () => {
 
     handleSettingsUpdate()
 
-    scene.addEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
+    world.addEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
 
-    return () => scene.removeEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
+    return () => world.removeEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
   }, [])
 
   if (type === undefined || settings === undefined) {

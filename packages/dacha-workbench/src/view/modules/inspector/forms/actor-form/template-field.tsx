@@ -26,7 +26,7 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
   const { t } = useTranslation()
   const store = useStore()
 
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
   const templatePath = useMemo(() => {
     const actor = store.get(path) as ActorConfig
@@ -42,9 +42,9 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
   const { name } = useConfig(templatePath) as TemplateConfig
 
   const handleTemplateInspect = useCallback(() => {
-    scene.dispatchEvent(EventType.SelectEntities, { paths: [templatePath] })
-    scene.dispatchEvent(EventType.InspectEntity, { path: templatePath })
-  }, [templatePath, scene])
+    world.dispatchEvent(EventType.SelectEntities, { paths: [templatePath] })
+    world.dispatchEvent(EventType.InspectEntity, { path: templatePath })
+  }, [templatePath, world])
 
   return (
     <Labelled

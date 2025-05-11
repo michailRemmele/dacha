@@ -23,40 +23,32 @@ import { Tool, ToolController } from '../../../engine/components'
 import type { FeatureValue } from '../../../engine/components/tool'
 import { EventType } from '../../../events'
 import { useStore } from '../../hooks/use-store'
-import type { SelectLevelEvent } from '../../../events'
-import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import type { SelectSceneEvent } from '../../../events'
+import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
 
 import { features } from './components'
 import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
 
 export const Toolbar: FC = () => {
   const { t } = useTranslation()
-  const {
-    scene,
-    gameStateObserver,
-  } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
   const store = useStore()
-
-  const mainActorId = useMemo<string>(
-    () => (scene.data.mainActor as Actor).id,
-    [scene],
-  )
 
   const [selectedTool, setSelectedTool] = useState('')
   const [toolFeatures, setToolFeatures] = useState<Record<string, FeatureValue>>({})
-  const [disabled, setDisabled] = useState(() => !getSavedSelectedLevelId(store))
+  const [disabled, setDisabled] = useState(() => !getSavedSelectedSceneId(store))
 
   const ToolFeatures = useMemo(() => features[selectedTool], [selectedTool])
 
   useEffect(() => {
-    const handleSelectLevel = (event: SelectLevelEvent): void => {
-      setDisabled(event.levelId === undefined)
+    const handleSelectScene = (event: SelectSceneEvent): void => {
+      setDisabled(event.sceneId === undefined)
     }
 
-    const handleUpdate = (): void => {
-      const mainActor = scene.getEntityById(mainActorId) as Actor
+    const handleToolUpdated = (): void => {
+      const mainActor = world.data.mainActor as Actor
       const toolController = mainActor.getComponent(ToolController)
-      const toolActor = mainActor.getEntityById(toolController.activeTool)
+      const toolActor = mainActor.findChildById(toolController.activeTool)
 
       if (!toolActor) {
         return
@@ -67,40 +59,32 @@ export const Toolbar: FC = () => {
         features: currentFeatures,
       } = toolActor.getComponent(Tool)
 
-      if (name !== selectedTool) {
-        setSelectedTool(name)
-      }
+      setSelectedTool((prev) => (name !== prev ? name : prev))
 
       const featuresValues = Object.keys(currentFeatures).reduce((acc, key) => {
         acc[key] = currentFeatures[key].value
         return acc
       }, {} as Record<string, FeatureValue>)
 
-      if (!isEqual(featuresValues, toolFeatures)) {
-        setToolFeatures(featuresValues)
-      }
+      setToolFeatures((prev) => (!isEqual(featuresValues, prev) ? featuresValues : prev))
     }
 
-    scene.addEventListener(EventType.SelectLevel, handleSelectLevel)
-    gameStateObserver.subscribe(handleUpdate)
+    handleToolUpdated()
+
+    world.addEventListener(EventType.SelectScene, handleSelectScene)
+    world.addEventListener(EventType.ToolUpdated, handleToolUpdated)
 
     return () => {
-      scene.removeEventListener(EventType.SelectLevel, handleSelectLevel)
-      gameStateObserver.unsubscribe(handleUpdate)
+      world.removeEventListener(EventType.SelectScene, handleSelectScene)
+      world.removeEventListener(EventType.ToolUpdated, handleToolUpdated)
     }
-  }, [
-    scene,
-    gameStateObserver,
-    mainActorId,
-    selectedTool,
-    toolFeatures,
-  ])
+  }, [world])
 
   const handleSelect = useCallback((event: RadioChangeEvent) => {
-    scene.dispatchEvent(EventType.SelectTool, {
+    world.dispatchEvent(EventType.SelectTool, {
       name: event.target.value as string,
     })
-  }, [scene])
+  }, [world])
 
   return (
     <ToolbarStyled>

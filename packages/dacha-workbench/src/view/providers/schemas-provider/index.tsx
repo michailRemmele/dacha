@@ -1,4 +1,5 @@
 import React, { useMemo, FC } from 'react'
+import i18next from 'i18next'
 
 import type { WidgetSchema } from '../../../types/widget-schema'
 import { componentsSchema, systemsSchema } from '../../modules/inspector/widgets'
@@ -60,10 +61,16 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
     })),
   ), [extSystemsSchema])
 
+  useMemo(() => {
+    Object.keys(extension.locales).forEach((lng) => {
+      i18next.addResourceBundle(lng, NAMESPACE_EXTENSION, extension.locales[lng])
+    })
+  }, [extension])
+
   const context = useMemo(() => ({
     components,
     systems,
-  }), [components])
+  }), [components, systems])
 
   return (
     <SchemasContext.Provider value={context}>

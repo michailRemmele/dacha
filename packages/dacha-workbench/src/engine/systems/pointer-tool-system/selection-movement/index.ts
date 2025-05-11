@@ -3,7 +3,7 @@ import {
   Sprite,
 } from 'dacha'
 import type {
-  Scene,
+  World,
   ActorConfig,
   TransformConfig,
   ActorCollection,
@@ -32,13 +32,13 @@ export interface Position {
 }
 
 interface SelectionMovementSubsystemOptions {
-  scene: Scene
+  world: World
   selectedActors: SelectedActors
   actorCollection: ActorCollection
 }
 
 export class SelectionMovementSubsystem {
-  private scene: Scene
+  private world: World
   private actorCollection: ActorCollection
   private configStore: CommanderStore
 
@@ -49,30 +49,28 @@ export class SelectionMovementSubsystem {
   private selectedActors: SelectedActors
 
   constructor({
-    scene,
+    world,
     selectedActors,
     actorCollection,
   }: SelectionMovementSubsystemOptions) {
-    this.scene = scene
+    this.world = world
     this.actorCollection = actorCollection
-    this.configStore = scene.data.configStore as CommanderStore
+    this.configStore = world.data.configStore as CommanderStore
     this.selectedActors = selectedActors
 
     this.isMoving = false
     this.selectionStart = {}
     this.pointerStart = { x: 0, y: 0 }
+
+    this.world.addEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
+    this.world.addEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
+    this.world.addEventListener(EventType.SelectionMove, this.handleSelectionMove)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
-    this.scene.addEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
-    this.scene.addEventListener(EventType.SelectionMove, this.handleSelectionMove)
-  }
-
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
-    this.scene.removeEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
-    this.scene.removeEventListener(EventType.SelectionMove, this.handleSelectionMove)
+  destroy(): void {
+    this.world.removeEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
+    this.world.removeEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
+    this.world.removeEventListener(EventType.SelectionMove, this.handleSelectionMove)
   }
 
   private handleSelectionMoveStart = (event: MouseControlEvent): void => {
@@ -112,7 +110,7 @@ export class SelectionMovementSubsystem {
     if (
       !this.isMoving
       || this.selectedActors.frames.length === 0
-      || this.selectedActors.levelId === undefined
+      || this.selectedActors.sceneId === undefined
     ) {
       return
     }
@@ -153,7 +151,7 @@ export class SelectionMovementSubsystem {
       return
     }
 
-    const actorsPath = ['levels', `id:${this.selectedActors.levelId}`, 'actors']
+    const actorsPath = ['scenes', `id:${this.selectedActors.sceneId}`, 'actors']
     const actorConfigs = this.configStore.get(actorsPath) as ActorConfig[]
 
     const updatedActors = actorConfigs.map(
@@ -177,7 +175,7 @@ export class SelectionMovementSubsystem {
 
     const { x, y } = event
 
-    const tool = getTool(this.scene)
+    const tool = getTool(this.world)
     const snapToGrid = tool.features.grid.value as boolean
 
     this.selectedActors.frames.forEach((frame) => {
@@ -199,7 +197,7 @@ export class SelectionMovementSubsystem {
 
       if (snapToGrid) {
         const sprite = actor.getComponent(Sprite)
-        const gridStep = getGridStep(this.scene)
+        const gridStep = getGridStep(this.world)
 
         transform.offsetX = getGridValue(offsetX, getSizeX(transform, sprite), gridStep)
         transform.offsetY = getGridValue(offsetY, getSizeY(transform, sprite), gridStep)

@@ -1,4 +1,4 @@
-import type { SceneEvent } from 'dacha'
+import type { WorldEvent } from 'dacha'
 import type { MouseControlEvent } from 'dacha/events'
 
 import type { SettingsConfig } from '../engine/components/settings'
@@ -7,43 +7,44 @@ import * as EventType from './event-types'
 
 export * as EventType from './event-types'
 
-export type SelectToolEvent = SceneEvent<{
+export type SelectToolEvent = WorldEvent<{
   name: string
 }>
 
-export type SetToolFeatureValueEvent = SceneEvent<{
+export type SetToolFeatureValueEvent = WorldEvent<{
   name: string
   value: string | boolean | number
 }>
 
-export type SetSettingsValueEvent = SceneEvent<{
+export type SetSettingsValueEvent = WorldEvent<{
   name: keyof SettingsConfig
   value: string | boolean | number
 }>
 
-export type SelectLevelEvent = SceneEvent<{
-  levelId: string | undefined
+export type SelectSceneEvent = WorldEvent<{
+  sceneId: string | undefined
 }>
 
-export type InspectEntityEvent = SceneEvent<{
+export type InspectEntityEvent = WorldEvent<{
   path: Array<string> | undefined
 }>
 
-export type SelectEntitiesEvent = SceneEvent<{
+export type SelectEntitiesEvent = WorldEvent<{
   paths: string[][]
 }>
 
 declare module 'dacha' {
-  export interface SceneEventMap {
+  export interface WorldEventMap {
     [EventType.SelectTool]: SelectToolEvent
     [EventType.SetToolFeatureValue]: SetToolFeatureValueEvent
+    [EventType.ToolUpdated]: WorldEvent
     [EventType.SetSettingsValue]: SetSettingsValueEvent
-    [EventType.SelectLevel]: SelectLevelEvent
+    [EventType.SelectScene]: SelectSceneEvent
     [EventType.InspectEntity]: InspectEntityEvent
     [EventType.InspectedEntityChange]: InspectEntityEvent
     [EventType.SelectEntities]: SelectEntitiesEvent
     [EventType.SelectEntitiesChange]: SelectEntitiesEvent
-    [EventType.SaveProject]: SceneEvent
+    [EventType.SaveProject]: WorldEvent
   }
 
   export interface ActorEventMap {

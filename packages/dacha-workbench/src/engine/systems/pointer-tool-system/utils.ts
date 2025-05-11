@@ -10,7 +10,7 @@ import type { RectangleShape } from '../../components/shape'
 import { getIdByPath } from '../../../utils/get-id-by-path'
 
 import type { SelectionArea } from './types'
-import { LEVEL_PATH_LEGTH } from './consts'
+import { SCENE_PATH_LEGTH } from './consts'
 
 const accumulatePath = (actor: Actor, path: Array<string>): void => {
   path.unshift(`id:${actor.id}`)
@@ -21,11 +21,11 @@ const accumulatePath = (actor: Actor, path: Array<string>): void => {
   }
 }
 
-export const buildActorPath = (actor: Actor, levelId: string): Array<string> => {
+export const buildActorPath = (actor: Actor, sceneId: string): Array<string> => {
   const path: Array<string> = []
 
   accumulatePath(actor, path)
-  path.unshift('levels', `id:${levelId}`, 'actors')
+  path.unshift('scenes', `id:${sceneId}`, 'actors')
 
   return path
 }
@@ -86,16 +86,16 @@ export const updateAreaSize = (selectionArea: SelectionArea): void => {
 
 export const getActorIdByPath = (
   path: string[],
-  currentLevelId: string | undefined,
+  currentSceneId: string | undefined,
 ): string | undefined => {
-  if (!currentLevelId) {
+  if (!currentSceneId) {
     return undefined
   }
 
-  if (path !== undefined && path[0] === 'levels' && path.length > LEVEL_PATH_LEGTH) {
-    const levelId = getIdByPath([path[1]])
+  if (path !== undefined && path[0] === 'scenes' && path.length > SCENE_PATH_LEGTH) {
+    const sceneId = getIdByPath([path[1]])
 
-    if (levelId !== currentLevelId) {
+    if (sceneId !== currentSceneId) {
       return undefined
     }
 

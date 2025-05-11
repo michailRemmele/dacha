@@ -3,7 +3,7 @@ import type { Actor } from 'dacha'
 export interface SelectedActors {
   actorPaths: string[][]
   frames: Actor[]
-  levelId?: string
+  sceneId?: string
 }
 
 export interface SelectionArea {

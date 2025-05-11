@@ -1,7 +1,6 @@
-import { useContext, useMemo, FC } from 'react'
+import { useMemo, FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
-import { InspectedEntityContext } from '../../../../providers'
 import { Widget } from '../widget'
 import { CustomWidget } from '../custom-widget'
 
@@ -11,13 +10,13 @@ import type { Entity, EntityType } from './types'
 import { EntityFormStyled } from './entity-list.style'
 
 interface EntityFormProps extends Entity {
+  path: string[]
   type: EntityType
 }
 
-export const EntityForm: FC<EntityFormProps> = ({ data, type }) => {
+export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
   const { t, i18n } = useTranslation()
 
-  const { path = [] } = useContext(InspectedEntityContext)
   const { schema, name } = data
 
   const widgetPath = useMemo(

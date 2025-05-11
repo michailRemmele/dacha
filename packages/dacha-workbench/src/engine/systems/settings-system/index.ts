@@ -1,7 +1,7 @@
-import { System } from 'dacha'
+import { SceneSystem } from 'dacha'
 import type {
-  Scene,
-  SystemOptions,
+  World,
+  SceneSystemOptions,
   Actor,
 } from 'dacha'
 
@@ -10,26 +10,24 @@ import type { SetSettingsValueEvent } from '../../../events'
 import { Settings } from '../../components'
 import { persistentStorage } from '../../../persistent-storage'
 
-export class SettingsSystem extends System {
-  private scene: Scene
+export class SettingsSystem extends SceneSystem {
+  private world: World
 
   private mainActor: Actor
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
-    const { scene } = options
+    const { world } = options
 
-    this.scene = scene
-    this.mainActor = scene.data.mainActor as Actor
+    this.world = world
+    this.mainActor = world.data.mainActor as Actor
+
+    this.world.addEventListener(EventType.SetSettingsValue, this.handleSetSettingsValue)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SetSettingsValue, this.handleSetSettingsValue)
-  }
-
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SetSettingsValue, this.handleSetSettingsValue)
+  onSceneDestroy(): void {
+    this.world.removeEventListener(EventType.SetSettingsValue, this.handleSetSettingsValue)
   }
 
   private handleSetSettingsValue = (event: SetSettingsValueEvent): void => {

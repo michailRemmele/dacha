@@ -1,8 +1,8 @@
-import { System } from 'dacha'
+import { WorldSystem } from 'dacha'
 import type {
-  Scene,
+  World,
   Config,
-  SystemOptions,
+  WorldSystemOptions,
   UpdateOptions,
 } from 'dacha'
 
@@ -16,43 +16,29 @@ interface ProjectLoaderResources {
   store: CommanderStore
 }
 
-export class ProjectLoader extends System {
-  private scene: Scene
+export class ProjectLoader extends WorldSystem {
+  private world: World
   private editorCofig: EditorConfig
 
   private autoSaveInterval: number
 
-  constructor(options: SystemOptions) {
+  constructor(options: WorldSystemOptions) {
     super()
 
-    this.scene = options.scene
+    this.world = options.world
     this.editorCofig = window.electron.getEditorConfig()
 
-    this.scene.data.configStore = (options.resources as ProjectLoaderResources).store
-    this.scene.data.editorConfig = this.editorCofig
+    this.world.data.configStore = (options.resources as ProjectLoaderResources).store
+    this.world.data.editorConfig = this.editorCofig
 
     this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
+
+    window.electron.onSave(() => {
+      this.saveProjectConfig()
+    })
   }
 
-  private setUpData(extension: Extension = {}): void {
-    const {
-      componentsSchema = {},
-      systemsSchema = {},
-      resourcesSchema = {},
-      globalReferences = {},
-      locales = {},
-    } = extension
-
-    this.scene.data.extension = {
-      componentsSchema,
-      systemsSchema,
-      resourcesSchema,
-      globalReferences,
-      locales,
-    }
-  }
-
-  load(): Promise<void> {
+  async onWorldLoad(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!window.electron.isExtensionAvailable()) {
         this.setUpData()
@@ -77,17 +63,29 @@ export class ProjectLoader extends System {
     })
   }
 
-  private saveProjectConfig(): void {
-    const projectConfig = (this.scene.data.configStore as CommanderStore).get([]) as Config
-    window.electron.saveProjectConfig(projectConfig)
+  private setUpData(extension: Extension = {}): void {
+    const {
+      componentsSchema = {},
+      systemsSchema = {},
+      resourcesSchema = {},
+      globalReferences = {},
+      locales = {},
+    } = extension
 
-    this.scene.dispatchEvent(EventType.SaveProject)
+    this.world.data.extension = {
+      componentsSchema,
+      systemsSchema,
+      resourcesSchema,
+      globalReferences,
+      locales,
+    }
   }
 
-  mount(): void {
-    window.electron.onSave(() => {
-      this.saveProjectConfig()
-    })
+  private saveProjectConfig(): void {
+    const projectConfig = (this.world.data.configStore as CommanderStore).get([]) as Config
+    window.electron.saveProjectConfig(projectConfig)
+
+    this.world.dispatchEvent(EventType.SaveProject)
   }
 
   update(options: UpdateOptions): void {

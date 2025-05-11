@@ -1,11 +1,11 @@
 import {
-  System,
+  SceneSystem,
   Camera,
   Transform,
 } from 'dacha'
 import type {
-  Scene,
-  SystemOptions,
+  World,
+  SceneSystemOptions,
   Actor,
 } from 'dacha'
 import type { MouseControlEvent } from 'dacha/events'
@@ -19,30 +19,28 @@ const DEFAULT_ZOOM = 1
 
 type ZoomMode = 'in' | 'out'
 
-export class ZoomToolSystem extends System {
-  private scene: Scene
+export class ZoomToolSystem extends SceneSystem {
+  private world: World
   private mainActor: Actor
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
-    const { scene } = options
+    const { world } = options
 
-    this.scene = scene
-    this.mainActor = scene.data.mainActor as Actor
+    this.world = world
+    this.mainActor = world.data.mainActor as Actor
+
+    this.world.addEventListener(EventType.SelectScene, this.handleSelectScene)
+    this.world.addEventListener(EventType.CameraZoom, this.handleCameraZoom)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.scene.addEventListener(EventType.CameraZoom, this.handleCameraZoom)
+  onSceneDestroy(): void {
+    this.world.removeEventListener(EventType.SelectScene, this.handleSelectScene)
+    this.world.removeEventListener(EventType.CameraZoom, this.handleCameraZoom)
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.scene.removeEventListener(EventType.CameraZoom, this.handleCameraZoom)
-  }
-
-  private handleSelectLevel = (): void => {
+  private handleSelectScene = (): void => {
     const cameraComponent = this.mainActor.getComponent(Camera)
     cameraComponent.zoom = DEFAULT_ZOOM
 
@@ -57,7 +55,7 @@ export class ZoomToolSystem extends System {
       screenY,
     } = event
 
-    const tool = getTool(this.scene)
+    const tool = getTool(this.world)
     const zoomMode = tool.features.direction.value as ZoomMode
 
     const cameraComponent = this.mainActor.getComponent(Camera)

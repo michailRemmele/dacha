@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { TemplateConfig, LevelConfig } from 'dacha'
+import type { TemplateConfig, SceneConfig } from 'dacha'
 
 import type { ExplorerEntity } from '../../../types/explorer-entity'
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
@@ -7,7 +7,7 @@ import { getUniqueName } from '../../../utils/get-unique-name'
 import { getIdByPath } from '../../../utils/get-id-by-path'
 import { addValues, setValue } from '..'
 
-import { getUpdatedLevels } from './utils'
+import { getUpdatedScenes } from './utils'
 
 const updateIds = (template: TemplateConfig): void => {
   template.id = uuidv4()
@@ -52,7 +52,7 @@ export const copyByPaths = (
   dispatch(addValues(destinationPath, values))
   if (destinationPath.at(-1) === 'children') {
     const parentTemplateId = getIdByPath(destinationPath.slice(0, -1))
-    const levels = getState(['levels']) as LevelConfig[]
-    dispatch(setValue(['levels'], getUpdatedLevels(levels, parentTemplateId, values), true))
+    const scenes = getState(['scenes']) as SceneConfig[]
+    dispatch(setValue(['scenes'], getUpdatedScenes(scenes, parentTemplateId, values), true))
   }
 }

@@ -1,21 +1,21 @@
 import {
-  System,
+  SceneSystem,
   SpriteRendererService,
   ActorCollection,
   Transform,
 } from 'dacha'
 import type {
-  Scene,
-  SystemOptions,
+  World,
+  SceneSystemOptions,
   Actor,
   ActorSpawner,
 } from 'dacha'
 import type { MouseControlEvent } from 'dacha/events'
 
 import { EventType } from '../../../events'
-import type { SelectEntitiesEvent, SelectLevelEvent } from '../../../events'
+import type { SelectEntitiesEvent, SelectSceneEvent } from '../../../events'
 import { getAncestor } from '../../../utils/get-ancestor'
-import { getSavedSelectedLevelId } from '../../../utils/get-saved-selected-level-id'
+import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
 import { getSavedEntitySelection } from '../../../utils/get-saved-entity-selection'
 import { getIdByPath } from '../../../utils/get-id-by-path'
 import type { CommanderStore } from '../../../store'
@@ -30,8 +30,8 @@ import {
 } from './utils'
 import type { SelectedActors, SelectionArea } from './types'
 
-export class PointerToolSystem extends System {
-  private scene: Scene
+export class PointerToolSystem extends SceneSystem {
+  private world: World
   private actorSpawner: ActorSpawner
   private actorCollection: ActorCollection
   private configStore: CommanderStore
@@ -44,61 +44,60 @@ export class PointerToolSystem extends System {
 
   private selectionArea?: SelectionArea
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
     const {
+      world,
       scene,
       actorSpawner,
     } = options
 
-    this.scene = scene
+    this.world = world
     this.actorSpawner = actorSpawner
     this.actorCollection = new ActorCollection(scene, {
       components: [Transform],
     })
-    this.configStore = scene.data.configStore as CommanderStore
-
-    this.mainActor = scene.data.mainActor as Actor
+    this.configStore = world.data.configStore as CommanderStore
+    this.mainActor = world.data.mainActor as Actor
 
     this.selectedActors = {
       actorPaths: getSavedEntitySelection(this.configStore),
       frames: [],
-      levelId: getSavedSelectedLevelId(this.configStore),
+      sceneId: getSavedSelectedSceneId(this.configStore),
     }
 
     this.selectionMovementSubsystem = new SelectionMovementSubsystem({
-      scene,
+      world,
       selectedActors: this.selectedActors,
       actorCollection: this.actorCollection,
     })
 
     this.selectionArea = undefined
+
+    this.world.addEventListener(EventType.SelectScene, this.handleSelectScene)
+    this.world.addEventListener(EventType.SelectEntitiesChange, this.handleSelectEntities)
+    this.world.addEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
+    this.world.addEventListener(EventType.SelectionMove, this.handleSelectionMove)
+    this.world.addEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.scene.addEventListener(EventType.SelectEntitiesChange, this.handleSelectEntities)
-    this.scene.addEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
-    this.scene.addEventListener(EventType.SelectionMove, this.handleSelectionMove)
-    this.scene.addEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
-
+  onSceneEnter(): void {
     this.updateFrames()
-    this.selectionMovementSubsystem.mount()
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectLevel, this.handleSelectLevel)
-    this.scene.removeEventListener(EventType.SelectEntitiesChange, this.handleSelectEntities)
-    this.scene.removeEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
-    this.scene.removeEventListener(EventType.SelectionMove, this.handleSelectionMove)
-    this.scene.removeEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
+  onSceneDestroy(): void {
+    this.world.removeEventListener(EventType.SelectScene, this.handleSelectScene)
+    this.world.removeEventListener(EventType.SelectEntitiesChange, this.handleSelectEntities)
+    this.world.removeEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
+    this.world.removeEventListener(EventType.SelectionMove, this.handleSelectionMove)
+    this.world.removeEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
 
-    this.selectionMovementSubsystem.unmount()
+    this.selectionMovementSubsystem.destroy()
   }
 
-  private handleSelectLevel = (event: SelectLevelEvent): void => {
-    this.selectedActors.levelId = event.levelId
+  private handleSelectScene = (event: SelectSceneEvent): void => {
+    this.selectedActors.sceneId = event.sceneId
   }
 
   private handleSelectEntities = (event: SelectEntitiesEvent): void => {
@@ -107,9 +106,9 @@ export class PointerToolSystem extends System {
   }
 
   private handleSelectionMoveStart = (event: MouseControlEvent): void => {
-    const { actorPaths, levelId } = this.selectedActors
+    const { actorPaths, sceneId } = this.selectedActors
 
-    if (levelId === undefined) {
+    if (sceneId === undefined) {
       return
     }
 
@@ -120,23 +119,23 @@ export class PointerToolSystem extends System {
 
     const shiftPick = nativeEvent.shiftKey
     const isWithinSelection = selectedActor
-      && actorPaths.some((path) => getActorIdByPath(path, levelId) === selectedActor.id)
+      && actorPaths.some((path) => getActorIdByPath(path, sceneId) === selectedActor.id)
 
     if (isWithinSelection && shiftPick) {
       const newSelection = actorPaths
-        .filter((path) => getActorIdByPath(path, levelId) !== selectedActor.id)
+        .filter((path) => getActorIdByPath(path, sceneId) !== selectedActor.id)
       this.sendSelectionEvents(newSelection, newSelection.at(-1))
       return
     }
 
     if (selectedActor && !isWithinSelection && shiftPick) {
-      const newSelection = [...actorPaths, buildActorPath(selectedActor, levelId)]
+      const newSelection = [...actorPaths, buildActorPath(selectedActor, sceneId)]
       this.sendSelectionEvents(newSelection, newSelection.at(-1))
       return
     }
 
     if (selectedActor && !isWithinSelection && !shiftPick) {
-      const path = buildActorPath(selectedActor, levelId)
+      const path = buildActorPath(selectedActor, sceneId)
       this.sendSelectionEvents([path], path)
       return
     }
@@ -178,10 +177,10 @@ export class PointerToolSystem extends System {
   }
 
   private handleSelectionMoveEnd = (event: MouseControlEvent): void => {
-    const { levelId, actorPaths } = this.selectedActors
+    const { sceneId, actorPaths } = this.selectedActors
     const { screenX, screenY } = event
 
-    if (!levelId || !this.selectionArea) {
+    if (!sceneId || !this.selectionArea) {
       return
     }
 
@@ -195,13 +194,13 @@ export class PointerToolSystem extends System {
     const minY = Math.min(size.y0, size.y1)
     const maxY = Math.max(size.y0, size.y1)
 
-    const rendererService = this.scene.getService(SpriteRendererService)
+    const rendererService = this.world.getService(SpriteRendererService)
     const actors = rendererService.intersectsWithRectangle(minX, minY, maxX, maxY)
 
     const selectedActorIds = new Set(actorPaths.map((path) => getIdByPath(path)))
     const newSelection = actors.reduce((acc, actor) => {
       if (!selectedActorIds.has(actor.id)) {
-        acc.push(buildActorPath(actor, levelId))
+        acc.push(buildActorPath(actor, sceneId))
       }
       return acc
     }, [...actorPaths])
@@ -212,10 +211,10 @@ export class PointerToolSystem extends System {
   }
 
   private sendSelectionEvents(selection: string[][], inspectedEntity: string[] | undefined): void {
-    this.scene.dispatchEvent(EventType.SelectEntities, {
+    this.world.dispatchEvent(EventType.SelectEntities, {
       paths: selection,
     })
-    this.scene.dispatchEvent(EventType.InspectEntity, {
+    this.world.dispatchEvent(EventType.InspectEntity, {
       path: inspectedEntity,
     })
 
@@ -224,21 +223,21 @@ export class PointerToolSystem extends System {
   }
 
   private selectActor(x: number, y: number): Actor | undefined {
-    const rendererService = this.scene.getService(SpriteRendererService)
+    const rendererService = this.world.getService(SpriteRendererService)
     return rendererService
       .intersectsWithPoint(x, y)
       .find((actor) => getAncestor(actor).id !== this.mainActor.id)
   }
 
   private updateFrames(): void {
-    if (!this.selectedActors.levelId) {
+    if (!this.selectedActors.sceneId) {
       return
     }
 
     this.selectedActors.frames.forEach((frame) => frame.remove())
 
     this.selectedActors.frames = this.selectedActors.actorPaths.reduce((acc: Actor[], path) => {
-      const id = getActorIdByPath(path, this.selectedActors.levelId)
+      const id = getActorIdByPath(path, this.selectedActors.sceneId)
       if (!id) {
         return acc
       }

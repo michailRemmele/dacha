@@ -5,13 +5,13 @@ import React, {
   useContext,
   FC,
 } from 'react'
-import type { UiInitFnOptions } from 'dacha'
+import type { UIOptions } from 'dacha'
 import {
   Engine,
   MouseInputSystem,
   MouseControlSystem,
   CameraSystem,
-  UiBridge,
+  UIBridge,
   SpriteRenderer,
   Transform,
   Camera,
@@ -22,7 +22,7 @@ import { CommandContext } from '../command-provider'
 import { getEditorConfig } from '../../../engine/config'
 import {
   ProjectLoader,
-  LevelViewer,
+  SceneViewer,
   ToolManager,
   ZoomToolSystem,
   HandToolSystem,
@@ -46,12 +46,12 @@ interface EngineProviderProps {
   children: JSX.Element | Array<JSX.Element>
 }
 
-export const EngineContext = React.createContext<UiInitFnOptions>({} as UiInitFnOptions)
+export const EngineContext = React.createContext<UIOptions>({} as UIOptions)
 
 export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Element => {
   const { store } = useContext(CommandContext)
 
-  const [context, setContext] = useState<UiInitFnOptions>()
+  const [context, setContext] = useState<UIOptions>()
 
   const globalOptions = useMemo(() => {
     const projectConfig = window.electron.getProjectConfig()
@@ -65,10 +65,10 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
       MouseInputSystem,
       MouseControlSystem,
       CameraSystem,
-      UiBridge,
+      UIBridge,
       SpriteRenderer,
       ProjectLoader,
-      LevelViewer,
+      SceneViewer,
       ToolManager,
       ZoomToolSystem,
       HandToolSystem,
@@ -89,14 +89,14 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
       Frame,
     ],
     resources: {
-      [UiBridge.systemName]: {
-        loadUiApp: () => Promise.resolve({
-          onInit: (options: UiInitFnOptions): void => setContext(options),
-          onDestroy: (): void => setContext(void 0),
-        }),
-      },
       [ProjectLoader.systemName]: {
         store,
+      },
+      [UIBridge.systemName]: {
+        loadUI: () => Promise.resolve({
+          onInit: (options: UIOptions): void => setContext(options),
+          onDestroy: (): void => setContext(void 0),
+        }),
       },
     },
   }), [globalOptions])
@@ -106,7 +106,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
   }, [editorEngine])
 
   return (
-    <EngineContext.Provider value={context as UiInitFnOptions}>
+    <EngineContext.Provider value={context as UIOptions}>
       {children}
     </EngineContext.Provider>
   )
