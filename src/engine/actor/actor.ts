@@ -69,12 +69,19 @@ export class Actor extends Entity {
     super.removeChild(child);
   }
 
-  override getEntityById(id: string): Actor | undefined {
-    return super.getEntityById(id) as Actor | undefined;
+  override findChild(predicate: (child: Actor) => boolean, recursive = true): Actor | undefined {
+    return super.findChild(
+      predicate as (child: Entity) => boolean,
+      recursive,
+    ) as Actor | undefined;
   }
 
-  override getEntityByName(name: string): Actor | undefined {
-    return super.getEntityByName(name) as Actor | undefined;
+  override findChildById(id: string, recursive = true): Actor | undefined {
+    return super.findChildById(id, recursive) as Actor | undefined;
+  }
+
+  override findChildByName(name: string, recursive = true): Actor | undefined {
+    return super.findChildByName(name, recursive) as Actor | undefined;
   }
 
   getComponents(): Array<Component> {

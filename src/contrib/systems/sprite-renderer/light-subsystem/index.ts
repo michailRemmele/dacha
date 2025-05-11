@@ -1,43 +1,59 @@
-import type { Scene, Light as ThreeJSLight } from 'three/src/Three';
+import type {
+  Scene as ThreeJSScene,
+  Light as ThreeJSLight,
+} from 'three/src/Three';
 
 import { Light } from '../../../components/light';
 import { Transform } from '../../../components/transform';
-import { Actor } from '../../../../engine/actor';
-import type { ActorCollection } from '../../../../engine/actor';
+import { Actor, ActorCollection } from '../../../../engine/actor';
+import type { Scene } from '../../../../engine/scene';
 import { RemoveActor } from '../../../../engine/events';
 import type { RemoveActorEvent } from '../../../../engine/events';
 
 import { createLight, updateLight } from './light-factory';
 
 export class LightSubsystem {
-  private renderScene: Scene;
-  private lightsCollection: ActorCollection;
-  private lightsMap: Record<string, number>;
+  private renderScene: ThreeJSScene;
+  private actorCollection?: ActorCollection;
+  private lightsMap: Map<string, number>;
 
-  constructor(renderScene: Scene, lightsCollection: ActorCollection) {
+  constructor(renderScene: ThreeJSScene) {
     this.renderScene = renderScene;
-    this.lightsCollection = lightsCollection;
 
-    this.lightsMap = {};
+    this.lightsMap = new Map();
   }
 
-  mount(): void {
-    this.lightsCollection.addEventListener(RemoveActor, this.handleLightRemove);
+  onSceneEnter(scene: Scene): void {
+    this.actorCollection = new ActorCollection(scene, {
+      components: [
+        Light,
+        Transform,
+      ],
+    });
+
+    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
-  unmount(): void {
-    this.lightsCollection.removeEventListener(RemoveActor, this.handleLightRemove);
+  onSceneExit(): void {
+    this.actorCollection?.removeEventListener(RemoveActor, this.handleActorRemove);
+
+    this.actorCollection = undefined;
+
+    this.lightsMap.clear();
   }
 
-  private handleLightRemove = (event: RemoveActorEvent): void => {
+  private handleActorRemove = (event: RemoveActorEvent): void => {
     const { actor } = event;
-    const object = this.renderScene.getObjectById(this.lightsMap[actor.id]);
 
-    if (object) {
-      this.renderScene.remove(object);
+    const objectId = this.lightsMap.get(actor.id);
+    if (objectId) {
+      const object = this.renderScene.getObjectById(objectId);
+      if (object) {
+        this.renderScene.remove(object);
+      }
     }
 
-    delete this.lightsMap[actor.id];
+    this.lightsMap.delete(actor.id);
   };
 
   private setUpActor(actor: Actor): void {
@@ -46,22 +62,22 @@ export class LightSubsystem {
     const light = createLight(type);
 
     light.userData.actor = actor;
-    this.lightsMap[actor.id] = light.id;
+    this.lightsMap.set(actor.id, light.id);
 
     this.renderScene.add(light);
   }
 
   update(): void {
-    this.lightsCollection.forEach((actor) => {
+    this.actorCollection?.forEach((actor) => {
       const transform = actor.getComponent(Transform);
       const { type, options } = actor.getComponent(Light);
 
-      if (!this.lightsMap[actor.id]) {
+      if (!this.lightsMap.has(actor.id)) {
         this.setUpActor(actor);
       }
 
       const light = this.renderScene.getObjectById(
-        this.lightsMap[actor.id],
+        this.lightsMap.get(actor.id)!,
       ) as ThreeJSLight;
 
       if (!light) {

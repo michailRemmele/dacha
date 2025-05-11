@@ -1,5 +1,5 @@
-import { System } from '../../../engine/system';
-import type { SystemOptions, UpdateOptions } from '../../../engine/system';
+import { SceneSystem } from '../../../engine/system';
+import type { UpdateOptions, SceneSystemOptions } from '../../../engine/system';
 import { Actor, ActorCollection } from '../../../engine/actor';
 import { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
@@ -17,13 +17,13 @@ import { setValue } from './utils';
 
 const FRAME_RATE = 100;
 
-export class Animator extends System {
+export class Animator extends SceneSystem {
   private actorCollection: ActorCollection;
   private substatePickers: Record<string, Picker>;
 
   private actorConditions: Record<string, Record<string, Record<string, ConditionController>>>;
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super();
 
     this.actorCollection = new ActorCollection(options.scene, {
@@ -37,14 +37,20 @@ export class Animator extends System {
       }, {});
 
     this.actorConditions = {};
-  }
 
-  mount(): void {
     this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
-  unmount(): void {
+  onSceneDestroy(): void {
     this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
+
+    Object.values(this.actorConditions).forEach((transitions) => {
+      Object.values(transitions).forEach((conditions) => {
+        Object.values(conditions).forEach((controller) => {
+          controller.destroy?.();
+        });
+      });
+    });
   }
 
   private handleActorRemove = (event: RemoveActorEvent): void => {

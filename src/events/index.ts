@@ -2,17 +2,28 @@ export {
   AddActor,
   RemoveActor,
   LoadScene,
-  LoadLevel,
+  EnterScene,
+  ExitScene,
+  DestroyScene,
+  SceneLoaded,
+  SceneEntered,
+  SceneExited,
+  SceneDestroyed,
 } from '../engine/events';
 export type {
   AddActorEvent,
   RemoveActorEvent,
   LoadSceneEvent,
-  LoadLevelEvent,
+  EnterSceneEvent,
+  ExitSceneEvent,
+  DestroySceneEvent,
+  SceneLoadedEvent,
+  SceneEnteredEvent,
+  SceneExitedEvent,
+  SceneDestroyedEvent,
 } from '../engine/events';
 
 export {
-  SetCamera,
   GameStatsUpdate,
   KeyboardInput,
   MouseInput,
@@ -26,7 +37,6 @@ export {
   SetAudioVolume,
 } from '../contrib/events';
 export type {
-  SetCameraEvent,
   GameStatsUpdateEvent,
   KeyboardInputEvent,
   MouseInputEvent,

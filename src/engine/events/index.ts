@@ -1,6 +1,6 @@
-import type { SceneLoadOptions, LevelLoadOptions } from '../scene';
 import type { Actor } from '../actor';
-import type { ActorEvent, SceneEvent } from '../../types/events';
+import type { Scene } from '../scene';
+import type { ActorEvent, SceneEvent, WorldEvent } from '../../types/events';
 import type { Event } from '../event-target';
 import type { Entity } from '../entity';
 
@@ -11,7 +11,14 @@ export const AddActor = 'AddActor';
 export const RemoveActor = 'RemoveActor';
 
 export const LoadScene = 'LoadScene';
-export const LoadLevel = 'LoadLevel';
+export const EnterScene = 'EnterScene';
+export const ExitScene = 'ExitScene';
+export const DestroyScene = 'DestroyScene';
+
+export const SceneLoaded = 'SceneLoaded';
+export const SceneEntered = 'SceneEntered';
+export const SceneExited = 'SceneExited';
+export const SceneDestroyed = 'SceneDestroyed';
 
 export const AddComponent = 'AddComponent';
 export const RemoveComponent = 'RemoveComponent';
@@ -25,9 +32,23 @@ export type RemoveComponentEvent = ActorEvent<{ componentName: string }>;
 export type AddActorEvent = SceneEvent<{ actor: Actor }>;
 export type RemoveActorEvent = SceneEvent<{ actor: Actor }>;
 
-export type LoadSceneEvent = SceneEvent<SceneLoadOptions>;
-
-export type LoadLevelEvent = SceneEvent<LevelLoadOptions>;
+export type LoadSceneEvent = WorldEvent<{
+  id: string
+  autoEnter?: boolean
+  autoDestroy?: boolean
+}>;
+export type EnterSceneEvent = WorldEvent<{
+  id: string
+  autoDestroy?: boolean
+}>;
+export type ExitSceneEvent = WorldEvent<{
+  autoDestroy?: boolean
+}>;
+export type DestroySceneEvent = WorldEvent<{ id: string }>;
+export type SceneLoadedEvent = WorldEvent<{ scene: Scene }>;
+export type SceneEnteredEvent = WorldEvent<{ scene: Scene }>;
+export type SceneExitedEvent = WorldEvent<{ scene: Scene }>;
+export type SceneDestroyedEvent = WorldEvent<{ scene: Scene }>;
 
 export interface ActorCollectionEventMap {
   [AddActor]: AddActorEvent
@@ -40,10 +61,18 @@ export interface EntityEventMap {
 }
 
 declare module '../../types/events' {
-  export interface SceneEventMap extends EntityEventMap {
+  export interface WorldEventMap extends EntityEventMap {
     [LoadScene]: LoadSceneEvent
-    [LoadLevel]: LoadLevelEvent
+    [EnterScene]: EnterSceneEvent
+    [ExitScene]: ExitSceneEvent
+    [DestroyScene]: DestroySceneEvent
+    [SceneLoaded]: SceneLoadedEvent
+    [SceneEntered]: SceneEnteredEvent
+    [SceneExited]: SceneExitedEvent
+    [SceneDestroyed]: SceneDestroyedEvent
   }
+
+  export interface SceneEventMap extends EntityEventMap {}
 
   export interface ActorEventMap extends EntityEventMap {
     [AddComponent]: AddComponentEvent

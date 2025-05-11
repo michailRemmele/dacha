@@ -1,7 +1,5 @@
-import type { SceneConfig, ActorConfig } from '../types';
+import type { SceneConfig } from '../types';
 import type { TemplateCollection } from '../template';
-import type { SystemConstructor } from '../system';
-import { System } from '../system';
 import {
   Actor,
   ActorSpawner,
@@ -13,7 +11,6 @@ import type {
   EventType, Event, ListenerFn, EventPayload,
 } from '../event-target';
 import type { SceneEventMap, ActorEventMap } from '../../types/events';
-import type { Constructor } from '../../types/utils';
 
 type SceneObjectListenerFn<T extends EventType> = (
   event: T extends keyof SceneEventMap
@@ -22,37 +19,26 @@ type SceneObjectListenerFn<T extends EventType> = (
 ) => void;
 
 interface SceneOptions extends EntityOptions, SceneConfig {
-  actors: Array<ActorConfig>
-  availableSystems: Array<SystemConstructor>
-  resources: Record<string, unknown>
-  globalOptions: Record<string, unknown>
   actorCreator: ActorCreator
   templateCollection: TemplateCollection
 }
 
 export class Scene extends Entity {
   private actorCreator: ActorCreator;
-  private availableSystemsMap: Record<string, SystemConstructor>;
-  private services: Record<string, unknown>;
 
-  declare public readonly children: Array<Actor>;
-  public systems: Array<System>;
-  public templateCollection: TemplateCollection;
-  public actorSpawner: ActorSpawner;
-  public data: Record<string, unknown>;
+  declare readonly children: Actor[];
+  templateCollection: TemplateCollection;
+  actorSpawner: ActorSpawner;
+  data: Record<string, unknown>;
 
-  declare public parent: null;
+  declare parent: null;
 
   constructor(options: SceneOptions) {
     super(options);
 
     const {
       actors,
-      systems,
-      resources,
-      globalOptions,
       actorCreator,
-      availableSystems,
       templateCollection,
     } = options;
 
@@ -61,27 +47,10 @@ export class Scene extends Entity {
     this.templateCollection = templateCollection;
 
     this.data = {};
-    this.services = {};
 
     actors.forEach((actorOptions) => {
       this.appendChild(this.actorCreator.create(actorOptions));
     });
-
-    this.availableSystemsMap = availableSystems.reduce((acc, AvailableSystem) => {
-      acc[AvailableSystem.systemName] = AvailableSystem;
-      return acc;
-    }, {} as Record<string, SystemConstructor>);
-
-    this.systems = systems
-      .filter((config) => this.availableSystemsMap[config.name])
-      .map((config) => new this.availableSystemsMap[config.name]({
-        ...config.options,
-        templateCollection: this.templateCollection,
-        actorSpawner: this.actorSpawner,
-        scene: this,
-        resources: resources[config.name],
-        globalOptions,
-      }));
   }
 
   override addEventListener<T extends EventType>(
@@ -120,56 +89,18 @@ export class Scene extends Entity {
     super.removeChild(child);
   }
 
-  override getEntityById(id: string): Actor | undefined {
-    return super.getEntityById(id) as Actor | undefined;
+  override findChild(predicate: (child: Actor) => boolean, recursive = true): Actor | undefined {
+    return super.findChild(
+      predicate as (child: Entity) => boolean,
+      recursive,
+    ) as Actor | undefined;
   }
 
-  override getEntityByName(name: string): Actor | undefined {
-    return super.getEntityByName(name) as Actor | undefined;
+  override findChildById(id: string, recursive = true): Actor | undefined {
+    return super.findChildById(id, recursive) as Actor | undefined;
   }
 
-  load(): Promise<Array<void>> | undefined {
-    if (this.systems.every((system) => !system.load)) {
-      return void 0;
-    }
-
-    return Promise.all(this.systems.map((system) => {
-      if (system.load) {
-        return system.load();
-      }
-      return Promise.resolve();
-    }));
-  }
-
-  mount(): void {
-    this.systems.forEach((system) => {
-      if (system.mount) {
-        system.mount();
-      }
-    });
-  }
-
-  unmount(): void {
-    this.systems.forEach((system) => {
-      if (system.unmount) {
-        system.unmount();
-      }
-    });
-  }
-
-  addService(service: object): void {
-    this.services[service.constructor.name] = service;
-  }
-
-  removeService<T>(serviceClass: Constructor<T>): void {
-    delete this.services[serviceClass.name];
-  }
-
-  getService<T>(serviceClass: Constructor<T>): T {
-    if (this.services[serviceClass.name] === undefined) {
-      throw new Error(`Can't find service with the following name: ${serviceClass.name}`);
-    }
-
-    return this.services[serviceClass.name] as T;
+  override findChildByName(name: string, recursive = true): Actor | undefined {
+    return super.findChildByName(name, recursive) as Actor | undefined;
   }
 }

@@ -1,5 +1,5 @@
 import { Vector2 } from '../../../../../engine/math-lib';
-import type { SystemOptions } from '../../../../../engine/system';
+import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
@@ -15,18 +15,16 @@ export class CollisionSolver {
   private scene: Scene;
   private gravitationalAcceleration: number;
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     const { scene, gravitationalAcceleration } = options as PhysicsSystemOptions;
 
     this.scene = scene;
     this.gravitationalAcceleration = gravitationalAcceleration;
-  }
 
-  mount(): void {
     this.scene.addEventListener(Collision, this.handleCollision);
   }
 
-  unmount(): void {
+  destroy(): void {
     this.scene.removeEventListener(Collision, this.handleCollision);
   }
 

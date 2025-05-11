@@ -1,6 +1,7 @@
-export { System } from './system';
+export { SceneSystem, WorldSystem } from './system';
 export type {
   SystemConstructor,
-  SystemOptions,
+  SceneSystemOptions,
+  WorldSystemOptions,
   UpdateOptions,
 } from './system';

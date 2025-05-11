@@ -1,40 +1,44 @@
-import { System } from '../../../engine/system';
+import { WorldSystem } from '../../../engine/system';
 import { ActorCollection } from '../../../engine/actor';
-import type { SystemOptions } from '../../../engine/system';
+import type { WorldSystemOptions } from '../../../engine/system';
 import type { Actor } from '../../../engine/actor';
 import type { Scene } from '../../../engine/scene';
+import type { World } from '../../../engine/world';
 import { KeyboardControl } from '../../components/keyboard-control';
 import type { KeyboardEventBind } from '../../components/keyboard-control';
 import { KeyboardInput } from '../../events';
 import type { KeyboardInputEvent } from '../../events';
 
-export class KeyboardControlSystem extends System {
-  private actorCollection: ActorCollection;
-  private scene: Scene;
+export class KeyboardControlSystem extends WorldSystem {
+  private world: World;
+  private actorCollection?: ActorCollection;
 
   private pressedKeys: Set<string>;
   private events: Array<KeyboardInputEvent>;
 
-  constructor(options: SystemOptions) {
+  constructor(options: WorldSystemOptions) {
     super();
 
-    this.actorCollection = new ActorCollection(options.scene, {
-      components: [
-        KeyboardControl,
-      ],
-    });
-    this.scene = options.scene;
+    this.world = options.world;
 
     this.pressedKeys = new Set();
     this.events = [];
+
+    this.world.addEventListener(KeyboardInput, this.handleKeyboardInput);
   }
 
-  mount(): void {
-    this.scene.addEventListener(KeyboardInput, this.handleKeyboardInput);
+  onSceneEnter(scene: Scene): void {
+    this.actorCollection = new ActorCollection(scene, {
+      components: [KeyboardControl],
+    });
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(KeyboardInput, this.handleKeyboardInput);
+  onSceneExit(): void {
+    this.actorCollection = undefined;
+  }
+
+  onWorldDestroy(): void {
+    this.world.removeEventListener(KeyboardInput, this.handleKeyboardInput);
   }
 
   private handleKeyboardInput = (event: KeyboardInputEvent): void => {
@@ -58,7 +62,7 @@ export class KeyboardControlSystem extends System {
       }
     });
 
-    this.actorCollection.forEach((actor) => {
+    this.actorCollection?.forEach((actor) => {
       const control = actor.getComponent(KeyboardControl);
 
       // Resend control event when key is pressed without actual event if keepEmit is set to true

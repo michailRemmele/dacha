@@ -1,27 +1,25 @@
-import type { SystemOptions } from '../../../../../engine/system';
-import type { Scene } from '../../../../../engine/scene';
+import type { WorldSystemOptions } from '../../../../../engine/system';
+import type { World } from '../../../../../engine/world';
 import { MouseInput } from '../../../../events';
 import type { MouseInputEvent } from '../../../../events';
 import { CameraService } from '../../../camera-system';
 import { getProjectedX, getProjectedY } from '../../../../utils/coordinates-projection';
 
 export class CoordinatesProjector {
-  private scene: Scene;
+  private world: World;
   private cameraService: CameraService;
 
-  constructor(options: SystemOptions) {
-    const { scene } = options;
+  constructor(options: WorldSystemOptions) {
+    const { world } = options;
 
-    this.scene = scene;
-    this.cameraService = scene.getService(CameraService);
+    this.world = world;
+    this.cameraService = world.getService(CameraService);
+
+    this.world.addEventListener(MouseInput, this.handleMouseInput);
   }
 
-  mount(): void {
-    this.scene.addEventListener(MouseInput, this.handleMouseInput);
-  }
-
-  unmount(): void {
-    this.scene.removeEventListener(MouseInput, this.handleMouseInput);
+  destroy(): void {
+    this.world.removeEventListener(MouseInput, this.handleMouseInput);
   }
 
   private handleMouseInput = (event: MouseInputEvent): void => {

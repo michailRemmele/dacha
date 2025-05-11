@@ -6,8 +6,9 @@ import {
 } from 'three/src/Three';
 
 import { Sprite } from '../../components/sprite';
-import type { Template } from '../../../engine/template';
+import type { TemplateCollection } from '../../../engine/template';
 import { ResourceLoader } from '../../../engine/resource-loader';
+import { traverseEntity } from '../../../engine/entity';
 
 import { SpriteCropper } from './sprite-cropper';
 
@@ -15,10 +16,10 @@ const spriteCropper = new SpriteCropper();
 const resourceLoader = new ResourceLoader();
 
 export const loadImage = (
-  sprite: Sprite,
-): Promise<HTMLImageElement> => resourceLoader.load(sprite.src) as Promise<HTMLImageElement>;
+  spriteSourcePath: string,
+): Promise<HTMLImageElement> => resourceLoader.load(spriteSourcePath) as Promise<HTMLImageElement>;
 
-export const prepareSprite = (image: HTMLImageElement, sprite: Sprite): Array<Texture> => {
+export const prepareSprite = (image: HTMLImageElement, sprite: Sprite): Texture[] => {
   const textures = spriteCropper.crop(image, sprite);
 
   textures.forEach((texture) => {
@@ -30,17 +31,19 @@ export const prepareSprite = (image: HTMLImageElement, sprite: Sprite): Array<Te
   return textures;
 };
 
-export const getImagesFromTemplate = (
-  images: Record<string, Sprite>,
-  template: Template,
-): void => {
-  const sprite = template.getComponent(Sprite);
+export const getAllTemplateSources = (templateCollection: TemplateCollection): string[] => {
+  const templateSources: string[] = [];
 
-  if (!sprite || images[sprite.src]) {
-    return;
-  }
+  templateCollection.getAll().forEach((template) => {
+    traverseEntity(template, (entity) => {
+      const audioSource = entity.getComponent(Sprite);
+      if (audioSource?.src) {
+        templateSources.push(audioSource.src);
+      }
+    });
+  });
 
-  images[sprite.src] = sprite;
+  return templateSources;
 };
 
 export const getTextureMapKey = ({
