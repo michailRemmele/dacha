@@ -1,16 +1,16 @@
-import { ScriptBundle } from '../index';
+import { Behaviors } from '../index';
 
-describe('Contrib -> components -> ScriptBundle', () => {
+describe('Contrib -> components -> Behaviors', () => {
   it('Returns correct values ', () => {
-    const script = new ScriptBundle({
-      scripts: [
+    const component = new Behaviors({
+      list: [
         { name: 'some-script-1', options: {} },
         { name: 'some-script-2', options: {} },
         { name: 'some-script-3', options: {} },
       ],
     }).clone();
 
-    expect(script.scripts).toEqual([
+    expect(component.list).toEqual([
       { name: 'some-script-1', options: {} },
       { name: 'some-script-2', options: {} },
       { name: 'some-script-3', options: {} },
@@ -18,16 +18,16 @@ describe('Contrib -> components -> ScriptBundle', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalScript = new ScriptBundle({
-      scripts: [
+    const originalComponent = new Behaviors({
+      list: [
         { name: 'some-script-1', options: {} },
         { name: 'some-script-2', options: {} },
         { name: 'some-script-3', options: {} },
       ],
     });
-    const cloneScript = originalScript.clone();
+    const cloneComponent = originalComponent.clone();
 
-    expect(originalScript).not.toBe(cloneScript);
-    expect(originalScript.scripts).not.toBe(cloneScript.scripts);
+    expect(originalComponent).not.toBe(cloneComponent);
+    expect(originalComponent.list).not.toBe(cloneComponent.list);
   });
 });

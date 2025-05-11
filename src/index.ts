@@ -4,9 +4,10 @@ export { VectorOps, MathOps, Vector2 } from './engine/math-lib';
 
 export * from './engine/consts';
 export * from './engine/types';
-export { System } from './engine/system';
+export { WorldSystem, SceneSystem } from './engine/system';
 export type {
-  SystemOptions,
+  WorldSystemOptions,
+  SceneSystemOptions,
   UpdateOptions,
 } from './engine/system';
 export type {
@@ -21,6 +22,7 @@ export type {
   ListenerFn,
 } from './engine/event-target';
 export type { Scene } from './engine/scene';
+export type { World } from './engine/world';
 
 export * as Animation from './contrib/components/animatable/types';
 

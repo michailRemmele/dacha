@@ -1,5 +1,5 @@
 import {
-  Scene,
+  Scene as ThreeJSScene,
   OrthographicCamera,
   WebGLRenderer,
   MeshStandardMaterial,
@@ -9,18 +9,19 @@ import {
   Color,
 } from 'three/src/Three';
 
-import { RemoveActor } from '../../../engine/events';
-import type { RemoveActorEvent } from '../../../engine/events';
-import { System } from '../../../engine/system';
-import type { SystemOptions } from '../../../engine/system';
+import { AddActor, RemoveActor } from '../../../engine/events';
+import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
+import { WorldSystem } from '../../../engine/system';
+import type { WorldSystemOptions } from '../../../engine/system';
 import { Actor, ActorCollection } from '../../../engine/actor';
 import type { TemplateCollection } from '../../../engine/template';
+import type { Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
-import { Light } from '../../components/light';
 import { Camera } from '../../components/camera';
 import { CameraService } from '../camera-system';
 import { MathOps } from '../../../engine/math-lib';
+import { CacheStore } from '../../../engine/data-lib';
 import { getWindowNode } from '../../utils/get-window-node';
 
 import { SpriteRendererService } from './service';
@@ -39,28 +40,29 @@ import { createMaterial, updateMaterial } from './material-factory';
 import {
   loadImage,
   prepareSprite,
-  getImagesFromTemplate,
+  getAllTemplateSources,
   getTextureMapKey,
   cloneTexture,
 } from './utils';
 import type { SortingLayers } from './types';
 
-interface RendererOptions extends SystemOptions {
+interface RendererOptions extends WorldSystemOptions {
   windowNodeId: string
   backgroundColor: string
   backgroundAlpha: number
 }
 
-export class SpriteRenderer extends System {
-  private actorCollection: ActorCollection;
+export class SpriteRenderer extends WorldSystem {
+  private scene?: Scene;
+  private actorCollections: Record<string, ActorCollection>;
   private window: HTMLElement;
-  private renderScene: Scene;
+  private renderScene: ThreeJSScene;
   private currentCamera: OrthographicCamera;
   private renderer: WebGLRenderer;
-  private imageCache: Record<string, HTMLImageElement | undefined | null>;
-  private spriteCache: Record<string, Record<number, Array<Texture>>>;
-  private textureMap: Record<string, Array<Texture>>;
-  private actorsMap: Record<string, number>;
+  private imageStore: CacheStore<HTMLImageElement>;
+  private spriteCache: Map<string, Record<number, Texture[]>>;
+  private textureMap: Map<string, Texture[]>;
+  private actorsMap: Map<string, number>;
   private sortFn: SortFn;
   private lightSubsystem: LightSubsystem;
   private viewWidth: number;
@@ -68,7 +70,7 @@ export class SpriteRenderer extends System {
   private templateCollection: TemplateCollection;
   private cameraService: CameraService;
 
-  constructor(options: SystemOptions) {
+  constructor(options: WorldSystemOptions) {
     super();
 
     const {
@@ -77,15 +79,10 @@ export class SpriteRenderer extends System {
       backgroundColor,
       backgroundAlpha,
       templateCollection,
-      scene,
+      world,
     } = options as RendererOptions;
 
-    this.actorCollection = new ActorCollection(scene, {
-      components: [
-        Sprite,
-        Transform,
-      ],
-    });
+    this.actorCollections = {};
     this.templateCollection = templateCollection;
 
     this.window = getWindowNode(windowNodeId);
@@ -98,145 +95,140 @@ export class SpriteRenderer extends System {
       sortByFit,
     ]);
 
-    this.actorsMap = {};
     this.viewWidth = 0;
     this.viewHeight = 0;
 
-    this.renderScene = new Scene();
+    this.renderScene = new ThreeJSScene();
     this.currentCamera = new OrthographicCamera();
     this.renderer = new WebGLRenderer();
     this.renderer.setClearColor(new Color(backgroundColor), backgroundAlpha);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    this.lightSubsystem = new LightSubsystem(
-      this.renderScene,
-      new ActorCollection(scene, {
-        components: [
-          Light,
-          Transform,
-        ],
-      }),
-    );
+    this.lightSubsystem = new LightSubsystem(this.renderScene);
 
     // TODO: Figure out how to set up camera correctly to avoid scale usage
     this.renderScene.scale.set(1, -1, 1);
 
-    this.imageCache = {};
-    this.spriteCache = {};
-    this.textureMap = {};
+    this.imageStore = new CacheStore<HTMLImageElement>();
+    this.actorsMap = new Map();
+    this.spriteCache = new Map();
+    this.textureMap = new Map();
 
-    this.cameraService = scene.getService(CameraService);
+    this.cameraService = world.getService(CameraService);
 
-    scene.addService(new SpriteRendererService({
+    world.addService(new SpriteRendererService({
       threeScene: this.renderScene,
       threeCamera: this.currentCamera,
       window: this.window,
       sortFn: this.sortFn,
       cameraService: this.cameraService,
     }));
-  }
 
-  async load(): Promise<void> {
-    const imagesToLoad = this.getImagesToLoad();
-
-    await Promise.all(
-      Object.keys(imagesToLoad).map((key) => this.loadImage(imagesToLoad[key])),
-    );
-  }
-
-  private async loadImage(sprite: Sprite): Promise<void> {
-    const { src, slice } = sprite;
-
-    this.imageCache[src] = null;
-    return loadImage(sprite)
-      .then((image) => {
-        this.imageCache[src] = image;
-
-        const spriteTextures = prepareSprite(image, sprite);
-        this.spriteCache[src] ??= {};
-        this.spriteCache[src][slice] = spriteTextures;
-        this.textureMap[getTextureMapKey(sprite)] = spriteTextures.map(
-          (frame) => cloneTexture(sprite, frame),
-        );
-      })
-      .catch(() => {
-        console.warn(`Can't load image by the following url: ${src}`);
-      });
-  }
-
-  private getTextureArray(sprite: Sprite): Array<Texture> | undefined {
-    const { src, slice } = sprite;
-    const image = this.imageCache[src];
-
-    if (image === null) {
-      return void 0;
-    }
-    if (image === undefined) {
-      void this.loadImage(sprite);
-      return void 0;
-    }
-
-    if (image && !this.spriteCache[src][slice]) {
-      this.spriteCache[src][slice] = prepareSprite(image, sprite);
-    }
-    const textureKey = getTextureMapKey(sprite);
-    if (image && this.spriteCache[src][slice] && !this.textureMap[textureKey]) {
-      this.textureMap[textureKey] = this.spriteCache[src][slice].map(
-        (frame) => cloneTexture(sprite, frame),
-      );
-    }
-
-    return this.textureMap[textureKey];
-  }
-
-  mount(): void {
-    this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
-
-    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
-
-    this.lightSubsystem.mount();
 
     this.window.appendChild(this.renderer.domElement);
   }
 
-  unmount(): void {
+  async onSceneLoad(scene: Scene): Promise<void> {
+    this.actorCollections[scene.id] = new ActorCollection(scene, {
+      components: [Sprite, Transform],
+    });
+
+    const allSources = [
+      ...getAllTemplateSources(this.templateCollection),
+      ...this.actorCollections[scene.id].map((actor) => actor.getComponent(Sprite).src),
+    ];
+    const uniqueSources = [...new Set(allSources)];
+
+    const images = await Promise.all(uniqueSources.map((src) => {
+      return !this.imageStore.has(src) ? this.loadImage(src) : undefined;
+    }));
+
+    uniqueSources.forEach((src, index) => {
+      if (images[index]) {
+        this.imageStore.add(src, images[index]!);
+      }
+    });
+    allSources.forEach((src) => this.imageStore.retain(src));
+  }
+
+  onSceneEnter(scene: Scene): void {
+    this.scene = scene;
+
+    this.handleWindowResize();
+
+    this.lightSubsystem.onSceneEnter(scene);
+
+    this.actorCollections[scene.id]?.addEventListener(AddActor, this.handleActorAdd);
+    this.actorCollections[scene.id]?.addEventListener(RemoveActor, this.handleActorRemove);
+  }
+
+  onSceneExit(scene: Scene): void {
+    this.actorCollections[scene.id]?.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorCollections[scene.id]?.removeEventListener(RemoveActor, this.handleActorRemove);
+
+    this.lightSubsystem.onSceneExit();
+
+    this.actorsMap.clear();
+    this.spriteCache.clear();
+    this.textureMap.clear();
+
+    this.renderScene.clear();
+
+    this.scene = undefined;
+  }
+
+  onSceneDestroy(scene: Scene): void {
+    const allSources = [
+      ...getAllTemplateSources(this.templateCollection),
+      ...this.actorCollections[scene.id].map((actor) => actor.getComponent(Sprite).src),
+    ];
+
+    allSources.forEach((src) => this.imageStore.release(src));
+    this.imageStore.cleanReleased();
+
+    delete this.actorCollections[scene.id];
+  }
+
+  onWorldDestroy(): void {
     window.removeEventListener('resize', this.handleWindowResize);
-
-    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
-
-    this.lightSubsystem.unmount();
 
     this.window.removeChild(this.renderer.domElement);
   }
 
-  private getImagesToLoad(): Record<string, Sprite> {
-    const imagesToLoad: Record<string, Sprite> = {};
+  private handleActorAdd = (event: AddActorEvent): void => {
+    const { actor } = event;
 
-    this.templateCollection.getAll().forEach(
-      (template) => getImagesFromTemplate(imagesToLoad, template),
-    );
+    const { src } = actor.getComponent(Sprite);
 
-    this.actorCollection.forEach((actor) => {
-      const sprite = actor.getComponent(Sprite);
-
-      if (!imagesToLoad[sprite.src]) {
-        imagesToLoad[sprite.src] = sprite;
-      }
-    });
-
-    return imagesToLoad;
-  }
+    if (this.imageStore.has(src)) {
+      this.imageStore.retain(src);
+    } else {
+      void this.loadImage(src).then((image) => {
+        if (image) {
+          this.imageStore.add(src, image);
+          this.imageStore.retain(src);
+        }
+      });
+    }
+  };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
     const { actor } = event;
-    const object = this.renderScene.getObjectById(this.actorsMap[actor.id]);
 
-    if (object) {
-      this.renderScene.remove(object);
+    const { src } = actor.getComponent(Sprite);
+    this.imageStore.release(src);
+
+    const objectId = this.actorsMap.get(actor.id);
+
+    if (objectId) {
+      const object = this.renderScene.getObjectById(objectId);
+      if (object) {
+        this.renderScene.remove(object);
+      }
     }
 
-    delete this.actorsMap[actor.id];
+    this.actorsMap.delete(actor.id);
   };
 
   private handleWindowResize = (): void => {
@@ -253,6 +245,46 @@ export class SpriteRenderer extends System {
     this.renderer.setSize(this.viewWidth, this.viewHeight);
   };
 
+  private async loadImage(src: string): Promise<HTMLImageElement | undefined> {
+    if (!src) {
+      return undefined;
+    }
+
+    try {
+      const image = await loadImage(src);
+      return image;
+    } catch (error: unknown) {
+      console.warn(`Can't load image by the following url: ${src}`, error);
+      return undefined;
+    }
+  }
+
+  private getTextureArray(sprite: Sprite): Texture[] | undefined {
+    const { src, slice } = sprite;
+    const image = this.imageStore.get(src);
+
+    if (!image) {
+      return undefined;
+    }
+
+    if (!this.spriteCache.has(src)) {
+      this.spriteCache.set(src, {});
+    }
+
+    const spriteCache = this.spriteCache.get(src)!;
+    if (!spriteCache[slice]) {
+      spriteCache[slice] = prepareSprite(image, sprite);
+    }
+    const textureKey = getTextureMapKey(sprite);
+    if (!this.textureMap.has(textureKey)) {
+      this.textureMap.set(textureKey, spriteCache[slice].map(
+        (frame) => cloneTexture(sprite, frame),
+      ));
+    }
+
+    return this.textureMap.get(textureKey);
+  }
+
   private setUpActor(actor: Actor): void {
     const sprite = actor.getComponent(Sprite);
 
@@ -261,7 +293,7 @@ export class SpriteRenderer extends System {
     const object = new Mesh(geometry, material);
 
     object.userData.actor = actor;
-    this.actorsMap[actor.id] = object.id;
+    this.actorsMap.set(actor.id, object.id);
 
     this.renderScene.add(object);
   }
@@ -296,16 +328,16 @@ export class SpriteRenderer extends System {
   }
 
   private updateActors(): void {
-    this.actorCollection.forEach((actor, index) => {
+    this.actorCollections[this.scene!.id].forEach((actor, index) => {
       const transform = actor.getComponent(Transform);
       const sprite = actor.getComponent(Sprite);
 
-      if (!this.actorsMap[actor.id]) {
+      if (!this.actorsMap.has(actor.id)) {
         this.setUpActor(actor);
       }
 
       const object = this.renderScene.getObjectById(
-        this.actorsMap[actor.id],
+        this.actorsMap.get(actor.id)!,
       ) as Mesh;
 
       if (!object) {
@@ -344,8 +376,10 @@ export class SpriteRenderer extends System {
 
     this.lightSubsystem.update();
 
-    this.actorCollection.sort(this.sortFn);
-    this.updateActors();
+    if (this.scene) {
+      this.actorCollections[this.scene.id].sort(this.sortFn);
+      this.updateActors();
+    }
 
     this.renderer.render(this.renderScene, this.currentCamera);
   }

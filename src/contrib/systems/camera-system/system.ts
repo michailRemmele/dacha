@@ -1,80 +1,64 @@
-import { System } from '../../../engine/system';
+import { WorldSystem } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
-import type { SystemOptions } from '../../../engine/system';
+import type { WorldSystemOptions } from '../../../engine/system';
 import { ActorCollection } from '../../../engine/actor';
+import type { Actor } from '../../../engine/actor';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
-import { SetCamera } from '../../events';
-import type { SetCameraEvent } from '../../events';
 
 import { CameraService } from './service';
 
-interface CameraSystemOptions extends SystemOptions {
+interface CameraSystemOptions extends WorldSystemOptions {
   windowNodeId: string
 }
 
-export class CameraSystem extends System {
-  private actorCollection: ActorCollection;
-  private scene: Scene;
+export class CameraSystem extends WorldSystem {
+  private actorCollection?: ActorCollection;
   private window: Window & HTMLElement;
   private cameraService: CameraService;
 
-  constructor(options: SystemOptions) {
+  constructor(options: WorldSystemOptions) {
     super();
 
     const {
       windowNodeId,
-      scene,
+      world,
     } = options as CameraSystemOptions;
 
     const windowNode = getWindowNode(windowNodeId);
 
-    this.actorCollection = new ActorCollection(scene, {
-      components: [
-        Camera,
-      ],
-    });
-    this.scene = scene;
     this.window = windowNode as (Window & HTMLElement);
 
     this.cameraService = new CameraService({
-      cameraCollection: this.actorCollection,
       onCameraUpdate: this.handleCameraUpdate,
+      findCurrentCamera: this.findCurrentCamera,
     });
-    scene.addService(this.cameraService);
+    world.addService(this.cameraService);
+
+    window.addEventListener('resize', this.handleWindowResize);
   }
 
-  mount(): void {
-    this.handleCameraUpdate();
-    window.addEventListener('resize', this.handleCameraUpdate);
-    this.scene.addEventListener(SetCamera, this.handleSetCamera);
+  onSceneEnter(scene: Scene): void {
+    this.actorCollection = new ActorCollection(scene, {
+      components: [Camera],
+    });
+
+    this.handleWindowResize();
   }
 
-  unmount(): void {
-    window.removeEventListener('resize', this.handleCameraUpdate);
-    this.scene.removeEventListener(SetCamera, this.handleSetCamera);
+  onSceneExit(): void {
+    this.actorCollection = undefined;
   }
 
-  /**
-   * @deprecated Use CameraService instead
-   */
-  private handleSetCamera = (event: SetCameraEvent): void => {
-    const { actorId } = event;
-    const newCamera = this.actorCollection.getById(actorId);
+  onWorldDestroy(): void {
+    window.removeEventListener('resize', this.handleWindowResize);
+  }
 
-    if (!newCamera) {
-      throw new Error(`Could not set camera with id ${actorId} for the scene`);
-    }
-
-    this.cameraService.setCurrentCamera(newCamera);
-    this.handleCameraUpdate();
-  };
-
-  private handleCameraUpdate = (): void => {
+  private handleWindowResize = (): void => {
     const width = this.window.innerWidth || this.window.clientWidth;
     const height = this.window.innerHeight || this.window.clientHeight;
 
-    const camera = this.cameraService.getCurrentCamera();
+    const camera = this.findCurrentCamera();
     if (!camera) {
       return;
     }
@@ -86,6 +70,22 @@ export class CameraSystem extends System {
       cameraComponent.windowSizeX = width;
       cameraComponent.windowSizeY = height;
     }
+  };
+
+  private handleCameraUpdate = (actor: Actor): void => {
+    this.actorCollection?.forEach((cameraActor) => {
+      const camera = cameraActor.getComponent(Camera);
+      camera.current = actor.id === cameraActor.id;
+    });
+
+    this.handleWindowResize();
+  };
+
+  private findCurrentCamera = (): Actor | undefined => {
+    return this.actorCollection?.find((actor) => {
+      const camera = actor.getComponent(Camera);
+      return camera.current;
+    });
   };
 }
 

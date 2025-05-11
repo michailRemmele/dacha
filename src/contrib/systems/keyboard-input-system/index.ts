@@ -1,47 +1,45 @@
-import { System } from '../../../engine/system';
-import type { SystemOptions } from '../../../engine/system';
-import type { Scene } from '../../../engine/scene';
+import { WorldSystem } from '../../../engine/system';
+import type { WorldSystemOptions } from '../../../engine/system';
+import type { World } from '../../../engine/world';
 import { KeyboardInput } from '../../events';
 import { getWindowNode } from '../../utils/get-window-node';
 
 import { InputListener } from './input-listener';
 
-interface KeyboardInputSystemOptions extends SystemOptions {
+interface KeyboardInputSystemOptions extends WorldSystemOptions {
   windowNodeId?: string
   useWindow: boolean
 }
 
-export class KeyboardInputSystem extends System {
-  private scene: Scene;
+export class KeyboardInputSystem extends WorldSystem {
+  private world: World;
   private inputListener: InputListener;
 
-  constructor(options: SystemOptions) {
+  constructor(options: WorldSystemOptions) {
     super();
 
     const {
-      scene,
+      world,
       windowNodeId,
       useWindow,
     } = options as KeyboardInputSystemOptions;
 
-    this.scene = scene;
+    this.world = world;
 
     const windowNode = useWindow ? window : getWindowNode(windowNodeId as string);
 
     this.inputListener = new InputListener(windowNode);
-  }
 
-  mount(): void {
     this.inputListener.startListen();
   }
 
-  unmount(): void {
+  onWorldDestroy(): void {
     this.inputListener.stopListen();
   }
 
   update(): void {
     this.inputListener.getEvents().forEach((event) => {
-      this.scene.dispatchEvent(KeyboardInput, event);
+      this.world.dispatchEvent(KeyboardInput, event);
     });
 
     this.inputListener.clear();

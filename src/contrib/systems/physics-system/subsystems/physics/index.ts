@@ -1,5 +1,5 @@
 import { Vector2 } from '../../../../../engine/math-lib';
-import type { SystemOptions, UpdateOptions } from '../../../../../engine/system';
+import type { SceneSystemOptions, UpdateOptions } from '../../../../../engine/system';
 import { Actor, ActorCollection } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
@@ -34,7 +34,7 @@ export class PhysicsSubsystem {
   private gravitationalAcceleration: number;
   private actorVectors: Record<string, ActorVectors | undefined>;
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     const {
       gravitationalAcceleration, scene,
     } = options as PhysicsSystemOptions;
@@ -49,9 +49,7 @@ export class PhysicsSubsystem {
     this.gravitationalAcceleration = gravitationalAcceleration;
 
     this.actorVectors = {};
-  }
 
-  mount(): void {
     this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
 
     this.scene.addEventListener(StopMovement, this.handleStopMovement);
@@ -59,7 +57,7 @@ export class PhysicsSubsystem {
     this.scene.addEventListener(AddImpulse, this.handleAddImpulse);
   }
 
-  unmount(): void {
+  destroy(): void {
     this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.scene.removeEventListener(StopMovement, this.handleStopMovement);

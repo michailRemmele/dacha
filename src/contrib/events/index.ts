@@ -1,9 +1,8 @@
 import type { Actor } from '../../engine/actor';
 import type { Vector2 } from '../../engine/math-lib';
 import type { CustomMouseEvent, CustomKeyboardEvent } from '../types/input-events';
-import type { ActorEvent, SceneEvent } from '../../types/events';
+import type { ActorEvent, SceneEvent, WorldEvent } from '../../types/events';
 
-export const SetCamera = 'SetCamera';
 export const GameStatsUpdate = 'GameStatsUpdate';
 export const Collision = 'Collision';
 export const KeyboardInput = 'KeyboardInput';
@@ -19,29 +18,19 @@ export const PlayAudio = 'PlayAudio';
 export const StopAudio = 'StopAudio';
 export const SetAudioVolume = 'SetAudioVolume';
 
-export type MouseInputEvent = SceneEvent<CustomMouseEvent>;
+export type MouseInputEvent = WorldEvent<CustomMouseEvent>;
 
-export type KeyboardInputEvent = SceneEvent<CustomKeyboardEvent>;
+export type KeyboardInputEvent = WorldEvent<CustomKeyboardEvent>;
 
-export type SetCameraEvent = SceneEvent<{
-  actorId: string
-}>;
+export type GameStatsUpdateEvent = WorldEvent<{ fps: number, actorsCount: number }>;
 
-export type GameStatsUpdateEvent = SceneEvent<{
-  fps: number
-  actorsCount: number
-}>;
+export type SetAudioGroupVolumeEvent = WorldEvent<{ group: string, value: number }>;
 
 export type CollisionEvent = SceneEvent<{
   actor1: Actor
   actor2: Actor
   mtv1: Vector2
   mtv2: Vector2
-}>;
-
-export type SetAudioGroupVolumeEvent = SceneEvent<{
-  group: string
-  value: number
 }>;
 
 export type MouseControlEvent<T = Record<string, never>>
@@ -70,13 +59,15 @@ export type SetAudioSourceVolumeEvent = ActorEvent<{
 }>;
 
 declare module '../../types/events' {
-  export interface SceneEventMap {
+  export interface WorldEventMap {
     [MouseInput]: MouseInputEvent
     [KeyboardInput]: KeyboardInputEvent
-    [SetCamera]: SetCameraEvent
     [GameStatsUpdate]: GameStatsUpdateEvent
-    [Collision]: CollisionEvent
     [SetAudioVolume]: SetAudioGroupVolumeEvent
+  }
+
+  export interface SceneEventMap {
+    [Collision]: CollisionEvent
   }
 
   export interface ActorEventMap {

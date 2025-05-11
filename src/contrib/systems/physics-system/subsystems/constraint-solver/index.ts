@@ -1,6 +1,6 @@
 import { Vector2 } from '../../../../../engine/math-lib';
 import { ActorCollection } from '../../../../../engine/actor';
-import type { SystemOptions } from '../../../../../engine/system';
+import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
@@ -16,7 +16,7 @@ export class ConstraintSolver {
   private processedPairs: Record<string, Record<string, boolean>>;
   private mtvMap: Record<string, Record<string, Vector2>>;
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     this.actorCollection = new ActorCollection(options.scene, {
       components: [
         RigidBody,
@@ -26,13 +26,11 @@ export class ConstraintSolver {
     this.scene = options.scene;
     this.processedPairs = {};
     this.mtvMap = {};
-  }
 
-  mount(): void {
     this.scene.addEventListener(Collision, this.handleCollision);
   }
 
-  unmount(): void {
+  destroy(): void {
     this.scene.removeEventListener(Collision, this.handleCollision);
   }
 

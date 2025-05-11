@@ -1,5 +1,5 @@
 import { ActorCollection } from '../../../../../engine/actor';
-import type { SystemOptions } from '../../../../../engine/system';
+import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import {
@@ -37,7 +37,7 @@ export class CollisionDetectionSubsystem {
   private collisionPairs: CollisionPair[];
   private entriesToDelete: Set<string>;
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     this.actorCollection = new ActorCollection(options.scene, {
       components: [
         ColliderContainer,
@@ -59,16 +59,14 @@ export class CollisionDetectionSubsystem {
     this.entriesMap = new Map();
     this.collisionPairs = [];
     this.entriesToDelete = new Set();
-  }
 
-  mount(): void {
     this.actorCollection.forEach((actor) => this.addCollisionEntry(actor));
 
     this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
-  unmount(): void {
+  destroy(): void {
     this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
     this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
   }
