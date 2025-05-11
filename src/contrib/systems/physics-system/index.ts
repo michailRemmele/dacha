@@ -1,5 +1,5 @@
-import { System } from '../../../engine/system';
-import type { SystemOptions, UpdateOptions } from '../../../engine/system';
+import { SceneSystem } from '../../../engine/system';
+import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
 
 import {
   PhysicsSubsystem,
@@ -9,14 +9,14 @@ import {
   ConstraintSolver,
 } from './subsystems';
 
-export class PhysicsSystem extends System {
+export class PhysicsSystem extends SceneSystem {
   private physicsSubsystem: PhysicsSubsystem;
   private collisionDetectionSubsystem: CollisionDetectionSubsystem;
   private collisionBroadcastSubsystem: CollisionBroadcastSubsystem;
   private collisionSolver: CollisionSolver;
   private constraintSolver: ConstraintSolver;
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super();
 
     this.physicsSubsystem = new PhysicsSubsystem(options);
@@ -26,20 +26,12 @@ export class PhysicsSystem extends System {
     this.constraintSolver = new ConstraintSolver(options);
   }
 
-  mount(): void {
-    this.physicsSubsystem.mount();
-    this.collisionDetectionSubsystem.mount();
-    this.collisionSolver.mount();
-    this.constraintSolver.mount();
-    this.collisionBroadcastSubsystem.mount();
-  }
-
-  unmount(): void {
-    this.physicsSubsystem.unmount();
-    this.collisionDetectionSubsystem.unmount();
-    this.collisionSolver.unmount();
-    this.constraintSolver.unmount();
-    this.collisionBroadcastSubsystem.unmount();
+  onSceneDestroy(): void {
+    this.physicsSubsystem.destroy();
+    this.collisionDetectionSubsystem.destroy();
+    this.collisionSolver.destroy();
+    this.constraintSolver.destroy();
+    this.collisionBroadcastSubsystem.destroy();
   }
 
   fixedUpdate(options: UpdateOptions): void {

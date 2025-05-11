@@ -2,10 +2,12 @@ import type {
   Actor,
   ActorSpawner,
 } from '../../../engine/actor';
+import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
 import type { Constructor } from '../../../types/utils';
 
-export interface ScriptOptions {
+export interface BehaviorOptions {
+  world: World
   scene: Scene
   actor: Actor
   actorSpawner: ActorSpawner
@@ -16,10 +18,10 @@ interface UpdateOptions {
   deltaTime: number
 }
 
-export abstract class Script {
-  static scriptName: string;
+export abstract class Behavior {
+  static behaviorName: string;
   destroy?(): void;
   update?(options: UpdateOptions): void;
 }
 
-export type ScriptConstructor = Constructor<Script> & { scriptName: string };
+export type BehaviorConstructor = Constructor<Behavior> & { behaviorName: string };

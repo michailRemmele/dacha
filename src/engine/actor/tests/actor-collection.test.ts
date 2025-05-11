@@ -47,13 +47,8 @@ describe('Engine -> ActorCollection', () => {
       id: '000',
       name: 'test-scene',
       actors: [],
-      availableSystems: [],
-      resources: {},
-      globalOptions: {},
-      systems: [],
       actorCreator: new ActorCreator([], templateCollection),
       templateCollection,
-      levelId: null,
     });
 
     actor1 = new Actor({

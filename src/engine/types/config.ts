@@ -23,12 +23,6 @@ export interface ActorConfig {
   templateId?: string
 }
 
-export interface LevelConfig {
-  id: string
-  name: string
-  actors: ActorConfig[]
-}
-
 export interface SystemConfig {
   name: string
   options: Record<string, unknown>
@@ -37,16 +31,13 @@ export interface SystemConfig {
 export interface SceneConfig {
   id: string
   name: string
-  levelId: string | null
-  systems: SystemConfig[]
+  actors: ActorConfig[]
 }
 
 export interface Config {
   scenes: SceneConfig[]
-  levels: LevelConfig[]
   templates: TemplateConfig[]
-  loaders: SceneConfig[]
+  systems: SystemConfig[]
   startSceneId: string | null
-  startLoaderId: string | null
   globalOptions: GlobalOption[]
 }

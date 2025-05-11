@@ -1,4 +1,4 @@
-import type { SystemOptions } from '../../../../../engine/system';
+import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Scene } from '../../../../../engine/scene';
 import {
   Collision as RawCollision,
@@ -24,18 +24,16 @@ export class CollisionBroadcastSubsystem {
   private collisionMap: Record<string, Record<string, Collision>>;
   private activeCollisions: Array<Collision>;
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     this.scene = options.scene;
 
     this.collisionMap = {};
     this.activeCollisions = [];
-  }
 
-  mount(): void {
     this.scene.addEventListener(RawCollision, this.handleCollision);
   }
 
-  unmount(): void {
+  destroy(): void {
     this.scene.removeEventListener(RawCollision, this.handleCollision);
   }
 

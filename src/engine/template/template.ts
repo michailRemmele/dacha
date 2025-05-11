@@ -23,12 +23,22 @@ export class Template extends Entity {
     super.removeChild(child);
   }
 
-  override getEntityById(id: string): Template | undefined {
-    return super.getEntityById(id) as Template | undefined;
+  override findChild(
+    predicate: (child: Template) => boolean,
+    recursive = true,
+  ): Template | undefined {
+    return super.findChild(
+      predicate as (child: Entity) => boolean,
+      recursive,
+    ) as Template | undefined;
   }
 
-  override getEntityByName(name: string): Template | undefined {
-    return super.getEntityByName(name) as Template | undefined;
+  override findChildById(id: string, recursive = true): Template | undefined {
+    return super.findChildById(id, recursive) as Template | undefined;
+  }
+
+  override findChildByName(name: string, recursive = true): Template | undefined {
+    return super.findChildByName(name, recursive) as Template | undefined;
   }
 
   setComponent(component: Component): void {

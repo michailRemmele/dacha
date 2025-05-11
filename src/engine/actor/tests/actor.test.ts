@@ -160,6 +160,6 @@ describe('Engine -> Actor', () => {
       child: actor3,
     });
 
-    expect(actor1.getEntityById('actor-3')).toBeUndefined();
+    expect(actor1.findChildById('actor-3')).toBeUndefined();
   });
 });
