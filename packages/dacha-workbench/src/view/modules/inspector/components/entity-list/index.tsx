@@ -1,7 +1,6 @@
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { InspectedEntityContext } from '../../../../providers'
 import type { SchemasDataEntry } from '../../../../providers'
 
 import { EntityListStyled } from './entity-list.style'
@@ -12,7 +11,8 @@ import { DraggablePanels } from './draggable-panels'
 import type { EntityType } from './types'
 
 interface EntityListProps {
-  entities: Array<SchemasDataEntry>
+  path?: string[]
+  entities: SchemasDataEntry[]
   addedEntities: Set<string>
   placeholder: string
   type: EntityType
@@ -22,6 +22,7 @@ interface EntityListProps {
 }
 
 export const EntityList = ({
+  path = [],
   entities,
   addedEntities,
   placeholder,
@@ -31,7 +32,6 @@ export const EntityList = ({
   draggable,
 }: EntityListProps): JSX.Element => {
   const { t } = useTranslation()
-  const { path = [] } = useContext(InspectedEntityContext)
 
   const pathKey = useMemo(() => path.join('.'), [path])
 
@@ -42,7 +42,7 @@ export const EntityList = ({
     }, {} as Record<string, SchemasDataEntry>)
 
     const sortedEntities = sortByAddition
-      ? Array.from(addedEntities).map((name) => entitesMap[name])
+      ? Array.from(addedEntities).map((name) => entitesMap[name]).filter(Boolean)
       : entities.filter((entity) => addedEntities.has(entity.name))
 
     return sortedEntities
@@ -57,16 +57,18 @@ export const EntityList = ({
     <EntityListStyled>
       {draggable && panels ? (
         <DraggablePanels
+          path={path}
           panels={panels}
           type={type}
           onDragEntity={onDragEntity}
         />
       ) : null}
 
-      {!draggable && panels ? <Panels panels={panels} type={type} /> : null}
+      {!draggable && panels ? <Panels path={path} panels={panels} type={type} /> : null}
 
       <EntityPicker
         key={pathKey}
+        path={path}
         entities={entities}
         addedEntities={addedEntities}
         placeholder={placeholder}

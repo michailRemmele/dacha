@@ -1,7 +1,7 @@
-import { System, MouseControl } from 'dacha'
+import { SceneSystem, MouseControl } from 'dacha'
 import type {
-  Scene,
-  SystemOptions,
+  World,
+  SceneSystemOptions,
   Actor,
   MouseControlConfig,
 } from 'dacha'
@@ -21,33 +21,33 @@ const getFeatureClassName = (
   value: FeatureValue,
 ): string => `${FEATURE_CLASS_NAME_PREFIX}${name}_${String(value)}`
 
-export class ToolManager extends System {
-  private scene: Scene
+export class ToolManager extends SceneSystem {
+  private world: World
   private mainActor: Actor
   private rootNode: HTMLElement
 
-  constructor(options: SystemOptions) {
+  constructor(options: SceneSystemOptions) {
     super()
 
-    const { scene } = options
+    const { world } = options
 
-    this.scene = scene
-    this.mainActor = this.scene.data.mainActor as Actor
+    this.world = world
+    this.mainActor = this.world.data.mainActor as Actor
 
     this.rootNode = document.getElementById(CANVAS_ROOT) as HTMLElement
+
+    this.world.addEventListener(EventType.SelectTool, this.handleSelectTool)
+    this.world.addEventListener(EventType.SetToolFeatureValue, this.handleSetToolFeatureValue)
   }
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectTool, this.handleSelectTool)
-    this.scene.addEventListener(EventType.SetToolFeatureValue, this.handleSetToolFeatureValue)
-
+  onSceneEnter(): void {
     const toolController = this.mainActor.getComponent(ToolController)
     this.selectTool(toolController.activeTool)
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectTool, this.handleSelectTool)
-    this.scene.removeEventListener(EventType.SetToolFeatureValue, this.handleSetToolFeatureValue)
+  onSceneDestroy(): void {
+    this.world.removeEventListener(EventType.SelectTool, this.handleSelectTool)
+    this.world.removeEventListener(EventType.SetToolFeatureValue, this.handleSetToolFeatureValue)
   }
 
   private selectTool(id: string): void {
@@ -56,7 +56,7 @@ export class ToolManager extends System {
 
     persistentStorage.set('canvas.mainActor.toolController.activeTool', id)
 
-    const toolActor = this.mainActor.getEntityById(id)
+    const toolActor = this.mainActor.findChildById(id)
 
     if (toolActor === undefined) {
       console.error(`Not found tool with same id: ${id}`)
@@ -82,7 +82,7 @@ export class ToolManager extends System {
 
   private removeCurrentTool(): void {
     const toolController = this.mainActor.getComponent(ToolController)
-    const toolActor = this.mainActor.getEntityById(toolController.activeTool)
+    const toolActor = this.mainActor.findChildById(toolController.activeTool)
 
     if (toolActor) {
       const { name, features } = toolActor.getComponent(Tool)
@@ -101,7 +101,7 @@ export class ToolManager extends System {
 
   private setToolFeatureValue(name: string, value: FeatureValue): void {
     const { activeTool } = this.mainActor.getComponent(ToolController)
-    const toolActor = this.mainActor.getEntityById(activeTool)
+    const toolActor = this.mainActor.findChildById(activeTool)
 
     if (toolActor) {
       const { features } = toolActor.getComponent(Tool)
@@ -123,12 +123,16 @@ export class ToolManager extends System {
 
     this.removeCurrentTool()
     this.selectTool(name)
+
+    this.world.dispatchEvent(EventType.ToolUpdated)
   }
 
   private handleSetToolFeatureValue = (event: SetToolFeatureValueEvent): void => {
     const { name, value } = event
 
     this.setToolFeatureValue(name, value)
+
+    this.world.dispatchEvent(EventType.ToolUpdated)
   }
 }
 

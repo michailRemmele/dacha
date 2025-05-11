@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 
 export interface FormComponentProps {
-  path: Array<string>
+  path: string[]
 }
 
 export type FormComponent = FC<FormComponentProps>

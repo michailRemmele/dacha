@@ -21,6 +21,7 @@ export const ComponentList: FC = () => {
 
   return (
     <EntityList
+      path={path}
       entities={availableComponents}
       addedEntities={addedComponents}
       type="components"

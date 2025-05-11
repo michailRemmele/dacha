@@ -1,4 +1,4 @@
-import type { TemplateConfig, ActorConfig, LevelConfig } from 'dacha'
+import type { TemplateConfig, ActorConfig, SceneConfig } from 'dacha'
 
 import { buildActorConfig } from '../../../utils/build-actor-config'
 
@@ -27,13 +27,13 @@ const getUpdatedActors = (
   return actor
 })
 
-export const getUpdatedLevels = (
-  levels: LevelConfig[],
+export const getUpdatedScenes = (
+  scenes: SceneConfig[],
   parentId: string,
   templates: TemplateConfig[],
-): LevelConfig[] => levels.map((level) => ({
-  ...level,
-  actors: getUpdatedActors(level.actors, parentId, templates),
+): SceneConfig[] => scenes.map((scene) => ({
+  ...scene,
+  actors: getUpdatedActors(scene.actors, parentId, templates),
 }))
 
 const filterActors = (
@@ -52,10 +52,10 @@ const filterActors = (
   return acc
 }, [] as ActorConfig[])
 
-export const filterLevels = (
-  levels: LevelConfig[],
+export const filterScenes = (
+  scenes: SceneConfig[],
   templateIds: Set<string>,
-): LevelConfig[] => levels.map((level) => ({
-  ...level,
-  actors: filterActors(level.actors, templateIds),
+): SceneConfig[] => scenes.map((scene) => ({
+  ...scene,
+  actors: filterActors(scene.actors, templateIds),
 }))

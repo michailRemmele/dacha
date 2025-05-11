@@ -7,9 +7,8 @@ const ASSETS_FOLDER_NAME = 'assets'
 
 const INITIAL_DATA = {
   scenes: [],
-  levels: [],
+  systems: [],
   templates: [],
-  loaders: [],
   globalOptions: [
     {
       id: uuidv4(),
@@ -19,7 +18,6 @@ const INITIAL_DATA = {
     },
   ],
   startSceneId: null,
-  startLoaderId: null,
 }
 
 const init = () => {

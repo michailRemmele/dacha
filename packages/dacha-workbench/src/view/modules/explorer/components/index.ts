@@ -1,3 +1,2 @@
-export { LevelsExplorer } from './levels-tree'
-export { ScenesList } from './scenes-list'
+export { ScenesExplorer } from './scenes-tree'
 export { TemplatesExplorer } from './templates-tree'

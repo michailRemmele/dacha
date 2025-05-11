@@ -1,5 +1,5 @@
 import type {
-  Scene,
+  World,
   Actor,
 } from 'dacha'
 
@@ -11,8 +11,8 @@ export const getGridValue = (
   gridStep: number,
 ): number => Math.floor((value - (size - gridStep) / 2) / gridStep) * gridStep + size / 2
 
-export const getGridStep = (scene: Scene): number => {
-  const mainActor = scene.data.mainActor as Actor
+export const getGridStep = (world: World): number => {
+  const mainActor = world.data.mainActor as Actor
   const settings = mainActor.getComponent(Settings)
 
   return settings.data.gridStep as number

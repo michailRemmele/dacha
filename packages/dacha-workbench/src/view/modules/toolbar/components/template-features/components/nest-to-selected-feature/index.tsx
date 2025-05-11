@@ -19,14 +19,14 @@ interface NestToSelectedFeatureProps {
 
 export const NestToSelectedFeature: FC<NestToSelectedFeatureProps> = ({ value }) => {
   const { t } = useTranslation()
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
   const handleChange = useCallback((event: CheckboxChangeEvent): void => {
-    scene.dispatchEvent(EventType.SetToolFeatureValue, {
+    world.dispatchEvent(EventType.SetToolFeatureValue, {
       name: NEST_TO_SELECTED_FEATURE_NAME,
       value: event.target.checked,
     })
-  }, [scene])
+  }, [world])
 
   return (
     <ToolFeature>

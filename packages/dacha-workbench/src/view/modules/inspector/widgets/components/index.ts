@@ -7,7 +7,7 @@ import {
   MouseControl,
   Sprite,
   RigidBody,
-  ScriptBundle,
+  Behaviors,
   Transform,
   AudioSource,
 } from 'dacha'
@@ -22,7 +22,7 @@ import { light } from './light'
 import { mouseControl } from './mouse-control'
 import { sprite } from './sprite'
 import { rigidBody } from './rigid-body'
-import { scriptBundle } from './script-bundle'
+import { behaviors } from './behaviors'
 import { transform } from './transform'
 import { audioSource } from './audio-source'
 
@@ -35,7 +35,7 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [MouseControl.componentName]: mouseControl,
   [Sprite.componentName]: sprite,
   [RigidBody.componentName]: rigidBody,
-  [ScriptBundle.componentName]: scriptBundle,
+  [Behaviors.componentName]: behaviors,
   [Transform.componentName]: transform,
   [AudioSource.componentName]: audioSource,
 }

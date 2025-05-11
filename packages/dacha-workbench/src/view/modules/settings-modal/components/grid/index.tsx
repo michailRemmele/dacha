@@ -14,28 +14,28 @@ import { ShowGridField } from './show-grid-field'
 import { GridSettingsStyled } from './grid.style'
 
 export const Grid: FC<ModalComponentProps> = ({ settings }) => {
-  const { scene } = useContext(EngineContext)
+  const { world } = useContext(EngineContext)
 
   const handleStepChange = useCallback((value: number): void => {
-    scene.dispatchEvent(EventType.SetSettingsValue, {
+    world.dispatchEvent(EventType.SetSettingsValue, {
       name: 'gridStep',
       value,
     })
-  }, [scene])
+  }, [world])
 
   const handleColorChange = useCallback((value: string): void => {
-    scene.dispatchEvent(EventType.SetSettingsValue, {
+    world.dispatchEvent(EventType.SetSettingsValue, {
       name: 'gridColor',
       value,
     })
-  }, [scene])
+  }, [world])
 
   const handleGridShowChange = useCallback((checked: boolean): void => {
-    scene.dispatchEvent(EventType.SetSettingsValue, {
+    world.dispatchEvent(EventType.SetSettingsValue, {
       name: 'showGrid',
       value: checked,
     })
-  }, [scene])
+  }, [world])
 
   return (
     <GridSettingsStyled>

@@ -1,29 +1,21 @@
 {
   "explorer": {
-    "tab.levels": "Levels",
-    "tab.templates": "Templates",
     "tab.scenes": "Scenes",
-    "tab.loaders": "Loaders",
+    "tab.templates": "Templates",
 
     "actionBar.cut.button.title": "Cut",
     "actionBar.copy.button.title": "Copy",
     "actionBar.paste.button.title": "Paste",
     "actionBar.delete.button.title": "Delete",
 
-    "levels.actionBar.addActor.button.title": "Add New Actor",
-    "levels.actionBar.addLevel.button.title": "Add New Level",
-    "levels.actionBar.focusActor.button.title": "Focus Actor",
-    "levels.actionBar.actor.new.title": "Actor",
-    "levels.actionBar.level.new.title": "Level",
-
-    "templates.actionBar.addTemplate.button.title": "Add New Template",
-    "templates.actionBar.template.new.title": "Template",
-
+    "scenes.actionBar.addActor.button.title": "Add New Actor",
     "scenes.actionBar.addScene.button.title": "Add New Scene",
+    "scenes.actionBar.focusActor.button.title": "Focus Actor",
+    "scenes.actionBar.actor.new.title": "Actor",
     "scenes.actionBar.scene.new.title": "Scene",
 
-    "loaders.actionBar.addLoader.button.title": "Add New Loader",
-    "loaders.actionBar.loader.new.title": "Loader"
+    "templates.actionBar.addTemplate.button.title": "Add New Template",
+    "templates.actionBar.template.new.title": "Template"
   },
   "toolbar": {
     "pointer.title": "Pointer Tool",
@@ -40,20 +32,16 @@
   },
   "inspector": {
     "tab.entityInspector": "Inspector",
+    "tab.systems": "Systems",
     "tab.projectSettings": "Project settings",
 
-    "entityInspector.level.title": "Level",
+    "entityInspector.scene.title": "Scene",
     "entityInspector.actor.title": "Actor",
     "entityInspector.template.title": "Template",
-    "entityInspector.scene.title": "Scene",
-    "entityInspector.loader.title": "Loader",
 
     "entityInspector.copyIdButton.title": "Copy id to clipboard",
 
     "sceneForm.field.name.label": "Name",
-    "sceneForm.field.level.label": "Level",
-
-    "levelForm.field.name.label": "Name",
 
     "templateForm.field.name.label": "Name",
 
@@ -61,7 +49,6 @@
     "actorForm.field.templateName.label": "Template",
 
     "projectSettings.field.startScene.label": "Start Scene",
-    "projectSettings.field.startLoader.label": "Start Loader",
     "projectSettings.globalOptions.title": "Global Options",
 
     "components.select.option.none.title": "[none]",
@@ -215,10 +202,10 @@
   "components.rigidBody.types.dynamic.title": "Dynamic",
   "components.rigidBody.types.static.title": "Static",
 
-  "components.scriptBundle.title": "Script Bundle",
-  "components.scriptBundle.script.name.title": "Name",
-  "components.scriptBundle.script.title": "Script {{index}}",
-  "components.scriptBundle.script.addNew.title": "Add New Script",
+  "components.behaviors.title": "Behaviors",
+  "components.behaviors.behavior.name.title": "Name",
+  "components.behaviors.behavior.title": "Behavior {{index}}",
+  "components.behaviors.behavior.addNew.title": "Add New Behavior",
 
   "components.transform.title": "Transform",
   "components.transform.offsetX.title": "Offset X",
@@ -257,7 +244,7 @@
   "systems.physicsSystem.title": "Physics System",
   "systems.physicsSystem.gravitationalAcceleration.title": "Gravity",
 
-  "systems.scriptSystem.title": "Script System",
+  "systems.behaviorSystem.title": "Behavior System",
 
   "systems.spriteRenderer.title": "Sprite Renderer",
   "systems.spriteRenderer.windowNodeId.title": "Window Node Id",

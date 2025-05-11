@@ -13,15 +13,17 @@ export interface Panel {
 }
 
 export interface PanelsProps {
-  panels: Array<Panel>
+  path: string[]
+  panels: Panel[]
   type: EntityType
 }
 
-export const Panels: FC<PanelsProps> = ({ panels, type }) => (
+export const Panels: FC<PanelsProps> = ({ path, panels, type }) => (
   <>
     {panels.map((entity) => (
       <EntityPanel
         key={entity.id}
+        path={path}
         entity={entity}
         type={type}
       />

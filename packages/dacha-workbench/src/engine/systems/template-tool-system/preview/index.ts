@@ -1,6 +1,6 @@
 import { Transform } from 'dacha'
 import type {
-  Scene,
+  World,
   ActorCreator,
   ActorSpawner,
   Actor,
@@ -16,13 +16,13 @@ import { Tool } from '../../../components'
 import type { CommanderStore } from '../../../../store'
 
 interface PreviewSubsystemOptions {
-  scene: Scene
+  world: World
   actorCreator: ActorCreator
   actorSpawner: ActorSpawner
 }
 
 export class PreviewSubsystem {
-  private scene: Scene
+  private world: World
   private actorCreator: ActorCreator
   private mainActor: Actor
   private configStore: CommanderStore
@@ -32,23 +32,21 @@ export class PreviewSubsystem {
   private unsubscribe?: () => void
 
   constructor({
-    scene,
+    world,
     actorCreator,
   }: PreviewSubsystemOptions) {
-    this.scene = scene
+    this.world = world
     this.actorCreator = actorCreator
 
-    this.mainActor = this.scene.data.mainActor as Actor
-    this.configStore = this.scene.data.configStore as CommanderStore
-  }
+    this.mainActor = this.world.data.mainActor as Actor
+    this.configStore = this.world.data.configStore as CommanderStore
 
-  mount(): void {
-    this.scene.addEventListener(EventType.SelectTool, this.handleSelectTool)
+    this.world.addEventListener(EventType.SelectTool, this.handleSelectTool)
     this.unsubscribe = this.configStore.subscribe(this.handleTemplatesUpdate)
   }
 
-  unmount(): void {
-    this.scene.removeEventListener(EventType.SelectTool, this.handleSelectTool)
+  destroy(): void {
+    this.world.removeEventListener(EventType.SelectTool, this.handleSelectTool)
     this.unsubscribe?.()
   }
 
@@ -61,11 +59,14 @@ export class PreviewSubsystem {
       return
     }
 
-    const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
-    const tool = getTool(this.scene)
+    const templates = this.configStore.get(['templates']) as TemplateConfig[]
+    const tool = getTool(this.world)
 
     if (tool.features.templateId.value === undefined && templates.length > 0) {
-      tool.features.templateId.value = templates[0].id
+      this.world.dispatchEvent(EventType.SetToolFeatureValue, {
+        name: 'templateId',
+        value: templates[0].id,
+      })
     }
   }
 
@@ -73,13 +74,13 @@ export class PreviewSubsystem {
    * Listens template update to sync template feature value and reset preview
    * if selected template was changed
    */
-  private handleTemplatesUpdate = (path: Array<string>): void => {
-    const tool = getTool(this.scene)
+  private handleTemplatesUpdate = (path: string[]): void => {
+    const tool = getTool(this.world)
     if (tool.name !== TOOL_NAME || !includesArray(path, ['templates'])) {
       return
     }
 
-    const templates = this.configStore.get(['templates']) as Array<TemplateConfig>
+    const templates = this.configStore.get(['templates']) as TemplateConfig[]
     const templateId = tool.features.templateId.value as string | undefined
 
     if (templateId !== undefined && templates.every((template) => template.id !== templateId)) {
@@ -140,7 +141,7 @@ export class PreviewSubsystem {
   }
 
   update(x: number | null, y: number | null): void {
-    const tool = getTool(this.scene)
+    const tool = getTool(this.world)
 
     if (tool.name !== TOOL_NAME || x === null || y === null) {
       this.deletePreview()

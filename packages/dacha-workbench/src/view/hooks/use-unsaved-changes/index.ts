@@ -52,11 +52,11 @@ export const useUnsavedChanges = (): void => {
   }, [])
 
   useEffect(() => {
-    if (context === undefined) {
+    if (!context) {
       return () => {}
     }
 
-    const { scene } = context
+    const { world } = context
 
     const handleGameStateUpdate = (): void => {
       if (unsavedChangesRef.current) {
@@ -65,8 +65,8 @@ export const useUnsavedChanges = (): void => {
       }
     }
 
-    scene.addEventListener(EventType.SaveProject, handleGameStateUpdate)
+    world.addEventListener(EventType.SaveProject, handleGameStateUpdate)
 
-    return () => scene.removeEventListener(EventType.SaveProject, handleGameStateUpdate)
+    return () => world.removeEventListener(EventType.SaveProject, handleGameStateUpdate)
   }, [context])
 }

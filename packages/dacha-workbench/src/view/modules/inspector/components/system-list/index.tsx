@@ -9,7 +9,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import type { SystemConfig } from 'dacha'
 
 import { EntityList } from '../entity-list'
-import { InspectedEntityContext, SchemasContext } from '../../../../providers'
+import { SchemasContext } from '../../../../providers'
 import { useConfig, useCommander } from '../../../../hooks'
 import { setValue } from '../../../../commands'
 
@@ -17,11 +17,9 @@ export const SystemList: FC = () => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const { path = [] } = useContext(InspectedEntityContext)
   const { systems: availableSystems } = useContext(SchemasContext)
 
-  const systemsPath = useMemo(() => path.concat('systems'), [path])
-  const systems = useConfig(systemsPath) as Array<SystemConfig>
+  const systems = useConfig('systems') as SystemConfig[]
 
   const addedSystems = useMemo(() => systems.reduce(
     (acc, system) => acc.add(system.name),
@@ -29,8 +27,8 @@ export const SystemList: FC = () => {
   ), [systems])
 
   const handleDragEntity = useCallback((from: number, to: number) => {
-    dispatch(setValue(systemsPath, arrayMove(systems, from, to)))
-  }, [systems, dispatch, systemsPath])
+    dispatch(setValue(['systems'], arrayMove(systems, from, to)))
+  }, [systems, dispatch])
 
   return (
     <EntityList

@@ -2,14 +2,12 @@ import {
   useCallback,
   useState,
   useMemo,
-  useContext,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Select } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 
-import { InspectedEntityContext } from '../../../../providers'
 import { useCommander } from '../../../../hooks'
 import { addValue } from '../../../../commands'
 import type { SchemasDataEntry } from '../../../../providers'
@@ -24,13 +22,15 @@ import { CONFIG_KEY_MAP } from './consts'
 import type { EntityType } from './types'
 
 interface EntityPickerProps {
-  entities: Array<SchemasDataEntry>
+  path: string[]
+  entities: SchemasDataEntry[]
   addedEntities: Set<string>
   placeholder: string
   type: EntityType
 }
 
 export const EntityPicker: FC<EntityPickerProps> = ({
+  path,
   entities,
   addedEntities,
   placeholder,
@@ -38,7 +38,6 @@ export const EntityPicker: FC<EntityPickerProps> = ({
 }): JSX.Element => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const { path = [] } = useContext(InspectedEntityContext)
 
   const rootPath = useMemo(() => path.concat(type), [path, type])
 
