@@ -40,7 +40,7 @@ import { createMaterial, updateMaterial } from './material-factory';
 import {
   loadImage,
   prepareSprite,
-  getAllTemplateSources,
+  getAllSources,
   getTextureMapKey,
   cloneTexture,
 } from './utils';
@@ -53,8 +53,7 @@ interface RendererOptions extends WorldSystemOptions {
 }
 
 export class SpriteRenderer extends WorldSystem {
-  private scene?: Scene;
-  private actorCollections: Record<string, ActorCollection>;
+  private actorCollection?: ActorCollection;
   private window: HTMLElement;
   private renderScene: ThreeJSScene;
   private currentCamera: OrthographicCamera;
@@ -82,7 +81,6 @@ export class SpriteRenderer extends WorldSystem {
       world,
     } = options as RendererOptions;
 
-    this.actorCollections = {};
     this.templateCollection = templateCollection;
 
     this.window = getWindowNode(windowNodeId);
@@ -130,13 +128,9 @@ export class SpriteRenderer extends WorldSystem {
   }
 
   async onSceneLoad(scene: Scene): Promise<void> {
-    this.actorCollections[scene.id] = new ActorCollection(scene, {
-      components: [Sprite, Transform],
-    });
-
     const allSources = [
-      ...getAllTemplateSources(this.templateCollection),
-      ...this.actorCollections[scene.id].map((actor) => actor.getComponent(Sprite).src),
+      ...getAllSources(this.templateCollection.getAll()),
+      ...getAllSources(scene.children),
     ];
     const uniqueSources = [...new Set(allSources)];
 
@@ -153,19 +147,21 @@ export class SpriteRenderer extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.scene = scene;
+    this.actorCollection = new ActorCollection(scene, {
+      components: [Sprite, Transform],
+    });
 
     this.handleWindowResize();
 
     this.lightSubsystem.onSceneEnter(scene);
 
-    this.actorCollections[scene.id]?.addEventListener(AddActor, this.handleActorAdd);
-    this.actorCollections[scene.id]?.addEventListener(RemoveActor, this.handleActorRemove);
+    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
+    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
-  onSceneExit(scene: Scene): void {
-    this.actorCollections[scene.id]?.removeEventListener(AddActor, this.handleActorAdd);
-    this.actorCollections[scene.id]?.removeEventListener(RemoveActor, this.handleActorRemove);
+  onSceneExit(): void {
+    this.actorCollection?.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorCollection?.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.lightSubsystem.onSceneExit();
 
@@ -175,19 +171,17 @@ export class SpriteRenderer extends WorldSystem {
 
     this.renderScene.clear();
 
-    this.scene = undefined;
+    this.actorCollection = undefined;
   }
 
   onSceneDestroy(scene: Scene): void {
     const allSources = [
-      ...getAllTemplateSources(this.templateCollection),
-      ...this.actorCollections[scene.id].map((actor) => actor.getComponent(Sprite).src),
+      ...getAllSources(this.templateCollection.getAll()),
+      ...getAllSources(scene.children),
     ];
 
     allSources.forEach((src) => this.imageStore.release(src));
     this.imageStore.cleanReleased();
-
-    delete this.actorCollections[scene.id];
   }
 
   onWorldDestroy(): void {
@@ -328,7 +322,7 @@ export class SpriteRenderer extends WorldSystem {
   }
 
   private updateActors(): void {
-    this.actorCollections[this.scene!.id].forEach((actor, index) => {
+    this.actorCollection?.forEach((actor, index) => {
       const transform = actor.getComponent(Transform);
       const sprite = actor.getComponent(Sprite);
 
@@ -376,10 +370,8 @@ export class SpriteRenderer extends WorldSystem {
 
     this.lightSubsystem.update();
 
-    if (this.scene) {
-      this.actorCollections[this.scene.id].sort(this.sortFn);
-      this.updateActors();
-    }
+    this.actorCollection?.sort(this.sortFn);
+    this.updateActors();
 
     this.renderer.render(this.renderScene, this.currentCamera);
   }
