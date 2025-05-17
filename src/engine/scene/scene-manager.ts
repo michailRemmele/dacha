@@ -28,8 +28,15 @@ import type {
   ExitSceneEvent,
   DestroySceneEvent,
 } from '../events';
+import { isSubclassOf } from '../utils/is-subclass-of';
 
 import { Scene } from './scene';
+
+type LoadEntry = {
+  scene: Scene
+  systems: Map<string, SceneSystem>
+  isLoading: boolean
+};
 
 interface SceneManagerOptions {
   sceneConfigs: SceneConfig[]
@@ -52,8 +59,8 @@ export class SceneManager {
   private actorSpawner: ActorSpawner;
 
   private world: World;
-  private loadedScenes: Map<string, Scene>;
-  private systems: Map<string, WorldSystem | Map<string, SceneSystem>>;
+  private worldSystems: Map<string, WorldSystem>;
+  private loadedScenes: Map<string, LoadEntry>;
   private activeSceneId?: string;
 
   constructor({
@@ -81,13 +88,13 @@ export class SceneManager {
     this.actorSpawner = new ActorSpawner(this.actorCreator);
 
     this.world = new World({ id: uuid(), name: 'world' });
+    this.worldSystems = new Map();
     this.loadedScenes = new Map();
-    this.systems = new Map();
     this.activeSceneId = undefined;
 
     this.systemConfigs.forEach((config) => {
       const SystemClass = this.availableSystems[config.name];
-      if (Object.getPrototypeOf(SystemClass) === WorldSystem) {
+      if (isSubclassOf(SystemClass, WorldSystem)) {
         const options: WorldSystemOptions = {
           ...config.options,
           templateCollection: this.templateCollection,
@@ -96,10 +103,7 @@ export class SceneManager {
           globalOptions: this.globalOptions,
           world: this.world,
         };
-        this.systems.set(config.name, new SystemClass(options) as WorldSystem);
-      }
-      if (Object.getPrototypeOf(SystemClass) === SceneSystem) {
-        this.systems.set(config.name, new Map());
+        this.worldSystems.set(config.name, new SystemClass(options) as WorldSystem);
       }
     });
 
@@ -122,8 +126,8 @@ export class SceneManager {
   destroyWorld(): void {
     this.exitActiveScene();
 
-    this.loadedScenes.forEach((scene) => {
-      this.destroyScene(scene.id);
+    this.loadedScenes.forEach((entry) => {
+      this.destroyScene(entry.scene.id);
     });
 
     this.getSystems().forEach((system) => {
@@ -131,7 +135,6 @@ export class SceneManager {
         system.onWorldDestroy?.(this.world);
       }
     });
-    this.systems.clear();
 
     this.world.removeEventListener(LoadScene, this.handleLoadScene);
     this.world.removeEventListener(EnterScene, this.handleEnterScene);
@@ -165,20 +168,18 @@ export class SceneManager {
     if (!this.activeSceneId) {
       return undefined;
     }
-
-    return this.world.findChildById(this.activeSceneId, false) as Scene | undefined;
+    return this.loadedScenes.get(this.activeSceneId)?.scene;
   }
 
   getSystems(scene?: Scene): System[] {
     scene ??= this.getActiveScene();
 
+    const sceneSystems = scene ? this.loadedScenes.get(scene.id)?.systems : undefined;
+
     return this.systemConfigs.reduce((acc: System[], config) => {
-      const entry = this.systems.get(config.name);
-      if (entry instanceof WorldSystem) {
-        acc.push(entry);
-      }
-      if (entry instanceof Map && scene && entry.has(scene.id)) {
-        acc.push(entry.get(scene.id)!);
+      const system = this.worldSystems.get(config.name) ?? sceneSystems?.get(config.name);
+      if (system) {
+        acc.push(system);
       }
       return acc;
     }, []);
@@ -192,6 +193,15 @@ export class SceneManager {
     if (!this.sceneConfigs[id]) {
       throw new Error(`Error while loading scene. Not found scene with id: ${id}`);
     }
+    if (this.loadedScenes.get(id)?.isLoading) {
+      return;
+    }
+    if (this.loadedScenes.has(id) && !this.loadedScenes.get(id)?.isLoading) {
+      if (id === this.activeSceneId) {
+        this.exitActiveScene();
+      }
+      this.destroyScene(id);
+    }
 
     const scene = new Scene({
       ...this.sceneConfigs[id],
@@ -199,9 +209,9 @@ export class SceneManager {
       templateCollection: this.templateCollection,
     });
 
-    this.systemConfigs.forEach((config) => {
+    const sceneSystems = this.systemConfigs.reduce((acc: Map<string, SceneSystem>, config) => {
       const SystemClass = this.availableSystems[config.name];
-      if (Object.getPrototypeOf(SystemClass) === SceneSystem) {
+      if (isSubclassOf(SystemClass, SceneSystem)) {
         const options: SceneSystemOptions = {
           ...config.options,
           templateCollection: this.templateCollection,
@@ -211,14 +221,17 @@ export class SceneManager {
           scene,
           world: this.world,
         };
-        const sceneSystems = this.systems.get(config.name) as Map<string, SceneSystem>;
-        sceneSystems.set(scene.id, new SystemClass(options) as SceneSystem);
+        acc.set(config.name, new SystemClass(options) as SceneSystem);
       }
-    });
+      return acc;
+    }, new Map());
+
+    const loadEntry: LoadEntry = { scene, systems: sceneSystems, isLoading: true };
+    this.loadedScenes.set(scene.id, loadEntry);
 
     await Promise.all(this.getSystems(scene).map((system) => system.onSceneLoad?.(scene)));
 
-    this.loadedScenes.set(scene.id, scene);
+    loadEntry.isLoading = false;
 
     this.world.dispatchEvent(SceneLoaded, { scene });
 
@@ -228,12 +241,20 @@ export class SceneManager {
   }
 
   enterScene(id: string, autoDestroy?: boolean): void {
-    const scene = this.loadedScenes.get(id);
-    if (!scene) {
+    const entry = this.loadedScenes.get(id);
+    if (!entry) {
       throw new Error(`Error while entering scene. Not found scene with same id: ${id}`);
+    }
+    if (entry.isLoading) {
+      throw new Error(`Error while entering scene. Scene with id: ${id} is still loading`);
+    }
+    if (id === this.activeSceneId) {
+      return;
     }
 
     this.exitActiveScene(autoDestroy);
+
+    const { scene } = entry;
 
     this.world.appendChild(scene);
 
@@ -264,21 +285,18 @@ export class SceneManager {
   }
 
   destroyScene(id: string): void {
-    const scene = this.loadedScenes.get(id);
-    if (!scene) {
+    const entry = this.loadedScenes.get(id);
+    if (!entry) {
       return;
     }
+
+    const { scene } = entry;
+
     if (scene.id === this.activeSceneId) {
       throw new Error('Error while destroying scene. Cannot destroy active scene. You should exit first.');
     }
 
     this.getSystems(scene).forEach((system) => system.onSceneDestroy?.(scene));
-    this.systemConfigs.forEach((config) => {
-      const entry = this.systems.get(config.name);
-      if (entry instanceof Map && entry.has(scene.id)) {
-        entry.delete(scene.id);
-      }
-    });
 
     this.loadedScenes.delete(id);
     this.world.dispatchEvent(SceneDestroyed, { scene });

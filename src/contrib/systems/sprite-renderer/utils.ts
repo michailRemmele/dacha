@@ -6,7 +6,8 @@ import {
 } from 'three/src/Three';
 
 import { Sprite } from '../../components/sprite';
-import type { TemplateCollection } from '../../../engine/template';
+import type { Actor } from '../../../engine/actor';
+import type { Template } from '../../../engine/template';
 import { ResourceLoader } from '../../../engine/resource-loader';
 import { traverseEntity } from '../../../engine/entity';
 
@@ -31,19 +32,19 @@ export const prepareSprite = (image: HTMLImageElement, sprite: Sprite): Texture[
   return textures;
 };
 
-export const getAllTemplateSources = (templateCollection: TemplateCollection): string[] => {
-  const templateSources: string[] = [];
+export const getAllSources = (actors: (Actor | Template)[]): string[] => {
+  const sources: string[] = [];
 
-  templateCollection.getAll().forEach((template) => {
-    traverseEntity(template, (entity) => {
-      const audioSource = entity.getComponent(Sprite);
-      if (audioSource?.src) {
-        templateSources.push(audioSource.src);
+  actors.forEach((actor) => {
+    traverseEntity(actor, (entity) => {
+      const sprite = entity.getComponent(Sprite);
+      if (sprite?.src) {
+        sources.push(sprite.src);
       }
     });
   });
 
-  return templateSources;
+  return sources;
 };
 
 export const getTextureMapKey = ({
