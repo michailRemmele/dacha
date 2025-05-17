@@ -1,20 +1,21 @@
-import type { TemplateCollection } from '../../../engine/template';
+import type { Actor } from '../../../engine/actor';
+import type { Template } from '../../../engine/template';
 import { AudioSource } from '../../components';
 import { traverseEntity } from '../../../engine/entity';
 
-export const getAllTemplateSources = (templateCollection: TemplateCollection): string[] => {
-  const templateSources: string[] = [];
+export const getAllSources = (actors: (Actor | Template)[]): string[] => {
+  const sources: string[] = [];
 
-  templateCollection.getAll().forEach((template) => {
-    traverseEntity(template, (entity) => {
+  actors.forEach((actor) => {
+    traverseEntity(actor, (entity) => {
       const audioSource = entity.getComponent(AudioSource);
       if (audioSource?.src) {
-        templateSources.push(audioSource.src);
+        sources.push(audioSource.src);
       }
     });
   });
 
-  return templateSources;
+  return sources;
 };
 
 export const loadAudio = async (url: string): Promise<ArrayBuffer> => {
