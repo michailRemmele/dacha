@@ -1,13 +1,12 @@
 import { VectorOps } from '../../../../../../engine/math-lib';
 import type {
-  ColliderContainer,
+  Collider,
   Transform,
 } from '../../../../../components';
-import type { BoxCollider } from '../../../../../components/collider-container/box-collider';
 import type { BoxGeometry } from '../types';
 
 export const buildBoxGeometry = (
-  container: ColliderContainer,
+  collider: Collider,
   transform: Transform,
 ): BoxGeometry => {
   const {
@@ -17,13 +16,13 @@ export const buildBoxGeometry = (
     scaleY,
     rotation,
   } = transform;
-  let { centerX, centerY } = container.collider;
-  const { sizeX, sizeY } = container.collider as BoxCollider;
+  let { centerX, centerY } = collider;
+  const { sizeX, sizeY } = collider;
 
-  const x1 = -(sizeX / 2);
-  const x2 = (sizeX / 2);
-  const y1 = -(sizeY / 2);
-  const y2 = (sizeY / 2);
+  const x1 = -(sizeX! / 2);
+  const x2 = (sizeX! / 2);
+  const y1 = -(sizeY! / 2);
+  const y2 = (sizeY! / 2);
 
   const angle = (rotation * Math.PI) / 180;
   const cos = Math.cos(angle);

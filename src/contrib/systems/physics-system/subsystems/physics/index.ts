@@ -31,12 +31,12 @@ const DIRECTION_VECTOR = {
 export class PhysicsSubsystem {
   private scene: Scene;
   private actorCollection: ActorCollection;
-  private gravitationalAcceleration: number;
+  private gravity: number;
   private actorVectors: Record<string, ActorVectors | undefined>;
 
   constructor(options: SceneSystemOptions) {
     const {
-      gravitationalAcceleration, scene,
+      gravity, scene,
     } = options as PhysicsSystemOptions;
 
     this.scene = scene;
@@ -46,7 +46,7 @@ export class PhysicsSubsystem {
         Transform,
       ],
     });
-    this.gravitationalAcceleration = gravitationalAcceleration;
+    this.gravity = gravity;
 
     this.actorVectors = {};
 
@@ -120,7 +120,7 @@ export class PhysicsSubsystem {
     const velocitySignX = Math.sign(velocity.x);
     const velocitySignY = Math.sign(velocity.y);
 
-    const reactionForceValue = mass * this.gravitationalAcceleration;
+    const reactionForceValue = mass * this.gravity;
     const dragForceValue = -1 * drag * reactionForceValue;
     const forceToVelocityMultiplier = deltaTime / mass;
     const slowdownValue = dragForceValue * forceToVelocityMultiplier;
@@ -143,7 +143,7 @@ export class PhysicsSubsystem {
 
     if (useGravity) {
       gravityVector.add(DIRECTION_VECTOR.DOWN);
-      gravityVector.multiplyNumber(mass * this.gravitationalAcceleration);
+      gravityVector.multiplyNumber(mass * this.gravity);
     }
 
     return gravityVector;

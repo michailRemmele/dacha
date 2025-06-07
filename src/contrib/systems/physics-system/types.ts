@@ -1,5 +1,5 @@
 import type { SceneSystemOptions } from '../../../engine/system';
 
 export interface PhysicsSystemOptions extends SceneSystemOptions {
-  gravitationalAcceleration: number
+  gravity: number
 }
