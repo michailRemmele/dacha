@@ -5,13 +5,8 @@ import type { GlobalToken } from 'antd'
 import type { CustomToken } from '../view/themes/types'
 import '../events'
 
-import type { WidgetSchema, WidgetPartSchema, References } from './widget-schema'
-
 export interface Extension {
-  componentsSchema?: Record<string, WidgetSchema | undefined>
-  systemsSchema?: Record<string, WidgetSchema | undefined>
-  resourcesSchema?: Record<string, Record<string, WidgetPartSchema | undefined> | undefined>
-  globalReferences?: References
+  events?: string[]
   locales?: Resource
 }
 
@@ -21,6 +16,7 @@ export interface EditorConfig {
   extension?: string
   autoSave?: boolean
   autoSaveInterval?: number
+  formatWidgetNames?: boolean
 }
 
 export interface ElectronAPI {

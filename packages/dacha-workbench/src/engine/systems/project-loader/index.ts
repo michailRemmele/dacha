@@ -5,6 +5,7 @@ import type {
   WorldSystemOptions,
   UpdateOptions,
 } from 'dacha'
+import * as Events from 'dacha/events'
 
 import { EventType } from '../../../events'
 import { CommanderStore } from '../../../store'
@@ -65,18 +66,15 @@ export class ProjectLoader extends WorldSystem {
 
   private setUpData(extension: Extension = {}): void {
     const {
-      componentsSchema = {},
-      systemsSchema = {},
-      resourcesSchema = {},
-      globalReferences = {},
+      events = [],
       locales = {},
     } = extension
 
     this.world.data.extension = {
-      componentsSchema,
-      systemsSchema,
-      resourcesSchema,
-      globalReferences,
+      events: [
+        ...events,
+        ...Object.values(Events),
+      ],
       locales,
     }
   }

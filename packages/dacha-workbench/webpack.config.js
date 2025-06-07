@@ -5,8 +5,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
-const babelrc = require('./babelrc')
-
 const isDev = process.env.NODE_ENV === 'development'
 
 module.exports = {
@@ -80,8 +78,10 @@ module.exports = {
         exclude: /(node_modules)/,
         use: [
           {
-            loader: 'babel-loader',
-            options: babelrc,
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
           },
         ],
       },

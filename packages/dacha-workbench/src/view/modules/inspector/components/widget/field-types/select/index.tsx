@@ -1,29 +1,43 @@
-import React, { useMemo, FC } from 'react'
+import { useMemo, useContext, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useStore } from '../../../../../../hooks'
 import { LabelledSelect } from '../../../select'
-import type { SelectProps } from '../../../../../../../types/inputs'
+import type { SelectProps, SelectOption } from '../../../../../../../types/inputs'
+import type { GetOptionsFn } from '../../../../../../../types/widget-schema'
 import type { LabelledProps } from '../../../labelled'
-import type { Reference } from '../../../../../../../types/widget-schema'
+import { WidgetFieldContext } from '../../widget-field-context'
 
 type SelectFieldProps = {
-  reference?: Reference
+  options: SelectOption[] | string[] | GetOptionsFn
 } & Omit<SelectProps, 'options'> & LabelledProps
 
 export const SelectField: FC<SelectFieldProps> = ({
-  reference,
+  options,
   ...props
 }) => {
   const { t } = useTranslation()
+  const store = useStore()
+  const context = useContext(WidgetFieldContext)
 
-  const options = useMemo(() => reference?.items.map(({ title, value }) => ({
-    title: t(title),
-    value,
-  })) || [], [reference])
+  const formattedOptions = useMemo(
+    () => {
+      const list = typeof options === 'function'
+        ? options((path) => store.get(path), context)
+        : options
+
+      return list.map(
+        (option) => (typeof option === 'string'
+          ? { title: option, value: option }
+          : { title: t(option.title), value: option.value }),
+      )
+    },
+    [store, context, options],
+  )
 
   return (
     <LabelledSelect
-      options={options}
+      options={formattedOptions}
       {...props}
     />
   )

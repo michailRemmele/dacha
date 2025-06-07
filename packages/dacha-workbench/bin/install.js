@@ -30,7 +30,6 @@ const appFiles = [
   'electron',
   'preload.js',
   'index.js',
-  'babelrc.js',
   'webpack.config.js',
   'webpack.extension.config.js',
 ]

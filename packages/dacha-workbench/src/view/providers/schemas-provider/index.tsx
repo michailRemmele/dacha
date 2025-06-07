@@ -3,7 +3,12 @@ import i18next from 'i18next'
 
 import type { WidgetSchema } from '../../../types/widget-schema'
 import { componentsSchema, systemsSchema } from '../../modules/inspector/widgets'
-import { useExtension } from '../../hooks'
+import {
+  useExtension,
+  useSystems,
+  useComponents,
+} from '../../hooks'
+import { schemaRegistry } from '../../modules/inspector/schema-registry'
 
 import { NAMESPACE_EDITOR, NAMESPACE_EXTENSION } from './consts'
 
@@ -32,8 +37,8 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
 }): JSX.Element => {
   const extension = useExtension()
 
-  const extComponentsSchema = extension.componentsSchema as Record<string, WidgetSchema>
-  const extSystemsSchema = extension.systemsSchema as Record<string, WidgetSchema>
+  const extComponentsSchema = useComponents()
+  const extSystemsSchema = useSystems()
 
   const components = useMemo(() => ([] as Array<SchemasDataEntry>).concat(
     Object.keys(componentsSchema).map((key) => ({
@@ -41,11 +46,11 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
       schema: componentsSchema[key],
       namespace: NAMESPACE_EDITOR,
     })),
-    Object.keys(extComponentsSchema).map((key) => ({
+    extComponentsSchema ? Object.keys(extComponentsSchema).map((key) => ({
       name: key,
       schema: extComponentsSchema[key],
       namespace: NAMESPACE_EXTENSION,
-    })),
+    })) : [],
   ), [extComponentsSchema])
 
   const systems = useMemo(() => ([] as Array<SchemasDataEntry>).concat(
@@ -54,11 +59,11 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
       schema: systemsSchema[key],
       namespace: NAMESPACE_EDITOR,
     })),
-    Object.keys(extSystemsSchema).map((key) => ({
+    extSystemsSchema ? Object.keys(extSystemsSchema).map((key) => ({
       name: key,
       schema: extSystemsSchema[key],
       namespace: NAMESPACE_EXTENSION,
-    })),
+    })) : [],
   ), [extSystemsSchema])
 
   useMemo(() => {

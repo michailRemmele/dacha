@@ -1,7 +1,7 @@
 import {
   Animatable,
   Camera,
-  ColliderContainer,
+  Collider,
   KeyboardControl,
   Light,
   MouseControl,
@@ -16,7 +16,7 @@ import type { WidgetSchema } from '../../../../../types/widget-schema'
 
 import { animatable } from './animatable'
 import { camera } from './camera'
-import { colliderContainer } from './collider-container'
+import { collider } from './collider'
 import { keyboardControl } from './keyboard-control'
 import { light } from './light'
 import { mouseControl } from './mouse-control'
@@ -29,7 +29,7 @@ import { audioSource } from './audio-source'
 export const componentsSchema: Record<string, WidgetSchema> = {
   [Animatable.componentName]: animatable,
   [Camera.componentName]: camera,
-  [ColliderContainer.componentName]: colliderContainer,
+  [Collider.componentName]: collider,
   [KeyboardControl.componentName]: keyboardControl,
   [Light.componentName]: light,
   [MouseControl.componentName]: mouseControl,

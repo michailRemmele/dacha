@@ -8,13 +8,7 @@ const EXCLUDE_DEPS = ['electron', 'electron-packager']
 // TODO: Try to move all of these dev dependencies to dependencies section
 // to avoid necessity to manually copy them and support this list
 const INCLUDE_DEV_DEPS = [
-  '@babel/cli',
-  '@babel/core',
-  '@babel/eslint-parser',
-  '@babel/preset-react',
-  '@babel/preset-typescript',
-  '@emotion/babel-plugin',
-  'babel-loader',
+  'ts-loader',
   'clean-webpack-plugin',
   'copy-webpack-plugin',
   'css-loader',

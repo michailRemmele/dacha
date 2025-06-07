@@ -1,36 +1,29 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { SortingLayer } from '../../types/sprite-renderer'
 
-import { SpriteWidget } from './view'
+const PATH = ['globalOptions', 'name:sortingLayers', 'options', 'layers']
 
 export const sprite: WidgetSchema = {
-  title: 'components.sprite.title',
   fields: [
     {
       name: 'src',
-      title: 'components.sprite.src.title',
       type: 'file',
-      properties: {
-        extensions: ['png'],
-      },
+      extensions: ['png'],
     },
     {
       name: 'width',
-      title: 'components.sprite.width.title',
       type: 'number',
     },
     {
       name: 'height',
-      title: 'components.sprite.height.title',
       type: 'number',
     },
     {
       name: 'slice',
-      title: 'components.sprite.slice.title',
       type: 'number',
     },
     {
       name: 'rotation',
-      title: 'components.sprite.rotation.title',
       type: 'number',
     },
     {
@@ -45,37 +38,44 @@ export const sprite: WidgetSchema = {
     },
     {
       name: 'flipX',
-      title: 'components.sprite.flipX.title',
       type: 'boolean',
     },
     {
       name: 'flipY',
-      title: 'components.sprite.flipY.title',
       type: 'boolean',
     },
     {
       name: 'sortingLayer',
-      title: 'components.sprite.sortingLayer.title',
       type: 'select',
-      referenceId: 'sortingLayers',
+      options: (getState) => (getState(PATH) as SortingLayer[] ?? []).map((layer) => layer.name),
     },
     {
       name: 'fit',
-      title: 'components.sprite.fit.title',
       type: 'select',
-      referenceId: 'fitTypes',
+      options: [
+        'stretch',
+        'repeat',
+      ],
     },
     {
       name: 'material.type',
       title: 'components.sprite.material.type.title',
       type: 'select',
-      referenceId: 'materialTypes',
+      options: [
+        'basic',
+        'lightsensitive',
+      ],
     },
     {
       name: 'material.options.blending',
       title: 'components.sprite.material.blending.title',
       type: 'select',
-      referenceId: 'blendingModes',
+      options: [
+        'normal',
+        'addition',
+        'substract',
+        'multiply',
+      ],
     },
     {
       name: 'material.options.color',
@@ -88,53 +88,6 @@ export const sprite: WidgetSchema = {
       type: 'number',
     },
   ],
-  references: {
-    fitTypes: {
-      items: [
-        {
-          title: 'components.sprite.fitTypes.stretch.title',
-          value: 'stretch',
-        },
-        {
-          title: 'components.sprite.fitTypes.repeat.title',
-          value: 'repeat',
-        },
-      ],
-    },
-    materialTypes: {
-      items: [
-        {
-          title: 'components.sprite.materialTypes.basic.title',
-          value: 'basic',
-        },
-        {
-          title: 'components.sprite.materialTypes.lightsensitive.title',
-          value: 'lightsensitive',
-        },
-      ],
-    },
-    blendingModes: {
-      items: [
-        {
-          title: 'components.sprite.blendingModes.normal.title',
-          value: 'normal',
-        },
-        {
-          title: 'components.sprite.blendingModes.addition.title',
-          value: 'addition',
-        },
-        {
-          title: 'components.sprite.blendingModes.substract.title',
-          value: 'substract',
-        },
-        {
-          title: 'components.sprite.blendingModes.multiply.title',
-          value: 'multiply',
-        },
-      ],
-    },
-  },
-  view: SpriteWidget,
   getInitialState: () => ({
     src: '',
     width: 0,

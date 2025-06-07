@@ -13,7 +13,7 @@ export interface SelectOption {
 }
 
 export interface SelectProps extends InputProps {
-  options: Array<SelectOption>
+  options: SelectOption[] | string[]
   allowEmpty?: boolean
 }
 
