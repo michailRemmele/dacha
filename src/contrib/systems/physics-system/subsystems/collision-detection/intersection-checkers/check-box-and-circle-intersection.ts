@@ -1,4 +1,4 @@
-import { ColliderContainer } from '../../../../../components';
+import { Collider } from '../../../../../components';
 import { MathOps, Vector2, VectorOps } from '../../../../../../engine/math-lib';
 import type {
   CollisionEntry,
@@ -48,7 +48,7 @@ export const checkBoxAndCircleIntersection = (
 ): Intersection | false => {
   let box: BoxGeometry;
   let circle: CircleGeometry;
-  if (arg1.actor.getComponent(ColliderContainer).type === 'boxCollider') {
+  if (arg1.actor.getComponent(Collider).type === 'box') {
     box = arg1.geometry as BoxGeometry;
     circle = arg2.geometry as CircleGeometry;
   } else {

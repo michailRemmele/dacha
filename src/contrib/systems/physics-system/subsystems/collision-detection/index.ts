@@ -4,11 +4,9 @@ import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import {
   Transform,
-  ColliderContainer,
+  Collider,
   RigidBody,
 } from '../../../../components';
-import type { BoxCollider } from '../../../../components/collider-container/box-collider';
-import type { CircleCollider } from '../../../../components/collider-container/circle-collider';
 import { AddActor, RemoveActor } from '../../../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../../../engine/events';
 import { Collision } from '../../../../events';
@@ -40,7 +38,7 @@ export class CollisionDetectionSubsystem {
   constructor(options: SceneSystemOptions) {
     this.actorCollection = new ActorCollection(options.scene, {
       components: [
-        ColliderContainer,
+        Collider,
         Transform,
       ],
     });
@@ -87,17 +85,17 @@ export class CollisionDetectionSubsystem {
     }
 
     const transform = actor.getComponent(Transform);
-    const colliderContainer = actor.getComponent(ColliderContainer);
+    const collider = actor.getComponent(Collider);
 
     const transformOld = entry.orientationData.transform;
     const colliderOld = entry.orientationData.collider;
 
-    return checkTransform(transform, transformOld) || checkCollider(colliderContainer, colliderOld);
+    return checkTransform(transform, transformOld) || checkCollider(collider, colliderOld);
   }
 
   private getOrientationData(actor: Actor): OrientationData {
     const transform = actor.getComponent(Transform);
-    const colliderContainer = actor.getComponent(ColliderContainer);
+    const collider = actor.getComponent(Collider);
 
     return {
       transform: {
@@ -108,25 +106,25 @@ export class CollisionDetectionSubsystem {
         scaleY: transform.scaleY,
       },
       collider: {
-        type: colliderContainer.type,
-        centerX: colliderContainer.collider.centerX,
-        centerY: colliderContainer.collider.centerY,
-        sizeX: (colliderContainer.collider as BoxCollider).sizeX,
-        sizeY: (colliderContainer.collider as BoxCollider).sizeY,
-        radius: (colliderContainer.collider as CircleCollider).radius,
+        type: collider.type,
+        centerX: collider.centerX,
+        centerY: collider.centerY,
+        sizeX: collider.sizeX,
+        sizeY: collider.sizeY,
+        radius: collider.radius,
       },
     };
   }
 
   private addCollisionEntry(actor: Actor): void {
     const transform = actor.getComponent(Transform);
-    const colliderContainer = actor.getComponent(ColliderContainer);
+    const collider = actor.getComponent(Collider);
 
-    const geometry = geometryBuilders[colliderContainer.type](
-      colliderContainer,
+    const geometry = geometryBuilders[collider.type](
+      collider,
       transform,
     );
-    const aabb = aabbBuilders[colliderContainer.type](geometry);
+    const aabb = aabbBuilders[collider.type](geometry);
 
     const entry = {
       actor,
@@ -146,13 +144,13 @@ export class CollisionDetectionSubsystem {
 
   private updateCollisionEntry(actor: Actor): void {
     const transform = actor.getComponent(Transform);
-    const colliderContainer = actor.getComponent(ColliderContainer);
+    const collider = actor.getComponent(Collider);
 
-    const geometry = geometryBuilders[colliderContainer.type](
-      colliderContainer,
+    const geometry = geometryBuilders[collider.type](
+      collider,
       transform,
     );
-    const aabb = aabbBuilders[colliderContainer.type](geometry);
+    const aabb = aabbBuilders[collider.type](geometry);
 
     const entry = this.entriesMap.get(actor.id)!;
     const prevAABB = entry.aabb;
@@ -264,8 +262,8 @@ export class CollisionDetectionSubsystem {
   private checkOnIntersection(pair: CollisionPair): Intersection | false {
     const [arg1, arg2] = pair;
 
-    const type1 = arg1.actor.getComponent(ColliderContainer).type;
-    const type2 = arg2.actor.getComponent(ColliderContainer).type;
+    const type1 = arg1.actor.getComponent(Collider).type;
+    const type2 = arg2.actor.getComponent(Collider).type;
 
     return intersectionCheckers[type1][type2](arg1, arg2);
   }
