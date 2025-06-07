@@ -28,7 +28,6 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
     return (
       <CustomWidget
         fields={schema.fields || []}
-        references={schema.references}
         path={widgetPath}
         component={schema.view}
         namespace={data.namespace}
@@ -48,7 +47,6 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
     <I18nextProvider i18n={i18n} defaultNS={data.namespace}>
       <Widget
         fields={schema.fields}
-        references={schema.references}
         path={widgetPath}
       />
     </I18nextProvider>

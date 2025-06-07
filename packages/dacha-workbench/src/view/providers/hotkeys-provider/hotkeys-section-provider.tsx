@@ -92,7 +92,7 @@ export const HotkeysSectionProvider = ({
     }
 
     if (isCut) {
-      if (clipboard.every((path) => !arraysEqual(path.slice(0, -1), destinationPath!))) {
+      if (clipboard.every((path) => !arraysEqual(path.slice(0, -1), destinationPath))) {
         onMoveTo(clipboard, destinationPath)
       }
       setClipboard(undefined)

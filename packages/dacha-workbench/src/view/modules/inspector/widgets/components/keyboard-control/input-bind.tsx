@@ -38,7 +38,7 @@ export const InputBind: FC<InputBindProps> = ({
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const { globalReferences } = useExtension()
+  const { events } = useExtension()
 
   const bindPath = useMemo(
     () => path.concat('inputEventBindings', `id:${id}`),
@@ -49,8 +49,6 @@ export const InputBind: FC<InputBindProps> = ({
   const keepEmitPath = useMemo(() => bindPath.concat('keepEmit'), [bindPath])
   const eventTypePath = useMemo(() => bindPath.concat('eventType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
-
-  const controlEvents = globalReferences.controlEvents?.items
 
   const handleKeyChange = useCallback((value: string) => {
     dispatch(setValue(keyPath, value))
@@ -84,9 +82,9 @@ export const InputBind: FC<InputBindProps> = ({
       />
       <Field
         path={eventTypePath}
-        component={controlEvents ? LabelledSelect : LabelledTextInput}
+        component={events ? LabelledSelect : LabelledTextInput}
         label={t('components.keyboardControl.bind.eventType.title')}
-        options={controlEvents}
+        options={events}
       />
       <SectionHeaderStyled>
         {t('components.keyboardControl.bind.attributes.title')}

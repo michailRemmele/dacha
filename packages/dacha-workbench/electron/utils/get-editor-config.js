@@ -10,6 +10,7 @@ const getEditorConfig = () => {
     projectConfig: normalizePath(config.projectConfig),
     assets: normalizePath(config.assets),
     extensionEntry: normalizePath(config.extensionEntry),
+    formatWidgetNames: config.formatWidgetNames ?? true,
   }
 }
 

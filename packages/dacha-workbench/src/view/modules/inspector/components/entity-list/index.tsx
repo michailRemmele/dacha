@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { SchemasDataEntry } from '../../../../providers'
+import { formatWidgetName } from '../../../../../utils/format-widget-name'
 
 import { EntityListStyled } from './entity-list.style'
 import { EntityPicker } from './entity-picker'
@@ -48,7 +49,9 @@ export const EntityList = ({
     return sortedEntities
       .map((entity) => ({
         id: `${pathKey}.${entity.name}`,
-        label: t(entity.schema.title, { ns: entity.namespace }),
+        label: entity.schema.title
+          ? t(entity.schema.title, { ns: entity.namespace })
+          : formatWidgetName(entity.name),
         data: entity,
       }))
   }, [pathKey, entities, addedEntities, sortByAddition])

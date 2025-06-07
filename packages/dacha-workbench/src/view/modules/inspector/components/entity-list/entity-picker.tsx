@@ -12,6 +12,7 @@ import { useCommander } from '../../../../hooks'
 import { addValue } from '../../../../commands'
 import type { SchemasDataEntry } from '../../../../providers'
 import type { WidgetSchema } from '../../../../../types/widget-schema'
+import { formatWidgetName } from '../../../../../utils/format-widget-name'
 
 import {
   EntityPickerStyled,
@@ -44,7 +45,9 @@ export const EntityPicker: FC<EntityPickerProps> = ({
   const options = useMemo(() => entities
     .filter((entity) => !addedEntities.has(entity.name))
     .map((entity) => ({
-      label: t(entity.schema.title, { ns: entity.namespace }),
+      label: entity.schema.title
+        ? t(entity.schema.title, { ns: entity.namespace })
+        : formatWidgetName(entity.name),
       value: entity.name,
     })), [entities, addedEntities])
   const schemasMap = useMemo(() => entities.reduce((acc, entity) => {

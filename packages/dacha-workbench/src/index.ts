@@ -6,10 +6,12 @@ export {
   useConfig,
   useCommander,
   useStore,
+  useBehaviors,
 } from './view/hooks'
 export { Field } from './view/modules/inspector/components/field'
 export { DependencyField } from './view/modules/inspector/components/dependency-field'
 export { Widget } from './view/modules/inspector/components/widget'
+export { BehaviorWidget } from './view/modules/inspector/components/behavior-widget'
 export { TextInput, LabelledTextInput } from './view/modules/inspector/components/text-input'
 export { NumberInput, LabelledNumberInput } from './view/modules/inspector/components/number-input'
 export { Select, LabelledSelect } from './view/modules/inspector/components/select'
@@ -21,6 +23,13 @@ export { FileInput, LabelledFileInput } from './view/modules/inspector/component
 export { MultiField } from './view/modules/inspector/components/multi-field'
 export { Panel } from './view/modules/inspector/components/panel'
 
+export {
+  DefineSystem,
+  DefineComponent,
+  DefineField,
+  DefineBehavior,
+} from './view/modules/inspector/decorators'
+
 export const commands = {
   setValue,
   addValue,
@@ -31,13 +40,9 @@ export type { Data } from './store'
 
 export type {
   WidgetSchema,
-  WidgetPartSchema,
   WidgetProps,
   Field as WidgetField,
   FieldType,
-  References,
-  Reference,
-  ReferenceItem,
   Dependency,
   DependencyValue,
 } from './types/widget-schema'
