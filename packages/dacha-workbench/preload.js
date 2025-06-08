@@ -13,7 +13,6 @@ contextBridge.exposeInMainWorld('electron', {
   saveProjectConfig,
   loadPersistentStorage,
   savePersistentStorage,
-  isExtensionAvailable: () => Boolean(editorConfig.extensionEntry),
   openAssetsDialog: (extensions) => ipcRenderer.invoke(MESSAGES.ASSETS_DIALOG, extensions),
   setUnsavedChanges: (unsavedChanges) => {
     ipcRenderer.send(MESSAGES.SET_UNSAVED_CHANGES, unsavedChanges)

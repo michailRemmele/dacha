@@ -6,10 +6,12 @@ import type {
   UpdateOptions,
 } from 'dacha'
 import * as Events from 'dacha/events'
+import type { Resource } from 'i18next'
 
 import { EventType } from '../../../events'
 import { CommanderStore } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
+import { deepMerge } from '../../../utils/deep-merge'
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10_000
 
@@ -19,7 +21,7 @@ interface ProjectLoaderResources {
 
 export class ProjectLoader extends WorldSystem {
   private world: World
-  private editorCofig: EditorConfig
+  private editorConfig: EditorConfig
 
   private autoSaveInterval: number
 
@@ -27,12 +29,12 @@ export class ProjectLoader extends WorldSystem {
     super()
 
     this.world = options.world
-    this.editorCofig = window.electron.getEditorConfig()
+    this.editorConfig = window.electron.getEditorConfig()
 
     this.world.data.configStore = (options.resources as ProjectLoaderResources).store
-    this.world.data.editorConfig = this.editorCofig
+    this.world.data.editorConfig = this.editorConfig
 
-    this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
+    this.autoSaveInterval = this.editorConfig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
 
     window.electron.onSave(() => {
       this.saveProjectConfig()
@@ -40,31 +42,68 @@ export class ProjectLoader extends WorldSystem {
   }
 
   async onWorldLoad(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!window.electron.isExtensionAvailable()) {
-        this.setUpData()
+    await Promise.all([
+      this.loadScript('/widgets.js'),
+      this.loadScript('/events.js'),
+      this.loadScript('/locales.js'),
+      ...this.editorConfig.libraries
+        .map((name) => ([
+          `${name}__widgets.js`,
+          `${name}__events.js`,
+          `${name}__locales.js`,
+        ]))
+        .flat()
+        .map((src) => this.loadScript(src)),
+    ])
 
-        resolve()
-        return
-      }
+    this.setUpData({
+      events: [
+        ...window.events
+          ? Object.values(window.events).filter((entry) => typeof entry === 'string')
+          : [],
+        ...this.editorConfig.libraries
+          .map((name) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const libraryEvents = window[`${name}__events`] as Record<string, unknown> | undefined
 
+            return libraryEvents
+              ? Object.values(libraryEvents).filter((entry) => typeof entry === 'string')
+              : []
+          })
+          .flat(),
+      ],
+      locales: this.editorConfig.libraries.reduce((acc: Resource, name) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const libraryLocales = window[`${name}__locales`]?.default as Resource | undefined
+
+        if (libraryLocales) {
+          return deepMerge(libraryLocales, acc)
+        }
+
+        return acc
+      }, window.locales?.default ?? {}),
+    })
+  }
+
+  private async loadScript(src: string): Promise<void> {
+    return new Promise<void>((resolve) => {
       const script = document.createElement('script')
-      script.src = '/extension.js'
+      script.src = src
 
-      script.onload = (): void => {
-        this.setUpData(window.editorExtension)
-
-        resolve()
-      }
+      script.onload = (): void => resolve()
       script.onerror = (): void => {
-        reject(new Error('Error while loading extension script'))
+        console.warn(`Error while loading bundle: ${src}`)
+        resolve()
       }
 
       document.body.appendChild(script)
     })
   }
 
-  private setUpData(extension: Extension = {}): void {
+  private setUpData(extension: Extension): void {
     const {
       events = [],
       locales = {},
@@ -87,7 +126,7 @@ export class ProjectLoader extends WorldSystem {
   }
 
   update(options: UpdateOptions): void {
-    if (!this.editorCofig.autoSave) {
+    if (!this.editorConfig.autoSave) {
       return
     }
 
@@ -96,7 +135,7 @@ export class ProjectLoader extends WorldSystem {
     this.autoSaveInterval -= deltaTime
     if (this.autoSaveInterval <= 0) {
       this.saveProjectConfig()
-      this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
+      this.autoSaveInterval = this.editorConfig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
     }
   }
 }
