@@ -15,7 +15,7 @@ const getEditorConfig = require('./electron/utils/get-editor-config')
 const applyExtension = require('./electron/apply-extension')
 const watchProjectConfig = require('./electron/watch-project-config')
 
-const { assets, extensionEntry, projectConfig } = getEditorConfig()
+const editorConfig = getEditorConfig()
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -38,7 +38,7 @@ if (isDev) {
 if (!isDev) {
   expressApp.use(express.static(path.join(__dirname, 'build')))
 }
-expressApp.use(express.static(path.resolve(assets)))
+expressApp.use(express.static(path.resolve(editorConfig.assets)))
 
 const server = expressApp.listen(0)
 
@@ -53,7 +53,10 @@ const createWindow = () => {
 
   Menu.setApplicationMenu(getMenu(win))
 
-  ipcMain.handle(MESSAGES.ASSETS_DIALOG, (_, ...args) => getAssetsDialog(assets, ...args))
+  ipcMain.handle(
+    MESSAGES.ASSETS_DIALOG,
+    (_, ...args) => getAssetsDialog(editorConfig.assets, ...args),
+  )
   ipcMain.on(MESSAGES.SET_UNSAVED_CHANGES, (_, unsavedChanges) => {
     win.off('close', handleCloseApp)
     if (unsavedChanges) {
@@ -63,11 +66,9 @@ const createWindow = () => {
 
   win.loadURL(`http://localhost:${server.address().port}`)
 
-  if (extensionEntry) {
-    applyExtension(extensionEntry, expressApp, win)
-  }
+  applyExtension(editorConfig, expressApp, win)
 
-  watchProjectConfig(projectConfig, win)
+  watchProjectConfig(editorConfig.projectConfig, win)
 }
 
 app.whenReady().then(() => {

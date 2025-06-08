@@ -9,7 +9,12 @@ const getEditorConfig = () => {
     ...config,
     projectConfig: normalizePath(config.projectConfig),
     assets: normalizePath(config.assets),
-    extensionEntry: normalizePath(config.extensionEntry),
+    systemsDir: normalizePath(config.systemsDir ?? 'src/systems'),
+    componentsDir: normalizePath(config.componentsDir ?? 'src/components'),
+    behaviorsDir: normalizePath(config.behaviorsDir ?? 'src/behaviors'),
+    eventsEntry: normalizePath(config.eventsEntry ?? 'src/events/index.ts'),
+    localesEntry: normalizePath(config.localesEntry ?? 'src/locales/index.ts'),
+    libraries: config.libraries ?? [],
     formatWidgetNames: config.formatWidgetNames ?? true,
   }
 }

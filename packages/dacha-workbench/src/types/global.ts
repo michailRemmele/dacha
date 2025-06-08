@@ -13,7 +13,12 @@ export interface Extension {
 export interface EditorConfig {
   projectConfig: string
   assets: string
-  extension?: string
+  systemsDir: string
+  componentsDir: string
+  behaviorsDir: string
+  eventsEntry: string
+  localesEntry: string
+  libraries: string[]
   autoSave?: boolean
   autoSaveInterval?: number
   formatWidgetNames?: boolean
@@ -22,7 +27,6 @@ export interface EditorConfig {
 export interface ElectronAPI {
   getProjectConfig: () => Config,
   getEditorConfig: () => EditorConfig
-  isExtensionAvailable: () => boolean
   openAssetsDialog: (extensions?: Array<string>) => Promise<string | undefined>
   saveProjectConfig: (config: Config) => void
   setUnsavedChanges: (unsavedChanges: boolean) => void
@@ -42,7 +46,9 @@ export interface ElectronAPI {
 declare global {
   interface Window {
     electron: ElectronAPI
-    editorExtension?: Extension
+    widgets?: unknown
+    events?: Record<string, unknown>
+    locales?: { default?: Resource }
     DachaWorkbench: Record<string, unknown>
   }
 }
