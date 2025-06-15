@@ -1,9 +1,10 @@
 import type { FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
+import { schemaRegistry } from '../../../../../decorators/schema-registry'
 import { NAMESPACE_EXTENSION } from '../../../../providers/schemas-provider/consts'
 import { Widget } from '../widget'
-import { schemaRegistry } from '../../schema-registry'
+import { CustomWidget } from '../custom-widget'
 
 interface BehaviorWidgetProps {
   name: string
@@ -23,6 +24,17 @@ export const BehaviorWidget: FC<BehaviorWidgetProps> = ({
   const schema = schemaRegistry.getWidget(systemName ? `behavior.${systemName}` : 'behavior', name)
   if (!schema) {
     return null
+  }
+
+  if (schema.view) {
+    return (
+      <CustomWidget
+        fields={schema.fields}
+        path={path}
+        component={schema.view}
+        namespace={NAMESPACE_EXTENSION}
+      />
+    )
   }
 
   return (

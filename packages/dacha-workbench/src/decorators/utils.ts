@@ -1,4 +1,4 @@
-import type { Field, FieldType } from '../../../../types/widget-schema'
+import type { Field, FieldType } from '../types/widget-schema'
 
 import type { Constructor } from './types'
 
@@ -66,3 +66,5 @@ export const buildInitialState = (
   ...(getInitialState?.() ?? {}),
   ...getInitialStateFromFields(fields),
 })
+
+export const isEditor = (): boolean => Boolean(window.DachaWorkbench)

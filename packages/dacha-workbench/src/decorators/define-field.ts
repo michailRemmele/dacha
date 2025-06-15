@@ -1,6 +1,6 @@
-import type { Field } from '../../../../types/widget-schema'
+import type { Field } from '../types/widget-schema'
 
-import { getFieldTypeName } from './utils'
+import { getFieldTypeName, isEditor } from './utils'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Target = { constructor: Function }
@@ -11,6 +11,10 @@ export function DefineField(
   field?: DefineFieldOptions,
 ): (target: Target, name: string) => void {
   return (target: Target, name: string): void => {
+    if (!isEditor()) {
+      return
+    }
+
     if (!Reflect.hasOwnMetadata('schema:fields', target.constructor)) {
       Reflect.defineMetadata('schema:fields', [], target.constructor)
     }

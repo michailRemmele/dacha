@@ -17,6 +17,7 @@ const INCLUDE_DEV_DEPS = [
   'webpack',
   'webpack-cli',
   'webpack-dev-middleware',
+  'webpack-virtual-modules',
 ]
 
 const buildPackage = () => {

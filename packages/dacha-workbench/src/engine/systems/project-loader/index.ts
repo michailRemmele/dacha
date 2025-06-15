@@ -6,12 +6,10 @@ import type {
   UpdateOptions,
 } from 'dacha'
 import * as Events from 'dacha/events'
-import type { Resource } from 'i18next'
 
 import { EventType } from '../../../events'
 import { CommanderStore } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
-import { deepMerge } from '../../../utils/deep-merge'
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10_000
 
@@ -42,49 +40,13 @@ export class ProjectLoader extends WorldSystem {
   }
 
   async onWorldLoad(): Promise<void> {
-    await Promise.all([
-      this.loadScript('/widgets.js'),
-      this.loadScript('/events.js'),
-      this.loadScript('/locales.js'),
-      ...this.editorConfig.libraries
-        .map((name) => ([
-          `${name}__widgets.js`,
-          `${name}__events.js`,
-          `${name}__locales.js`,
-        ]))
-        .flat()
-        .map((src) => this.loadScript(src)),
-    ])
+    if (process.env.NODE_ENV === 'production') {
+      await this.loadScript('./extension.js')
+    }
 
     this.setUpData({
-      events: [
-        ...window.events
-          ? Object.values(window.events).filter((entry) => typeof entry === 'string')
-          : [],
-        ...this.editorConfig.libraries
-          .map((name) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const libraryEvents = window[`${name}__events`] as Record<string, unknown> | undefined
-
-            return libraryEvents
-              ? Object.values(libraryEvents).filter((entry) => typeof entry === 'string')
-              : []
-          })
-          .flat(),
-      ],
-      locales: this.editorConfig.libraries.reduce((acc: Resource, name) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const libraryLocales = window[`${name}__locales`]?.default as Resource | undefined
-
-        if (libraryLocales) {
-          return deepMerge(libraryLocales, acc)
-        }
-
-        return acc
-      }, window.locales?.default ?? {}),
+      events: window.extension?.default.events,
+      locales: window.extension?.default.locales,
     })
   }
 

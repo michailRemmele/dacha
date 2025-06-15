@@ -8,6 +8,7 @@ export {
   useStore,
   useBehaviors,
 } from './view/hooks'
+export { defineWidget } from './hocs'
 export { Field } from './view/modules/inspector/components/field'
 export { DependencyField } from './view/modules/inspector/components/dependency-field'
 export { Widget } from './view/modules/inspector/components/widget'
@@ -22,13 +23,6 @@ export { ColorInput, LabelledColorInput } from './view/modules/inspector/compone
 export { FileInput, LabelledFileInput } from './view/modules/inspector/components/file-input'
 export { MultiField } from './view/modules/inspector/components/multi-field'
 export { Panel } from './view/modules/inspector/components/panel'
-
-export {
-  DefineSystem,
-  DefineComponent,
-  DefineField,
-  DefineBehavior,
-} from './view/modules/inspector/decorators'
 
 export const commands = {
   setValue,
