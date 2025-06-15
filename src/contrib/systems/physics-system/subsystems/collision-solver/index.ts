@@ -13,13 +13,13 @@ const REACTION_FORCE_VECTOR_Y = -1;
 
 export class CollisionSolver {
   private scene: Scene;
-  private gravitationalAcceleration: number;
+  private gravity: number;
 
   constructor(options: SceneSystemOptions) {
-    const { scene, gravitationalAcceleration } = options as PhysicsSystemOptions;
+    const { scene, gravity } = options as PhysicsSystemOptions;
 
     this.scene = scene;
-    this.gravitationalAcceleration = gravitationalAcceleration;
+    this.gravity = gravity;
 
     this.scene.addEventListener(Collision, this.handleCollision);
   }
@@ -59,7 +59,7 @@ export class CollisionSolver {
 
     if (useGravity && mtv.y && Math.sign(mtv.y) === -1 && !mtv.x) {
       const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
-      reactionForce.multiplyNumber(mass * this.gravitationalAcceleration);
+      reactionForce.multiplyNumber(mass * this.gravity);
 
       actor.dispatchEventImmediately(AddForce, {
         value: reactionForce,

@@ -10,12 +10,12 @@ export type CheckIntersectionFn = (
 ) => Intersection | false;
 
 export const intersectionCheckers: Record<string, Record<string, CheckIntersectionFn>> = {
-  boxCollider: {
-    boxCollider: checkBoxesIntersection,
-    circleCollider: checkBoxAndCircleIntersection,
+  box: {
+    box: checkBoxesIntersection,
+    circle: checkBoxAndCircleIntersection,
   },
-  circleCollider: {
-    circleCollider: checkCirclesIntersection,
-    boxCollider: checkBoxAndCircleIntersection,
+  circle: {
+    circle: checkCirclesIntersection,
+    box: checkBoxAndCircleIntersection,
   },
 };

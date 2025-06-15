@@ -1,25 +1,21 @@
-import type { ColliderContainer } from '../../../../../components';
-import type { BoxCollider } from '../../../../../components/collider-container/box-collider';
-import type { CircleCollider } from '../../../../../components/collider-container/circle-collider';
+import type { Collider } from '../../../../../components';
 import type { OrientationData } from '../types';
 
 export const checkCollider = (
-  colliderContainer: ColliderContainer,
+  collider: Collider,
   colliderOld: OrientationData['collider'],
 ): boolean => {
-  if (colliderContainer.type !== colliderOld.type) {
+  if (collider.type !== colliderOld.type) {
     return true;
   }
 
-  if (colliderContainer.type === 'boxCollider') {
-    const collider = colliderContainer.collider as BoxCollider;
+  if (collider.type === 'box') {
     return collider.centerX !== colliderOld.centerX
       || collider.centerY !== colliderOld.centerY
       || collider.sizeX !== colliderOld.sizeX
       || collider.sizeY !== colliderOld.sizeY;
   }
 
-  const collider = colliderContainer.collider as CircleCollider;
   return collider.centerX !== colliderOld.centerX
     || collider.centerY !== colliderOld.centerY
     || collider.radius !== colliderOld.radius;

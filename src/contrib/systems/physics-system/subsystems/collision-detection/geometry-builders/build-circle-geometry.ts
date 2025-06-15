@@ -1,12 +1,11 @@
 import type {
-  ColliderContainer,
+  Collider,
   Transform,
 } from '../../../../../components';
-import type { CircleCollider } from '../../../../../components/collider-container/circle-collider';
 import type { CircleGeometry } from '../types';
 
 export const buildCircleGeometry = (
-  container: ColliderContainer,
+  collider: Collider,
   transform: Transform,
 ): CircleGeometry => {
   const {
@@ -15,13 +14,13 @@ export const buildCircleGeometry = (
     scaleX,
     scaleY,
   } = transform;
-  const { centerX, centerY, radius } = container.collider as CircleCollider;
+  const { centerX, centerY, radius } = collider;
 
   const center = {
     x: centerX + offsetX,
     y: centerY + offsetY,
   };
-  const scaledRadius = radius * Math.max(scaleX, scaleY);
+  const scaledRadius = radius! * Math.max(scaleX, scaleY);
 
   return {
     center,
