@@ -74,14 +74,14 @@ describe('Contrib -> components -> Collider', () => {
 
     expect(originalBox).not.toBe(cloneBox);
 
-    const originalCircleCollider = new Collider({
+    const originalCircle = new Collider({
       type: 'circle',
       radius: 20,
       centerX: 1,
       centerY: 2,
     });
-    const cloneCircleCollider = originalCircleCollider.clone();
+    const cloneCircle = originalCircle.clone();
 
-    expect(originalCircleCollider).not.toBe(cloneCircleCollider);
+    expect(originalCircle).not.toBe(cloneCircle);
   });
 });
