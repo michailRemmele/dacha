@@ -6,6 +6,6 @@ import { buildCircleAABB } from './build-circle-aabb';
 export type BuildAABBFn = (geometry: Geometry) => AABB;
 
 export const aabbBuilders: Record<string, BuildAABBFn> = {
-  boxCollider: buildBoxAABB,
-  circleCollider: buildCircleAABB,
+  box: buildBoxAABB,
+  circle: buildCircleAABB,
 };

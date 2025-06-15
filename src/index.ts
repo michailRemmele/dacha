@@ -6,6 +6,7 @@ export * from './engine/consts';
 export * from './engine/types';
 export { WorldSystem, SceneSystem } from './engine/system';
 export type {
+  System,
   WorldSystemOptions,
   SceneSystemOptions,
   UpdateOptions,
