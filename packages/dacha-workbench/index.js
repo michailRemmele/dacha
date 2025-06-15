@@ -66,7 +66,9 @@ const createWindow = () => {
 
   win.loadURL(`http://localhost:${server.address().port}`)
 
-  applyExtension(editorConfig, expressApp, win)
+  if (!isDev) {
+    applyExtension(expressApp, win)
+  }
 
   watchProjectConfig(editorConfig.projectConfig, win)
 }

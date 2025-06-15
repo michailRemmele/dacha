@@ -8,9 +8,8 @@ import { WidgetFieldProvider } from './widget-field-context'
 export const Widget: FC<WidgetProps> = ({ path, fields, context }) => (
   <div>
     {fields?.map((field) => (
-      <WidgetFieldProvider path={path} data={context}>
+      <WidgetFieldProvider key={field.name} path={path} data={context}>
         <WidgetField
-          key={field.name}
           field={field}
           path={path}
         />

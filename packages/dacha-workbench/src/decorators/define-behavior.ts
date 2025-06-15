@@ -1,13 +1,20 @@
-import { schemaRegistry } from '../schema-registry'
-import type { WidgetSchema, Field } from '../../../../types/widget-schema'
+import type { WidgetSchema, Field } from '../types/widget-schema'
+import { widgetRegistry } from '../hocs/widget-registry'
 
-import { defineMetaProperty, mergeFields, buildInitialState } from './utils'
+import { schemaRegistry } from './schema-registry'
+
+import {
+  defineMetaProperty,
+  mergeFields,
+  buildInitialState,
+  isEditor,
+} from './utils'
 import type { Constructor } from './types'
 
 type BehaviorConstructor<T = unknown>
   = Constructor<T> & { behaviorName: string };
 
-interface DefineBehaviorOptions extends WidgetSchema {
+interface DefineBehaviorOptions extends Omit<WidgetSchema, 'view'> {
   name: string
   systemName?: string
 }
@@ -20,6 +27,10 @@ export function DefineBehavior({
   return (constructor: BehaviorConstructor): void => {
     defineMetaProperty(constructor, 'behaviorName', name)
 
+    if (!isEditor()) {
+      return
+    }
+
     const fields = mergeFields(
       widget.fields,
       Reflect.getMetadata('schema:fields', constructor) as Field[] | undefined,
@@ -31,6 +42,7 @@ export function DefineBehavior({
 
     schemaRegistry.addWidget(systemName ? `behavior.${systemName}` : 'behavior', name, {
       ...widget,
+      view: widgetRegistry.getWidget(name),
       fields,
       getInitialState,
     })

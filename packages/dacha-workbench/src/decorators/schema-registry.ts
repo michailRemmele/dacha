@@ -1,4 +1,4 @@
-import type { WidgetSchema } from '../../../../types/widget-schema'
+import type { WidgetSchema } from '../types/widget-schema'
 
 class SchemaRegistry {
   private registry: Map<string, Map<string, WidgetSchema>>

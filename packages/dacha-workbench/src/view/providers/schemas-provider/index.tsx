@@ -8,7 +8,6 @@ import {
   useSystems,
   useComponents,
 } from '../../hooks'
-import { schemaRegistry } from '../../modules/inspector/schema-registry'
 
 import { NAMESPACE_EDITOR, NAMESPACE_EXTENSION } from './consts'
 

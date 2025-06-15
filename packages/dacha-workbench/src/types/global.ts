@@ -49,6 +49,12 @@ declare global {
     widgets?: unknown
     events?: Record<string, unknown>
     locales?: { default?: Resource }
+    extension?: {
+      default: {
+        events: string[]
+        locales: Resource
+      }
+    }
     DachaWorkbench: Record<string, unknown>
   }
 }

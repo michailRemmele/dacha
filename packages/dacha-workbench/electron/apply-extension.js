@@ -1,15 +1,10 @@
 const webpack = require('webpack')
 const middleware = require('webpack-dev-middleware')
 
-const getExtensionWebpackConfig = require('../webpack.extension.config')
+const getWebpackConfig = require('../webpack.extension.config')
 
-const applyExtension = (config, app, window) => {
-  const webpackConfig = getExtensionWebpackConfig(config)
-  if (!webpackConfig) {
-    return
-  }
-
-  const compiler = webpack(webpackConfig)
+const applyExtension = (app, window) => {
+  const compiler = webpack(getWebpackConfig())
 
   let lastHash
   compiler.hooks.afterDone.tap('extensionWatcher', (stats) => {
