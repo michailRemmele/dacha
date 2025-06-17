@@ -1,13 +1,18 @@
-import React, { useMemo, FC } from 'react'
+import React, {
+  useState,
+  useContext,
+  useMemo,
+  useEffect,
+  FC,
+} from 'react'
 import i18next from 'i18next'
 
+import { schemaRegistry } from '../../../decorators/schema-registry'
 import type { WidgetSchema } from '../../../types/widget-schema'
 import { componentsSchema, systemsSchema } from '../../modules/inspector/widgets'
-import {
-  useExtension,
-  useSystems,
-  useComponents,
-} from '../../hooks'
+import { useExtension } from '../../hooks'
+import { EngineContext } from '../engine-provider'
+import { EventType } from '../../../events'
 
 import { NAMESPACE_EDITOR, NAMESPACE_EXTENSION } from './consts'
 
@@ -34,10 +39,11 @@ export const SchemasContext = React.createContext<SchemasData>({
 export const SchemasProvider: FC<SchemasProviderProps> = ({
   children,
 }): JSX.Element => {
+  const { world } = useContext(EngineContext)
   const extension = useExtension()
 
-  const extComponentsSchema = useComponents()
-  const extSystemsSchema = useSystems()
+  const [extComponentsSchema, setExtComponentsSchema] = useState(() => schemaRegistry.getGroup('component'))
+  const [extSystemsSchema, setExtSystemsSchema] = useState(() => schemaRegistry.getGroup('system'))
 
   const components = useMemo(() => ([] as Array<SchemasDataEntry>).concat(
     Object.keys(componentsSchema).map((key) => ({
@@ -67,9 +73,25 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
 
   useMemo(() => {
     Object.keys(extension.locales).forEach((lng) => {
+      if (i18next.hasResourceBundle(lng, NAMESPACE_EXTENSION)) {
+        i18next.removeResourceBundle(lng, NAMESPACE_EXTENSION)
+      }
       i18next.addResourceBundle(lng, NAMESPACE_EXTENSION, extension.locales[lng])
     })
   }, [extension])
+
+  useEffect(() => {
+    const handleExtensionUpdated = (): void => {
+      setExtComponentsSchema(schemaRegistry.getGroup('component'))
+      setExtSystemsSchema(schemaRegistry.getGroup('system'))
+    }
+
+    world.addEventListener(EventType.ExtensionUpdated, handleExtensionUpdated)
+
+    return () => {
+      world.removeEventListener(EventType.ExtensionUpdated, handleExtensionUpdated)
+    }
+  }, [world])
 
   const context = useMemo(() => ({
     components,

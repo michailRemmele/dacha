@@ -39,6 +39,7 @@ export interface ElectronAPI {
   onCopy: (callback: () => void) => () => void
   onPaste: (callback: () => void) => () => void
   onDelete: (callback: () => void) => () => void
+  onNeedsUpdate: (callback: () => void) => () => void
   loadPersistentStorage: () => Record<string, unknown>
   savePersistentStorage: (state: Record<string, unknown>) => void
 }

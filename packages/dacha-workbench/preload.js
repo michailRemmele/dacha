@@ -47,4 +47,8 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.on(MESSAGES.DELETE, callback)
     return () => ipcRenderer.removeListener(MESSAGES.DELETE, callback)
   },
+  onNeedsUpdate: (callback) => {
+    ipcRenderer.on(MESSAGES.NEEDS_UPDATE, callback)
+    return () => ipcRenderer.removeListener(MESSAGES.NEEDS_UPDATE, callback)
+  },
 })

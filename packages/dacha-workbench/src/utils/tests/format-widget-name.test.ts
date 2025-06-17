@@ -19,5 +19,8 @@ describe('Utils -> formatWidgetName()', () => {
     expect(formatWidgetName('example long name')).toBe('Example Long Name')
     expect(formatWidgetName('example-long-name')).toBe('Example Long Name')
     expect(formatWidgetName('__example_long_name_')).toBe('Example Long Name')
+    expect(formatWidgetName('example2D')).toBe('Example 2 D')
+    expect(formatWidgetName('example212example')).toBe('Example 212 Example')
+    expect(formatWidgetName('EXAMPLE')).toBe('EXAMPLE')
   })
 })

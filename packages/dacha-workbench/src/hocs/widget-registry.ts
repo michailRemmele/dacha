@@ -19,6 +19,10 @@ class WidgetRegistry {
   getWidget(name: string): FC<WidgetProps> | undefined {
     return this.registry.get(name)
   }
+
+  clear(): void {
+    this.registry.clear()
+  }
 }
 
 export const widgetRegistry = new WidgetRegistry()

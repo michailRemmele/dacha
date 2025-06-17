@@ -10,4 +10,5 @@ module.exports = {
   CUT: 'CUT',
   PASTE: 'PASTE',
   DELETE: 'DELETE',
+  NEEDS_UPDATE: 'NEEDS_UPDATE',
 }

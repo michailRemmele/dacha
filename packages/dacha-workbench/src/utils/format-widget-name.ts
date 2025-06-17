@@ -8,6 +8,8 @@ export const formatWidgetName = (name: string): string => {
   return name
     .replace(/[_-]+/g, ' ')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/([0-9])([a-zA-Z])/g, '$1 $2')
+    .replace(/([a-zA-Z])([0-9])/g, '$1 $2')
     .replace(/\s+/g, ' ')
     .trim()
     .replace(/^./, (s) => s.toUpperCase())
