@@ -48,10 +48,10 @@ module.exports = () => {
 
   return `
     ${libWidgets.map((name) => `import '${name}/widgets';`).join('\n')}
-    ${libLocales.map((name, index) => `import * as libLocales${index} from '${name}/locales';`).join('\n')}
+    ${libLocales.map((name, index) => `import libLocales${index} from '${name}/locales';`).join('\n')}
     ${libEvents.map((name, index) => `import * as libEvents${index} from '${name}/events';`).join('\n')}
     ${libraries.map((name) => (`import '${name}';`)).join('\n')}
-    ${fs.existsSync(normalizePath(locales)) ? `import * as locales from '${getImportPath(locales)}';` : ''}
+    ${fs.existsSync(normalizePath(locales)) ? `import locales from '${getImportPath(locales)}';` : ''}
     ${fs.existsSync(normalizePath(events)) ? `import * as events from '${getImportPath(events)}';` : ''}
 
     function importAll(r) {

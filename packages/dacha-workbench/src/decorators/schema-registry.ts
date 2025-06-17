@@ -29,6 +29,10 @@ class SchemaRegistry {
       ? Object.fromEntries(this.registry.get(groupName)!)
       : undefined
   }
+
+  clear(): void {
+    this.registry.clear()
+  }
 }
 
 export const schemaRegistry = new SchemaRegistry()

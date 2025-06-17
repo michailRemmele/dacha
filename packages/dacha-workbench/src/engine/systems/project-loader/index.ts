@@ -7,6 +7,8 @@ import type {
 } from 'dacha'
 import * as Events from 'dacha/events'
 
+import { schemaRegistry } from '../../../decorators/schema-registry'
+import { widgetRegistry } from '../../../hocs/widget-registry'
 import { EventType } from '../../../events'
 import { CommanderStore } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
@@ -20,6 +22,8 @@ interface ProjectLoaderResources {
 export class ProjectLoader extends WorldSystem {
   private world: World
   private editorConfig: EditorConfig
+
+  private extensionScript?: HTMLScriptElement
 
   private autoSaveInterval: number
 
@@ -37,6 +41,27 @@ export class ProjectLoader extends WorldSystem {
     window.electron.onSave(() => {
       this.saveProjectConfig()
     })
+
+    window.electron.onNeedsUpdate(() => {
+      void this.handleNeedsUpdate()
+    })
+  }
+
+  private handleNeedsUpdate = async (): Promise<void> => {
+    this.extensionScript?.remove()
+    this.extensionScript = undefined
+
+    widgetRegistry.clear()
+    schemaRegistry.clear()
+
+    await this.loadScript('./extension.js')
+
+    this.setUpData({
+      events: window.extension?.default.events,
+      locales: window.extension?.default.locales,
+    })
+
+    this.world.dispatchEvent(EventType.ExtensionUpdated)
   }
 
   async onWorldLoad(): Promise<void> {
@@ -62,6 +87,8 @@ export class ProjectLoader extends WorldSystem {
       }
 
       document.body.appendChild(script)
+
+      this.extensionScript = script
     })
   }
 
