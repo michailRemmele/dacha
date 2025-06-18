@@ -38,6 +38,10 @@ const getLastUpdateHash = () => {
 const getCurrentHash = () => {
   const fileBuffer = fs.readFileSync(path.resolve(projectConfig))
 
+  if (fileBuffer.length === 0) {
+    throw new Error('Error while calculating project config hash. File is empty')
+  }
+
   const hashSum = crypto.createHash('sha256')
   hashSum.update(fileBuffer)
 

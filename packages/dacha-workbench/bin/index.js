@@ -39,6 +39,7 @@ program
       electron = spawn(
         process.platform === 'win32' ? 'electron.cmd' : 'electron',
         [path.join(__dirname, '../index')],
+        { shell: true },
       )
     } else {
       // Run application in production mode using binary package
