@@ -44,12 +44,20 @@ const server = expressApp.listen(0)
 
 const createWindow = () => {
   const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    show: false,
+    backgroundColor: '#ffffff',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       sandbox: false,
     },
   })
-  win.maximize()
+  win.once('ready-to-show', () => {
+    win.show()
+  })
 
   Menu.setApplicationMenu(getMenu(win))
 
