@@ -57,6 +57,7 @@
     "systemList.addNew.button.title": "Add System",
 
     "entityList.content.empty.title": "No params required",
+    "entityList.content.noSchema.title": "Schema not found",
 
     "multifield.field.title": "Field {{index}}",
     "multifield.field.name.title": "Name",

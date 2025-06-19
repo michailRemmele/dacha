@@ -6,7 +6,6 @@ import { CustomWidget } from '../custom-widget'
 
 import { CONFIG_KEY_MAP } from './consts'
 import type { Entity, EntityType } from './types'
-
 import { EntityFormStyled } from './entity-list.style'
 
 interface EntityFormProps extends Entity {
@@ -17,12 +16,20 @@ interface EntityFormProps extends Entity {
 export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
   const { t, i18n } = useTranslation()
 
-  const { schema, name } = data
+  const { name, schema, namespace } = data
 
   const widgetPath = useMemo(
     () => path.concat(type, `name:${name}`, CONFIG_KEY_MAP[type]),
     [path, type, name],
   )
+
+  if (!schema || !namespace) {
+    return (
+      <EntityFormStyled>
+        {t('inspector.entityList.content.noSchema.title')}
+      </EntityFormStyled>
+    )
+  }
 
   if (schema.view) {
     return (
@@ -30,7 +37,7 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
         fields={schema.fields || []}
         path={widgetPath}
         component={schema.view}
-        namespace={data.namespace}
+        namespace={namespace}
       />
     )
   }
@@ -44,7 +51,7 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
   }
 
   return (
-    <I18nextProvider i18n={i18n} defaultNS={data.namespace}>
+    <I18nextProvider i18n={i18n} defaultNS={namespace}>
       <Widget
         fields={schema.fields}
         path={widgetPath}

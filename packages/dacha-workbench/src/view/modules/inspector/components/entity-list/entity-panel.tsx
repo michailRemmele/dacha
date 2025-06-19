@@ -5,6 +5,7 @@ import { useCommander } from '../../../../hooks'
 import { deleteValue } from '../../../../commands'
 
 import { EntityForm } from './entity-form'
+import { CollapsePanelCSS } from './entity-list.style'
 import type { Entity, EntityType } from './types'
 
 export interface EntityPanelProps {
@@ -30,6 +31,7 @@ export const EntityPanel = ({
 
   return (
     <CollapsePanel
+      css={CollapsePanelCSS(!entity.data.schema)}
       title={entity.label}
       onDelete={handleDelete}
       expandExtra={expandExtra}
