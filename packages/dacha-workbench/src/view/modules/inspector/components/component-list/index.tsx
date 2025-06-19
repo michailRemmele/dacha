@@ -26,7 +26,7 @@ export const ComponentList: FC = () => {
       addedEntities={addedComponents}
       type="components"
       placeholder={t('inspector.componentList.addNew.button.title')}
-      sortByAddition={false}
+      sort
     />
   )
 }

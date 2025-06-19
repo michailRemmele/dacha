@@ -17,7 +17,7 @@ interface EntityListProps {
   addedEntities: Set<string>
   placeholder: string
   type: EntityType
-  sortByAddition?: boolean
+  sort?: boolean
   onDragEntity?: (from: number, to: number) => void
   draggable?: boolean
 }
@@ -28,7 +28,7 @@ export const EntityList = ({
   addedEntities,
   placeholder,
   type,
-  sortByAddition = true,
+  sort = false,
   onDragEntity,
   draggable,
 }: EntityListProps): JSX.Element => {
@@ -40,21 +40,46 @@ export const EntityList = ({
     const entitesMap = entities.reduce((acc, entity) => {
       acc[entity.name] = entity
       return acc
-    }, {} as Record<string, SchemasDataEntry>)
+    }, {} as Record<string, SchemasDataEntry | undefined>)
 
-    const sortedEntities = sortByAddition
-      ? Array.from(addedEntities).map((name) => entitesMap[name]).filter(Boolean)
-      : entities.filter((entity) => addedEntities.has(entity.name))
+    const widgets = Array.from(addedEntities)
+      .map((name) => {
+        const entity = entitesMap[name]
 
-    return sortedEntities
-      .map((entity) => ({
-        id: `${pathKey}.${entity.name}`,
-        label: entity.schema.title
-          ? t(entity.schema.title, { ns: entity.namespace })
-          : formatWidgetName(entity.name),
-        data: entity,
-      }))
-  }, [pathKey, entities, addedEntities, sortByAddition])
+        if (!entity) {
+          return {
+            id: `${pathKey}.${name}`,
+            label: formatWidgetName(name),
+            data: { name },
+          }
+        }
+
+        return {
+          id: `${pathKey}.${entity.name}`,
+          label: entity.schema.title
+            ? t(entity.schema.title, { ns: entity.namespace })
+            : formatWidgetName(entity.name),
+          data: entity,
+        }
+      })
+
+    if (sort) {
+      widgets.sort((a, b) => {
+        const labelA = a.label.toLowerCase()
+        const labelB = b.label.toLowerCase()
+
+        if (labelA < labelB) {
+          return -1
+        }
+        if (labelA > labelB) {
+          return 1
+        }
+        return 0
+      })
+    }
+
+    return widgets
+  }, [pathKey, entities, addedEntities, sort])
 
   return (
     <EntityListStyled>
