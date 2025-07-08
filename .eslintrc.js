@@ -20,6 +20,7 @@ const commonRules = {
   'no-restricted-properties': 1,
   'prefer-destructuring': 'warn',
   'prefer-exponentiation-operator': 'warn',
+  'no-console': ['error', { allow: ['warn', 'error'] }],
 };
 
 module.exports = {
