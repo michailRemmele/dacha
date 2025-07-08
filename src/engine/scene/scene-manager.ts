@@ -80,7 +80,12 @@ export class SceneManager {
       acc[scene.id] = scene;
       return acc;
     }, {});
-    this.systemConfigs = systemConfigs.filter((config) => this.availableSystems[config.name]);
+    this.systemConfigs = systemConfigs.filter((config) => {
+      if (!this.availableSystems[config.name]) {
+        console.warn(`System not found: ${config.name}`);
+      }
+      return this.availableSystems[config.name];
+    });
     this.templateCollection = templateCollection;
     this.globalOptions = globalOptions;
     this.resources = resources;
