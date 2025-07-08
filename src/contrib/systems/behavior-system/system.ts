@@ -8,8 +8,8 @@ import type { ActorSpawner } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
 import { Behaviors } from '../../components';
-import { RemoveActor } from '../../../engine/events';
-import type { RemoveActorEvent } from '../../../engine/events';
+import { AddActor, RemoveActor } from '../../../engine/events';
+import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 
 import type { Behavior, BehaviorOptions, BehaviorConstructor } from './types';
 
@@ -17,7 +17,7 @@ export class BehaviorSystem extends SceneSystem {
   private behaviorCollection: ActorCollection;
   private actorSpawner: ActorSpawner;
   private globalOptions: Record<string, unknown>;
-  private behaviors: Record<string, BehaviorConstructor>;
+  private behaviors: Record<string, BehaviorConstructor | undefined>;
   private world: World;
   private scene: Scene;
   private activeBehaviors: Record<string, Behavior[]>;
@@ -50,11 +50,17 @@ export class BehaviorSystem extends SceneSystem {
     }, {} as Record<string, BehaviorConstructor>);
 
     this.activeBehaviors = {};
+  }
 
+  onSceneEnter(): void {
+    this.behaviorCollection.forEach((actor) => this.setUpBehavior(actor));
+
+    this.behaviorCollection.addEventListener(AddActor, this.handleActorAdd);
     this.behaviorCollection.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   onSceneDestroy(): void {
+    this.behaviorCollection.removeEventListener(AddActor, this.handleActorAdd);
     this.behaviorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.behaviorCollection.forEach((actor) => {
@@ -62,6 +68,11 @@ export class BehaviorSystem extends SceneSystem {
       delete this.activeBehaviors[actor.id];
     });
   }
+
+  private handleActorAdd = (event: AddActorEvent): void => {
+    const { actor } = event;
+    this.setUpBehavior(actor);
+  };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
     const { actor } = event;
@@ -71,26 +82,29 @@ export class BehaviorSystem extends SceneSystem {
 
   private setUpBehavior(actor: Actor): void {
     const { list } = actor.getComponent(Behaviors);
-    this.activeBehaviors[actor.id] = list.map((config) => {
-      const options: BehaviorOptions = {
-        ...config.options,
-        actor,
-        actorSpawner: this.actorSpawner,
-        world: this.world,
-        scene: this.scene,
-        globalOptions: this.globalOptions,
-      };
-      const BehaviorClass = this.behaviors[config.name];
-      return new BehaviorClass(options);
-    });
+    this.activeBehaviors[actor.id] = list
+      .filter((config) => {
+        if (!this.behaviors[config.name]) {
+          console.warn(`Behavior not found: ${config.name}`);
+        }
+        return this.behaviors[config.name];
+      })
+      .map((config) => {
+        const options: BehaviorOptions = {
+          ...config.options,
+          actor,
+          actorSpawner: this.actorSpawner,
+          world: this.world,
+          scene: this.scene,
+          globalOptions: this.globalOptions,
+        };
+        const BehaviorClass = this.behaviors[config.name]!;
+        return new BehaviorClass(options);
+      });
   }
 
   update(options: UpdateOptions): void {
     this.behaviorCollection.forEach((actor) => {
-      if (!this.activeBehaviors[actor.id]) {
-        this.setUpBehavior(actor);
-      }
-
       this.activeBehaviors[actor.id].forEach((behavior) => behavior.update?.(options));
     });
   }
