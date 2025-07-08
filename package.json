@@ -1,6 +1,6 @@
 {
   "name": "dacha",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "exports": {
