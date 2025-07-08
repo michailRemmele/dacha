@@ -4,6 +4,7 @@ import { CollapsePanel } from '../collapse-panel'
 import { useCommander } from '../../../../hooks'
 import { deleteValue } from '../../../../commands'
 
+import { CONFIG_KEY_MAP, PATH_FIELD_MAP } from './consts'
 import { EntityForm } from './entity-form'
 import { CollapsePanelCSS } from './entity-list.style'
 import type { Entity, EntityType } from './types'
@@ -23,7 +24,8 @@ export const EntityPanel = ({
 }: EntityPanelProps): JSX.Element => {
   const { dispatch } = useCommander()
 
-  const entityPath = useMemo(() => path.concat(type, `name:${entity.data.name}`), [entity, path, type])
+  const entityPath = useMemo(() => path.concat(PATH_FIELD_MAP[type], `name:${entity.data.name}`), [entity, path, type])
+  const widgetPath = useMemo(() => entityPath.concat(CONFIG_KEY_MAP[type]), [entityPath, type])
 
   const handleDelete = useCallback(() => {
     dispatch(deleteValue(entityPath))
@@ -36,7 +38,7 @@ export const EntityPanel = ({
       onDelete={handleDelete}
       expandExtra={expandExtra}
     >
-      <EntityForm {...entity} path={path} type={type} />
+      <EntityForm {...entity} path={widgetPath} />
     </CollapsePanel>
   )
 }

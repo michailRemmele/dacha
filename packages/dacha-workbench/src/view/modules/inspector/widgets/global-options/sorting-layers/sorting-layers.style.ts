@@ -8,6 +8,10 @@ export const LayersStyled = styled.div`
 
 export const ButtonCSS = css`
   width: 100%;
+  margin-bottom: 5px;
+`
+
+export const RemoveButtonCSS = css`
   flex-shrink: 0;
 `
 

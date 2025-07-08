@@ -22,6 +22,8 @@ const commonRules = {
   'import/no-dynamic-require': 0,
   'global-require': 0,
   'no-continue': 0,
+  'no-nested-ternary': 0,
+  'no-console': ['error', { allow: ['warn', 'error'] }],
 }
 
 const reactRules = {

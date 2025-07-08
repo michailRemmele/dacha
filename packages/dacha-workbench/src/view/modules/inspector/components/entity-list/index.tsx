@@ -20,6 +20,7 @@ interface EntityListProps {
   sort?: boolean
   onDragEntity?: (from: number, to: number) => void
   draggable?: boolean
+  onCreate: (name: string, path: string) => void
 }
 
 export const EntityList = ({
@@ -31,6 +32,7 @@ export const EntityList = ({
   sort = false,
   onDragEntity,
   draggable,
+  onCreate,
 }: EntityListProps): JSX.Element => {
   const { t } = useTranslation()
 
@@ -101,6 +103,7 @@ export const EntityList = ({
         addedEntities={addedEntities}
         placeholder={placeholder}
         type={type}
+        onCreate={onCreate}
       />
     </EntityListStyled>
   )

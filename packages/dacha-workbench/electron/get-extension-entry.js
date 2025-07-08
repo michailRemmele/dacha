@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 
 const normalizePath = require('./utils/normilize-path')
-const getEditorConfig = require('./utils/get-editor-config')
+const getEditorConfig = require('./get-editor-config')
 
 const getImportPath = (entry) => {
   const entryExt = path.extname(entry)

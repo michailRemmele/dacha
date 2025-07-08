@@ -3,7 +3,7 @@ const path = require('path')
 const crypto = require('crypto')
 
 const { saveFile, readFile } = require('./file-system')
-const getEditorConfig = require('./utils/get-editor-config')
+const getEditorConfig = require('./get-editor-config')
 
 const { projectConfig } = getEditorConfig()
 

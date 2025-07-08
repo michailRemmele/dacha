@@ -1,4 +1,9 @@
-import { useContext, useMemo, FC } from 'react'
+import {
+  useContext,
+  useMemo,
+  useCallback,
+  FC,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ActorConfig } from 'dacha'
 
@@ -19,14 +24,19 @@ export const ComponentList: FC = () => {
     new Set<string>(),
   ), [components])
 
+  const handleCreate = useCallback((name: string, filepath: string) => {
+    window.electron.createComponent(name, filepath)
+  }, [])
+
   return (
     <EntityList
       path={path}
       entities={availableComponents}
       addedEntities={addedComponents}
-      type="components"
+      type="component"
       placeholder={t('inspector.componentList.addNew.button.title')}
       sort
+      onCreate={handleCreate}
     />
   )
 }

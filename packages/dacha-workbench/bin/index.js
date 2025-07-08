@@ -53,6 +53,7 @@ program
     }
 
     electron.stdout.on('data', (data) => {
+      // eslint-disable-next-line no-console
       console.log(`stdout: ${data}`)
     })
 

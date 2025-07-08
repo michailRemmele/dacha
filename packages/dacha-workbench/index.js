@@ -9,11 +9,13 @@ const path = require('path')
 
 const getMenu = require('./electron/get-menu')
 const getAssetsDialog = require('./electron/get-assets-dialog')
+const getPathSelectionDialog = require('./electron/get-path-selection-dialog')
 const handleCloseApp = require('./electron/handle-close-app')
 const MESSAGES = require('./electron/messages')
-const getEditorConfig = require('./electron/utils/get-editor-config')
+const getEditorConfig = require('./electron/get-editor-config')
 const applyExtension = require('./electron/apply-extension')
 const watchProjectConfig = require('./electron/watch-project-config')
+const normalizePath = require('./electron/utils/normilize-path')
 
 const editorConfig = getEditorConfig()
 
@@ -64,6 +66,10 @@ const createWindow = () => {
   ipcMain.handle(
     MESSAGES.ASSETS_DIALOG,
     (_, ...args) => getAssetsDialog(editorConfig.assets, ...args),
+  )
+  ipcMain.handle(
+    MESSAGES.PATH_DIALOG,
+    (_, ...args) => getPathSelectionDialog(normalizePath(editorConfig.contextRoot), ...args),
   )
   ipcMain.on(MESSAGES.SET_UNSAVED_CHANGES, (_, unsavedChanges) => {
     win.off('close', handleCloseApp)

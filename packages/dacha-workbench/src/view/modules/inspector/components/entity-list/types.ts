@@ -6,4 +6,4 @@ export interface Entity {
   data: SchemasDataEntry | (Partial<SchemasDataEntry> & Pick<SchemasDataEntry, 'name'>)
 }
 
-export type EntityType = 'components' | 'systems'
+export type EntityType = 'component' | 'system'

@@ -1,6 +1,10 @@
 import styled from '@emotion/styled'
 import { css } from '@emotion/react'
 
+export const MultiFieldStyled = styled.div`
+  margin: 5px 0;
+`
+
 export const FieldsStyled = styled.ul`
   padding: 0;
   margin: 0;
@@ -8,7 +12,7 @@ export const FieldsStyled = styled.ul`
 `
 
 export const FieldStyled = styled.li`
-  margin: 5px 0;
+  margin-bottom: 5px;
 `
 
 export const NoFieldsStyled = styled.div`
@@ -20,5 +24,5 @@ export const NoFieldsStyled = styled.div`
 export const ButtonCSS = css`
   width: 100%;
 
-  margin-bottom: 5px;
+  margin-top: 5px;
 `

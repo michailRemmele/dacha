@@ -1,6 +1,9 @@
 const path = require('path')
 
-const normalizePath = require('./normilize-path')
+const getSystemTemplate = require('./script-templates/get-system-template')
+const getComponentTemplate = require('./script-templates/get-component-template')
+const getBehaviorTemplate = require('./script-templates/get-behavior-template')
+const normalizePath = require('./utils/normilize-path')
 
 const getEditorConfig = () => {
   const config = require(path.resolve(process.env.EDITOR_CONFIG))
@@ -18,6 +21,11 @@ const getEditorConfig = () => {
     locales: config.locales ?? './src/locales/index.ts',
     libraries: config.libraries ?? [],
     formatWidgetNames: config.formatWidgetNames ?? true,
+    templates: {
+      system: config.templates?.system ?? getSystemTemplate,
+      component: config.templates?.component ?? getComponentTemplate,
+      behavior: config.templates?.behavior ?? getBehaviorTemplate,
+    },
   }
 }
 
