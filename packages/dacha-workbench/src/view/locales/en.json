@@ -59,6 +59,19 @@
     "entityList.content.empty.title": "No params required",
     "entityList.content.noSchema.title": "Schema not found",
 
+    "entityPicker.createNew.button.title": "Create New",
+    "entityPicker.createNew.modal.system.title": "New System",
+    "entityPicker.createNew.modal.component.title": "New Component",
+    "entityPicker.createNew.modal.behavior.title": "New Behavior",
+    "entityPicker.createNew.modal.field.path.label": "File Path:",
+    "entityPicker.createNew.modal.field.baseDirectory.label": "Base Directory",
+    "entityPicker.createNew.modal.field.customizePath.label": "Customize Path",
+    "entityPicker.createNew.modal.field.subdirectory.label": "Subdirectory",
+    "entityPicker.createNew.modal.field.filename.label": "File Name",
+    "entityPicker.createNew.modal.field.name.label": "Class Name",
+    "entityPicker.createNew.modal.button.create.label": "Create",
+    "entityPicker.createNew.modal.button.cancel.label": "Cancel",
+
     "multifield.field.title": "Field {{index}}",
     "multifield.field.name.title": "Name",
     "multifield.field.type.title": "Type",
@@ -154,7 +167,8 @@
 
   "components.behaviors.behavior.name.title": "Name",
   "components.behaviors.behavior.title": "Behavior {{index}}",
-  "components.behaviors.behavior.addNew.title": "Add New Behavior",
+  "components.behaviors.behavior.addNew.title": "Add Behavior",
+  "components.behaviors.behavior.noSchema.title": "Schema not found",
 
   "globalOptions.sortingLayers.title": "Sorting Layers",
   "globalOptions.sortingLayers.addNew.title": "Add Layer",

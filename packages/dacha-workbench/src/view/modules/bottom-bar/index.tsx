@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 
-import { ReloadButton, CanvasCoordinates } from './components'
+import { ReloadButton, CanvasCoordinates, UpdateIndicator } from './components'
 import {
   BottomBarStyled,
   LeftSectionStyled,
@@ -14,6 +14,7 @@ export const BottomBar: FC = () => (
     </LeftSectionStyled>
     <RightSectionStyled>
       <ReloadButton />
+      <UpdateIndicator />
     </RightSectionStyled>
   </BottomBarStyled>
 )

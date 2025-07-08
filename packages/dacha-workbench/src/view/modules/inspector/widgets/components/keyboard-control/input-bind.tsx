@@ -61,6 +61,7 @@ export const InputBind: FC<InputBindProps> = ({
   return (
     <Panel
       css={PanelCSS}
+      size="small"
       title={t('components.keyboardControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >

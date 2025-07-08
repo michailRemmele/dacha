@@ -1,7 +1,7 @@
 import { useCallback, FC } from 'react'
 
 import { Labelled, LabelledProps } from '../labelled'
-import { FilePicker } from '../../../../components'
+import { AssetsPicker } from '../../../../components'
 import type { FileInputProps } from '../../../../../types/inputs'
 
 export const FileInput: FC<FileInputProps> = ({
@@ -21,7 +21,7 @@ export const FileInput: FC<FileInputProps> = ({
   }, [onAccept, onBlur])
 
   return (
-    <FilePicker
+    <AssetsPicker
       onOpenChange={handleOpenChange}
       onBlur={handleBlur}
       onPressEnter={onAccept}

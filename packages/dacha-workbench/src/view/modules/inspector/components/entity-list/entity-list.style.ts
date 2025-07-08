@@ -16,22 +16,6 @@ export const EntityListStyled = styled.div`
   margin: 10px 0;
 `
 
-export const EntityPickerStyled = styled.div`
-  display: flex;
-
-  margin-top: 10px;
-`
-
-export const SelectCSS = css`
-  width: 100%;
-`
-
-export const ButtonCSS = css`
-  flex-shrink: 0;
-
-  margin-left: 5px;
-`
-
 export const EntityFormStyled = styled.div`
   text-align: center;
 `
@@ -57,3 +41,7 @@ export const HolderOutlinedCSS = (): SerializedStyles => {
     }
   `
 }
+
+export const EntityPickerCSS = css`
+  margin-top: 10px;
+`

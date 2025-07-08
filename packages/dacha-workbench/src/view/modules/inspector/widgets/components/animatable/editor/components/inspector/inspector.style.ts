@@ -25,7 +25,7 @@ export const FormStyled = styled.form`
   display: flex;
   flex-direction: column;
 
-  margin: 10px;
+  padding: 5px 10px;
 `
 
 export const FooterStyled = styled.footer`

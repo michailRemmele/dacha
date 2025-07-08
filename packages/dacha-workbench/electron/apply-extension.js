@@ -8,8 +8,14 @@ const MESSAGES = require('./messages')
 const applyExtension = (app, window) => {
   const compiler = webpack(getWebpackConfig())
 
+  compiler.hooks.compile.tap('ExtensionBuldStart', () => {
+    window.webContents.send(MESSAGES.EXTENSION_BUILD_START)
+  })
+
   let lastHash
-  compiler.hooks.afterDone.tap('extensionWatcher', (stats) => {
+  compiler.hooks.afterDone.tap('ExtensionBuildEnd', (stats) => {
+    window.webContents.send(MESSAGES.EXTENSION_BUILD_END)
+
     if (lastHash === undefined) {
       lastHash = stats.hash
       return

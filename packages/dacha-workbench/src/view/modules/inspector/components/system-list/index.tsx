@@ -30,14 +30,19 @@ export const SystemList: FC = () => {
     dispatch(setValue(['systems'], arrayMove(systems, from, to)))
   }, [systems, dispatch])
 
+  const handleCreate = useCallback((name: string, filepath: string) => {
+    window.electron.createSystem(name, filepath)
+  }, [])
+
   return (
     <EntityList
       entities={availableSystems}
       addedEntities={addedSystems}
-      type="systems"
+      type="system"
       placeholder={t('inspector.systemList.addNew.button.title')}
       draggable
       onDragEntity={handleDragEntity}
+      onCreate={handleCreate}
     />
   )
 }
