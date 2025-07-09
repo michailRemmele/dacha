@@ -67,12 +67,6 @@ export class PointerToolSystem extends SceneSystem {
       sceneId: getSavedSelectedSceneId(this.configStore),
     }
 
-    this.selectionMovementSubsystem = new SelectionMovementSubsystem({
-      world,
-      selectedActors: this.selectedActors,
-      actorCollection: this.actorCollection,
-    })
-
     this.selectionArea = undefined
 
     this.world.addEventListener(EventType.SelectScene, this.handleSelectScene)
@@ -80,6 +74,12 @@ export class PointerToolSystem extends SceneSystem {
     this.world.addEventListener(EventType.SelectionMoveStart, this.handleSelectionMoveStart)
     this.world.addEventListener(EventType.SelectionMove, this.handleSelectionMove)
     this.world.addEventListener(EventType.SelectionMoveEnd, this.handleSelectionMoveEnd)
+
+    this.selectionMovementSubsystem = new SelectionMovementSubsystem({
+      world,
+      selectedActors: this.selectedActors,
+      actorCollection: this.actorCollection,
+    })
   }
 
   onSceneEnter(): void {

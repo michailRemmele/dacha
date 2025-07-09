@@ -5,7 +5,10 @@ import type {
   WorldSystemOptions,
   UpdateOptions,
 } from 'dacha'
+import * as Events from 'dacha/events'
 
+import { schemaRegistry } from '../../../decorators/schema-registry'
+import { widgetRegistry } from '../../../hocs/widget-registry'
 import { EventType } from '../../../events'
 import { CommanderStore } from '../../../store'
 import type { EditorConfig, Extension } from '../../../types/global'
@@ -18,7 +21,9 @@ interface ProjectLoaderResources {
 
 export class ProjectLoader extends WorldSystem {
   private world: World
-  private editorCofig: EditorConfig
+  private editorConfig: EditorConfig
+
+  private extensionScript?: HTMLScriptElement
 
   private autoSaveInterval: number
 
@@ -26,57 +31,78 @@ export class ProjectLoader extends WorldSystem {
     super()
 
     this.world = options.world
-    this.editorCofig = window.electron.getEditorConfig()
+    this.editorConfig = window.electron.getEditorConfig()
 
     this.world.data.configStore = (options.resources as ProjectLoaderResources).store
-    this.world.data.editorConfig = this.editorCofig
+    this.world.data.editorConfig = this.editorConfig
 
-    this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
+    this.autoSaveInterval = this.editorConfig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
 
     window.electron.onSave(() => {
       this.saveProjectConfig()
     })
-  }
 
-  async onWorldLoad(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!window.electron.isExtensionAvailable()) {
-        this.setUpData()
-
-        resolve()
-        return
-      }
-
-      const script = document.createElement('script')
-      script.src = '/extension.js'
-
-      script.onload = (): void => {
-        this.setUpData(window.editorExtension)
-
-        resolve()
-      }
-      script.onerror = (): void => {
-        reject(new Error('Error while loading extension script'))
-      }
-
-      document.body.appendChild(script)
+    window.electron.onNeedsUpdate(() => {
+      void this.handleNeedsUpdate()
     })
   }
 
-  private setUpData(extension: Extension = {}): void {
+  private handleNeedsUpdate = async (): Promise<void> => {
+    this.extensionScript?.remove()
+    this.extensionScript = undefined
+
+    widgetRegistry.clear()
+    schemaRegistry.clear()
+
+    await this.loadScript('./extension.js')
+
+    this.setUpData({
+      events: window.extension?.default.events,
+      locales: window.extension?.default.locales,
+    })
+
+    this.world.dispatchEvent(EventType.ExtensionUpdated)
+  }
+
+  async onWorldLoad(): Promise<void> {
+    if (process.env.NODE_ENV === 'production') {
+      await this.loadScript('./extension.js')
+    }
+
+    this.setUpData({
+      events: window.extension?.default.events,
+      locales: window.extension?.default.locales,
+    })
+  }
+
+  private async loadScript(src: string): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const script = document.createElement('script')
+      script.src = src
+
+      script.onload = (): void => resolve()
+      script.onerror = (): void => {
+        console.warn(`Error while loading bundle: ${src}`)
+        resolve()
+      }
+
+      document.body.appendChild(script)
+
+      this.extensionScript = script
+    })
+  }
+
+  private setUpData(extension: Extension): void {
     const {
-      componentsSchema = {},
-      systemsSchema = {},
-      resourcesSchema = {},
-      globalReferences = {},
+      events = [],
       locales = {},
     } = extension
 
     this.world.data.extension = {
-      componentsSchema,
-      systemsSchema,
-      resourcesSchema,
-      globalReferences,
+      events: [
+        ...events,
+        ...Object.values(Events),
+      ],
       locales,
     }
   }
@@ -89,7 +115,7 @@ export class ProjectLoader extends WorldSystem {
   }
 
   update(options: UpdateOptions): void {
-    if (!this.editorCofig.autoSave) {
+    if (!this.editorConfig.autoSave) {
       return
     }
 
@@ -98,7 +124,7 @@ export class ProjectLoader extends WorldSystem {
     this.autoSaveInterval -= deltaTime
     if (this.autoSaveInterval <= 0) {
       this.saveProjectConfig()
-      this.autoSaveInterval = this.editorCofig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
+      this.autoSaveInterval = this.editorConfig.autoSaveInterval ?? DEFAULT_AUTO_SAVE_INTERVAL
     }
   }
 }

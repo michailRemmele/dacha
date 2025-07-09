@@ -23,7 +23,8 @@ import {
 
 import { DraggableEntityPanel } from './draggable-entity-panel'
 import { DragOverlayEntity } from './drag-overlay-entity'
-import type { Panel, PanelsProps } from './panels'
+import type { PanelsProps } from './panels'
+import type { Entity } from './types'
 
 interface DraggablePanelsProps extends PanelsProps {
   onDragEntity?: (from: number, to: number) => void
@@ -42,10 +43,10 @@ export const DraggablePanels: FC<DraggablePanelsProps> = ({
     }),
   )
 
-  const [draggablePanels, setDraggablePanels] = useState<Array<Panel>>(panels)
+  const [draggablePanels, setDraggablePanels] = useState<Entity[]>(panels)
   useEffect(() => setDraggablePanels(panels), [panels])
 
-  const [activePanel, setActivePanel] = useState<Panel | null>()
+  const [activePanel, setActivePanel] = useState<Entity | null>()
 
   const panelsIds = useMemo(() => draggablePanels.map((panel) => panel.id), [draggablePanels])
 

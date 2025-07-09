@@ -15,7 +15,7 @@ import { deleteValue } from '../../../../../commands'
 import {
   LayerStyled,
   FieldWrapperStyled,
-  ButtonCSS,
+  RemoveButtonCSS,
 } from './sorting-layers.style'
 import { PATH } from './consts'
 
@@ -47,7 +47,7 @@ export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
         />
       </FieldWrapperStyled>
 
-      <Button css={ButtonCSS} icon={<DeleteOutlined />} size="small" onClick={handleDeleteBind} />
+      <Button css={RemoveButtonCSS} icon={<DeleteOutlined />} size="small" onClick={handleDeleteBind} />
     </LayerStyled>
   )
 }

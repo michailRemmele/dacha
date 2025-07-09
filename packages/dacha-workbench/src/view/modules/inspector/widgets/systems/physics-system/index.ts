@@ -1,15 +1,13 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema'
 
 export const physicsSystem: WidgetSchema = {
-  title: 'systems.physicsSystem.title',
   fields: [
     {
-      name: 'gravitationalAcceleration',
-      title: 'systems.physicsSystem.gravitationalAcceleration.title',
+      name: 'gravity',
       type: 'number',
     },
   ],
   getInitialState: () => ({
-    gravitationalAcceleration: 100,
+    gravity: 100,
   }),
 }

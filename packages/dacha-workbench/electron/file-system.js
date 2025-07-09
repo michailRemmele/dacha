@@ -8,7 +8,7 @@ const saveFile = (rawPath, data) => {
   const dataDirname = path.dirname(dataPath)
 
   if (!fs.existsSync(dataDirname)) {
-    fs.mkdirSync(dataDirname)
+    fs.mkdirSync(dataDirname, { recursive: true })
   }
 
   fs.writeFileSync(dataPath, data)

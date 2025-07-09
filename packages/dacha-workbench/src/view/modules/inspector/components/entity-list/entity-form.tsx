@@ -1,37 +1,36 @@
-import { useMemo, FC } from 'react'
+import type { FC } from 'react'
 import { useTranslation, I18nextProvider } from 'react-i18next'
 
 import { Widget } from '../widget'
 import { CustomWidget } from '../custom-widget'
 
-import { CONFIG_KEY_MAP } from './consts'
-import type { Entity, EntityType } from './types'
-
+import type { Entity } from './types'
 import { EntityFormStyled } from './entity-list.style'
 
 interface EntityFormProps extends Entity {
   path: string[]
-  type: EntityType
 }
 
-export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
+export const EntityForm: FC<EntityFormProps> = ({ data, path }) => {
   const { t, i18n } = useTranslation()
 
-  const { schema, name } = data
+  const { schema, namespace } = data
 
-  const widgetPath = useMemo(
-    () => path.concat(type, `name:${name}`, CONFIG_KEY_MAP[type]),
-    [path, type, name],
-  )
+  if (!schema || !namespace) {
+    return (
+      <EntityFormStyled>
+        {t('inspector.entityList.content.noSchema.title')}
+      </EntityFormStyled>
+    )
+  }
 
   if (schema.view) {
     return (
       <CustomWidget
         fields={schema.fields || []}
-        references={schema.references}
-        path={widgetPath}
+        path={path}
         component={schema.view}
-        namespace={data.namespace}
+        namespace={namespace}
       />
     )
   }
@@ -45,11 +44,10 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path, type }) => {
   }
 
   return (
-    <I18nextProvider i18n={i18n} defaultNS={data.namespace}>
+    <I18nextProvider i18n={i18n} defaultNS={namespace}>
       <Widget
         fields={schema.fields}
-        references={schema.references}
-        path={widgetPath}
+        path={path}
       />
     </I18nextProvider>
   )

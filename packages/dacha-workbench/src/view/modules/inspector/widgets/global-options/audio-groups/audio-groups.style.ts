@@ -6,9 +6,10 @@ export const GroupsStyled = styled.div`
 `
 
 export const PanelCSS = css`
-  margin-bottom: 5px;
+  margin: 5px 0;
 `
 
 export const ButtonCSS = css`
   width: 100%;
+  margin-bottom: 5px;
 `

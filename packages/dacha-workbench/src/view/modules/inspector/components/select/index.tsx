@@ -34,11 +34,17 @@ export const Select: FC<SelectProps> = ({
           {t('inspector.components.select.option.none.title')}
         </AntdSelect.Option>
       )}
-      {options.map((option) => (
-        <AntdSelect.Option key={option.value} value={option.value} disabled={option.disabled}>
-          {option.title}
-        </AntdSelect.Option>
-      ))}
+      {options.map((option) => (typeof option === 'object'
+        ? (
+          <AntdSelect.Option key={option.value} value={option.value} disabled={option.disabled}>
+            {option.title}
+          </AntdSelect.Option>
+        )
+        : (
+          <AntdSelect.Option key={option} value={option}>
+            {option}
+          </AntdSelect.Option>
+        )))}
     </AntdSelect>
   )
 }

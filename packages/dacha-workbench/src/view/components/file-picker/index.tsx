@@ -7,35 +7,22 @@ import { FolderOpenOutlined } from '@ant-design/icons'
 
 import { SpaceCompactCSS, ButtonCSS } from './file-picker.style'
 
-interface FilePickerProps extends Omit<HTMLProps<HTMLInputElement>, 'size' | 'ref' | 'onChange'> {
+export interface FilePickerProps extends Omit<HTMLProps<HTMLInputElement>, 'size' | 'ref' | 'onChange'> {
+  onOpen?: () => void
   onChange?: (value: string) => void
   onPressEnter?: KeyboardEventHandler<HTMLInputElement>
-  onOpenChange?: (state: boolean) => void
   value?: string
-  extensions?: Array<string>
 }
 
 export const FilePicker: FC<FilePickerProps> = ({
   onChange = (): void => void 0,
-  onOpenChange = (): void => void 0,
-  extensions,
+  onOpen = (): void => void 0,
   ...props
 }) => {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
     [onChange],
   )
-
-  const handleClick = useCallback(() => {
-    onOpenChange(true)
-    void window.electron.openAssetsDialog(extensions)
-      .then((filePath) => {
-        if (filePath !== undefined) {
-          onChange(filePath)
-        }
-        onOpenChange(false)
-      })
-  }, [onChange, onOpenChange, extensions])
 
   return (
     <Space.Compact
@@ -49,7 +36,7 @@ export const FilePicker: FC<FilePickerProps> = ({
       <Button
         css={ButtonCSS}
         icon={<FolderOpenOutlined />}
-        onClick={handleClick}
+        onClick={onOpen}
       />
     </Space.Compact>
   )

@@ -5,29 +5,37 @@ import type { GlobalToken } from 'antd'
 import type { CustomToken } from '../view/themes/types'
 import '../events'
 
-import type { WidgetSchema, WidgetPartSchema, References } from './widget-schema'
-
 export interface Extension {
-  componentsSchema?: Record<string, WidgetSchema | undefined>
-  systemsSchema?: Record<string, WidgetSchema | undefined>
-  resourcesSchema?: Record<string, Record<string, WidgetPartSchema | undefined> | undefined>
-  globalReferences?: References
+  events?: string[]
   locales?: Resource
 }
 
 export interface EditorConfig {
   projectConfig: string
   assets: string
-  extension?: string
+  contextRoot: string
+  systems: string[]
+  components: string[]
+  behaviors: string[]
+  widgets: string[]
+  events: string
+  locales: string
+  libraries: string[]
+  templates: {
+    system: (name: string) => string
+    component: (name: string) => string
+    behavior: (name: string) => string
+  }
   autoSave?: boolean
   autoSaveInterval?: number
+  formatWidgetNames?: boolean
 }
 
 export interface ElectronAPI {
   getProjectConfig: () => Config,
   getEditorConfig: () => EditorConfig
-  isExtensionAvailable: () => boolean
-  openAssetsDialog: (extensions?: Array<string>) => Promise<string | undefined>
+  openAssetsDialog: (extensions?: string[]) => Promise<string | undefined>
+  openPathSelectionDialog: () => Promise<string | undefined>
   saveProjectConfig: (config: Config) => void
   setUnsavedChanges: (unsavedChanges: boolean) => void
   onSave: (callback: () => void) => void
@@ -39,14 +47,25 @@ export interface ElectronAPI {
   onCopy: (callback: () => void) => () => void
   onPaste: (callback: () => void) => () => void
   onDelete: (callback: () => void) => () => void
+  onExtensionBuildStart: (callback: () => void) => () => void
+  onExtensionBuildEnd: (callback: () => void) => () => void
+  onNeedsUpdate: (callback: () => void) => () => void
   loadPersistentStorage: () => Record<string, unknown>
   savePersistentStorage: (state: Record<string, unknown>) => void
+  createSystem: (name: string, filepath: string) => void
+  createComponent: (name: string, filepath: string) => void
+  createBehavior: (name: string, filepath: string) => void
 }
 
 declare global {
   interface Window {
     electron: ElectronAPI
-    editorExtension?: Extension
+    extension?: {
+      default: {
+        events: string[]
+        locales: Resource
+      }
+    }
     DachaWorkbench: Record<string, unknown>
   }
 }

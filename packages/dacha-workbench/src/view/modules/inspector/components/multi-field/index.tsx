@@ -14,6 +14,7 @@ import { Entry } from './entry'
 import type { MultiFieldEntry } from './types'
 
 import {
+  MultiFieldStyled,
   FieldsStyled,
   NoFieldsStyled,
   FieldStyled,
@@ -40,7 +41,7 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   }, [dispatch, path])
 
   return (
-    <div>
+    <MultiFieldStyled>
       {!values.length && (
         <NoFieldsStyled>
           {t('inspector.multifield.noFields.title')}
@@ -67,6 +68,6 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
       >
         {t('inspector.multifield.addNew.value.title')}
       </Button>
-    </div>
+    </MultiFieldStyled>
   )
 }

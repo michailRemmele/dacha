@@ -36,6 +36,7 @@ export const AudioGroup: FC<AudioGroupProps> = ({ id }) => {
   return (
     <Panel
       css={PanelCSS}
+      size="small"
       title={t('globalOptions.audioGroups.panel.name.title')}
       onDelete={handleDeleteBind}
     >

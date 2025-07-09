@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { LabelledTextInput } from '../../../text-input'
 import type { InputProps } from '../../../../../../../types/inputs'

@@ -22,6 +22,7 @@ export interface CollapsePanelProps {
   onDelete?: (event: React.MouseEvent<HTMLElement>) => void
   expandExtra?: JSX.Element | Array<JSX.Element>
   deletable?: boolean
+  className?: string
 }
 
 export const CollapsePanel: FC<CollapsePanelProps> = ({
@@ -30,6 +31,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
   onDelete,
   expandExtra,
   deletable = true,
+  className,
 }) => {
   const ignoreRef = useRef(false)
   const [activeKey, setActiveKey] = useState<string | Array<string>>()
@@ -54,6 +56,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
   return (
     <Collapse
       css={CollapseCSS}
+      className={className}
       activeKey={activeKey}
       onChange={handleChange}
       expandIcon={expandIcon}

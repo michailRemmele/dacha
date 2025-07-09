@@ -8,8 +8,12 @@ const watchProjectConfig = (path, window) => {
       return
     }
 
-    if (getCurrentHash() !== getLastUpdateHash()) {
-      window.webContents.reload()
+    try {
+      if (getCurrentHash() !== getLastUpdateHash()) {
+        window.webContents.reload()
+      }
+    } catch (error) {
+      console.warn(error)
     }
   })
 }

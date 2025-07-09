@@ -1,13 +1,21 @@
 const webpack = require('webpack')
 const middleware = require('webpack-dev-middleware')
 
-const getExtensionWebpackConfig = require('../webpack.extension.config')
+const getWebpackConfig = require('../webpack.extension.config')
 
-const applyExtension = (entry, app, window) => {
-  const compiler = webpack(getExtensionWebpackConfig(entry))
+const MESSAGES = require('./messages')
+
+const applyExtension = (app, window) => {
+  const compiler = webpack(getWebpackConfig())
+
+  compiler.hooks.compile.tap('ExtensionBuldStart', () => {
+    window.webContents.send(MESSAGES.EXTENSION_BUILD_START)
+  })
 
   let lastHash
-  compiler.hooks.afterDone.tap('extensionWatcher', (stats) => {
+  compiler.hooks.afterDone.tap('ExtensionBuildEnd', (stats) => {
+    window.webContents.send(MESSAGES.EXTENSION_BUILD_END)
+
     if (lastHash === undefined) {
       lastHash = stats.hash
       return
@@ -15,7 +23,7 @@ const applyExtension = (entry, app, window) => {
 
     if (lastHash !== stats.hash) {
       lastHash = stats.hash
-      window.webContents.reload()
+      window.webContents.send(MESSAGES.NEEDS_UPDATE)
     }
   })
 

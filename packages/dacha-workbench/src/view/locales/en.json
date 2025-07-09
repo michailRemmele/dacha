@@ -57,6 +57,20 @@
     "systemList.addNew.button.title": "Add System",
 
     "entityList.content.empty.title": "No params required",
+    "entityList.content.noSchema.title": "Schema not found",
+
+    "entityPicker.createNew.button.title": "Create New",
+    "entityPicker.createNew.modal.system.title": "New System",
+    "entityPicker.createNew.modal.component.title": "New Component",
+    "entityPicker.createNew.modal.behavior.title": "New Behavior",
+    "entityPicker.createNew.modal.field.path.label": "File Path:",
+    "entityPicker.createNew.modal.field.baseDirectory.label": "Base Directory",
+    "entityPicker.createNew.modal.field.customizePath.label": "Customize Path",
+    "entityPicker.createNew.modal.field.subdirectory.label": "Subdirectory",
+    "entityPicker.createNew.modal.field.filename.label": "File Name",
+    "entityPicker.createNew.modal.field.name.label": "Class Name",
+    "entityPicker.createNew.modal.button.create.label": "Create",
+    "entityPicker.createNew.modal.button.cancel.label": "Cancel",
 
     "multifield.field.title": "Field {{index}}",
     "multifield.field.name.title": "Name",
@@ -76,7 +90,6 @@
     "reloadWarning.button.title": "Reload Required"
   },
 
-  "components.animatable.title": "Animatable",
   "components.animatable.openEditorButton.title": "Open Animation Editor",
   "components.animatable.editor.title": "Animation Editor",
 
@@ -126,21 +139,6 @@
   "components.animatable.editor.condition.add.button.title": "Add New Condition",
   "components.animatable.editor.condition.delete.button.title": "Delete Condition",
 
-  "components.camera.title": "Camera",
-  "components.camera.zoom.title": "Zoom",
-  "components.camera.current.title": "Current",
-
-  "components.colliderContainer.title": "Collider Container",
-  "components.colliderContainer.type.title": "Type",
-  "components.colliderContainer.sizeX.title": "Size X",
-  "components.colliderContainer.sizeY.title": "Size Y",
-  "components.colliderContainer.radius.title": "Radius",
-  "components.colliderContainer.centerX.title": "Center X",
-  "components.colliderContainer.centerY.title": "Center Y",
-  "components.colliderContainer.types.boxCollider.title": "Box Collider",
-  "components.colliderContainer.types.circleCollider.title": "Circle Collider",
-
-  "components.keyboardControl.title": "Keyboard Control",
   "components.keyboardControl.bind.title": "Event Bind {{index}}",
   "components.keyboardControl.bind.key.title": "Key",
   "components.keyboardControl.bind.pressed.title": "Pressed",
@@ -149,15 +147,10 @@
   "components.keyboardControl.bind.attributes.title": "Attributes",
   "components.keyboardControl.bind.addNew.title": "Add New Bind",
 
-  "components.light.title": "Light",
-  "components.light.type.title": "Type",
   "components.light.distance.title": "Distance",
   "components.light.color.title": "Color",
   "components.light.intensity.title": "Intensity",
-  "components.light.types.ambient.title": "Ambient",
-  "components.light.types.point.title": "Point",
 
-  "components.mouseControl.title": "Mouse Control",
   "components.mouseControl.bind.title": "Event Bind {{index}}",
   "components.mouseControl.bind.event.title": "Event",
   "components.mouseControl.bind.button.title": "Button",
@@ -165,97 +158,17 @@
   "components.mouseControl.bind.attributes.title": "Attributes",
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
-  "components.sprite.title": "Sprite",
-  "components.sprite.src.title": "Source",
-  "components.sprite.width.title": "Width",
-  "components.sprite.height.title": "Height",
-  "components.sprite.slice.title": "Slice",
-  "components.sprite.rotation.title": "Rotation",
   "components.sprite.sortCenterX.title": "Sort Center X",
   "components.sprite.sortCenterY.title": "Sort Center Y",
-  "components.sprite.flipX.title": "Flip X",
-  "components.sprite.flipY.title": "Flip Y",
-  "components.sprite.sortingLayer.title": "Sorting Layer",
-  "components.sprite.fit.title": "Fit",
   "components.sprite.material.type.title": "Material Type",
   "components.sprite.material.blending.title": "Material Blending",
   "components.sprite.material.color.title": "Material Color",
   "components.sprite.material.opacity.title": "Material Opacity",
-  "components.sprite.types.static.title": "Static",
-  "components.sprite.types.sprite.title": "Sprite",
-  "components.sprite.fitTypes.stretch.title": "Stretch",
-  "components.sprite.fitTypes.repeat.title": "Repeat",
-  "components.sprite.materialTypes.basic.title": "Basic",
-  "components.sprite.materialTypes.lightsensitive.title": "Lightsensitive",
-  "components.sprite.blendingModes.normal.title": "Normal",
-  "components.sprite.blendingModes.addition.title": "Addition",
-  "components.sprite.blendingModes.substract.title": "Substract",
-  "components.sprite.blendingModes.multiply.title": "Multiply",
 
-  "components.rigidBody.title": "Rigid Body",
-  "components.rigidBody.type.title": "Type",
-  "components.rigidBody.mass.title": "Mass",
-  "components.rigidBody.useGravity.title": "Use Gravity",
-  "components.rigidBody.isPermeable.title": "Is Permeable",
-  "components.rigidBody.ghost.title": "Ghost",
-  "components.rigidBody.drag.title": "Drag",
-  "components.rigidBody.types.dynamic.title": "Dynamic",
-  "components.rigidBody.types.static.title": "Static",
-
-  "components.behaviors.title": "Behaviors",
   "components.behaviors.behavior.name.title": "Name",
   "components.behaviors.behavior.title": "Behavior {{index}}",
-  "components.behaviors.behavior.addNew.title": "Add New Behavior",
-
-  "components.transform.title": "Transform",
-  "components.transform.offsetX.title": "Offset X",
-  "components.transform.offsetY.title": "Offset Y",
-  "components.transform.offsetZ.title": "Offset Z",
-  "components.transform.rotation.title": "Rotation",
-  "components.transform.scaleX.title": "Scale X",
-  "components.transform.scaleY.title": "Scale Y",
-
-  "components.audioSource.title": "Audio Source",
-  "components.audioSource.src.title": "Source",
-  "components.audioSource.volume.title": "Volume",
-  "components.audioSource.looped.title": "Looped",
-  "components.audioSource.autoplay.title": "Autoplay",
-  "components.audioSource.group.title": "Group",
-
-  "systems.animator.title": "Animator",
-
-  "systems.cameraSystem.title": "Camera System",
-  "systems.cameraSystem.windowNodeId.title": "Window Node Id",
-
-  "systems.gameStatsMeter.title": "Game Stats Meter",
-  "systems.gameStatsMeter.frequency.title": "Frequency",
-
-  "systems.keyboardControlSystem.title": "Keyboard Control System",
-  "systems.mouseControlSystem.title": "Mouse Control System",
-
-  "systems.keyboardInputSystem.title": "Keyboard Input System",
-  "systems.keyboardInputSystem.windowNodeId.title": "Window Node Id",
-  "systems.keyboardInputSystem.useWindow.title": "Use Window",
-
-  "systems.mouseInputSystem.title": "Mouse Input System",
-  "systems.mouseInputSystem.windowNodeId.title": "Window Node Id",
-  "systems.mouseInputSystem.useWindow.title": "Use Window",
-  
-  "systems.physicsSystem.title": "Physics System",
-  "systems.physicsSystem.gravitationalAcceleration.title": "Gravity",
-
-  "systems.behaviorSystem.title": "Behavior System",
-
-  "systems.spriteRenderer.title": "Sprite Renderer",
-  "systems.spriteRenderer.windowNodeId.title": "Window Node Id",
-  "systems.spriteRenderer.backgroundColor.title": "Background Color",
-  "systems.spriteRenderer.backgroundAlpha.title": "Background Alpha",
-  "systems.spriteRenderer.sortingLayers.title": "Sorting Layers",
-
-  "systems.uiBridge.title": "UI Bridge",
-  "systems.uiBridge.filterComponents.title": "Filtered Components",
-
-  "systems.audioSystem.title": "Audio System",
+  "components.behaviors.behavior.addNew.title": "Add Behavior",
+  "components.behaviors.behavior.noSchema.title": "Schema not found",
 
   "globalOptions.sortingLayers.title": "Sorting Layers",
   "globalOptions.sortingLayers.addNew.title": "Add Layer",

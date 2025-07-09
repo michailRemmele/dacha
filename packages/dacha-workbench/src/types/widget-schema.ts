@@ -1,7 +1,5 @@
 import type { FC } from 'react'
 
-export type Properties = Record<string, string | number | boolean | Array<string> | undefined>
-
 export type DependencyValue = string | number | boolean
 
 export interface Dependency {
@@ -9,42 +7,89 @@ export interface Dependency {
   value: DependencyValue
 }
 
-export interface ReferenceItem {
+export type GetStateFn = (path: string[]) => unknown
+
+export type GetOptionsFn = (
+  getState: GetStateFn,
+  context: {
+    path: string[]
+    data: Record<string, unknown>
+  }
+) => Option[] | string[]
+
+export type Option = {
   title: string
   value: string
 }
 
-export interface Reference {
-  items: Array<ReferenceItem>
-}
+export type FieldType = 'string' | 'number' | 'boolean' | 'select' | 'multiselect' | 'multitext' | 'color' | 'file' | 'range'
 
-export type References = Record<string, Reference | undefined>
-
-export type FieldType = 'string' | 'number' | 'boolean' | 'select' | 'multitext' | 'multiselect' | 'color' | 'file' | 'range'
-
-export interface Field {
+export interface AnyField {
   name: string
-  title: string
   type: FieldType
-  referenceId?: string
+  title?: string
+  initialValue?: unknown
   dependency?: Dependency
-  properties?: Properties
 }
+
+export interface StringField extends AnyField {
+  type: 'string' | 'color'
+}
+
+export interface NumberField extends AnyField {
+  type: 'number'
+  initialValue?: number
+}
+
+export interface BooleanField extends AnyField {
+  type: 'boolean'
+  initialValue?: boolean
+}
+
+export interface SelectField extends AnyField {
+  type: 'select'
+  initialValue?: string
+  options: Option[] | string[] | GetOptionsFn
+}
+
+export interface MultiselectField extends AnyField {
+  type: 'multiselect'
+  initialValue?: string[]
+  options: Option[] | string[] | GetOptionsFn
+}
+
+export interface MultitextField extends AnyField {
+  type: 'multitext'
+  initialValue?: string[]
+}
+
+export interface FileField extends AnyField {
+  type: 'file'
+  initialValue?: string
+  extensions: string[]
+}
+
+export interface RangeField extends AnyField {
+  type: 'range'
+  initialValue?: number
+  min?: number
+  max?: number
+  step?: number
+}
+
+export type Field = StringField | NumberField | BooleanField
+| SelectField | MultiselectField | MultitextField
+| FileField | RangeField
 
 export interface WidgetProps {
-  fields: Array<Field>
-  references?: References
-  path: Array<string>
+  path: string[]
+  fields?: Field[]
+  context?: Record<string, unknown>
 }
 
 export interface WidgetSchema {
-  title: string
-  fields?: Array<Field>
-  references?: References
+  title?: string
+  fields?: Field[]
   view?: FC<WidgetProps>
   getInitialState?: () => Record<string, unknown>
-}
-
-export interface WidgetPartSchema extends Omit<WidgetSchema, 'title' | 'fields' | 'view'> {
-  fields: Array<Field>
 }
