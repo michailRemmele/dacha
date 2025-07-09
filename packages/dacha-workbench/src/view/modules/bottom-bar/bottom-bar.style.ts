@@ -23,6 +23,7 @@ export const LeftSectionStyled = styled.div`
 export const RightSectionStyled = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 
   flex: 1;
 `

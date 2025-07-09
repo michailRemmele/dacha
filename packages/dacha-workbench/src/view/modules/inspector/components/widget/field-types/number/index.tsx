@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { LabelledNumberInput } from '../../../number-input'
 import type { NumberInputProps } from '../../../../../../../types/inputs'

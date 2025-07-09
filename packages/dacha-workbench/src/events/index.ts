@@ -45,6 +45,7 @@ declare module 'dacha' {
     [EventType.SelectEntities]: SelectEntitiesEvent
     [EventType.SelectEntitiesChange]: SelectEntitiesEvent
     [EventType.SaveProject]: WorldEvent
+    [EventType.ExtensionUpdated]: WorldEvent
   }
 
   export interface ActorEventMap {

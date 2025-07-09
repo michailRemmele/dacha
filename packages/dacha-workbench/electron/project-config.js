@@ -3,7 +3,7 @@ const path = require('path')
 const crypto = require('crypto')
 
 const { saveFile, readFile } = require('./file-system')
-const getEditorConfig = require('./utils/get-editor-config')
+const getEditorConfig = require('./get-editor-config')
 
 const { projectConfig } = getEditorConfig()
 
@@ -37,6 +37,10 @@ const getLastUpdateHash = () => {
 
 const getCurrentHash = () => {
   const fileBuffer = fs.readFileSync(path.resolve(projectConfig))
+
+  if (fileBuffer.length === 0) {
+    throw new Error('Error while calculating project config hash. File is empty')
+  }
 
   const hashSum = crypto.createHash('sha256')
   hashSum.update(fileBuffer)

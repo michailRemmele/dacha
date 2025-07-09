@@ -39,7 +39,7 @@ export const Condition: FC<ConditionProps> = ({
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const { globalReferences } = useExtension()
+  const { events } = useExtension()
 
   const conditionPath = useMemo(() => path.concat(`id:${id}`), [id, path])
   const typePath = useMemo(() => conditionPath.concat('type'), [conditionPath])
@@ -53,8 +53,6 @@ export const Condition: FC<ConditionProps> = ({
 
   const condition = useConfig(conditionPath) as Animation.ConditionConfig
   const { arg1, arg2 } = condition.props as unknown as Animation.ComparatorConditionPropsConfig
-
-  const events = globalReferences.events?.items
 
   const handleTypeChange = useCallback((value: unknown) => {
     const { props, ...otherCondition } = condition

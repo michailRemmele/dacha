@@ -1,13 +1,14 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema'
 
 export const light: WidgetSchema = {
-  title: 'components.light.title',
   fields: [
     {
       name: 'type',
-      title: 'components.light.type.title',
       type: 'select',
-      referenceId: 'types',
+      options: [
+        'ambient',
+        'point',
+      ],
     },
     {
       name: 'options.distance',
@@ -29,20 +30,6 @@ export const light: WidgetSchema = {
       type: 'number',
     },
   ],
-  references: {
-    types: {
-      items: [
-        {
-          title: 'components.light.types.ambient.title',
-          value: 'ambient',
-        },
-        {
-          title: 'components.light.types.point.title',
-          value: 'point',
-        },
-      ],
-    },
-  },
   getInitialState: () => ({
     type: 'point',
     options: {

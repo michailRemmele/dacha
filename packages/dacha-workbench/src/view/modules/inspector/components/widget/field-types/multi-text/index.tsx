@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { LabelledMultiTextInput } from '../../../multi-text-input'
 import type { MultiTextInputProps } from '../../../../../../../types/inputs'

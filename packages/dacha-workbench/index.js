@@ -9,13 +9,15 @@ const path = require('path')
 
 const getMenu = require('./electron/get-menu')
 const getAssetsDialog = require('./electron/get-assets-dialog')
+const getPathSelectionDialog = require('./electron/get-path-selection-dialog')
 const handleCloseApp = require('./electron/handle-close-app')
 const MESSAGES = require('./electron/messages')
-const getEditorConfig = require('./electron/utils/get-editor-config')
+const getEditorConfig = require('./electron/get-editor-config')
 const applyExtension = require('./electron/apply-extension')
 const watchProjectConfig = require('./electron/watch-project-config')
+const normalizePath = require('./electron/utils/normilize-path')
 
-const { assets, extensionEntry, projectConfig } = getEditorConfig()
+const editorConfig = getEditorConfig()
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -38,22 +40,37 @@ if (isDev) {
 if (!isDev) {
   expressApp.use(express.static(path.join(__dirname, 'build')))
 }
-expressApp.use(express.static(path.resolve(assets)))
+expressApp.use(express.static(path.resolve(editorConfig.assets)))
 
 const server = expressApp.listen(0)
 
 const createWindow = () => {
   const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    show: false,
+    backgroundColor: '#ffffff',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       sandbox: false,
     },
   })
-  win.maximize()
+  win.once('ready-to-show', () => {
+    win.show()
+  })
 
   Menu.setApplicationMenu(getMenu(win))
 
-  ipcMain.handle(MESSAGES.ASSETS_DIALOG, (_, ...args) => getAssetsDialog(assets, ...args))
+  ipcMain.handle(
+    MESSAGES.ASSETS_DIALOG,
+    (_, ...args) => getAssetsDialog(editorConfig.assets, ...args),
+  )
+  ipcMain.handle(
+    MESSAGES.PATH_DIALOG,
+    (_, ...args) => getPathSelectionDialog(normalizePath(editorConfig.contextRoot), ...args),
+  )
   ipcMain.on(MESSAGES.SET_UNSAVED_CHANGES, (_, unsavedChanges) => {
     win.off('close', handleCloseApp)
     if (unsavedChanges) {
@@ -63,11 +80,11 @@ const createWindow = () => {
 
   win.loadURL(`http://localhost:${server.address().port}`)
 
-  if (extensionEntry) {
-    applyExtension(extensionEntry, expressApp, win)
+  if (!isDev) {
+    applyExtension(expressApp, win)
   }
 
-  watchProjectConfig(projectConfig, win)
+  watchProjectConfig(editorConfig.projectConfig, win)
 }
 
 app.whenReady().then(() => {

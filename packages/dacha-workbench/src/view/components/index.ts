@@ -1,5 +1,6 @@
 export { Modal } from './modal'
 export { ColorPicker } from './color-picker'
-export { FilePicker } from './file-picker'
+export { AssetsPicker } from './assets-picker'
+export { DirectoryPicker } from './directory-picker'
 export { Tree } from './tree'
 export { HotkeysBar } from './hotkeys-bar'

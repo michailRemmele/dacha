@@ -10,7 +10,6 @@ interface CustomWidgetProps extends WidgetProps {
 
 export const CustomWidget: FC<CustomWidgetProps> = ({
   fields,
-  references,
   path,
   component: View,
   namespace,
@@ -21,7 +20,6 @@ export const CustomWidget: FC<CustomWidgetProps> = ({
     <I18nextProvider i18n={i18n} defaultNS={namespace}>
       <View
         fields={fields}
-        references={references}
         path={path}
       />
     </I18nextProvider>

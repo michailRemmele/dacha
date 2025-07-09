@@ -6,12 +6,14 @@ import {
   PanelStyled,
   HeadingStyled,
   PanelContentStyled,
+  ButtonSmallCSS,
 } from './panel.style'
 
 export interface PanelProps {
   children: JSX.Element | Array<JSX.Element | null | undefined> | null | undefined
   title: string
   onDelete: () => void
+  size?: 'small' | 'middle'
   className?: string
 }
 
@@ -19,17 +21,32 @@ export const Panel: FC<PanelProps> = ({
   children,
   title,
   onDelete,
+  size = 'middle',
   className,
 }) => (
-  <PanelStyled className={className}>
-    <HeadingStyled>
+  <PanelStyled size={size} className={className}>
+    <HeadingStyled size={size} contentless={!children}>
       <span>
         {title}
       </span>
-      <Button icon={<DeleteOutlined />} size="small" onClick={onDelete} />
+
+      {size === 'middle' ? (
+        <Button icon={<DeleteOutlined />} size="small" onClick={onDelete} />
+      ) : null}
+      {size === 'small' ? (
+        <Button
+          css={ButtonSmallCSS}
+          type="text"
+          icon={<DeleteOutlined />}
+          size="small"
+          onClick={onDelete}
+        />
+      ) : null}
     </HeadingStyled>
-    <PanelContentStyled>
-      {children}
-    </PanelContentStyled>
+    {children ? (
+      <PanelContentStyled size={size}>
+        {children}
+      </PanelContentStyled>
+    ) : null}
   </PanelStyled>
 )

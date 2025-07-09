@@ -13,11 +13,12 @@ export const SectionHeaderStyled = styled.span`
 `
 
 export const PanelCSS = css`
-  margin-bottom: 5px;
+  margin: 5px 0;
 `
 
 export const ButtonCSS = css`
   width: 100%;
+  margin: 5px 0;
 `
 
 export const KeyPickerSpaceCompactCSS = css`

@@ -270,14 +270,12 @@
               }
             },
             {
-              "name": "ColliderContainer",
+              "name": "Collider",
               "config": {
-                "type": "circleCollider",
-                "collider": {
-                  "radius": 0,
-                  "centerX": 0,
-                  "centerY": 0
-                }
+                "type": "circle",
+                "radius": 0,
+                "centerX": 0,
+                "centerY": 0
               }
             },
             {
@@ -391,15 +389,13 @@
           }
         },
         {
-          "name": "ColliderContainer",
+          "name": "Collider",
           "config": {
-            "type": "boxCollider",
-            "collider": {
-              "sizeX": 12,
-              "sizeY": 16,
-              "centerX": 0,
-              "centerY": 0
-            }
+            "type": "box",
+            "sizeX": 12,
+            "sizeY": 16,
+            "centerX": 0,
+            "centerY": 0
           }
         },
         {

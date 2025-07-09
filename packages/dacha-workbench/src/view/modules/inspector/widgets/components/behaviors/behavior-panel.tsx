@@ -3,53 +3,41 @@ import {
   useCallback,
   FC,
 } from 'react'
-import { useTranslation, I18nextProvider } from 'react-i18next'
-import { BehaviorSystem } from 'dacha'
+import { useTranslation } from 'react-i18next'
 
+import type { WidgetSchema } from '../../../../../../types/widget-schema'
 import { Panel } from '../../../components/panel'
-import { Field } from '../../../components/field'
-import { LabelledSelect } from '../../../components/select'
-import { Widget } from '../../../components/widget'
+import { BehaviorWidget } from '../../../components/behavior-widget'
+import {
+  useConfig,
+  useCommander,
+} from '../../../../../hooks'
+import { deleteValue } from '../../../../../commands'
+import { formatWidgetName } from '../../../../../../utils/format-widget-name'
 import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/consts'
-import { useExtension, useConfig, useCommander } from '../../../../../hooks'
-import { setValue, deleteValue } from '../../../../../commands'
 
-import { PanelCSS } from './behavior.style'
+import { PanelCSS, BehaviorFormStyled } from './behavior.style'
 
 interface BehaviorPanelProps {
   id: string
-  path: Array<string>
-  order: number
-  availableBehaviors: { title: string; value: string }[]
+  path: string[]
+  schema?: WidgetSchema
 }
 
 export const BehaviorPanel: FC<BehaviorPanelProps> = ({
   id,
   path,
-  order,
-  availableBehaviors,
+  schema,
 }) => {
-  const { t, i18n } = useTranslation()
-  const { dispatch } = useCommander()
+  const { t } = useTranslation()
 
-  const { resourcesSchema } = useExtension()
+  const { dispatch } = useCommander()
 
   const behaviorPath = useMemo(() => path.concat(`id:${id}`), [path])
   const namePath = useMemo(() => behaviorPath.concat('name'), [behaviorPath])
   const optionsPath = useMemo(() => behaviorPath.concat('options'), [behaviorPath])
 
-  const behaviorName = useConfig(namePath) as string
-
-  const partSchema = resourcesSchema[BehaviorSystem.systemName]?.[behaviorName]
-  const partFields = partSchema?.fields
-  const partReferences = partSchema?.references
-
-  const handleSelect = useCallback((newName: unknown) => {
-    const nextPartSchema = resourcesSchema[BehaviorSystem.systemName]?.[newName as string]
-    if (nextPartSchema !== void 0) {
-      dispatch(setValue(optionsPath, nextPartSchema.getInitialState?.() ?? {}, true))
-    }
-  }, [resourcesSchema, optionsPath])
+  const name = useConfig(namePath) as string
 
   const handleDelete = useCallback(() => {
     dispatch(deleteValue(behaviorPath))
@@ -57,22 +45,21 @@ export const BehaviorPanel: FC<BehaviorPanelProps> = ({
 
   return (
     <Panel
-      css={PanelCSS}
-      title={t('components.behaviors.behavior.title', { index: order + 1 })}
+      css={PanelCSS(!schema)}
+      size="small"
+      title={schema?.title ? t(schema.title, { ns: NAMESPACE_EXTENSION }) : formatWidgetName(name)}
       onDelete={handleDelete}
     >
-      <Field
-        path={namePath}
-        component={LabelledSelect}
-        label={t('components.behaviors.behavior.name.title')}
-        options={availableBehaviors}
-        onAccept={handleSelect}
-      />
-      {partFields && (
-        <I18nextProvider i18n={i18n} defaultNS={NAMESPACE_EXTENSION}>
-          <Widget path={optionsPath} fields={partFields} references={partReferences} />
-        </I18nextProvider>
-      )}
+      {!schema ? (
+        <BehaviorFormStyled>
+          {t('components.behaviors.behavior.noSchema.title')}
+        </BehaviorFormStyled>
+      ) : (schema.fields?.length || schema.view) ? (
+        <BehaviorWidget
+          name={name}
+          path={optionsPath}
+        />
+      ) : null}
     </Panel>
   )
 }

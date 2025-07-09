@@ -27,3 +27,5 @@ export const SelectEntities = 'SelectEntities'
 export const SelectEntitiesChange = 'SelectEntitiesChange'
 
 export const SaveProject = 'SaveProject'
+
+export const ExtensionUpdated = 'ExtensionUpdated'

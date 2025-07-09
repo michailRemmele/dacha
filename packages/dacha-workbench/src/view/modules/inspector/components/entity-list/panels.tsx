@@ -1,20 +1,12 @@
 import { FC } from 'react'
 
-import type { SchemasDataEntry } from '../../../../providers'
-
 import { EntityPanel } from './entity-panel'
 
-import type { EntityType } from './types'
-
-export interface Panel {
-  id: string
-  label: string
-  data: SchemasDataEntry
-}
+import type { Entity, EntityType } from './types'
 
 export interface PanelsProps {
   path: string[]
-  panels: Panel[]
+  panels: Entity[]
   type: EntityType
 }
 

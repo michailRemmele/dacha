@@ -2,24 +2,18 @@ import styled from '@emotion/styled'
 import { css, useTheme } from '@emotion/react'
 import type { SerializedStyles } from '@emotion/react'
 
+export const CollapsePanelCSS = (noSchema: boolean): SerializedStyles => {
+  const theme = useTheme()
+  return css`
+    ${noSchema && css`
+      box-shadow: 0 0 0 2px ${theme.colorError};
+      background-color: ${theme.colorErrorBg};
+    `}
+  `
+}
+
 export const EntityListStyled = styled.div`
   margin: 10px 0;
-`
-
-export const EntityPickerStyled = styled.div`
-  display: flex;
-
-  margin-top: 10px;
-`
-
-export const SelectCSS = css`
-  width: 100%;
-`
-
-export const ButtonCSS = css`
-  flex-shrink: 0;
-
-  margin-left: 5px;
 `
 
 export const EntityFormStyled = styled.div`
@@ -47,3 +41,7 @@ export const HolderOutlinedCSS = (): SerializedStyles => {
     }
   `
 }
+
+export const EntityPickerCSS = css`
+  margin-top: 10px;
+`

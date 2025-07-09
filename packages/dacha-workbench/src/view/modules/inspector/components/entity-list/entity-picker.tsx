@@ -1,24 +1,19 @@
 import {
   useCallback,
-  useState,
   useMemo,
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Select } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
 
 import { useCommander } from '../../../../hooks'
 import { addValue } from '../../../../commands'
 import type { SchemasDataEntry } from '../../../../providers'
 import type { WidgetSchema } from '../../../../../types/widget-schema'
+import { formatWidgetName } from '../../../../../utils/format-widget-name'
+import { EntityPicker as EntityPickerComponent } from '../entity-picker'
 
-import {
-  EntityPickerStyled,
-  SelectCSS,
-  ButtonCSS,
-} from './entity-list.style'
-import { CONFIG_KEY_MAP } from './consts'
+import { EntityPickerCSS } from './entity-list.style'
+import { CONFIG_KEY_MAP, PATH_FIELD_MAP } from './consts'
 import type { EntityType } from './types'
 
 interface EntityPickerProps {
@@ -27,6 +22,7 @@ interface EntityPickerProps {
   addedEntities: Set<string>
   placeholder: string
   type: EntityType
+  onCreate: (name: string, path: string) => void
 }
 
 export const EntityPicker: FC<EntityPickerProps> = ({
@@ -35,16 +31,19 @@ export const EntityPicker: FC<EntityPickerProps> = ({
   addedEntities,
   placeholder,
   type,
+  onCreate,
 }): JSX.Element => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const rootPath = useMemo(() => path.concat(type), [path, type])
+  const rootPath = useMemo(() => path.concat(PATH_FIELD_MAP[type]), [path, type])
 
   const options = useMemo(() => entities
     .filter((entity) => !addedEntities.has(entity.name))
     .map((entity) => ({
-      label: t(entity.schema.title, { ns: entity.namespace }),
+      label: entity.schema.title
+        ? t(entity.schema.title, { ns: entity.namespace })
+        : formatWidgetName(entity.name),
       value: entity.name,
     })), [entities, addedEntities])
   const schemasMap = useMemo(() => entities.reduce((acc, entity) => {
@@ -52,40 +51,21 @@ export const EntityPicker: FC<EntityPickerProps> = ({
     return acc
   }, {} as Record<string, WidgetSchema>), [entities])
 
-  const [value, setValue] = useState<string>()
-
-  const handleChange = useCallback((selectedValue: string) => {
-    setValue(selectedValue)
-  }, [])
-
-  const handleAdd = useCallback(() => {
-    if (!value) {
-      return
-    }
-
+  const handleAdd = useCallback((value: string) => {
     dispatch(addValue(rootPath, {
       name: value,
       [CONFIG_KEY_MAP[type]]: schemasMap[value].getInitialState?.() ?? {},
     }))
-
-    setValue(undefined)
-  }, [value, schemasMap, rootPath, type])
+  }, [schemasMap, rootPath, type])
 
   return (
-    <EntityPickerStyled>
-      <Select
-        css={SelectCSS}
-        options={options}
-        onChange={handleChange}
-        value={value}
-        placeholder={placeholder}
-        showSearch
-      />
-      <Button
-        css={ButtonCSS}
-        icon={<PlusOutlined />}
-        onClick={handleAdd}
-      />
-    </EntityPickerStyled>
+    <EntityPickerComponent
+      css={EntityPickerCSS}
+      options={options}
+      onAdd={handleAdd}
+      onCreate={onCreate}
+      placeholder={placeholder}
+      type={type}
+    />
   )
 }

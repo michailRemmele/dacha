@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import 'reflect-metadata'
 import 'antd/dist/reset.css'
 
 import { App } from './view'

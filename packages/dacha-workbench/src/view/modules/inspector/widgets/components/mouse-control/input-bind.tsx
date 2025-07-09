@@ -37,15 +37,13 @@ export const InputBind: FC<InputBindProps> = ({
 }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
-  const { globalReferences } = useExtension()
+  const { events } = useExtension()
 
   const bindPath = useMemo(() => path.concat('inputEventBindings', `event:${value}`), [path, value])
   const eventPath = useMemo(() => bindPath.concat('event'), [bindPath])
   const buttonPath = useMemo(() => bindPath.concat('button'), [bindPath])
   const eventTypePath = useMemo(() => bindPath.concat('eventType'), [bindPath])
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath])
-
-  const controlEvents = globalReferences.controlEvents?.items
 
   const inputEvents = useMemo(
     () => options.filter(
@@ -61,6 +59,7 @@ export const InputBind: FC<InputBindProps> = ({
   return (
     <Panel
       css={PanelCSS}
+      size="small"
       title={t('components.mouseControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
@@ -79,9 +78,9 @@ export const InputBind: FC<InputBindProps> = ({
       />
       <Field
         path={eventTypePath}
-        component={controlEvents ? LabelledSelect : LabelledTextInput}
+        component={events ? LabelledSelect : LabelledTextInput}
         label={t('components.mouseControl.bind.eventType.title')}
-        options={controlEvents}
+        options={events}
       />
       <SectionHeaderStyled>
         {t('components.mouseControl.bind.attributes.title')}

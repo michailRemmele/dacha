@@ -88,6 +88,7 @@ export const Entry: FC<MultiFieldEntryProps> = ({
 
   return (
     <Panel
+      size="small"
       title={t('inspector.multifield.field.title', { index: order + 1 })}
       onDelete={handleDeleteField}
     >
