@@ -60,9 +60,6 @@ export interface ElectronAPI {
 declare global {
   interface Window {
     electron: ElectronAPI
-    widgets?: unknown
-    events?: Record<string, unknown>
-    locales?: { default?: Resource }
     extension?: {
       default: {
         events: string[]
