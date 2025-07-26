@@ -20,24 +20,24 @@ import { traverseEntity } from '../entity';
 import { Actor } from './actor';
 
 type ActorCollectionListenerFn<T extends EventType> = (
-  event: T extends keyof ActorCollectionEventMap ? ActorCollectionEventMap[T] : Event
+  event: T extends keyof ActorCollectionEventMap
+    ? ActorCollectionEventMap[T]
+    : Event,
 ) => void;
 
 export interface ActorCollectionFilter {
-  components?: Array<ComponentConstructor | string>;
+  components?: (ComponentConstructor | string)[];
 }
 
 export class ActorCollection extends EventTarget {
-  private components: Array<ComponentConstructor | string>;
-  private acceptedActors: Array<Actor>;
+  private components: (ComponentConstructor | string)[];
+  private acceptedActors: Actor[];
   private acceptedActorsMap: Record<string, Actor | undefined>;
 
   constructor(scene: Scene, filter: ActorCollectionFilter = {}) {
     super();
 
-    const {
-      components = [],
-    } = filter;
+    const { components = [] } = filter;
 
     this.components = components;
 
@@ -79,7 +79,9 @@ export class ActorCollection extends EventTarget {
     super.removeEventListener(type, callback as ListenerFn);
   }
 
-  private handleActorUpdate = (event: AddComponentEvent | RemoveComponentEvent): void => {
+  private handleActorUpdate = (
+    event: AddComponentEvent | RemoveComponentEvent,
+  ): void => {
     const { target } = event;
 
     if (this.test(target)) {

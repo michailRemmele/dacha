@@ -16,6 +16,7 @@ describe('Contrib -> components -> Sprite', () => {
       fit: 'stretch',
       material: {
         type: 'basic',
+        options: {},
       },
     }).clone();
 
@@ -48,6 +49,7 @@ describe('Contrib -> components -> Sprite', () => {
       fit: 'stretch',
       material: {
         type: 'basic',
+        options: {},
       },
     }).clone();
 
@@ -61,7 +63,6 @@ describe('Contrib -> components -> Sprite', () => {
     sprite.flipY = false;
     sprite.disabled = true;
     sprite.sortingLayer = 'units';
-    sprite.fit = 'repeat';
     sprite.material.type = 'lightsensitive';
     sprite.material.options.color = '#000';
     sprite.material.options.blending = 'multiply';
@@ -76,7 +77,6 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.flipY).toEqual(false);
     expect(sprite.disabled).toEqual(true);
     expect(sprite.sortingLayer).toEqual('units');
-    expect(sprite.fit).toEqual('repeat');
     expect(sprite.material.type).toEqual('lightsensitive');
     expect(sprite.material.options.color).toEqual('#000');
     expect(sprite.material.options.blending).toEqual('multiply');
@@ -97,6 +97,7 @@ describe('Contrib -> components -> Sprite', () => {
       fit: 'stretch',
       material: {
         type: 'basic',
+        options: {},
       },
     });
     const cloneSprite = originalSprite.clone();

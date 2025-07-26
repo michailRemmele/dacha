@@ -1,14 +1,14 @@
 import { Vector2 } from './vector2';
 
-type Point = {
-  x: number
-  y: number
-};
+interface Point {
+  x: number;
+  y: number;
+}
 
-type Edge = {
-  point1: Point
-  point2: Point
-};
+interface Edge {
+  point1: Point;
+  point2: Point;
+}
 
 export class VectorOps {
   static fixCalcError(value: number): number {
@@ -39,7 +39,7 @@ export class VectorOps {
    * Calculate dot product of two vectors
    */
   static dotProduct(point: Point, vector: Vector2): number {
-    return (point.x * vector.x) + (point.y * vector.y);
+    return point.x * vector.x + point.y * vector.y;
   }
 
   /**
@@ -95,8 +95,8 @@ export class VectorOps {
       const y2 = edge.point2.y;
 
       // https://en.wikipedia.org/wiki/Linear_equation#Determinant_form
-      const isIntersection = (y1 > y !== y2 > y)
-        && (x < ((x2 - x1) * (y - y1)) / (y2 - y1) + x1);
+      const isIntersection =
+        y1 > y !== y2 > y && x < ((x2 - x1) * (y - y1)) / (y2 - y1) + x1;
       if (isIntersection) {
         isInside = !isInside;
       }

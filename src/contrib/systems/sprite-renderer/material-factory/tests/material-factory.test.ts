@@ -1,12 +1,19 @@
-import { MeshBasicMaterial, MeshStandardMaterial, Texture } from 'three/src/Three';
+import {
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  Texture,
+} from 'three/src/Three';
 
+import type { BasicMaterialOptions } from '../../../../components/sprite';
 import { createMaterial, updateMaterial } from '../index';
 
 describe('Contrib -> RenderSystem -> material factory', () => {
   describe('createMaterial()', () => {
     it('Returns correct material by type', () => {
       expect(createMaterial('basic') instanceof MeshBasicMaterial).toBeTruthy();
-      expect(createMaterial('lightsensitive') instanceof MeshStandardMaterial).toBeTruthy();
+      expect(
+        createMaterial('lightsensitive') instanceof MeshStandardMaterial,
+      ).toBeTruthy();
     });
 
     it('Throws error if type not found', () => {
@@ -22,8 +29,10 @@ describe('Contrib -> RenderSystem -> material factory', () => {
     it('Updates basic material correctly', () => {
       const material = new MeshBasicMaterial();
       const texture = new Texture();
-      const options = {
+      const options: BasicMaterialOptions = {
         color: '#112233',
+        blending: 'normal',
+        opacity: 1,
       };
 
       updateMaterial('basic', material, options, texture);
@@ -36,8 +45,10 @@ describe('Contrib -> RenderSystem -> material factory', () => {
     it('Updates lightsensitive material correctly', () => {
       const material = new MeshStandardMaterial();
       const texture = new Texture();
-      const options = {
+      const options: BasicMaterialOptions = {
         color: '#aabbcc',
+        blending: 'normal',
+        opacity: 1,
       };
 
       updateMaterial('lightsensitive', material, options, texture);

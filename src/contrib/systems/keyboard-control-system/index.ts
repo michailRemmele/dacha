@@ -14,7 +14,7 @@ export class KeyboardControlSystem extends WorldSystem {
   private actorCollection?: ActorCollection;
 
   private pressedKeys: Set<string>;
-  private events: Array<KeyboardInputEvent>;
+  private events: KeyboardInputEvent[];
 
   constructor(options: WorldSystemOptions) {
     super();

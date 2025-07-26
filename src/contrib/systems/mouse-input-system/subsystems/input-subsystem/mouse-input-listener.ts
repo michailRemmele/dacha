@@ -13,7 +13,7 @@ const LISTENING_EVENTS = [
 
 export class MouseInputListener {
   private window: Window | HTMLElement;
-  private firedEvents: Array<CustomMouseEvent>;
+  private firedEvents: CustomMouseEvent[];
 
   constructor(window: Window | HTMLElement) {
     this.window = window;
@@ -48,7 +48,7 @@ export class MouseInputListener {
     });
   }
 
-  getFiredEvents(): Array<CustomMouseEvent> {
+  getFiredEvents(): CustomMouseEvent[] {
     return this.firedEvents;
   }
 

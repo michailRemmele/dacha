@@ -6,7 +6,7 @@ export class State {
   name: string;
   speed: number;
   type: 'individual' | 'group';
-  transitions: Array<Transition>;
+  transitions: Transition[];
 
   constructor(config: StateConfig) {
     const {

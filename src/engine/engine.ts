@@ -8,8 +8,8 @@ import type { PerformanceSettings } from './game-loop';
 
 export interface EngineOptions {
   config: Config
-  systems: Array<SystemConstructor>
-  components: Array<ComponentConstructor>
+  systems: SystemConstructor[]
+  components: ComponentConstructor[]
   resources?: Record<string, unknown>
 }
 
@@ -64,22 +64,22 @@ export class Engine {
       throw new Error('Can\'t start the engine without starting scene. Please specify start scene id.');
     }
 
-    for (let i = 0; i < components.length; i += 1) {
-      if (components[i].componentName === undefined) {
-        throw new Error(`Missing componentName field for ${components[i].name} component.`);
+    for (const component of components) {
+      if (component.componentName === undefined) {
+        throw new Error(`Missing componentName field for ${component.name} component.`);
       }
     }
 
-    for (let i = 0; i < availableSystems.length; i += 1) {
-      if (availableSystems[i].systemName === undefined) {
-        throw new Error(`Missing systemName field for ${availableSystems[i].name} system.`);
+    for (const availableSystem of availableSystems) {
+      if (availableSystem.systemName === undefined) {
+        throw new Error(`Missing systemName field for ${availableSystem.name} system.`);
       }
     }
 
     const templateCollection = new TemplateCollection(components);
 
-    for (let i = 0; i < templates.length; i += 1) {
-      templateCollection.register(templates[i]);
+    for (const template of templates) {
+      templateCollection.register(template);
     }
 
     const globalOptions = rawGlobalOptions.reduce((acc: Record<string, unknown>, option) => {

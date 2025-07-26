@@ -5,28 +5,29 @@ import type {
 } from '../../types';
 
 export interface KeyboardEventBind {
-  eventType: string
-  attrs: InputEventAttributes
-  keepEmit: boolean
+  eventType: string;
+  attrs: InputEventAttributes;
+  keepEmit: boolean;
 }
 
-export interface InputEventBindings {
-  [key: string]: {
-    pressed?: KeyboardEventBind
-    released?: KeyboardEventBind
+export type InputEventBindings = Record<
+  string,
+  {
+    pressed?: KeyboardEventBind;
+    released?: KeyboardEventBind;
   }
-}
+>;
 
 export interface KeyboardEventBindConfig {
-  key: string
-  pressed: boolean
-  keepEmit?: boolean
-  eventType: string
-  attrs: Array<InputEventAttributeConfig>
+  key: string;
+  pressed: boolean;
+  keepEmit?: boolean;
+  eventType: string;
+  attrs: InputEventAttributeConfig[];
 }
 
 export interface KeyboardControlConfig extends Record<string, unknown> {
-  inputEventBindings: Array<KeyboardEventBindConfig>
+  inputEventBindings: KeyboardEventBindConfig[];
 }
 
 export class KeyboardControl extends Component {
@@ -37,20 +38,23 @@ export class KeyboardControl extends Component {
 
     const { inputEventBindings } = config;
 
-    this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
-      acc[bind.key] ??= {};
+    this.inputEventBindings = inputEventBindings.reduce(
+      (acc: InputEventBindings, bind) => {
+        acc[bind.key] ??= {};
 
-      acc[bind.key][bind.pressed ? 'pressed' : 'released'] = {
-        eventType: bind.eventType,
-        keepEmit: !!bind.keepEmit,
-        attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
-          attrs[attr.name] = attr.value;
-          return attrs;
-        }, {}),
-      };
+        acc[bind.key][bind.pressed ? 'pressed' : 'released'] = {
+          eventType: bind.eventType,
+          keepEmit: !!bind.keepEmit,
+          attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
+            attrs[attr.name] = attr.value;
+            return attrs;
+          }, {}),
+        };
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
   }
 
   clone(): KeyboardControl {
@@ -65,9 +69,10 @@ export class KeyboardControl extends Component {
               eventType: pressed.eventType,
               pressed: true,
               keepEmit: pressed.keepEmit,
-              attrs: Object.keys(pressed.attrs).map(
-                (name) => ({ name, value: pressed.attrs[name] }),
-              ),
+              attrs: Object.keys(pressed.attrs).map((name) => ({
+                name,
+                value: pressed.attrs[name],
+              })),
             });
           }
           if (released !== undefined) {
@@ -75,15 +80,16 @@ export class KeyboardControl extends Component {
               key: inputEvent,
               eventType: released.eventType,
               pressed: false,
-              attrs: Object.keys(released.attrs).map(
-                (name) => ({ name, value: released.attrs[name] }),
-              ),
+              attrs: Object.keys(released.attrs).map((name) => ({
+                name,
+                value: released.attrs[name],
+              })),
             });
           }
 
           return acc;
         },
-        [] as Array<KeyboardEventBindConfig>,
+        [] as KeyboardEventBindConfig[],
       ),
     });
   }

@@ -9,8 +9,8 @@ import { Actor } from './actor';
 export interface ActorOptions {
   id?: string
   name?: string
-  children?: Array<ActorOptions>
-  components?: Array<ComponentConfig>
+  children?: ActorOptions[]
+  components?: ComponentConfig[]
   templateId?: string
   isNew?: boolean
 }
@@ -20,7 +20,7 @@ export class ActorCreator {
   private templateCollection: TemplateCollection;
 
   constructor(
-    components: Array<ComponentConstructor>,
+    components: ComponentConstructor[],
     templateCollection: TemplateCollection,
   ) {
     this.components = components.reduce((acc, ComponentClass) => {

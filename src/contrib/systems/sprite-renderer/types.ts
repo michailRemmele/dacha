@@ -1,8 +1,8 @@
-export type SortingLayer = {
-  id: string
-  name: string
-};
+export interface SortingLayer {
+  id: string;
+  name: string;
+}
 
-export type SortingLayers = {
-  layers: SortingLayer[]
-};
+export interface SortingLayers {
+  layers: SortingLayer[];
+}

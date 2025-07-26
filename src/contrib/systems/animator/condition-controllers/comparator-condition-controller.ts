@@ -22,10 +22,7 @@ export class ComparatorConditionController implements ConditionController {
   private actor: Actor;
   private props: ComparatorConditionProps;
 
-  constructor(
-    props: ComparatorConditionProps,
-    actor: Actor,
-  ) {
+  constructor(props: ComparatorConditionProps, actor: Actor) {
     this.actor = actor;
     this.props = props;
   }
@@ -35,7 +32,7 @@ export class ComparatorConditionController implements ConditionController {
     arg: ComparatorConditionComponentValue | ComparatorConditionSimpleValue,
   ): ComparatorValue {
     if (arg.type === 'componentValue') {
-      return getComponentValue(actor, arg.value as Array<string>) as ComparatorValue;
+      return getComponentValue(actor, arg.value as string[]) as ComparatorValue;
     }
 
     return arg.value as ComparatorValue;

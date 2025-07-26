@@ -16,25 +16,21 @@ const MOUSE_BUTTONS_MAP = {
 } as Record<string, number>;
 
 export interface MouseEventBind {
-  eventType: string
-  attrs: InputEventAttributes
+  eventType: string;
+  attrs: InputEventAttributes;
 }
 
-export interface InputEventBindings {
-  [key: string]: {
-    [button: string]: MouseEventBind
-  }
-}
+export type InputEventBindings = Record<string, Record<string, MouseEventBind>>;
 
 export interface MouseEventBindConfig {
-  event: string
-  button?: number
-  eventType: string
-  attrs: Array<InputEventAttributeConfig>
+  event: string;
+  button?: number;
+  eventType: string;
+  attrs: InputEventAttributeConfig[];
 }
 
 export interface MouseControlConfig {
-  inputEventBindings: Array<MouseEventBindConfig>
+  inputEventBindings: MouseEventBindConfig[];
 }
 
 export class MouseControl extends Component {
@@ -45,17 +41,20 @@ export class MouseControl extends Component {
 
     const { inputEventBindings } = config;
 
-    this.inputEventBindings = inputEventBindings.reduce((acc: InputEventBindings, bind) => {
-      acc[bind.event] ??= {};
-      acc[bind.event][bind.button ?? MOUSE_BUTTONS_MAP[bind.event]] = {
-        eventType: bind.eventType,
-        attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
-          attrs[attr.name] = attr.value;
-          return attrs;
-        }, {}),
-      };
-      return acc;
-    }, {});
+    this.inputEventBindings = inputEventBindings.reduce(
+      (acc: InputEventBindings, bind) => {
+        acc[bind.event] ??= {};
+        acc[bind.event][bind.button ?? MOUSE_BUTTONS_MAP[bind.event]] = {
+          eventType: bind.eventType,
+          attrs: bind.attrs.reduce((attrs: InputEventAttributes, attr) => {
+            attrs[attr.name] = attr.value;
+            return attrs;
+          }, {}),
+        };
+        return acc;
+      },
+      {},
+    );
   }
 
   clone(): MouseControl {
@@ -69,15 +68,16 @@ export class MouseControl extends Component {
               event: inputEvent,
               button: Number(button),
               eventType: buttonBinds[button].eventType,
-              attrs: Object.keys(buttonBinds[button].attrs).map(
-                (name) => ({ name, value: buttonBinds[button].attrs[name] }),
-              ),
+              attrs: Object.keys(buttonBinds[button].attrs).map((name) => ({
+                name,
+                value: buttonBinds[button].attrs[name],
+              })),
             });
           });
 
           return acc;
         },
-        [] as Array<MouseEventBindConfig>,
+        [] as MouseEventBindConfig[],
       ),
     });
   }

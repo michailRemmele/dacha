@@ -22,13 +22,13 @@ export interface EdgeWithNormal extends Edge {
   normal: Vector2
 }
 
-export type BoxGeometry = {
+export interface BoxGeometry {
   center: Point
-  points: Array<Point>
-  edges: Array<EdgeWithNormal>
+  points: Point[]
+  edges: EdgeWithNormal[]
 };
 
-export type CircleGeometry = {
+export interface CircleGeometry {
   center: Point
   radius: number
 };
@@ -67,7 +67,7 @@ export interface SortedItem {
 }
 
 export interface AxisEntry {
-  sortedList: Array<SortedItem>
+  sortedList: SortedItem[]
   dispersionCalculator: DispersionCalculator
 }
 
@@ -80,7 +80,7 @@ export interface Axes {
 
 export type CollisionPair = [CollisionEntry, CollisionEntry];
 
-export type Intersection = {
+export interface Intersection {
   mtv1: Vector2
   mtv2: Vector2
 };

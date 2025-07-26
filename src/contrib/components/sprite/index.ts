@@ -1,24 +1,36 @@
+import type { Sprite as PixiSprite, TilingSprite } from 'pixi.js';
+
 import { Component } from '../../../engine/component';
 
 import { Material, MaterialConfig } from './material';
 
+interface RenderData {
+  sprite: PixiSprite | TilingSprite;
+  textureSourceKey?: string;
+  textureArrayKey?: string;
+}
+
 type FitType = 'stretch' | 'repeat';
 
-export type { MaterialType, BasicMaterialOptions, BlendingMode } from './material';
+export type {
+  MaterialType,
+  BasicMaterialOptions,
+  BlendingMode,
+} from './material';
 
 export interface SpriteConfig {
-  src: string
-  width: number
-  height: number
-  slice: number
-  rotation: number
-  flipX: boolean
-  flipY: boolean
-  disabled: boolean
-  sortingLayer: string
-  sortCenter: [number, number]
-  fit: FitType
-  material: MaterialConfig
+  src: string;
+  width: number;
+  height: number;
+  slice: number;
+  rotation: number;
+  flipX: boolean;
+  flipY: boolean;
+  disabled: boolean;
+  sortingLayer: string;
+  sortCenter: [number, number];
+  fit: FitType;
+  material: MaterialConfig;
 }
 
 export class Sprite extends Component {
@@ -33,8 +45,9 @@ export class Sprite extends Component {
   sortingLayer: string;
   sortCenter: [number, number];
   currentFrame?: number;
-  fit: FitType;
+  readonly fit: FitType;
   material: Material;
+  renderData?: RenderData;
 
   constructor(config: SpriteConfig) {
     super();

@@ -11,7 +11,7 @@ export class SpriteCropper {
     this.canvasContext = this.canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
   }
 
-  crop(spriteTexture: HTMLImageElement, sprite: Sprite): Array<Texture> {
+  crop(spriteTexture: HTMLImageElement, sprite: Sprite): Texture[] {
     const frames = sprite.slice;
 
     if (frames <= 0) {

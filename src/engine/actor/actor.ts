@@ -19,7 +19,7 @@ export interface ActorOptions extends EntityOptions {
 export class Actor extends Entity {
   private components: Record<string, Component>;
 
-  declare public readonly children: Array<Actor>;
+  declare public readonly children: Actor[];
   public readonly templateId?: string;
 
   declare public parent: Actor | Scene | null;
@@ -84,12 +84,10 @@ export class Actor extends Entity {
     return super.findChildByName(name, recursive) as Actor | undefined;
   }
 
-  getComponents(): Array<Component> {
+  getComponents(): Component[] {
     return Object.values(this.components);
   }
 
-  getComponent<T extends Component = Component>(componentName: string): T;
-  getComponent<T extends Component>(componentClass: ComponentConstructor<T>): T;
   getComponent<T extends Component>(classOrName: ComponentConstructor<T> | string): T {
     if (typeof classOrName === 'string') {
       return this.components[classOrName] as T;

@@ -12,7 +12,7 @@ export class OneDimensionalPicker implements Picker {
 
   getSubstate(
     actor: Actor,
-    substates: Array<Substate>,
+    substates: Substate[],
     props: OneDimensionalProps,
   ): Substate {
     if (!substates.length) {

@@ -32,7 +32,7 @@ import { isSubclassOf } from '../utils/is-subclass-of';
 
 import { Scene } from './scene';
 
-type LoadEntry = {
+interface LoadEntry {
   scene: Scene
   systems: Map<string, SceneSystem>
   isLoading: boolean

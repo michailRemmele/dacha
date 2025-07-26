@@ -8,7 +8,7 @@ import { eventQueue } from './event-queue';
 export class EventTarget {
   public parent: EventTarget | null;
 
-  private listenersMap: Map<EventType, Array<ListenerFn>>;
+  private listenersMap: Map<EventType, ListenerFn[]>;
 
   constructor() {
     this.listenersMap = new Map();
@@ -24,7 +24,7 @@ export class EventTarget {
     this.listenersMap.get(type)?.push(callback);
   }
 
-  getEventListeners(type: EventType): Array<ListenerFn> | undefined {
+  getEventListeners(type: EventType): ListenerFn[] | undefined {
     return this.listenersMap.get(type);
   }
 
@@ -68,7 +68,7 @@ export class EventTarget {
     while (target !== null && !isPropagationStopped) {
       event.currentTarget = target;
 
-      const listeners = target.getEventListeners(type) as Array<ListenerFn>;
+      const listeners = target.getEventListeners(type) as ListenerFn[];
       listeners?.forEach((listener) => listener(event));
 
       target = target.parent;

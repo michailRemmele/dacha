@@ -10,10 +10,6 @@ export { BehaviorSystem, Behavior } from './behavior-system';
 export type { BehaviorOptions } from './behavior-system';
 export { SpriteRenderer, SpriteRendererService } from './sprite-renderer';
 export { UIBridge } from './ui-bridge';
-export type {
-  UIOptions,
-  UIInitFn,
-  UIDestroyFn,
-  LoadUIFn,
-} from './ui-bridge';
+export type { UIOptions, UIInitFn, UIDestroyFn, LoadUIFn } from './ui-bridge';
 export { AudioSystem } from './audio-system';
+export { Renderer } from './renderer';

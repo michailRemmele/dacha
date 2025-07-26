@@ -11,7 +11,7 @@ export interface EntityOptions {
 export class Entity extends EventTarget {
   public readonly id: string;
   public readonly name: string;
-  public children: Array<Entity>;
+  public children: Entity[];
 
   declare public parent: Entity | null;
 

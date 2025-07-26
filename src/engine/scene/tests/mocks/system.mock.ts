@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { Scene } from '../..';
 import { World } from '../../../world';
 import {
