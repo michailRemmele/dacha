@@ -4,7 +4,7 @@ import type { Loader } from './loaders/loader';
 const EXT_SEPARATOR = '.';
 
 export class ResourceLoaderQualifier {
-  private loaders: Array<Loader>;
+  private loaders: Loader[];
 
   constructor() {
     this.loaders = Object.keys(loaders).map((loaderName) => {

@@ -6,7 +6,7 @@ import type { TwoDimensionalProps } from '../../../components/animatable/two-dim
 export interface Picker {
   getSubstate(
     actor: Actor,
-    substates: Array<Substate>,
+    substates: Substate[],
     props: OneDimensionalProps | TwoDimensionalProps,
   ): Substate
 }

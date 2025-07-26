@@ -1,5 +1,3 @@
-/* comment: mock classes for test */
-/* eslint-disable max-classes-per-file */
 import { Actor } from '../actor';
 import { Component } from '../../component';
 import {

@@ -1,16 +1,16 @@
 export type BlendingMode = 'normal' | 'addition' | 'substract' | 'multiply';
 
 export interface BasicMaterialOptions {
-  color?: string
-  blending?: BlendingMode
-  opacity?: number
+  color: string;
+  blending: BlendingMode;
+  opacity: number;
 }
 
 export type MaterialType = 'lightsensitive' | 'basic';
 
 export interface MaterialConfig {
   type: MaterialType;
-  options?: BasicMaterialOptions
+  options: Partial<BasicMaterialOptions>;
 }
 
 export class Material {
@@ -19,6 +19,10 @@ export class Material {
 
   constructor(config: MaterialConfig) {
     this.type = config.type;
-    this.options = config.options ? { ...config.options } : {};
+    this.options = {
+      color: config.options.color || '#ffffff',
+      blending: config.options.blending || 'normal',
+      opacity: config.options.opacity || 1,
+    };
   }
 }

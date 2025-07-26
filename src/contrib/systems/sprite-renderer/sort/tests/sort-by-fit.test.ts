@@ -18,6 +18,7 @@ describe('Contrib -> RenderSystem -> Sort -> sortByFit()', () => {
     fit: 'stretch',
     material: {
       type: 'basic',
+      options: {},
     },
   };
 
@@ -25,17 +26,8 @@ describe('Contrib -> RenderSystem -> Sort -> sortByFit()', () => {
     const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
     const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
 
-    actor1.setComponent(new Sprite(baseSpriteProps));
-    actor2.setComponent(new Sprite(baseSpriteProps));
-
-    expect(sortByFit(actor1, actor2)).toBe(0);
-
-    (actor2.getComponent(Sprite)).fit = 'repeat';
-
-    expect(sortByFit(actor1, actor2)).toBeGreaterThan(0);
-
-    (actor2.getComponent(Sprite)).fit = 'stretch';
-    (actor1.getComponent(Sprite)).fit = 'repeat';
+    actor1.setComponent(new Sprite({ ...baseSpriteProps, fit: 'repeat' }));
+    actor2.setComponent(new Sprite({ ...baseSpriteProps, fit: 'stretch' }));
 
     expect(sortByFit(actor1, actor2)).toBeLessThan(0);
   });

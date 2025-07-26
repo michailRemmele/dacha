@@ -13,7 +13,7 @@ export class TwoDimensionalPicker implements Picker {
 
   getSubstate(
     actor: Actor,
-    substates: Array<Substate>,
+    substates: Substate[],
     props: TwoDimensionalProps,
   ): Substate {
     if (!substates.length) {

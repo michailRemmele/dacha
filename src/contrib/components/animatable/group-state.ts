@@ -6,7 +6,7 @@ import { TwoDimensionalProps } from './two-dimensional-props';
 import type { GroupStateConfig } from './types';
 
 export class GroupState extends State {
-  substates: Array<Substate>;
+  substates: Substate[];
   pickMode: '1D' | '2D';
   pickProps: OneDimensionalProps | TwoDimensionalProps;
 

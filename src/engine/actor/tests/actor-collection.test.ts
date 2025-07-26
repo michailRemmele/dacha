@@ -1,5 +1,3 @@
-/* comment: mock classes for test */
-/* eslint-disable max-classes-per-file */
 import { Scene } from '../../scene';
 import { ActorCollection } from '../actor-collection';
 import { ActorCreator } from '../actor-creator';

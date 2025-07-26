@@ -8,11 +8,11 @@ export { sortByYAxis } from './sort-by-y-axis';
 export { sortByZAxis } from './sort-by-z-axis';
 export { sortByFit } from './sort-by-fit';
 
-export const composeSort = (sortFns: Array<SortFn>): SortFn => (a: Actor, b: Actor) => {
+export const composeSort = (sortFns: SortFn[]): SortFn => (a: Actor, b: Actor) => {
   let result = 0;
 
-  for (let i = 0; i < sortFns.length; i += 1) {
-    result = sortFns[i](a, b);
+  for (const sortFn of sortFns) {
+    result = sortFn(a, b);
 
     if (result !== 0) {
       return result;

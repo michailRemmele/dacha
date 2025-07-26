@@ -1,4 +1,4 @@
 export interface Loader {
-  getSupportedExtensions(): Array<string>
+  getSupportedExtensions(): string[]
   load(resourceUrl: string): Promise<unknown>
 }

@@ -7,7 +7,7 @@ import type { AnimatableConfig, GroupStateConfig, IndividualStateConfig } from '
 export type { AnimatableConfig };
 
 export class Animatable extends Component {
-  states: Array<IndividualState | GroupState>;
+  states: (IndividualState | GroupState)[];
   initialState: string;
   currentState?: IndividualState | GroupState;
   duration: number;
@@ -21,7 +21,7 @@ export class Animatable extends Component {
     } = config;
 
     this.states = states
-      .reduce((acc: Array<IndividualState | GroupState>, state) => {
+      .reduce((acc: (IndividualState | GroupState)[], state) => {
         const { type } = state as State;
         if (type === 'individual') {
           acc.push(new IndividualState(state as IndividualStateConfig));
