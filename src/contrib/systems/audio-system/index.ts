@@ -3,16 +3,12 @@ import type { Scene } from '../../../engine/scene';
 import type { World } from '../../../engine/world';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { TemplateCollection } from '../../../engine/template';
-import { Actor, ActorCollection } from '../../../engine/actor';
+import { Actor, ActorQuery } from '../../../engine/actor';
 import { AddActor, RemoveActor } from '../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 import { CacheStore } from '../../../engine/data-lib';
 import { AudioSource } from '../../components';
-import {
-  PlayAudio,
-  StopAudio,
-  SetAudioVolume,
-} from '../../../events';
+import { PlayAudio, StopAudio, SetAudioVolume } from '../../../events';
 import type {
   SetAudioGroupVolumeEvent,
   SetAudioSourceVolumeEvent,
@@ -33,7 +29,7 @@ export class AudioSystem extends WorldSystem {
   private audioGroups: Record<string, GainNode | undefined>;
   private audioStore: CacheStore<AudioBuffer>;
   private audioState: Map<string, AudioStateNode>;
-  private actorCollection?: ActorCollection;
+  private actorQuery?: ActorQuery;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -49,21 +45,29 @@ export class AudioSystem extends WorldSystem {
 
     masterAudioGroup.connect(this.audioContext.destination);
 
-    const audioGroupsOption = globalOptions.audioGroups as AudioGroups | undefined;
+    const audioGroupsOption = globalOptions.audioGroups as
+      | AudioGroups
+      | undefined;
     const audioGroupsSettings = audioGroupsOption?.groups ?? [];
-    this.audioGroups = audioGroupsSettings.reduce((acc, groupSettings) => {
-      if (groupSettings.name === MASTER_GROUP) {
+    this.audioGroups = audioGroupsSettings.reduce(
+      (acc, groupSettings) => {
+        if (groupSettings.name === MASTER_GROUP) {
+          return acc;
+        }
+
+        const gainNode = new GainNode(this.audioContext);
+        gainNode.gain.value = groupSettings.volume;
+
+        gainNode.connect(masterAudioGroup);
+
+        acc[groupSettings.name] = gainNode;
         return acc;
-      }
-
-      const gainNode = new GainNode(this.audioContext);
-      gainNode.gain.value = groupSettings.volume;
-
-      gainNode.connect(masterAudioGroup);
-
-      acc[groupSettings.name] = gainNode;
-      return acc;
-    }, { [MASTER_GROUP]: masterAudioGroup } as Record<string, GainNode | undefined>);
+      },
+      { [MASTER_GROUP]: masterAudioGroup } as Record<
+        string,
+        GainNode | undefined
+      >,
+    );
 
     this.audioStore = new CacheStore<AudioBuffer>();
     this.audioState = new Map();
@@ -74,7 +78,9 @@ export class AudioSystem extends WorldSystem {
 
     window.addEventListener('click', this.resumeIfSuspended, { once: true });
     window.addEventListener('keydown', this.resumeIfSuspended, { once: true });
-    window.addEventListener('touchstart', this.resumeIfSuspended, { once: true });
+    window.addEventListener('touchstart', this.resumeIfSuspended, {
+      once: true,
+    });
   }
 
   async onSceneLoad(scene: Scene): Promise<void> {
@@ -84,9 +90,11 @@ export class AudioSystem extends WorldSystem {
     ];
     const uniqueSources = [...new Set(allSources)];
 
-    const audioBuffers = await Promise.all(uniqueSources.map((src) => {
-      return !this.audioStore.has(src) ? this.loadAudio(src) : undefined;
-    }));
+    const audioBuffers = await Promise.all(
+      uniqueSources.map((src) => {
+        return !this.audioStore.has(src) ? this.loadAudio(src) : undefined;
+      }),
+    );
 
     uniqueSources.forEach((src, index) => {
       if (audioBuffers[index]) {
@@ -97,14 +105,15 @@ export class AudioSystem extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorCollection = new ActorCollection(scene, {
-      components: [AudioSource],
+    this.actorQuery = new ActorQuery({
+      scene,
+      filter: [AudioSource],
     });
 
-    this.actorCollection.forEach((actor) => this.initAudio(actor));
+    this.actorQuery.getActors().forEach((actor) => this.initAudio(actor));
 
-    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.addEventListener(AddActor, this.handleActorAdd);
+    this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   onSceneExit(): void {
@@ -112,10 +121,10 @@ export class AudioSystem extends WorldSystem {
       audioState.sourceNode.stop();
     });
 
-    this.actorCollection?.removeEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection?.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery?.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorQuery?.removeEventListener(RemoveActor, this.handleActorRemove);
 
-    this.actorCollection = undefined;
+    this.actorQuery = undefined;
   }
 
   onSceneDestroy(scene: Scene): void {
@@ -150,7 +159,10 @@ export class AudioSystem extends WorldSystem {
       const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
       return audioBuffer;
     } catch (error: unknown) {
-      console.error(`An error occurred during audio source loading: ${src}`, error);
+      console.error(
+        `An error occurred during audio source loading: ${src}`,
+        error,
+      );
       return undefined;
     }
   }
@@ -193,7 +205,8 @@ export class AudioSystem extends WorldSystem {
 
       audioSource.volume = event.value;
     } else {
-      const audioGroup = this.audioGroups[(event as SetAudioGroupVolumeEvent).group];
+      const audioGroup =
+        this.audioGroups[(event as SetAudioGroupVolumeEvent).group];
 
       if (!audioGroup) {
         return;
@@ -205,11 +218,9 @@ export class AudioSystem extends WorldSystem {
 
   private resumeIfSuspended = (): void => {
     if (this.audioContext.state === 'suspended') {
-      void this.audioContext
-        .resume()
-        .catch((err: unknown) => {
-          console.warn('Cannot resume a audio context', err);
-        });
+      void this.audioContext.resume().catch((err: unknown) => {
+        console.warn('Cannot resume a audio context', err);
+      });
     }
   };
 
@@ -227,9 +238,7 @@ export class AudioSystem extends WorldSystem {
       return;
     }
 
-    const {
-      src, group, volume, looped, playing,
-    } = audioSource;
+    const { src, group, volume, looped, playing } = audioSource;
     const audioGroupNode = this.audioGroups[group];
 
     if (!audioGroupNode || !this.audioStore.has(src)) {
@@ -238,7 +247,10 @@ export class AudioSystem extends WorldSystem {
 
     if (playing && this.audioState.has(actor.id)) {
       const prevAudio = this.audioState.get(actor.id)!;
-      prevAudio.sourceNode.removeEventListener('ended', prevAudio.properties.endedListener);
+      prevAudio.sourceNode.removeEventListener(
+        'ended',
+        prevAudio.properties.endedListener,
+      );
       prevAudio.sourceNode.stop();
       prevAudio.gainNode.disconnect();
     }
@@ -266,7 +278,9 @@ export class AudioSystem extends WorldSystem {
   }
 
   private stopAudio(actor: Actor): void {
-    const audioSource = actor.getComponent(AudioSource) as AudioSource | undefined;
+    const audioSource = actor.getComponent(AudioSource) as
+      | AudioSource
+      | undefined;
 
     if (audioSource) {
       audioSource.playing = false;
@@ -287,13 +301,16 @@ export class AudioSystem extends WorldSystem {
     const audioSource = actor.getComponent(AudioSource);
     const audioState = this.audioState.get(actor.id) as AudioStateNode;
 
-    if (Math.abs(audioSource.volume - audioState.properties.volume) > VOLUME_TOLERANCE) {
+    if (
+      Math.abs(audioSource.volume - audioState.properties.volume) >
+      VOLUME_TOLERANCE
+    ) {
       audioState.gainNode.gain.value = audioSource.volume;
     }
   }
 
   update(): void {
-    this.actorCollection?.forEach((actor) => {
+    this.actorQuery?.getActors().forEach((actor) => {
       const audioSource = actor.getComponent(AudioSource);
       const audioState = this.audioState.get(actor.id);
 

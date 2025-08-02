@@ -1,6 +1,6 @@
 import { SceneSystem } from '../../../engine/system';
 import type { UpdateOptions, SceneSystemOptions } from '../../../engine/system';
-import { Actor, ActorCollection } from '../../../engine/actor';
+import { Actor, ActorQuery } from '../../../engine/actor';
 import { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
 import type { IndividualState } from '../../components/animatable/individual-state';
@@ -18,31 +18,37 @@ import { setValue } from './utils';
 const FRAME_RATE = 100;
 
 export class Animator extends SceneSystem {
-  private actorCollection: ActorCollection;
+  private actorQuery: ActorQuery;
   private substatePickers: Record<string, Picker>;
 
-  private actorConditions: Record<string, Record<string, Record<string, ConditionController>>>;
+  private actorConditions: Record<
+    string,
+    Record<string, Record<string, ConditionController>>
+  >;
 
   constructor(options: SceneSystemOptions) {
     super();
 
-    this.actorCollection = new ActorCollection(options.scene, {
-      components: [Animatable],
+    this.actorQuery = new ActorQuery({
+      scene: options.scene,
+      filter: [Animatable],
     });
-    this.substatePickers = Object.keys(substatePickers)
-      .reduce((storage: Record<string, Picker>, key) => {
+    this.substatePickers = Object.keys(substatePickers).reduce(
+      (storage: Record<string, Picker>, key) => {
         const SubstatePicker = substatePickers[key];
         storage[key] = new SubstatePicker();
         return storage;
-      }, {});
+      },
+      {},
+    );
 
     this.actorConditions = {};
 
-    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   onSceneDestroy(): void {
-    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.removeEventListener(RemoveActor, this.handleActorRemove);
 
     Object.values(this.actorConditions).forEach((transitions) => {
       Object.values(transitions).forEach((conditions) => {
@@ -76,11 +82,9 @@ export class Animator extends SceneSystem {
   }
 
   private updateFrame(actor: Actor, frame: Frame): void {
-    Object.keys(frame).forEach((fieldName) => setValue(
-      actor,
-      frame[fieldName].path,
-      frame[fieldName].value,
-    ));
+    Object.keys(frame).forEach((fieldName) =>
+      setValue(actor, frame[fieldName].path, frame[fieldName].value),
+    );
   }
 
   private pickSubstate(actor: Actor, state: GroupState): Substate {
@@ -91,7 +95,7 @@ export class Animator extends SceneSystem {
   update(options: UpdateOptions): void {
     const { deltaTime } = options;
 
-    this.actorCollection.forEach((actor) => {
+    this.actorQuery.getActors().forEach((actor) => {
       const animatable = actor.getComponent(Animatable);
 
       if (animatable.currentState === void 0) {
@@ -105,7 +109,10 @@ export class Animator extends SceneSystem {
       let { timeline } = animatable.currentState as IndividualState;
 
       if ((animatable.currentState as GroupState).substates) {
-        const substate = this.pickSubstate(actor, animatable.currentState as GroupState);
+        const substate = this.pickSubstate(
+          actor,
+          animatable.currentState as GroupState,
+        );
         timeline = substate.timeline;
       }
 
@@ -115,21 +122,26 @@ export class Animator extends SceneSystem {
 
       animatable.duration += deltaTime / baseDuration;
 
-      const currentFrame = animatable.duration < 1 || timeline.looped
-        ? Math.trunc((animatable.duration % 1) * framesCount)
-        : framesCount - 1;
+      const currentFrame =
+        animatable.duration < 1 || timeline.looped
+          ? Math.trunc((animatable.duration % 1) * framesCount)
+          : framesCount - 1;
 
       this.updateFrame(actor, timeline.frames[currentFrame]);
 
-      const nextTransition = animatable.currentState.transitions.find((transition) => {
-        if (transition.time && animatable.duration < transition.time) {
-          return false;
-        }
+      const nextTransition = animatable.currentState.transitions.find(
+        (transition) => {
+          if (transition.time && animatable.duration < transition.time) {
+            return false;
+          }
 
-        return transition.conditions.every((condition) => {
-          return this.actorConditions[actor.id][transition.id][condition.id].check();
-        });
-      });
+          return transition.conditions.every((condition) => {
+            return this.actorConditions[actor.id][transition.id][
+              condition.id
+            ].check();
+          });
+        },
+      );
 
       if (nextTransition) {
         animatable.setCurrentState(nextTransition.state);

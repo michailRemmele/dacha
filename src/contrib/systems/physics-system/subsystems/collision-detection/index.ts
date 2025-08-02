@@ -1,14 +1,13 @@
-import { ActorCollection } from '../../../../../engine/actor';
+import { ActorQuery } from '../../../../../engine/actor';
 import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
-import {
-  Transform,
-  Collider,
-  RigidBody,
-} from '../../../../components';
+import { Transform, Collider, RigidBody } from '../../../../components';
 import { AddActor, RemoveActor } from '../../../../../engine/events';
-import type { AddActorEvent, RemoveActorEvent } from '../../../../../engine/events';
+import type {
+  AddActorEvent,
+  RemoveActorEvent,
+} from '../../../../../engine/events';
 import { Collision } from '../../../../events';
 import { insertionSort } from '../../../../../engine/data-lib';
 
@@ -28,7 +27,7 @@ import type {
 } from './types';
 
 export class CollisionDetectionSubsystem {
-  private actorCollection: ActorCollection;
+  private actorQuery: ActorQuery;
   private scene: Scene;
   private axis: Axes;
   private entriesMap: Map<string, CollisionEntry>;
@@ -36,11 +35,9 @@ export class CollisionDetectionSubsystem {
   private entriesToDelete: Set<string>;
 
   constructor(options: SceneSystemOptions) {
-    this.actorCollection = new ActorCollection(options.scene, {
-      components: [
-        Collider,
-        Transform,
-      ],
+    this.actorQuery = new ActorQuery({
+      scene: options.scene,
+      filter: [Collider, Transform],
     });
     this.scene = options.scene;
 
@@ -58,15 +55,17 @@ export class CollisionDetectionSubsystem {
     this.collisionPairs = [];
     this.entriesToDelete = new Set();
 
-    this.actorCollection.forEach((actor) => this.addCollisionEntry(actor));
+    this.actorQuery
+      .getActors()
+      .forEach((actor) => this.addCollisionEntry(actor));
 
-    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.addEventListener(AddActor, this.handleActorAdd);
+    this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   destroy(): void {
-    this.actorCollection.removeEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorQuery.removeEventListener(RemoveActor, this.handleActorRemove);
   }
 
   private handleActorAdd = (event: AddActorEvent): void => {
@@ -90,7 +89,10 @@ export class CollisionDetectionSubsystem {
     const transformOld = entry.orientationData.transform;
     const colliderOld = entry.orientationData.collider;
 
-    return checkTransform(transform, transformOld) || checkCollider(collider, colliderOld);
+    return (
+      checkTransform(transform, transformOld) ||
+      checkCollider(collider, colliderOld)
+    );
   }
 
   private getOrientationData(actor: Actor): OrientationData {
@@ -120,10 +122,7 @@ export class CollisionDetectionSubsystem {
     const transform = actor.getComponent(Transform);
     const collider = actor.getComponent(Collider);
 
-    const geometry = geometryBuilders[collider.type](
-      collider,
-      transform,
-    );
+    const geometry = geometryBuilders[collider.type](collider, transform);
     const aabb = aabbBuilders[collider.type](geometry);
 
     const entry = {
@@ -146,10 +145,7 @@ export class CollisionDetectionSubsystem {
     const transform = actor.getComponent(Transform);
     const collider = actor.getComponent(Collider);
 
-    const geometry = geometryBuilders[collider.type](
-      collider,
-      transform,
-    );
+    const geometry = geometryBuilders[collider.type](collider, transform);
     const aabb = aabbBuilders[collider.type](geometry);
 
     const entry = this.entriesMap.get(actor.id)!;
@@ -201,7 +197,10 @@ export class CollisionDetectionSubsystem {
     return xDispersion >= yDispersion ? ['x', 'y'] : ['y', 'x'];
   }
 
-  private areStaticBodies(entry1: CollisionEntry, entry2: CollisionEntry): boolean {
+  private areStaticBodies(
+    entry1: CollisionEntry,
+    entry2: CollisionEntry,
+  ): boolean {
     const { actor: actor1 } = entry1;
     const { actor: actor2 } = entry2;
 
@@ -219,7 +218,9 @@ export class CollisionDetectionSubsystem {
     const aabb1 = entry1.aabb;
     const aabb2 = entry2.aabb;
 
-    return aabb1.max[axis] > aabb2.min[axis] && aabb1.min[axis] < aabb2.max[axis];
+    return (
+      aabb1.max[axis] > aabb2.min[axis] && aabb1.min[axis] < aabb2.max[axis]
+    );
   }
 
   private sweepAndPrune(): void {
@@ -312,7 +313,7 @@ export class CollisionDetectionSubsystem {
   update(): void {
     this.clearDeletedEntries();
 
-    this.actorCollection.forEach((actor) => {
+    this.actorQuery.getActors().forEach((actor) => {
       if (!this.checkOnReorientation(actor)) {
         return;
       }
@@ -325,11 +326,7 @@ export class CollisionDetectionSubsystem {
     this.collisionPairs.forEach((pair) => {
       const intersection = this.checkOnIntersection(pair);
       if (intersection) {
-        this.sendCollisionEvent(
-          pair[0].actor,
-          pair[1].actor,
-          intersection,
-        );
+        this.sendCollisionEvent(pair[0].actor, pair[1].actor, intersection);
       }
     });
   }

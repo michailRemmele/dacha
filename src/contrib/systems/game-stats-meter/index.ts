@@ -3,7 +3,7 @@ import type { WorldSystemOptions, UpdateOptions } from '../../../engine/system';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
 import { GameStatsUpdate } from '../../events';
-import { ActorCollection } from '../../../engine/actor';
+import { ActorQuery } from '../../../engine/actor';
 
 const MS_IN_SEC = 1000;
 
@@ -13,7 +13,7 @@ interface GameStatsMeterOptions extends WorldSystemOptions {
 
 export class GameStatsMeter extends WorldSystem {
   private world: World;
-  private actorCollection?: ActorCollection;
+  private actorQuery?: ActorQuery;
   private frequency: number;
   private fps: number;
   private time: number;
@@ -21,10 +21,7 @@ export class GameStatsMeter extends WorldSystem {
   constructor(options: WorldSystemOptions) {
     super();
 
-    const {
-      world,
-      frequency,
-    } = options as GameStatsMeterOptions;
+    const { world, frequency } = options as GameStatsMeterOptions;
 
     this.world = world;
     this.frequency = frequency || MS_IN_SEC;
@@ -34,11 +31,11 @@ export class GameStatsMeter extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorCollection = new ActorCollection(scene);
+    this.actorQuery = new ActorQuery({ scene, filter: [] });
   }
 
   onSceneExit(): void {
-    this.actorCollection = undefined;
+    this.actorQuery = undefined;
   }
 
   update(options: UpdateOptions): void {
@@ -50,7 +47,7 @@ export class GameStatsMeter extends WorldSystem {
     if (this.time >= this.frequency) {
       this.world.dispatchEvent(GameStatsUpdate, {
         fps: (this.fps * MS_IN_SEC) / this.time,
-        actorsCount: this.actorCollection?.size ?? 0,
+        actorsCount: this.actorQuery?.getActors().size ?? 0,
       });
 
       this.fps = 0;

@@ -1,5 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
-import { ActorCollection } from '../../../engine/actor';
+import { ActorQuery } from '../../../engine/actor';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
 import type { World } from '../../../engine/world';
@@ -8,7 +8,7 @@ import { MouseInput } from '../../events';
 import type { MouseInputEvent } from '../../events';
 
 export class MouseControlSystem extends WorldSystem {
-  private actorCollection?: ActorCollection;
+  private actorQuery?: ActorQuery;
   private world: World;
 
   constructor(options: WorldSystemOptions) {
@@ -20,13 +20,11 @@ export class MouseControlSystem extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorCollection = new ActorCollection(scene, {
-      components: [MouseControl],
-    });
+    this.actorQuery = new ActorQuery({ scene, filter: [MouseControl] });
   }
 
   onSceneExit(): void {
-    this.actorCollection = undefined;
+    this.actorQuery = undefined;
   }
 
   onWorldDestroy(): void {
@@ -34,13 +32,16 @@ export class MouseControlSystem extends WorldSystem {
   }
 
   private handleMouseInput = (event: MouseInputEvent): void => {
-    this.actorCollection?.forEach((actor) => {
+    this.actorQuery?.getActors().forEach((actor) => {
       const control = actor.getComponent(MouseControl);
-      const eventBinding = control.inputEventBindings[event.eventType]?.[event.button];
+      const eventBinding =
+        control.inputEventBindings[event.eventType]?.[event.button];
 
       if (eventBinding) {
         if (!eventBinding.eventType) {
-          throw new Error(`The event type is not specified for input event: ${event.eventType}`);
+          throw new Error(
+            `The event type is not specified for input event: ${event.eventType}`,
+          );
         }
 
         actor.dispatchEvent(eventBinding.eventType, {
