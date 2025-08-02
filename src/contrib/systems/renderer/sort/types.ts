@@ -1,3 +1,3 @@
-import type { Actor } from '../../../../engine/actor';
+import { type ViewContainer } from 'pixi.js';
 
-export type SortFn = (a: Actor, b: Actor) => number;
+export type SortFn = (a: ViewContainer, b: ViewContainer) => number;

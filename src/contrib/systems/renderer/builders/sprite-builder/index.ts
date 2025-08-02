@@ -3,6 +3,8 @@ import {
   Texture,
   Sprite as PixiSprite,
   TilingSprite,
+  Bounds,
+  type ViewContainer,
 } from 'pixi.js';
 
 import type { Builder } from '../builder';
@@ -47,13 +49,13 @@ export class SpriteBuilder implements Builder {
 
     this.viewMetaMap.delete(actor.id);
 
-    sprite.renderData?.sprite.destroy();
+    sprite.renderData?.view.destroy();
     sprite.renderData = undefined;
   }
 
   hasView(actor: Actor): boolean {
     const sprite = actor.getComponent(Sprite);
-    return !!sprite.renderData?.sprite;
+    return !!sprite.renderData?.view;
   }
 
   buildView(actor: Actor): PixiSprite | TilingSprite {
@@ -64,7 +66,13 @@ export class SpriteBuilder implements Builder {
         ? new PixiSprite(options)
         : new TilingSprite(options);
 
-    sprite.renderData = { sprite: view };
+    sprite.renderData = { view };
+    view.__dacha = {
+      actor,
+      builderKey: Sprite.componentName,
+      viewComponent: sprite,
+      bounds: new Bounds(),
+    };
 
     return view;
   }
@@ -73,11 +81,15 @@ export class SpriteBuilder implements Builder {
     const transform = actor.getComponent(Transform);
     const sprite = actor.getComponent(Sprite);
 
+    if (!sprite) {
+      return undefined;
+    }
+
     if (!this.viewMetaMap.has(actor.id)) {
       this.viewMetaMap.set(actor.id, {});
     }
     const meta = this.viewMetaMap.get(actor.id)!;
-    const view = sprite.renderData!.sprite;
+    const view = sprite.renderData!.view;
 
     if (sprite.disabled !== meta.disabled) {
       view.visible = !sprite.disabled;
@@ -114,7 +126,10 @@ export class SpriteBuilder implements Builder {
       meta.offsetY = transform.offsetY;
     }
 
-    if (sprite.src !== meta.src || sprite.slice !== meta.slice) {
+    if (
+      this.imageStore.has(sprite.src) &&
+      (sprite.src !== meta.src || sprite.slice !== meta.slice)
+    ) {
       view.label = sprite.src;
       this.updateTextureArray(sprite);
       meta.src = sprite.src;
@@ -128,6 +143,7 @@ export class SpriteBuilder implements Builder {
     const scaleX = (sprite.flipX ? -1 : 1) * transform.scaleX;
     const scaleY = (sprite.flipY ? -1 : 1) * transform.scaleY;
     if (
+      view.texture !== meta.texture ||
       scaleX !== meta.scaleX ||
       scaleY !== meta.scaleY ||
       sprite.width !== meta.width ||
@@ -144,14 +160,26 @@ export class SpriteBuilder implements Builder {
         view.scale.set(scaleX, scaleY);
       }
 
-      meta.scaleX = transform.scaleX;
-      meta.scaleY = transform.scaleY;
+      meta.texture = view.texture;
+      meta.scaleX = scaleX;
+      meta.scaleY = scaleY;
       meta.width = sprite.width;
       meta.height = sprite.height;
-      meta.fit = sprite.fit;
     }
 
+    this.updateBounds(view);
+
     view.zIndex = zIndex;
+  }
+
+  private updateBounds(view: ViewContainer): void {
+    const localBounds = view.getLocalBounds();
+    view.__dacha.bounds.set(
+      localBounds.minX + view.position.x,
+      localBounds.minY + view.position.y,
+      localBounds.maxX + view.position.x,
+      localBounds.maxY + view.position.y,
+    );
   }
 
   private updateTextureArray(sprite: Sprite): void {

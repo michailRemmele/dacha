@@ -5,7 +5,7 @@ import { Component } from '../../../engine/component';
 import { Material, MaterialConfig } from './material';
 
 interface RenderData {
-  sprite: PixiSprite | TilingSprite;
+  view: PixiSprite | TilingSprite;
   textureSourceKey?: string;
   textureArrayKey?: string;
 }

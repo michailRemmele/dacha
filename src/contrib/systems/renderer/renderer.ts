@@ -1,12 +1,15 @@
-import { Application, Container } from 'pixi.js';
+import { Application, Container, type ViewContainer } from 'pixi.js';
 
-import { AddActor, RemoveActor } from '../../../engine/events';
-import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
-import { WorldSystem } from '../../../engine/system';
-import type { WorldSystemOptions } from '../../../engine/system';
-import { ActorCollection } from '../../../engine/actor';
-import type { TemplateCollection } from '../../../engine/template';
-import type { Scene } from '../../../engine/scene';
+import {
+  AddActor,
+  RemoveActor,
+  type AddActorEvent,
+  type RemoveActorEvent,
+} from '../../../engine/events';
+import { WorldSystem, type WorldSystemOptions } from '../../../engine/system';
+import { ActorQuery, type Actor } from '../../../engine/actor';
+import { type TemplateCollection } from '../../../engine/template';
+import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
 import { Camera } from '../../components/camera';
@@ -14,14 +17,13 @@ import { CameraService } from '../camera-system';
 import { CacheStore } from '../../../engine/data-lib';
 import { getWindowNode } from '../../utils/get-window-node';
 
-// import { RendererService } from './service';
+import { RendererService } from './service';
 import {
   composeSort,
   SortFn,
   createSortByLayer,
   sortByYAxis,
   sortByXAxis,
-  sortByZAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
 // import { LightSubsystem } from './light-subsystem';
@@ -37,7 +39,9 @@ interface RendererOptions extends WorldSystemOptions {
 }
 
 export class Renderer extends WorldSystem {
-  private actorCollection?: ActorCollection;
+  private actorQuery?: ActorQuery;
+  private viewEntries?: ViewContainer[];
+  private deletedActors: Set<Actor>;
   private window: HTMLElement;
   private application: Application;
   private worldContainer: Container;
@@ -76,7 +80,6 @@ export class Renderer extends WorldSystem {
       ),
       sortByYAxis,
       sortByXAxis,
-      sortByZAxis,
     ]);
 
     this.application = new Application();
@@ -94,19 +97,20 @@ export class Renderer extends WorldSystem {
 
     this.cameraService = world.getService(CameraService);
 
-    // world.addService(new RendererService({
-    //   threeScene: this.renderScene,
-    //   threeCamera: this.currentCamera,
-    //   window: this.window,
-    //   sortFn: this.sortFn,
-    //   cameraService: this.cameraService,
-    // }));
+    this.deletedActors = new Set();
+
+    world.addService(
+      new RendererService({
+        getViewEntries: () => this.viewEntries,
+        sortFn: this.sortFn,
+      }),
+    );
   }
 
   async onWorldLoad(): Promise<void> {
     await this.application.init({
       autoStart: false,
-      resizeTo: window,
+      resizeTo: this.window,
       width: this.window.clientWidth,
       height: this.window.clientHeight,
       backgroundColor: this.backgroundColor,
@@ -156,33 +160,40 @@ export class Renderer extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorCollection = new ActorCollection(scene, {
-      components: [Sprite, Transform],
-    });
+    this.actorQuery = new ActorQuery({ scene, filter: [Sprite, Transform] });
+
+    this.viewEntries = [];
+    for (const actor of this.actorQuery.getActors()) {
+      const spriteView = this.builders[Sprite.componentName].buildView(actor);
+
+      if (spriteView) {
+        this.viewEntries.push(spriteView);
+        this.worldContainer.addChild(spriteView);
+      }
+    }
 
     // this.lightSubsystem.onSceneEnter(scene);
 
-    this.actorCollection.addEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.addEventListener(AddActor, this.handleActorAdd);
+    this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   onSceneExit(): void {
-    this.actorCollection?.removeEventListener(AddActor, this.handleActorAdd);
-    this.actorCollection?.removeEventListener(
-      RemoveActor,
-      this.handleActorRemove,
-    );
+    this.actorQuery?.removeEventListener(AddActor, this.handleActorAdd);
+    this.actorQuery?.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.worldContainer.removeChildren();
     this.application.renderer.clear();
 
-    this.actorCollection?.forEach((actor) => {
-      this.builders[Sprite.componentName].destroy(actor);
+    this.viewEntries?.forEach((entry) => {
+      this.builders[entry.__dacha.builderKey].destroy(entry.__dacha.actor);
     });
+    this.viewEntries = undefined;
 
     // this.lightSubsystem.onSceneExit();
 
-    this.actorCollection = undefined;
+    this.actorQuery?.destroy();
+    this.actorQuery = undefined;
   }
 
   onSceneDestroy(scene: Scene): void {
@@ -210,6 +221,15 @@ export class Renderer extends WorldSystem {
         }
       });
     }
+
+    const spriteView = this.builders[Sprite.componentName].buildView(actor);
+
+    if (spriteView) {
+      this.viewEntries?.push(spriteView);
+      this.worldContainer.addChild(spriteView);
+    }
+
+    this.deletedActors.delete(actor);
   };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
@@ -218,10 +238,7 @@ export class Renderer extends WorldSystem {
     const sprite = actor.getComponent(Sprite);
     this.imageStore.release(sprite.src);
 
-    if (sprite.renderData?.sprite) {
-      this.worldContainer.removeChild(sprite.renderData.sprite);
-      this.builders[Sprite.componentName].destroy(actor);
-    }
+    this.deletedActors.add(actor);
   };
 
   private async loadImage(src: string): Promise<HTMLImageElement | undefined> {
@@ -256,23 +273,42 @@ export class Renderer extends WorldSystem {
   }
 
   private updateActors(): void {
-    this.actorCollection?.forEach((actor, index) => {
-      const builder = this.builders[Sprite.componentName];
-
-      if (!builder.hasView(actor)) {
-        this.worldContainer.addChild(builder.buildView(actor));
-      }
-
-      builder.updateView(actor, index);
+    this.viewEntries?.forEach((entry, index) => {
+      this.builders[entry.__dacha.builderKey].updateView(
+        entry.__dacha.actor,
+        index,
+      );
     });
   }
 
+  private clearDeletedEntries(): void {
+    if (this.deletedActors.size === 0) {
+      return;
+    }
+
+    this.worldContainer.removeChildren();
+
+    this.viewEntries = this.viewEntries?.filter((entry) => {
+      if (!this.deletedActors.has(entry.__dacha.actor)) {
+        this.worldContainer.addChild(entry);
+        return true;
+      }
+
+      this.builders[entry.__dacha.builderKey].destroy(entry.__dacha.actor);
+      return false;
+    });
+
+    this.deletedActors.clear();
+  }
+
   update(): void {
+    this.clearDeletedEntries();
+
     this.updateCamera();
 
     // this.lightSubsystem.update();
 
-    this.actorCollection?.sort(this.sortFn);
+    this.viewEntries?.sort(this.sortFn);
     this.updateActors();
 
     this.application.renderer.render({ container: this.application.stage });
