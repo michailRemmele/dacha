@@ -20,9 +20,9 @@ export class Material {
   constructor(config: MaterialConfig) {
     this.type = config.type;
     this.options = {
-      color: config.options.color || '#ffffff',
-      blending: config.options.blending || 'normal',
-      opacity: config.options.opacity || 1,
+      color: config.options.color ?? '#ffffff',
+      blending: config.options.blending ?? 'normal',
+      opacity: config.options.opacity ?? 1,
     };
   }
 }

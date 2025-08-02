@@ -1,21 +1,18 @@
-import { Sprite } from '../../../components/sprite';
-import { Transform } from '../../../components/transform';
-import type { Actor } from '../../../../engine/actor';
+import { type ViewContainer } from 'pixi.js';
 
 import type { SortFn } from './types';
 
-export const sortByYAxis: SortFn = (a: Actor, b: Actor): number => {
-  const aSprite = a.getComponent(Sprite);
-  const bSprite = b.getComponent(Sprite);
-  const aTransform = a.getComponent(Transform);
-  const bTransform = b.getComponent(Transform);
+export const sortByYAxis: SortFn = (
+  a: ViewContainer,
+  b: ViewContainer,
+): number => {
+  const aComponent = a.__dacha.viewComponent;
+  const bComponent = b.__dacha.viewComponent;
+  const aY = a.__dacha.bounds.maxY;
+  const bY = b.__dacha.bounds.maxY;
 
-  const aOffsetY = aTransform.offsetY
-    + aSprite.sortCenter[1]
-    + ((aTransform.scaleY * aSprite.height) / 2);
-  const bOffsetY = bTransform.offsetY
-    + bSprite.sortCenter[1]
-    + ((bTransform.scaleY * bSprite.height) / 2);
+  const aOffsetY = aY + aComponent.sortCenter[1];
+  const bOffsetY = bY + bComponent.sortCenter[1];
 
   return aOffsetY - bOffsetY;
 };

@@ -1,5 +1,4 @@
-import { Sprite } from '../../../components/sprite';
-import type { Actor } from '../../../../engine/actor';
+import { type ViewContainer } from 'pixi.js';
 
 import type { SortFn } from './types';
 
@@ -12,11 +11,11 @@ export const createSortByLayer = (sortingLayers: string[]): SortFn => {
     {},
   );
 
-  return (a: Actor, b: Actor): number => {
-    const aSprite = a.getComponent(Sprite);
-    const bSprite = b.getComponent(Sprite);
-    const aSortingLayerOrder = sortingLayer[aSprite.sortingLayer];
-    const bSortingLayerOrder = sortingLayer[bSprite.sortingLayer];
+  return (a: ViewContainer, b: ViewContainer): number => {
+    const aComponent = a.__dacha.viewComponent;
+    const bComponent = b.__dacha.viewComponent;
+    const aSortingLayerOrder = sortingLayer[aComponent.sortingLayer];
+    const bSortingLayerOrder = sortingLayer[bComponent.sortingLayer];
 
     return aSortingLayerOrder - bSortingLayerOrder;
   };

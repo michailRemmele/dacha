@@ -1,51 +1,21 @@
-import { Transform, TransformConfig } from '../../../../components/transform';
-import { Actor } from '../../../../../engine/actor/actor';
+import { type ViewContainer } from 'pixi.js';
 
 import { composeSort } from '../index';
 
-describe('Contrib -> RenderSystem -> Sort -> composeSort()', () => {
-  const baseTransformProps: TransformConfig = {
-    offsetX: 0,
-    offsetY: 0,
-    offsetZ: 0,
-    rotation: 0,
-    scaleX: 1,
-    scaleY: 1,
-  };
-
-  const sortY = (a: Actor, b: Actor): number => (
-    (a.getComponent(Transform)).offsetY - (b.getComponent(Transform)).offsetY
-  );
-  const sortX = (a: Actor, b: Actor): number => (
-    (a.getComponent(Transform)).offsetX - (b.getComponent(Transform)).offsetX
-  );
-  const sortZ = (a: Actor, b: Actor): number => (
-    (a.getComponent(Transform)).offsetZ - (b.getComponent(Transform)).offsetZ
-  );
+describe('Contrib -> Renderer -> Sort -> composeSort()', () => {
+  const sortY = (a: ViewContainer, b: ViewContainer): number =>
+    a.position.y - b.position.y;
+  const sortX = (a: ViewContainer, b: ViewContainer): number =>
+    a.position.x - b.position.x;
 
   it('Correctly creates composed sort function which executes passing function in correct order', () => {
-    const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
-    const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
+    const view1 = { position: { x: 20, y: 10 } } as ViewContainer;
+    const view2 = { position: { x: 30, y: 10 } } as ViewContainer;
 
-    actor1.setComponent(new Transform(baseTransformProps));
-    actor2.setComponent(new Transform(baseTransformProps));
+    expect(composeSort([sortY, sortX])(view1, view2)).toBeLessThan(0);
 
-    (actor1.getComponent(Transform)).offsetY = 10;
-    (actor1.getComponent(Transform)).offsetX = 20;
-    (actor1.getComponent(Transform)).offsetZ = 40;
+    view1.position.y = 20;
 
-    (actor2.getComponent(Transform)).offsetY = 10;
-    (actor2.getComponent(Transform)).offsetX = 20;
-    (actor2.getComponent(Transform)).offsetZ = 30;
-
-    expect(composeSort([sortY, sortX, sortZ])(actor1, actor2)).toBeGreaterThan(0);
-
-    (actor2.getComponent(Transform)).offsetX = 30;
-
-    expect(composeSort([sortY, sortX, sortZ])(actor1, actor2)).toBeLessThan(0);
-
-    (actor1.getComponent(Transform)).offsetY = 20;
-
-    expect(composeSort([sortY, sortX, sortZ])(actor1, actor2)).toBeGreaterThan(0);
+    expect(composeSort([sortY, sortX])(view1, view2)).toBeGreaterThan(0);
   });
 });

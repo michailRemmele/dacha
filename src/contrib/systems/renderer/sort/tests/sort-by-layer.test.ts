@@ -1,3 +1,5 @@
+import { type ViewContainer } from 'pixi.js';
+
 import { Sprite, SpriteConfig } from '../../../../components/sprite';
 import { Actor } from '../../../../../engine/actor/actor';
 
@@ -34,14 +36,23 @@ describe('Contrib -> RenderSystem -> Sort -> sortByLayer()', () => {
     actor1.getComponent(Sprite).sortingLayer = 'layer-1';
     actor2.getComponent(Sprite).sortingLayer = 'layer-2';
 
-    expect(createSortByLayer(layers)(actor1, actor2)).toBe(-1);
+    const view1 = {
+      __dacha: {
+        viewComponent: actor1.getComponent(Sprite),
+      },
+    } as unknown as ViewContainer;
+    const view2 = {
+      __dacha: { viewComponent: actor2.getComponent(Sprite) },
+    } as unknown as ViewContainer;
+
+    expect(createSortByLayer(layers)(view1, view2)).toBe(-1);
 
     actor1.getComponent(Sprite).sortingLayer = 'layer-3';
 
-    expect(createSortByLayer(layers)(actor1, actor2)).toBe(1);
+    expect(createSortByLayer(layers)(view1, view2)).toBe(1);
 
     actor1.getComponent(Sprite).sortingLayer = 'layer-2';
 
-    expect(createSortByLayer(layers)(actor1, actor2)).toBe(0);
+    expect(createSortByLayer(layers)(view1, view2)).toBe(0);
   });
 });

@@ -1,69 +1,42 @@
-import { Raycaster, Vector2 } from 'three/src/Three';
-import type { Scene, Camera } from 'three/src/Three';
+import { ViewContainer } from 'pixi.js';
 
-import {
-  getProjectedX,
-  getProjectedY,
-} from '../../../utils/coordinates-projection';
-import type { CameraService } from '../../camera-system';
-import type { Actor } from '../../../../engine/actor';
-import type { SortFn } from '../sort';
+import { Sprite } from '../../../components/sprite';
+import { Transform } from '../../../components/transform';
+import { type Actor } from '../../../../engine/actor';
+import { type SortFn } from '../sort';
+import { type Bounds } from '../types';
 
 interface RendererServiceOptions {
-  threeScene: Scene;
-  threeCamera: Camera;
-  window: HTMLElement;
+  getViewEntries: () => ViewContainer[] | undefined;
   sortFn: SortFn;
-  cameraService: CameraService;
 }
 
 export class RendererService {
-  private threeScene: Scene;
-  private threeCamera: Camera;
-  private window: HTMLElement;
-  private raycaster: Raycaster;
+  private getViewEntries: () => ViewContainer[] | undefined;
   private sortFn: SortFn;
-  private cameraService: CameraService;
 
-  constructor({
-    threeScene,
-    threeCamera,
-    window,
-    sortFn,
-    cameraService,
-  }: RendererServiceOptions) {
-    this.threeScene = threeScene;
-    this.threeCamera = threeCamera;
-    this.window = window;
+  constructor({ getViewEntries, sortFn }: RendererServiceOptions) {
+    this.getViewEntries = getViewEntries;
     this.sortFn = sortFn;
-    this.cameraService = cameraService;
-
-    this.raycaster = new Raycaster();
-  }
-
-  private getNormalizedCoordinates(x: number, y: number): Vector2 {
-    const { clientWidth, clientHeight } = this.window;
-
-    return new Vector2((x / clientWidth) * 2 - 1, -(y / clientHeight) * 2 + 1);
   }
 
   intersectsWithPoint(x: number, y: number): Actor[] {
-    this.raycaster.setFromCamera(
-      this.getNormalizedCoordinates(x, y),
-      this.threeCamera,
-    );
-    const intersects = this.raycaster.intersectObjects(
-      this.threeScene.children,
-      true,
-    );
+    const intersects = new Set<ViewContainer>();
 
-    const actors = intersects.map(
-      (intersect) => intersect.object.userData.actor as Actor,
-    );
+    this.getViewEntries()?.forEach((entry) => {
+      const { minX, minY, maxX, maxY } = entry.__dacha.bounds;
+
+      if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+        intersects.add(entry);
+      }
+    });
 
     // TODO: Find more efficient way to return intersected objects in right order
     // according to posititon and sorting layer
-    return actors.sort(this.sortFn).reverse();
+    return Array.from(intersects)
+      .sort(this.sortFn)
+      .reverse()
+      .map((entry) => entry.__dacha.actor);
   }
 
   intersectsWithRectangle(
@@ -72,31 +45,35 @@ export class RendererService {
     maxX: number,
     maxY: number,
   ): Actor[] {
-    const actors: Actor[] = [];
+    const actors = new Set<Actor>();
 
-    const camera = this.cameraService.getCurrentCamera();
-    if (!camera) {
-      return actors;
-    }
-
-    const projectedMinX = getProjectedX(minX, camera);
-    const projectedMinY = getProjectedY(minY, camera);
-    const projectedMaxX = getProjectedX(maxX, camera);
-    const projectedMaxY = getProjectedY(maxY, camera);
-
-    this.threeScene.traverse((object) => {
-      if (object.userData.actor !== undefined) {
-        const { x, y } = object.position;
-        if (
-          x >= projectedMinX &&
-          x <= projectedMaxX &&
-          y >= projectedMinY &&
-          y <= projectedMaxY
-        ) {
-          actors.push(object.userData.actor as Actor);
-        }
+    this.getViewEntries()?.forEach((entry) => {
+      const { x, y } = entry.position;
+      if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+        actors.add(entry.__dacha.actor);
       }
     });
-    return actors;
+    return Array.from(actors);
+  }
+
+  getBounds(actor: Actor): Bounds {
+    const transform = actor.getComponent(Transform);
+    const sprite = actor.getComponent(Sprite);
+
+    const spriteBounds = sprite?.renderData?.view.__dacha.bounds;
+
+    const minX = spriteBounds?.minX ?? transform.offsetX;
+    const minY = spriteBounds?.minY ?? transform.offsetY;
+    const maxX = spriteBounds?.maxX ?? transform.offsetX;
+    const maxY = spriteBounds?.maxY ?? transform.offsetY;
+
+    return {
+      minX,
+      minY,
+      maxX,
+      maxY,
+      width: maxX - minX,
+      height: maxY - minY,
+    };
   }
 }
