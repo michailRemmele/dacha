@@ -1,24 +1,23 @@
 import { Vector2 } from '../../../../../engine/math-lib';
-import type { SceneSystemOptions, UpdateOptions } from '../../../../../engine/system';
-import { Actor, ActorCollection } from '../../../../../engine/actor';
+import type {
+  SceneSystemOptions,
+  UpdateOptions,
+} from '../../../../../engine/system';
+import { Actor, ActorQuery } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { PhysicsSystemOptions } from '../../types';
-import {
-  AddForce,
-  AddImpulse,
-  StopMovement,
-} from '../../../../events';
+import { AddForce, AddImpulse, StopMovement } from '../../../../events';
 import type { AddForceEvent, AddImpulseEvent } from '../../../../events';
 import { RemoveActor } from '../../../../../engine/events';
 import type { RemoveActorEvent } from '../../../../../engine/events';
 import type { ActorEvent } from '../../../../../types/events';
 
 interface ActorVectors {
-  velocity: Vector2
-  force: Vector2
-  impulse: Vector2
+  velocity: Vector2;
+  force: Vector2;
+  impulse: Vector2;
 }
 
 const DIRECTION_VECTOR = {
@@ -30,27 +29,20 @@ const DIRECTION_VECTOR = {
 
 export class PhysicsSubsystem {
   private scene: Scene;
-  private actorCollection: ActorCollection;
+  private actorQuery: ActorQuery;
   private gravity: number;
   private actorVectors: Record<string, ActorVectors | undefined>;
 
   constructor(options: SceneSystemOptions) {
-    const {
-      gravity, scene,
-    } = options as PhysicsSystemOptions;
+    const { gravity, scene } = options as PhysicsSystemOptions;
 
     this.scene = scene;
-    this.actorCollection = new ActorCollection(scene, {
-      components: [
-        RigidBody,
-        Transform,
-      ],
-    });
+    this.actorQuery = new ActorQuery({ scene, filter: [RigidBody, Transform] });
     this.gravity = gravity;
 
     this.actorVectors = {};
 
-    this.actorCollection.addEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
 
     this.scene.addEventListener(StopMovement, this.handleStopMovement);
     this.scene.addEventListener(AddForce, this.handleAddForce);
@@ -58,7 +50,7 @@ export class PhysicsSubsystem {
   }
 
   destroy(): void {
-    this.actorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.scene.removeEventListener(StopMovement, this.handleStopMovement);
     this.scene.removeEventListener(AddForce, this.handleAddForce);
@@ -131,7 +123,10 @@ export class PhysicsSubsystem {
 
     velocity.add(slowdown);
 
-    if (Math.sign(velocity.x) !== velocitySignX && Math.sign(velocity.y) !== velocitySignY) {
+    if (
+      Math.sign(velocity.x) !== velocitySignX &&
+      Math.sign(velocity.y) !== velocitySignY
+    ) {
       velocity.multiplyNumber(0);
     }
   }
@@ -154,7 +149,7 @@ export class PhysicsSubsystem {
     const deltaTimeInMsec = deltaTime;
     const deltaTimeInSeconds = deltaTimeInMsec / 1000;
 
-    this.actorCollection.forEach((actor) => {
+    this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
       const transform = actor.getComponent(Transform);
       const { mass } = rigidBody;
