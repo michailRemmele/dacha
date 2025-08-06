@@ -17,6 +17,8 @@ declare module 'pixi.js' {
         sortCenter: [number, number];
       };
       bounds: Bounds;
+      meta: Record<string, unknown>;
+      didChange: boolean;
     };
   }
 }

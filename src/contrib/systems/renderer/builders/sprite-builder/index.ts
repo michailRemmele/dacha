@@ -4,7 +4,6 @@ import {
   Sprite as PixiSprite,
   TilingSprite,
   Bounds,
-  type ViewContainer,
 } from 'pixi.js';
 
 import type { Builder } from '../builder';
@@ -14,7 +13,7 @@ import { Sprite } from '../../../../components/sprite';
 import type { Actor } from '../../../../../engine/actor';
 import { CacheStore } from '../../../../../engine/data-lib';
 
-import { getTextureSource, getTextureArray } from './utils';
+import { getTextureSource, getTextureArray, floatEquals } from './utils';
 
 interface SpriteBuilderOptions {
   imageStore: CacheStore<HTMLImageElement>;
@@ -23,14 +22,12 @@ interface SpriteBuilderOptions {
 export class SpriteBuilder implements Builder {
   private imageStore: CacheStore<HTMLImageElement>;
 
-  private viewMetaMap: Map<string, Record<string, unknown>>;
   private textureSourceMap: CacheStore<TextureSource>;
   private textureArrayMap: CacheStore<Texture[]>;
 
   constructor(options: SpriteBuilderOptions) {
     this.imageStore = options.imageStore;
 
-    this.viewMetaMap = new Map();
     this.textureSourceMap = new CacheStore();
     this.textureArrayMap = new CacheStore();
   }
@@ -47,8 +44,6 @@ export class SpriteBuilder implements Builder {
       this.textureArrayMap.release(textureArrayKey, true);
     }
 
-    this.viewMetaMap.delete(actor.id);
-
     sprite.renderData?.view.destroy();
     sprite.renderData = undefined;
   }
@@ -60,6 +55,7 @@ export class SpriteBuilder implements Builder {
 
   buildView(actor: Actor): PixiSprite | TilingSprite {
     const sprite = actor.getComponent(Sprite);
+    const { offsetX, offsetY } = actor.getComponent(Transform);
     const options = { anchor: 0.5 };
     const view =
       sprite.fit === 'stretch'
@@ -71,13 +67,15 @@ export class SpriteBuilder implements Builder {
       actor,
       builderKey: Sprite.componentName,
       viewComponent: sprite,
-      bounds: new Bounds(),
+      bounds: new Bounds(offsetX, offsetY, offsetX, offsetY),
+      meta: {},
+      didChange: false,
     };
 
     return view;
   }
 
-  updateView(actor: Actor, zIndex: number) {
+  updateView(actor: Actor): void {
     const transform = actor.getComponent(Transform);
     const sprite = actor.getComponent(Sprite);
 
@@ -85,45 +83,51 @@ export class SpriteBuilder implements Builder {
       return undefined;
     }
 
-    if (!this.viewMetaMap.has(actor.id)) {
-      this.viewMetaMap.set(actor.id, {});
-    }
-    const meta = this.viewMetaMap.get(actor.id)!;
     const view = sprite.renderData!.view;
+    const meta = view.__dacha.meta;
+
+    view.__dacha.didChange = false;
 
     if (sprite.disabled !== meta.disabled) {
       view.visible = !sprite.disabled;
       meta.disabled = sprite.disabled;
+      view.__dacha.didChange = true;
     }
 
     if (sprite.material.options.color !== meta.color) {
       view.tint = sprite.material.options.color;
       meta.color = sprite.material.options.color;
+      view.__dacha.didChange = true;
     }
 
     if (sprite.material.options.blending !== meta.blending) {
       view.blendMode = BLEND_MODE_MAPPING[sprite.material.options.blending];
       meta.blending = sprite.material.options.blending;
+      view.__dacha.didChange = true;
     }
 
     if (sprite.material.options.opacity !== meta.opacity) {
       view.alpha = sprite.material.options.opacity;
       meta.opacity = sprite.material.options.opacity;
+      view.__dacha.didChange = true;
     }
 
     const angle = transform.rotation + sprite.rotation;
     if (angle !== meta.angle) {
       view.angle = angle;
       meta.angle = angle;
+      view.__dacha.didChange = true;
     }
 
+    const { offsetX, offsetY } = transform;
     if (
-      transform.offsetX !== meta.offsetX ||
-      transform.offsetY !== meta.offsetY
+      !floatEquals(offsetX, meta.offsetX as number) ||
+      !floatEquals(offsetY, meta.offsetY as number)
     ) {
-      view.position.set(transform.offsetX, transform.offsetY);
-      meta.offsetX = transform.offsetX;
-      meta.offsetY = transform.offsetY;
+      view.position.set(offsetX, offsetY);
+      meta.offsetX = offsetX;
+      meta.offsetY = offsetY;
+      view.__dacha.didChange = true;
     }
 
     if (
@@ -134,6 +138,7 @@ export class SpriteBuilder implements Builder {
       this.updateTextureArray(sprite);
       meta.src = sprite.src;
       meta.slice = sprite.slice;
+      view.__dacha.didChange = true;
     }
 
     const textureArray = this.getTextureArray(sprite);
@@ -165,21 +170,8 @@ export class SpriteBuilder implements Builder {
       meta.scaleY = scaleY;
       meta.width = sprite.width;
       meta.height = sprite.height;
+      view.__dacha.didChange = true;
     }
-
-    this.updateBounds(view);
-
-    view.zIndex = zIndex;
-  }
-
-  private updateBounds(view: ViewContainer): void {
-    const localBounds = view.getLocalBounds();
-    view.__dacha.bounds.set(
-      localBounds.minX + view.position.x,
-      localBounds.minY + view.position.y,
-      localBounds.maxX + view.position.x,
-      localBounds.maxY + view.position.y,
-    );
   }
 
   private updateTextureArray(sprite: Sprite): void {
