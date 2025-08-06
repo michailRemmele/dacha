@@ -272,12 +272,33 @@ export class Renderer extends WorldSystem {
     this.worldContainer.pivot.set(offsetX, offsetY);
   }
 
-  private updateActors(): void {
-    this.viewEntries?.forEach((entry, index) => {
-      this.builders[entry.__dacha.builderKey].updateView(
-        entry.__dacha.actor,
-        index,
+  private updateViews(): void {
+    this.viewEntries?.forEach((view) => {
+      this.builders[view.__dacha.builderKey].updateView(view.__dacha.actor);
+    });
+  }
+
+  private updateBounds(): void {
+    this.viewEntries?.forEach((view) => {
+      if (!view.__dacha.didChange) {
+        return;
+      }
+      const bounds = view.getLocalBounds();
+      view.__dacha.bounds.set(
+        bounds.minX,
+        bounds.minY,
+        bounds.maxX,
+        bounds.maxY,
       );
+      view.updateLocalTransform();
+      view.__dacha.bounds.applyMatrix(view.localTransform);
+    });
+  }
+
+  private sortViews(): void {
+    this.viewEntries?.sort(this.sortFn);
+    this.viewEntries?.forEach((view, index) => {
+      view.zIndex = index;
     });
   }
 
@@ -308,8 +329,9 @@ export class Renderer extends WorldSystem {
 
     // this.lightSubsystem.update();
 
-    this.viewEntries?.sort(this.sortFn);
-    this.updateActors();
+    this.updateViews();
+    this.updateBounds();
+    this.sortViews();
 
     this.application.renderer.render({ container: this.application.stage });
   }

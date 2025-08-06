@@ -6,5 +6,5 @@ export interface Builder {
   destroy(actor: Actor): void;
   hasView(actor: Actor): boolean;
   buildView(actor: Actor): ViewContainer | undefined;
-  updateView(actor: Actor, zIndex: number): void;
+  updateView(actor: Actor): void;
 }
