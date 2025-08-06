@@ -13,6 +13,9 @@
       "require": "./build/events/index.js",
       "import": "./build/events/index.js",
       "types": "./build/events/index.d.ts"
+    },
+    "./renderer": {
+      "types": "./build/contrib/systems/renderer/types.d.ts"
     }
   },
   "dependencies": {

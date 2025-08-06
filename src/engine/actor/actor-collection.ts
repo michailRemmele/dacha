@@ -29,6 +29,9 @@ export interface ActorCollectionFilter {
   components?: (ComponentConstructor | string)[];
 }
 
+/**
+ * @deprecated Use `ActorQuery` instead.
+ */
 export class ActorCollection extends EventTarget {
   private components: (ComponentConstructor | string)[];
   private acceptedActors: Actor[];
