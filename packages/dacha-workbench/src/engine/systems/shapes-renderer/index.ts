@@ -2,7 +2,7 @@ import {
   SceneSystem,
   Transform,
   CameraService,
-  ActorCollection,
+  ActorQuery,
 } from 'dacha'
 import type { SceneSystemOptions } from 'dacha'
 
@@ -16,7 +16,7 @@ interface ShapesRendererOptions extends SceneSystemOptions {
 }
 
 export class ShapesRenderer extends SceneSystem {
-  private actorCollection: ActorCollection
+  private actorQuery: ActorQuery
   private cameraService: CameraService
   private window: HTMLCanvasElement
   private context: CanvasRenderingContext2D
@@ -34,8 +34,9 @@ export class ShapesRenderer extends SceneSystem {
       windowNodeId,
     } = options as ShapesRendererOptions
 
-    this.actorCollection = new ActorCollection(scene, {
-      components: [
+    this.actorQuery = new ActorQuery({
+      scene,
+      filter: [
         Transform,
         Shape,
       ],
@@ -89,7 +90,7 @@ export class ShapesRenderer extends SceneSystem {
 
     this.transformer.setCamera(currentCamera)
 
-    this.actorCollection.forEach((actor) => {
+    this.actorQuery.getActors().forEach((actor) => {
       const transform = actor.getComponent(Transform)
       const shape = actor.getComponent(Shape)
 

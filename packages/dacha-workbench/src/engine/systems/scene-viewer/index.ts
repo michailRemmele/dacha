@@ -65,7 +65,7 @@ export class SceneViewer extends SceneSystem {
     this.configStore = world.data.configStore as CommanderStore
     this.editorConfig = world.data.editorConfig as EditorConfig
 
-    const mainActor = this.actorCollection.getById(this.mainActorId)
+    const mainActor = scene.findChildById(mainActorId)
 
     if (!mainActor) {
       throw new Error('Can\'t find the main actor')
