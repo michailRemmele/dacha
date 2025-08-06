@@ -1,6 +1,6 @@
 import {
+  RendererService,
   Transform,
-  Sprite,
 } from 'dacha'
 import type {
   World,
@@ -19,12 +19,7 @@ import { getGridValue, getGridStep } from '../../../../utils/grid'
 import type { CommanderStore } from '../../../../store'
 import type { SelectedActors } from '../types'
 
-import {
-  isFloatEqual,
-  getSizeX,
-  getSizeY,
-  updateActorTransform,
-} from './utils'
+import { isFloatEqual, updateActorTransform } from './utils'
 
 export interface Position {
   x: number
@@ -178,6 +173,8 @@ export class SelectionMovementSubsystem {
     const tool = getTool(this.world)
     const snapToGrid = tool.features.grid.value as boolean
 
+    const rendererService = this.world.getService(RendererService)
+
     this.selectedActors.frames.forEach((frame) => {
       const { selectedActorId } = frame.getComponent(Frame)
       const actor = selectedActorId ? this.actorCollection.getById(selectedActorId) : undefined
@@ -196,11 +193,12 @@ export class SelectionMovementSubsystem {
       const offsetY = selectionStart.y - this.pointerStart.y + y
 
       if (snapToGrid) {
-        const sprite = actor.getComponent(Sprite)
         const gridStep = getGridStep(this.world)
 
-        transform.offsetX = getGridValue(offsetX, getSizeX(transform, sprite), gridStep)
-        transform.offsetY = getGridValue(offsetY, getSizeY(transform, sprite), gridStep)
+        const bounds = rendererService.getBounds(actor)
+
+        transform.offsetX = getGridValue(offsetX, bounds.width, gridStep)
+        transform.offsetY = getGridValue(offsetY, bounds.height, gridStep)
       } else {
         transform.offsetX = Math.round(offsetX)
         transform.offsetY = Math.round(offsetY)

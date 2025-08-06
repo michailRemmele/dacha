@@ -308,7 +308,7 @@ export const getEditorConfig = ({
       options: {},
     },
     {
-      name: 'SpriteRenderer',
+      name: 'Renderer',
       options: {
         windowNodeId: 'canvas-root',
         backgroundColor: '#ffffff',
