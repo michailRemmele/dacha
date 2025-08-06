@@ -6,7 +6,7 @@ import { getIdByPath } from '../../../../../utils/get-id-by-path'
 
 const parseActor = (
   actor: ActorConfig,
-  path: Array<string>,
+  path: string[],
   parent?: ExplorerDataNode,
 ): ExplorerDataNode => {
   const isLeaf = !actor?.children?.length
@@ -34,7 +34,7 @@ const parseActor = (
 export const parseScenes = (
   scenes: SceneConfig[],
   inactiveSelectedSceneId?: string,
-): Array<ExplorerDataNode> => scenes.map((scene) => {
+): ExplorerDataNode[] => scenes.map((scene) => {
   const node: ExplorerDataNode = {
     key: scene.id,
     title: scene.name,
@@ -49,7 +49,7 @@ export const parseScenes = (
   return node
 })
 
-export const getInspectedKey = (path?: Array<string>): string | undefined => {
+export const getInspectedKey = (path?: string[]): string | undefined => {
   if (!path || path[0] !== 'scenes') {
     return void ''
   }

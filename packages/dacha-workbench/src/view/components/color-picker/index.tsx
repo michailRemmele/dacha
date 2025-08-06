@@ -40,7 +40,7 @@ export const ColorPicker: FC<ColorPickerProps> = ({
   // TODO: Remove all keyboard accessibility hacks once ColorPicker will be updated
   useEffect(() => {
     if (!open) {
-      return () => void 0
+      return (): void => {}
     }
 
     const handleClose = (event: KeyboardEvent): void => {
@@ -56,7 +56,7 @@ export const ColorPicker: FC<ColorPickerProps> = ({
 
     window.addEventListener('keydown', handleClose)
 
-    return () => window.removeEventListener('keydown', handleClose)
+    return (): void => window.removeEventListener('keydown', handleClose)
   }, [open, onOpenChange])
 
   // TODO: Sometimes it leads to call stack overflow

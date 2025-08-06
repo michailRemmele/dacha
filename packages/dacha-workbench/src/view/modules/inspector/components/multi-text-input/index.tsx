@@ -48,7 +48,7 @@ export const MultiTextInput: FC<MultiTextInputProps> = ({
   // Drag action leads to issues with input focus, so select should been reloaded
   const [forceReload, setForceReload] = useState(false)
 
-  const handleChange = useCallback((values: Array<string>) => onChange(values), [onChange])
+  const handleChange = useCallback((values: string[]) => onChange(values), [onChange])
 
   const handleDeselect = useCallback(() => {
     onAccept()

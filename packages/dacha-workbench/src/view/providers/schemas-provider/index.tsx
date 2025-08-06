@@ -23,12 +23,12 @@ export interface SchemasDataEntry {
 }
 
 interface SchemasData {
-  components: Array<SchemasDataEntry>
-  systems: Array<SchemasDataEntry>
+  components: SchemasDataEntry[]
+  systems: SchemasDataEntry[]
 }
 
 interface SchemasProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const SchemasContext = React.createContext<SchemasData>({
@@ -45,7 +45,7 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
   const [extComponentsSchema, setExtComponentsSchema] = useState(() => schemaRegistry.getGroup('component'))
   const [extSystemsSchema, setExtSystemsSchema] = useState(() => schemaRegistry.getGroup('system'))
 
-  const components = useMemo(() => ([] as Array<SchemasDataEntry>).concat(
+  const components = useMemo(() => ([] as SchemasDataEntry[]).concat(
     Object.keys(componentsSchema).map((key) => ({
       name: key,
       schema: componentsSchema[key],
@@ -58,7 +58,7 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
     })) : [],
   ), [extComponentsSchema])
 
-  const systems = useMemo(() => ([] as Array<SchemasDataEntry>).concat(
+  const systems = useMemo(() => ([] as SchemasDataEntry[]).concat(
     Object.keys(systemsSchema).map((key) => ({
       name: key,
       schema: systemsSchema[key],
@@ -88,7 +88,7 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
 
     world.addEventListener(EventType.ExtensionUpdated, handleExtensionUpdated)
 
-    return () => {
+    return (): void => {
       world.removeEventListener(EventType.ExtensionUpdated, handleExtensionUpdated)
     }
   }, [world])

@@ -12,7 +12,7 @@ import { deleteValue } from '../../../../commands'
 import { checkDependency } from './check-dependency'
 
 interface DependencyFieldProps extends FieldProps {
-  dependencyPath: Array<string>
+  dependencyPath: string[]
   dependencyValue: string | number | boolean
   deleteOnHide?: boolean
 }

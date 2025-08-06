@@ -35,13 +35,13 @@ export const TransitionInspector: FC = () => {
   const timePath = useMemo(() => transitionPath.concat('time'), [transitionPath])
   const conditionsPath = useMemo(() => transitionPath.concat('conditions'), [transitionPath])
 
-  const states = useConfig(statesPath) as Array<Animation.StateConfig>
+  const states = useConfig(statesPath) as Animation.StateConfig[]
   const statesOptions = useMemo(() => states.map((state) => ({
     title: state.name,
     value: state.id,
   })), [states])
 
-  const conditions = useConfig(conditionsPath) as Array<Animation.ConditionConfig>
+  const conditions = useConfig(conditionsPath) as Animation.ConditionConfig[]
 
   const handleAddCondition = useCallback(() => {
     dispatch(addValue(conditionsPath, {

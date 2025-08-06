@@ -5,7 +5,7 @@ import { RightOutlinedCSS } from './collapse-panel.style'
 
 interface PanelExpandProps {
   isActive?: boolean
-  children?: JSX.Element | Array<JSX.Element>
+  children?: JSX.Element | JSX.Element[]
 }
 
 export const PanelExpand: FC<PanelExpandProps> = ({

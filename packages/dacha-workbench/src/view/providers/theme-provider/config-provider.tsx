@@ -15,7 +15,7 @@ const CONFIG_MAP: Record<ThemeMode, ThemeConfig> = {
 }
 
 interface ConfigProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const ConfigProvider: FC<ConfigProviderProps> = ({ children }) => {

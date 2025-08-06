@@ -2,8 +2,8 @@ import type { Field } from '../types/widget-schema'
 
 import { getFieldTypeName, isEditor } from './utils'
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type Target = { constructor: Function }
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+interface Target { constructor: Function }
 
 type DefineFieldOptions = Partial<Field>
 

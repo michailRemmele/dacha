@@ -12,7 +12,7 @@ import { persistentStorage } from '../persistent-storage'
 import type { CommanderStore } from '../store'
 
 interface EditorConfigOptions {
-  globalOptions: Array<GlobalOption>
+  globalOptions: GlobalOption[]
   store: CommanderStore
 }
 

@@ -12,7 +12,7 @@ const shapes = {
 
 export type ShapeType = keyof typeof shapes
 
-interface ShapeConfig extends Record<string, unknown> {
+interface ShapeConfig {
   type: ShapeType
   properties: BaseShapeConfig
 }
@@ -21,13 +21,11 @@ export class Shape extends Component {
   type: ShapeType
   properties: BaseShapeConfig
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: ShapeConfig) {
     super()
 
-    const shapeConfig = config as ShapeConfig
-
-    this.type = shapeConfig.type
-    this.properties = new shapes[shapeConfig.type](shapeConfig.properties)
+    this.type = config.type
+    this.properties = new shapes[config.type](config.properties)
   }
 
   clone(): Shape {

@@ -10,7 +10,7 @@ import { EngineContext } from '../../../../../../providers'
 import { ButtonCSS } from '../../../../explorer.style'
 
 interface FocusActionButtonProps {
-  path?: Array<string>
+  path?: string[]
 }
 
 export const FocusActionButton: FC<FocusActionButtonProps> = ({

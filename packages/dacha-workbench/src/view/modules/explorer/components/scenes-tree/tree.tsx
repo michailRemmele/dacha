@@ -44,7 +44,7 @@ export const ScenesTree: FC<ScenesTreeProps> = ({ className, onDrop }) => {
 
     world.addEventListener(EventType.SelectScene, handleSceneChange)
 
-    return () => world.removeEventListener(EventType.SelectScene, handleSceneChange)
+    return (): void => world.removeEventListener(EventType.SelectScene, handleSceneChange)
   }, [selectedScene])
 
   const inactiveSelectedSceneId = useMemo(() => {

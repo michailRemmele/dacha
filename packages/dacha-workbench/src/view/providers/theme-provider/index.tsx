@@ -7,7 +7,7 @@ import { ThemeContext } from './contexts'
 import type { ThemeMode } from './types'
 
 interface ThemeProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
@@ -28,7 +28,7 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
 
     const unsubscribe = window.electron.onSwitchTheme(handleSwitchTheme)
 
-    return () => unsubscribe()
+    return (): void => unsubscribe()
   }, [mode])
 
   return (

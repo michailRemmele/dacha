@@ -12,7 +12,7 @@ const getFieldValue = (value: DataValue, name: string): DataValue | undefined =>
 }
 
 export const findByKey = (
-  data: Array<DataValue>,
+  data: DataValue[],
   key: string,
 ): DataValue | undefined => {
   const [name, value] = key.split(KEY_DELIMETER)
@@ -25,7 +25,7 @@ export const findByKey = (
 }
 
 export const findIndexByKey = (
-  data: Array<DataValue>,
+  data: DataValue[],
   key: string,
 ): number => {
   const [name, value] = key.split(KEY_DELIMETER)
@@ -39,7 +39,7 @@ export const findIndexByKey = (
 
 export const get = (
   data: DataValue | Data,
-  path: Array<string>,
+  path: string[],
   index = 0,
 ): DataValue | Data | undefined => {
   const key = path[index]
@@ -63,8 +63,8 @@ export const get = (
 
 export const getImmutable = (
   data: DataValue | Data,
-  path: Array<string>,
-  parent?: DataObjectValue | Array<DataValue> | Data | Store,
+  path: string[],
+  parent?: DataObjectValue | DataValue[] | Data | Store,
   parentKey?: string | number,
   index = 0,
 ): DataValue | Data | undefined => {
@@ -74,11 +74,11 @@ export const getImmutable = (
   if (parent !== undefined && parentKey !== undefined) {
     if (Array.isArray(data)) {
       /* comment: Need to update all objects and arrays on the way to value */
-      /* eslint-disable-next-line no-param-reassign */
+       
       (parent as Data)[parentKey] = [...data]
     } else if (typeof data === 'object' && data !== null) {
       /* comment: Need to update all objects and arrays on the way to value */
-      /* eslint-disable-next-line no-param-reassign */
+       
       (parent as Data)[parentKey] = { ...data as DataObjectValue }
     }
 
