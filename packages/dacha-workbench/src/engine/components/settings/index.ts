@@ -1,6 +1,6 @@
 import { Component } from 'dacha'
 
-export type SettingsConfig = {
+export interface SettingsConfig {
   showGrid: boolean
   gridStep: number
   gridColor: string
@@ -9,15 +9,13 @@ export type SettingsConfig = {
 export class Settings extends Component {
   data: Record<keyof SettingsConfig, unknown>
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: SettingsConfig) {
     super()
 
-    const settingsConfig = config as SettingsConfig
-
     this.data = {
-      showGrid: settingsConfig.showGrid,
-      gridStep: settingsConfig.gridStep,
-      gridColor: settingsConfig.gridColor,
+      showGrid: config.showGrid,
+      gridStep: config.gridStep,
+      gridColor: config.gridColor,
     }
   }
 
@@ -26,7 +24,7 @@ export class Settings extends Component {
       showGrid: this.data.showGrid,
       gridStep: this.data.gridStep,
       gridColor: this.data.gridColor,
-    })
+    } as SettingsConfig)
   }
 }
 

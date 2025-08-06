@@ -1,6 +1,6 @@
-type FnType<T extends Array<unknown>> = (...args: T) => void
+type FnType<T extends unknown[]> = (...args: T) => void
 
-export const debounce = <T extends Array<unknown>>(
+export const debounce = <T extends unknown[]>(
   fn: FnType<T>,
   time: number,
 ): FnType<T> => {

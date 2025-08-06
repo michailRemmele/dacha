@@ -16,7 +16,7 @@ export interface Command {
   isEffect?: boolean
 }
 
-export type GetStateFn = (path: Array<string>) => unknown
+export type GetStateFn = (path: string[]) => unknown
 export type ThunkFn = (dispatch: DispatchFn, getState: GetStateFn) => void
 export type DispatchFn = (commandOrThunkFn: Command | ThunkFn) => void
 

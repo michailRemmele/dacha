@@ -7,5 +7,5 @@ export abstract class Command {
     this.store = store
   }
 
-  abstract execute(options: unknown): (() => void) | void
+  abstract execute(options: unknown): (() => void) | undefined
 }

@@ -5,7 +5,7 @@ import React, {
   useContext,
   FC,
 } from 'react'
-import type { UIOptions } from 'dacha'
+import type { UIOptions, LoadUIFn } from 'dacha'
 import {
   Engine,
   MouseInputSystem,
@@ -43,7 +43,7 @@ const REQUIRED_GLOBAL_OPTIONS = [
 ]
 
 interface EngineProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const EngineContext = React.createContext<UIOptions>({} as UIOptions)
@@ -93,7 +93,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({ children }): JSX.Eleme
         store,
       },
       [UIBridge.systemName]: {
-        loadUI: () => Promise.resolve({
+        loadUI: (): ReturnType<LoadUIFn> => Promise.resolve({
           onInit: (options: UIOptions): void => setContext(options),
           onDestroy: (): void => setContext(void 0),
         }),

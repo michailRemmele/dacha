@@ -23,7 +23,7 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   const { dispatch } = useCommander()
 
   const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
-  const inputEventBindings = useConfig(bindingsPath) as Array<InputEventBind>
+  const inputEventBindings = useConfig(bindingsPath) as InputEventBind[]
 
   const addedKeys = useMemo(() => inputEventBindings.map((inputBind) => ({
     id: inputBind.id,

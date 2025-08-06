@@ -27,7 +27,7 @@ import { operationTypes } from './operation-types'
 type ArgType = Animation.ComparatorConditionArg['type']
 
 export interface ConditionProps {
-  path: Array<string>
+  path: string[]
   id: string
   order: number
 }

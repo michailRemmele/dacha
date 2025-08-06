@@ -20,7 +20,7 @@ export const watchTemplates: WatcherFn = ({
   const templatesToAdd = new Map<string, TemplateConfig>()
 
   if (path.length === TEMPLATES_PATH_LENGTH) {
-    const templatesConfigs = store.get(['templates']) as Array<TemplateConfig>
+    const templatesConfigs = store.get(['templates']) as TemplateConfig[]
     const templatesConfigsMap = templatesConfigs.reduce(
       (acc, templateConfig) => acc.add(templateConfig.id),
       new Set<string>(),

@@ -5,9 +5,7 @@ export const filterNestedPaths = (paths: string[][]): string[][] => {
 
   const result: string[][] = []
 
-  for (let i = 0; i < sortedPaths.length; i += 1) {
-    const path = sortedPaths[i]
-
+  for (const path of sortedPaths) {
     const isNested = result.some((parentPath) => includesArray(path, parentPath))
     if (!isNested) {
       result.push(path)

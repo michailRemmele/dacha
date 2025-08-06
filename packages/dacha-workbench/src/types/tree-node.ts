@@ -1,7 +1,7 @@
 import type { TreeProps, DataNode } from 'antd/lib/tree'
 
 export interface ExplorerDataNode extends DataNode {
-  path: Array<string>
+  path: string[]
   parent?: ExplorerDataNode
 }
 

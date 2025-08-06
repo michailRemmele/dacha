@@ -18,14 +18,14 @@ export interface SelectProps extends InputProps {
 }
 
 export interface MultiTextInputProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value: Array<string>
-  onChange?: (values: Array<string>) => void
+  value: string[]
+  onChange?: (values: string[]) => void
 }
 
 export interface MultiSelectProps extends Omit<InputProps, 'value' | 'onChange'> {
-  options: Array<SelectOption>
-  value: Array<string>
-  onChange?: (values: Array<string>) => void
+  options: SelectOption[]
+  value: string[]
+  onChange?: (values: string[]) => void
 }
 
 export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'onInput'> {
@@ -43,7 +43,7 @@ export interface ColorInputProps extends Omit<InputProps, 'defaultValue' | 'colo
 }
 
 export interface FileInputProps extends InputProps {
-  extensions?: Array<string>
+  extensions?: string[]
 }
 
 export interface RangeInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'step'> {

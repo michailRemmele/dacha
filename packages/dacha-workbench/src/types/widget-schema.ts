@@ -17,7 +17,7 @@ export type GetOptionsFn = (
   }
 ) => Option[] | string[]
 
-export type Option = {
+export interface Option {
   title: string
   value: string
 }

@@ -89,7 +89,7 @@ export const AnimationEditorProvider: FC<AnimationEditorProviderProps> = ({
       }
     })
 
-    return () => {
+    return (): void => {
       unsubscribe()
     }
   }, [store, entitySelection, inspectedEntity])

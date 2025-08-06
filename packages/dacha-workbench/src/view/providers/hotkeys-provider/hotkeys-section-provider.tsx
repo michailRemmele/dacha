@@ -20,7 +20,7 @@ interface HotkeysSectionProviderProps {
   onMoveTo: (sourcePaths: string[][], destinationPath: string[]) => void
   onCopyTo: (sourcePaths: string[][], destinationPath: string[]) => void
   onRemove: (paths: string[][]) => void
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 interface HotkeysSectionContextProps {
@@ -116,7 +116,7 @@ export const HotkeysSectionProvider = ({
     addHotkeyListener(scope, 'paste', handlePaste)
     addHotkeyListener(scope, 'delete', handleDelete)
 
-    return () => {
+    return (): void => {
       removeHotkeyListener(scope, 'cut', handleCut)
       removeHotkeyListener(scope, 'copy', handleCopy)
       removeHotkeyListener(scope, 'paste', handlePaste)

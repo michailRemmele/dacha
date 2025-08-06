@@ -14,7 +14,7 @@ type HotkeyType = 'cut' | 'copy' | 'paste' | 'delete'
 type HotkeyListeners = Record<string, Record<HotkeyType, (() => void)[]>>
 
 interface HotkeysProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 interface HotkeysContextProps {
@@ -65,7 +65,7 @@ export const HotkeysProvider = ({ children }: HotkeysProviderProps): JSX.Element
   )
 
   useEffect(() => {
-    const handleHotkeyEvent = (hotkey: HotkeyType) => () => {
+    const handleHotkeyEvent = (hotkey: HotkeyType) => (): void => {
       const { activeElement } = document
       if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
         document.execCommand(hotkey)
@@ -85,7 +85,7 @@ export const HotkeysProvider = ({ children }: HotkeysProviderProps): JSX.Element
     const pasteUnsubscribe = window.electron.onPaste(handleHotkeyEvent('paste'))
     const deleteUnsubscribe = window.electron.onDelete(handleHotkeyEvent('delete'))
 
-    return () => {
+    return (): void => {
       cutUnsubscribe()
       copyUnsubscribe()
       pasteUnsubscribe()

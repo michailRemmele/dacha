@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import { Grid } from './grid'
 import type { ModalComponentProps } from './types'
 
-type Modal = {
+interface Modal {
   component: FC<ModalComponentProps>
   title: string
 }

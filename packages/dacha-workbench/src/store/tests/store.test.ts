@@ -38,7 +38,7 @@ describe('Store', () => {
 
     expect(store.get(['a'])).not.toBe(object)
     expect(store.get(['a', 'c'])).not.toBe(object.c)
-    expect(store.get(['a', 'c', 'id:item0'])).not.toBe((object.c as Array<unknown>)[0])
+    expect(store.get(['a', 'c', 'id:item0'])).not.toBe((object.c as unknown[])[0])
   })
 
   it('Should correctly immutable change of nested array item', () => {
@@ -53,7 +53,7 @@ describe('Store', () => {
 
     expect(store.get(['a'])).not.toBe(object)
     expect(store.get(['a', 'c'])).not.toBe(object.c)
-    expect(store.get(['a', 'c', 'id:item2'])).not.toBe((object.c as Array<unknown>)[1])
+    expect(store.get(['a', 'c', 'id:item2'])).not.toBe((object.c as unknown[])[1])
   })
 
   it('Should correctly immutable delete nested item', () => {
@@ -63,14 +63,14 @@ describe('Store', () => {
     store.delete(['a', 'c', 'id:item1'])
 
     expect(store.get(['a', 'c', 'id:item1'])).toBeUndefined()
-    expect((store.get(['a', 'c']) as Array<unknown>).length).toBe(1)
+    expect((store.get(['a', 'c']) as unknown[]).length).toBe(1)
 
     store.delete(['b'])
 
     expect(store.get(['b'])).toBeUndefined()
 
     expect((object as { b: unknown }).b).toBeDefined()
-    expect((object as { a: { c: Array<unknown> } }).a.c.length).toBe(2)
+    expect((object as { a: { c: unknown[] } }).a.c.length).toBe(2)
   })
 
   it('Should correctly immutable delete multiple items by paths', () => {
@@ -83,8 +83,8 @@ describe('Store', () => {
     expect(store.get(['a', 'c'])).toBeUndefined()
     expect(store.get(['b'])).toBeUndefined()
 
-    expect((object as { a: { c: Array<unknown> } }).a.c).toBeDefined()
-    expect((object as { a: { c: Array<unknown> } }).a.c.length).toBe(2)
+    expect((object as { a: { c: unknown[] } }).a.c).toBeDefined()
+    expect((object as { a: { c: unknown[] } }).a.c.length).toBe(2)
     expect((object as { b: unknown }).b).toBeDefined()
   })
 
@@ -95,6 +95,6 @@ describe('Store', () => {
     store.deleteByPaths([['a', 'c', 'id:item1']])
 
     expect(store.get(['a', 'c', 'id:item1'])).toBeUndefined()
-    expect((object as { a: { c: Array<unknown> } }).a.c.length).toBe(2)
+    expect((object as { a: { c: unknown[] } }).a.c.length).toBe(2)
   })
 })

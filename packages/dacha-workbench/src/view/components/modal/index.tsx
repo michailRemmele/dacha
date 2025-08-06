@@ -10,7 +10,7 @@ interface ModalProps {
   open: boolean
   onCancel: () => void
   width?: string | number
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const Modal: FC<ModalProps> = ({

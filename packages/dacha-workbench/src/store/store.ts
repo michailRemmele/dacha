@@ -12,18 +12,18 @@ import type {
 
 export class Store {
   private data: Data
-  private listeners: Array<ListenerFn>
+  private listeners: ListenerFn[]
 
   constructor(data: Data) {
     this.data = data
     this.listeners = []
   }
 
-  get(path: Array<string>): unknown {
+  get(path: string[]): unknown {
     return get(this.data, path)
   }
 
-  set(path: Array<string>, value: DataValue): void {
+  set(path: string[], value: DataValue): void {
     const item = getImmutable(this.data, path.slice(0, -1), this, 'data')
 
     if (typeof item !== 'object' || item === null) {
@@ -44,7 +44,7 @@ export class Store {
     this.listeners.forEach((listener) => listener(path, value))
   }
 
-  delete(path: Array<string>): void {
+  delete(path: string[]): void {
     const item = getImmutable(this.data, path.slice(0, -1), this, 'data')
 
     if (typeof item !== 'object' || item === null) {

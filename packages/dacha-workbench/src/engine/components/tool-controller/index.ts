@@ -1,18 +1,16 @@
 import { Component } from 'dacha'
 
-export interface ToolControllerConfig extends Record<string, unknown> {
+export interface ToolControllerConfig {
   activeTool: string;
 }
 
 export class ToolController extends Component {
   activeTool: string
 
-  constructor(config: Record<string, unknown>) {
+  constructor(config: ToolControllerConfig) {
     super()
 
-    const { activeTool } = config as ToolControllerConfig
-
-    this.activeTool = activeTool
+    this.activeTool = config.activeTool
   }
 
   clone(): ToolController {

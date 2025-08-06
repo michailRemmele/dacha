@@ -16,7 +16,7 @@ const TOKEN_MAP: Record<ThemeMode, CustomToken> = {
 }
 
 interface ThemeTokenProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const ThemeTokenProvider: FC<ThemeTokenProviderProps> = ({ children }) => {

@@ -4,5 +4,5 @@ export interface MultiFieldEntry {
   id: string
   name: string
   type: MultiFieldEntryType
-  value: string | number | boolean | Array<string>
+  value: string | number | boolean | string[]
 }

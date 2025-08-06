@@ -8,7 +8,7 @@ import { getIdByPath } from '../../../utils/get-id-by-path'
 import type { SelectionArea } from './types'
 import { SCENE_PATH_LEGTH } from './consts'
 
-const accumulatePath = (actor: Actor, path: Array<string>): void => {
+const accumulatePath = (actor: Actor, path: string[]): void => {
   path.unshift(`id:${actor.id}`)
 
   if (actor.parent instanceof Actor) {
@@ -17,8 +17,8 @@ const accumulatePath = (actor: Actor, path: Array<string>): void => {
   }
 }
 
-export const buildActorPath = (actor: Actor, sceneId: string): Array<string> => {
-  const path: Array<string> = []
+export const buildActorPath = (actor: Actor, sceneId: string): string[] => {
+  const path: string[] = []
 
   accumulatePath(actor, path)
   path.unshift('scenes', `id:${sceneId}`, 'actors')

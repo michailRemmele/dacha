@@ -8,7 +8,7 @@ import {
 
 interface LabelProps {
   title: string
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
   className?: string
 }
 

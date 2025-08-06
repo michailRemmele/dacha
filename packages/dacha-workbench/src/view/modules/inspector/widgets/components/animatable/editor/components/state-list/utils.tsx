@@ -12,7 +12,7 @@ import {
 
 export interface StateDataNode extends DataNode {
   parent?: StateDataNode
-  path: Array<string>
+  path: string[]
 }
 
 const parseSubstate = (
@@ -22,7 +22,7 @@ const parseSubstate = (
     x,
     y,
   }: Animation.SubstateConfig,
-  path: Array<string>,
+  path: string[],
   parent: StateDataNode,
 ): StateDataNode => ({
   key: id,
@@ -33,11 +33,11 @@ const parseSubstate = (
 })
 
 export const parseStates = (
-  states: Array<Animation.StateConfig>,
-  path: Array<string>,
+  states: Animation.StateConfig[],
+  path: string[],
   initialState: string,
   initialSuffix: string,
-): Array<StateDataNode> => states.map((state) => {
+): StateDataNode[] => states.map((state) => {
   const statePath = path.concat('states', `id:${state.id}`)
 
   const node: StateDataNode = {

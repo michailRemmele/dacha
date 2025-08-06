@@ -28,7 +28,7 @@ export interface InputEventBind {
   event: string
   button?: number
   eventType: string
-  attrs: Array<unknown>
+  attrs: unknown[]
 }
 
 export type InputEventBindings = Record<string, Omit<InputEventBind, 'event'>>
@@ -49,7 +49,7 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   const { dispatch } = useCommander()
 
   const bindingsPath = useMemo(() => path.concat('inputEventBindings'), [path])
-  const inputEventBindings = useConfig(bindingsPath) as Array<InputEventBind>
+  const inputEventBindings = useConfig(bindingsPath) as InputEventBind[]
 
   const selectedOptions = useMemo(
     () => inputEventBindings.map((inputEventBinding) => inputEventBinding.event),

@@ -22,14 +22,14 @@ import {
 } from './multi-field.style'
 
 interface MultiFieldProps {
-  path: Array<string>
+  path: string[]
 }
 
 export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   const { t } = useTranslation(NAMESPACE_EDITOR)
   const { dispatch } = useCommander()
 
-  const values = useConfig(path) as Array<MultiFieldEntry>
+  const values = useConfig(path) as MultiFieldEntry[]
 
   const handleAddField = useCallback(() => {
     dispatch(addValue(path, {

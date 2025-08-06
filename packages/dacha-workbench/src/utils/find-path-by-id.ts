@@ -1,4 +1,4 @@
-type TreeNode = {
+interface TreeNode {
   children?: TreeNode[]
 }
 
@@ -9,7 +9,7 @@ export const findPathById = <T extends TreeNode>(
 ): string[] => {
   const stack = [...tree]
   const visited = new Set()
-  const path: Array<string> = []
+  const path: string[] = []
 
   while (stack.length !== 0) {
     const node = stack.at(-1) as T

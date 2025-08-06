@@ -38,7 +38,7 @@ export const List: FC = () => {
   const state = useConfig(statePath) as Animation.StateConfig
 
   const framesPath = getFramesPath(state, statePath, substatePath)
-  const frames = useConfig(framesPath) as Array<Animation.FrameConfig> | undefined
+  const frames = useConfig(framesPath) as Animation.FrameConfig[] | undefined
 
   useEffect(() => {
     lastSelectedKey.current = undefined
