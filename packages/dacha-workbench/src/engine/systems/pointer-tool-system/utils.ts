@@ -1,9 +1,5 @@
-import {
-  MathOps,
-  Transform,
-  Sprite,
-  Actor,
-} from 'dacha'
+import { Transform, Actor } from 'dacha'
+import { type Bounds } from 'dacha/renderer'
 
 import { Shape } from '../../components/shape'
 import type { RectangleShape } from '../../components/shape'
@@ -30,45 +26,15 @@ export const buildActorPath = (actor: Actor, sceneId: string): Array<string> => 
   return path
 }
 
-const getAngle = (rotation: number): number => {
-  const normalizedAngle = Math.abs(rotation) % 180
-  const acuteAngle = Math.min(normalizedAngle, 180 - normalizedAngle)
-
-  return MathOps.degToRad(acuteAngle)
-}
-
-export const updateFrameSize = (frame: Actor, actor: Actor): void => {
-  const sprite = actor.getComponent(Sprite)
-  const transform = actor.getComponent(Transform)
-
-  let offsetX = 0
-  let offsetY = 0
-  let rotation = 0
-  let width = 0
-  let height = 0
-  if (
-    sprite !== undefined
-    && sprite.width !== 0
-    && sprite.height !== 0
-    && transform !== undefined
-  ) {
-    offsetX = transform.offsetX
-    offsetY = transform.offsetY
-    rotation = getAngle(transform.rotation)
-
-    // Need to perform scale before rotation since main renderer has the same order
-    width = sprite.width * transform.scaleX
-    height = sprite.height * transform.scaleY
-  }
-
+export const updateFrameSize = (frame: Actor, bounds: Bounds): void => {
   const frameTransform = frame.getComponent(Transform)
   const frameShape = frame.getComponent(Shape)
   const properties = frameShape.properties as RectangleShape
 
-  frameTransform.offsetX = offsetX
-  frameTransform.offsetY = offsetY
-  properties.width = Math.cos(rotation) * width + Math.sin(rotation) * height
-  properties.height = Math.sin(rotation) * width + Math.cos(rotation) * height
+  frameTransform.offsetX = (bounds.maxX + bounds.minX) / 2
+  frameTransform.offsetY = (bounds.maxY + bounds.minY) / 2
+  properties.width = bounds.width
+  properties.height = bounds.height
 }
 
 export const updateAreaSize = (selectionArea: SelectionArea): void => {
