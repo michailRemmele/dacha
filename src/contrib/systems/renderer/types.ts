@@ -3,8 +3,15 @@ export interface SortingLayer {
   name: string;
 }
 
-export interface SortingLayers {
+export type SortingOrder =
+  | 'bottom right'
+  | 'bottom left'
+  | 'top left'
+  | 'top right';
+
+export interface Sorting {
   layers: SortingLayer[];
+  order: SortingOrder;
 }
 
 export interface Bounds {

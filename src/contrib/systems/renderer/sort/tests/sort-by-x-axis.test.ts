@@ -63,19 +63,19 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
     updateBounds(view1);
     updateBounds(view2);
 
-    expect(sortByXAxis(view1, view2)).toBe(0);
+    expect(sortByXAxis(1)(view1, view2)).toBe(0);
 
     actor2.getComponent(Transform).offsetX = 50;
 
     updateBounds(view2);
 
-    expect(sortByXAxis(view1, view2)).toBeLessThan(0);
+    expect(sortByXAxis(1)(view1, view2)).toBeLessThan(0);
 
     actor1.getComponent(Transform).offsetX = 100;
 
     updateBounds(view1);
 
-    expect(sortByXAxis(view1, view2)).toBeGreaterThan(0);
+    expect(sortByXAxis(1)(view1, view2)).toBeGreaterThan(0);
   });
 
   it('Returns correct order of objects while different width', () => {
@@ -104,18 +104,18 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
     updateBounds(view1);
     updateBounds(view2);
 
-    expect(sortByXAxis(view1, view2)).toBeGreaterThan(0);
+    expect(sortByXAxis(1)(view1, view2)).toBeGreaterThan(0);
 
     actor2.getComponent(Sprite).width = 110;
 
     updateBounds(view2);
 
-    expect(sortByXAxis(view1, view2)).toBe(0);
+    expect(sortByXAxis(1)(view1, view2)).toBe(0);
 
     actor2.getComponent(Sprite).width = 130;
 
     updateBounds(view2);
 
-    expect(sortByXAxis(view1, view2)).toBeLessThan(0);
+    expect(sortByXAxis(1)(view1, view2)).toBeLessThan(0);
   });
 });
