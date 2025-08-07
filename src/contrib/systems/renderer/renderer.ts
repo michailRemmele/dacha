@@ -28,9 +28,10 @@ import {
 import { parseSortingLayers } from './sort/utils';
 // import { LightSubsystem } from './light-subsystem';
 import { loadImage, getAllSources } from './utils';
-import type { SortingLayers } from './types';
+import type { Sorting } from './types';
 import { SpriteBuilder } from './builders';
 import type { Builder } from './builders';
+import { SORTING_ORDER_MAPPING } from './consts';
 
 interface RendererOptions extends WorldSystemOptions {
   windowNodeId: string;
@@ -72,14 +73,14 @@ export class Renderer extends WorldSystem {
 
     this.window = getWindowNode(windowNodeId);
 
+    const sorting = globalOptions.sorting as Sorting | undefined;
+    const sortingOrder =
+      SORTING_ORDER_MAPPING[sorting?.order ?? 'bottom right'];
+
     this.sortFn = composeSort([
-      createSortByLayer(
-        parseSortingLayers(
-          (globalOptions.sortingLayers as SortingLayers)?.layers,
-        ),
-      ),
-      sortByYAxis,
-      sortByXAxis,
+      createSortByLayer(parseSortingLayers(sorting?.layers)),
+      sortByYAxis(sortingOrder[1]),
+      sortByXAxis(sortingOrder[0]),
     ]);
 
     this.application = new Application();

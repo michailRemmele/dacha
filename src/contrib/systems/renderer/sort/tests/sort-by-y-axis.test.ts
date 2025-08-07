@@ -63,19 +63,19 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
     updateBounds(view1);
     updateBounds(view2);
 
-    expect(sortByYAxis(view1, view2)).toBe(0);
+    expect(sortByYAxis(1)(view1, view2)).toBe(0);
 
     actor2.getComponent(Transform).offsetY = 50;
 
     updateBounds(view2);
 
-    expect(sortByYAxis(view1, view2)).toBeLessThan(0);
+    expect(sortByYAxis(1)(view1, view2)).toBeLessThan(0);
 
     actor1.getComponent(Transform).offsetY = 100;
 
     updateBounds(view1);
 
-    expect(sortByYAxis(view1, view2)).toBeGreaterThan(0);
+    expect(sortByYAxis(1)(view1, view2)).toBeGreaterThan(0);
   });
 
   it('Returns correct order of objects while different height', () => {
@@ -104,18 +104,18 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
     updateBounds(view1);
     updateBounds(view2);
 
-    expect(sortByYAxis(view1, view2)).toBeGreaterThan(0);
+    expect(sortByYAxis(1)(view1, view2)).toBeGreaterThan(0);
 
     actor2.getComponent(Sprite).height = 110;
 
     updateBounds(view2);
 
-    expect(sortByYAxis(view1, view2)).toBe(0);
+    expect(sortByYAxis(1)(view1, view2)).toBe(0);
 
     actor2.getComponent(Sprite).height = 130;
 
     updateBounds(view2);
 
-    expect(sortByYAxis(view1, view2)).toBeLessThan(0);
+    expect(sortByYAxis(1)(view1, view2)).toBeLessThan(0);
   });
 });
