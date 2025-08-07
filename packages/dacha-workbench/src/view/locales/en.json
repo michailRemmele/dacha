@@ -170,9 +170,11 @@
   "components.behaviors.behavior.addNew.title": "Add Behavior",
   "components.behaviors.behavior.noSchema.title": "Schema not found",
 
-  "globalOptions.sortingLayers.title": "Sorting Layers",
-  "globalOptions.sortingLayers.addNew.title": "Add Layer",
-  "globalOptions.sortingLayers.name.title": "Layer",
+  "globalOptions.sorting.title": "Sorting",
+  "globalOptions.sorting.order.title": "Order",
+  "globalOptions.sorting.layers.title": "Layers",
+  "globalOptions.sorting.layers.addNew.title": "Add Layer",
+  "globalOptions.sorting.layers.name.title": "Layer",
 
   "globalOptions.audioGroups.title": "Audio Groups",
   "globalOptions.audioGroups.addNew.title": "Add Group",
