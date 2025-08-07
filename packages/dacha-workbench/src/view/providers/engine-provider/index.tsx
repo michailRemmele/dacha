@@ -39,7 +39,7 @@ import {
 } from '../../../engine'
 
 const REQUIRED_GLOBAL_OPTIONS = [
-  'sortingLayers',
+  'sorting',
 ]
 
 interface EngineProviderProps {

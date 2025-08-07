@@ -816,8 +816,9 @@
       }
     },
     {
-      "name": "sortingLayers",
+      "name": "sorting",
       "options": {
+        "order": "bottom right",
         "layers": [
           {
             "id": "3e260430-1938-452d-ad2e-fdf72cf49a0a",

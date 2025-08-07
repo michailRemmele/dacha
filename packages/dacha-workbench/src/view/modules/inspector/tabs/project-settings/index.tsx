@@ -16,7 +16,7 @@ import {
   Form,
 } from '../../components'
 import {
-  SortingLayersWidget,
+  SortingWidget,
   AudioGroupsWidget,
   PerformanceWidget,
 } from '../../widgets/global-options'
@@ -59,7 +59,7 @@ export const ProjectSettings: FC = () => {
       </div>
 
       <PerformanceWidget />
-      <SortingLayersWidget />
+      <SortingWidget />
       <AudioGroupsWidget />
     </Form>
   )
