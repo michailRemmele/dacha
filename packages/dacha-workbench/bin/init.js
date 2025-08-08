@@ -13,7 +13,7 @@ const INITIAL_DATA = {
     {
       name: 'sorting',
       options: {
-        order: 'bottom right',
+        order: 'bottomRight',
         layers: [
           {
             id: uuidv4(),

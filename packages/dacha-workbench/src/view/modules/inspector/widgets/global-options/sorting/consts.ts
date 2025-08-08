@@ -7,8 +7,20 @@ export const LAYERS_PATH = [
 ];
 
 export const ORDER_OPTIONS = [
-  'bottom right',
-  'bottom left',
-  'top left',
-  'top right',
-]
+  {
+    title: 'bottom right',
+    value: 'bottomRight',
+  },
+  {
+    title: 'bottom left',
+    value: 'bottomLeft',
+  },
+  {
+    title: 'top left',
+    value: 'topLeft',
+  },
+  {
+    title: 'top right',
+    value: 'topRight',
+  },
+];
