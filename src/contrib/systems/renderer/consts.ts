@@ -11,8 +11,8 @@ export const BLEND_MODE_MAPPING: Record<BlendingMode, BLEND_MODES> = {
 };
 
 export const SORTING_ORDER_MAPPING: Record<SortingOrder, [number, number]> = {
-  'bottom right': [1, 1],
-  'bottom left': [-1, 1],
-  'top left': [-1, -1],
-  'top right': [1, -1],
+  bottomRight: [1, 1],
+  bottomLeft: [-1, 1],
+  topLeft: [-1, -1],
+  topRight: [1, -1],
 };

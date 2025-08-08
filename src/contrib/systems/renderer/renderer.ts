@@ -75,7 +75,7 @@ export class Renderer extends WorldSystem {
 
     const sorting = globalOptions.sorting as Sorting | undefined;
     const sortingOrder =
-      SORTING_ORDER_MAPPING[sorting?.order ?? 'bottom right'];
+      SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
 
     this.sortFn = composeSort([
       createSortByLayer(parseSortingLayers(sorting?.layers)),

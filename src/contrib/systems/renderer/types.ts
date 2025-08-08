@@ -4,10 +4,10 @@ export interface SortingLayer {
 }
 
 export type SortingOrder =
-  | 'bottom right'
-  | 'bottom left'
-  | 'top left'
-  | 'top right';
+  | 'bottomRight'
+  | 'bottomLeft'
+  | 'topLeft'
+  | 'topRight';
 
 export interface Sorting {
   layers: SortingLayer[];
