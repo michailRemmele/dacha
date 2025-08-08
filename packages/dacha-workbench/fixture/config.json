@@ -256,7 +256,440 @@
         {
           "id": "6",
           "name": "player",
-          "children": [],
+          "children": [
+            {
+              "id": "c74959be-a936-428a-937f-85e63fc412b9",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -24.5,
+                    "offsetY": -118,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "534848b7-7d92-4936-8848-76a2bd8326d0",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "c6513318-8775-4c88-ae01-82d6ebacc961",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 2",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -0.5,
+                    "offsetY": -118,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "690af1df-7e02-4e0a-af3f-6f6a6a97f70d",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "e3d1b206-f404-4580-9213-b0f1cebf19a1",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 3",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -24.5,
+                    "offsetY": -94,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "cce56c6d-6df2-4407-85ea-c377e832ac61",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "679c872b-bb2d-47f8-aa7c-4058c830d535",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 4",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -0.5,
+                    "offsetY": -94,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "e012e11c-d7d5-41c9-a468-291280799bc9",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "edf84088-8012-43ab-9658-03bf9fb91104",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 5",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -24.5,
+                    "offsetY": -70,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "7d55a7c8-0aaa-42b7-972a-ec515a052304",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "4d514da0-c1b7-4ba2-9e42-a0adb9dff581",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 6",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -0.5,
+                    "offsetY": -70,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "44596e8d-428f-44f8-a4ab-51a0b40238bc",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "d2ec7b27-3fe9-4e74-9175-aede8af7364b",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 7",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": 23.5,
+                    "offsetY": -94,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "c9f4d7cb-0efd-4f46-bd4f-6cd67bdc4a54",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "80aa0f89-9761-433e-a4a0-3167b3ba20cb",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 8",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": 23.5,
+                    "offsetY": -118,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "8237de99-82ca-4515-854f-e9e9c380d6d5",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "aae5bf21-9c4d-4415-9d62-171d71518963",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 9",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": 23.5,
+                    "offsetY": -70,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "7bf07e01-d4a8-4849-b8e2-450ae4ec9b37",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "da860614-094b-40d3-87a1-7644543e9f66",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 10",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -48.5,
+                    "offsetY": -118,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "a2b18de3-ac78-44dd-8969-8fb8df16c484",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "5b25f518-4d5c-4e4f-9ec2-b601ae1dbab3",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 11",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -48.5,
+                    "offsetY": -94,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "136a7ff4-805a-40ce-85f0-693d93ea6df4",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "d3b85e96-6601-4893-b71b-a57e4d9c210e",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 12",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -48.5,
+                    "offsetY": -70,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "bd6ffc59-9853-4e91-98d9-96437ed6603a",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "cc4e8821-b04a-4976-ab82-02935831d78a",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 13",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -48.5,
+                    "offsetY": -142,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "81d8dc11-6eec-4405-8df3-06fc0929eb49",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "4b430992-572e-4f27-b572-eb4b6f4a90f0",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 14",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -24.5,
+                    "offsetY": -142,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "78b0894c-0f33-4dee-a6bf-de73e3f7bb35",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "b386e971-e7d6-45fa-8f0f-17cd412796b1",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 15",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": -0.5,
+                    "offsetY": -142,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "8c58fa56-15e3-40ef-8a89-3d4d5bd827f0",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "754b93c1-30bf-453c-874a-cbd14abe2522",
+              "templateId": "f5519adc-bcf6-46a6-8eee-ccfde61289a5",
+              "name": "player 16",
+              "components": [
+                {
+                  "name": "Transform",
+                  "config": {
+                    "offsetX": 23.5,
+                    "offsetY": -142,
+                    "offsetZ": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "id": "f15604af-85e5-4346-b09e-c3b6c770528d",
+                  "templateId": "2d5813ae-1d88-4582-b55e-608f67df1ddf",
+                  "name": "playerHitBox",
+                  "components": [],
+                  "children": []
+                }
+              ]
+            }
+          ],
           "components": [
             {
               "name": "Transform",
@@ -818,7 +1251,7 @@
     {
       "name": "sorting",
       "options": {
-        "order": "bottom right",
+        "order": "topLeft",
         "layers": [
           {
             "id": "3e260430-1938-452d-ad2e-fdf72cf49a0a",

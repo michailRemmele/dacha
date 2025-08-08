@@ -31,7 +31,7 @@ export const SortingWidget: FC = () => {
       addValue(['globalOptions'], {
         name: 'sortingLayers',
         options: {
-          order: ORDER_OPTIONS[0],
+          order: ORDER_OPTIONS[0].value,
           layers: [],
         },
       }),
