@@ -1,11 +1,6 @@
-import type {
-  Material,
-  Texture,
-  Blending,
-} from 'three/src/Three';
+import type { Material, Texture, Blending } from 'three/src/Three';
 import {
   MeshBasicMaterial,
-  MeshStandardMaterial,
   Color,
   NormalBlending,
   AdditiveBlending,
@@ -13,17 +8,17 @@ import {
   MultiplyBlending,
   DataTexture,
 } from 'three/src/Three';
-import type {
-  MaterialType,
-  BasicMaterialOptions,
-  BlendingMode,
-} from '../../../components/sprite';
+import type { Sprite, BlendingMode } from '../../../components/sprite';
 
 const DEFAULT_COLOR = '#ffffff';
 const DEFAULT_BLENDING = 'normal';
 const DEFAULT_OPACITY = 1;
 
-const DEFAULT_TEXTURE = new DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1);
+const DEFAULT_TEXTURE = new DataTexture(
+  new Uint8Array([255, 255, 255, 255]),
+  1,
+  1,
+);
 DEFAULT_TEXTURE.needsUpdate = true;
 
 const blendingMap: Record<BlendingMode, Blending> = {
@@ -34,15 +29,15 @@ const blendingMap: Record<BlendingMode, Blending> = {
 };
 
 const updateBasicMaterial = (
+  sprite: Sprite,
   material: Material,
-  componentOptions: BasicMaterialOptions,
   texture: Texture = DEFAULT_TEXTURE,
 ): void => {
   const {
     color = DEFAULT_COLOR,
     blending = DEFAULT_BLENDING,
     opacity = DEFAULT_OPACITY,
-  } = componentOptions;
+  } = sprite;
   const basicMaterial = material as MeshBasicMaterial;
 
   basicMaterial.transparent = true;
@@ -57,18 +52,12 @@ const updateBasicMaterial = (
   }
 };
 
-const materialMap: Record<MaterialType, typeof Material> = {
-  lightsensitive: MeshStandardMaterial,
-  basic: MeshBasicMaterial,
-};
-
-export const createMaterial = (type: MaterialType): Material => new materialMap[type]();
+export const createMaterial = (): Material => new MeshBasicMaterial();
 
 export const updateMaterial = (
-  type: MaterialType,
+  sprite: Sprite,
   material: Material,
-  options: BasicMaterialOptions,
   texture?: Texture,
 ): void => {
-  updateBasicMaterial(material, options, texture);
+  updateBasicMaterial(sprite, material, texture);
 };

@@ -12,6 +12,8 @@ import { type TemplateCollection } from '../../../engine/template';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
+import { Shape } from '../../components/shape';
+import { PixiView } from '../../components/pixi-view';
 import { Camera } from '../../components/camera';
 import { CameraService } from '../camera-system';
 import { CacheStore } from '../../../engine/data-lib';
@@ -29,7 +31,7 @@ import { parseSortingLayers } from './sort/utils';
 // import { LightSubsystem } from './light-subsystem';
 import { loadImage, getAllSources } from './utils';
 import type { Sorting } from './types';
-import { SpriteBuilder } from './builders';
+import { SpriteBuilder, ShapeBuilder, PixiViewBuilder } from './builders';
 import type { Builder } from './builders';
 import { SORTING_ORDER_MAPPING } from './consts';
 
@@ -47,7 +49,7 @@ export class Renderer extends WorldSystem {
   private application: Application;
   private worldContainer: Container;
   private imageStore: CacheStore<HTMLImageElement>;
-  private builders: Record<string, Builder>;
+  private builders: Map<string, Builder>;
   private sortFn: SortFn;
   // private lightSubsystem: LightSubsystem;
   private templateCollection: TemplateCollection;
@@ -74,8 +76,7 @@ export class Renderer extends WorldSystem {
     this.window = getWindowNode(windowNodeId);
 
     const sorting = globalOptions.sorting as Sorting | undefined;
-    const sortingOrder =
-      SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
+    const sortingOrder = SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
 
     this.sortFn = composeSort([
       createSortByLayer(parseSortingLayers(sorting?.layers)),
@@ -90,11 +91,13 @@ export class Renderer extends WorldSystem {
 
     this.imageStore = new CacheStore<HTMLImageElement>();
 
-    this.builders = {
-      [Sprite.componentName]: new SpriteBuilder({
-        imageStore: this.imageStore,
-      }),
-    };
+    this.builders = new Map();
+    this.builders.set(
+      Sprite.componentName,
+      new SpriteBuilder({ imageStore: this.imageStore }),
+    );
+    this.builders.set(Shape.componentName, new ShapeBuilder());
+    this.builders.set(PixiView.componentName, new PixiViewBuilder());
 
     this.cameraService = world.getService(CameraService);
 
@@ -102,7 +105,8 @@ export class Renderer extends WorldSystem {
 
     world.addService(
       new RendererService({
-        getViewEntries: () => this.viewEntries,
+        application: this.application,
+        getViewEntries: (): ViewContainer[] | undefined => this.viewEntries,
         sortFn: this.sortFn,
       }),
     );
@@ -148,7 +152,7 @@ export class Renderer extends WorldSystem {
 
     const images = await Promise.all(
       uniqueSources.map((src) => {
-        return !this.imageStore.has(src) ? this.loadImage(src) : undefined;
+        return !this.imageStore.has(src) ? loadImage(src) : undefined;
       }),
     );
 
@@ -161,16 +165,26 @@ export class Renderer extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorQuery = new ActorQuery({ scene, filter: [Sprite, Transform] });
+    this.actorQuery = new ActorQuery({
+      scene,
+      filter: (actor): boolean =>
+        Boolean(
+          actor.getComponent(Transform) &&
+            (actor.getComponent(Sprite) ||
+              actor.getComponent(Shape) ||
+              actor.getComponent(PixiView)),
+        ),
+    });
 
     this.viewEntries = [];
     for (const actor of this.actorQuery.getActors()) {
-      const spriteView = this.builders[Sprite.componentName].buildView(actor);
-
-      if (spriteView) {
-        this.viewEntries.push(spriteView);
-        this.worldContainer.addChild(spriteView);
-      }
+      this.builders.forEach((builder) => {
+        const view = builder.buildView(actor);
+        if (view) {
+          this.viewEntries?.push(view);
+          this.worldContainer.addChild(view);
+        }
+      });
     }
 
     // this.lightSubsystem.onSceneEnter(scene);
@@ -187,7 +201,7 @@ export class Renderer extends WorldSystem {
     this.application.renderer.clear();
 
     this.viewEntries?.forEach((entry) => {
-      this.builders[entry.__dacha.builderKey].destroy(entry.__dacha.actor);
+      this.builders.get(entry.__dacha.builderKey)!.destroy(entry.__dacha.actor);
     });
     this.viewEntries = undefined;
 
@@ -210,25 +224,29 @@ export class Renderer extends WorldSystem {
   private handleActorAdd = (event: AddActorEvent): void => {
     const { actor } = event;
 
-    const { src } = actor.getComponent(Sprite);
+    const sprite = actor.getComponent(Sprite);
+    if (sprite) {
+      const { src } = sprite;
 
-    if (this.imageStore.has(src)) {
-      this.imageStore.retain(src);
-    } else {
-      void this.loadImage(src).then((image) => {
-        if (image) {
-          this.imageStore.add(src, image);
-          this.imageStore.retain(src);
-        }
-      });
+      if (this.imageStore.has(src)) {
+        this.imageStore.retain(src);
+      } else {
+        void loadImage(src).then((image) => {
+          if (image) {
+            this.imageStore.add(src, image);
+            this.imageStore.retain(src);
+          }
+        });
+      }
     }
 
-    const spriteView = this.builders[Sprite.componentName].buildView(actor);
-
-    if (spriteView) {
-      this.viewEntries?.push(spriteView);
-      this.worldContainer.addChild(spriteView);
-    }
+    this.builders.forEach((builder) => {
+      const view = builder.buildView(actor);
+      if (view) {
+        this.viewEntries?.push(view);
+        this.worldContainer.addChild(view);
+      }
+    });
 
     this.deletedActors.delete(actor);
   };
@@ -237,24 +255,12 @@ export class Renderer extends WorldSystem {
     const { actor } = event;
 
     const sprite = actor.getComponent(Sprite);
-    this.imageStore.release(sprite.src);
+    if (sprite) {
+      this.imageStore.release(sprite.src);
+    }
 
     this.deletedActors.add(actor);
   };
-
-  private async loadImage(src: string): Promise<HTMLImageElement | undefined> {
-    if (!src) {
-      return undefined;
-    }
-
-    try {
-      const image = await loadImage(src);
-      return image;
-    } catch (error: unknown) {
-      console.warn(`Can't load image by the following url: ${src}`, error);
-      return undefined;
-    }
-  }
 
   private updateCamera(): void {
     const currentCamera = this.cameraService.getCurrentCamera();
@@ -275,7 +281,9 @@ export class Renderer extends WorldSystem {
 
   private updateViews(): void {
     this.viewEntries?.forEach((view) => {
-      this.builders[view.__dacha.builderKey].updateView(view.__dacha.actor);
+      this.builders
+        .get(view.__dacha.builderKey)!
+        .updateView(view.__dacha.actor);
     });
   }
 
@@ -316,7 +324,7 @@ export class Renderer extends WorldSystem {
         return true;
       }
 
-      this.builders[entry.__dacha.builderKey].destroy(entry.__dacha.actor);
+      this.builders.get(entry.__dacha.builderKey)!.destroy(entry.__dacha.actor);
       return false;
     });
 

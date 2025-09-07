@@ -24,6 +24,7 @@ export default tseslint.config(
     ],
     rules: {
       'no-console': ['error', { allow: ['warn', 'error'] }],
+      '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/no-empty-object-type': 0,
       '@typescript-eslint/no-this-alias': 0,
       '@typescript-eslint/no-extraneous-class': 0,

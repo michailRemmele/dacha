@@ -14,10 +14,9 @@ describe('Contrib -> components -> Sprite', () => {
       disabled: false,
       sortingLayer: 'terrain',
       fit: 'stretch',
-      material: {
-        type: 'basic',
-        options: {},
-      },
+      color: '#fff',
+      blending: 'normal',
+      opacity: 1,
     }).clone();
 
     expect(sprite.src).toEqual('some-path-to-texture');
@@ -31,7 +30,9 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.disabled).toEqual(false);
     expect(sprite.sortingLayer).toEqual('terrain');
     expect(sprite.fit).toEqual('stretch');
-    expect(sprite.material.type).toEqual('basic');
+    expect(sprite.color).toEqual('#fff');
+    expect(sprite.blending).toEqual('normal');
+    expect(sprite.opacity).toEqual(1);
   });
 
   it('Correct updates values ', () => {
@@ -47,10 +48,9 @@ describe('Contrib -> components -> Sprite', () => {
       disabled: false,
       sortingLayer: 'terrain',
       fit: 'stretch',
-      material: {
-        type: 'basic',
-        options: {},
-      },
+      color: '#fff',
+      blending: 'normal',
+      opacity: 1,
     }).clone();
 
     sprite.src = 'another-path-to-texture';
@@ -63,9 +63,9 @@ describe('Contrib -> components -> Sprite', () => {
     sprite.flipY = false;
     sprite.disabled = true;
     sprite.sortingLayer = 'units';
-    sprite.material.type = 'lightsensitive';
-    sprite.material.options.color = '#000';
-    sprite.material.options.blending = 'multiply';
+    sprite.color = '#000';
+    sprite.blending = 'multiply';
+    sprite.opacity = 0.5;
 
     expect(sprite.src).toEqual('another-path-to-texture');
     expect(sprite.width).toEqual(200);
@@ -77,9 +77,9 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.flipY).toEqual(false);
     expect(sprite.disabled).toEqual(true);
     expect(sprite.sortingLayer).toEqual('units');
-    expect(sprite.material.type).toEqual('lightsensitive');
-    expect(sprite.material.options.color).toEqual('#000');
-    expect(sprite.material.options.blending).toEqual('multiply');
+    expect(sprite.color).toEqual('#000');
+    expect(sprite.blending).toEqual('multiply');
+    expect(sprite.opacity).toEqual(0.5);
   });
 
   it('Clones return deep copy of original component', () => {
@@ -95,10 +95,9 @@ describe('Contrib -> components -> Sprite', () => {
       disabled: false,
       sortingLayer: 'terrain',
       fit: 'stretch',
-      material: {
-        type: 'basic',
-        options: {},
-      },
+      color: '#fff',
+      blending: 'normal',
+      opacity: 1,
     });
     const cloneSprite = originalSprite.clone();
 

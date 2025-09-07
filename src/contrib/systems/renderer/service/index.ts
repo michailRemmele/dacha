@@ -1,23 +1,35 @@
-import { ViewContainer } from 'pixi.js';
+import { type ViewContainer, type Application } from 'pixi.js';
 
+import { type ComponentConstructor } from '../../../../engine/component';
 import { Sprite } from '../../../components/sprite';
+import { Shape } from '../../../components/shape';
+import { PixiView } from '../../../components/pixi-view';
 import { Transform } from '../../../components/transform';
 import { type Actor } from '../../../../engine/actor';
 import { type SortFn } from '../sort';
-import { type Bounds } from '../types';
+import { type Bounds, type ViewComponent } from '../types';
+
+const VIEW_COMPONENTS: ComponentConstructor[] = [Sprite, Shape, PixiView];
 
 interface RendererServiceOptions {
+  application: Application;
   getViewEntries: () => ViewContainer[] | undefined;
   sortFn: SortFn;
 }
 
 export class RendererService {
+  private application: Application;
   private getViewEntries: () => ViewContainer[] | undefined;
   private sortFn: SortFn;
 
-  constructor({ getViewEntries, sortFn }: RendererServiceOptions) {
+  constructor({ application, getViewEntries, sortFn }: RendererServiceOptions) {
+    this.application = application;
     this.getViewEntries = getViewEntries;
     this.sortFn = sortFn;
+  }
+
+  getRenderingContext(): Application {
+    return this.application;
   }
 
   intersectsWithPoint(x: number, y: number): Actor[] {
@@ -58,14 +70,25 @@ export class RendererService {
 
   getBounds(actor: Actor): Bounds {
     const transform = actor.getComponent(Transform);
-    const sprite = actor.getComponent(Sprite);
 
-    const spriteBounds = sprite?.renderData?.view.__dacha.bounds;
+    let minX = transform.offsetX;
+    let minY = transform.offsetY;
+    let maxX = transform.offsetX;
+    let maxY = transform.offsetY;
 
-    const minX = spriteBounds?.minX ?? transform.offsetX;
-    const minY = spriteBounds?.minY ?? transform.offsetY;
-    const maxX = spriteBounds?.maxX ?? transform.offsetX;
-    const maxY = spriteBounds?.maxY ?? transform.offsetY;
+    VIEW_COMPONENTS.forEach((ViewComponent) => {
+      const viewComponent = actor.getComponent(ViewComponent) as ViewComponent;
+      const bounds = viewComponent?.renderData?.view.__dacha.bounds;
+
+      if (!bounds) {
+        return;
+      }
+
+      minX = Math.min(minX, bounds?.minX);
+      minY = Math.min(minY, bounds?.minY);
+      maxX = Math.max(maxX, bounds?.maxX);
+      maxY = Math.max(maxY, bounds?.maxY);
+    });
 
     return {
       minX,
