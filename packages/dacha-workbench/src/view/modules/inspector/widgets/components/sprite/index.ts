@@ -57,25 +57,16 @@ export const sprite: WidgetSchema = {
       options: ['stretch', 'repeat'],
     },
     {
-      name: 'material.type',
-      title: 'components.sprite.material.type.title',
-      type: 'select',
-      options: ['basic', 'lightsensitive'],
-    },
-    {
-      name: 'material.options.blending',
-      title: 'components.sprite.material.blending.title',
+      name: 'blending',
       type: 'select',
       options: ['normal', 'addition', 'substract', 'multiply'],
     },
     {
-      name: 'material.options.color',
-      title: 'components.sprite.material.color.title',
+      name: 'color',
       type: 'color',
     },
     {
-      name: 'material.options.opacity',
-      title: 'components.sprite.material.opacity.title',
+      name: 'opacity',
       type: 'number',
     },
   ],
@@ -90,13 +81,8 @@ export const sprite: WidgetSchema = {
     flipY: false,
     sortingLayer: 'default',
     fit: 'stretch',
-    material: {
-      type: 'basic',
-      options: {
-        blending: 'normal',
-        color: '#fff',
-        opacity: 1,
-      },
-    },
+    blending: 'normal',
+    color: '#fff',
+    opacity: 1,
   }),
 };

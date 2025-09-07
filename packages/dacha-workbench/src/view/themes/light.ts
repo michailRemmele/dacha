@@ -1,10 +1,9 @@
-import { theme } from 'antd'
+import { theme } from 'antd';
 
-import type { CustomToken } from './types'
+import type { CustomToken } from './types';
 
 export const customToken: CustomToken = {
-  // place your custom tokens here
-  example: '#fafafa',
-}
+  canvasBackground: '#ffffff',
+};
 
-export const customTheme = { algorithm: [theme.compactAlgorithm] }
+export const customTheme = { algorithm: [theme.compactAlgorithm] };

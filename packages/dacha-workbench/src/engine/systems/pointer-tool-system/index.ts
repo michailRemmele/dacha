@@ -27,6 +27,7 @@ import {
   updateFrameSize,
   updateAreaSize,
   getActorIdByPath,
+  getCurrentZoom,
 } from './utils'
 import type { SelectedActors, SelectionArea } from './types'
 
@@ -165,7 +166,7 @@ export class PointerToolSystem extends SceneSystem {
     this.selectionArea.sceneSize.x1 = x
     this.selectionArea.sceneSize.y1 = y
 
-    updateAreaSize(this.selectionArea)
+    updateAreaSize(this.selectionArea, getCurrentZoom(this.world))
   }
 
   private handleSelectionMoveEnd = (event: MouseControlEvent): void => {
@@ -187,7 +188,9 @@ export class PointerToolSystem extends SceneSystem {
     const maxY = Math.max(sceneSize.y0, sceneSize.y1)
 
     const rendererService = this.world.getService(RendererService)
-    const actors = rendererService.intersectsWithRectangle(minX, minY, maxX, maxY)
+    const actors = rendererService
+      .intersectsWithRectangle(minX, minY, maxX, maxY)
+      .filter((actor) => getAncestor(actor).id !== this.mainActor.id)
 
     const selectedActorIds = new Set(actorPaths.map((path) => getIdByPath(path)))
     const newSelection = actors.reduce((acc, actor) => {
@@ -261,7 +264,7 @@ export class PointerToolSystem extends SceneSystem {
       }
 
       const bounds = rendererService.getBounds(actor)
-      updateFrameSize(frame, bounds)
+      updateFrameSize(frame, actor, bounds, getCurrentZoom(this.world))
     })
   }
 

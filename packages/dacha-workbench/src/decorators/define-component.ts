@@ -1,6 +1,5 @@
-import type { Component } from 'dacha'
-
 import type { WidgetSchema, Field } from '../types/widget-schema'
+import { type ComponentConstructor } from '../types/engine'
 import { widgetRegistry } from '../hocs/widget-registry'
 
 import { schemaRegistry } from './schema-registry'
@@ -11,10 +10,6 @@ import {
   buildInitialState,
   isEditor,
 } from './utils'
-import type { Constructor } from './types'
-
-type ComponentConstructor<T extends Component = Component>
-  = Constructor<T> & { componentName: string };
 
 interface DefineComponentOptions extends Omit<WidgetSchema, 'view'> {
   name: string
