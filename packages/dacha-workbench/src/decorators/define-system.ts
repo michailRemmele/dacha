@@ -1,6 +1,5 @@
-import type { System } from 'dacha'
-
 import type { WidgetSchema, Field } from '../types/widget-schema'
+import { type SystemConstructor } from '../types/engine'
 import { widgetRegistry } from '../hocs/widget-registry'
 
 import { schemaRegistry } from './schema-registry'
@@ -11,10 +10,6 @@ import {
   buildInitialState,
   isEditor,
 } from './utils'
-import type { Constructor } from './types'
-
-type SystemConstructor<T extends System = System>
-  = Constructor<T> & { systemName: string };
 
 interface DefineSystemOptions extends Omit<WidgetSchema, 'view'> {
   name: string

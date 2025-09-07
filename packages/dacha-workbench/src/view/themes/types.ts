@@ -1,3 +1,3 @@
 export interface CustomToken {
-  example: string
+  canvasBackground: string;
 }

@@ -26,6 +26,7 @@ import { getTool } from '../../../utils/get-tool'
 import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
 import { getSavedInspectedEntity } from '../../../utils/get-saved-inspected-entity'
 import { getActorIdByPath } from '../../../utils/get-actor-id-by-path'
+import type { ComponentConstructor } from '../../../types/engine'
 
 import { TOOL_NAME, PREVIEW_FEATURE_NAME, VIEW_COMPONENTS } from './consts'
 import { createFromTemplate, updatePreviewPosition, isActorPath } from './utils'
@@ -239,10 +240,10 @@ export class TemplateToolSystem extends SceneSystem {
       return
     }
 
-    VIEW_COMPONENTS.forEach((name) => {
-      const viewComponent = this.preview?.getComponent(name) as ViewComponent | undefined
+    VIEW_COMPONENTS.forEach((componentClass: ComponentConstructor) => {
+      const viewComponent = this.preview?.getComponent(componentClass) as ViewComponent | undefined
       if (viewComponent) {
-        viewComponent.material.options.opacity = 0
+        viewComponent.opacity = 0
       }
     })
   }

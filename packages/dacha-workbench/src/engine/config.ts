@@ -1,33 +1,35 @@
-import type { Config, GlobalOption, TemplateConfig } from 'dacha'
+import type { Config, TemplateConfig } from 'dacha';
+import { type Sorting } from 'dacha/renderer';
 
-import { SHAPE_CANVAS_ROOT } from '../consts/root-nodes'
 import {
   HAND_TOOL,
   POINTER_TOOL,
   ZOOM_TOOL,
   TEMPLATE_TOOL,
-} from '../consts/tools'
-import { EventType } from '../events'
-import { persistentStorage } from '../persistent-storage'
-import type { CommanderStore } from '../store'
+} from '../consts/tools';
+import { EventType } from '../events';
+import { persistentStorage } from '../persistent-storage';
+import type { CommanderStore } from '../store';
 
 interface EditorConfigOptions {
-  globalOptions: GlobalOption[]
-  store: CommanderStore
+  sorting: Sorting;
+  store: CommanderStore;
 }
 
 const getTemplateId = (store: CommanderStore): string | undefined => {
-  const templateId = persistentStorage.get<string | undefined>('canvas.mainActor.tools.template.features.templateId')
+  const templateId = persistentStorage.get<string | undefined>(
+    'canvas.mainActor.tools.template.features.templateId',
+  );
   if (!templateId) {
-    return undefined
+    return undefined;
   }
   return store.get(['templates', `id:${templateId}`])
     ? templateId
-    : (store.get(['templates']) as TemplateConfig[])[0]?.id
-}
+    : (store.get(['templates']) as TemplateConfig[])[0]?.id;
+};
 
 export const getEditorConfig = ({
-  globalOptions,
+  sorting,
   store,
 }: EditorConfigOptions): Config => ({
   scenes: [
@@ -92,7 +94,10 @@ export const getEditorConfig = ({
                     name: 'zoom',
                     features: {
                       direction: {
-                        value: persistentStorage.get('canvas.mainActor.tools.zoom.features.direction', 'in'),
+                        value: persistentStorage.get(
+                          'canvas.mainActor.tools.zoom.features.direction',
+                          'in',
+                        ),
                         withClassName: true,
                       },
                     },
@@ -120,7 +125,10 @@ export const getEditorConfig = ({
                     name: 'pointer',
                     features: {
                       grid: {
-                        value: persistentStorage.get('canvas.mainActor.tools.pointer.features.grid', false),
+                        value: persistentStorage.get(
+                          'canvas.mainActor.tools.pointer.features.grid',
+                          false,
+                        ),
                         withClassName: false,
                       },
                     },
@@ -167,15 +175,24 @@ export const getEditorConfig = ({
                     name: 'template',
                     features: {
                       nestToSelected: {
-                        value: persistentStorage.get('canvas.mainActor.tools.template.features.nestToSelected', true),
+                        value: persistentStorage.get(
+                          'canvas.mainActor.tools.template.features.nestToSelected',
+                          true,
+                        ),
                         withClassName: false,
                       },
                       preview: {
-                        value: persistentStorage.get('canvas.mainActor.tools.template.features.preview', true),
+                        value: persistentStorage.get(
+                          'canvas.mainActor.tools.template.features.preview',
+                          true,
+                        ),
                         withClassName: false,
                       },
                       grid: {
-                        value: persistentStorage.get('canvas.mainActor.tools.template.features.grid', false),
+                        value: persistentStorage.get(
+                          'canvas.mainActor.tools.template.features.grid',
+                          false,
+                        ),
                         withClassName: false,
                       },
                       templateId: {
@@ -195,13 +212,35 @@ export const getEditorConfig = ({
                 },
               ],
             },
+            {
+              id: 'grid',
+              name: 'grid',
+              children: [],
+              components: [
+                {
+                  name: 'Transform',
+                  config: {
+                    offsetX: 0,
+                    offsetY: 0,
+                    offsetZ: 0,
+                    rotation: 0,
+                  },
+                },
+              ],
+            },
           ],
           components: [
             {
               name: 'Transform',
               config: {
-                offsetX: persistentStorage.get('canvas.mainActor.transform.offsetX', 0),
-                offsetY: persistentStorage.get('canvas.mainActor.transform.offsetY', 0),
+                offsetX: persistentStorage.get(
+                  'canvas.mainActor.transform.offsetX',
+                  0,
+                ),
+                offsetY: persistentStorage.get(
+                  'canvas.mainActor.transform.offsetY',
+                  0,
+                ),
                 offsetZ: 1,
                 rotation: 0,
               },
@@ -235,15 +274,27 @@ export const getEditorConfig = ({
             {
               name: 'ToolController',
               config: {
-                activeTool: persistentStorage.get('canvas.mainActor.toolController.activeTool', HAND_TOOL),
+                activeTool: persistentStorage.get(
+                  'canvas.mainActor.toolController.activeTool',
+                  HAND_TOOL,
+                ),
               },
             },
             {
               name: 'Settings',
               config: {
-                showGrid: persistentStorage.get('canvas.mainActor.settings.showGrid', false),
-                gridStep: persistentStorage.get('canvas.mainActor.settings.gridStep', 16),
-                gridColor: persistentStorage.get('canvas.mainActor.settings.gridColor', '#1890FF'),
+                showGrid: persistentStorage.get(
+                  'canvas.mainActor.settings.showGrid',
+                  false,
+                ),
+                gridStep: persistentStorage.get(
+                  'canvas.mainActor.settings.gridStep',
+                  16,
+                ),
+                gridColor: persistentStorage.get(
+                  'canvas.mainActor.settings.gridColor',
+                  '#1890FF',
+                ),
               },
             },
           ],
@@ -304,6 +355,10 @@ export const getEditorConfig = ({
       options: {},
     },
     {
+      name: 'GridSystem',
+      options: {},
+    },
+    {
       name: 'UIBridge',
       options: {},
     },
@@ -311,19 +366,9 @@ export const getEditorConfig = ({
       name: 'Renderer',
       options: {
         windowNodeId: 'canvas-root',
-        backgroundColor: '#ffffff',
-        backgroundAlpha: 0,
+        backgroundColor: '#000000',
+        backgroundAlpha: 0.15,
       },
-    },
-    {
-      name: 'ShapesRenderer',
-      options: {
-        windowNodeId: SHAPE_CANVAS_ROOT,
-      },
-    },
-    {
-      name: 'GridSystem',
-      options: {},
     },
   ],
   templates: [
@@ -345,13 +390,15 @@ export const getEditorConfig = ({
           name: 'Shape',
           config: {
             type: 'rectangle',
-            properties: {
-              width: 0,
-              height: 0,
-              color: 'rgba(0, 0, 0, 0)',
-              strokeWidth: 3,
-              strokeColor: '#fff',
-            },
+            width: 0,
+            height: 0,
+            strokeWidth: 1,
+            strokeColor: '#fff',
+            opacity: 1,
+            blending: 'normal',
+            disabled: false,
+            sortingLayer: 'editor-layer-2',
+            sortCenter: [0, 0],
           },
         },
         {
@@ -378,20 +425,43 @@ export const getEditorConfig = ({
           name: 'Shape',
           config: {
             type: 'rectangle',
-            properties: {
-              width: 0,
-              height: 0,
-              color: 'rgba(24, 144, 255, 0.25)',
-              strokeWidth: 2,
-              strokeColor: '#1890FF',
-            },
+            width: 0,
+            height: 0,
+            strokeWidth: 1,
+            strokeColor: '#1890FF',
+            fill: 'rgba(24, 144, 255, 0.25)',
+            opacity: 1,
+            blending: 'normal',
+            disabled: false,
+            sortingLayer: 'editor-layer-3',
+            sortCenter: [0, 0],
           },
         },
       ],
     },
   ],
   globalOptions: [
-    ...globalOptions,
+    {
+      name: 'sorting',
+      options: {
+        order: sorting.order,
+        layers: [
+          ...sorting.layers,
+          {
+            id: 'editor-layer-1',
+            name: 'editor-layer-1',
+          },
+          {
+            id: 'editor-layer-2',
+            name: 'editor-layer-2',
+          },
+          {
+            id: 'editor-layer-3',
+            name: 'editor-layer-3',
+          },
+        ],
+      },
+    },
   ],
   startSceneId: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
-})
+});

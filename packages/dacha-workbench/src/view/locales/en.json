@@ -160,10 +160,9 @@
 
   "components.sprite.sortCenterX.title": "Sort Center X",
   "components.sprite.sortCenterY.title": "Sort Center Y",
-  "components.sprite.material.type.title": "Material Type",
-  "components.sprite.material.blending.title": "Material Blending",
-  "components.sprite.material.color.title": "Material Color",
-  "components.sprite.material.opacity.title": "Material Opacity",
+
+  "components.shape.sortCenterX.title": "Sort Center X",
+  "components.shape.sortCenterY.title": "Sort Center Y",
 
   "components.behaviors.behavior.name.title": "Name",
   "components.behaviors.behavior.title": "Behavior {{index}}",
