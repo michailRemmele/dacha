@@ -282,7 +282,7 @@ export class SpriteRenderer extends WorldSystem {
   private setUpActor(actor: Actor): void {
     const sprite = actor.getComponent(Sprite);
 
-    const material = createMaterial(sprite.material.type);
+    const material = createMaterial();
     const geometry = new PlaneGeometry(sprite.width, sprite.height);
     const object = new Mesh(geometry, material);
 
@@ -361,7 +361,7 @@ export class SpriteRenderer extends WorldSystem {
       const textureArray = this.getTextureArray(sprite);
       const texture = textureArray?.[sprite.currentFrame || 0];
 
-      updateMaterial(sprite.material.type, material, sprite.material.options, texture);
+      updateMaterial(sprite, material, texture);
     });
   }
 

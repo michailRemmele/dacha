@@ -16,10 +16,9 @@ describe('Contrib -> RenderSystem -> Sort -> sortByFit()', () => {
     disabled: false,
     sortingLayer: 'some-layer',
     fit: 'stretch',
-    material: {
-      type: 'basic',
-      options: {},
-    },
+    color: '#fff',
+    blending: 'normal',
+    opacity: 1,
   };
 
   it('Returns correct order of objects', () => {

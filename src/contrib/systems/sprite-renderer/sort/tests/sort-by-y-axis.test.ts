@@ -17,10 +17,9 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
     disabled: false,
     sortingLayer: 'some-layer',
     fit: 'stretch',
-    material: {
-      type: 'basic',
-      options: {},
-    },
+    color: '#fff',
+    blending: 'normal',
+    opacity: 1,
   };
   const baseTransformProps: TransformConfig = {
     offsetX: 0,

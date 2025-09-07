@@ -12,8 +12,9 @@ import { Transform } from '../../../../components/transform';
 import { Sprite } from '../../../../components/sprite';
 import type { Actor } from '../../../../../engine/actor';
 import { CacheStore } from '../../../../../engine/data-lib';
+import { floatEquals } from '../utils';
 
-import { getTextureSource, getTextureArray, floatEquals } from './utils';
+import { getTextureSource, getTextureArray } from './utils';
 
 interface SpriteBuilderOptions {
   imageStore: CacheStore<HTMLImageElement>;
@@ -48,13 +49,12 @@ export class SpriteBuilder implements Builder {
     sprite.renderData = undefined;
   }
 
-  hasView(actor: Actor): boolean {
+  buildView(actor: Actor): PixiSprite | TilingSprite | undefined {
     const sprite = actor.getComponent(Sprite);
-    return !!sprite.renderData?.view;
-  }
+    if (!sprite) {
+      return undefined;
+    }
 
-  buildView(actor: Actor): PixiSprite | TilingSprite {
-    const sprite = actor.getComponent(Sprite);
     const { offsetX, offsetY } = actor.getComponent(Transform);
     const options = { anchor: 0.5 };
     const view =
@@ -94,21 +94,21 @@ export class SpriteBuilder implements Builder {
       view.__dacha.didChange = true;
     }
 
-    if (sprite.material.options.color !== meta.color) {
-      view.tint = sprite.material.options.color;
-      meta.color = sprite.material.options.color;
+    if (sprite.color !== meta.color) {
+      view.tint = sprite.color;
+      meta.color = sprite.color;
       view.__dacha.didChange = true;
     }
 
-    if (sprite.material.options.blending !== meta.blending) {
-      view.blendMode = BLEND_MODE_MAPPING[sprite.material.options.blending];
-      meta.blending = sprite.material.options.blending;
+    if (sprite.blending !== meta.blending) {
+      view.blendMode = BLEND_MODE_MAPPING[sprite.blending];
+      meta.blending = sprite.blending;
       view.__dacha.didChange = true;
     }
 
-    if (sprite.material.options.opacity !== meta.opacity) {
-      view.alpha = sprite.material.options.opacity;
-      meta.opacity = sprite.material.options.opacity;
+    if (sprite.opacity !== meta.opacity) {
+      view.alpha = sprite.opacity;
+      meta.opacity = sprite.opacity;
       view.__dacha.didChange = true;
     }
 

@@ -22,3 +22,9 @@ export interface Bounds {
   width: number;
   height: number;
 }
+
+export interface ViewComponent {
+  renderData?: {
+    view: { __dacha: { bounds: Bounds } };
+  };
+}
