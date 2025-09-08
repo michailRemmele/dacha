@@ -28,7 +28,6 @@ import {
   sortByXAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
-// import { LightSubsystem } from './light-subsystem';
 import { loadImage, getAllSources } from './utils';
 import type { Sorting } from './types';
 import { SpriteBuilder, ShapeBuilder, PixiViewBuilder } from './builders';
@@ -51,7 +50,6 @@ export class Renderer extends WorldSystem {
   private imageStore: CacheStore<HTMLImageElement>;
   private builders: Map<string, Builder>;
   private sortFn: SortFn;
-  // private lightSubsystem: LightSubsystem;
   private templateCollection: TemplateCollection;
   private backgroundColor: string;
   private backgroundAlpha: number;
@@ -86,8 +84,6 @@ export class Renderer extends WorldSystem {
 
     this.application = new Application();
     this.worldContainer = new Container({ sortableChildren: true });
-
-    // this.lightSubsystem = new LightSubsystem(this.renderScene);
 
     this.imageStore = new CacheStore<HTMLImageElement>();
 
@@ -187,8 +183,6 @@ export class Renderer extends WorldSystem {
       });
     }
 
-    // this.lightSubsystem.onSceneEnter(scene);
-
     this.actorQuery.addEventListener(AddActor, this.handleActorAdd);
     this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
   }
@@ -204,8 +198,6 @@ export class Renderer extends WorldSystem {
       this.builders.get(entry.__dacha.builderKey)!.destroy(entry.__dacha.actor);
     });
     this.viewEntries = undefined;
-
-    // this.lightSubsystem.onSceneExit();
 
     this.actorQuery?.destroy();
     this.actorQuery = undefined;
@@ -335,8 +327,6 @@ export class Renderer extends WorldSystem {
     this.clearDeletedEntries();
 
     this.updateCamera();
-
-    // this.lightSubsystem.update();
 
     this.updateViews();
     this.updateBounds();
