@@ -1,25 +1,22 @@
-import type { FC } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Typography } from 'antd'
+import type { FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Typography } from 'antd';
 
-import { ColorPicker } from '../../../../components'
+import { ColorPicker } from '../../../../components';
 
 import {
   SettingsFieldStyled,
   SettingsLabelCSS,
   SettingsInputCSS,
-} from './grid.style'
+} from './grid.style';
 
 interface ColorFieldProps {
-  value: string
-  onChange: (value: string) => void
+  value: string;
+  onChange: (value: string) => void;
 }
 
-export const ColorField: FC<ColorFieldProps> = ({
-  value,
-  onChange,
-}) => {
-  const { t } = useTranslation()
+export const ColorField: FC<ColorFieldProps> = ({ value, onChange }) => {
+  const { t } = useTranslation();
 
   return (
     <SettingsFieldStyled>
@@ -30,7 +27,8 @@ export const ColorField: FC<ColorFieldProps> = ({
         css={SettingsInputCSS}
         value={value}
         onChange={onChange}
+        disabledAlpha
       />
     </SettingsFieldStyled>
-  )
-}
+  );
+};

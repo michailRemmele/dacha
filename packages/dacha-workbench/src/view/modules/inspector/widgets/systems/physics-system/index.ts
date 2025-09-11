@@ -1,4 +1,4 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const physicsSystem: WidgetSchema = {
   fields: [
@@ -10,4 +10,4 @@ export const physicsSystem: WidgetSchema = {
   getInitialState: () => ({
     gravity: 100,
   }),
-}
+};

@@ -119,6 +119,9 @@ export const Tree: FC<TreeProps> = ({
     if (sourcePaths.some((path) => arraysEqual(path.slice(0, -1), destinationPath))) {
       return
     }
+    if (sourcePaths.some((path) => arraysEqual(path, node.path))) {
+      return
+    }
 
     onDrop(sourcePaths, destinationPath)
   }, [selectedPaths, onDrop, childrenFieldMap])

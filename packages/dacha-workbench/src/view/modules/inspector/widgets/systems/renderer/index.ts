@@ -1,6 +1,6 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
-export const spriteRenderer: WidgetSchema = {
+export const renderer: WidgetSchema = {
   fields: [
     {
       name: 'windowNodeId',
@@ -10,14 +10,9 @@ export const spriteRenderer: WidgetSchema = {
       name: 'backgroundColor',
       type: 'color',
     },
-    {
-      name: 'backgroundAlpha',
-      type: 'number',
-    },
   ],
   getInitialState: () => ({
     windowNodeId: '',
     backgroundColor: '#000',
-    backgroundAlpha: 1,
   }),
-}
+};
