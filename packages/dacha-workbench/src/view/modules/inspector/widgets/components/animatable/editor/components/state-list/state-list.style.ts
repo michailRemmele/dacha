@@ -18,8 +18,8 @@ export const TreeCSS = (isInactive: boolean): SerializedStyles => {
     ${BaseTreeCSS}
 
     ${isInactive && css`
-      &.ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before,
-      &.ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
+      &.ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-node-content-wrapper:hover::before,
+      &.ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-node-content-wrapper::before {
         background: ${theme.colorBorderSecondary};
       }
 
@@ -29,7 +29,7 @@ export const TreeCSS = (isInactive: boolean): SerializedStyles => {
       }
     `}
 
-    & .ant-tree-treenode-selected ${ListItemSuffixStyled} {
+    & .ant-tree-treenode-selected .ant-tree-title span {
       color: inherit;
     }
   `

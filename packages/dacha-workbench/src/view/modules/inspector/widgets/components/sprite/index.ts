@@ -64,6 +64,7 @@ export const sprite: WidgetSchema = {
     {
       name: 'color',
       type: 'color',
+      disabledAlpha: true,
     },
     {
       name: 'opacity',

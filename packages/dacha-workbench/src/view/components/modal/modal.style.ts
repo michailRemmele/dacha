@@ -17,6 +17,8 @@ export const ModalStyled = styled(Modal)(({ theme }) => css`
   & .ant-modal-close {
     top: 5px;
     right: 5px;
+    width: 20px;
+    height: 20px;
   }
 
   & .ant-modal-title {

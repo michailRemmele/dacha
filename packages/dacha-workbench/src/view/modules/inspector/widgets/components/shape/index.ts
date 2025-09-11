@@ -65,6 +65,24 @@ export const shape: WidgetSchema = {
       },
     },
     {
+      name: 'strokeAlignment',
+      type: 'select',
+      options: [
+        {
+          title: 'centered',
+          value: 0.5,
+        },
+        {
+          title: 'inside',
+          value: 1,
+        },
+        {
+          title: 'outside',
+          value: 0,
+        },
+      ],
+    },
+    {
       name: 'pixelLine',
       type: 'boolean',
     },
@@ -107,6 +125,8 @@ export const shape: WidgetSchema = {
     width: 10,
     height: 10,
     strokeWidth: 0,
+    strokeColor: '#fff',
+    strokeAlignment: 0.5,
     fill: '#fff',
     pixelLine: false,
     sortCenter: [0, 0],

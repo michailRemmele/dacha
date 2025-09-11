@@ -318,7 +318,7 @@
       "options": {}
     },
     {
-      "name": "SpriteRenderer",
+      "name": "Renderer",
       "options": {
         "windowNodeId": "root",
         "backgroundColor": "#000"
@@ -400,7 +400,7 @@
             "sortingLayer": "units",
             "fit": "stretch",
             "blending": "normal",
-            "color": "#fff",
+            "color": "rgba(255,255,255,0.55)",
             "opacity": 1
           }
         },

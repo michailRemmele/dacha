@@ -8,12 +8,12 @@ export interface InputProps extends Omit<HTMLProps<HTMLInputElement>, 'size' | '
 
 export interface SelectOption {
   title: string
-  value: string
+  value: string | number
   disabled?: boolean
 }
 
 export interface SelectProps extends InputProps {
-  options: SelectOption[] | string[]
+  options: SelectOption[] | string[] | number[]
   allowEmpty?: boolean
 }
 
@@ -24,8 +24,8 @@ export interface MultiTextInputProps extends Omit<InputProps, 'value' | 'onChang
 
 export interface MultiSelectProps extends Omit<InputProps, 'value' | 'onChange'> {
   options: SelectOption[]
-  value: string[]
-  onChange?: (values: string[]) => void
+  value: string[] | number[]
+  onChange?: (values: string[] | number[]) => void
 }
 
 export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'onInput'> {

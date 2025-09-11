@@ -28,7 +28,7 @@ export const Modal: FC<ModalProps> = ({
     onCancel={onCancel}
     footer={null}
     centered
-    destroyOnClose
+    destroyOnHidden
   >
     <CommandScopeProvider name={MODAL_SCOPE}>
       <HotkeysScopeProvider name={MODAL_SCOPE}>
