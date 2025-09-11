@@ -14,6 +14,7 @@ export interface BaseShape {
   type: ShapeType;
   strokeColor?: string;
   strokeWidth: number;
+  strokeAlignment: number;
   pixelLine: boolean;
   fill?: string;
   opacity: number;
@@ -54,6 +55,7 @@ export class Shape extends Component {
   type: ShapeType;
   strokeColor?: string;
   strokeWidth: number;
+  strokeAlignment: number;
   pixelLine: boolean;
   fill?: string;
   opacity: number;
@@ -74,6 +76,7 @@ export class Shape extends Component {
     this.type = config.type;
     this.strokeColor = config.strokeColor;
     this.strokeWidth = config.strokeWidth;
+    this.strokeAlignment = config.strokeAlignment;
     this.pixelLine = config.pixelLine;
     this.fill = config.fill;
     this.opacity = config.opacity;
@@ -93,6 +96,7 @@ export class Shape extends Component {
       type: this.type,
       strokeColor: this.strokeColor,
       strokeWidth: this.strokeWidth,
+      strokeAlignment: this.strokeAlignment,
       pixelLine: this.pixelLine,
       opacity: this.opacity,
       blending: this.blending,
