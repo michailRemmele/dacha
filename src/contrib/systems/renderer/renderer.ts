@@ -1,4 +1,4 @@
-import { Application, Container, type ViewContainer } from 'pixi.js';
+import { Application, Container, type ViewContainer, Color } from 'pixi.js';
 
 import {
   AddActor,
@@ -37,7 +37,6 @@ import { SORTING_ORDER_MAPPING } from './consts';
 interface RendererOptions extends WorldSystemOptions {
   windowNodeId: string;
   backgroundColor: string;
-  backgroundAlpha: number;
 }
 
 export class Renderer extends WorldSystem {
@@ -51,8 +50,7 @@ export class Renderer extends WorldSystem {
   private builders: Map<string, Builder>;
   private sortFn: SortFn;
   private templateCollection: TemplateCollection;
-  private backgroundColor: string;
-  private backgroundAlpha: number;
+  private backgroundColor: Color;
   private cameraService: CameraService;
 
   constructor(options: WorldSystemOptions) {
@@ -62,14 +60,12 @@ export class Renderer extends WorldSystem {
       globalOptions,
       windowNodeId,
       backgroundColor,
-      backgroundAlpha,
       templateCollection,
       world,
     } = options as RendererOptions;
 
     this.templateCollection = templateCollection;
-    this.backgroundColor = backgroundColor;
-    this.backgroundAlpha = backgroundAlpha;
+    this.backgroundColor = new Color(backgroundColor);
 
     this.window = getWindowNode(windowNodeId);
 
@@ -114,8 +110,8 @@ export class Renderer extends WorldSystem {
       resizeTo: this.window,
       width: this.window.clientWidth,
       height: this.window.clientHeight,
-      backgroundColor: this.backgroundColor,
-      backgroundAlpha: this.backgroundAlpha,
+      backgroundColor: this.backgroundColor.toHex(),
+      backgroundAlpha: this.backgroundColor.alpha,
       resolution: window.devicePixelRatio,
       autoDensity: true,
     });

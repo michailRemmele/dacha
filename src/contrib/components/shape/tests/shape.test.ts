@@ -6,6 +6,7 @@ describe('Contrib -> components -> Shape', () => {
       type: 'rectangle',
       strokeWidth: 2,
       strokeColor: '#000',
+      strokeAlignment: 0.5,
       pixelLine: false,
       opacity: 1,
       blending: 'normal',
@@ -22,6 +23,7 @@ describe('Contrib -> components -> Shape', () => {
     expect(shape.height).toEqual(200);
     expect(shape.strokeWidth).toEqual(2);
     expect(shape.strokeColor).toEqual('#000');
+    expect(shape.strokeAlignment).toEqual(0.5);
     expect(shape.opacity).toEqual(1);
     expect(shape.disabled).toEqual(false);
     expect(shape.sortingLayer).toEqual('units');
@@ -33,6 +35,7 @@ describe('Contrib -> components -> Shape', () => {
       type: 'circle',
       strokeWidth: 2,
       strokeColor: '#000',
+      strokeAlignment: 0.5,
       pixelLine: false,
       opacity: 1,
       blending: 'normal',
@@ -57,6 +60,7 @@ describe('Contrib -> components -> Shape', () => {
       type: 'circle',
       strokeWidth: 2,
       strokeColor: '#000',
+      strokeAlignment: 0.5,
       pixelLine: false,
       opacity: 1,
       blending: 'normal',
