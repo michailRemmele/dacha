@@ -92,12 +92,12 @@ export const shape: WidgetSchema = {
     },
     {
       name: 'sortCenter.0',
-      title: 'components.shape.sortCenterX.title',
+      title: 'components.renderable.sortCenterX.title',
       type: 'number',
     },
     {
       name: 'sortCenter.1',
-      title: 'components.shape.sortCenterY.title',
+      title: 'components.renderable.sortCenterY.title',
       type: 'number',
     },
     {

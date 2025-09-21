@@ -7,6 +7,7 @@ import {
   MouseControl,
   Sprite,
   Shape,
+  Text,
   RigidBody,
   Behaviors,
   Transform,
@@ -23,6 +24,7 @@ import { light } from './light';
 import { mouseControl } from './mouse-control';
 import { sprite } from './sprite';
 import { shape } from './shape';
+import { text } from './text';
 import { rigidBody } from './rigid-body';
 import { behaviors } from './behaviors';
 import { transform } from './transform';
@@ -37,6 +39,7 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [MouseControl.componentName]: mouseControl,
   [Sprite.componentName]: sprite,
   [Shape.componentName]: shape,
+  [Text.componentName]: text,
   [RigidBody.componentName]: rigidBody,
   [Behaviors.componentName]: behaviors,
   [Transform.componentName]: transform,

@@ -31,7 +31,8 @@ export type FieldType =
   | 'multitext'
   | 'color'
   | 'file'
-  | 'range';
+  | 'range'
+  | 'textarea';
 
 export interface AnyField {
   name: string;
@@ -92,6 +93,10 @@ export interface ColorField extends AnyField {
   disabledAlpha?: boolean;
 }
 
+export interface TextAreaField extends AnyField {
+  type: 'textarea';
+}
+
 export type Field =
   | StringField
   | NumberField
@@ -101,7 +106,8 @@ export type Field =
   | MultitextField
   | FileField
   | RangeField
-  | ColorField;
+  | ColorField
+  | TextAreaField;
 
 export interface WidgetProps {
   path: string[];

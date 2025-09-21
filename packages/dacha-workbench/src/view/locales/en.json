@@ -158,11 +158,8 @@
   "components.mouseControl.bind.attributes.title": "Attributes",
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
-  "components.sprite.sortCenterX.title": "Sort Center X",
-  "components.sprite.sortCenterY.title": "Sort Center Y",
-
-  "components.shape.sortCenterX.title": "Sort Center X",
-  "components.shape.sortCenterY.title": "Sort Center Y",
+  "components.renderable.sortCenterX.title": "Sort Center X",
+  "components.renderable.sortCenterY.title": "Sort Center Y",
 
   "components.behaviors.behavior.name.title": "Name",
   "components.behaviors.behavior.title": "Behavior {{index}}",
