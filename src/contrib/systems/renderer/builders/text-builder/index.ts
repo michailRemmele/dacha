@@ -112,9 +112,9 @@ export class TextBuilder implements Builder {
       view.__dacha.didChange = true;
     }
 
-    if (text.fill !== meta.fill) {
-      view.style.fill = text.fill;
-      meta.fill = text.fill;
+    if (text.color !== meta.color) {
+      view.style.fill = text.color;
+      meta.color = text.color;
       view.__dacha.didChange = true;
     }
 

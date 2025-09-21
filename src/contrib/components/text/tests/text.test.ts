@@ -7,7 +7,7 @@ describe('Contrib -> components -> Text', () => {
       font: 'Arial',
       fontSize: 24,
       align: 'center',
-      fill: '#000',
+      color: '#000',
       opacity: 1,
       blending: 'normal',
       disabled: false,
@@ -19,7 +19,7 @@ describe('Contrib -> components -> Text', () => {
     expect(text.font).toEqual('Arial');
     expect(text.fontSize).toEqual(24);
     expect(text.align).toEqual('center');
-    expect(text.fill).toEqual('#000');
+    expect(text.color).toEqual('#000');
     expect(text.opacity).toEqual(1);
     expect(text.blending).toEqual('normal');
     expect(text.disabled).toEqual(false);
@@ -33,7 +33,7 @@ describe('Contrib -> components -> Text', () => {
       font: 'Arial',
       fontSize: 24,
       align: 'center',
-      fill: '#000',
+      color: '#000',
       opacity: 1,
       blending: 'normal',
       disabled: false,
@@ -42,11 +42,11 @@ describe('Contrib -> components -> Text', () => {
     }).clone();
 
     text.fontSize = 48;
-    text.fill = '#444';
+    text.color = '#444';
     text.align = 'right';
 
     expect(text.fontSize).toEqual(48);
-    expect(text.fill).toEqual('#444');
+    expect(text.color).toEqual('#444');
     expect(text.align).toEqual('right');
   });
 
@@ -56,7 +56,7 @@ describe('Contrib -> components -> Text', () => {
       font: 'Arial',
       fontSize: 24,
       align: 'center',
-      fill: '#000',
+      color: '#000',
       opacity: 1,
       blending: 'normal',
       disabled: false,

@@ -15,7 +15,7 @@ export interface TextConfig {
   font: string;
   fontSize: number;
   align: TextAlign;
-  fill: string;
+  color: string;
   opacity: number;
   blending: BlendingMode;
   disabled: boolean;
@@ -28,7 +28,7 @@ export class Text extends Component {
   font: string;
   fontSize: number;
   align: TextAlign;
-  fill: string;
+  color: string;
   opacity: number;
   blending: BlendingMode;
   disabled: boolean;
@@ -43,7 +43,7 @@ export class Text extends Component {
     this.font = config.font;
     this.fontSize = config.fontSize;
     this.align = config.align;
-    this.fill = config.fill;
+    this.color = config.color;
     this.opacity = config.opacity;
     this.blending = config.blending;
     this.disabled = config.disabled;
@@ -57,7 +57,7 @@ export class Text extends Component {
       font: this.font,
       fontSize: this.fontSize,
       align: this.align,
-      fill: this.fill,
+      color: this.color,
       opacity: this.opacity,
       blending: this.blending,
       disabled: this.disabled,
