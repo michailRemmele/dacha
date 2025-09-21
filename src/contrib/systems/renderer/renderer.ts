@@ -1,4 +1,10 @@
-import { Application, Container, type ViewContainer, Color } from 'pixi.js';
+import {
+  Application,
+  Container,
+  type ViewContainer,
+  Color,
+  Assets,
+} from 'pixi.js';
 
 import {
   AddActor,
@@ -14,6 +20,7 @@ import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
 import { Shape } from '../../components/shape';
 import { PixiView } from '../../components/pixi-view';
+import { Text } from '../../components/text';
 import { Camera } from '../../components/camera';
 import { CameraService } from '../camera-system';
 import { CacheStore } from '../../../engine/data-lib';
@@ -28,9 +35,14 @@ import {
   sortByXAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
-import { loadImage, getAllSources } from './utils';
+import { loadImage, getAllImageSources, getAllFontSources } from './utils';
 import type { Sorting } from './types';
-import { SpriteBuilder, ShapeBuilder, PixiViewBuilder } from './builders';
+import {
+  SpriteBuilder,
+  ShapeBuilder,
+  PixiViewBuilder,
+  TextBuilder,
+} from './builders';
 import type { Builder } from './builders';
 import { SORTING_ORDER_MAPPING } from './consts';
 
@@ -90,6 +102,7 @@ export class Renderer extends WorldSystem {
     );
     this.builders.set(Shape.componentName, new ShapeBuilder());
     this.builders.set(PixiView.componentName, new PixiViewBuilder());
+    this.builders.set(Text.componentName, new TextBuilder());
 
     this.cameraService = world.getService(CameraService);
 
@@ -136,24 +149,32 @@ export class Renderer extends WorldSystem {
   }
 
   async onSceneLoad(scene: Scene): Promise<void> {
-    const allSources = [
-      ...getAllSources(this.templateCollection.getAll()),
-      ...getAllSources(scene.children),
+    const allImageSources = [
+      ...getAllImageSources(this.templateCollection.getAll()),
+      ...getAllImageSources(scene.children),
     ];
-    const uniqueSources = [...new Set(allSources)];
+    const uniqueImageSources = [...new Set(allImageSources)];
 
     const images = await Promise.all(
-      uniqueSources.map((src) => {
+      uniqueImageSources.map((src) => {
         return !this.imageStore.has(src) ? loadImage(src) : undefined;
       }),
     );
 
-    uniqueSources.forEach((src, index) => {
+    uniqueImageSources.forEach((src, index) => {
       if (images[index]) {
         this.imageStore.add(src, images[index]!);
       }
     });
-    allSources.forEach((src) => this.imageStore.retain(src));
+    allImageSources.forEach((src) => this.imageStore.retain(src));
+
+    const allFontSources = [
+      ...getAllFontSources(this.templateCollection.getAll()),
+      ...getAllFontSources(scene.children),
+    ];
+    const uniqueFontSources = [...new Set(allFontSources)];
+
+    await Assets.load(uniqueFontSources);
   }
 
   onSceneEnter(scene: Scene): void {
@@ -164,7 +185,8 @@ export class Renderer extends WorldSystem {
           actor.getComponent(Transform) &&
             (actor.getComponent(Sprite) ||
               actor.getComponent(Shape) ||
-              actor.getComponent(PixiView)),
+              actor.getComponent(PixiView) ||
+              actor.getComponent(Text)),
         ),
     });
 
@@ -201,8 +223,8 @@ export class Renderer extends WorldSystem {
 
   onSceneDestroy(scene: Scene): void {
     const allSources = [
-      ...getAllSources(this.templateCollection.getAll()),
-      ...getAllSources(scene.children),
+      ...getAllImageSources(this.templateCollection.getAll()),
+      ...getAllImageSources(scene.children),
     ];
 
     allSources.forEach((src) => this.imageStore.release(src));
@@ -226,6 +248,11 @@ export class Renderer extends WorldSystem {
           }
         });
       }
+    }
+
+    const text = actor.getComponent(Text);
+    if (text) {
+      Assets.load(text.font);
     }
 
     this.builders.forEach((builder) => {

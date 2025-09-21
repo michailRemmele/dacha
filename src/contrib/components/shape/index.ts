@@ -102,7 +102,7 @@ export class Shape extends Component {
       blending: this.blending,
       disabled: this.disabled,
       sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter,
+      sortCenter: this.sortCenter.slice(0) as [number, number],
       width: this.width,
       height: this.height,
       radius: this.radius,

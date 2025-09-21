@@ -31,7 +31,7 @@ export class PixiView extends Component {
     return new PixiView({
       buildView: this.buildView,
       sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter,
+      sortCenter: this.sortCenter.slice(0) as [number, number],
     });
   }
 }
