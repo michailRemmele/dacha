@@ -1,55 +1,77 @@
-import type { HTMLProps } from 'react'
+import type { HTMLProps } from 'react';
 
-export interface InputProps extends Omit<HTMLProps<HTMLInputElement>, 'size' | 'ref' | 'onChange'> {
-  value: string
-  onChange?: (value: string) => void
-  onAccept?: () => void
+export interface InputProps
+  extends Omit<HTMLProps<HTMLInputElement>, 'size' | 'ref' | 'onChange'> {
+  value: string;
+  onChange?: (value: string) => void;
+  onAccept?: () => void;
 }
 
 export interface SelectOption {
-  title: string
-  value: string | number
-  disabled?: boolean
+  title: string;
+  value: string | number;
+  disabled?: boolean;
 }
 
 export interface SelectProps extends InputProps {
-  options: SelectOption[] | string[] | number[]
-  allowEmpty?: boolean
+  options: SelectOption[] | string[] | number[];
+  allowEmpty?: boolean;
 }
 
-export interface MultiTextInputProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value: string[]
-  onChange?: (values: string[]) => void
+export interface MultiTextInputProps
+  extends Omit<InputProps, 'value' | 'onChange'> {
+  value: string[];
+  onChange?: (values: string[]) => void;
 }
 
-export interface MultiSelectProps extends Omit<InputProps, 'value' | 'onChange'> {
-  options: SelectOption[]
-  value: string[] | number[]
-  onChange?: (values: string[] | number[]) => void
+export interface MultiSelectProps
+  extends Omit<InputProps, 'value' | 'onChange'> {
+  options: SelectOption[];
+  value: string[] | number[];
+  onChange?: (values: string[] | number[]) => void;
 }
 
-export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'onInput'> {
-  value: number
-  onChange?: (value: number) => void
+export interface NumberInputProps
+  extends Omit<
+    InputProps,
+    'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'onInput'
+  > {
+  value: number;
+  onChange?: (value: number) => void;
 }
 
 export interface CheckboxProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value: boolean
-  onChange?: (value: boolean) => void
+  value: boolean;
+  onChange?: (value: boolean) => void;
 }
 
-export interface ColorInputProps extends Omit<InputProps, 'defaultValue' | 'color'> {
-  defaultValue: string
+export interface ColorInputProps
+  extends Omit<InputProps, 'defaultValue' | 'color'> {
+  defaultValue: string;
 }
 
 export interface FileInputProps extends InputProps {
-  extensions?: string[]
+  extensions?: string[];
 }
 
-export interface RangeInputProps extends Omit<InputProps, 'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'step'> {
-  value: number
-  onChange?: (value: number) => void
-  min: number
-  max: number
-  step: number
+export interface RangeInputProps
+  extends Omit<
+    InputProps,
+    'value' | 'onChange' | 'max' | 'min' | 'defaultValue' | 'step'
+  > {
+  value: number;
+  onChange?: (value: number) => void;
+  min: number;
+  max: number;
+  step: number;
+}
+
+export interface TextAreaProps
+  extends Omit<
+    HTMLProps<HTMLTextAreaElement>,
+    'size' | 'ref' | 'onChange' | 'onResize'
+  > {
+  value: string;
+  onChange?: (value: string) => void;
+  onAccept?: () => void;
 }

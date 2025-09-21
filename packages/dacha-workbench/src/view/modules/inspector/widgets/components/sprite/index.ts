@@ -29,12 +29,12 @@ export const sprite: WidgetSchema = {
     },
     {
       name: 'sortCenter.0',
-      title: 'components.sprite.sortCenterX.title',
+      title: 'components.renderable.sortCenterX.title',
       type: 'number',
     },
     {
       name: 'sortCenter.1',
-      title: 'components.sprite.sortCenterY.title',
+      title: 'components.renderable.sortCenterY.title',
       type: 'number',
     },
     {
