@@ -22,3 +22,4 @@ export { AudioSource } from './audio-source';
 export type { AudioSourceConfig } from './audio-source';
 export { Shape, type ShapeConfig } from './shape';
 export { PixiView } from './pixi-view';
+export { Text, type TextConfig } from './text';

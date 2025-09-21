@@ -1,4 +1,5 @@
 import { Sprite } from '../../components/sprite';
+import { Text } from '../../components/text';
 import type { Actor } from '../../../engine/actor';
 import type { Template } from '../../../engine/template';
 import { ResourceLoader } from '../../../engine/resource-loader';
@@ -22,7 +23,7 @@ export const loadImage = async (
   }
 };
 
-export const getAllSources = (actors: (Actor | Template)[]): string[] => {
+export const getAllImageSources = (actors: (Actor | Template)[]): string[] => {
   const sources: string[] = [];
 
   actors.forEach((actor) => {
@@ -30,6 +31,21 @@ export const getAllSources = (actors: (Actor | Template)[]): string[] => {
       const sprite = entity.getComponent(Sprite);
       if (sprite?.src) {
         sources.push(sprite.src);
+      }
+    });
+  });
+
+  return sources;
+};
+
+export const getAllFontSources = (actors: (Actor | Template)[]): string[] => {
+  const sources: string[] = [];
+
+  actors.forEach((actor) => {
+    traverseEntity(actor, (entity) => {
+      const text = entity.getComponent(Text);
+      if (text?.font) {
+        sources.push(text.font);
       }
     });
   });

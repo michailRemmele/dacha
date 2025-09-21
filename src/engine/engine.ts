@@ -31,24 +31,6 @@ export class Engine {
     this.options = options;
   }
 
-  private handleWindowBlur = (): void => {
-    this.gameLoop?.stop();
-  };
-
-  private handleWindowFocus = (): void => {
-    this.gameLoop?.run();
-  };
-
-  private addWindowListeners(): void {
-    window.addEventListener('blur', this.handleWindowBlur);
-    window.addEventListener('focus', this.handleWindowFocus);
-  }
-
-  private removeWindowListeners(): void {
-    window.removeEventListener('blur', this.handleWindowBlur);
-    window.removeEventListener('focus', this.handleWindowFocus);
-  }
-
   /**
    * Starts the engine. If the engine was already initialized, this resumes the
    * game loop and re-attaches window listeners. Otherwise, it bootstraps the
@@ -62,7 +44,6 @@ export class Engine {
   async play(): Promise<void> {
     if (this.sceneManager !== undefined && this.gameLoop !== undefined) {
       this.gameLoop.run();
-      this.addWindowListeners();
       return;
     }
 
@@ -134,26 +115,22 @@ export class Engine {
     );
 
     this.gameLoop.run();
-    this.addWindowListeners();
   }
 
   /**
-   * Pauses the engine by stopping the game loop and removing window listeners.
+   * Pauses the engine by stopping the game loop.
    * The world and scene state remain in memory so it can be resumed with `play`.
    */
   pause(): void {
     this.gameLoop?.stop();
-    this.removeWindowListeners();
   }
 
   /**
-   * Stops the engine completely by stopping the game loop, destroying the world,
-   * removing listeners, and clearing internal references.
+   * Stops the engine completely by stopping the game loop and destroying the world.
    */
   stop(): void {
     this.gameLoop?.stop();
     this.sceneManager?.destroyWorld();
-    this.removeWindowListeners();
 
     this.gameLoop = undefined;
     this.sceneManager = undefined;

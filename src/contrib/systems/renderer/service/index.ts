@@ -4,12 +4,13 @@ import { type ComponentConstructor } from '../../../../engine/component';
 import { Sprite } from '../../../components/sprite';
 import { Shape } from '../../../components/shape';
 import { PixiView } from '../../../components/pixi-view';
+import { Text } from '../../../components/text';
 import { Transform } from '../../../components/transform';
 import { type Actor } from '../../../../engine/actor';
 import { type SortFn } from '../sort';
 import { type Bounds, type ViewComponent } from '../types';
 
-const VIEW_COMPONENTS: ComponentConstructor[] = [Sprite, Shape, PixiView];
+const VIEW_COMPONENTS: ComponentConstructor[] = [Sprite, Shape, PixiView, Text];
 
 interface RendererServiceOptions {
   application: Application;
