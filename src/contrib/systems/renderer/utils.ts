@@ -1,5 +1,5 @@
 import { Sprite } from '../../components/sprite';
-import { Text } from '../../components/text';
+import { BitmapText } from '../../components/bitmap-text';
 import type { Actor } from '../../../engine/actor';
 import type { Template } from '../../../engine/template';
 import { ResourceLoader } from '../../../engine/resource-loader';
@@ -43,7 +43,7 @@ export const getAllFontSources = (actors: (Actor | Template)[]): string[] => {
 
   actors.forEach((actor) => {
     traverseEntity(actor, (entity) => {
-      const text = entity.getComponent(Text);
+      const text = entity.getComponent(BitmapText);
       if (text?.font) {
         sources.push(text.font);
       }
