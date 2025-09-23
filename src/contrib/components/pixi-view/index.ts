@@ -7,13 +7,13 @@ interface RenderData {
 }
 
 export interface PixiViewConfig {
-  buildView: () => ViewContainer;
+  createView: () => ViewContainer;
   sortingLayer: string;
   sortCenter: [number, number];
 }
 
 export class PixiView extends Component {
-  buildView: () => ViewContainer;
+  createView: () => ViewContainer;
   sortingLayer: string;
   sortCenter: [number, number];
 
@@ -22,14 +22,18 @@ export class PixiView extends Component {
   constructor(config: PixiViewConfig) {
     super();
 
-    this.buildView = config.buildView;
+    this.createView = config.createView;
     this.sortingLayer = config.sortingLayer;
     this.sortCenter = config.sortCenter;
   }
 
+  get view(): ViewContainer | undefined {
+    return this.renderData?.view;
+  }
+
   clone(): PixiView {
     return new PixiView({
-      buildView: this.buildView,
+      createView: this.createView,
       sortingLayer: this.sortingLayer,
       sortCenter: this.sortCenter.slice(0) as [number, number],
     });

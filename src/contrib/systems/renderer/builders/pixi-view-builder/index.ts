@@ -20,7 +20,7 @@ export class PixiViewBuilder implements Builder {
     }
 
     const { offsetX, offsetY } = actor.getComponent(Transform);
-    const view = pixiView.buildView();
+    const view = pixiView.createView();
 
     pixiView.renderData = { view };
     view.__dacha = {

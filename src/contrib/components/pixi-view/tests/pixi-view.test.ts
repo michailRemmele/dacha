@@ -9,7 +9,7 @@ import { PixiView } from '../index';
 describe('Contrib -> components -> PixiView', () => {
   it('Returns correct values ', () => {
     const pixiView = new PixiView({
-      buildView: (): ViewContainer => new Sprite(),
+      createView: (): ViewContainer => new Sprite(),
       sortingLayer: 'units',
       sortCenter: [0, 0],
     }).clone();
@@ -20,7 +20,7 @@ describe('Contrib -> components -> PixiView', () => {
 
   it('Correct updates values ', () => {
     const pixiView = new PixiView({
-      buildView: (): ViewContainer => new Sprite(),
+      createView: (): ViewContainer => new Sprite(),
       sortingLayer: 'units',
       sortCenter: [0, 0],
     }).clone();
@@ -34,7 +34,7 @@ describe('Contrib -> components -> PixiView', () => {
 
   it('Clones return deep copy of original component', () => {
     const originalShape = new PixiView({
-      buildView: (): ViewContainer => new Sprite(),
+      createView: (): ViewContainer => new Sprite(),
       sortingLayer: 'units',
       sortCenter: [0, 0],
     }).clone();

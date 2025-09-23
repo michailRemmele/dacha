@@ -20,7 +20,7 @@ import { Transform } from '../../components/transform';
 import { Sprite } from '../../components/sprite';
 import { Shape } from '../../components/shape';
 import { PixiView } from '../../components/pixi-view';
-import { Text } from '../../components/text';
+import { BitmapText } from '../../components/bitmap-text';
 import { Camera } from '../../components/camera';
 import { CameraService } from '../camera-system';
 import { CacheStore } from '../../../engine/data-lib';
@@ -41,7 +41,7 @@ import {
   SpriteBuilder,
   ShapeBuilder,
   PixiViewBuilder,
-  TextBuilder,
+  BitmapTextBuilder,
 } from './builders';
 import type { Builder } from './builders';
 import { SORTING_ORDER_MAPPING } from './consts';
@@ -102,7 +102,7 @@ export class Renderer extends WorldSystem {
     );
     this.builders.set(Shape.componentName, new ShapeBuilder());
     this.builders.set(PixiView.componentName, new PixiViewBuilder());
-    this.builders.set(Text.componentName, new TextBuilder());
+    this.builders.set(BitmapText.componentName, new BitmapTextBuilder());
 
     this.cameraService = world.getService(CameraService);
 
@@ -186,7 +186,7 @@ export class Renderer extends WorldSystem {
             (actor.getComponent(Sprite) ||
               actor.getComponent(Shape) ||
               actor.getComponent(PixiView) ||
-              actor.getComponent(Text)),
+              actor.getComponent(BitmapText)),
         ),
     });
 
@@ -250,7 +250,7 @@ export class Renderer extends WorldSystem {
       }
     }
 
-    const text = actor.getComponent(Text);
+    const text = actor.getComponent(BitmapText);
     if (text) {
       Assets.load(text.font);
     }

@@ -1,8 +1,8 @@
-import { Text } from '../index';
+import { BitmapText } from '../index';
 
-describe('Contrib -> components -> Text', () => {
+describe('Contrib -> components -> BitmapText', () => {
   it('Returns correct values ', () => {
-    const text = new Text({
+    const text = new BitmapText({
       text: 'Hello World',
       font: 'Arial',
       fontSize: 24,
@@ -28,7 +28,7 @@ describe('Contrib -> components -> Text', () => {
   });
 
   it('Correct updates values ', () => {
-    const text = new Text({
+    const text = new BitmapText({
       text: 'Hello World',
       font: 'Arial',
       fontSize: 24,
@@ -51,7 +51,7 @@ describe('Contrib -> components -> Text', () => {
   });
 
   it('Clones return deep copy of original component', () => {
-    const originalText = new Text({
+    const originalText = new BitmapText({
       text: 'Hello World',
       font: 'Arial',
       fontSize: 24,

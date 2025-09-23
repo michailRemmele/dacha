@@ -1,31 +1,31 @@
-import { BitmapText, Bounds, Assets, type BitmapFont } from 'pixi.js';
+import { BitmapText as PixiBitmapText, Bounds, Assets, type BitmapFont } from 'pixi.js';
 
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Transform } from '../../../../components/transform';
-import { Text } from '../../../../components/text';
+import { BitmapText } from '../../../../components/bitmap-text';
 import type { Actor } from '../../../../../engine/actor';
 import { floatEquals } from '../utils';
 
 import { filterUnsupportedChars } from './utils';
 
-export class TextBuilder implements Builder {
+export class BitmapTextBuilder implements Builder {
   destroy(actor: Actor): void {
-    const text = actor.getComponent(Text);
+    const text = actor.getComponent(BitmapText);
 
     text.renderData?.view.destroy();
     text.renderData = undefined;
   }
 
-  buildView(actor: Actor): BitmapText | undefined {
-    const text = actor.getComponent(Text);
+  buildView(actor: Actor): PixiBitmapText | undefined {
+    const text = actor.getComponent(BitmapText);
     if (!text) {
       return undefined;
     }
 
     const { offsetX, offsetY } = actor.getComponent(Transform);
 
-    const view = new BitmapText({
+    const view = new PixiBitmapText({
       anchor: 0.5,
       style: {
         fontFamily: 'sans-serif',
@@ -35,7 +35,7 @@ export class TextBuilder implements Builder {
     text.renderData = { view };
     view.__dacha = {
       actor,
-      builderKey: Text.componentName,
+      builderKey: BitmapText.componentName,
       viewComponent: text,
       bounds: new Bounds(offsetX, offsetY, offsetX, offsetY),
       meta: {},
@@ -47,7 +47,7 @@ export class TextBuilder implements Builder {
 
   updateView(actor: Actor): void {
     const transform = actor.getComponent(Transform);
-    const text = actor.getComponent(Text);
+    const text = actor.getComponent(BitmapText);
 
     if (!text) {
       return undefined;
@@ -76,7 +76,8 @@ export class TextBuilder implements Builder {
       view.__dacha.didChange = true;
     }
 
-    const font = Assets.get<BitmapFont | undefined>(text.font);
+    // @ts-expect-error, comment: In order to avoid warning spam if value is missing
+    const font = Assets.cache._cache.get(text.font) as BitmapFont | undefined;
     if (font && font.fontFamily !== meta.fontFamily) {
       view.style.fontFamily = font.fontFamily;
       meta.fontFamily = font.fontFamily;

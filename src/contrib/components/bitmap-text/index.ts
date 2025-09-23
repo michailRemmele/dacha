@@ -1,16 +1,16 @@
-import type { BitmapText } from 'pixi.js';
+import type { BitmapText as PixiBitmapText } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
 import { type BlendingMode } from '../../types/view';
 
 interface RenderData {
-  view: BitmapText;
+  view: PixiBitmapText;
   graphicsContextKey?: string;
 }
 
 type TextAlign = 'left' | 'center' | 'right';
 
-export interface TextConfig {
+export interface BitmapTextConfig {
   text: string;
   font: string;
   fontSize: number;
@@ -23,7 +23,7 @@ export interface TextConfig {
   sortCenter: [number, number];
 }
 
-export class Text extends Component {
+export class BitmapText extends Component {
   text: string;
   font: string;
   fontSize: number;
@@ -36,7 +36,7 @@ export class Text extends Component {
   sortCenter: [number, number];
   renderData?: RenderData;
 
-  constructor(config: TextConfig) {
+  constructor(config: BitmapTextConfig) {
     super();
 
     this.text = config.text;
@@ -51,8 +51,8 @@ export class Text extends Component {
     this.sortCenter = config.sortCenter;
   }
 
-  clone(): Text {
-    return new Text({
+  clone(): BitmapText {
+    return new BitmapText({
       text: this.text,
       font: this.font,
       fontSize: this.fontSize,
@@ -67,4 +67,4 @@ export class Text extends Component {
   }
 }
 
-Text.componentName = 'Text';
+BitmapText.componentName = 'BitmapText';
