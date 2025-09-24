@@ -1,13 +1,13 @@
 import type { Loader } from './loader';
 
 export class ImageLoader implements Loader {
-  private supportedExtensions: Array<string>;
+  private supportedExtensions: string[];
 
   constructor() {
     this.supportedExtensions = ['.png'];
   }
 
-  getSupportedExtensions(): Array<string> {
+  getSupportedExtensions(): string[] {
     return this.supportedExtensions;
   }
 

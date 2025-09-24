@@ -14,6 +14,7 @@ export type {
 export type {
   ActorCollectionFilter,
   ActorSpawner,
+  ActorQueryFilter,
 } from './engine/actor';
 export type {
   EventTarget,
@@ -27,7 +28,12 @@ export type { World } from './engine/world';
 
 export * as Animation from './contrib/components/animatable/types';
 
-export { Actor, ActorCollection, ActorCreator } from './engine/actor';
+export {
+  Actor,
+  ActorCollection,
+  ActorCreator,
+  ActorQuery,
+} from './engine/actor';
 export { TemplateCollection } from './engine/template';
 
 export * from './types/events';

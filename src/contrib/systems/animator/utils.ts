@@ -3,10 +3,9 @@ import { Actor } from '../../../engine/actor';
 const PATH_COMPONENTS = 'components';
 const PATH_CHILDREN = 'children';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const _getValue = (
   actor: Actor,
-  path: Array<string> | string,
+  path: string[] | string,
   pathDepth: number,
 ): unknown => {
   let soughtValue: unknown = actor;
@@ -14,7 +13,9 @@ const _getValue = (
   for (let i = 0; i < pathDepth && soughtValue !== undefined; i += 1) {
     if (soughtValue instanceof Actor && path[i] === PATH_CHILDREN) {
       i += 1;
-      soughtValue = soughtValue.children.find((child) => child.name === path[i]);
+      soughtValue = soughtValue.children.find(
+        (child) => child.name === path[i],
+      );
     } else if (soughtValue instanceof Actor && path[i] === PATH_COMPONENTS) {
       i += 1;
       soughtValue = soughtValue.getComponent(path[i]);
@@ -26,19 +27,23 @@ const _getValue = (
   return soughtValue;
 };
 
-export const getValue = (
-  actor: Actor,
-  path: Array<string> | string,
-): unknown => _getValue(actor, path, path.length);
+export const getValue = (actor: Actor, path: string[] | string): unknown =>
+  _getValue(actor, path, path.length);
 
-export const setValue = (actor: Actor, path: Array<string>, value: unknown): void => {
+export const setValue = (
+  actor: Actor,
+  path: string[],
+  value: unknown,
+): void => {
   const soughtValue: unknown = _getValue(actor, path, path.length - 1);
 
   if (!soughtValue) {
     return;
   }
   if (soughtValue instanceof Actor) {
-    throw new Error(`Can't set frame value for path: ${path.join('.')}. Setting value as actor property is restricted`);
+    throw new Error(
+      `Can't set frame value for path: ${path.join('.')}. Setting value as actor property is restricted`,
+    );
   }
 
   (soughtValue as Record<string, unknown>)[path[path.length - 1]] = value;

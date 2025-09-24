@@ -7,7 +7,7 @@ export class TemplateCollection {
   private components: Record<string, ComponentConstructor>;
   private storage: Record<string, Template>;
 
-  constructor(components: Array<ComponentConstructor>) {
+  constructor(components: ComponentConstructor[]) {
     this.components = components.reduce((acc, ComponentClass) => {
       acc[ComponentClass.componentName] = ComponentClass;
       return acc;
@@ -52,7 +52,7 @@ export class TemplateCollection {
     return this.storage[id].clone();
   }
 
-  getAll(): Array<Template> {
+  getAll(): Template[] {
     return Object.values(this.storage);
   }
 

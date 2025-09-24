@@ -5,7 +5,7 @@ import type { EntityOptions } from '../entity';
 export class Template extends Entity {
   private components: Record<string, Component>;
 
-  declare public readonly children: Array<Template>;
+  declare public readonly children: Template[];
 
   declare public parent: Template | null;
 
@@ -51,7 +51,7 @@ export class Template extends Entity {
     return this.components[componentClass.componentName] as T;
   }
 
-  getComponents(): Array<Component> {
+  getComponents(): Component[] {
     return Object.values(this.components);
   }
 

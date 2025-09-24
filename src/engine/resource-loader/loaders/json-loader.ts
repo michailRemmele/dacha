@@ -1,13 +1,13 @@
 import { Loader } from './loader';
 
 export class JsonLoader implements Loader {
-  private supportedExtensions: Array<string>;
+  private supportedExtensions: string[];
 
   constructor() {
     this.supportedExtensions = ['.json'];
   }
 
-  getSupportedExtensions(): Array<string> {
+  getSupportedExtensions(): string[] {
     return this.supportedExtensions;
   }
 

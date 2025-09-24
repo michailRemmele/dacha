@@ -29,7 +29,7 @@ export class Transform extends Component {
   }
 
   _getPropertyFromParent(name: string, defaultValue: number): number {
-    const parentComponent = this.getParentComponent() as Record<string, number> | void;
+    const parentComponent = this.getParentComponent() as Record<string, number> | undefined;
     return parentComponent ? parentComponent[name] : defaultValue;
   }
 

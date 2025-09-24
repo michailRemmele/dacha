@@ -8,7 +8,7 @@ export type ComponentConstructor<T extends Component = Component>
 export const findParentComponent = (
   actor: Actor,
   componentClass: ComponentConstructor,
-): Component | void => {
+): Component | undefined => {
   if (!actor.parent || actor.parent instanceof Scene) {
     return void 0;
   }
@@ -26,7 +26,7 @@ export abstract class Component {
     this.actor = void 0;
   }
 
-  getParentComponent(): Component | void {
+  getParentComponent(): Component | undefined {
     if (!this.actor) {
       return void 0;
     }

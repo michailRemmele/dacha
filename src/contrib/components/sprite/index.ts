@@ -1,24 +1,33 @@
-import { Component } from '../../../engine/component';
+import type { Sprite as PixiSprite, TilingSprite } from 'pixi.js';
 
-import { Material, MaterialConfig } from './material';
+import { Component } from '../../../engine/component';
+import { type BlendingMode } from '../../types/view';
+
+interface RenderData {
+  view: PixiSprite | TilingSprite;
+  textureSourceKey?: string;
+  textureArrayKey?: string;
+}
 
 type FitType = 'stretch' | 'repeat';
 
-export type { MaterialType, BasicMaterialOptions, BlendingMode } from './material';
+export { type BlendingMode } from '../../types/view';
 
 export interface SpriteConfig {
-  src: string
-  width: number
-  height: number
-  slice: number
-  rotation: number
-  flipX: boolean
-  flipY: boolean
-  disabled: boolean
-  sortingLayer: string
-  sortCenter: [number, number]
-  fit: FitType
-  material: MaterialConfig
+  src: string;
+  width: number;
+  height: number;
+  slice: number;
+  rotation: number;
+  flipX: boolean;
+  flipY: boolean;
+  sortingLayer: string;
+  sortCenter: [number, number];
+  fit: FitType;
+  color: string;
+  blending: BlendingMode;
+  opacity: number;
+  disabled: boolean;
 }
 
 export class Sprite extends Component {
@@ -33,8 +42,11 @@ export class Sprite extends Component {
   sortingLayer: string;
   sortCenter: [number, number];
   currentFrame?: number;
-  fit: FitType;
-  material: Material;
+  readonly fit: FitType;
+  color: string;
+  blending: BlendingMode;
+  opacity: number;
+  renderData?: RenderData;
 
   constructor(config: SpriteConfig) {
     super();
@@ -51,7 +63,9 @@ export class Sprite extends Component {
     this.sortingLayer = config.sortingLayer;
     this.sortCenter = config.sortCenter;
     this.fit = config.fit;
-    this.material = new Material(config.material);
+    this.color = config.color ?? '#ffffff';
+    this.blending = config.blending ?? 'normal';
+    this.opacity = config.opacity ?? 1;
   }
 
   clone(): Sprite {
@@ -67,7 +81,9 @@ export class Sprite extends Component {
       sortingLayer: this.sortingLayer,
       sortCenter: this.sortCenter.slice(0) as [number, number],
       fit: this.fit,
-      material: this.material,
+      color: this.color,
+      blending: this.blending,
+      opacity: this.opacity,
     });
   }
 }

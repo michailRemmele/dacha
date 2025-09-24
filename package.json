@@ -13,25 +13,28 @@
       "require": "./build/events/index.js",
       "import": "./build/events/index.js",
       "types": "./build/events/index.d.ts"
+    },
+    "./renderer": {
+      "types": "./build/contrib/systems/renderer/types.d.ts"
     }
   },
   "dependencies": {
-    "three": "0.151.3",
+    "pixi.js": "8.13.2",
     "uuid-random": "1.0.9"
   },
   "devDependencies": {
+    "@eslint/js": "9.31.0",
     "@types/jest": "29.5.11",
-    "@types/three": "0.150.2",
-    "@typescript-eslint/eslint-plugin": "6.18.1",
-    "@typescript-eslint/parser": "6.18.1",
-    "eslint": "7.32.0",
-    "eslint-config-airbnb-typescript": "17.1.0",
-    "eslint-import-resolver-typescript": "3.6.1",
-    "eslint-plugin-import": "2.27.5",
+    "eslint": "9.31.0",
+    "eslint-config-prettier": "10.1.5",
+    "eslint-plugin-import": "2.32.0",
+    "globals": "^16.3.0",
     "husky": "7.0.4",
     "jest": "29.7.0",
+    "prettier": "3.6.2",
     "ts-jest": "29.1.1",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "typescript-eslint": "8.37.0"
   },
   "sideEffects": false,
   "files": [
