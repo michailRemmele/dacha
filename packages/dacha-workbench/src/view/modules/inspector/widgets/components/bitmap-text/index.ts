@@ -13,7 +13,7 @@ export const bitmapText: WidgetSchema = {
     {
       name: 'font',
       type: 'file',
-      extensions: ['fnt', 'xml', 'txt'],
+      extensions: ['fnt', 'xml'],
     },
     {
       name: 'fontSize',
