@@ -21,7 +21,7 @@ interface PrevState {
 export class GridSystem extends SceneSystem {
   private mainActor: Actor;
   private gridActor: Actor;
-  private gridView: Graphics;
+  private gridView?: Graphics;
 
   private prevState: PrevState;
 
@@ -33,44 +33,49 @@ export class GridSystem extends SceneSystem {
     this.mainActor = world.data.mainActor as Actor;
     this.gridActor = this.mainActor.findChildById('grid')!;
 
-    this.gridView = new Graphics();
-    this.gridView.rect(-1, -1, 2, 2).fill({ color: 'transparent' });
-    this.gridView.filters = [
-      new Filter({
-        glProgram: new GlProgram({
-          fragment: getGridFragmentShader(),
-          vertex: defaultFilterVert,
-        }),
-        resources: {
-          myUniforms: {
-            u_graphic_resolution: {
-              type: 'vec2<f32>',
-              value: [0, 0],
-            },
-            u_spacing: {
-              type: 'f32',
-              value: 0,
-            },
-            u_camera_zoom: {
-              type: 'f32',
-              value: 1,
-            },
-            u_offset: {
-              type: 'vec2<f32>',
-              value: [0, 0],
-            },
-            u_line_color: {
-              type: 'vec4<f32>',
-              value: [1, 1, 1, 1],
-            },
-          },
-        },
-      }),
-    ];
-
     this.gridActor.setComponent(
       new PixiView({
-        buildView: (): Graphics => this.gridView,
+        createView: (): Graphics => {
+          const gridView = new Graphics();
+          gridView.rect(-1, -1, 2, 2).fill({ color: 'transparent' });
+          gridView.filters = [
+            new Filter({
+              glProgram: new GlProgram({
+                fragment: getGridFragmentShader(),
+                vertex: defaultFilterVert,
+              }),
+              resources: {
+                myUniforms: {
+                  u_graphic_resolution: {
+                    type: 'vec2<f32>',
+                    value: [0, 0],
+                  },
+                  u_spacing: {
+                    type: 'f32',
+                    value: 0,
+                  },
+                  u_camera_zoom: {
+                    type: 'f32',
+                    value: 1,
+                  },
+                  u_offset: {
+                    type: 'vec2<f32>',
+                    value: [0, 0],
+                  },
+                  u_line_color: {
+                    type: 'vec4<f32>',
+                    value: [1, 1, 1, 1],
+                  },
+                },
+              },
+            }),
+          ];
+
+          this.gridView = gridView;
+          this.handleWindowResize();
+
+          return gridView;
+        },
         sortingLayer: 'editor-layer-1',
         sortCenter: [0, 0],
       }),
@@ -81,10 +86,6 @@ export class GridSystem extends SceneSystem {
     window.addEventListener('resize', this.handleWindowResize);
   }
 
-  onSceneEnter(): void {
-    this.handleWindowResize();
-  }
-
   onWorldDestroy(): void {
     window.removeEventListener('resize', this.handleWindowResize);
   }
@@ -92,6 +93,10 @@ export class GridSystem extends SceneSystem {
   private handleWindowResize = (): void => {
     const { windowSizeX, windowSizeY, zoom } =
       this.mainActor.getComponent(Camera);
+
+    if (!this.gridView) {
+      return;
+    }
 
     const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
 
@@ -124,6 +129,10 @@ export class GridSystem extends SceneSystem {
   }
 
   private updateGridSettings(): void {
+    if (!this.gridView) {
+      return;
+    }
+
     const settings = this.mainActor.getComponent(Settings);
 
     const gridStep = settings.data.gridStep as number;
@@ -139,6 +148,10 @@ export class GridSystem extends SceneSystem {
   }
 
   update(): void {
+    if (!this.gridView) {
+      return;
+    }
+
     const settings = this.mainActor.getComponent(Settings);
     const showGrid = settings.data.showGrid as boolean;
 
