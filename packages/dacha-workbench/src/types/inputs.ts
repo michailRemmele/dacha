@@ -26,9 +26,9 @@ export interface MultiTextInputProps
 
 export interface MultiSelectProps
   extends Omit<InputProps, 'value' | 'onChange'> {
-  options: SelectOption[];
-  value: string[] | number[];
-  onChange?: (values: string[] | number[]) => void;
+  options: SelectOption[] | string[] | number[];
+  value: string[];
+  onChange?: (values: string[]) => void;
 }
 
 export interface NumberInputProps
