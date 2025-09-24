@@ -61,7 +61,7 @@ export const CanvasCoordinates: FC = () => {
     world.addEventListener(EventType.ToolCursorMove, handleCursorMove)
     world.addEventListener(EventType.ToolCursorLeave, handleCursorLeave)
 
-    return () => {
+    return (): void => {
       world.removeEventListener(EventType.SelectScene, handleSelectScene)
       world.removeEventListener(EventType.ToolCursorMove, handleCursorMove)
       world.removeEventListener(EventType.ToolCursorLeave, handleCursorLeave)

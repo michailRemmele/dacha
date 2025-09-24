@@ -1,6 +1,6 @@
 import {
   SceneSystem,
-  SpriteRendererService,
+  RendererService,
   ActorCollection,
   Transform,
 } from 'dacha'
@@ -27,6 +27,7 @@ import {
   updateFrameSize,
   updateAreaSize,
   getActorIdByPath,
+  getCurrentZoom,
 } from './utils'
 import type { SelectedActors, SelectionArea } from './types'
 
@@ -98,6 +99,7 @@ export class PointerToolSystem extends SceneSystem {
 
   private handleSelectScene = (event: SelectSceneEvent): void => {
     this.selectedActors.sceneId = event.sceneId
+    this.updateFrames()
   }
 
   private handleSelectEntities = (event: SelectEntitiesEvent): void => {
@@ -112,10 +114,8 @@ export class PointerToolSystem extends SceneSystem {
       return
     }
 
-    const {
-      screenX, screenY, x, y, nativeEvent,
-    } = event
-    const selectedActor = this.selectActor(screenX, screenY)
+    const { x, y, nativeEvent } = event
+    const selectedActor = this.selectActor(x, y)
 
     const shiftPick = nativeEvent.shiftKey
     const isWithinSelection = selectedActor
@@ -148,9 +148,6 @@ export class PointerToolSystem extends SceneSystem {
       const areaActor = this.actorSpawner.spawn('selectionArea')
       this.mainActor.appendChild(areaActor)
       this.selectionArea = {
-        size: {
-          x0: screenX, y0: screenY, x1: screenX, y1: screenY,
-        },
         sceneSize: {
           x0: x, y0: y, x1: x, y1: y,
         },
@@ -160,42 +157,40 @@ export class PointerToolSystem extends SceneSystem {
   }
 
   private handleSelectionMove = (event: MouseControlEvent): void => {
-    const {
-      screenX, screenY, x, y,
-    } = event
+    const { x, y } = event
 
     if (!this.selectionArea) {
       return
     }
 
-    this.selectionArea.size.x1 = screenX
-    this.selectionArea.size.y1 = screenY
     this.selectionArea.sceneSize.x1 = x
     this.selectionArea.sceneSize.y1 = y
 
-    updateAreaSize(this.selectionArea)
+    updateAreaSize(this.selectionArea, getCurrentZoom(this.world))
   }
 
   private handleSelectionMoveEnd = (event: MouseControlEvent): void => {
     const { sceneId, actorPaths } = this.selectedActors
-    const { screenX, screenY } = event
+    const { x, y } = event
 
     if (!sceneId || !this.selectionArea) {
       return
     }
 
-    const { size, area } = this.selectionArea
+    const { sceneSize, area } = this.selectionArea
 
-    size.x1 = screenX
-    size.y1 = screenY
+    sceneSize.x1 = x
+    sceneSize.y1 = y
 
-    const minX = Math.min(size.x0, size.x1)
-    const maxX = Math.max(size.x0, size.x1)
-    const minY = Math.min(size.y0, size.y1)
-    const maxY = Math.max(size.y0, size.y1)
+    const minX = Math.min(sceneSize.x0, sceneSize.x1)
+    const maxX = Math.max(sceneSize.x0, sceneSize.x1)
+    const minY = Math.min(sceneSize.y0, sceneSize.y1)
+    const maxY = Math.max(sceneSize.y0, sceneSize.y1)
 
-    const rendererService = this.world.getService(SpriteRendererService)
-    const actors = rendererService.intersectsWithRectangle(minX, minY, maxX, maxY)
+    const rendererService = this.world.getService(RendererService)
+    const actors = rendererService
+      .intersectsWithRectangle(minX, minY, maxX, maxY)
+      .filter((actor) => getAncestor(actor).id !== this.mainActor.id)
 
     const selectedActorIds = new Set(actorPaths.map((path) => getIdByPath(path)))
     const newSelection = actors.reduce((acc, actor) => {
@@ -223,7 +218,7 @@ export class PointerToolSystem extends SceneSystem {
   }
 
   private selectActor(x: number, y: number): Actor | undefined {
-    const rendererService = this.world.getService(SpriteRendererService)
+    const rendererService = this.world.getService(RendererService)
     return rendererService
       .intersectsWithPoint(x, y)
       .find((actor) => getAncestor(actor).id !== this.mainActor.id)
@@ -255,6 +250,8 @@ export class PointerToolSystem extends SceneSystem {
   }
 
   private updateFramesSize(): void {
+    const rendererService = this.world.getService(RendererService)
+
     this.selectedActors.frames.forEach((frame) => {
       const { selectedActorId } = frame.getComponent(Frame)
       if (!selectedActorId) {
@@ -266,7 +263,8 @@ export class PointerToolSystem extends SceneSystem {
         return
       }
 
-      updateFrameSize(frame, actor)
+      const bounds = rendererService.getBounds(actor)
+      updateFrameSize(frame, actor, bounds, getCurrentZoom(this.world))
     })
   }
 

@@ -30,7 +30,7 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
   const { t } = useTranslation()
   const { world } = useContext(EngineContext)
 
-  const templates = useConfig('templates') as Array<TemplateConfig>
+  const templates = useConfig('templates') as TemplateConfig[]
 
   const options = useMemo(() => templates.map((template) => ({
     label: template.name,

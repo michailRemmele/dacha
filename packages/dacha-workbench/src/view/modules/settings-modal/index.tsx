@@ -48,7 +48,7 @@ export const SettingsModal: FC = () => {
 
     world.addEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
 
-    return () => world.removeEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
+    return (): void => world.removeEventListener(EventType.SetSettingsValue, handleSettingsUpdate)
   }, [])
 
   if (type === undefined || settings === undefined) {

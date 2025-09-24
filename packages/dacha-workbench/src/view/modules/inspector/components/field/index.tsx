@@ -12,7 +12,7 @@ import { useConfig, useCommander } from '../../../../hooks'
 import { setValue as setValueCmd } from '../../../../commands'
 
 export interface FieldProps extends Omit<HTMLProps<HTMLElement>, 'onBlur' | 'onChange'> {
-  path: Array<string>
+  path: string[]
   onBlur?: (value: unknown) => void
   onChange?: (value: unknown) => void
   onAccept?: (value: unknown) => void

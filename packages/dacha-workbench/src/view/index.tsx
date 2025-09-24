@@ -1,11 +1,7 @@
-import { useContext } from 'react'
-import { App as DSApp } from 'antd'
+import { useContext } from 'react';
+import { App as DSApp } from 'antd';
 
-import {
-  CANVAS_ROOT,
-  SHAPE_CANVAS_ROOT,
-  GRID_ROOT,
-} from '../consts/root-nodes'
+import { CANVAS_ROOT } from '../consts/root-nodes';
 
 import {
   Explorer,
@@ -13,9 +9,9 @@ import {
   Toolbar,
   BottomBar,
   SettingsModal,
-} from './modules'
-import { useUnsavedChanges } from './hooks'
-import { EngineContext } from './providers'
+} from './modules';
+import { useUnsavedChanges } from './hooks';
+import { EngineContext } from './providers';
 import {
   EditorCSS,
   EditorMainStyled,
@@ -23,41 +19,26 @@ import {
   CanvasStyled,
   ToolbarStyled,
   InspectorStyled,
-  HelperCanvasRootCSS,
-} from './app.style'
+} from './app.style';
 
 export const App = (): JSX.Element => {
-  const context = useContext(EngineContext)
+  const context = useContext(EngineContext);
 
-  useUnsavedChanges()
+  useUnsavedChanges();
 
   return (
     <DSApp css={EditorCSS}>
       <EditorMainStyled>
-        <ExplorerStyled>
-          {context && <Explorer />}
-        </ExplorerStyled>
+        <ExplorerStyled>{context && <Explorer />}</ExplorerStyled>
         <CanvasStyled>
-          <ToolbarStyled>
-            {context && <Toolbar />}
-          </ToolbarStyled>
+          <ToolbarStyled>{context && <Toolbar />}</ToolbarStyled>
           <div id={CANVAS_ROOT} />
-          <div
-            id={GRID_ROOT}
-            css={HelperCanvasRootCSS}
-          />
-          <canvas
-            id={SHAPE_CANVAS_ROOT}
-            css={HelperCanvasRootCSS}
-          />
         </CanvasStyled>
-        <InspectorStyled>
-          {context && <Inspector />}
-        </InspectorStyled>
+        <InspectorStyled>{context && <Inspector />}</InspectorStyled>
       </EditorMainStyled>
       {context && <BottomBar />}
 
       {context && <SettingsModal />}
     </DSApp>
-  )
-}
+  );
+};

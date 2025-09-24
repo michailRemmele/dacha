@@ -2,7 +2,7 @@ import { ADD_VALUES } from '../../../command-types'
 import type { Command } from '../../hooks/use-commander'
 
 export const addValues = <T = unknown>(
-  path: Array<string>,
+  path: string[],
   values: T[],
   isEffect?: boolean,
 ): Command => ({

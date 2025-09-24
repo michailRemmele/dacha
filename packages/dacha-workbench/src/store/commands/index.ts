@@ -14,7 +14,7 @@ import { AddValueCmd } from './add-value'
 import { AddValuesCmd } from './add-values'
 import { DeleteByPathsCmd } from './delete-by-paths'
 
-export const commands: Record<string, { new(store: Store): Command }> = {
+export const commands: Record<string, new(store: Store) => Command> = {
   [SET]: SetCmd,
   [DELETE]: DeleteCmd,
   [ADD_VALUE]: AddValueCmd,

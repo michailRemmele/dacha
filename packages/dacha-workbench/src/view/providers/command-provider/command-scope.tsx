@@ -10,7 +10,7 @@ import { CommandContext } from './command-provider'
 
 interface CommandScopeProps {
   name?: string
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const CommandScopeContext = React.createContext<string>(ROOT_SCOPE)
@@ -24,12 +24,12 @@ export const CommandScopeProvider: FC<CommandScopeProps> = ({
   useEffect(() => {
     setActiveScope(name)
 
-    return () => {
+    return (): void => {
       setActiveScope(ROOT_SCOPE)
     }
   }, [name])
 
-  useEffect(() => () => {
+  useEffect(() => (): void => {
     store.clean({ scope: name })
   }, [])
 

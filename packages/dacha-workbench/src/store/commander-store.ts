@@ -13,7 +13,7 @@ interface HistoryOperationEffect {
 interface HistoryOperation {
   undo: () => void
   redo: () => void
-  effects: Array<HistoryOperationEffect>
+  effects: HistoryOperationEffect[]
 }
 
 interface CommandEvent {
@@ -30,8 +30,8 @@ interface CommandControlEvent {
 export class CommanderStore {
   private store: Store
   private commands: Record<string, Command>
-  private undoHistory: Record<string, Array<HistoryOperation>>
-  private redoHistory: Record<string, Array<HistoryOperation>>
+  private undoHistory: Record<string, HistoryOperation[]>
+  private redoHistory: Record<string, HistoryOperation[]>
 
   constructor(data: Data) {
     this.store = new Store(data)
@@ -45,7 +45,7 @@ export class CommanderStore {
     this.redoHistory = {}
   }
 
-  get(path: Array<string>): unknown {
+  get(path: string[]): unknown {
     return this.store.get(path)
   }
 

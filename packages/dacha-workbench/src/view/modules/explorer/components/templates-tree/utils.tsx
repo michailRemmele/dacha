@@ -6,7 +6,7 @@ import { getIdByPath } from '../../../../../utils/get-id-by-path'
 
 const parseTemplate = (
   template: TemplateConfig,
-  path: Array<string>,
+  path: string[],
   parent?: ExplorerDataNode,
 ): ExplorerDataNode => {
   const isLeaf = !template?.children?.length
@@ -32,10 +32,10 @@ const parseTemplate = (
 }
 
 export const parseTemplates = (
-  templates: Array<TemplateConfig>,
-): Array<ExplorerDataNode> => templates.map((template) => parseTemplate(template, ['templates']))
+  templates: TemplateConfig[],
+): ExplorerDataNode[] => templates.map((template) => parseTemplate(template, ['templates']))
 
-export const getInspectedKey = (path?: Array<string>): string | undefined => {
+export const getInspectedKey = (path?: string[]): string | undefined => {
   if (!path || path[0] !== 'templates') {
     return void ''
   }
@@ -47,9 +47,9 @@ export const getSelectedPaths = (paths: string[][]): string[][] => paths
   .filter((path) => path[0] === 'templates')
 
 export const filterActors = (
-  actors: Array<ActorConfig>,
+  actors: ActorConfig[],
   templateId: string,
-): Array<ActorConfig> => actors.reduce((acc, actor) => {
+): ActorConfig[] => actors.reduce((acc, actor) => {
   if (actor.templateId !== templateId) {
     acc.push(actor)
   }
@@ -59,7 +59,7 @@ export const filterActors = (
   }
 
   return acc
-}, [] as Array<ActorConfig>)
+}, [] as ActorConfig[])
 
 export const filterScenes = (
   scenes: SceneConfig[],

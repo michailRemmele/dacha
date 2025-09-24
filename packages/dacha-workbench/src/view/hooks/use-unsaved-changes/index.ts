@@ -38,7 +38,7 @@ export const useUnsavedChanges = (): void => {
     }
 
     window.addEventListener('beforeunload', handleUnload)
-    return () => window.removeEventListener('beforeunload', handleUnload)
+    return (): void => window.removeEventListener('beforeunload', handleUnload)
   }, [])
 
   useEffect(() => {
@@ -48,12 +48,12 @@ export const useUnsavedChanges = (): void => {
     }
 
     window.addEventListener('blur', handleBlur)
-    return () => window.removeEventListener('blur', handleBlur)
+    return (): void => window.removeEventListener('blur', handleBlur)
   }, [])
 
   useEffect(() => {
     if (!context) {
-      return () => {}
+      return (): void => {}
     }
 
     const { world } = context
@@ -67,6 +67,6 @@ export const useUnsavedChanges = (): void => {
 
     world.addEventListener(EventType.SaveProject, handleGameStateUpdate)
 
-    return () => world.removeEventListener(EventType.SaveProject, handleGameStateUpdate)
+    return (): void => world.removeEventListener(EventType.SaveProject, handleGameStateUpdate)
   }, [context])
 }

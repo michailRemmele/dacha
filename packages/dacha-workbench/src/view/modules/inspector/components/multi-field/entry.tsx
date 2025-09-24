@@ -52,7 +52,7 @@ const TYPES_INITIAL_VALUES_MAP = {
 }
 
 interface MultiFieldEntryProps {
-  path: Array<string>
+  path: string[]
   order: number
   id: string
   type: MultiFieldEntryType

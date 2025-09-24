@@ -90,7 +90,7 @@ export const Tree: FC<TreeProps> = ({
   const selectedKeys = useMemo(() => selectedPaths?.map(getIdByPath), [selectedPaths])
 
   const handleExpand = useCallback<ExpandFn>((keys) => {
-    setExpandedKeys(keys as Array<string>)
+    setExpandedKeys(keys as string[])
   }, [])
 
   const handleSelect = useCallback<SelectFn<ExplorerDataNode>>((keys, info) => {
@@ -117,6 +117,9 @@ export const Tree: FC<TreeProps> = ({
     const destinationPath = node.path.concat(childrenField)
 
     if (sourcePaths.some((path) => arraysEqual(path.slice(0, -1), destinationPath))) {
+      return
+    }
+    if (sourcePaths.some((path) => arraysEqual(path, node.path))) {
       return
     }
 

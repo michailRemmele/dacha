@@ -10,7 +10,7 @@ interface ModalProps {
   open: boolean
   onCancel: () => void
   width?: string | number
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const Modal: FC<ModalProps> = ({
@@ -28,7 +28,7 @@ export const Modal: FC<ModalProps> = ({
     onCancel={onCancel}
     footer={null}
     centered
-    destroyOnClose
+    destroyOnHidden
   >
     <CommandScopeProvider name={MODAL_SCOPE}>
       <HotkeysScopeProvider name={MODAL_SCOPE}>

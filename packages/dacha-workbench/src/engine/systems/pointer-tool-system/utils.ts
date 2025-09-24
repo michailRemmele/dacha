@@ -1,105 +1,102 @@
 import {
-  MathOps,
   Transform,
-  Sprite,
+  Shape,
   Actor,
-} from 'dacha'
+  Camera,
+  CameraService,
+  type World,
+} from 'dacha';
+import { type Bounds } from 'dacha/renderer';
 
-import { Shape } from '../../components/shape'
-import type { RectangleShape } from '../../components/shape'
-import { getIdByPath } from '../../../utils/get-id-by-path'
+import { getIdByPath } from '../../../utils/get-id-by-path';
 
-import type { SelectionArea } from './types'
-import { SCENE_PATH_LEGTH } from './consts'
+import type { SelectionArea } from './types';
+import {
+  SCENE_PATH_LEGTH,
+  FRAME_STROKE_WIDTH,
+  AREA_STROKE_WIDTH,
+} from './consts';
 
-const accumulatePath = (actor: Actor, path: Array<string>): void => {
-  path.unshift(`id:${actor.id}`)
+const accumulatePath = (actor: Actor, path: string[]): void => {
+  path.unshift(`id:${actor.id}`);
 
   if (actor.parent instanceof Actor) {
-    path.unshift('children')
-    accumulatePath(actor.parent, path)
+    path.unshift('children');
+    accumulatePath(actor.parent, path);
   }
-}
+};
 
-export const buildActorPath = (actor: Actor, sceneId: string): Array<string> => {
-  const path: Array<string> = []
+export const buildActorPath = (actor: Actor, sceneId: string): string[] => {
+  const path: string[] = [];
 
-  accumulatePath(actor, path)
-  path.unshift('scenes', `id:${sceneId}`, 'actors')
+  accumulatePath(actor, path);
+  path.unshift('scenes', `id:${sceneId}`, 'actors');
 
-  return path
-}
+  return path;
+};
 
-const getAngle = (rotation: number): number => {
-  const normalizedAngle = Math.abs(rotation) % 180
-  const acuteAngle = Math.min(normalizedAngle, 180 - normalizedAngle)
+export const updateFrameSize = (
+  frame: Actor,
+  actor: Actor,
+  bounds: Bounds,
+  zoom: number,
+): void => {
+  const frameTransform = frame.getComponent(Transform);
+  const frameShape = frame.getComponent(Shape);
 
-  return MathOps.degToRad(acuteAngle)
-}
+  const actorTransform = actor.getComponent(Transform);
 
-export const updateFrameSize = (frame: Actor, actor: Actor): void => {
-  const sprite = actor.getComponent(Sprite)
-  const transform = actor.getComponent(Transform)
+  frameTransform.offsetX = actorTransform.offsetX;
+  frameTransform.offsetY = actorTransform.offsetY;
+  frameShape.width = bounds.width;
+  frameShape.height = bounds.height;
+  frameShape.strokeWidth = FRAME_STROKE_WIDTH / zoom;
+};
 
-  let offsetX = 0
-  let offsetY = 0
-  let rotation = 0
-  let width = 0
-  let height = 0
-  if (
-    sprite !== undefined
-    && sprite.width !== 0
-    && sprite.height !== 0
-    && transform !== undefined
-  ) {
-    offsetX = transform.offsetX
-    offsetY = transform.offsetY
-    rotation = getAngle(transform.rotation)
+export const updateAreaSize = (
+  selectionArea: SelectionArea,
+  zoom: number,
+): void => {
+  const { sceneSize, area } = selectionArea;
 
-    // Need to perform scale before rotation since main renderer has the same order
-    width = sprite.width * transform.scaleX
-    height = sprite.height * transform.scaleY
-  }
+  const transform = area.getComponent(Transform);
+  const shape = area.getComponent(Shape);
 
-  const frameTransform = frame.getComponent(Transform)
-  const frameShape = frame.getComponent(Shape)
-  const properties = frameShape.properties as RectangleShape
-
-  frameTransform.offsetX = offsetX
-  frameTransform.offsetY = offsetY
-  properties.width = Math.cos(rotation) * width + Math.sin(rotation) * height
-  properties.height = Math.sin(rotation) * width + Math.cos(rotation) * height
-}
-
-export const updateAreaSize = (selectionArea: SelectionArea): void => {
-  const { sceneSize, area } = selectionArea
-
-  const transform = area.getComponent(Transform)
-  const shape = area.getComponent(Shape)
-  const properties = shape.properties as RectangleShape
-
-  transform.offsetX = (sceneSize.x0 + sceneSize.x1) / 2
-  transform.offsetY = (sceneSize.y0 + sceneSize.y1) / 2
-  properties.width = Math.abs(sceneSize.x0 - sceneSize.x1)
-  properties.height = Math.abs(sceneSize.y0 - sceneSize.y1)
-}
+  transform.offsetX = (sceneSize.x0 + sceneSize.x1) / 2;
+  transform.offsetY = (sceneSize.y0 + sceneSize.y1) / 2;
+  shape.width = Math.abs(sceneSize.x0 - sceneSize.x1);
+  shape.height = Math.abs(sceneSize.y0 - sceneSize.y1);
+  shape.strokeWidth = AREA_STROKE_WIDTH / zoom;
+};
 
 export const getActorIdByPath = (
   path: string[],
   currentSceneId: string | undefined,
 ): string | undefined => {
   if (!currentSceneId) {
-    return undefined
+    return undefined;
   }
 
-  if (path !== undefined && path[0] === 'scenes' && path.length > SCENE_PATH_LEGTH) {
-    const sceneId = getIdByPath([path[1]])
+  if (
+    path !== undefined &&
+    path[0] === 'scenes' &&
+    path.length > SCENE_PATH_LEGTH
+  ) {
+    const sceneId = getIdByPath([path[1]]);
 
     if (sceneId !== currentSceneId) {
-      return undefined
+      return undefined;
     }
 
-    return getIdByPath(path)
+    return getIdByPath(path);
   }
-  return undefined
-}
+  return undefined;
+};
+
+export const getCurrentZoom = (world: World): number => {
+  const cameraService = world.getService(CameraService);
+  const cameraActor = cameraService.getCurrentCamera();
+  const camera = cameraActor?.getComponent(Camera);
+
+  return camera?.zoom ?? 1;
+};

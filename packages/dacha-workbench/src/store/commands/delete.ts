@@ -3,7 +3,7 @@ import { Command } from './command'
 import type { DataValue } from '../types'
 
 interface DeleteCommandOptions {
-  path: Array<string>
+  path: string[]
 }
 
 export class DeleteCmd extends Command {

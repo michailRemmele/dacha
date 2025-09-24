@@ -8,12 +8,6 @@ export interface SelectedActors {
 
 export interface SelectionArea {
   area: Actor
-  size: {
-    x0: number
-    y0: number
-    x1: number
-    y1: number
-  }
   sceneSize: {
     x0: number
     y0: number

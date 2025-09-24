@@ -197,14 +197,9 @@
                 "flipY": false,
                 "sortingLayer": "terrain",
                 "fit": "repeat",
-                "material": {
-                  "type": "basic",
-                  "options": {
-                    "blending": "normal",
-                    "color": "#fff",
-                    "opacity": 1
-                  }
-                }
+                "blending": "normal",
+                "color": "#fff",
+                "opacity": 1
               }
             }
           ]
@@ -241,14 +236,9 @@
                 "flipY": false,
                 "sortingLayer": "background",
                 "fit": "repeat",
-                "material": {
-                  "type": "basic",
-                  "options": {
-                    "blending": "normal",
-                    "color": "#fff",
-                    "opacity": 1
-                  }
-                }
+                "blending": "normal",
+                "color": "#fff",
+                "opacity": 1
               }
             }
           ]
@@ -294,14 +284,9 @@
                 "flipY": false,
                 "sortingLayer": "units",
                 "fit": "stretch",
-                "material": {
-                  "type": "basic",
-                  "options": {
-                    "blending": "normal",
-                    "color": "#fff",
-                    "opacity": 1
-                  }
-                }
+                "blending": "normal",
+                "color": "#fff",
+                "opacity": 1
               }
             }
           ]
@@ -333,7 +318,7 @@
       "options": {}
     },
     {
-      "name": "SpriteRenderer",
+      "name": "Renderer",
       "options": {
         "windowNodeId": "root",
         "backgroundColor": "#000"
@@ -414,14 +399,9 @@
             "flipY": false,
             "sortingLayer": "units",
             "fit": "stretch",
-            "material": {
-              "type": "basic",
-              "options": {
-                "blending": "normal",
-                "color": "#fff",
-                "opacity": 1
-              }
-            }
+            "blending": "normal",
+            "color": "rgba(255,255,255,0.55)",
+            "opacity": 1
           }
         },
         {
@@ -739,14 +719,9 @@
             "flipY": false,
             "sortingLayer": "background",
             "fit": "repeat",
-            "material": {
-              "type": "basic",
-              "options": {
-                "blending": "normal",
-                "color": "#fff",
-                "opacity": 1
-              }
-            }
+            "blending": "normal",
+            "color": "#fff",
+            "opacity": 1
           }
         }
       ],
@@ -783,14 +758,9 @@
             "flipY": false,
             "sortingLayer": "terrain",
             "fit": "repeat",
-            "material": {
-              "type": "basic",
-              "options": {
-                "blending": "normal",
-                "color": "#fff",
-                "opacity": 1
-              }
-            }
+            "blending": "normal",
+            "color": "#fff",
+            "opacity": 1
           }
         }
       ],
@@ -816,8 +786,9 @@
       }
     },
     {
-      "name": "sortingLayers",
+      "name": "sorting",
       "options": {
+        "order": "topLeft",
         "layers": [
           {
             "id": "3e260430-1938-452d-ad2e-fdf72cf49a0a",

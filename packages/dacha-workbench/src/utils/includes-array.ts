@@ -1,7 +1,7 @@
 /**
  * Checks if array includes subarray from zero index
  */
-export const includesArray = (array?: Array<unknown>, subarray?: Array<unknown>): boolean => {
+export const includesArray = (array?: unknown[], subarray?: unknown[]): boolean => {
   if (!Array.isArray(array) || !Array.isArray(subarray)) {
     return false
   }

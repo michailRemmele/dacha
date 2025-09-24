@@ -4,7 +4,7 @@ const path = require('path')
 const fs = require('fs')
 const os = require('os')
 const { execSync } = require('child_process')
-const packager = require('electron-packager')
+const packager = require('@electron/packager')
 
 // const getAppIconPath = require('./utils/get-app-icon-path')
 const buildPackage = require('./utils/build-package')

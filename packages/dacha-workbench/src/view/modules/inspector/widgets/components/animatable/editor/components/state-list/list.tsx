@@ -39,7 +39,7 @@ export const List: FC<StateListProps> = ({ onDrop }) => {
 
   const initialState = useConfig(initialStatePath) as string
 
-  const states = useConfig(statesPath) as Array<Animation.StateConfig>
+  const states = useConfig(statesPath) as Animation.StateConfig[]
 
   const treeData = useMemo(() => parseStates(
     states,

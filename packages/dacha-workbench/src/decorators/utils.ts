@@ -1,6 +1,5 @@
 import type { Field, FieldType } from '../types/widget-schema'
-
-import type { Constructor } from './types'
+import { type Constructor } from '../types/engine'
 
 export const defineMetaProperty = (
   constructor: Constructor<unknown>,

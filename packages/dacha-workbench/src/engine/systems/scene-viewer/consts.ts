@@ -1,11 +1,3 @@
-import {
-  Transform,
-  Sprite,
-  Light,
-} from 'dacha'
+import { Transform, Sprite, Shape, BitmapText } from 'dacha';
 
-export const ALLOWED_COMPONENTS = [
-  Transform,
-  Sprite,
-  Light,
-]
+export const ALLOWED_COMPONENTS = [Transform, Sprite, Shape, BitmapText];

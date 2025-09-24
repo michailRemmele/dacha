@@ -18,7 +18,7 @@ export const UpdateIndicator: FC = () => {
     const unsubscribeBuildStart = window.electron.onExtensionBuildStart(handleBuildStart)
     const unsubscribeBuildEnd = window.electron.onExtensionBuildEnd(handleBuildEnd)
 
-    return () => {
+    return (): void => {
       unsubscribeBuildStart()
       unsubscribeBuildEnd()
     }

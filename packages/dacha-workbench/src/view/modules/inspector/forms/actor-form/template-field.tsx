@@ -19,7 +19,7 @@ import { parseTemplatePath } from './utils'
 import { SpaceCompactCSS, ButtonCSS } from './actor-form.style'
 
 interface TemplateFieldProps {
-  path: Array<string>
+  path: string[]
 }
 
 export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {

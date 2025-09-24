@@ -8,7 +8,7 @@ import type {
 import type { CommanderStore } from '../../../../store'
 
 export interface WatcherOptions {
-  path: Array<string>,
+  path: string[],
   store: CommanderStore,
   editorScene: Scene,
   actorCollection: ActorCollection,

@@ -8,7 +8,7 @@ interface AddValuesCommandOptions {
 }
 
 export class AddValuesCmd extends Command {
-  execute(options: unknown): (() => void) | void {
+  execute(options: unknown): (() => void) | undefined {
     const { path } = options as AddValuesCommandOptions
     const values = (options as AddValuesCommandOptions).values as DataValue
 
@@ -25,7 +25,7 @@ export class AddValuesCmd extends Command {
     )
 
     return () => {
-      const modifiedArray = this.store.get(path) as Array<DataValue>
+      const modifiedArray = this.store.get(path) as DataValue[]
       this.store.set(path, modifiedArray.slice(0, Array.isArray(values) ? -values.length : -1))
     }
   }

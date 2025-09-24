@@ -8,8 +8,13 @@ export const TreeCSS = (): SerializedStyles => {
       opacity: 0.5;
     }
 
-    &.ant-tree.ant-tree-directory .ant-tree-treenode.ant-tree-treenode-draggable.drop-target::before {
+    &.ant-tree.ant-tree-directory .ant-tree-treenode.ant-tree-treenode-draggable .ant-tree-node-content-wrapper:has(.ant-tree-drop-indicator) {
+      position: static;
+    }
+
+    &.ant-tree.ant-tree-directory .ant-tree-treenode.ant-tree-treenode-draggable.drop-target .ant-tree-node-content-wrapper::before {
       background-color: ${theme.colorInfoBgHover};
+      border-radius: ${theme.borderRadius}px;
     }
 
     &.ant-tree.ant-tree-directory .ant-tree-drop-indicator {
