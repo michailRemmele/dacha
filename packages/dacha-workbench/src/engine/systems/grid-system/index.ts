@@ -2,86 +2,180 @@ import {
   SceneSystem,
   Transform,
   Camera,
-} from 'dacha'
-import type {
-  World,
-  SceneSystemOptions,
-  Actor,
-} from 'dacha'
+  PixiView,
+  type SceneSystemOptions,
+  type Actor,
+} from 'dacha';
+import { Graphics, Filter, GlProgram, defaultFilterVert, Color } from 'pixi.js';
 
-import { EventType } from '../../../events'
-import type { SelectSceneEvent } from '../../../events'
-import { GRID_ROOT } from '../../../consts/root-nodes'
-import { Settings } from '../../components'
-import type { CommanderStore } from '../../../store'
-import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
+import { Settings } from '../../components';
+
+import { getGridFragmentShader } from './utils';
+
+interface PrevState {
+  gridStep?: number;
+  gridColor?: string;
+  zoom?: number;
+}
 
 export class GridSystem extends SceneSystem {
-  private world: World
-  private configStore: CommanderStore
+  private mainActor: Actor;
+  private gridActor: Actor;
+  private gridView?: Graphics;
 
-  private mainActor: Actor
-  private selectedSceneId?: string
-  private gridNode: HTMLDivElement
-
-  private showGrid: boolean
+  private prevState: PrevState;
 
   constructor(options: SceneSystemOptions) {
-    super()
+    super();
 
-    const { world } = options
+    const { world } = options;
 
-    this.world = world
-    this.configStore = world.data.configStore as CommanderStore
-    this.mainActor = world.data.mainActor as Actor
-    this.gridNode = document.getElementById(GRID_ROOT) as HTMLDivElement
+    this.mainActor = world.data.mainActor as Actor;
+    this.gridActor = this.mainActor.findChildById('grid')!;
 
-    this.selectedSceneId = getSavedSelectedSceneId(this.configStore)
+    this.gridActor.setComponent(
+      new PixiView({
+        createView: (): Graphics => {
+          const gridView = new Graphics();
+          gridView.rect(-1, -1, 2, 2).fill({ color: 'transparent' });
+          gridView.filters = [
+            new Filter({
+              glProgram: new GlProgram({
+                fragment: getGridFragmentShader(),
+                vertex: defaultFilterVert,
+              }),
+              resources: {
+                myUniforms: {
+                  u_graphic_resolution: {
+                    type: 'vec2<f32>',
+                    value: [0, 0],
+                  },
+                  u_spacing: {
+                    type: 'f32',
+                    value: 0,
+                  },
+                  u_camera_zoom: {
+                    type: 'f32',
+                    value: 1,
+                  },
+                  u_offset: {
+                    type: 'vec2<f32>',
+                    value: [0, 0],
+                  },
+                  u_line_color: {
+                    type: 'vec4<f32>',
+                    value: [1, 1, 1, 1],
+                  },
+                },
+              },
+            }),
+          ];
 
-    this.showGrid = false
+          this.gridView = gridView;
+          this.handleWindowResize();
 
-    this.world.addEventListener(EventType.SelectScene, this.handleSceneChange)
+          return gridView;
+        },
+        sortingLayer: 'editor-layer-1',
+        sortCenter: [0, 0],
+      }),
+    );
+
+    this.prevState = {};
+
+    window.addEventListener('resize', this.handleWindowResize);
   }
 
-  onSceneDestroy(): void {
-    this.world.removeEventListener(EventType.SelectScene, this.handleSceneChange)
+  onWorldDestroy(): void {
+    window.removeEventListener('resize', this.handleWindowResize);
   }
 
-  private handleSceneChange = (event: SelectSceneEvent): void => {
-    const { sceneId } = event
-    this.selectedSceneId = sceneId
+  private handleWindowResize = (): void => {
+    const { windowSizeX, windowSizeY, zoom } =
+      this.mainActor.getComponent(Camera);
+
+    if (!this.gridView) {
+      return;
+    }
+
+    const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
+
+    uniforms.u_graphic_resolution = [windowSizeX, windowSizeY];
+    this.gridView.setSize(windowSizeX / zoom, windowSizeY / zoom);
+  };
+
+  private isGridChanged(): boolean {
+    const settings = this.mainActor.getComponent(Settings);
+
+    const gridStep = settings.data.gridStep as number;
+    const gridColor = settings.data.gridColor as string;
+
+    const { zoom } = this.mainActor.getComponent(Camera);
+
+    let isChanged = false;
+
+    if (
+      zoom !== this.prevState.zoom ||
+      gridStep !== this.prevState.gridStep ||
+      gridColor !== this.prevState.gridColor
+    ) {
+      isChanged = true;
+      this.prevState.zoom = zoom;
+      this.prevState.gridStep = gridStep;
+      this.prevState.gridColor = gridColor;
+    }
+
+    return isChanged;
+  }
+
+  private updateGridSettings(): void {
+    if (!this.gridView) {
+      return;
+    }
+
+    const settings = this.mainActor.getComponent(Settings);
+
+    const gridStep = settings.data.gridStep as number;
+    const gridColor = settings.data.gridColor as string;
+
+    const { zoom } = this.mainActor.getComponent(Camera);
+
+    const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
+
+    uniforms.u_camera_zoom = zoom * devicePixelRatio;
+    uniforms.u_spacing = gridStep;
+    uniforms.u_line_color = new Color(gridColor).toArray();
   }
 
   update(): void {
-    const {
-      data: { gridStep, showGrid, gridColor },
-    } = this.mainActor.getComponent(Settings)
-
-    if (this.selectedSceneId === undefined || !showGrid) {
-      if (this.showGrid) {
-        this.gridNode.setAttribute('style', '')
-        this.showGrid = false
-      }
-      return
+    if (!this.gridView) {
+      return;
     }
 
-    this.showGrid = true
+    const settings = this.mainActor.getComponent(Settings);
+    const showGrid = settings.data.showGrid as boolean;
 
-    const transform = this.mainActor.getComponent(Transform)
-    const { zoom } = this.mainActor.getComponent(Camera)
+    this.gridView.renderable = showGrid;
 
-    const offsetX = ((gridStep as number) / 2 - transform.offsetX) * zoom
-    const offsetY = ((gridStep as number) / 2 - transform.offsetY) * zoom
+    if (!showGrid) {
+      return;
+    }
 
-    const scale = (gridStep as number) * zoom
+    const { zoom, windowSizeX, windowSizeY } =
+      this.mainActor.getComponent(Camera);
+    const { offsetX, offsetY } = this.gridActor.getComponent(Transform);
 
-    this.gridNode.style.backgroundImage = `
-      repeating-linear-gradient(${gridColor as string} 0 1px, transparent 1px 100%),
-      repeating-linear-gradient(90deg, ${gridColor as string} 0 1px, transparent 1px 100%)
-    `
-    this.gridNode.style.backgroundSize = `${scale}px ${scale}px`
-    this.gridNode.style.backgroundPosition = `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`
+    this.gridView.position.set(offsetX, offsetY);
+
+    const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
+    uniforms.u_offset = [offsetX, offsetY];
+
+    const shouldUpdateGrid = this.isGridChanged();
+    if (shouldUpdateGrid) {
+      this.gridView.setSize(windowSizeX / zoom, windowSizeY / zoom);
+      this.updateGridSettings();
+    }
   }
 }
 
-GridSystem.systemName = 'GridSystem'
+GridSystem.systemName = 'GridSystem';

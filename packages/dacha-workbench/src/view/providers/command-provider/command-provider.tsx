@@ -11,7 +11,7 @@ import { ROOT_SCOPE } from '../../../consts/scopes'
 type OperationType = 'undo' | 'redo'
 
 interface UndoRedoProviderProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 interface CommandContextProps {
@@ -33,7 +33,7 @@ export const CommandProvider = ({
   const [activeScope, setActiveScope] = useState(ROOT_SCOPE)
 
   useEffect(() => {
-    const handleOperation = (operation: OperationType) => () => {
+    const handleOperation = (operation: OperationType) => (): void => {
       const { activeElement } = document
       if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
         document.execCommand(operation)
@@ -46,7 +46,7 @@ export const CommandProvider = ({
     const undoUnsubscribe = window.electron.onUndo(handleOperation('undo'))
     const redoUnsubscribe = window.electron.onRedo(handleOperation('redo'))
 
-    return () => {
+    return (): void => {
       undoUnsubscribe()
       redoUnsubscribe()
     }

@@ -1,0 +1,57 @@
+import { useMemo, useCallback, FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+
+import { LabelledTextInput } from '../../../components/text-input';
+import { Field } from '../../../components/field';
+import { useCommander } from '../../../../../hooks';
+import { deleteValue } from '../../../../../commands';
+
+import {
+  LayerStyled,
+  FieldWrapperStyled,
+  RemoveButtonCSS,
+} from './sorting.style';
+import { LAYERS_PATH } from './consts';
+
+export interface SortingLayerProps {
+  id: string;
+  expandExtra: JSX.Element;
+}
+
+export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
+  const { t } = useTranslation();
+  const { dispatch } = useCommander();
+
+  const layerPath = useMemo(
+    () => LAYERS_PATH.concat(`id:${id}`),
+    [LAYERS_PATH],
+  );
+  const namePath = useMemo(() => layerPath.concat('name'), [layerPath]);
+
+  const handleDeleteBind = useCallback(() => {
+    dispatch(deleteValue(layerPath));
+  }, [dispatch, layerPath]);
+
+  return (
+    <LayerStyled>
+      {expandExtra}
+
+      <FieldWrapperStyled>
+        <Field
+          path={namePath}
+          component={LabelledTextInput}
+          label={t('globalOptions.sorting.layers.name.title')}
+        />
+      </FieldWrapperStyled>
+
+      <Button
+        css={RemoveButtonCSS}
+        icon={<DeleteOutlined />}
+        size="small"
+        onClick={handleDeleteBind}
+      />
+    </LayerStyled>
+  );
+};

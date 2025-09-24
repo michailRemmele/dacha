@@ -1,6 +1,6 @@
-type FnType<T extends Array<unknown>> = (...args: T) => void
+type FnType<T extends unknown[]> = (...args: T) => void
 
-export const throttle = <T extends Array<unknown>>(fn: FnType<T>, ms: number): FnType<T> => {
+export const throttle = <T extends unknown[]>(fn: FnType<T>, ms: number): FnType<T> => {
   let isTimeout = false
   let stashedArgs: T | undefined
 

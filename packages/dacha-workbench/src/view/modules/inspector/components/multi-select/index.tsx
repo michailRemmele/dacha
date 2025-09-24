@@ -15,7 +15,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
   onSelect,
   ...props
 }) => {
-  const handleChange = useCallback((values: Array<string>) => onChange(values), [onChange])
+  const handleChange = useCallback((values: string[]) => onChange(values), [onChange])
 
   const handleBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
     onAccept()

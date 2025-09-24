@@ -13,7 +13,7 @@ export interface EntityPanelProps {
   path: string[]
   entity: Entity
   type: EntityType
-  expandExtra?: JSX.Element | Array<JSX.Element>
+  expandExtra?: JSX.Element | JSX.Element[]
 }
 
 export const EntityPanel = ({

@@ -5,7 +5,7 @@ import type { FC } from 'react'
 type NotificationInstance = ReturnType<typeof notification.useNotification>[0]
 
 interface NotificationProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const NotificationContext = createContext({} as NotificationInstance)

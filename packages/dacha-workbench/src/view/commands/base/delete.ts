@@ -2,7 +2,7 @@ import { DELETE } from '../../../command-types'
 import type { Command } from '../../hooks/use-commander'
 
 export const deleteValue = (
-  path: Array<string>,
+  path: string[],
   isEffect?: boolean,
 ): Command => ({
   command: DELETE,

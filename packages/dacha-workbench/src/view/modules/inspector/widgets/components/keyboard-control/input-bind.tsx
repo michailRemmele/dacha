@@ -24,7 +24,7 @@ import {
 const KEEP_EMIT_DEPENDENCY_VALUE = true
 
 export interface InputBindProps {
-  path: Array<string>
+  path: string[]
   id: string
   inputKey: string
   order: number

@@ -2,16 +2,16 @@ import type { Animation } from 'dacha'
 import type { DataNode } from 'antd/lib/tree'
 
 export interface TransitionDataNode extends DataNode {
-  path: Array<string>
+  path: string[]
 }
 
 export const parseTransitions = (
-  transitions: Array<Animation.TransitionConfig>,
-  path: Array<string>,
+  transitions: Animation.TransitionConfig[],
+  path: string[],
   stateName: string,
   statesNames: Record<string, string>,
   defaultName: string,
-): Array<TransitionDataNode> => transitions.map((transition) => ({
+): TransitionDataNode[] => transitions.map((transition) => ({
   key: transition.id,
   title: `${stateName} -> ${statesNames[transition.state] ?? defaultName}`,
   isLeaf: true,

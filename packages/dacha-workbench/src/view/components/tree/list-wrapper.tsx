@@ -6,7 +6,7 @@ import {
 import { ListWrapperStyled } from './list-wrapper.style'
 
 interface ListWrapperProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
   onClickOutside?: () => void
 }
 

@@ -33,9 +33,9 @@ export const List: FC = () => {
   const statesPath = useMemo(() => path.concat('states'), [path])
   const transitionsPath = useMemo(() => statePath.concat('transitions'), [statePath])
 
-  const statesConfigs = useConfig(statesPath) as Array<Animation.StateConfig>
+  const statesConfigs = useConfig(statesPath) as Animation.StateConfig[]
   const stateConfig = useConfig(statePath) as Animation.StateConfig
-  const transitions = useConfig(transitionsPath) as Array<Animation.TransitionConfig>
+  const transitions = useConfig(transitionsPath) as Animation.TransitionConfig[]
 
   const statesNames = useMemo(() => statesConfigs.reduce((acc, item) => {
     acc[item.id] = item.name

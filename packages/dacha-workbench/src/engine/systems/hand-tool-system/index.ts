@@ -52,6 +52,9 @@ export class HandToolSystem extends SceneSystem {
     const transform = this.mainActor.getComponent(Transform)
     transform.offsetX = DEFAULT_POS_X
     transform.offsetY = DEFAULT_POS_Y
+
+    persistentStorage.set('canvas.mainActor.transform.offsetX', transform.offsetX)
+    persistentStorage.set('canvas.mainActor.transform.offsetY', transform.offsetY)
   }
 
   private handleCameraMoveStart = (event: MouseControlEvent): void => {
@@ -63,6 +66,11 @@ export class HandToolSystem extends SceneSystem {
   }
 
   private handleCameraMoveEnd = (): void => {
+    const transform = this.mainActor.getComponent(Transform)
+
+    persistentStorage.set('canvas.mainActor.transform.offsetX', transform.offsetX)
+    persistentStorage.set('canvas.mainActor.transform.offsetY', transform.offsetY)
+
     this.isMoving = false
   }
 
@@ -78,9 +86,6 @@ export class HandToolSystem extends SceneSystem {
 
     transform.offsetX += (this.anchor.x - screenX) / zoom
     transform.offsetY += (this.anchor.y - screenY) / zoom
-
-    persistentStorage.set('canvas.mainActor.transform.offsetX', transform.offsetX)
-    persistentStorage.set('canvas.mainActor.transform.offsetY', transform.offsetY)
 
     this.anchor.x = screenX
     this.anchor.y = screenY

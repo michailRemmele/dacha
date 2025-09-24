@@ -10,7 +10,7 @@ import { HotkeysContext } from './hotkeys-provider'
 
 interface HotkeysScopeProps {
   name?: string
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const HotkeysScopeContext = React.createContext<string>(ROOT_SCOPE)
@@ -24,7 +24,7 @@ export const HotkeysScopeProvider: FC<HotkeysScopeProps> = ({
   useEffect(() => {
     setActiveScope(name)
 
-    return () => {
+    return (): void => {
       setActiveScope(ROOT_SCOPE)
     }
   }, [name])

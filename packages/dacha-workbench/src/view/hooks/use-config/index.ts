@@ -9,7 +9,7 @@ import isEqual from 'lodash.isequal'
 import { includesArray } from '../../../utils/includes-array'
 import { useStore } from '../use-store'
 
-export const useConfig = (path?: Array<string> | string): unknown => {
+export const useConfig = (path?: string[] | string): unknown => {
   const configStore = useStore()
 
   const parsedPath = useMemo(() => {
@@ -35,7 +35,7 @@ export const useConfig = (path?: Array<string> | string): unknown => {
         valueRef.current = updateValue
         setForceRerender((forceRerender) => forceRerender + 1)
       } else if (includesArray(updatePath, parsedPath) || includesArray(parsedPath, updatePath)) {
-        valueRef.current = configStore.get(parsedPath as Array<string>)
+        valueRef.current = configStore.get(parsedPath as string[])
         setForceRerender((forceRerender) => forceRerender + 1)
       }
     })

@@ -21,11 +21,11 @@ import {
 } from './mouse-control.style'
 
 export interface InputBindProps {
-  path: Array<string>
+  path: string[]
   value: string
   order: number
-  options: Array<{ title: string, value: string }>
-  selectedOptions: Array<string>
+  options: { title: string, value: string }[]
+  selectedOptions: string[]
 }
 
 export const InputBind: FC<InputBindProps> = ({

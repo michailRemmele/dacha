@@ -21,12 +21,12 @@ import { getEntityType, EntityType } from './get-entity-type'
 import { getSceneId } from './get-scene-id'
 
 export interface InspectedEntity {
-  path?: Array<string>
+  path?: string[]
   type?: EntityType
 }
 
 interface EntityExplorerProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const InspectedEntityContext = React.createContext<InspectedEntity>({})
@@ -72,7 +72,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
 
   useEffect(() => {
     if (!world) {
-      return () => void 0
+      return (): void => {}
     }
 
     const handleInspectEntity = (event: InspectEntityEvent): void => {
@@ -100,7 +100,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
 
   useEffect(() => {
     if (!world) {
-      return () => void 0
+      return (): void => {}
     }
 
     const handleSelectEntities = (event: SelectEntitiesEvent): void => {
@@ -119,7 +119,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
 
   useEffect(() => {
     if (world === undefined) {
-      return () => {}
+      return (): void => {}
     }
 
     const unsubscribe = store.subscribe((updatedPath) => {
@@ -149,7 +149,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
       }
     })
 
-    return () => {
+    return (): void => {
       unsubscribe()
     }
   }, [world, store, entitySelection, entityData.path])

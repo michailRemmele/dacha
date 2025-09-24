@@ -5,13 +5,13 @@ import {
 } from 'react'
 import type { FC } from 'react'
 
-type NotificationInstance = {
+interface NotificationInstance {
   needsReload: boolean
   setNeedsReload: (needsReload: boolean) => void
 }
 
 interface NeedsReloadProviderProps {
-  children: JSX.Element | Array<JSX.Element>
+  children: JSX.Element | JSX.Element[]
 }
 
 export const NeedsReloadContext = createContext({} as NotificationInstance)

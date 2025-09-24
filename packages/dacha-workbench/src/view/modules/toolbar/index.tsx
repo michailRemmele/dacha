@@ -74,7 +74,7 @@ export const Toolbar: FC = () => {
     world.addEventListener(EventType.SelectScene, handleSelectScene)
     world.addEventListener(EventType.ToolUpdated, handleToolUpdated)
 
-    return () => {
+    return (): void => {
       world.removeEventListener(EventType.SelectScene, handleSelectScene)
       world.removeEventListener(EventType.ToolUpdated, handleToolUpdated)
     }

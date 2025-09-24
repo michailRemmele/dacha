@@ -1,6 +1,6 @@
 export type EntityType = 'actor' | 'template' | 'scene'
 
-export const getEntityType = (path: Array<string> | undefined): EntityType | undefined => {
+export const getEntityType = (path: string[] | undefined): EntityType | undefined => {
   if (path === undefined) {
     return undefined
   }

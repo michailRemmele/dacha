@@ -1,7 +1,8 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
-import type { SortingLayer } from '../../types/sprite-renderer'
+import { type SortingLayer } from 'dacha/renderer';
 
-const PATH = ['globalOptions', 'name:sortingLayers', 'options', 'layers']
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
+
+const PATH = ['globalOptions', 'name:sorting', 'options', 'layers'];
 
 export const sprite: WidgetSchema = {
   fields: [
@@ -28,12 +29,12 @@ export const sprite: WidgetSchema = {
     },
     {
       name: 'sortCenter.0',
-      title: 'components.sprite.sortCenterX.title',
+      title: 'components.renderable.sortCenterX.title',
       type: 'number',
     },
     {
       name: 'sortCenter.1',
-      title: 'components.sprite.sortCenterY.title',
+      title: 'components.renderable.sortCenterY.title',
       type: 'number',
     },
     {
@@ -47,44 +48,26 @@ export const sprite: WidgetSchema = {
     {
       name: 'sortingLayer',
       type: 'select',
-      options: (getState) => (getState(PATH) as SortingLayer[] ?? []).map((layer) => layer.name),
+      options: (getState) =>
+        ((getState(PATH) as SortingLayer[]) ?? []).map((layer) => layer.name),
     },
     {
       name: 'fit',
       type: 'select',
-      options: [
-        'stretch',
-        'repeat',
-      ],
+      options: ['stretch', 'repeat'],
     },
     {
-      name: 'material.type',
-      title: 'components.sprite.material.type.title',
+      name: 'blending',
       type: 'select',
-      options: [
-        'basic',
-        'lightsensitive',
-      ],
+      options: ['normal', 'addition', 'substract', 'multiply'],
     },
     {
-      name: 'material.options.blending',
-      title: 'components.sprite.material.blending.title',
-      type: 'select',
-      options: [
-        'normal',
-        'addition',
-        'substract',
-        'multiply',
-      ],
-    },
-    {
-      name: 'material.options.color',
-      title: 'components.sprite.material.color.title',
+      name: 'color',
       type: 'color',
+      disabledAlpha: true,
     },
     {
-      name: 'material.options.opacity',
-      title: 'components.sprite.material.opacity.title',
+      name: 'opacity',
       type: 'number',
     },
   ],
@@ -99,13 +82,8 @@ export const sprite: WidgetSchema = {
     flipY: false,
     sortingLayer: 'default',
     fit: 'stretch',
-    material: {
-      type: 'basic',
-      options: {
-        blending: 'normal',
-        color: '#fff',
-        opacity: 1,
-      },
-    },
+    blending: 'normal',
+    color: '#fff',
+    opacity: 1,
   }),
-}
+};

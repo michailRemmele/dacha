@@ -26,7 +26,7 @@ export type SelectSceneEvent = WorldEvent<{
 }>
 
 export type InspectEntityEvent = WorldEvent<{
-  path: Array<string> | undefined
+  path: string[] | undefined
 }>
 
 export type SelectEntitiesEvent = WorldEvent<{

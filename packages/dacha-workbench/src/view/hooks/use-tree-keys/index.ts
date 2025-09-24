@@ -11,22 +11,22 @@ import { findPathById } from '../../../utils/find-path-by-id'
 import type { TreeNode } from './types'
 
 interface UseExpandedKeysReturnType {
-  expandedKeys: Array<string>
-  setExpandedKeys: (keys: Array<string>) => void
+  expandedKeys: string[]
+  setExpandedKeys: (keys: string[]) => void
 }
 
 // Provides storage of tree's expanded keys with possibility to manually set new keys
 // In addition, it observes tree changes and clean deleted nodes
 export const useTreeKeys = <T extends DataNode>(
-  tree: Array<TreeNode<T>>,
+  tree: TreeNode<T>[],
   selectedKey?: string,
   persistentStorageKey?: string,
 ): UseExpandedKeysReturnType => {
-  const [expandedKeys, setExpandedKeys] = useState<Array<string>>(
+  const [expandedKeys, setExpandedKeys] = useState<string[]>(
     () => (persistentStorageKey ? persistentStorage.get(persistentStorageKey, []) : []),
   )
 
-  const handleSetExpandedKeys = useCallback((keys: Array<string>) => {
+  const handleSetExpandedKeys = useCallback((keys: string[]) => {
     setExpandedKeys(keys)
     if (persistentStorageKey) {
       persistentStorage.set(persistentStorageKey, keys)

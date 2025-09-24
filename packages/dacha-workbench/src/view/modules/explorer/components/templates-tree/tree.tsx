@@ -20,7 +20,7 @@ export const TemplatesTree: FC<TemplatesTreeProps> = ({ onDrop }) => {
   const { path: inspectedEntityPath } = useContext(InspectedEntityContext)
   const { paths: selectedEntitiesPaths } = useContext(EntitySelectionContext)
 
-  const templates = useConfig('templates') as Array<TemplateConfig>
+  const templates = useConfig('templates') as TemplateConfig[]
   const treeData = useMemo(() => parseTemplates(templates), [templates])
 
   return (

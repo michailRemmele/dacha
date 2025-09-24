@@ -17,10 +17,10 @@ type ExpandIcon = FC<{
 }>
 
 export interface CollapsePanelProps {
-  children: JSX.Element | Array<JSX.Element | null> | string | null
+  children: JSX.Element | (JSX.Element | null)[] | string | null
   title: string
   onDelete?: (event: React.MouseEvent<HTMLElement>) => void
-  expandExtra?: JSX.Element | Array<JSX.Element>
+  expandExtra?: JSX.Element | JSX.Element[]
   deletable?: boolean
   className?: string
 }
@@ -34,13 +34,13 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
   className,
 }) => {
   const ignoreRef = useRef(false)
-  const [activeKey, setActiveKey] = useState<string | Array<string>>()
+  const [activeKey, setActiveKey] = useState<string | string[]>()
 
   const expandIcon = useCallback<ExpandIcon>(({ isActive }) => (
     <PanelExpand isActive={isActive}>{expandExtra}</PanelExpand>
   ), [expandExtra])
 
-  const handleChange = useCallback((key: string | Array<string>): void => {
+  const handleChange = useCallback((key: string | string[]): void => {
     if (ignoreRef.current) {
       ignoreRef.current = false
     } else {

@@ -1,4 +1,5 @@
 import type { WidgetSchema, Field } from '../types/widget-schema'
+import { type BehaviorConstructor } from '../types/engine'
 import { widgetRegistry } from '../hocs/widget-registry'
 
 import { schemaRegistry } from './schema-registry'
@@ -9,10 +10,6 @@ import {
   buildInitialState,
   isEditor,
 } from './utils'
-import type { Constructor } from './types'
-
-type BehaviorConstructor<T = unknown>
-  = Constructor<T> & { behaviorName: string };
 
 interface DefineBehaviorOptions extends Omit<WidgetSchema, 'view'> {
   name: string

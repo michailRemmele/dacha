@@ -158,21 +158,19 @@
   "components.mouseControl.bind.attributes.title": "Attributes",
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
-  "components.sprite.sortCenterX.title": "Sort Center X",
-  "components.sprite.sortCenterY.title": "Sort Center Y",
-  "components.sprite.material.type.title": "Material Type",
-  "components.sprite.material.blending.title": "Material Blending",
-  "components.sprite.material.color.title": "Material Color",
-  "components.sprite.material.opacity.title": "Material Opacity",
+  "components.renderable.sortCenterX.title": "Sort Center X",
+  "components.renderable.sortCenterY.title": "Sort Center Y",
 
   "components.behaviors.behavior.name.title": "Name",
   "components.behaviors.behavior.title": "Behavior {{index}}",
   "components.behaviors.behavior.addNew.title": "Add Behavior",
   "components.behaviors.behavior.noSchema.title": "Schema not found",
 
-  "globalOptions.sortingLayers.title": "Sorting Layers",
-  "globalOptions.sortingLayers.addNew.title": "Add Layer",
-  "globalOptions.sortingLayers.name.title": "Layer",
+  "globalOptions.sorting.title": "Sorting",
+  "globalOptions.sorting.order.title": "Order",
+  "globalOptions.sorting.layers.title": "Layers",
+  "globalOptions.sorting.layers.addNew.title": "Add Layer",
+  "globalOptions.sorting.layers.name.title": "Layer",
 
   "globalOptions.audioGroups.title": "Audio Groups",
   "globalOptions.audioGroups.addNew.title": "Add Group",
