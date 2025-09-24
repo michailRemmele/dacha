@@ -4,7 +4,7 @@ import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 const PATH = ['globalOptions', 'name:sorting', 'options', 'layers'];
 
-export const text: WidgetSchema = {
+export const bitmapText: WidgetSchema = {
   fields: [
     {
       name: 'text',

@@ -3,11 +3,10 @@ import {
   Camera,
   Collider,
   KeyboardControl,
-  Light,
   MouseControl,
   Sprite,
   Shape,
-  Text,
+  BitmapText,
   RigidBody,
   Behaviors,
   Transform,
@@ -20,11 +19,10 @@ import { animatable } from './animatable';
 import { camera } from './camera';
 import { collider } from './collider';
 import { keyboardControl } from './keyboard-control';
-import { light } from './light';
 import { mouseControl } from './mouse-control';
 import { sprite } from './sprite';
 import { shape } from './shape';
-import { text } from './text';
+import { bitmapText } from './bitmap-text';
 import { rigidBody } from './rigid-body';
 import { behaviors } from './behaviors';
 import { transform } from './transform';
@@ -35,11 +33,10 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [Camera.componentName]: camera,
   [Collider.componentName]: collider,
   [KeyboardControl.componentName]: keyboardControl,
-  [Light.componentName]: light,
   [MouseControl.componentName]: mouseControl,
   [Sprite.componentName]: sprite,
   [Shape.componentName]: shape,
-  [Text.componentName]: text,
+  [BitmapText.componentName]: bitmapText,
   [RigidBody.componentName]: rigidBody,
   [Behaviors.componentName]: behaviors,
   [Transform.componentName]: transform,

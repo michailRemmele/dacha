@@ -12,7 +12,7 @@ import {
   MouseControl,
   Shape,
   Sprite,
-  Text,
+  BitmapText,
   PixiView,
 } from 'dacha';
 import {
@@ -91,7 +91,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           ToolController,
           Shape,
           Sprite,
-          Text,
+          BitmapText,
           PixiView,
           Settings,
           Frame,
