@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 import type { ActorSpawner } from '../actor';
 import type { TemplateCollection } from '../template';
 import type { Scene } from '../scene';

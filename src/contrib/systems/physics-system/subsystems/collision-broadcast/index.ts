@@ -22,7 +22,7 @@ const STATE_TO_EVENT: Record<CollisionState, CollisionStateEvent> = {
 export class CollisionBroadcastSubsystem {
   private scene: Scene;
   private collisionMap: Record<string, Record<string, Collision>>;
-  private activeCollisions: Array<Collision>;
+  private activeCollisions: Collision[];
 
   constructor(options: SceneSystemOptions) {
     this.scene = options.scene;

@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { SceneManager } from '../scene-manager';
 import { WorldSystem, SceneSystem } from '../../system';
 import { TemplateCollection } from '../../template';

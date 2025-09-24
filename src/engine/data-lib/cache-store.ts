@@ -1,7 +1,7 @@
-type StoreEntry<T> = {
-  data: T
-  count: number
-};
+interface StoreEntry<T> {
+  data: T;
+  count: number;
+}
 
 export class CacheStore<T> {
   private cache: Map<string, StoreEntry<T>>;
@@ -26,15 +26,22 @@ export class CacheStore<T> {
     }
   }
 
-  release(src: string): void {
+  release(src: string, clean?: boolean): void {
     const entry = this.cache.get(src);
     if (entry) {
       entry.count -= 1;
+      if (clean && entry.count <= 0) {
+        this.cache.delete(src);
+      }
     }
   }
 
   has(src: string): boolean {
     return this.cache.has(src);
+  }
+
+  get size(): number {
+    return this.cache.size;
   }
 
   // TODO: It's hard to find a place in a system's lifecycle to call this method

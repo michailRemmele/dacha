@@ -32,4 +32,23 @@ describe('Engine -> DataLib -> CacheStore', () => {
 
     expect(store.has('field-1')).toBeFalsy();
   });
+
+  it('Clean store right after release with clean flag', () => {
+    const store = new CacheStore<number>();
+
+    store.add('field-1', 1);
+    store.add('field-2', 2);
+
+    expect(store.has('field-1')).toBeTruthy();
+    expect(store.has('field-2')).toBeTruthy();
+
+    store.retain('field-1');
+    store.retain('field-1');
+
+    store.release('field-1', true);
+    store.release('field-2', true);
+
+    expect(store.has('field-1')).toBeTruthy();
+    expect(store.has('field-2')).toBeFalsy();
+  });
 });

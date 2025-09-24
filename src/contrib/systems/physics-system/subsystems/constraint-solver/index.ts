@@ -1,5 +1,4 @@
 import { Vector2 } from '../../../../../engine/math-lib';
-import { ActorCollection } from '../../../../../engine/actor';
 import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
@@ -11,21 +10,14 @@ import type { CollisionEvent } from '../../../../events';
 import { RIGID_BODY_TYPE } from '../../consts';
 
 export class ConstraintSolver {
-  private actorCollection: ActorCollection;
   private scene: Scene;
-  private processedPairs: Record<string, Record<string, boolean>>;
-  private mtvMap: Record<string, Record<string, Vector2>>;
+  private processedPairs: Map<Actor, Set<Actor>>;
+  private mtvMap: Map<Actor, Record<string, Vector2>>;
 
   constructor(options: SceneSystemOptions) {
-    this.actorCollection = new ActorCollection(options.scene, {
-      components: [
-        RigidBody,
-        Transform,
-      ],
-    });
     this.scene = options.scene;
-    this.processedPairs = {};
-    this.mtvMap = {};
+    this.processedPairs = new Map();
+    this.mtvMap = new Map();
 
     this.scene.addEventListener(Collision, this.handleCollision);
   }
@@ -35,19 +27,20 @@ export class ConstraintSolver {
   }
 
   private handleCollision = (event: CollisionEvent): void => {
-    const {
-      actor1, actor2, mtv1, mtv2,
-    } = event;
+    const { actor1, actor2, mtv1, mtv2 } = event;
 
-    const id1 = actor1.id;
-    const id2 = actor2.id;
-
-    if (this.processedPairs[id2] && this.processedPairs[id2][id1]) {
+    if (
+      this.processedPairs.has(actor2) &&
+      this.processedPairs.get(actor2)!.has(actor1)
+    ) {
       return;
     }
 
-    this.processedPairs[id1] ??= {};
-    this.processedPairs[id1][id2] = true;
+    if (!this.processedPairs.has(actor1)) {
+      this.processedPairs.set(actor1, new Set());
+    }
+
+    this.processedPairs.get(actor1)!.add(actor2);
 
     if (!this.validateCollision(actor1, actor2)) {
       return;
@@ -64,42 +57,56 @@ export class ConstraintSolver {
       return false;
     }
 
-    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC && rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
+    if (
+      rigidBody1.type === RIGID_BODY_TYPE.STATIC &&
+      rigidBody2.type === RIGID_BODY_TYPE.STATIC
+    ) {
       return false;
     }
 
-    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC || rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
+    if (
+      rigidBody1.type === RIGID_BODY_TYPE.STATIC ||
+      rigidBody2.type === RIGID_BODY_TYPE.STATIC
+    ) {
       return !rigidBody1.ghost && !rigidBody2.ghost;
     }
 
-    return !rigidBody1.ghost && !rigidBody1.isPermeable
-      && !rigidBody2.ghost && !rigidBody2.isPermeable;
+    return (
+      !rigidBody1.ghost &&
+      !rigidBody1.isPermeable &&
+      !rigidBody2.ghost &&
+      !rigidBody2.isPermeable
+    );
   }
 
-  private setMtv(id: string, mtvX: number, mtvY: number, type: RigidBodyType): void {
-    this.mtvMap[id] = this.mtvMap[id] || {};
+  private setMtv(
+    actor: Actor,
+    mtvX: number,
+    mtvY: number,
+    type: RigidBodyType,
+  ): void {
+    if (!this.mtvMap.has(actor)) {
+      this.mtvMap.set(actor, {});
+    }
 
-    if (!this.mtvMap[id][type]) {
-      this.mtvMap[id][type] = new Vector2(mtvX, mtvY);
+    const mtvs = this.mtvMap.get(actor)!;
+
+    if (!mtvs?.[type]) {
+      mtvs[type] = new Vector2(mtvX, mtvY);
       return;
     }
 
-    const settingStrategy = {
-      static: (): void => {
-        this.mtvMap[id][type].x = Math.abs(mtvX) > Math.abs(this.mtvMap[id][type].x)
-          ? mtvX
-          : this.mtvMap[id][type].x;
-        this.mtvMap[id][type].y = Math.abs(mtvY) > Math.abs(this.mtvMap[id][type].y)
-          ? mtvY
-          : this.mtvMap[id][type].y;
-      },
-      dynamic: (): void => {
-        this.mtvMap[id][type].x += mtvX;
-        this.mtvMap[id][type].y += mtvY;
-      },
-    };
-
-    settingStrategy[type]();
+    switch (type) {
+      case 'static':
+        mtvs[type].x =
+          Math.abs(mtvX) > Math.abs(mtvs[type].x) ? mtvX : mtvs[type].x;
+        mtvs[type].y =
+          Math.abs(mtvY) > Math.abs(mtvs[type].y) ? mtvY : mtvs[type].y;
+        break;
+      case 'dynamic':
+        mtvs[type].x += mtvX;
+        mtvs[type].y += mtvY;
+    }
   }
 
   private resolveCollision(
@@ -108,36 +115,24 @@ export class ConstraintSolver {
     mtv1: Vector2,
     mtv2: Vector2,
   ): void {
-    const id1 = actor1.id;
-    const id2 = actor2.id;
-
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
-      this.setMtv(id2, mtv2.x, mtv2.y, rigidBody1.type);
+      this.setMtv(actor2, mtv2.x, mtv2.y, rigidBody1.type);
     } else if (rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
-      this.setMtv(id1, mtv1.x, mtv1.y, rigidBody2.type);
+      this.setMtv(actor1, mtv1.x, mtv1.y, rigidBody2.type);
     } else {
-      this.setMtv(id1, mtv1.x / 2, mtv1.y / 2, rigidBody2.type);
-      this.setMtv(id2, mtv2.x / 2, mtv2.y / 2, rigidBody1.type);
+      this.setMtv(actor1, mtv1.x / 2, mtv1.y / 2, rigidBody2.type);
+      this.setMtv(actor2, mtv2.x / 2, mtv2.y / 2, rigidBody1.type);
     }
   }
 
   update(): void {
-    Object.keys(this.mtvMap).forEach((id) => {
-      const actor = this.actorCollection.getById(id) as Actor;
+    for (const [actor, entry] of this.mtvMap) {
       const transform = actor.getComponent(Transform);
 
-      const mtvs = Object.keys(this.mtvMap[id]);
-
-      if (mtvs.length === 1) {
-        transform.offsetX += this.mtvMap[id][mtvs[0]].x;
-        transform.offsetY += this.mtvMap[id][mtvs[0]].y;
-        return;
-      }
-
-      const { static: staticMtv, dynamic: dynamicMtv } = this.mtvMap[id];
+      const { static: staticMtv, dynamic: dynamicMtv } = entry;
 
       /*
        * TODO:: Enable this part when it will be possible to run
@@ -150,11 +145,11 @@ export class ConstraintSolver {
       //   ? staticMtv.y + dynamicMtv.y
       //   : staticMtv.y || dynamicMtv.y;
 
-      transform.offsetX += staticMtv.x + dynamicMtv.x;
-      transform.offsetY += staticMtv.y + dynamicMtv.y;
-    });
+      transform.offsetX += (staticMtv?.x ?? 0) + (dynamicMtv?.x ?? 0);
+      transform.offsetY += (staticMtv?.y ?? 0) + (dynamicMtv?.y ?? 0);
+    }
 
-    this.processedPairs = {};
-    this.mtvMap = {};
+    this.processedPairs.clear();
+    this.mtvMap.clear();
   }
 }

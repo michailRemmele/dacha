@@ -1,19 +1,19 @@
-export type AudioStateNode = {
-  sourceNode: AudioBufferSourceNode
-  gainNode: GainNode
+export interface AudioStateNode {
+  sourceNode: AudioBufferSourceNode;
+  gainNode: GainNode;
   properties: {
-    volume: number
-    group: string
-    endedListener: () => void
-  }
-};
+    volume: number;
+    group: string;
+    endedListener: () => void;
+  };
+}
 
-export type AudioGroup = {
-  id: string
-  name: string
-  volume: number
-};
+export interface AudioGroup {
+  id: string;
+  name: string;
+  volume: number;
+}
 
-export type AudioGroups = {
-  groups: AudioGroup[]
-};
+export interface AudioGroups {
+  groups: AudioGroup[];
+}

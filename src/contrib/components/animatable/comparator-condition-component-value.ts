@@ -4,7 +4,7 @@ const SEPARATOR = '.';
 
 export class ComparatorConditionComponentValue {
   type: string;
-  value: string | Array<string>;
+  value: string | string[];
 
   constructor(config: unknown) {
     const { value, type } = config as ComparatorConditionComponentValueConfig;

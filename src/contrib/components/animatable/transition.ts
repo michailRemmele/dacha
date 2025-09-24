@@ -5,7 +5,7 @@ export class Transition {
   id: string;
   state: string;
   time: number;
-  conditions: Array<Condition>;
+  conditions: Condition[];
 
   constructor(config: TransitionConfig) {
     const {

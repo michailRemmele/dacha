@@ -1,5 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
-import { ActorCollection } from '../../../engine/actor';
+import { ActorQuery } from '../../../engine/actor';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { Actor } from '../../../engine/actor';
 import type { Scene } from '../../../engine/scene';
@@ -11,10 +11,10 @@ import type { KeyboardInputEvent } from '../../events';
 
 export class KeyboardControlSystem extends WorldSystem {
   private world: World;
-  private actorCollection?: ActorCollection;
+  private actorQuery?: ActorQuery;
 
   private pressedKeys: Set<string>;
-  private events: Array<KeyboardInputEvent>;
+  private events: KeyboardInputEvent[];
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -28,13 +28,11 @@ export class KeyboardControlSystem extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorCollection = new ActorCollection(scene, {
-      components: [KeyboardControl],
-    });
+    this.actorQuery = new ActorQuery({ scene, filter: [KeyboardControl] });
   }
 
   onSceneExit(): void {
-    this.actorCollection = undefined;
+    this.actorQuery = undefined;
   }
 
   onWorldDestroy(): void {
@@ -45,7 +43,11 @@ export class KeyboardControlSystem extends WorldSystem {
     this.events.push(event);
   };
 
-  private sendEvent(actor: Actor, eventBinding: KeyboardEventBind, code: string): void {
+  private sendEvent(
+    actor: Actor,
+    eventBinding: KeyboardEventBind,
+    code: string,
+  ): void {
     if (!eventBinding.eventType) {
       throw new Error(`The event type is not specified for input key: ${code}`);
     }
@@ -62,7 +64,7 @@ export class KeyboardControlSystem extends WorldSystem {
       }
     });
 
-    this.actorCollection?.forEach((actor) => {
+    this.actorQuery?.getActors().forEach((actor) => {
       const control = actor.getComponent(KeyboardControl);
 
       // Resend control event when key is pressed without actual event if keepEmit is set to true
@@ -76,7 +78,8 @@ export class KeyboardControlSystem extends WorldSystem {
       // Send control event on input event excluding repeated browser generated key pressed events
       this.events.forEach((event) => {
         const { key, pressed } = event;
-        const inputBinding = control.inputEventBindings[key]?.[pressed ? 'pressed' : 'released'];
+        const inputBinding =
+          control.inputEventBindings[key]?.[pressed ? 'pressed' : 'released'];
         if (inputBinding !== undefined && !this.pressedKeys.has(key)) {
           this.sendEvent(actor, inputBinding, key);
         }

@@ -1,7 +1,7 @@
 import { WorldSystem } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
 import type { WorldSystemOptions } from '../../../engine/system';
-import { ActorCollection } from '../../../engine/actor';
+import { ActorQuery } from '../../../engine/actor';
 import type { Actor } from '../../../engine/actor';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
@@ -9,25 +9,22 @@ import { getWindowNode } from '../../utils/get-window-node';
 import { CameraService } from './service';
 
 interface CameraSystemOptions extends WorldSystemOptions {
-  windowNodeId: string
+  windowNodeId: string;
 }
 
 export class CameraSystem extends WorldSystem {
-  private actorCollection?: ActorCollection;
+  private actorQuery?: ActorQuery;
   private window: Window & HTMLElement;
   private cameraService: CameraService;
 
   constructor(options: WorldSystemOptions) {
     super();
 
-    const {
-      windowNodeId,
-      world,
-    } = options as CameraSystemOptions;
+    const { windowNodeId, world } = options as CameraSystemOptions;
 
     const windowNode = getWindowNode(windowNodeId);
 
-    this.window = windowNode as (Window & HTMLElement);
+    this.window = windowNode as Window & HTMLElement;
 
     this.cameraService = new CameraService({
       onCameraUpdate: this.handleCameraUpdate,
@@ -39,15 +36,16 @@ export class CameraSystem extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorCollection = new ActorCollection(scene, {
-      components: [Camera],
+    this.actorQuery = new ActorQuery({
+      scene,
+      filter: [Camera],
     });
 
     this.handleWindowResize();
   }
 
   onSceneExit(): void {
-    this.actorCollection = undefined;
+    this.actorQuery = undefined;
   }
 
   onWorldDestroy(): void {
@@ -73,7 +71,7 @@ export class CameraSystem extends WorldSystem {
   };
 
   private handleCameraUpdate = (actor: Actor): void => {
-    this.actorCollection?.forEach((cameraActor) => {
+    this.actorQuery?.getActors().forEach((cameraActor) => {
       const camera = cameraActor.getComponent(Camera);
       camera.current = actor.id === cameraActor.id;
     });
@@ -82,10 +80,16 @@ export class CameraSystem extends WorldSystem {
   };
 
   private findCurrentCamera = (): Actor | undefined => {
-    return this.actorCollection?.find((actor) => {
+    if (!this.actorQuery) {
+      return;
+    }
+
+    for (const actor of this.actorQuery.getActors()) {
       const camera = actor.getComponent(Camera);
-      return camera.current;
-    });
+      if (camera.current) {
+        return actor;
+      }
+    }
   };
 }
 

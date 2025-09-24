@@ -7,43 +7,43 @@ import { GameLoop } from './game-loop';
 import type { PerformanceSettings } from './game-loop';
 
 export interface EngineOptions {
-  config: Config
-  systems: Array<SystemConstructor>
-  components: Array<ComponentConstructor>
-  resources?: Record<string, unknown>
+  config: Config;
+  systems: SystemConstructor[];
+  components: ComponentConstructor[];
+  resources?: Record<string, unknown>;
 }
 
+/**
+ * Main game engine responsible for bootstrapping scenes and systems, managing the
+ * game loop, and controlling lifecycle actions (play, pause, stop).
+ */
 export class Engine {
   private options: EngineOptions;
   private gameLoop?: GameLoop;
   private sceneManager?: SceneManager;
 
+  /**
+   * Creates a new engine instance.
+   *
+   * @param options - Configuration, available systems and components, and optional shared resources.
+   */
   constructor(options: EngineOptions) {
     this.options = options;
   }
 
-  private handleWindowBlur = (): void => {
-    this.gameLoop?.stop();
-  };
-
-  private handleWindowFocus = (): void => {
-    this.gameLoop?.run();
-  };
-
-  private addWindowListeners(): void {
-    window.addEventListener('blur', this.handleWindowBlur);
-    window.addEventListener('focus', this.handleWindowFocus);
-  }
-
-  private removeWindowListeners(): void {
-    window.removeEventListener('blur', this.handleWindowBlur);
-    window.removeEventListener('focus', this.handleWindowFocus);
-  }
-
+  /**
+   * Starts the engine. If the engine was already initialized, this resumes the
+   * game loop and re-attaches window listeners. Otherwise, it bootstraps the
+   * world, loads the start scene, creates the game loop, and begins execution.
+   *
+   * @returns A promise that resolves once the engine is fully started.
+   * @throws Error If `startSceneId` is not provided in the config.
+   * @throws Error If any component is missing `componentName`.
+   * @throws Error If any system is missing `systemName`.
+   */
   async play(): Promise<void> {
     if (this.sceneManager !== undefined && this.gameLoop !== undefined) {
       this.gameLoop.run();
-      this.addWindowListeners();
       return;
     }
 
@@ -61,31 +61,40 @@ export class Engine {
     } = this.options;
 
     if (!startSceneId) {
-      throw new Error('Can\'t start the engine without starting scene. Please specify start scene id.');
+      throw new Error(
+        "Can't start the engine without starting scene. Please specify start scene id.",
+      );
     }
 
-    for (let i = 0; i < components.length; i += 1) {
-      if (components[i].componentName === undefined) {
-        throw new Error(`Missing componentName field for ${components[i].name} component.`);
+    for (const component of components) {
+      if (component.componentName === undefined) {
+        throw new Error(
+          `Missing componentName field for ${component.name} component.`,
+        );
       }
     }
 
-    for (let i = 0; i < availableSystems.length; i += 1) {
-      if (availableSystems[i].systemName === undefined) {
-        throw new Error(`Missing systemName field for ${availableSystems[i].name} system.`);
+    for (const availableSystem of availableSystems) {
+      if (availableSystem.systemName === undefined) {
+        throw new Error(
+          `Missing systemName field for ${availableSystem.name} system.`,
+        );
       }
     }
 
     const templateCollection = new TemplateCollection(components);
 
-    for (let i = 0; i < templates.length; i += 1) {
-      templateCollection.register(templates[i]);
+    for (const template of templates) {
+      templateCollection.register(template);
     }
 
-    const globalOptions = rawGlobalOptions.reduce((acc: Record<string, unknown>, option) => {
-      acc[option.name] = option.options;
-      return acc;
-    }, {});
+    const globalOptions = rawGlobalOptions.reduce(
+      (acc: Record<string, unknown>, option) => {
+        acc[option.name] = option.options;
+        return acc;
+      },
+      {},
+    );
 
     this.sceneManager = new SceneManager({
       sceneConfigs: scenes,
@@ -106,18 +115,22 @@ export class Engine {
     );
 
     this.gameLoop.run();
-    this.addWindowListeners();
   }
 
+  /**
+   * Pauses the engine by stopping the game loop.
+   * The world and scene state remain in memory so it can be resumed with `play`.
+   */
   pause(): void {
     this.gameLoop?.stop();
-    this.removeWindowListeners();
   }
 
+  /**
+   * Stops the engine completely by stopping the game loop and destroying the world.
+   */
   stop(): void {
     this.gameLoop?.stop();
     this.sceneManager?.destroyWorld();
-    this.removeWindowListeners();
 
     this.gameLoop = undefined;
     this.sceneManager = undefined;
