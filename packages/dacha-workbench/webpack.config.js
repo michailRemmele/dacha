@@ -1,11 +1,11 @@
-const path = require('path')
-const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin')
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
   mode: 'none',
@@ -59,16 +59,18 @@ module.exports = {
       template: path.resolve(__dirname, 'public/index.html'),
       chunks: ['app'],
     }),
-    isDev ? null : new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.join(__dirname, 'public'),
-          globOptions: {
-            ignore: ['**/index.html'],
-          },
-        },
-      ],
-    }),
+    isDev
+      ? null
+      : new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: path.join(__dirname, 'public'),
+              globOptions: {
+                ignore: ['**/index.html'],
+              },
+            },
+          ],
+        }),
   ].filter(Boolean),
 
   module: {
@@ -98,4 +100,4 @@ module.exports = {
       },
     ],
   },
-}
+};
