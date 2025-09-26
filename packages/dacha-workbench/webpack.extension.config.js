@@ -1,9 +1,9 @@
-const webpack = require('webpack')
-const VirtualModulesPlugin = require('webpack-virtual-modules')
+const webpack = require('webpack');
+const VirtualModulesPlugin = require('webpack-virtual-modules');
 
-const getExtensionEntry = require('./electron/get-extension-entry')
-const normalizePath = require('./electron/utils/normilize-path')
-const baseConfig = require('./webpack.config')
+const getExtensionEntry = require('./electron/get-extension-entry');
+const normalizePath = require('./electron/utils/normilize-path');
+const baseConfig = require('./webpack.config');
 
 module.exports = () => ({
   ...baseConfig,
@@ -17,18 +17,25 @@ module.exports = () => ({
     library: '[name]',
   },
 
+  optimization: {
+    sideEffects: false,
+  },
+
   externals: [
     baseConfig.externals,
     function dachaWorkbench({ request }, callback) {
-      if (request === 'dacha-workbench' || request.startsWith('dacha-workbench/')) {
+      if (
+        request === 'dacha-workbench' ||
+        request.startsWith('dacha-workbench/')
+      ) {
         return callback(null, {
           commonjs: request,
           commonjs2: request,
           amd: request,
           root: ['DachaWorkbench', ...request.split('/').slice(1)],
-        })
+        });
       }
-      return callback()
+      return callback();
     },
   ],
 
@@ -40,4 +47,4 @@ module.exports = () => ({
       [normalizePath('./extension-entry.ts')]: getExtensionEntry(),
     }),
   ],
-})
+});
