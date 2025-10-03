@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.docs.ts"],
+  "out": "docs",
+  "disableSources": true,
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "exclude": ["**/tests/**", "**/*.test.ts"],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "excludeReferences": false,
+    "includeFolders": true
+  },
+  "categoryOrder": [
+    "Core",
+    "Core Events",
+    "Systems",
+    "Components",
+    "Events"
+  ]
+}

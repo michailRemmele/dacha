@@ -51,6 +51,13 @@ interface RendererOptions extends WorldSystemOptions {
   backgroundColor: string;
 }
 
+/**
+ * Renderer system that manages 2D graphics rendering using PIXI.js under the hood
+ *
+ * @extends WorldSystem
+ * 
+ * @category Systems
+ */
 export class Renderer extends WorldSystem {
   private actorQuery?: ActorQuery;
   private viewEntries?: ViewContainer[];

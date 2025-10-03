@@ -7,6 +7,16 @@ import { MouseControl } from '../../components/mouse-control';
 import { MouseInput } from '../../events';
 import type { MouseInputEvent } from '../../events';
 
+/**
+ * Mouse control system that maps mouse input to actor events
+ *
+ * Processes mouse input events and dispatches corresponding control events
+ * to actors with {@link MouseControl} components
+ *
+ * @extends WorldSystem
+ * 
+ * @category Systems
+ */
 export class MouseControlSystem extends WorldSystem {
   private actorQuery?: ActorQuery;
   private world: World;

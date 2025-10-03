@@ -30,24 +30,81 @@ export interface SpriteConfig {
   disabled: boolean;
 }
 
+/**
+ * Sprite component for rendering 2D textures.
+ *
+ * Handles the visual representation of an actor using a texture.
+ * It can be used to render a single texture or a texture slice from a sprite sheet.
+ *
+ * @example
+ * ```typescript
+ * // Create a basic sprite
+ * const sprite = new Sprite({
+ *   src: 'assets/player.png',
+ *   width: 64,
+ *   height: 64,
+ *   slice: 0,
+ *   rotation: 0,
+ *   flipX: false,
+ *   flipY: false,
+ *   sortingLayer: 'units',
+ *   sortCenter: [0, 0],
+ *   fit: 'stretch',
+ *   color: '#ffffff',
+ *   blending: 'normal',
+ *   opacity: 1,
+ *   disabled: false
+ * });
+ *
+ * // Add to actor
+ * actor.setComponent(sprite);
+ *
+ * // Modify properties
+ * sprite.opacity = 0.5; // Make semi-transparent
+ * sprite.color = '#ff0000'; // Apply a red tint
+ * ```
+ * 
+ * @category Components
+ */
 export class Sprite extends Component {
+  /** Path to the texture image file */
   src: string;
+  /** Width of the sprite in pixels */
   width: number;
+  /** Height of the sprite in pixels */
   height: number;
+  /** Amount of frames in the sprite sheet */
   slice: number;
+  /** Rotation of the sprite in degrees */
   rotation: number;
+  /** Whether to flip the sprite horizontally */
   flipX: boolean;
+  /** Whether to flip the sprite vertically */
   flipY: boolean;
+  /** Whether the sprite is disabled and should not render */
   disabled: boolean;
+  /** Sorting layer name for rendering order */
   sortingLayer: string;
+  /** Center point for sorting calculations */
   sortCenter: [number, number];
+  /** Current frame to render */
   currentFrame?: number;
+  /** How the texture should fit within the sprite bounds */
   readonly fit: FitType;
+  /** Color tint applied to the sprite */
   color: string;
+  /** Blending mode for rendering */
   blending: BlendingMode;
+  /** Opacity from 0 (transparent) to 1 (opaque) */
   opacity: number;
+  /** Internal rendering data */
   renderData?: RenderData;
 
+  /**
+   * Creates a new Sprite component.
+   *
+   * @param config - Configuration for the sprite
+   */
   constructor(config: SpriteConfig) {
     super();
 
