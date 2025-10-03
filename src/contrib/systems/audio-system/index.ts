@@ -21,6 +21,13 @@ import { getAllSources, loadAudio } from './utils';
 const MASTER_GROUP = 'master';
 const VOLUME_TOLERANCE = 0.001;
 
+/**
+ * Audio system that manages audio playback for actors with {@link AudioSource} components
+ *
+ * @extends WorldSystem
+ * 
+ * @category Systems
+ */
 export class AudioSystem extends WorldSystem {
   private templateCollection: TemplateCollection;
   private world: World;

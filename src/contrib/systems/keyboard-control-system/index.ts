@@ -9,6 +9,16 @@ import type { KeyboardEventBind } from '../../components/keyboard-control';
 import { KeyboardInput } from '../../events';
 import type { KeyboardInputEvent } from '../../events';
 
+/**
+ * Keyboard control system that maps keyboard input to actor events
+ *
+ * Processes keyboard input events and dispatches corresponding control events
+ * to actors with {@link KeyboardControl} components
+ *
+ * @extends WorldSystem
+ * 
+ * @category Systems
+ */
 export class KeyboardControlSystem extends WorldSystem {
   private world: World;
   private actorQuery?: ActorQuery;

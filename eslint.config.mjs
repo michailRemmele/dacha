@@ -33,7 +33,7 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['build', 'jest.config.js', 'eslint.config.mjs'],
+    ignores: ['build', 'docs', 'jest.config.js', 'eslint.config.mjs'],
   },
   eslintConfigPrettier,
 );

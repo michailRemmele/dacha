@@ -51,25 +51,86 @@ export interface Ellipse extends BaseShape {
 export type ShapeConfig = BaseShape &
   Partial<Rectangle | RoundRectangle | Circle | Ellipse>;
 
+/**
+ * Shape component for rendering 2D geometry.
+ *
+ * Handles the visual representation of an actor using a shape.
+ * It can be used to render such shapes as rectangles or circles.
+ *
+ * @example
+ * ```typescript
+ * // Create a basic shape
+ * const shape = new Shape({
+ *   type: 'rectangle',
+ *   width: 100,
+ *   height: 100,
+ *   strokeWidth: 2,
+ *   strokeColor: '#000',
+ *   strokeAlignment: 0.5,
+ *   pixelLine: false,
+ *   opacity: 1,
+ *   blending: 'normal',
+ *   disabled: false,
+ *   sortingLayer: 'units',
+ *   sortCenter: [0, 0],
+ * });
+ *
+ * // Add to actor
+ * actor.setComponent(shape);
+ *
+ * // Modify properties
+ * shape.opacity = 0.5; // Make semi-transparent
+ * shape.color = '#ff0000'; // Apply a red tint
+ * ```
+ * 
+ * @category Components
+ */
 export class Shape extends Component {
+  /** Type of the shape */
   type: ShapeType;
+  /** Color of the stroke */
   strokeColor?: string;
+  /** Width of the stroke */
   strokeWidth: number;
+  /** Alignment of the stroke relative to the path
+   * 
+   * 0 - Outside of the shape
+   * 0.5 - Center of the path
+   * 1 - Inside of the shape
+   */
   strokeAlignment: number;
+  /** Whether the shape stroke should remains 1 pixel wide regardless of the scale */
   pixelLine: boolean;
+  /** Fill color of the shape */
   fill?: string;
+  /** Opacity of the shape */
   opacity: number;
+  /** Blending mode of the shape */
   blending: BlendingMode;
+  /** Whether the shape is disabled */
   disabled: boolean;
+  /** Sorting layer of the shape */
   sortingLayer: string;
+  /** Center point of the shape */
   sortCenter: [number, number];
+  /** Width of the shape */
   width?: number;
+  /** Height of the shape */
   height?: number;
+  /** Radius of the shape */
   radius?: number;
+  /** Radius X of the shape */
   radiusX?: number;
+  /** Radius Y of the shape */
   radiusY?: number;
+  /** Internal rendering data */
   renderData?: RenderData;
 
+  /**
+   * Creates a new Shape component.
+   * 
+   * @param config - Configuration for the shape
+   */
   constructor(config: ShapeConfig) {
     super();
 

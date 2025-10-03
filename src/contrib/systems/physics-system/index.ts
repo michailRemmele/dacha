@@ -9,6 +9,15 @@ import {
   ConstraintSolver,
 } from './subsystems';
 
+/**
+ * Physics system that handles 2D physics simulation and collision detection
+ *
+ * Manages rigid body physics and collision detection and resolution.
+ *
+ * @extends SceneSystem
+ * 
+ * @category Systems
+ */
 export class PhysicsSystem extends SceneSystem {
   private physicsSubsystem: PhysicsSubsystem;
   private collisionDetectionSubsystem: CollisionDetectionSubsystem;

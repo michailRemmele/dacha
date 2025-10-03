@@ -1,9 +1,6 @@
 import { SceneSystem } from '../../../engine/system';
-import type {
-  SceneSystemOptions,
-  UpdateOptions,
-} from '../../../engine/system';
-import { Actor, ActorCollection } from '../../../engine/actor';
+import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
+import { Actor, ActorQuery } from '../../../engine/actor';
 import type { ActorSpawner } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
@@ -13,8 +10,16 @@ import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 
 import type { Behavior, BehaviorOptions, BehaviorConstructor } from './types';
 
+/**
+ * Behavior system that manages custom behavior execution for actors
+ * with {@link Behaviors} components
+ *
+ * @extends SceneSystem
+ * 
+ * @category Systems
+ */
 export class BehaviorSystem extends SceneSystem {
-  private behaviorCollection: ActorCollection;
+  private behaviorQuery: ActorQuery;
   private actorSpawner: ActorSpawner;
   private globalOptions: Record<string, unknown>;
   private behaviors: Record<string, BehaviorConstructor | undefined>;
@@ -35,36 +40,46 @@ export class BehaviorSystem extends SceneSystem {
 
     this.world = world;
     this.scene = scene;
-    this.behaviorCollection = new ActorCollection(scene, {
-      components: [Behaviors],
+    this.behaviorQuery = new ActorQuery({
+      scene,
+      filter: [Behaviors],
     });
     this.actorSpawner = actorSpawner;
     this.globalOptions = globalOptions;
-    this.behaviors = (resources as BehaviorConstructor[]).reduce((acc, behavior) => {
-      if (behavior.behaviorName === undefined) {
-        throw new Error(`Missing behaviorName field for ${behavior.name} behavior.`);
-      }
+    this.behaviors = (resources as BehaviorConstructor[]).reduce(
+      (acc, behavior) => {
+        if (behavior.behaviorName === undefined) {
+          throw new Error(
+            `Missing behaviorName field for ${behavior.name} behavior.`,
+          );
+        }
 
-      acc[behavior.behaviorName] = behavior;
-      return acc;
-    }, {} as Record<string, BehaviorConstructor>);
+        acc[behavior.behaviorName] = behavior;
+        return acc;
+      },
+      {} as Record<string, BehaviorConstructor>,
+    );
 
     this.activeBehaviors = {};
   }
 
   onSceneEnter(): void {
-    this.behaviorCollection.forEach((actor) => this.setUpBehavior(actor));
+    this.behaviorQuery
+      .getActors()
+      .forEach((actor) => this.setUpBehavior(actor));
 
-    this.behaviorCollection.addEventListener(AddActor, this.handleActorAdd);
-    this.behaviorCollection.addEventListener(RemoveActor, this.handleActorRemove);
+    this.behaviorQuery.addEventListener(AddActor, this.handleActorAdd);
+    this.behaviorQuery.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   onSceneDestroy(): void {
-    this.behaviorCollection.removeEventListener(AddActor, this.handleActorAdd);
-    this.behaviorCollection.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.behaviorQuery.removeEventListener(AddActor, this.handleActorAdd);
+    this.behaviorQuery.removeEventListener(RemoveActor, this.handleActorRemove);
 
-    this.behaviorCollection.forEach((actor) => {
-      this.activeBehaviors[actor.id].forEach((behavior) => behavior.destroy?.());
+    this.behaviorQuery.getActors().forEach((actor) => {
+      this.activeBehaviors[actor.id].forEach((behavior) =>
+        behavior.destroy?.(),
+      );
       delete this.activeBehaviors[actor.id];
     });
   }
@@ -104,8 +119,10 @@ export class BehaviorSystem extends SceneSystem {
   }
 
   update(options: UpdateOptions): void {
-    this.behaviorCollection.forEach((actor) => {
-      this.activeBehaviors[actor.id].forEach((behavior) => behavior.update?.(options));
+    this.behaviorQuery.getActors().forEach((actor) => {
+      this.activeBehaviors[actor.id].forEach((behavior) =>
+        behavior.update?.(options),
+      );
     });
   }
 }

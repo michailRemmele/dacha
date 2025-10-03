@@ -33,9 +33,59 @@ export interface MouseControlConfig {
   inputEventBindings: MouseEventBindConfig[];
 }
 
+/**
+ * MouseControl component for handling mouse input events.
+ *
+ * Handles the mouse input events for an actor.
+ * It can be used to bind mouse events to game actions.
+ *
+ * @example
+ * ```typescript
+ * // Create a mouse control
+ * const mouseControl = new MouseControl({
+ *   inputEventBindings: [
+ *     {
+ *       event: 'mousedown',
+ *       button: 0,
+ *       eventType: 'ATTACK',
+ *       attrs: [
+ *         {
+ *           name: 'type',
+ *           type: 'string',
+ *           value: 'lightAttack',
+ *         },
+ *       ],
+ *     },
+ *     {
+ *       event: 'mousedown',
+ *       button: 2,
+ *       eventType: 'ATTACK',
+ *       attrs: [
+ *         {
+ *           name: 'type',
+ *           type: 'string',
+ *           value: 'heavyAttack',
+ *         },
+ *       ],
+ *     },
+ *   ],
+ * });
+ * 
+ * // Add to actor
+ * actor.setComponent(mouseControl);
+ * ```
+ * 
+ * @category Components
+ */
 export class MouseControl extends Component {
+  /** Input event bindings */
   inputEventBindings: InputEventBindings;
 
+  /**
+   * Creates a new MouseControl component.
+   * 
+   * @param config - Configuration for the mouse control
+   */
   constructor(config: MouseControlConfig) {
     super();
 

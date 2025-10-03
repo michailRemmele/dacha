@@ -36,7 +36,6 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
   const baseTransformProps: TransformConfig = {
     offsetX: 0,
     offsetY: 0,
-    offsetZ: 0,
     rotation: 0,
     scaleX: 1,
     scaleY: 1,

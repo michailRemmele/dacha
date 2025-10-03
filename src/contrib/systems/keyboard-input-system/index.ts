@@ -7,10 +7,20 @@ import { getWindowNode } from '../../utils/get-window-node';
 import { InputListener } from './input-listener';
 
 interface KeyboardInputSystemOptions extends WorldSystemOptions {
-  windowNodeId?: string
-  useWindow: boolean
+  windowNodeId?: string;
+  useWindow: boolean;
 }
 
+/**
+ * Keyboard input system that captures and processes keyboard events
+ *
+ * Listens for keyboard input events and dispatches them as KeyboardInput events
+ * to the world
+ *
+ * @extends WorldSystem
+ * 
+ * @category Systems
+ */
 export class KeyboardInputSystem extends WorldSystem {
   private world: World;
   private inputListener: InputListener;
@@ -18,15 +28,14 @@ export class KeyboardInputSystem extends WorldSystem {
   constructor(options: WorldSystemOptions) {
     super();
 
-    const {
-      world,
-      windowNodeId,
-      useWindow,
-    } = options as KeyboardInputSystemOptions;
+    const { world, windowNodeId, useWindow } =
+      options as KeyboardInputSystemOptions;
 
     this.world = world;
 
-    const windowNode = useWindow ? window : getWindowNode(windowNodeId as string);
+    const windowNode = useWindow
+      ? window
+      : getWindowNode(windowNodeId as string);
 
     this.inputListener = new InputListener(windowNode);
 
