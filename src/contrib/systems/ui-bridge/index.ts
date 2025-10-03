@@ -5,20 +5,34 @@ import type { TemplateCollection } from '../../../engine/template';
 import type { ActorSpawner } from '../../../engine/actor';
 
 export interface UIOptions {
-  world: World
-  templateCollection: TemplateCollection
-  actorSpawner: ActorSpawner
-  globalOptions: Record<string, unknown>
+  world: World;
+  templateCollection: TemplateCollection;
+  actorSpawner: ActorSpawner;
+  globalOptions: Record<string, unknown>;
 }
 
 export type UIInitFn = (options: UIOptions) => void;
 export type UIDestroyFn = () => void;
-export type LoadUIFn = () => Promise<{ onInit: UIInitFn, onDestroy: UIDestroyFn }>;
+export type LoadUIFn = () => Promise<{
+  onInit: UIInitFn;
+  onDestroy: UIDestroyFn;
+}>;
 
 interface UIBridgeResources {
-  loadUI?: LoadUIFn
+  loadUI?: LoadUIFn;
 }
 
+/**
+ * UI bridge system that manages external UI integration
+ *
+ * Handles loading and lifecycle management of external UI modules.
+ * Provides a bridge between the game engine and external UI frameworks,
+ * allowing seamless integration of UI components with the game world.
+ *
+ * @extends WorldSystem
+ * 
+ * @category Systems
+ */
 export class UIBridge extends WorldSystem {
   private actorSpawner: ActorSpawner;
   private world: World;
@@ -42,7 +56,9 @@ export class UIBridge extends WorldSystem {
     const loadUI = (resources as UIBridgeResources | undefined)?.loadUI;
 
     if (loadUI === undefined) {
-      throw new Error('UIBridge requires a UI loader. Please specify the loader in the resources section.');
+      throw new Error(
+        'UIBridge requires a UI loader. Please specify the loader in the resources section.',
+      );
     }
 
     this.loadUI = loadUI;

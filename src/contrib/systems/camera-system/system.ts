@@ -12,6 +12,13 @@ interface CameraSystemOptions extends WorldSystemOptions {
   windowNodeId: string;
 }
 
+/**
+ * Camera system that manages camera control and current camera tracking
+ *
+ * Integrates with the renderer system for viewport transformations.
+ * 
+ * @category Systems
+ */
 export class CameraSystem extends WorldSystem {
   private actorQuery?: ActorQuery;
   private window: Window & HTMLElement;
