@@ -1,46 +1,68 @@
 import type { SceneConfig } from '../types';
 import type { TemplateCollection } from '../template';
-import {
-  Actor,
-  ActorSpawner,
-  ActorCreator,
-} from '../actor';
+import { Actor, ActorSpawner, ActorCreator } from '../actor';
 import { Entity } from '../entity';
 import type { EntityOptions } from '../entity';
 import type {
-  EventType, Event, ListenerFn, EventPayload,
+  EventType,
+  Event,
+  ListenerFn,
+  EventPayload,
 } from '../event-target';
 import type { SceneEventMap, ActorEventMap } from '../../types/events';
 
 type SceneObjectListenerFn<T extends EventType> = (
   event: T extends keyof SceneEventMap
     ? SceneEventMap[T]
-    : T extends keyof ActorEventMap ? ActorEventMap[T] : Event
+    : T extends keyof ActorEventMap
+      ? ActorEventMap[T]
+      : Event,
 ) => void;
 
 interface SceneOptions extends EntityOptions, SceneConfig {
-  actorCreator: ActorCreator
-  templateCollection: TemplateCollection
+  actorCreator: ActorCreator;
+  templateCollection: TemplateCollection;
 }
 
+/**
+ * A scene represents a distinct game level, menu, or gameplay state within the game world.
+ *
+ * Scenes serve as the primary organizational unit in the engine architecture.
+ * Each scene contains a collection of actors that can be accessed and managed directly
+ * or through utilitiy classes such as the {@link ActorQuery}.
+ *
+ * Scenes are typically created from configuration data rather than instantiated directly.
+ * SceneManager reads scene configurations and creates scene instances with their
+ * associated actors automatically.
+ *
+ * @extends {Entity}
+ * 
+ * @category Core
+ */
 export class Scene extends Entity {
   private actorCreator: ActorCreator;
 
+  /** Collection of actors contained within this scene */
   declare readonly children: Actor[];
+
+  /** Template collection used for creating actors from predefined templates */
   templateCollection: TemplateCollection;
+
+  /** Spawner utility for creating new actors within this scene */
   actorSpawner: ActorSpawner;
+
+  /** Custom data storage for scene-related information */
   data: Record<string, unknown>;
 
   declare parent: null;
 
+  /**
+   * Creates a new scene instance.
+   */
   constructor(options: SceneOptions) {
     super(options);
 
-    const {
-      actors,
-      actorCreator,
-      templateCollection,
-    } = options;
+    const { actors, actorCreator, templateCollection } = options;
 
     this.actorCreator = actorCreator;
     this.actorSpawner = new ActorSpawner(this.actorCreator);
@@ -89,7 +111,10 @@ export class Scene extends Entity {
     super.removeChild(child);
   }
 
-  override findChild(predicate: (child: Actor) => boolean, recursive = true): Actor | undefined {
+  override findChild(
+    predicate: (child: Actor) => boolean,
+    recursive = true,
+  ): Actor | undefined {
     return super.findChild(
       predicate as (child: Entity) => boolean,
       recursive,

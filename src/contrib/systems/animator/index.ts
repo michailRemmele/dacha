@@ -17,6 +17,14 @@ import { setValue } from './utils';
 
 const FRAME_RATE = 100;
 
+/**
+ * Animator system that manages the animation of actors with {@link Animatable} components
+ * using the state machine approach
+ *
+ * @extends SceneSystem
+ * 
+ * @category Systems
+ */
 export class Animator extends SceneSystem {
   private actorQuery: ActorQuery;
   private substatePickers: Record<string, Picker>;

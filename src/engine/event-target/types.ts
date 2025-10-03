@@ -2,10 +2,19 @@ import type { EventTarget } from './event-target';
 
 export type EventType = string | symbol;
 
+/**
+ * Event interface.
+ * 
+ * @category Core
+ */
 export interface Event<T = EventTarget> {
+  /** Type of the event */
   type: EventType
+  /** Target of the event */
   target: T
+  /** Current event target */
   currentTarget: EventTarget
+  /** Function to stop the event propagation */
   stopPropagation: () => void
 }
 

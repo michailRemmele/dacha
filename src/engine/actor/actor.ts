@@ -5,25 +5,47 @@ import { AddComponent, RemoveComponent } from '../events';
 import { Entity } from '../entity';
 import type { EntityOptions } from '../entity';
 import type {
-  EventType, Event, ListenerFn, EventPayload,
+  EventType,
+  Event,
+  ListenerFn,
+  EventPayload,
 } from '../event-target';
 
 type ActorListenerFn<T extends EventType> = (
-  event: T extends keyof ActorEventMap ? ActorEventMap[T] : Event
+  event: T extends keyof ActorEventMap ? ActorEventMap[T] : Event,
 ) => void;
 
+/**
+ * Configuration options for creating an Actor.
+ */
 export interface ActorOptions extends EntityOptions {
-  templateId?: string
+  /** Optional template ID to instantiate from */
+  templateId?: string;
 }
 
+/**
+ * An Actor is the main entity type in the game engine.
+ *
+ * Actors are entities that can have components attached to them
+ * and represent various game objects such as players, enemies, items, decorations, etc.
+ * They support hierarchical relationships and can be organized in parent-child structures.
+ * 
+ * @category Core
+ */
 export class Actor extends Entity {
   private components: Record<string, Component>;
 
   declare public readonly children: Actor[];
+  /** The template id of the actor */
   public readonly templateId?: string;
 
   declare public parent: Actor | Scene | null;
 
+  /**
+   * Creates a new Actor instance.
+   *
+   * @param options - Configuration options for the actor
+   */
   constructor(options: ActorOptions) {
     super(options);
 
@@ -69,7 +91,10 @@ export class Actor extends Entity {
     super.removeChild(child);
   }
 
-  override findChild(predicate: (child: Actor) => boolean, recursive = true): Actor | undefined {
+  override findChild(
+    predicate: (child: Actor) => boolean,
+    recursive = true,
+  ): Actor | undefined {
     return super.findChild(
       predicate as (child: Entity) => boolean,
       recursive,
@@ -84,19 +109,63 @@ export class Actor extends Entity {
     return super.findChildByName(name, recursive) as Actor | undefined;
   }
 
+  /**
+   * Gets all components attached to this actor.
+   *
+   * @returns An array of all components
+   */
   getComponents(): Component[] {
     return Object.values(this.components);
   }
 
-  getComponent<T extends Component>(classOrName: ComponentConstructor<T> | string): T {
+  /**
+   * Gets a specific component from this actor.
+   *
+   * @param classOrName - The component class or component name string
+   * @returns The component instance, or undefined if not found
+   *
+   * @example
+   * ```typescript
+   * // Get by class
+   * const transform = actor.getComponent(Transform);
+   *
+   * // Get by name
+   * const sprite = actor.getComponent('Sprite');
+   *
+   * // Type-safe access
+   * if (transform) {
+   *   transform.offsetX = 100;
+   * }
+   * ```
+   */
+  getComponent<T extends Component>(
+    classOrName: ComponentConstructor<T> | string,
+  ): T {
     if (typeof classOrName === 'string') {
       return this.components[classOrName] as T;
     }
     return this.components[classOrName.componentName] as T;
   }
 
+  /**
+   * Attaches a component to this actor.
+   *
+   * @param component - The component to attach
+   *
+   * @example
+   * ```typescript
+   * const transform = new Transform({
+   *   offsetX: 100,
+   *   offsetY: 200,
+   *   rotation: 0,
+   *   scaleX: 1,
+   *   scaleY: 1
+   * });
+   * actor.setComponent(transform);
+   * ```
+   */
   setComponent(component: Component): void {
-    const { componentName } = (component.constructor as ComponentConstructor);
+    const { componentName } = component.constructor as ComponentConstructor;
 
     this.components[componentName] = component;
     component.actor = this;
@@ -104,6 +173,16 @@ export class Actor extends Entity {
     this.dispatchEventImmediately(AddComponent, { componentName });
   }
 
+  /**
+   * Removes a component from this actor.
+   *
+   * @param componentClass - The component class to remove
+   *
+   * @example
+   * ```typescript
+   * actor.removeComponent(Transform);
+   * ```
+   */
   removeComponent(componentClass: ComponentConstructor): void {
     const { componentName } = componentClass;
 

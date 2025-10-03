@@ -16,6 +16,8 @@ export interface EngineOptions {
 /**
  * Main game engine responsible for bootstrapping scenes and systems, managing the
  * game loop, and controlling lifecycle actions (play, pause, stop).
+ * 
+ * @category Core
  */
 export class Engine {
   private options: EngineOptions;
@@ -26,6 +28,10 @@ export class Engine {
    * Creates a new engine instance.
    *
    * @param options - Configuration, available systems and components, and optional shared resources.
+   * @param options.config - Configuration for the engine. It contains game world description such as scenes, actors, and their components.
+   * @param options.systems - Available systems for the engine.
+   * @param options.components - Available components for the engine.
+   * @param options.resources - Optional shared resources used by the engine's systems.
    */
   constructor(options: EngineOptions) {
     this.options = options;

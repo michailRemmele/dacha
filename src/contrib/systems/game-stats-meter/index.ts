@@ -11,6 +11,16 @@ interface GameStatsMeterOptions extends WorldSystemOptions {
   frequency: number;
 }
 
+/**
+ * Game statistics meter that tracks and reports performance metrics
+ *
+ * Monitors frame rate (FPS) and actor count, dispatching periodic updates
+ * via {@link GameStatsUpdate} events. Useful for performance monitoring and debugging.
+ *
+ * @extends WorldSystem
+ * 
+ * @category Systems
+ */
 export class GameStatsMeter extends WorldSystem {
   private world: World;
   private actorQuery?: ActorQuery;

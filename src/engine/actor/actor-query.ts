@@ -27,21 +27,71 @@ type ActorQueryListenerFn<T extends EventType> = (
     : Event,
 ) => void;
 
+/**
+ * Filter type for ActorQuery that can match actors by components or custom logic.
+ *
+ * @example
+ * // Match actors with specific components
+ * const filter = [Transform, Sprite];
+ *
+ * // Match actors with custom logic
+ * const filter = (actor) => actor.getComponent(Transform)?.offsetY > 100;
+ */
 export type ActorQueryFilter =
   | (ComponentConstructor | string)[]
   | ((actor: Actor) => boolean);
 
+/**
+ * Configuration options for creating an ActorQuery.
+ */
 export interface ActorQueryOptions {
+  /** Scene to query actors from */
   scene: Scene;
+  /** Filter criteria to match actors */
   filter: ActorQueryFilter;
 }
 
+/**
+ * A query system that automatically tracks actors matching specific criteria.
+ *
+ * ActorQuery provides real-time filtering and tracking of actors in a scene based on
+ * component presence or custom logic. It automatically updates when actors are added,
+ * removed, or have components added/removed.
+ *
+ * @example
+ * ```typescript
+ * // Query all actors with Transform and Sprite components
+ * const query = new ActorQuery({
+ *   scene: myScene,
+ *   filter: [Transform, Sprite]
+ * });
+ *
+ * // Listen for actors being added to the query
+ * query.addEventListener(AddActor, ({ actor }) => {
+ *   console.log('New actor added:', actor.name);
+ * });
+ *
+ * // Get all currently matching actors
+ * const actors = query.getActors();
+ * 
+ * for (const actor of actors) {
+ *   console.log('Actor:', actor.name);
+ * }
+ * ```
+ * 
+ * @category Core
+ */
 export class ActorQuery extends EventTarget {
   private scene: Scene;
   private filter: ActorQueryFilter;
 
   private matchedActors: Set<Actor>;
 
+  /**
+   * Creates a new ActorQuery instance.
+   *
+   * @param options - Configuration for the query
+   */
   constructor(options: ActorQueryOptions) {
     super();
 
@@ -64,6 +114,11 @@ export class ActorQuery extends EventTarget {
     scene.addEventListener(RemoveComponent, this.handleActorUpdate);
   }
 
+  /**
+   * Destroys the query and removes all event listeners.
+   *
+   * Call this method when the query is no longer needed to prevent memory leaks.
+   */
   destroy(): void {
     this.scene.removeEventListener(AddChildEntity, this.handleAddChildEntity);
     this.scene.removeEventListener(
@@ -146,6 +201,23 @@ export class ActorQuery extends EventTarget {
     this.dispatchEventImmediately(RemoveActor, { actor });
   }
 
+  /**
+   * Gets all actors currently matching the query criteria.
+   *
+   * @returns A Set of all actors that match the query filter
+   *
+   * @example
+   * ```typescript
+   * const query = new ActorQuery({
+   *   scene: myScene,
+   *   filter: [Transform, Sprite]
+   * });
+   *
+   * // Get all matching actors
+   * const actors = query.getActors();
+   * console.log(`Found ${actors.size} actors with Transform and Sprite`);
+   * ```
+   */
   getActors(): Set<Actor> {
     return this.matchedActors;
   }
