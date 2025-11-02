@@ -73,7 +73,7 @@
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "6.7.1",
-    "dacha": "0.16.0",
+    "dacha": "0.16.1",
     "eslint": "9.31.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
