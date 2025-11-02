@@ -45,7 +45,7 @@ export interface ElectronAPI {
   onRedo: (callback: () => void) => () => void
   onCut: (callback: () => void) => () => void
   onCopy: (callback: () => void) => () => void
-  onPaste: (callback: () => void) => () => void
+  onPaste: (callback: (value?: string) => void) => () => void
   onDelete: (callback: () => void) => () => void
   onExtensionBuildStart: (callback: () => void) => () => void
   onExtensionBuildEnd: (callback: () => void) => () => void
