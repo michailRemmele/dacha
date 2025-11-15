@@ -2,21 +2,24 @@ import { SceneSystem, Camera, Transform } from 'dacha';
 import type { World, SceneSystemOptions, Actor } from 'dacha';
 import type { MouseControlEvent } from 'dacha/events';
 
+import { CANVAS_ROOT } from '../../../consts/root-nodes';
 import { EventType } from '../../../events';
 import { getTool } from '../../../utils/get-tool';
+import {
+  getProjectedX,
+  getProjectedY,
+} from '../../../utils/coordinates-projection';
 import { persistentStorage } from '../../../persistent-storage';
 
-const ZOOM_FACTOR = 1.5;
-const MIN_ZOOM = 0.0025;
-const DEFAULT_ZOOM = 1;
-
-const roundZoom = (value: number): number => parseFloat(value.toFixed(4));
+import { ZOOM_FACTOR, WHEEL_ZOOM_STEP, DEFAULT_ZOOM } from './consts';
+import { updateZoom } from './utils';
 
 type ZoomMode = 'in' | 'out';
 
 export class ZoomToolSystem extends SceneSystem {
   private world: World;
   private mainActor: Actor;
+  private rootNode: HTMLElement;
 
   constructor(options: SceneSystemOptions) {
     super();
@@ -26,8 +29,12 @@ export class ZoomToolSystem extends SceneSystem {
     this.world = world;
     this.mainActor = world.data.mainActor as Actor;
 
+    this.rootNode = document.getElementById(CANVAS_ROOT) as HTMLElement;
+
     this.world.addEventListener(EventType.SelectScene, this.handleSelectScene);
     this.world.addEventListener(EventType.CameraZoom, this.handleCameraZoom);
+
+    this.rootNode.addEventListener('wheel', this.handleWheel);
   }
 
   onSceneDestroy(): void {
@@ -36,6 +43,8 @@ export class ZoomToolSystem extends SceneSystem {
       this.handleSelectScene,
     );
     this.world.removeEventListener(EventType.CameraZoom, this.handleCameraZoom);
+
+    this.rootNode.removeEventListener('wheel', this.handleWheel);
   }
 
   private handleSelectScene = (): void => {
@@ -46,22 +55,49 @@ export class ZoomToolSystem extends SceneSystem {
   };
 
   private handleCameraZoom = (event: MouseControlEvent): void => {
-    const { x, y, screenX, screenY } = event;
-
     const tool = getTool(this.world);
     const zoomMode = tool.features.direction.value as ZoomMode;
 
     const cameraComponent = this.mainActor.getComponent(Camera);
-    const transform = this.mainActor.getComponent(Transform);
 
-    if (zoomMode === 'in') {
-      cameraComponent.zoom = roundZoom(cameraComponent.zoom * ZOOM_FACTOR);
-    } else {
-      cameraComponent.zoom = Math.max(
-        roundZoom(cameraComponent.zoom / ZOOM_FACTOR),
-        MIN_ZOOM,
-      );
+    const zoomFactor = zoomMode === 'in' ? ZOOM_FACTOR : 1 / ZOOM_FACTOR;
+
+    cameraComponent.zoom = updateZoom(cameraComponent.zoom, zoomFactor);
+
+    persistentStorage.set('canvas.mainActor.camera.zoom', cameraComponent.zoom);
+
+    this.updateCameraPosition(event.x, event.y, event.screenX, event.screenY);
+  };
+
+  private handleWheel = (event: WheelEvent): void => {
+    if (!event.ctrlKey) {
+      return;
     }
+
+    const x = getProjectedX(event.offsetX, this.mainActor);
+    const y = getProjectedY(event.offsetY, this.mainActor);
+
+    const cameraComponent = this.mainActor.getComponent(Camera);
+
+    const zoomDirection = event.deltaY > 0 ? -1 : 1;
+
+    const zoomFactor = 1 + zoomDirection * WHEEL_ZOOM_STEP;
+
+    cameraComponent.zoom = updateZoom(cameraComponent.zoom, zoomFactor);
+
+    persistentStorage.set('canvas.mainActor.camera.zoom', cameraComponent.zoom);
+
+    this.updateCameraPosition(x, y, event.offsetX, event.offsetY);
+  };
+
+  private updateCameraPosition(
+    x: number,
+    y: number,
+    screenX: number,
+    screenY: number,
+  ): void {
+    const cameraComponent = this.mainActor.getComponent(Camera);
+    const transform = this.mainActor.getComponent(Transform);
 
     const { windowSizeX, windowSizeY, zoom } = cameraComponent;
 
@@ -75,7 +111,6 @@ export class ZoomToolSystem extends SceneSystem {
     transform.offsetX += x - nextX;
     transform.offsetY += y - nextY;
 
-    persistentStorage.set('canvas.mainActor.camera.zoom', cameraComponent.zoom);
     persistentStorage.set(
       'canvas.mainActor.transform.offsetX',
       transform.offsetX,
@@ -84,7 +119,7 @@ export class ZoomToolSystem extends SceneSystem {
       'canvas.mainActor.transform.offsetY',
       transform.offsetY,
     );
-  };
+  }
 }
 
 ZoomToolSystem.systemName = 'ZoomToolSystem';
