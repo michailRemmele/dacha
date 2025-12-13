@@ -1,21 +1,18 @@
-import { Scene } from '../scene';
 import type { Actor } from '../actor';
 import type { Constructor } from '../../types/utils';
 
-export type ComponentConstructor<T extends Component = Component>
-  = Constructor<T> & { componentName: string };
+export type ComponentConstructor<T extends Component = Component> =
+  Constructor<T> & { componentName: string };
 
 export const findParentComponent = (
   actor: Actor,
   componentClass: ComponentConstructor,
 ): Component | undefined => {
-  if (!actor.parent || actor.parent instanceof Scene) {
-    return void 0;
+  if (!actor.parent || !('getComponent' in actor.parent)) {
+    return undefined;
   }
 
-  const parentComponent = actor.parent.getComponent(componentClass);
-
-  return parentComponent || findParentComponent(actor.parent, componentClass);
+  return actor.parent.getComponent(componentClass);
 };
 
 export abstract class Component {
@@ -23,15 +20,18 @@ export abstract class Component {
   public actor?: Actor;
 
   constructor() {
-    this.actor = void 0;
+    this.actor = undefined;
   }
 
   getParentComponent(): Component | undefined {
     if (!this.actor) {
-      return void 0;
+      return undefined;
     }
 
-    return findParentComponent(this.actor, this.constructor as ComponentConstructor);
+    return findParentComponent(
+      this.actor,
+      this.constructor as ComponentConstructor,
+    );
   }
 
   abstract clone(): Component;

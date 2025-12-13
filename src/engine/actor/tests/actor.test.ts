@@ -1,15 +1,12 @@
 import { Actor } from '../actor';
 import { Component } from '../../component';
-import {
-  RemoveChildEntity,
-  AddComponent,
-  RemoveComponent,
-} from '../../events';
+import { RemoveChildEntity, AddComponent, RemoveComponent } from '../../events';
 import type {
   RemoveChildEntityEvent,
   AddComponentEvent,
   RemoveComponentEvent,
 } from '../../events';
+import { Transform } from '../../../contrib/components/transform';
 
 class TestComponent1 extends Component {
   static componentName = 'TestComponent1';
@@ -28,6 +25,15 @@ class TestComponent2 extends Component {
 }
 
 describe('Engine -> Actor', () => {
+  it('Transform component is always defined', () => {
+    const actor = new Actor({
+      id: '0',
+      name: 'actor',
+    });
+
+    expect(actor.getComponent(Transform)).toBeDefined();
+  });
+
   it('Returns correct list of component names', () => {
     const actor = new Actor({
       id: '0',
@@ -39,10 +45,6 @@ describe('Engine -> Actor', () => {
     actor.setComponent(component1);
     actor.setComponent(component2);
 
-    expect(actor.getComponents()).toStrictEqual([
-      component1,
-      component2,
-    ]);
     expect(actor.getComponent(TestComponent1)).toEqual(component1);
     expect(actor.getComponent(TestComponent2)).toEqual(component2);
   });
@@ -60,9 +62,7 @@ describe('Engine -> Actor', () => {
 
     actor.removeComponent(TestComponent2);
 
-    expect(actor.getComponents()).toStrictEqual([
-      component1,
-    ]);
+    expect(actor.getComponent(TestComponent1)).toBeDefined();
     expect(actor.getComponent(TestComponent2)).toBeUndefined();
   });
 
@@ -75,12 +75,15 @@ describe('Engine -> Actor', () => {
     const subscription2 = jest.fn() as jest.Mock<void, [AddComponentEvent]>;
     const subscription3 = jest.fn() as jest.Mock<void, [RemoveComponentEvent]>;
 
+    const component1 = new TestComponent1();
+    const component2 = new TestComponent2();
+
     actor.addEventListener(AddComponent, subscription1);
     actor.addEventListener(RemoveComponent, subscription3);
-    actor.setComponent(new TestComponent1());
+    actor.setComponent(component1);
 
     actor.addEventListener(AddComponent, subscription2);
-    actor.setComponent(new TestComponent2());
+    actor.setComponent(component2);
 
     actor.removeComponent(TestComponent1);
 
@@ -89,23 +92,27 @@ describe('Engine -> Actor', () => {
 
     expect(subscription1.mock.calls[0][0]).toMatchObject({
       type: AddComponent,
-      componentName: 'TestComponent1',
+      name: 'TestComponent1',
+      component: component1,
       target: actor,
     });
     expect(subscription1.mock.calls[1][0]).toMatchObject({
       type: AddComponent,
-      componentName: 'TestComponent2',
+      name: 'TestComponent2',
+      component: component2,
       target: actor,
     });
     expect(subscription3.mock.calls[0][0]).toMatchObject({
       type: RemoveComponent,
-      componentName: 'TestComponent1',
+      name: 'TestComponent1',
+      component: component1,
       target: actor,
     });
 
     expect(subscription2.mock.calls[0][0]).toMatchObject({
       type: AddComponent,
-      componentName: 'TestComponent2',
+      name: 'TestComponent2',
+      component: component2,
       target: actor,
     });
   });

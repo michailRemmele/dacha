@@ -3,38 +3,35 @@ import {
   Texture,
   Sprite as PixiSprite,
   TilingSprite,
-  Bounds,
 } from 'pixi.js';
 
+import type { Assets } from '../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
-import { Transform } from '../../../../components/transform';
 import { Sprite } from '../../../../components/sprite';
 import type { Actor } from '../../../../../engine/actor';
 import { CacheStore } from '../../../../../engine/data-lib';
-import { floatEquals } from '../utils';
 
 import { getTextureSource, getTextureArray } from './utils';
 
 interface SpriteBuilderOptions {
-  imageStore: CacheStore<HTMLImageElement>;
+  assets: Assets;
 }
 
-export class SpriteBuilder implements Builder {
-  private imageStore: CacheStore<HTMLImageElement>;
+export class SpriteBuilder implements Builder<Sprite> {
+  private assets: Assets;
 
   private textureSourceMap: CacheStore<TextureSource>;
   private textureArrayMap: CacheStore<Texture[]>;
 
-  constructor(options: SpriteBuilderOptions) {
-    this.imageStore = options.imageStore;
+  constructor({ assets }: SpriteBuilderOptions) {
+    this.assets = assets;
 
     this.textureSourceMap = new CacheStore();
     this.textureArrayMap = new CacheStore();
   }
 
-  destroy(actor: Actor): void {
-    const sprite = actor.getComponent(Sprite);
+  destroy(sprite: Sprite): void {
     const textureSourceKey = sprite.renderData?.textureSourceKey;
     const textureArrayKey = sprite.renderData?.textureArrayKey;
 
@@ -49,13 +46,7 @@ export class SpriteBuilder implements Builder {
     sprite.renderData = undefined;
   }
 
-  buildView(actor: Actor): PixiSprite | TilingSprite | undefined {
-    const sprite = actor.getComponent(Sprite);
-    if (!sprite) {
-      return undefined;
-    }
-
-    const { offsetX, offsetY } = actor.getComponent(Transform);
+  buildView(sprite: Sprite, actor: Actor): PixiSprite | TilingSprite {
     const options = { anchor: 0.5 };
     const view =
       sprite.fit === 'stretch'
@@ -67,86 +58,52 @@ export class SpriteBuilder implements Builder {
       actor,
       builderKey: Sprite.componentName,
       viewComponent: sprite,
-      bounds: new Bounds(offsetX, offsetY, offsetX, offsetY),
       meta: {},
-      didChange: false,
     };
 
     return view;
   }
 
-  updateView(actor: Actor): void {
-    const transform = actor.getComponent(Transform);
-    const sprite = actor.getComponent(Sprite);
-
-    if (!sprite) {
-      return undefined;
-    }
-
+  updateView(sprite: Sprite): void {
     const view = sprite.renderData!.view;
     const meta = view.__dacha.meta;
-
-    view.__dacha.didChange = false;
 
     if (sprite.disabled !== meta.disabled) {
       view.visible = !sprite.disabled;
       meta.disabled = sprite.disabled;
-      view.__dacha.didChange = true;
     }
 
     if (sprite.color !== meta.color) {
       view.tint = sprite.color;
       meta.color = sprite.color;
-      view.__dacha.didChange = true;
     }
 
     if (sprite.blending !== meta.blending) {
       view.blendMode = BLEND_MODE_MAPPING[sprite.blending];
       meta.blending = sprite.blending;
-      view.__dacha.didChange = true;
     }
 
     if (sprite.opacity !== meta.opacity) {
       view.alpha = sprite.opacity;
       meta.opacity = sprite.opacity;
-      view.__dacha.didChange = true;
-    }
-
-    const angle = transform.rotation + sprite.rotation;
-    if (angle !== meta.angle) {
-      view.angle = angle;
-      meta.angle = angle;
-      view.__dacha.didChange = true;
-    }
-
-    const { offsetX, offsetY } = transform;
-    if (
-      !floatEquals(offsetX, meta.offsetX as number) ||
-      !floatEquals(offsetY, meta.offsetY as number)
-    ) {
-      view.position.set(offsetX, offsetY);
-      meta.offsetX = offsetX;
-      meta.offsetY = offsetY;
-      view.__dacha.didChange = true;
     }
 
     if (
-      this.imageStore.has(sprite.src) &&
+      this.assets.get(sprite) &&
       (sprite.src !== meta.src || sprite.slice !== meta.slice)
     ) {
       view.label = sprite.src;
       this.updateTextureArray(sprite);
       meta.src = sprite.src;
       meta.slice = sprite.slice;
-      view.__dacha.didChange = true;
     }
 
     const textureArray = this.getTextureArray(sprite);
     const texture = textureArray?.[sprite.currentFrame ?? 0];
     view.texture = texture ?? Texture.WHITE;
 
-    const scaleX = (sprite.flipX ? -1 : 1) * transform.scaleX;
-    const scaleY = (sprite.flipY ? -1 : 1) * transform.scaleY;
+    const scaleX = sprite.flipX ? -1 : 1;
+    const scaleY = sprite.flipY ? -1 : 1;
     if (
       view.texture !== meta.texture ||
       scaleX !== meta.scaleX ||
@@ -170,7 +127,6 @@ export class SpriteBuilder implements Builder {
       meta.scaleY = scaleY;
       meta.width = sprite.width;
       meta.height = sprite.height;
-      view.__dacha.didChange = true;
     }
   }
 
@@ -206,7 +162,7 @@ export class SpriteBuilder implements Builder {
       this.textureSourceMap.retain(textureSourceKey);
     }
 
-    const image = this.imageStore.get(sprite.src);
+    const image = this.assets.get(sprite);
 
     if (!image) {
       return undefined;

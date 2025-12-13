@@ -67,14 +67,14 @@ export class Transform extends Component {
   constructor(config: TransformConfig) {
     super();
 
-    this.relativeOffsetX = config.offsetX;
-    this.relativeOffsetY = config.offsetY;
-    this.relativeRotation = config.rotation;
-    this.relativeScaleX = config.scaleX || 1;
-    this.relativeScaleY = config.scaleY || 1;
+    this.relativeOffsetX = config.offsetX ?? 0;
+    this.relativeOffsetY = config.offsetY ?? 0;
+    this.relativeRotation = config.rotation ?? 0;
+    this.relativeScaleX = config.scaleX ?? 1;
+    this.relativeScaleY = config.scaleY ?? 1;
   }
 
-  _getPropertyFromParent(name: string, defaultValue: number): number {
+  private getPropertyFromParent(name: string, defaultValue: number): number {
     const parentComponent = this.getParentComponent() as
       | Record<string, number>
       | undefined;
@@ -86,7 +86,7 @@ export class Transform extends Component {
    * @param offsetX - World X position
    */
   set offsetX(offsetX) {
-    this.relativeOffsetX = offsetX - this._getPropertyFromParent('offsetX', 0);
+    this.relativeOffsetX = offsetX - this.getPropertyFromParent('offsetX', 0);
   }
 
   /**
@@ -94,7 +94,7 @@ export class Transform extends Component {
    * @returns World X position
    */
   get offsetX(): number {
-    return this.relativeOffsetX + this._getPropertyFromParent('offsetX', 0);
+    return this.relativeOffsetX + this.getPropertyFromParent('offsetX', 0);
   }
 
   /**
@@ -102,7 +102,7 @@ export class Transform extends Component {
    * @param offsetY - World Y position
    */
   set offsetY(offsetY) {
-    this.relativeOffsetY = offsetY - this._getPropertyFromParent('offsetY', 0);
+    this.relativeOffsetY = offsetY - this.getPropertyFromParent('offsetY', 0);
   }
 
   /**
@@ -110,7 +110,7 @@ export class Transform extends Component {
    * @returns World Y position
    */
   get offsetY(): number {
-    return this.relativeOffsetY + this._getPropertyFromParent('offsetY', 0);
+    return this.relativeOffsetY + this.getPropertyFromParent('offsetY', 0);
   }
 
   /**
@@ -119,7 +119,7 @@ export class Transform extends Component {
    */
   set rotation(rotation) {
     this.relativeRotation =
-      rotation - this._getPropertyFromParent('rotation', 0);
+      rotation - this.getPropertyFromParent('rotation', 0);
   }
 
   /**
@@ -127,7 +127,7 @@ export class Transform extends Component {
    * @returns World rotation in degrees
    */
   get rotation(): number {
-    return this.relativeRotation + this._getPropertyFromParent('rotation', 0);
+    return this.relativeRotation + this.getPropertyFromParent('rotation', 0);
   }
 
   /**
@@ -135,7 +135,7 @@ export class Transform extends Component {
    * @param scaleX - X scale factor
    */
   set scaleX(scaleX) {
-    this.relativeScaleX = scaleX / this._getPropertyFromParent('scaleX', 1);
+    this.relativeScaleX = scaleX / this.getPropertyFromParent('scaleX', 1);
   }
 
   /**
@@ -143,7 +143,7 @@ export class Transform extends Component {
    * @returns X scale factor
    */
   get scaleX(): number {
-    return this.relativeScaleX * this._getPropertyFromParent('scaleX', 1);
+    return this.relativeScaleX * this.getPropertyFromParent('scaleX', 1);
   }
 
   /**
@@ -151,7 +151,7 @@ export class Transform extends Component {
    * @param scaleY - Y scale factor
    */
   set scaleY(scaleY) {
-    this.relativeScaleY = scaleY / this._getPropertyFromParent('scaleY', 1);
+    this.relativeScaleY = scaleY / this.getPropertyFromParent('scaleY', 1);
   }
 
   /**
@@ -159,7 +159,7 @@ export class Transform extends Component {
    * @returns Y scale factor
    */
   get scaleY(): number {
-    return this.relativeScaleY * this._getPropertyFromParent('scaleY', 1);
+    return this.relativeScaleY * this.getPropertyFromParent('scaleY', 1);
   }
 
   clone(): Transform {

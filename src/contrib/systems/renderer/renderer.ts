@@ -3,27 +3,15 @@ import {
   Container,
   type ViewContainer,
   Color,
-  Assets,
+  RenderLayer,
+  type IRenderLayer,
 } from 'pixi.js';
 
-import {
-  AddActor,
-  RemoveActor,
-  type AddActorEvent,
-  type RemoveActorEvent,
-} from '../../../engine/events';
 import { WorldSystem, type WorldSystemOptions } from '../../../engine/system';
-import { ActorQuery, type Actor } from '../../../engine/actor';
-import { type TemplateCollection } from '../../../engine/template';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
-import { Sprite } from '../../components/sprite';
-import { Shape } from '../../components/shape';
-import { PixiView } from '../../components/pixi-view';
-import { BitmapText } from '../../components/bitmap-text';
 import { Camera } from '../../components/camera';
 import { CameraService } from '../camera-system';
-import { CacheStore } from '../../../engine/data-lib';
 import { getWindowNode } from '../../utils/get-window-node';
 
 import { RendererService } from './service';
@@ -35,15 +23,9 @@ import {
   sortByXAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
-import { loadImage, getAllImageSources, getAllFontSources } from './utils';
 import type { Sorting } from './types';
-import {
-  SpriteBuilder,
-  ShapeBuilder,
-  PixiViewBuilder,
-  BitmapTextBuilder,
-} from './builders';
-import type { Builder } from './builders';
+import { Assets } from './assets';
+import { ActorRenderTree } from './actor-render-tree';
 import { SORTING_ORDER_MAPPING } from './consts';
 
 interface RendererOptions extends WorldSystemOptions {
@@ -55,22 +37,19 @@ interface RendererOptions extends WorldSystemOptions {
  * Renderer system that manages 2D graphics rendering using PIXI.js under the hood
  *
  * @extends WorldSystem
- * 
+ *
  * @category Systems
  */
 export class Renderer extends WorldSystem {
-  private actorQuery?: ActorQuery;
-  private viewEntries?: ViewContainer[];
-  private deletedActors: Set<Actor>;
   private window: HTMLElement;
   private application: Application;
   private worldContainer: Container;
-  private imageStore: CacheStore<HTMLImageElement>;
-  private builders: Map<string, Builder>;
+  private sortingLayers: Map<string, IRenderLayer>;
   private sortFn: SortFn;
-  private templateCollection: TemplateCollection;
   private backgroundColor: Color;
   private cameraService: CameraService;
+  private assets: Assets;
+  private actorRenderTree?: ActorRenderTree;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -83,7 +62,6 @@ export class Renderer extends WorldSystem {
       world,
     } = options as RendererOptions;
 
-    this.templateCollection = templateCollection;
     this.backgroundColor = new Color(backgroundColor);
 
     this.window = getWindowNode(windowNodeId);
@@ -91,34 +69,38 @@ export class Renderer extends WorldSystem {
     const sorting = globalOptions.sorting as Sorting | undefined;
     const sortingOrder = SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
 
+    const parsedSortingLayers = parseSortingLayers(sorting?.layers);
+
     this.sortFn = composeSort([
-      createSortByLayer(parseSortingLayers(sorting?.layers)),
+      createSortByLayer(parsedSortingLayers),
       sortByYAxis(sortingOrder[1]),
       sortByXAxis(sortingOrder[0]),
     ]);
 
-    this.application = new Application();
-    this.worldContainer = new Container({ sortableChildren: true });
-
-    this.imageStore = new CacheStore<HTMLImageElement>();
-
-    this.builders = new Map();
-    this.builders.set(
-      Sprite.componentName,
-      new SpriteBuilder({ imageStore: this.imageStore }),
+    this.sortingLayers = new Map();
+    parsedSortingLayers.forEach((name) =>
+      this.sortingLayers.set(
+        name,
+        new RenderLayer({
+          sortableChildren: true,
+          sortFunction: this.sortFn as (a: Container, b: Container) => number,
+        }),
+      ),
     );
-    this.builders.set(Shape.componentName, new ShapeBuilder());
-    this.builders.set(PixiView.componentName, new PixiViewBuilder());
-    this.builders.set(BitmapText.componentName, new BitmapTextBuilder());
+
+    this.application = new Application();
+    this.worldContainer = new Container();
+
+    this.assets = new Assets({ templateCollection });
 
     this.cameraService = world.getService(CameraService);
-
-    this.deletedActors = new Set();
 
     world.addService(
       new RendererService({
         application: this.application,
-        getViewEntries: (): ViewContainer[] | undefined => this.viewEntries,
+        worldContainer: this.worldContainer,
+        getViewEntries: (): Set<ViewContainer> | undefined =>
+          this.actorRenderTree?.viewEntries,
         sortFn: this.sortFn,
       }),
     );
@@ -139,6 +121,10 @@ export class Renderer extends WorldSystem {
     this.window.appendChild(this.application.canvas);
     this.application.stage.addChild(this.worldContainer);
 
+    this.sortingLayers.forEach((layer) =>
+      this.application.stage.addChild(layer),
+    );
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     window.__PIXI_DEVTOOLS__ = {
@@ -156,133 +142,28 @@ export class Renderer extends WorldSystem {
   }
 
   async onSceneLoad(scene: Scene): Promise<void> {
-    const allImageSources = [
-      ...getAllImageSources(this.templateCollection.getAll()),
-      ...getAllImageSources(scene.children),
-    ];
-    const uniqueImageSources = [...new Set(allImageSources)];
-
-    const images = await Promise.all(
-      uniqueImageSources.map((src) => {
-        return !this.imageStore.has(src) ? loadImage(src) : undefined;
-      }),
-    );
-
-    uniqueImageSources.forEach((src, index) => {
-      if (images[index]) {
-        this.imageStore.add(src, images[index]!);
-      }
-    });
-    allImageSources.forEach((src) => this.imageStore.retain(src));
-
-    const allFontSources = [
-      ...getAllFontSources(this.templateCollection.getAll()),
-      ...getAllFontSources(scene.children),
-    ];
-    const uniqueFontSources = [...new Set(allFontSources)];
-
-    await Assets.load(uniqueFontSources);
+    await this.assets.load(scene);
   }
 
   onSceneEnter(scene: Scene): void {
-    this.actorQuery = new ActorQuery({
+    this.actorRenderTree = new ActorRenderTree({
       scene,
-      filter: (actor): boolean =>
-        Boolean(
-          actor.getComponent(Transform) &&
-            (actor.getComponent(Sprite) ||
-              actor.getComponent(Shape) ||
-              actor.getComponent(PixiView) ||
-              actor.getComponent(BitmapText)),
-        ),
+      worldContainer: this.worldContainer,
+      assets: this.assets,
+      sortingLayers: this.sortingLayers,
     });
-
-    this.viewEntries = [];
-    for (const actor of this.actorQuery.getActors()) {
-      this.builders.forEach((builder) => {
-        const view = builder.buildView(actor);
-        if (view) {
-          this.viewEntries?.push(view);
-          this.worldContainer.addChild(view);
-        }
-      });
-    }
-
-    this.actorQuery.addEventListener(AddActor, this.handleActorAdd);
-    this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
   }
 
   onSceneExit(): void {
-    this.actorQuery?.removeEventListener(AddActor, this.handleActorAdd);
-    this.actorQuery?.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.actorRenderTree?.destroy();
+    this.actorRenderTree = undefined;
 
-    this.worldContainer.removeChildren();
     this.application.renderer.clear();
-
-    this.viewEntries?.forEach((entry) => {
-      this.builders.get(entry.__dacha.builderKey)!.destroy(entry.__dacha.actor);
-    });
-    this.viewEntries = undefined;
-
-    this.actorQuery?.destroy();
-    this.actorQuery = undefined;
   }
 
   onSceneDestroy(scene: Scene): void {
-    const allSources = [
-      ...getAllImageSources(this.templateCollection.getAll()),
-      ...getAllImageSources(scene.children),
-    ];
-
-    allSources.forEach((src) => this.imageStore.release(src));
-    this.imageStore.cleanReleased();
+    this.assets.unload(scene);
   }
-
-  private handleActorAdd = (event: AddActorEvent): void => {
-    const { actor } = event;
-
-    const sprite = actor.getComponent(Sprite);
-    if (sprite) {
-      const { src } = sprite;
-
-      if (this.imageStore.has(src)) {
-        this.imageStore.retain(src);
-      } else {
-        void loadImage(src).then((image) => {
-          if (image) {
-            this.imageStore.add(src, image);
-            this.imageStore.retain(src);
-          }
-        });
-      }
-    }
-
-    const text = actor.getComponent(BitmapText);
-    if (text) {
-      Assets.load(text.font);
-    }
-
-    this.builders.forEach((builder) => {
-      const view = builder.buildView(actor);
-      if (view) {
-        this.viewEntries?.push(view);
-        this.worldContainer.addChild(view);
-      }
-    });
-
-    this.deletedActors.delete(actor);
-  };
-
-  private handleActorRemove = (event: RemoveActorEvent): void => {
-    const { actor } = event;
-
-    const sprite = actor.getComponent(Sprite);
-    if (sprite) {
-      this.imageStore.release(sprite.src);
-    }
-
-    this.deletedActors.add(actor);
-  };
 
   private updateCamera(): void {
     const currentCamera = this.cameraService.getCurrentCamera();
@@ -301,66 +182,10 @@ export class Renderer extends WorldSystem {
     this.worldContainer.pivot.set(offsetX, offsetY);
   }
 
-  private updateViews(): void {
-    this.viewEntries?.forEach((view) => {
-      this.builders
-        .get(view.__dacha.builderKey)!
-        .updateView(view.__dacha.actor);
-    });
-  }
-
-  private updateBounds(): void {
-    this.viewEntries?.forEach((view) => {
-      if (!view.__dacha.didChange) {
-        return;
-      }
-      const bounds = view.getLocalBounds();
-      view.__dacha.bounds.set(
-        bounds.minX,
-        bounds.minY,
-        bounds.maxX,
-        bounds.maxY,
-      );
-      view.updateLocalTransform();
-      view.__dacha.bounds.applyMatrix(view.localTransform);
-    });
-  }
-
-  private sortViews(): void {
-    this.viewEntries?.sort(this.sortFn);
-    this.viewEntries?.forEach((view, index) => {
-      view.zIndex = index;
-    });
-  }
-
-  private clearDeletedEntries(): void {
-    if (this.deletedActors.size === 0) {
-      return;
-    }
-
-    this.worldContainer.removeChildren();
-
-    this.viewEntries = this.viewEntries?.filter((entry) => {
-      if (!this.deletedActors.has(entry.__dacha.actor)) {
-        this.worldContainer.addChild(entry);
-        return true;
-      }
-
-      this.builders.get(entry.__dacha.builderKey)!.destroy(entry.__dacha.actor);
-      return false;
-    });
-
-    this.deletedActors.clear();
-  }
-
   update(): void {
-    this.clearDeletedEntries();
-
     this.updateCamera();
 
-    this.updateViews();
-    this.updateBounds();
-    this.sortViews();
+    this.actorRenderTree?.update();
 
     this.application.renderer.render({ container: this.application.stage });
   }
