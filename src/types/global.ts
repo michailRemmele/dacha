@@ -1,10 +1,17 @@
-import { type Bounds } from 'pixi.js';
-
 import '../engine/events';
 import '../contrib/events';
 import { type Actor } from '../engine/actor';
+import { type Component } from '../engine/component';
 
 declare module 'pixi.js' {
+  interface Container {
+    /**
+     * Custom property to store engine specific data and link pixi.js view with Actor
+     */
+    __dacha: {
+      meta: Record<string, unknown>;
+    };
+  }
   interface ViewContainer {
     /**
      * Custom property to store engine specific data and link pixi.js view with Actor
@@ -12,13 +19,11 @@ declare module 'pixi.js' {
     __dacha: {
       actor: Actor;
       builderKey: string;
-      viewComponent: {
+      viewComponent: Component & {
         sortingLayer: string;
         sortCenter: [number, number];
       };
-      bounds: Bounds;
       meta: Record<string, unknown>;
-      didChange: boolean;
     };
   }
 }

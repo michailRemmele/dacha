@@ -1,6 +1,11 @@
 import { type BLEND_MODES } from 'pixi.js';
 
-import { type BlendingMode } from '../../components/sprite';
+import { type ComponentConstructor } from '../../../engine/component';
+import { Sprite, type BlendingMode } from '../../components/sprite';
+import { Shape } from '../../components/shape';
+import { PixiView } from '../../components/pixi-view';
+import { BitmapText } from '../../components/bitmap-text';
+
 import { type SortingOrder } from './types';
 
 export const BLEND_MODE_MAPPING: Record<BlendingMode, BLEND_MODES> = {
@@ -16,3 +21,10 @@ export const SORTING_ORDER_MAPPING: Record<SortingOrder, [number, number]> = {
   topLeft: [-1, -1],
   topRight: [1, -1],
 };
+
+export const VIEW_COMPONENTS: ComponentConstructor[] = [
+  Sprite,
+  Shape,
+  PixiView,
+  BitmapText,
+];

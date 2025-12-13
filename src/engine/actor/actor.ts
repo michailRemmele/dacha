@@ -10,6 +10,7 @@ import type {
   ListenerFn,
   EventPayload,
 } from '../event-target';
+import { Transform } from '../../contrib/components/transform';
 
 type ActorListenerFn<T extends EventType> = (
   event: T extends keyof ActorEventMap ? ActorEventMap[T] : Event,
@@ -29,7 +30,7 @@ export interface ActorOptions extends EntityOptions {
  * Actors are entities that can have components attached to them
  * and represent various game objects such as players, enemies, items, decorations, etc.
  * They support hierarchical relationships and can be organized in parent-child structures.
- * 
+ *
  * @category Core
  */
 export class Actor extends Entity {
@@ -52,7 +53,19 @@ export class Actor extends Entity {
     const { templateId } = options;
 
     this.templateId = templateId;
-    this.components = {};
+
+    const transform = new Transform({
+      offsetX: 0,
+      offsetY: 0,
+      rotation: 0,
+      scaleX: 1,
+      scaleY: 1,
+    });
+    transform.actor = this;
+
+    this.components = {
+      [Transform.componentName]: transform,
+    };
   }
 
   override addEventListener<T extends EventType>(
@@ -167,10 +180,17 @@ export class Actor extends Entity {
   setComponent(component: Component): void {
     const { componentName } = component.constructor as ComponentConstructor;
 
+    if (this.components[componentName]) {
+      this.removeComponent(component.constructor as ComponentConstructor);
+    }
+
     this.components[componentName] = component;
     component.actor = this;
 
-    this.dispatchEventImmediately(AddComponent, { componentName });
+    this.dispatchEventImmediately(AddComponent, {
+      name: componentName,
+      component,
+    });
   }
 
   /**
@@ -190,9 +210,14 @@ export class Actor extends Entity {
       return;
     }
 
-    this.components[componentName].actor = void 0;
+    const deletedComponent = this.components[componentName];
+
+    this.components[componentName].actor = undefined;
     delete this.components[componentName];
 
-    this.dispatchEventImmediately(RemoveComponent, { componentName });
+    this.dispatchEventImmediately(RemoveComponent, {
+      name: componentName,
+      component: deletedComponent,
+    });
   }
 }
