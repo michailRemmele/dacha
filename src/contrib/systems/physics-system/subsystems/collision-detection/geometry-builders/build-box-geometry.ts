@@ -1,8 +1,5 @@
 import { VectorOps } from '../../../../../../engine/math-lib';
-import type {
-  Collider,
-  Transform,
-} from '../../../../../components';
+import type { Collider, Transform } from '../../../../../components';
 import type { BoxGeometry } from '../types';
 
 export const buildBoxGeometry = (
@@ -10,26 +7,22 @@ export const buildBoxGeometry = (
   transform: Transform,
 ): BoxGeometry => {
   const {
-    offsetX,
-    offsetY,
-    scaleX,
-    scaleY,
-    rotation,
+    world: { position, rotation, scale },
   } = transform;
   let { centerX, centerY } = collider;
   const { sizeX, sizeY } = collider;
 
   const x1 = -(sizeX! / 2);
-  const x2 = (sizeX! / 2);
+  const x2 = sizeX! / 2;
   const y1 = -(sizeY! / 2);
-  const y2 = (sizeY! / 2);
+  const y2 = sizeY! / 2;
 
   const angle = (rotation * Math.PI) / 180;
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
 
-  centerX += offsetX;
-  centerY += offsetY;
+  centerX += position.x;
+  centerY += position.y;
 
   const points = [
     { x: x1, y: y1 },
@@ -41,8 +34,8 @@ export const buildBoxGeometry = (
   points.forEach((point) => {
     const { x, y } = point;
 
-    const scaledX = x * scaleX;
-    const scaledY = y * scaleY;
+    const scaledX = x * scale.x;
+    const scaledY = y * scale.y;
 
     const rotatedX = scaledX * cos - scaledY * sin;
     const rotatedY = scaledX * sin + scaledY * cos;

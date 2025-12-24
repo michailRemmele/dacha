@@ -222,33 +222,29 @@ export class ActorRenderTree {
 
   private updatePosition(container: Container, actor: Actor): void {
     const {
-      relativeOffsetX,
-      relativeOffsetY,
-      relativeRotation,
-      relativeScaleX,
-      relativeScaleY,
+      local: { position, rotation, scale },
     } = actor.getComponent(Transform);
 
     const meta = container.__dacha.meta;
 
-    if (relativeRotation !== meta.angle) {
-      container.angle = relativeRotation;
-      meta.angle = relativeRotation;
+    if (rotation !== meta.angle) {
+      container.angle = rotation;
+      meta.angle = rotation;
     }
 
     if (
-      !floatEquals(relativeOffsetX, meta.offsetX as number) ||
-      !floatEquals(relativeOffsetY, meta.offsetY as number)
+      !floatEquals(position.x, meta.positionX as number) ||
+      !floatEquals(position.y, meta.positionY as number)
     ) {
-      container.position.set(relativeOffsetX, relativeOffsetY);
-      meta.offsetX = relativeOffsetX;
-      meta.offsetY = relativeOffsetY;
+      container.position.set(position.x, position.y);
+      meta.positionX = position.x;
+      meta.positionY = position.y;
     }
 
-    if (relativeScaleX !== meta.scaleX || relativeScaleY !== meta.scaleY) {
-      container.scale.set(relativeScaleX, relativeScaleY);
-      meta.scaleX = relativeScaleX;
-      meta.scaleY = relativeScaleY;
+    if (scale.x !== meta.scaleX || scale.y !== meta.scaleY) {
+      container.scale.set(scale.x, scale.y);
+      meta.scaleX = scale.x;
+      meta.scaleY = scale.y;
     }
   }
 

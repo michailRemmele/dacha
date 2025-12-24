@@ -74,8 +74,8 @@ export interface UpdateOptions {
  *       const transform = actor.getComponent(Transform);
  *       const velocity = actor.getComponent(Velocity);
  *
- *       transform.offsetX += velocity.x * deltaTime;
- *       transform.offsetY += velocity.y * deltaTime;
+ *       transform.world.position.x += velocity.x * deltaTime;
+ *       transform.world.position.y += velocity.y * deltaTime;
  *     }
  *   }
  * }

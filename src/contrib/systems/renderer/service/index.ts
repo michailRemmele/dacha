@@ -114,12 +114,12 @@ export class RendererService {
    * @returns Bounds of the actor
    */
   getBounds(actor: Actor): Bounds {
-    const transform = actor.getComponent(Transform);
+    const { world } = actor.getComponent(Transform);
 
-    let minX = transform.offsetX;
-    let minY = transform.offsetY;
-    let maxX = transform.offsetX;
-    let maxY = transform.offsetY;
+    let minX = world.position.x;
+    let minY = world.position.y;
+    let maxX = world.position.x;
+    let maxY = world.position.y;
 
     const inverseMatrix = this.worldContainer.worldTransform.clone().invert();
 

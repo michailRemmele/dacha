@@ -138,15 +138,15 @@ export class ConstraintSolver {
        * TODO:: Enable this part when it will be possible to run
        * phycics pipeline several times per single game loop iteration
        */
-      // transform.offsetX += Math.sign(staticMtv.x) === Math.sign(dynamicMtv.x)
+      // transform.world.position.x += Math.sign(staticMtv.x) === Math.sign(dynamicMtv.x)
       //   ? staticMtv.x + dynamicMtv.x
       //   : staticMtv.x || dynamicMtv.x;
-      // transform.offsetY += Math.sign(staticMtv.y) === Math.sign(dynamicMtv.y)
+      // transform.world.position.y += Math.sign(staticMtv.y) === Math.sign(dynamicMtv.y)
       //   ? staticMtv.y + dynamicMtv.y
       //   : staticMtv.y || dynamicMtv.y;
 
-      transform.offsetX += (staticMtv?.x ?? 0) + (dynamicMtv?.x ?? 0);
-      transform.offsetY += (staticMtv?.y ?? 0) + (dynamicMtv?.y ?? 0);
+      transform.world.position.x += (staticMtv?.x ?? 0) + (dynamicMtv?.x ?? 0);
+      transform.world.position.y += (staticMtv?.y ?? 0) + (dynamicMtv?.y ?? 0);
     }
 
     this.processedPairs.clear();

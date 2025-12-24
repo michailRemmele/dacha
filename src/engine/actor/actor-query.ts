@@ -35,7 +35,7 @@ type ActorQueryListenerFn<T extends EventType> = (
  * const filter = [Transform, Sprite];
  *
  * // Match actors with custom logic
- * const filter = (actor) => actor.getComponent(Transform)?.offsetY > 100;
+ * const filter = (actor) => actor.getComponent(Transform)?.world.position.y > 100;
  */
 export type ActorQueryFilter =
   | (ComponentConstructor | string)[]

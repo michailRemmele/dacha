@@ -170,8 +170,8 @@ export class Renderer extends WorldSystem {
     const transform = currentCamera?.getComponent(Transform);
     const camera = currentCamera?.getComponent(Camera);
 
-    const offsetX = transform?.offsetX ?? 0;
-    const offsetY = transform?.offsetY ?? 0;
+    const x = transform?.world.position.x ?? 0;
+    const y = transform?.world.position.y ?? 0;
     const zoom = camera?.zoom ?? 1;
 
     this.worldContainer.scale.set(zoom);
@@ -179,7 +179,7 @@ export class Renderer extends WorldSystem {
       this.application.renderer.width / 2,
       this.application.renderer.height / 2,
     );
-    this.worldContainer.pivot.set(offsetX, offsetY);
+    this.worldContainer.pivot.set(x, y);
   }
 
   update(): void {

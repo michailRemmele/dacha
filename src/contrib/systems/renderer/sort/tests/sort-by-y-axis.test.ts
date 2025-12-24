@@ -7,7 +7,7 @@ import { Actor } from '../../../../../engine/actor/actor';
 import { sortByYAxis } from '../sort-by-y-axis';
 
 const createGetGlobalPositionMock = (actor: Actor) => (): { y: number } => ({
-  y: actor.getComponent(Transform).offsetY,
+  y: actor.getComponent(Transform).world.position.y,
 });
 
 describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
@@ -56,11 +56,11 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
 
     expect(sortByYAxis(1)(view1, view2)).toBe(0);
 
-    actor2.getComponent(Transform).offsetY = 50;
+    actor2.getComponent(Transform).world.position.y = 50;
 
     expect(sortByYAxis(1)(view1, view2)).toBeLessThan(0);
 
-    actor1.getComponent(Transform).offsetY = 100;
+    actor1.getComponent(Transform).world.position.y = 100;
 
     expect(sortByYAxis(1)(view1, view2)).toBeGreaterThan(0);
   });
