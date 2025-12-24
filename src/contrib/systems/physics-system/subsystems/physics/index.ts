@@ -174,8 +174,8 @@ export class PhysicsSubsystem {
 
       this.applyDragForce(actor, deltaTimeInSeconds);
 
-      transform.offsetX += velocity.x * deltaTimeInSeconds;
-      transform.offsetY += velocity.y * deltaTimeInSeconds;
+      transform.world.position.x += velocity.x * deltaTimeInSeconds;
+      transform.world.position.y += velocity.y * deltaTimeInSeconds;
 
       force.multiplyNumber(0);
       impulse.multiplyNumber(0);

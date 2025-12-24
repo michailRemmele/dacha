@@ -147,7 +147,7 @@ export class Actor extends Entity {
    *
    * // Type-safe access
    * if (transform) {
-   *   transform.offsetX = 100;
+   *   transform.world.position.x = 100;
    * }
    * ```
    */
