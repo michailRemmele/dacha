@@ -185,6 +185,9 @@ export class ActorRenderTree {
       }
     });
 
+    this.updateParent(container, actor);
+    this.updatePosition(container, actor);
+
     return container;
   }
 
@@ -218,6 +221,29 @@ export class ActorRenderTree {
       !this.actorParentMap.has(actor) ||
       this.actorParentMap.get(actor) !== actor.parent
     );
+  }
+
+  private updateParent(container: Container, actor: Actor): void {
+    if (!this.isParentChanged(actor)) {
+      return;
+    }
+
+    container.removeFromParent();
+
+    const nextParent =
+      actor.parent instanceof Actor
+        ? this.actorContainerMap.get(actor.parent)
+        : this.worldContainer;
+
+    if (!nextParent) {
+      throw new Error(
+        "Failed to add actor: no matching pixi container found for the actor's parent.",
+      );
+    }
+
+    nextParent.addChild(container);
+
+    this.actorParentMap.set(actor, actor.parent);
   }
 
   private updatePosition(container: Container, actor: Actor): void {
@@ -269,25 +295,7 @@ export class ActorRenderTree {
 
   update(): void {
     this.actorContainerMap.forEach((container, actor) => {
-      if (this.isParentChanged(actor)) {
-        container.removeFromParent();
-
-        const nextParent =
-          actor.parent instanceof Actor
-            ? this.actorContainerMap.get(actor.parent)
-            : this.worldContainer;
-
-        if (!nextParent) {
-          throw new Error(
-            "Failed to add actor: no matching pixi container found for the actor's parent.",
-          );
-        }
-
-        nextParent.addChild(container);
-
-        this.actorParentMap.set(actor, actor.parent);
-      }
-
+      this.updateParent(container, actor);
       this.updatePosition(container, actor);
     });
 

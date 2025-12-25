@@ -37,6 +37,8 @@ export class ShapeBuilder implements Builder<Shape> {
       meta: {},
     };
 
+    this.updateView(shape);
+
     return view;
   }
 
