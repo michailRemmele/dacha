@@ -79,16 +79,16 @@ export const updatePreviewPosition = (
   }
 
   if (!snapToGrid) {
-    transform.offsetX = Math.round(cursor.x)
-    transform.offsetY = Math.round(cursor.y)
+    transform.world.position.x = Math.round(cursor.x)
+    transform.world.position.y = Math.round(cursor.y)
     return
   }
 
   const rendererService = world.getService(RendererService)
   const bounds = rendererService.getBounds(preview)
 
-  transform.offsetX = getGridValue(cursor.x, bounds.width, gridStep)
-  transform.offsetY = getGridValue(cursor.y, bounds.height, gridStep)
+  transform.world.position.x = getGridValue(cursor.x, bounds.width, gridStep)
+  transform.world.position.y = getGridValue(cursor.y, bounds.height, gridStep)
 }
 
 export const isActorPath = (

@@ -19,7 +19,6 @@
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
-                "offsetZ": 0,
                 "rotation": 0,
                 "scaleX": 1,
                 "scaleY": 1
@@ -38,7 +37,6 @@
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
-                "offsetZ": 0,
                 "rotation": 0,
                 "scaleX": 1,
                 "scaleY": 1
@@ -61,7 +59,6 @@
                   "config": {
                     "offsetX": 0,
                     "offsetY": 0,
-                    "offsetZ": 1,
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1
@@ -83,7 +80,6 @@
               "config": {
                 "offsetX": 55,
                 "offsetY": 30,
-                "offsetZ": 0,
                 "rotation": 0,
                 "scaleX": 1,
                 "scaleY": 1
@@ -175,7 +171,6 @@
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
-                "offsetZ": 0,
                 "rotation": 0,
                 "scaleX": 1,
                 "scaleY": 1
@@ -214,7 +209,6 @@
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
-                "offsetZ": 0,
                 "rotation": 0,
                 "scaleX": 1,
                 "scaleY": 1
@@ -253,7 +247,6 @@
               "config": {
                 "offsetX": 0,
                 "offsetY": 0,
-                "offsetZ": 0,
                 "rotation": 0,
                 "scaleX": 1,
                 "scaleY": 1
@@ -356,7 +349,6 @@
           "config": {
             "offsetX": 0,
             "offsetY": 0,
-            "offsetZ": 0,
             "rotation": 0,
             "scaleX": 1,
             "scaleY": 1
@@ -697,7 +689,6 @@
           "config": {
             "offsetX": 0,
             "offsetY": 0,
-            "offsetZ": 0,
             "rotation": 0,
             "scaleX": 1,
             "scaleY": 1
@@ -736,7 +727,6 @@
           "config": {
             "offsetX": 0,
             "offsetY": 0,
-            "offsetZ": 0,
             "rotation": 0,
             "scaleX": 1,
             "scaleY": 1
@@ -788,7 +778,7 @@
     {
       "name": "sorting",
       "options": {
-        "order": "topLeft",
+        "order": "bottomRight",
         "layers": [
           {
             "id": "3e260430-1938-452d-ad2e-fdf72cf49a0a",
