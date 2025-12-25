@@ -40,6 +40,8 @@ export class BitmapTextBuilder implements Builder<BitmapText> {
       meta: {},
     };
 
+    this.updateView(text);
+
     return view;
   }
 

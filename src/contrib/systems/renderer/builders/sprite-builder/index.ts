@@ -61,6 +61,8 @@ export class SpriteBuilder implements Builder<Sprite> {
       meta: {},
     };
 
+    this.updateView(sprite);
+
     return view;
   }
 

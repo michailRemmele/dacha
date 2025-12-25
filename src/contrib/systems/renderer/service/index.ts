@@ -116,10 +116,10 @@ export class RendererService {
   getBounds(actor: Actor): Bounds {
     const { world } = actor.getComponent(Transform);
 
-    let minX = world.position.x;
-    let minY = world.position.y;
-    let maxX = world.position.x;
-    let maxY = world.position.y;
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
 
     const inverseMatrix = this.worldContainer.worldTransform.clone().invert();
 
@@ -140,6 +140,17 @@ export class RendererService {
       maxX = Math.max(maxX, bounds?.maxX);
       maxY = Math.max(maxY, bounds?.maxY);
     });
+
+    if (minX === Infinity) {
+      return {
+        minX: world.position.x,
+        minY: world.position.y,
+        maxX: world.position.x,
+        maxY: world.position.y,
+        width: 0,
+        height: 0,
+      };
+    }
 
     return {
       minX,
