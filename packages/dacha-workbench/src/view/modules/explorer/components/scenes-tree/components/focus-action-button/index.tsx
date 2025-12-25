@@ -32,8 +32,8 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
       const mainActorTransform = mainActor.getComponent(Transform)
       const transform = selectedActor.getComponent(Transform)
 
-      mainActorTransform.offsetX = transform.offsetX
-      mainActorTransform.offsetY = transform.offsetY
+      mainActorTransform.world.position.x = transform.world.position.x
+      mainActorTransform.world.position.y = transform.world.position.y
     }
   }, [world, path])
 

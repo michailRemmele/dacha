@@ -46,8 +46,8 @@ export const updateFrameSize = (
 
   const actorTransform = actor.getComponent(Transform);
 
-  frameTransform.offsetX = actorTransform.offsetX;
-  frameTransform.offsetY = actorTransform.offsetY;
+  frameTransform.world.position.x = actorTransform.world.position.x;
+  frameTransform.world.position.y = actorTransform.world.position.y;
   frameShape.width = bounds.width;
   frameShape.height = bounds.height;
   frameShape.strokeWidth = FRAME_STROKE_WIDTH / zoom;
@@ -62,8 +62,8 @@ export const updateAreaSize = (
   const transform = area.getComponent(Transform);
   const shape = area.getComponent(Shape);
 
-  transform.offsetX = (sceneSize.x0 + sceneSize.x1) / 2;
-  transform.offsetY = (sceneSize.y0 + sceneSize.y1) / 2;
+  transform.world.position.x = (sceneSize.x0 + sceneSize.x1) / 2;
+  transform.world.position.y = (sceneSize.y0 + sceneSize.y1) / 2;
   shape.width = Math.abs(sceneSize.x0 - sceneSize.x1);
   shape.height = Math.abs(sceneSize.y0 - sceneSize.y1);
   shape.strokeWidth = AREA_STROKE_WIDTH / zoom;

@@ -65,10 +65,13 @@ export class HandToolSystem extends SceneSystem {
 
   private handleSceneChange = (): void => {
     const transform = this.mainActor.getComponent(Transform);
-    transform.offsetX = DEFAULT_POS_X;
-    transform.offsetY = DEFAULT_POS_Y;
+    transform.world.position.x = DEFAULT_POS_X;
+    transform.world.position.y = DEFAULT_POS_Y;
 
-    this.saveCameraPosition(transform.offsetX, transform.offsetY);
+    this.saveCameraPosition(
+      transform.world.position.x,
+      transform.world.position.y,
+    );
   };
 
   private handleCameraMoveStart = (event: MouseControlEvent): void => {
@@ -93,13 +96,16 @@ export class HandToolSystem extends SceneSystem {
     const transform = this.mainActor.getComponent(Transform);
     const { zoom } = this.mainActor.getComponent(Camera);
 
-    transform.offsetX += (this.anchor.x - screenX) / zoom;
-    transform.offsetY += (this.anchor.y - screenY) / zoom;
+    transform.world.position.x += (this.anchor.x - screenX) / zoom;
+    transform.world.position.y += (this.anchor.y - screenY) / zoom;
 
     this.anchor.x = screenX;
     this.anchor.y = screenY;
 
-    this.saveCameraPosition(transform.offsetX, transform.offsetY);
+    this.saveCameraPosition(
+      transform.world.position.x,
+      transform.world.position.y,
+    );
   };
 
   private handleWheel = (event: WheelEvent): void => {
@@ -113,10 +119,13 @@ export class HandToolSystem extends SceneSystem {
     const deltaX = (event.deltaX * WHEEL_MOVE_FACTOR) / zoom;
     const deltaY = (event.deltaY * WHEEL_MOVE_FACTOR) / zoom;
 
-    transform.offsetX += deltaX;
-    transform.offsetY += deltaY;
+    transform.world.position.x += deltaX;
+    transform.world.position.y += deltaY;
 
-    this.saveCameraPosition(transform.offsetX, transform.offsetY);
+    this.saveCameraPosition(
+      transform.world.position.x,
+      transform.world.position.y,
+    );
   };
 
   private saveCameraPosition(x: number, y: number): void {
