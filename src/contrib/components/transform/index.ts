@@ -13,11 +13,11 @@ export interface TransformConfig {
 }
 
 /**
- * Transform component that handles position, rotation, and scale of an actor.
+ * Component responsible for handling local and world-space transforms.
  *
- * Component provides hierarchical transformation support, meaning
- * child actors inherit transformations from their parents. All values are
- * stored as relative to the parent, but accessed as world coordinates.
+ * A Transform manages position, rotation, and scale, and computes
+ * corresponding transformation matrices. It supports hierarchical
+ * parent-child relationships via world matrix composition.
  *
  * @example
  * ```typescript
@@ -35,18 +35,39 @@ export interface TransformConfig {
  *
  * // Access world coordinates
  * console.log(`Position: ${transform.world.position.x}, ${transform.world.position.y}`);
- * console.log(`Rotation: ${transform.world.rotation}`);
+ * console.log(`Rotation (in radians): ${transform.world.rotation}`);
  * console.log(`Scale: ${transform.world.scale.x}, ${transform.world.scale.y}`);
  * ```
  *
  * @category Components
  */
 export class Transform extends Component {
+  /**
+   * Local-space transform values (position, rotation, scale).
+   * These values are relative to the parent transform.
+   */
   local: LocalTransform;
+
+  /**
+   * World-space transform values derived from the local transform
+   * and the parent hierarchy.
+   */
   world: WorldTransform;
 
+  /**
+   * Matrix representing the local-space transformation.
+   */
   localMatrix: Matrix;
+
+  /**
+   * Matrix representing the world-space transformation.
+   */
   worldMatrix: Matrix;
+
+  /**
+   * Inverse of the world transformation matrix.
+   * Useful for converting world-space coordinates to local space.
+   */
   invertedWorldMatrix: Matrix;
 
   private dirty: boolean;
@@ -54,7 +75,7 @@ export class Transform extends Component {
   /**
    * Creates a new Transform component.
    *
-   * @param config - Configuration for the transform
+   * @param config - Initial configuration for position, rotation, and scale.
    */
   constructor(config: TransformConfig) {
     super();
@@ -69,10 +90,20 @@ export class Transform extends Component {
     this.dirty = true;
   }
 
+  /**
+   * Returns the parent Transform component, if one exists.
+   *
+   * @returns The parent Transform or `undefined` if this transform has no parent.
+   */
   override getParentComponent(): Transform | undefined {
     return super.getParentComponent() as Transform | undefined;
   }
 
+  /**
+   * Marks this transform and all descendant transforms as dirty.
+   *
+   * This signals that their matrices must be recalculated before use.
+   */
   markDirty(): void {
     if (this.dirty) {
       return;
@@ -86,10 +117,13 @@ export class Transform extends Component {
     });
   }
 
+  /**
+   * Recomputes the local transformation matrix from local position,
+   * rotation, and scale.
+   */
   updateLocalMatrix(): void {
-    const rad = MathOps.degToRad(this.local.rotation);
-    const cos = Math.cos(rad);
-    const sin = Math.sin(rad);
+    const cos = Math.cos(this.local.rotation);
+    const sin = Math.sin(this.local.rotation);
 
     this.localMatrix.assign(
       cos * this.local.scale.x,
@@ -101,6 +135,12 @@ export class Transform extends Component {
     );
   }
 
+  /**
+   * Recomputes the world transformation matrix if the transform is dirty.
+   *
+   * This method ensures parent transforms are updated first and then
+   * composes the local matrix with the parent world matrix.
+   */
   updateWorldMatrix(): void {
     if (!this.dirty) {
       return;
@@ -126,7 +166,7 @@ export class Transform extends Component {
     return new Transform({
       offsetX: this.local.position.x,
       offsetY: this.local.position.y,
-      rotation: this.local.rotation,
+      rotation: MathOps.radToDeg(this.local.rotation),
       scaleX: this.local.scale.x,
       scaleY: this.local.scale.y,
     });

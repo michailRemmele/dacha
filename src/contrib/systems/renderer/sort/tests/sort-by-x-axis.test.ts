@@ -17,7 +17,6 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
     height: 0,
     sortCenter: [0, 0],
     slice: 1,
-    rotation: 0,
     flipX: false,
     flipY: false,
     disabled: false,
