@@ -1,5 +1,6 @@
 import uuid from 'uuid-random';
 
+import { MathOps } from '../../../../engine/math-lib';
 import { Actor } from '../../../../engine/actor';
 import { Transform } from '../index';
 
@@ -38,7 +39,7 @@ describe('Contrib -> components -> Transform', () => {
   it('child inherits parent rotation', () => {
     const parent = makeActor();
     const parentTransform = parent.getComponent(Transform);
-    parentTransform.local.rotation = 90;
+    parentTransform.local.rotation = MathOps.degToRad(90);
 
     const child = makeActor(parent);
     const childTransform = child.getComponent(Transform);
@@ -47,24 +48,24 @@ describe('Contrib -> components -> Transform', () => {
 
     expectClose(childTransform.world.position.x, 0);
     expectClose(childTransform.world.position.y, 10);
-    expectClose(childTransform.world.rotation, 90);
+    expectClose(childTransform.world.rotation, MathOps.degToRad(90));
   });
 
   it('rotation accumulates across full hierarchy', () => {
     const grandParent = makeActor();
     const grandParentTransform = grandParent.getComponent(Transform);
-    grandParentTransform.local.rotation = 10;
+    grandParentTransform.local.rotation = MathOps.degToRad(10);
 
     const parent = makeActor(grandParent);
     const parentTransform = parent.getComponent(Transform);
-    parentTransform.local.rotation = 20;
+    parentTransform.local.rotation = MathOps.degToRad(20);
 
     const child = makeActor(parent);
     const childTransform = child.getComponent(Transform);
-    childTransform.local.rotation = 30;
+    childTransform.local.rotation = MathOps.degToRad(30);
 
-    expectClose(parentTransform.world.rotation, 30);
-    expectClose(childTransform.world.rotation, 60);
+    expectClose(parentTransform.world.rotation, MathOps.degToRad(30));
+    expectClose(childTransform.world.rotation, MathOps.degToRad(60));
   });
 
   it('child inherits parent scale', () => {
@@ -110,7 +111,7 @@ describe('Contrib -> components -> Transform', () => {
     const parent = makeActor();
     const parentTransform = parent.getComponent(Transform);
     parentTransform.local.position.x = 100;
-    parentTransform.local.rotation = 90;
+    parentTransform.local.rotation = MathOps.degToRad(90);
     parentTransform.local.scale.x = 2;
     parentTransform.local.scale.y = 2;
 
@@ -126,12 +127,12 @@ describe('Contrib -> components -> Transform', () => {
   it('deep hierarchy rotation propagation', () => {
     const grandParent = makeActor();
     const grandParentTransform = grandParent.getComponent(Transform);
-    grandParentTransform.local.rotation = 90;
+    grandParentTransform.local.rotation = MathOps.degToRad(90);
 
     const parent = makeActor(grandParent);
     const parentTransform = parent.getComponent(Transform);
     parentTransform.local.position.x = 10;
-    parentTransform.local.rotation = 90;
+    parentTransform.local.rotation = MathOps.degToRad(90);
 
     const child = makeActor(parent);
     const childTransform = child.getComponent(Transform);
@@ -147,7 +148,7 @@ describe('Contrib -> components -> Transform', () => {
   it('world position update overrides current world position (update X, preserve Y)', () => {
     const parent = makeActor();
     const parentTransform = parent.getComponent(Transform);
-    parentTransform.local.rotation = 90;
+    parentTransform.local.rotation = MathOps.degToRad(90);
 
     const child = makeActor(parent);
     const childTransform = child.getComponent(Transform);
@@ -168,7 +169,7 @@ describe('Contrib -> components -> Transform', () => {
     const parent = makeActor();
     const parentTransform = parent.getComponent(Transform);
     parentTransform.local.position.x = 100;
-    parentTransform.local.rotation = 90;
+    parentTransform.local.rotation = MathOps.degToRad(90);
     parentTransform.local.scale.x = 2;
     parentTransform.local.scale.y = 2;
 
@@ -208,5 +209,72 @@ describe('Contrib -> components -> Transform', () => {
     parentTransform.local.position.x = 50;
 
     expectClose(childTransform.world.position.x, 150);
+  });
+
+  it('set local rotation in degrees updates rotation in radians', () => {
+    const actor = makeActor();
+    const actorTransform = actor.getComponent(Transform);
+
+    actorTransform.local.rotationDeg = 180;
+
+    expectClose(actorTransform.local.rotation, Math.PI);
+    expectClose(actorTransform.local.rotationDeg, 180);
+  });
+
+  it('set rotation in degrees accumulates through hierarchy', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+
+    parentTransform.local.rotationDeg = 30;
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.rotationDeg = 15;
+
+    expectClose(childTransform.world.rotation, Math.PI / 4);
+    expectClose(childTransform.world.rotationDeg, 45);
+  });
+
+  it('world rotation update overrides current world rotation', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+
+    parentTransform.local.rotationDeg = 30;
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.rotationDeg = 15;
+
+    expectClose(childTransform.world.rotation, Math.PI / 4);
+    expectClose(childTransform.world.rotationDeg, 45);
+
+    childTransform.world.rotationDeg = 90;
+
+    expectClose(childTransform.world.rotation, Math.PI / 2);
+    expectClose(childTransform.world.rotationDeg, 90);
+  });
+
+  it('world scale update overrides current world scale', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+
+    parentTransform.local.scale.x = 2;
+    parentTransform.local.scale.y = 1;
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.scale.x = 3;
+    childTransform.local.scale.y = 2;
+
+    expectClose(childTransform.world.scale.x, 6);
+    expectClose(childTransform.world.scale.y, 2);
+
+    childTransform.world.scale.x = 4;
+
+    expectClose(childTransform.world.scale.x, 4);
+    expectClose(childTransform.world.scale.y, 2);
   });
 });

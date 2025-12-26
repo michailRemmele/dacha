@@ -18,7 +18,7 @@ export class WorldScale {
     parent.updateWorldMatrix();
 
     const parentScale = Math.hypot(parent.worldMatrix.a, parent.worldMatrix.b);
-    this.transform.local.position.x = val / parentScale;
+    this.transform.local.scale.x = val / parentScale;
   }
 
   get x(): number {
@@ -40,7 +40,7 @@ export class WorldScale {
     parent.updateWorldMatrix();
 
     const parentScale = Math.hypot(parent.worldMatrix.c, parent.worldMatrix.d);
-    this.transform.local.position.y = val / parentScale;
+    this.transform.local.scale.y = val / parentScale;
   }
 
   get y(): number {

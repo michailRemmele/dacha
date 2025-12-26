@@ -17,9 +17,8 @@ export const buildBoxGeometry = (
   const y1 = -(sizeY! / 2);
   const y2 = sizeY! / 2;
 
-  const angle = (rotation * Math.PI) / 180;
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
+  const cos = Math.cos(rotation);
+  const sin = Math.sin(rotation);
 
   centerX += position.x;
   centerY += position.y;

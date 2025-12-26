@@ -253,9 +253,9 @@ export class ActorRenderTree {
 
     const meta = container.__dacha.meta;
 
-    if (rotation !== meta.angle) {
-      container.angle = rotation;
-      meta.angle = rotation;
+    if (rotation !== meta.rotation) {
+      container.rotation = rotation;
+      meta.rotation = rotation;
     }
 
     if (

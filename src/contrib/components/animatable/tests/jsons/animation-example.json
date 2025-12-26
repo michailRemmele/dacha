@@ -78,11 +78,6 @@
                     "value": 0
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -107,11 +102,6 @@
                     "value": 1
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -134,11 +124,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 2
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -175,11 +160,6 @@
                     "value": 0
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
@@ -204,11 +184,6 @@
                     "value": 1
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
@@ -231,11 +206,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 2
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -272,11 +242,6 @@
                     "value": 6
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -301,11 +266,6 @@
                     "value": 7
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -328,11 +288,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 8
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -369,11 +324,6 @@
                     "value": 3
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -398,11 +348,6 @@
                     "value": 4
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -425,11 +370,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 5
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -527,11 +467,6 @@
                     "value": 9
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -554,11 +489,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -585,11 +515,6 @@
                     "value": 11
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -612,11 +537,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -653,11 +573,6 @@
                     "value": 9
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
@@ -680,11 +595,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -711,11 +621,6 @@
                     "value": 11
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": true
@@ -738,11 +643,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 10
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -779,11 +679,6 @@
                     "value": 15
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -806,11 +701,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 16
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -837,11 +727,6 @@
                     "value": 17
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -864,11 +749,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 16
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -905,11 +785,6 @@
                     "value": 12
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -932,11 +807,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 13
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -963,11 +833,6 @@
                     "value": 14
                   },
                   {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
-                  },
-                  {
                     "name": "components.sprite.flipX",
                     "type": "boolean",
                     "value": false
@@ -990,11 +855,6 @@
                     "name": "components.sprite.currentFrame",
                     "type": "number",
                     "value": 13
-                  },
-                  {
-                    "name": "components.sprite.rotation",
-                    "type": "number",
-                    "value": 0
                   },
                   {
                     "name": "components.sprite.flipX",
@@ -1037,11 +897,6 @@
                 "value": 27
               },
               {
-                "name": "components.sprite.rotation",
-                "type": "number",
-                "value": 0
-              },
-              {
                 "name": "components.sprite.flipX",
                 "type": "boolean",
                 "value": false
@@ -1064,11 +919,6 @@
                 "name": "components.sprite.currentFrame",
                 "type": "number",
                 "value": 24
-              },
-              {
-                "name": "components.sprite.rotation",
-                "type": "number",
-                "value": 0
               },
               {
                 "name": "components.sprite.flipX",
@@ -1095,11 +945,6 @@
                 "value": 25
               },
               {
-                "name": "components.sprite.rotation",
-                "type": "number",
-                "value": 0
-              },
-              {
                 "name": "components.sprite.flipX",
                 "type": "boolean",
                 "value": false
@@ -1122,11 +967,6 @@
                 "name": "components.sprite.currentFrame",
                 "type": "number",
                 "value": 26
-              },
-              {
-                "name": "components.sprite.rotation",
-                "type": "number",
-                "value": 0
               },
               {
                 "name": "components.sprite.flipX",
