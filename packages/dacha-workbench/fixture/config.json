@@ -339,7 +339,18 @@
         {
           "name": "playerHitBox",
           "children": [],
-          "components": [],
+          "components": [
+            {
+              "name": "Transform",
+              "config": {
+                "offsetX": 0,
+                "offsetY": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ],
           "id": "2d5813ae-1d88-4582-b55e-608f67df1ddf"
         }
       ],
