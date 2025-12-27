@@ -1,19 +1,19 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react';
 
-import { CollapsePanel } from '../collapse-panel'
-import { useCommander } from '../../../../hooks'
-import { deleteValue } from '../../../../commands'
+import { CollapsePanel } from '../collapse-panel';
+import { useCommander } from '../../../../hooks';
+import { deleteValue } from '../../../../commands';
 
-import { CONFIG_KEY_MAP, PATH_FIELD_MAP } from './consts'
-import { EntityForm } from './entity-form'
-import { CollapsePanelCSS } from './entity-list.style'
-import type { Entity, EntityType } from './types'
+import { CONFIG_KEY_MAP, PATH_FIELD_MAP, NON_DELETABLE_MAP } from './consts';
+import { EntityForm } from './entity-form';
+import { CollapsePanelCSS } from './entity-list.style';
+import type { Entity, EntityType } from './types';
 
 export interface EntityPanelProps {
-  path: string[]
-  entity: Entity
-  type: EntityType
-  expandExtra?: JSX.Element | JSX.Element[]
+  path: string[];
+  entity: Entity;
+  type: EntityType;
+  expandExtra?: JSX.Element | JSX.Element[];
 }
 
 export const EntityPanel = ({
@@ -22,14 +22,20 @@ export const EntityPanel = ({
   type,
   expandExtra,
 }: EntityPanelProps): JSX.Element => {
-  const { dispatch } = useCommander()
+  const { dispatch } = useCommander();
 
-  const entityPath = useMemo(() => path.concat(PATH_FIELD_MAP[type], `name:${entity.data.name}`), [entity, path, type])
-  const widgetPath = useMemo(() => entityPath.concat(CONFIG_KEY_MAP[type]), [entityPath, type])
+  const entityPath = useMemo(
+    () => path.concat(PATH_FIELD_MAP[type], `name:${entity.data.name}`),
+    [entity, path, type],
+  );
+  const widgetPath = useMemo(
+    () => entityPath.concat(CONFIG_KEY_MAP[type]),
+    [entityPath, type],
+  );
 
   const handleDelete = useCallback(() => {
-    dispatch(deleteValue(entityPath))
-  }, [dispatch, entityPath])
+    dispatch(deleteValue(entityPath));
+  }, [dispatch, entityPath]);
 
   return (
     <CollapsePanel
@@ -37,8 +43,9 @@ export const EntityPanel = ({
       title={entity.label}
       onDelete={handleDelete}
       expandExtra={expandExtra}
+      deletable={!NON_DELETABLE_MAP[type].includes(entity.data.name)}
     >
       <EntityForm {...entity} path={widgetPath} />
     </CollapsePanel>
-  )
-}
+  );
+};
