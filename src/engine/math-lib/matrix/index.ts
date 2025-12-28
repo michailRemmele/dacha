@@ -135,7 +135,7 @@ export class Matrix {
     tx?: number,
     ty?: number,
   ): Matrix {
-    if (mOrA instanceof Matrix) {
+    if (typeof mOrA !== 'number') {
       this.a = mOrA.a;
       this.b = mOrA.b;
       this.c = mOrA.c;

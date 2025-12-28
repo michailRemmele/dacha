@@ -64,13 +64,10 @@ export class Transform extends Component {
    */
   worldMatrix: Matrix;
 
-  /**
-   * Inverse of the world transformation matrix.
-   * Useful for converting world-space coordinates to local space.
-   */
-  invertedWorldMatrix: Matrix;
+  private _invertedWorldMatrix: Matrix;
 
   private dirty: boolean;
+  private invertedDirty: boolean;
 
   /**
    * Creates a new Transform component.
@@ -85,9 +82,10 @@ export class Transform extends Component {
 
     this.localMatrix = new Matrix(1, 0, 0, 1, 0, 0);
     this.worldMatrix = new Matrix(1, 0, 0, 1, 0, 0);
-    this.invertedWorldMatrix = new Matrix(1, 0, 0, 1, 0, 0);
+    this._invertedWorldMatrix = new Matrix(1, 0, 0, 1, 0, 0);
 
     this.dirty = true;
+    this.invertedDirty = true;
   }
 
   /**
@@ -110,6 +108,7 @@ export class Transform extends Component {
     }
 
     this.dirty = true;
+    this.invertedDirty = true;
 
     this.actor?.children.forEach((child) => {
       const childTransform = child.getComponent(Transform);
@@ -157,9 +156,22 @@ export class Transform extends Component {
       Matrix.multiply(this.worldMatrix, parent.worldMatrix, this.localMatrix);
     }
 
-    this.invertedWorldMatrix.assign(this.worldMatrix).invert();
-
     this.dirty = false;
+  }
+
+  /**
+   * Inverse of the world transformation matrix.
+   * Useful for converting world-space coordinates to local space.
+   */
+  get invertedWorldMatrix(): Matrix {
+    this.updateWorldMatrix();
+
+    if (this.invertedDirty) {
+      this._invertedWorldMatrix.assign(this.worldMatrix).invert();
+      this.invertedDirty = false;
+    }
+
+    return this._invertedWorldMatrix;
   }
 
   clone(): Transform {
