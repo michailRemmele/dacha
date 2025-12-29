@@ -1,172 +1,280 @@
+import uuid from 'uuid-random';
+
+import { MathOps } from '../../../../engine/math-lib';
 import { Actor } from '../../../../engine/actor';
 import { Transform } from '../index';
 
+const EPS = 1e-6;
+
+const expectClose = (a: number, b: number, eps = EPS): void => {
+  expect(Math.abs(a - b)).toBeLessThan(eps);
+};
+
+const makeActor = (parent?: Actor): Actor => {
+  const id = uuid();
+  const actor = new Actor({ id, name: id });
+
+  if (parent) {
+    parent.appendChild(actor);
+  }
+  return actor;
+};
+
 describe('Contrib -> components -> Transform', () => {
-  let transform1: Transform;
-  let transform2: Transform;
-  let transform3: Transform;
+  it('child inherits parent translation', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.position.x = 100;
+    parentTransform.local.position.y = 50;
 
-  beforeEach(() => {
-    transform1 = new Transform({
-      offsetX: 10,
-      offsetY: 5,
-      rotation: 90,
-      scaleX: 3,
-      scaleY: 4,
-    }).clone();
-    transform2 = new Transform({
-      offsetX: 20,
-      offsetY: 10,
-      rotation: 180,
-      scaleX: 6,
-      scaleY: 8,
-    }).clone();
-    transform3 = new Transform({
-      offsetX: 30,
-      offsetY: 20,
-      rotation: 270,
-      scaleX: 9,
-      scaleY: 12,
-    }).clone();
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+    childTransform.local.position.x = 10;
+    childTransform.local.position.y = 5;
 
-    const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
-    const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
-    const actor3 = new Actor({ id: '3', name: 'mock-actor-3' });
-
-    actor1.setComponent(transform1);
-    actor2.setComponent(transform2);
-    actor3.setComponent(transform3);
-
-    actor3.appendChild(actor2);
-    actor2.appendChild(actor1);
+    expectClose(childTransform.world.position.x, 110);
+    expectClose(childTransform.world.position.y, 55);
   });
 
-  it('Returns correct absolute values ', () => {
-    expect(transform1.offsetX).toEqual(60);
-    expect(transform1.offsetY).toEqual(35);
-    expect(transform1.rotation).toEqual(540);
-    expect(transform1.scaleX).toEqual(162);
-    expect(transform1.scaleY).toEqual(384);
+  it('child inherits parent rotation', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.rotation = MathOps.degToRad(90);
 
-    expect(transform2.offsetX).toEqual(50);
-    expect(transform2.offsetY).toEqual(30);
-    expect(transform2.rotation).toEqual(450);
-    expect(transform2.scaleX).toEqual(54);
-    expect(transform2.scaleY).toEqual(96);
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+    childTransform.local.position.x = 10;
+    childTransform.local.position.y = 0;
 
-    expect(transform3.offsetX).toEqual(30);
-    expect(transform3.offsetY).toEqual(20);
-    expect(transform3.rotation).toEqual(270);
-    expect(transform3.scaleX).toEqual(9);
-    expect(transform3.scaleY).toEqual(12);
+    expectClose(childTransform.world.position.x, 0);
+    expectClose(childTransform.world.position.y, 10);
+    expectClose(childTransform.world.rotation, MathOps.degToRad(90));
   });
 
-  it('Returns correct relative values ', () => {
-    expect(transform1.relativeOffsetX).toEqual(10);
-    expect(transform1.relativeOffsetY).toEqual(5);
-    expect(transform1.relativeRotation).toEqual(90);
-    expect(transform1.relativeScaleX).toEqual(3);
-    expect(transform1.relativeScaleY).toEqual(4);
+  it('rotation accumulates across full hierarchy', () => {
+    const grandParent = makeActor();
+    const grandParentTransform = grandParent.getComponent(Transform);
+    grandParentTransform.local.rotation = MathOps.degToRad(10);
 
-    expect(transform2.relativeOffsetX).toEqual(20);
-    expect(transform2.relativeOffsetY).toEqual(10);
-    expect(transform2.relativeRotation).toEqual(180);
-    expect(transform2.relativeScaleX).toEqual(6);
-    expect(transform2.relativeScaleY).toEqual(8);
+    const parent = makeActor(grandParent);
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.rotation = MathOps.degToRad(20);
 
-    expect(transform3.relativeOffsetX).toEqual(30);
-    expect(transform3.relativeOffsetY).toEqual(20);
-    expect(transform3.relativeRotation).toEqual(270);
-    expect(transform3.relativeScaleX).toEqual(9);
-    expect(transform3.relativeScaleY).toEqual(12);
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+    childTransform.local.rotation = MathOps.degToRad(30);
+
+    expectClose(parentTransform.world.rotation, MathOps.degToRad(30));
+    expectClose(childTransform.world.rotation, MathOps.degToRad(60));
   });
 
-  it('Correct updates absolute values ', () => {
-    transform1.offsetX = 80;
-    transform1.offsetY = 55;
-    transform1.rotation = 780;
-    transform1.scaleX = 81;
-    transform1.scaleY = 192;
+  it('child inherits parent scale', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.scale.x = 2;
+    parentTransform.local.scale.y = 3;
 
-    transform2.offsetX = 25;
-    transform2.offsetY = 15;
-    transform2.rotation = 360;
-    transform2.scaleX = 27;
-    transform2.scaleY = 48;
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+    childTransform.local.position.x = 5;
+    childTransform.local.position.y = 4;
 
-    transform3.offsetX = 15;
-    transform3.offsetY = 10;
-    transform3.rotation = 180;
-    transform3.scaleX = 3;
-    transform3.scaleY = 6;
-
-    expect(transform1.offsetX).toEqual(40);
-    expect(transform1.offsetY).toEqual(30);
-    expect(transform1.rotation).toEqual(600);
-    expect(transform1.scaleX).toEqual(13.5);
-    expect(transform1.scaleY).toEqual(48);
-
-    expect(transform2.offsetX).toEqual(10);
-    expect(transform2.offsetY).toEqual(5);
-    expect(transform2.rotation).toEqual(270);
-    expect(transform2.scaleX).toEqual(9);
-    expect(transform2.scaleY).toEqual(24);
-
-    expect(transform3.offsetX).toEqual(15);
-    expect(transform3.offsetY).toEqual(10);
-    expect(transform3.rotation).toEqual(180);
-    expect(transform3.scaleX).toEqual(3);
-    expect(transform3.scaleY).toEqual(6);
+    expectClose(childTransform.world.position.x, 10);
+    expectClose(childTransform.world.position.y, 12);
+    expectClose(childTransform.world.scale.x, 2);
+    expectClose(childTransform.world.scale.y, 3);
   });
 
-  it('Correct updates relative values ', () => {
-    transform1.offsetX = 80;
-    transform1.offsetY = 55;
-    transform1.rotation = 780;
-    transform1.scaleX = 81;
-    transform1.scaleY = 192;
+  it('scale accumulates across full hierarchy', () => {
+    const grandParent = makeActor();
+    const grandParentTransform = grandParent.getComponent(Transform);
+    grandParentTransform.local.scale.x = 2;
+    grandParentTransform.local.scale.y = 2;
 
-    transform2.offsetX = 25;
-    transform2.offsetY = 15;
-    transform2.rotation = 360;
-    transform2.scaleX = 27;
-    transform2.scaleY = 48;
+    const parent = makeActor(grandParent);
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.scale.x = 3;
+    parentTransform.local.scale.y = 4;
 
-    transform3.offsetX = 15;
-    transform3.offsetY = 10;
-    transform3.rotation = 180;
-    transform3.scaleX = 3;
-    transform3.scaleY = 6;
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+    childTransform.local.scale.x = 5;
+    childTransform.local.scale.y = 6;
 
-    expect(transform1.relativeOffsetX).toEqual(30);
-    expect(transform1.relativeOffsetY).toEqual(25);
-    expect(transform1.relativeRotation).toEqual(330);
-    expect(transform1.relativeScaleX).toEqual(1.5);
-    expect(transform1.relativeScaleY).toEqual(2);
-
-    expect(transform2.relativeOffsetX).toEqual(-5);
-    expect(transform2.relativeOffsetY).toEqual(-5);
-    expect(transform2.relativeRotation).toEqual(90);
-    expect(transform2.relativeScaleX).toEqual(3);
-    expect(transform2.relativeScaleY).toEqual(4);
-
-    expect(transform3.relativeOffsetX).toEqual(15);
-    expect(transform3.relativeOffsetY).toEqual(10);
-    expect(transform3.relativeRotation).toEqual(180);
-    expect(transform3.relativeScaleX).toEqual(3);
-    expect(transform3.relativeScaleY).toEqual(6);
+    expectClose(parentTransform.world.scale.x, 6);
+    expectClose(parentTransform.world.scale.y, 8);
+    expectClose(childTransform.world.scale.x, 30);
+    expectClose(childTransform.world.scale.y, 48);
   });
 
-  it('Clones return deep copy of original component', () => {
-    const originalTransform = new Transform({
-      offsetX: 10,
-      offsetY: 5,
-      rotation: 90,
-      scaleX: 3,
-      scaleY: 4,
-    });
-    const cloneTransform = originalTransform.clone();
+  it('combined translation + rotation + scale', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.position.x = 100;
+    parentTransform.local.rotation = MathOps.degToRad(90);
+    parentTransform.local.scale.x = 2;
+    parentTransform.local.scale.y = 2;
 
-    expect(originalTransform).not.toBe(cloneTransform);
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+    childTransform.local.position.x = 5;
+    childTransform.local.position.y = 0;
+
+    expectClose(childTransform.world.position.x, 100);
+    expectClose(childTransform.world.position.y, 10);
+  });
+
+  it('deep hierarchy rotation propagation', () => {
+    const grandParent = makeActor();
+    const grandParentTransform = grandParent.getComponent(Transform);
+    grandParentTransform.local.rotation = MathOps.degToRad(90);
+
+    const parent = makeActor(grandParent);
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.position.x = 10;
+    parentTransform.local.rotation = MathOps.degToRad(90);
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+    childTransform.local.position.x = 5;
+
+    expectClose(parentTransform.world.position.x, 0);
+    expectClose(parentTransform.world.position.y, 10);
+
+    expectClose(childTransform.world.position.x, -5);
+    expectClose(childTransform.world.position.y, 10);
+  });
+
+  it('world position update overrides current world position (update X, preserve Y)', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.rotation = MathOps.degToRad(90);
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.position.x = 20;
+    childTransform.local.position.y = 5;
+
+    expectClose(childTransform.world.position.x, -5);
+    expectClose(childTransform.world.position.y, 20);
+
+    childTransform.world.position.x = 10;
+
+    expectClose(childTransform.world.position.x, 10);
+    expectClose(childTransform.world.position.y, 20);
+  });
+
+  it('world position update overrides current world position (update Y, preserve X)', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+    parentTransform.local.position.x = 100;
+    parentTransform.local.rotation = MathOps.degToRad(90);
+    parentTransform.local.scale.x = 2;
+    parentTransform.local.scale.y = 2;
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.position.x = 50;
+    childTransform.local.position.y = 0;
+
+    expectClose(childTransform.world.position.x, 100);
+    expectClose(childTransform.world.position.y, 100);
+
+    childTransform.world.position.y = 10;
+
+    expectClose(childTransform.world.position.x, 100);
+    expectClose(childTransform.world.position.y, 10);
+  });
+
+  it('changing parent invalidates child', () => {
+    const grandParent = makeActor();
+    const grandParentTransform = grandParent.getComponent(Transform);
+
+    const parent = makeActor(grandParent);
+    const parentTransform = parent.getComponent(Transform);
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    expectClose(parentTransform.world.position.x, 0);
+    expectClose(childTransform.world.position.x, 0);
+
+    grandParentTransform.local.position.x = 100;
+
+    expectClose(parentTransform.world.position.x, 100);
+    expectClose(childTransform.world.position.x, 100);
+
+    parentTransform.local.position.x = 50;
+
+    expectClose(childTransform.world.position.x, 150);
+  });
+
+  it('set local rotation in degrees updates rotation in radians', () => {
+    const actor = makeActor();
+    const actorTransform = actor.getComponent(Transform);
+
+    actorTransform.local.rotationDeg = 180;
+
+    expectClose(actorTransform.local.rotation, Math.PI);
+    expectClose(actorTransform.local.rotationDeg, 180);
+  });
+
+  it('set rotation in degrees accumulates through hierarchy', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+
+    parentTransform.local.rotationDeg = 30;
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.rotationDeg = 15;
+
+    expectClose(childTransform.world.rotation, Math.PI / 4);
+    expectClose(childTransform.world.rotationDeg, 45);
+  });
+
+  it('world rotation update overrides current world rotation', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+
+    parentTransform.local.rotationDeg = 30;
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.rotationDeg = 15;
+
+    expectClose(childTransform.world.rotation, Math.PI / 4);
+    expectClose(childTransform.world.rotationDeg, 45);
+
+    childTransform.world.rotationDeg = 90;
+
+    expectClose(childTransform.world.rotation, Math.PI / 2);
+    expectClose(childTransform.world.rotationDeg, 90);
+  });
+
+  it('world scale update overrides current world scale', () => {
+    const parent = makeActor();
+    const parentTransform = parent.getComponent(Transform);
+
+    parentTransform.local.scale.x = 2;
+    parentTransform.local.scale.y = 1;
+
+    const child = makeActor(parent);
+    const childTransform = child.getComponent(Transform);
+
+    childTransform.local.scale.x = 3;
+    childTransform.local.scale.y = 2;
+
+    expectClose(childTransform.world.scale.x, 6);
+    expectClose(childTransform.world.scale.y, 2);
+
+    childTransform.world.scale.x = 4;
+
+    expectClose(childTransform.world.scale.x, 4);
+    expectClose(childTransform.world.scale.y, 2);
   });
 });

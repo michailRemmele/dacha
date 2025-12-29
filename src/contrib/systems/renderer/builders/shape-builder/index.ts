@@ -1,24 +1,21 @@
-import { Graphics, GraphicsContext, Bounds } from 'pixi.js';
+import { Graphics, GraphicsContext } from 'pixi.js';
 
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
-import { Transform } from '../../../../components/transform';
 import { Shape } from '../../../../components/shape';
 import type { Actor } from '../../../../../engine/actor';
 import { CacheStore } from '../../../../../engine/data-lib';
-import { floatEquals } from '../utils';
 
 import { getGraphicsContext, getGraphicsContextKey } from './utils';
 
-export class ShapeBuilder implements Builder {
+export class ShapeBuilder implements Builder<Shape> {
   private graphicsContextMap: CacheStore<GraphicsContext>;
 
   constructor() {
     this.graphicsContextMap = new CacheStore();
   }
 
-  destroy(actor: Actor): void {
-    const shape = actor.getComponent(Shape);
+  destroy(shape: Shape): void {
     const graphicsContextKey = shape.renderData?.graphicsContextKey;
 
     if (graphicsContextKey) {
@@ -29,13 +26,7 @@ export class ShapeBuilder implements Builder {
     shape.renderData = undefined;
   }
 
-  buildView(actor: Actor): Graphics | undefined {
-    const shape = actor.getComponent(Shape);
-    if (!shape) {
-      return undefined;
-    }
-
-    const { offsetX, offsetY } = actor.getComponent(Transform);
+  buildView(shape: Shape, actor: Actor): Graphics {
     const view = new Graphics();
 
     shape.renderData = { view };
@@ -43,61 +34,31 @@ export class ShapeBuilder implements Builder {
       actor,
       builderKey: Shape.componentName,
       viewComponent: shape,
-      bounds: new Bounds(offsetX, offsetY, offsetX, offsetY),
       meta: {},
-      didChange: false,
     };
+
+    this.updateView(shape);
 
     return view;
   }
 
-  updateView(actor: Actor): void {
-    const transform = actor.getComponent(Transform);
-    const shape = actor.getComponent(Shape);
-
-    if (!shape) {
-      return undefined;
-    }
-
+  updateView(shape: Shape): void {
     const view = shape.renderData!.view;
     const meta = view.__dacha.meta;
-
-    view.__dacha.didChange = false;
 
     if (shape.disabled !== meta.disabled) {
       view.visible = !shape.disabled;
       meta.disabled = shape.disabled;
-      view.__dacha.didChange = true;
     }
 
     if (shape.blending !== meta.blending) {
       view.blendMode = BLEND_MODE_MAPPING[shape.blending];
       meta.blending = shape.blending;
-      view.__dacha.didChange = true;
     }
 
     if (shape.opacity !== meta.opacity) {
       view.alpha = shape.opacity;
       meta.opacity = shape.opacity;
-      view.__dacha.didChange = true;
-    }
-
-    const angle = transform.rotation;
-    if (angle !== meta.angle) {
-      view.angle = angle;
-      meta.angle = angle;
-      view.__dacha.didChange = true;
-    }
-
-    const { offsetX, offsetY } = transform;
-    if (
-      !floatEquals(offsetX, meta.offsetX as number) ||
-      !floatEquals(offsetY, meta.offsetY as number)
-    ) {
-      view.position.set(offsetX, offsetY);
-      meta.offsetX = offsetX;
-      meta.offsetY = offsetY;
-      view.__dacha.didChange = true;
     }
 
     if (
@@ -122,19 +83,10 @@ export class ShapeBuilder implements Builder {
       meta.radius = shape.radius;
       meta.radiusX = shape.radiusX;
       meta.radiusY = shape.radiusY;
-      view.__dacha.didChange = true;
     }
 
     const graphicsContext = this.getGraphicsContext(shape)!;
     view.context = graphicsContext;
-
-    const { scaleX, scaleY } = transform;
-    if (scaleX !== meta.scaleX || scaleY !== meta.scaleY) {
-      view.scale.set(scaleX, scaleY);
-      meta.scaleX = scaleX;
-      meta.scaleY = scaleY;
-      view.__dacha.didChange = true;
-    }
   }
 
   private updateGraphicsContext(shape: Shape): void {

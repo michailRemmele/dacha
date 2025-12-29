@@ -1,25 +1,16 @@
-import { Bounds, type ViewContainer } from 'pixi.js';
+import { type ViewContainer } from 'pixi.js';
 
 import type { Builder } from '../builder';
-import { Transform } from '../../../../components/transform';
 import { PixiView } from '../../../../components/pixi-view';
 import type { Actor } from '../../../../../engine/actor';
 
-export class PixiViewBuilder implements Builder {
-  destroy(actor: Actor): void {
-    const pixiView = actor.getComponent(PixiView);
-
+export class PixiViewBuilder implements Builder<PixiView> {
+  destroy(pixiView: PixiView): void {
     pixiView.renderData?.view.destroy();
     pixiView.renderData = undefined;
   }
 
-  buildView(actor: Actor): ViewContainer | undefined {
-    const pixiView = actor.getComponent(PixiView);
-    if (!pixiView) {
-      return undefined;
-    }
-
-    const { offsetX, offsetY } = actor.getComponent(Transform);
+  buildView(pixiView: PixiView, actor: Actor): ViewContainer {
     const view = pixiView.createView();
 
     pixiView.renderData = { view };
@@ -27,9 +18,7 @@ export class PixiViewBuilder implements Builder {
       actor,
       builderKey: PixiView.componentName,
       viewComponent: pixiView,
-      bounds: new Bounds(offsetX, offsetY, offsetX, offsetY),
       meta: {},
-      didChange: false,
     };
 
     return view;

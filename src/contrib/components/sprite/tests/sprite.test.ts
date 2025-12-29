@@ -7,7 +7,6 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      rotation: 45,
       sortCenter: [0, 0],
       flipX: false,
       flipY: true,
@@ -23,7 +22,6 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.width).toEqual(100);
     expect(sprite.height).toEqual(200);
     expect(sprite.slice).toEqual(10);
-    expect(sprite.rotation).toEqual(45);
     expect(sprite.sortCenter).toEqual([0, 0]);
     expect(sprite.flipX).toEqual(false);
     expect(sprite.flipY).toEqual(true);
@@ -41,7 +39,6 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      rotation: 45,
       sortCenter: [0, 0],
       flipX: false,
       flipY: true,
@@ -57,7 +54,6 @@ describe('Contrib -> components -> Sprite', () => {
     sprite.width = 200;
     sprite.height = 400;
     sprite.slice = 55;
-    sprite.rotation = 90;
     sprite.sortCenter = [5, 10];
     sprite.flipX = true;
     sprite.flipY = false;
@@ -71,7 +67,6 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.width).toEqual(200);
     expect(sprite.height).toEqual(400);
     expect(sprite.slice).toEqual(55);
-    expect(sprite.rotation).toEqual(90);
     expect(sprite.sortCenter).toEqual([5, 10]);
     expect(sprite.flipX).toEqual(true);
     expect(sprite.flipY).toEqual(false);
@@ -88,7 +83,6 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      rotation: 45,
       sortCenter: [0, 0],
       flipX: false,
       flipY: true,

@@ -37,8 +37,8 @@ export type Geometry = BoxGeometry | CircleGeometry;
 
 export interface OrientationData {
   transform: {
-    offsetX: number
-    offsetY: number
+    positionX: number
+    positionY: number
     rotation: number
     scaleX: number
     scaleY: number

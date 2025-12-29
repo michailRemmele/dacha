@@ -4,8 +4,9 @@ import type { OrientationData } from '../types';
 export const checkTransform = (
   transform: Transform,
   transformOld: OrientationData['transform'],
-): boolean => transform.offsetX !== transformOld.offsetX
-  || transform.offsetY !== transformOld.offsetY
-  || transform.rotation !== transformOld.rotation
-  || transform.scaleX !== transformOld.scaleX
-  || transform.scaleY !== transformOld.scaleY;
+): boolean =>
+  transform.world.position.x !== transformOld.positionX ||
+  transform.world.position.y !== transformOld.positionY ||
+  transform.world.rotation !== transformOld.rotation ||
+  transform.world.scale.x !== transformOld.scaleX ||
+  transform.world.scale.y !== transformOld.scaleY;

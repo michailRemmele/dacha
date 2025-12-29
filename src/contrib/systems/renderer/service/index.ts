@@ -1,25 +1,17 @@
-import { type ViewContainer, type Application } from 'pixi.js';
+import { type ViewContainer, type Application, type Container } from 'pixi.js';
 
-import { type ComponentConstructor } from '../../../../engine/component';
-import { Sprite } from '../../../components/sprite';
-import { Shape } from '../../../components/shape';
-import { PixiView } from '../../../components/pixi-view';
-import { BitmapText } from '../../../components/bitmap-text';
 import { Transform } from '../../../components/transform';
 import { type Actor } from '../../../../engine/actor';
 import { type SortFn } from '../sort';
 import { type Bounds, type ViewComponent } from '../types';
+import { VIEW_COMPONENTS } from '../consts';
 
-const VIEW_COMPONENTS: ComponentConstructor[] = [
-  Sprite,
-  Shape,
-  PixiView,
-  BitmapText,
-];
+import { convertBounds } from './utils';
 
 interface RendererServiceOptions {
   application: Application;
-  getViewEntries: () => ViewContainer[] | undefined;
+  worldContainer: Container;
+  getViewEntries: () => Set<ViewContainer> | undefined;
   sortFn: SortFn;
 }
 
@@ -28,16 +20,23 @@ interface RendererServiceOptions {
  *
  * Offers methods for view intersection testing, bounds calculation, and
  * direct access to the underlying PIXI.js application
- * 
+ *
  * @category Systems
  */
 export class RendererService {
   private application: Application;
-  private getViewEntries: () => ViewContainer[] | undefined;
+  private worldContainer: Container;
+  private getViewEntries: () => Set<ViewContainer> | undefined;
   private sortFn: SortFn;
 
-  constructor({ application, getViewEntries, sortFn }: RendererServiceOptions) {
+  constructor({
+    application,
+    worldContainer,
+    getViewEntries,
+    sortFn,
+  }: RendererServiceOptions) {
     this.application = application;
+    this.worldContainer = worldContainer;
     this.getViewEntries = getViewEntries;
     this.sortFn = sortFn;
   }
@@ -61,8 +60,10 @@ export class RendererService {
   intersectsWithPoint(x: number, y: number): Actor[] {
     const intersects = new Set<ViewContainer>();
 
+    const inverseMatrix = this.worldContainer.worldTransform.clone().invert();
+
     this.getViewEntries()?.forEach((entry) => {
-      const { minX, minY, maxX, maxY } = entry.__dacha.bounds;
+      const { minX, minY, maxX, maxY } = convertBounds(entry, inverseMatrix);
 
       if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
         intersects.add(entry);
@@ -113,26 +114,43 @@ export class RendererService {
    * @returns Bounds of the actor
    */
   getBounds(actor: Actor): Bounds {
-    const transform = actor.getComponent(Transform);
+    const { world } = actor.getComponent(Transform);
 
-    let minX = transform.offsetX;
-    let minY = transform.offsetY;
-    let maxX = transform.offsetX;
-    let maxY = transform.offsetY;
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    const inverseMatrix = this.worldContainer.worldTransform.clone().invert();
 
     VIEW_COMPONENTS.forEach((ViewComponent) => {
       const viewComponent = actor.getComponent(ViewComponent) as ViewComponent;
-      const bounds = viewComponent?.renderData?.view.__dacha.bounds;
 
-      if (!bounds) {
+      if (!viewComponent?.renderData?.view) {
         return;
       }
+
+      const bounds = convertBounds(
+        viewComponent.renderData.view,
+        inverseMatrix,
+      );
 
       minX = Math.min(minX, bounds?.minX);
       minY = Math.min(minY, bounds?.minY);
       maxX = Math.max(maxX, bounds?.maxX);
       maxY = Math.max(maxY, bounds?.maxY);
     });
+
+    if (minX === Infinity) {
+      return {
+        minX: world.position.x,
+        minY: world.position.y,
+        maxX: world.position.x,
+        maxY: world.position.y,
+        width: 0,
+        height: 0,
+      };
+    }
 
     return {
       minX,

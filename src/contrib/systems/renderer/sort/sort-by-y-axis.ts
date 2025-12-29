@@ -7,8 +7,8 @@ export const sortByYAxis =
   (a: ViewContainer, b: ViewContainer): number => {
     const aComponent = a.__dacha.viewComponent;
     const bComponent = b.__dacha.viewComponent;
-    const aY = a.__dacha.bounds.maxY;
-    const bY = b.__dacha.bounds.maxY;
+    const aY = a.getGlobalPosition(undefined, true).y;
+    const bY = b.getGlobalPosition(undefined, true).y;
 
     const aOffsetY = aY + aComponent.sortCenter[1];
     const bOffsetY = bY + bComponent.sortCenter[1];
