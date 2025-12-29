@@ -11,10 +11,6 @@ export const transform: WidgetSchema = {
       type: 'number',
     },
     {
-      name: 'offsetZ',
-      type: 'number',
-    },
-    {
       name: 'rotation',
       type: 'number',
     },
@@ -30,7 +26,6 @@ export const transform: WidgetSchema = {
   getInitialState: () => ({
     offsetX: 0,
     offsetY: 0,
-    offsetZ: 0,
     rotation: 0,
     scaleX: 1,
     scaleY: 1,

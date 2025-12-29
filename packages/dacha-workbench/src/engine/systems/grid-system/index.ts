@@ -163,12 +163,12 @@ export class GridSystem extends SceneSystem {
 
     const { zoom, windowSizeX, windowSizeY } =
       this.mainActor.getComponent(Camera);
-    const { offsetX, offsetY } = this.gridActor.getComponent(Transform);
-
-    this.gridView.position.set(offsetX, offsetY);
+    const {
+      world: { position },
+    } = this.gridActor.getComponent(Transform);
 
     const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
-    uniforms.u_offset = [offsetX, offsetY];
+    uniforms.u_offset = [position.x, position.y];
 
     const shouldUpdateGrid = this.isGridChanged();
     if (shouldUpdateGrid) {
