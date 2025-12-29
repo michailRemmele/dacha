@@ -7,9 +7,9 @@ import templateExample from './jsons/template-example.json';
 import actorFromTemplateExample from './jsons/actor-from-template-example.json';
 
 interface TestComponent1Config extends Record<string, unknown> {
-  testField1: string
-  testField2: boolean
-  testField3: number
+  testField1: string;
+  testField2: boolean;
+  testField3: number;
 }
 
 class TestComponent1 extends Component {
@@ -22,7 +22,8 @@ class TestComponent1 extends Component {
   constructor(config: Record<string, unknown>) {
     super();
 
-    const { testField1, testField2, testField3 } = config as TestComponent1Config;
+    const { testField1, testField2, testField3 } =
+      config as TestComponent1Config;
 
     this.testField1 = testField1;
     this.testField2 = testField2;
@@ -39,9 +40,9 @@ class TestComponent1 extends Component {
 }
 
 interface TestComponent2Config extends Record<string, unknown> {
-  testField4: string
-  testField5: boolean
-  testField6: number
+  testField4: string;
+  testField5: boolean;
+  testField6: number;
 }
 
 class TestComponent2 extends Component {
@@ -54,7 +55,8 @@ class TestComponent2 extends Component {
   constructor(config: Record<string, unknown>) {
     super();
 
-    const { testField4, testField5, testField6 } = config as TestComponent2Config;
+    const { testField4, testField5, testField6 } =
+      config as TestComponent2Config;
 
     this.testField4 = testField4;
     this.testField5 = testField5;
@@ -71,10 +73,7 @@ class TestComponent2 extends Component {
 }
 
 describe('Engine -> ActorCreator', () => {
-  const components = [
-    TestComponent1,
-    TestComponent2,
-  ];
+  const components = [TestComponent1, TestComponent2];
 
   let templateCollection: TemplateCollection;
 
@@ -97,24 +96,27 @@ describe('Engine -> ActorCreator', () => {
     expect(actor.children.length).toBe(1);
     expect(actor.children[0].parent).toBe(actor);
 
-    expect(actor.getComponents()).toStrictEqual([
-      actor.getComponent(TestComponent1),
-      actor.getComponent(TestComponent2),
-    ]);
+    expect(actor.getComponent(TestComponent1).testField1).toBe(
+      'testField1Value',
+    );
+    expect(actor.getComponent(TestComponent1).testField2).toBe(true);
+    expect(actor.getComponent(TestComponent1).testField3).toBe(100);
 
-    expect((actor.getComponent(TestComponent1)).testField1).toBe('testField1Value');
-    expect((actor.getComponent(TestComponent1)).testField2).toBe(true);
-    expect((actor.getComponent(TestComponent1)).testField3).toBe(100);
-
-    expect((actor.getComponent(TestComponent2)).testField4).toBe('testField4Value');
-    expect((actor.getComponent(TestComponent2)).testField5).toBe(false);
-    expect((actor.getComponent(TestComponent2)).testField6).toBe(300);
+    expect(actor.getComponent(TestComponent2).testField4).toBe(
+      'testField4Value',
+    );
+    expect(actor.getComponent(TestComponent2).testField5).toBe(false);
+    expect(actor.getComponent(TestComponent2).testField6).toBe(300);
 
     expect(actor.children[0].getComponent(TestComponent1)).toBeUndefined();
 
-    expect((actor.children[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
-    expect((actor.children[0].getComponent(TestComponent2)).testField5).toBe(true);
-    expect((actor.children[0].getComponent(TestComponent2)).testField6).toBe(450);
+    expect(actor.children[0].getComponent(TestComponent2).testField4).toBe(
+      'testField4ValueChild',
+    );
+    expect(actor.children[0].getComponent(TestComponent2).testField5).toBe(
+      true,
+    );
+    expect(actor.children[0].getComponent(TestComponent2).testField6).toBe(450);
   });
 
   it('Creates actor from template', () => {
@@ -138,30 +140,41 @@ describe('Engine -> ActorCreator', () => {
     expect(actor.children[0].parent).toBe(actor);
     expect(actor.children[1].parent).toBe(actor);
 
-    expect(actor.getComponents()).toStrictEqual([
-      actor.getComponent(TestComponent2),
-      actor.getComponent(TestComponent1),
-    ]);
+    expect(actor.getComponent(TestComponent1).testField1).toBe(
+      'testField1ValueFromTemplate',
+    );
+    expect(actor.getComponent(TestComponent1).testField2).toBe(false);
+    expect(actor.getComponent(TestComponent1).testField3).toBe(100);
 
-    expect((actor.getComponent(TestComponent1)).testField1).toBe('testField1ValueFromTemplate');
-    expect((actor.getComponent(TestComponent1)).testField2).toBe(false);
-    expect((actor.getComponent(TestComponent1)).testField3).toBe(100);
+    expect(actor.getComponent(TestComponent2).testField4).toBe(
+      'testField4ValueTemplate',
+    );
+    expect(actor.getComponent(TestComponent2).testField5).toBe(true);
+    expect(actor.getComponent(TestComponent2).testField6).toBe(200);
 
-    expect((actor.getComponent(TestComponent2)).testField4).toBe('testField4ValueTemplate');
-    expect((actor.getComponent(TestComponent2)).testField5).toBe(true);
-    expect((actor.getComponent(TestComponent2)).testField6).toBe(200);
+    expect(actor.children[0].getComponent(TestComponent1).testField1).toBe(
+      'testField1ValueChild',
+    );
+    expect(actor.children[0].getComponent(TestComponent1).testField2).toBe(
+      false,
+    );
+    expect(actor.children[0].getComponent(TestComponent1).testField3).toBe(350);
 
-    expect((actor.children[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
-    expect((actor.children[0].getComponent(TestComponent1)).testField2).toBe(false);
-    expect((actor.children[0].getComponent(TestComponent1)).testField3).toBe(350);
+    expect(actor.children[0].getComponent(TestComponent2).testField4).toBe(
+      'testField4ValueChild',
+    );
+    expect(actor.children[0].getComponent(TestComponent2).testField5).toBe(
+      true,
+    );
+    expect(actor.children[0].getComponent(TestComponent2).testField6).toBe(750);
 
-    expect((actor.children[0].getComponent(TestComponent2)).testField4).toBe('testField4ValueChild');
-    expect((actor.children[0].getComponent(TestComponent2)).testField5).toBe(true);
-    expect((actor.children[0].getComponent(TestComponent2)).testField6).toBe(750);
-
-    expect((actor.children[1].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
-    expect((actor.children[1].getComponent(TestComponent1)).testField2).toBe(false);
-    expect((actor.children[1].getComponent(TestComponent1)).testField3).toBe(950);
+    expect(actor.children[1].getComponent(TestComponent1).testField1).toBe(
+      'testField1ValueChild',
+    );
+    expect(actor.children[1].getComponent(TestComponent1).testField2).toBe(
+      false,
+    );
+    expect(actor.children[1].getComponent(TestComponent1).testField3).toBe(950);
   });
 
   it('Creates actor from template without actor options', () => {
@@ -183,16 +196,18 @@ describe('Engine -> ActorCreator', () => {
     expect(actor.children.length).toBe(1);
     expect(actor.children[0].parent).toBe(actor);
 
-    expect(actor.getComponents()).toStrictEqual([
-      actor.getComponent(TestComponent2),
-    ]);
+    expect(actor.getComponent(TestComponent2).testField4).toBe(
+      'testField4ValueTemplate',
+    );
+    expect(actor.getComponent(TestComponent2).testField5).toBe(true);
+    expect(actor.getComponent(TestComponent2).testField6).toBe(200);
 
-    expect((actor.getComponent(TestComponent2)).testField4).toBe('testField4ValueTemplate');
-    expect((actor.getComponent(TestComponent2)).testField5).toBe(true);
-    expect((actor.getComponent(TestComponent2)).testField6).toBe(200);
-
-    expect((actor.children[0].getComponent(TestComponent1)).testField1).toBe('testField1ValueChild');
-    expect((actor.children[0].getComponent(TestComponent1)).testField2).toBe(false);
-    expect((actor.children[0].getComponent(TestComponent1)).testField3).toBe(350);
+    expect(actor.children[0].getComponent(TestComponent1).testField1).toBe(
+      'testField1ValueChild',
+    );
+    expect(actor.children[0].getComponent(TestComponent1).testField2).toBe(
+      false,
+    );
+    expect(actor.children[0].getComponent(TestComponent1).testField3).toBe(350);
   });
 });

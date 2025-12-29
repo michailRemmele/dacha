@@ -18,7 +18,6 @@ export interface SpriteConfig {
   width: number;
   height: number;
   slice: number;
-  rotation: number;
   flipX: boolean;
   flipY: boolean;
   sortingLayer: string;
@@ -44,7 +43,6 @@ export interface SpriteConfig {
  *   width: 64,
  *   height: 64,
  *   slice: 0,
- *   rotation: 0,
  *   flipX: false,
  *   flipY: false,
  *   sortingLayer: 'units',
@@ -75,8 +73,6 @@ export class Sprite extends Component {
   height: number;
   /** Amount of frames in the sprite sheet */
   slice: number;
-  /** Rotation of the sprite in degrees */
-  rotation: number;
   /** Whether to flip the sprite horizontally */
   flipX: boolean;
   /** Whether to flip the sprite vertically */
@@ -113,7 +109,6 @@ export class Sprite extends Component {
     this.height = config.height;
     this.slice = config.slice;
     this.currentFrame = 0;
-    this.rotation = config.rotation;
     this.flipX = config.flipX;
     this.flipY = config.flipY;
     this.disabled = config.disabled;
@@ -131,7 +126,6 @@ export class Sprite extends Component {
       width: this.width,
       height: this.height,
       slice: this.slice,
-      rotation: this.rotation,
       flipX: this.flipX,
       flipY: this.flipY,
       disabled: this.disabled,

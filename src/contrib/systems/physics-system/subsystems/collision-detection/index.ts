@@ -101,11 +101,11 @@ export class CollisionDetectionSubsystem {
 
     return {
       transform: {
-        offsetX: transform.offsetX,
-        offsetY: transform.offsetY,
-        rotation: transform.rotation,
-        scaleX: transform.scaleX,
-        scaleY: transform.scaleY,
+        positionX: transform.world.position.x,
+        positionY: transform.world.position.y,
+        rotation: transform.world.rotation,
+        scaleX: transform.world.scale.x,
+        scaleY: transform.world.scale.y,
       },
       collider: {
         type: collider.type,

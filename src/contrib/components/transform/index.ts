@@ -1,4 +1,8 @@
 import { Component } from '../../../engine/component';
+import { Matrix, MathOps } from '../../../engine/math-lib';
+
+import { LocalTransform } from './local-transform';
+import { WorldTransform } from './world-transform';
 
 export interface TransformConfig {
   offsetX: number;
@@ -9,11 +13,11 @@ export interface TransformConfig {
 }
 
 /**
- * Transform component that handles position, rotation, and scale of an actor.
+ * Component responsible for handling local and world-space transforms.
  *
- * Component provides hierarchical transformation support, meaning
- * child actors inherit transformations from their parents. All values are
- * stored as relative to the parent, but accessed as world coordinates.
+ * A Transform manages position, rotation, and scale, and computes
+ * corresponding transformation matrices. It supports hierarchical
+ * parent-child relationships via world matrix composition.
  *
  * @example
  * ```typescript
@@ -30,145 +34,153 @@ export interface TransformConfig {
  * actor.setComponent(transform);
  *
  * // Access world coordinates
- * console.log(`Position: ${transform.offsetX}, ${transform.offsetY}`);
- * console.log(`Rotation: ${transform.rotation}`);
- * console.log(`Scale: ${transform.scaleX}, ${transform.scaleY}`);
+ * console.log(`Position: ${transform.world.position.x}, ${transform.world.position.y}`);
+ * console.log(`Rotation (in radians): ${transform.world.rotation}`);
+ * console.log(`Scale: ${transform.world.scale.x}, ${transform.world.scale.y}`);
  * ```
  *
  * @category Components
  */
 export class Transform extends Component {
   /**
-   * Relative X position of the actor.
+   * Local-space transform values (position, rotation, scale).
+   * These values are relative to the parent transform.
    */
-  relativeOffsetX: number;
+  local: LocalTransform;
+
   /**
-   * Relative offset Y position of the actor.
+   * World-space transform values derived from the local transform
+   * and the parent hierarchy.
    */
-  relativeOffsetY: number;
+  world: WorldTransform;
+
   /**
-   * Relative rotation of the actor.
+   * Matrix representing the local-space transformation.
    */
-  relativeRotation: number;
+  localMatrix: Matrix;
+
   /**
-   * Relative scale X factor of the actor.
+   * Matrix representing the world-space transformation.
    */
-  relativeScaleX: number;
-  /**
-   * Relative scale Y factor of the actor.
-   */
-  relativeScaleY: number;
+  worldMatrix: Matrix;
+
+  private _invertedWorldMatrix: Matrix;
+
+  private dirty: boolean;
+  private invertedDirty: boolean;
 
   /**
    * Creates a new Transform component.
    *
-   * @param config - Configuration for the transform
+   * @param config - Initial configuration for position, rotation, and scale.
    */
   constructor(config: TransformConfig) {
     super();
 
-    this.relativeOffsetX = config.offsetX;
-    this.relativeOffsetY = config.offsetY;
-    this.relativeRotation = config.rotation;
-    this.relativeScaleX = config.scaleX || 1;
-    this.relativeScaleY = config.scaleY || 1;
-  }
+    this.local = new LocalTransform(config, this);
+    this.world = new WorldTransform(this);
 
-  _getPropertyFromParent(name: string, defaultValue: number): number {
-    const parentComponent = this.getParentComponent() as
-      | Record<string, number>
-      | undefined;
-    return parentComponent ? parentComponent[name] : defaultValue;
+    this.localMatrix = new Matrix(1, 0, 0, 1, 0, 0);
+    this.worldMatrix = new Matrix(1, 0, 0, 1, 0, 0);
+    this._invertedWorldMatrix = new Matrix(1, 0, 0, 1, 0, 0);
+
+    this.dirty = true;
+    this.invertedDirty = true;
   }
 
   /**
-   * Sets the world X position of the actor.
-   * @param offsetX - World X position
+   * Returns the parent Transform component, if one exists.
+   *
+   * @returns The parent Transform or `undefined` if this transform has no parent.
    */
-  set offsetX(offsetX) {
-    this.relativeOffsetX = offsetX - this._getPropertyFromParent('offsetX', 0);
+  override getParentComponent(): Transform | undefined {
+    return super.getParentComponent() as Transform | undefined;
   }
 
   /**
-   * Gets the world X position of the actor.
-   * @returns World X position
+   * Marks this transform and all descendant transforms as dirty.
+   *
+   * This signals that their matrices must be recalculated before use.
    */
-  get offsetX(): number {
-    return this.relativeOffsetX + this._getPropertyFromParent('offsetX', 0);
+  markDirty(): void {
+    if (this.dirty) {
+      return;
+    }
+
+    this.dirty = true;
+    this.invertedDirty = true;
+
+    this.actor?.children.forEach((child) => {
+      const childTransform = child.getComponent(Transform);
+      childTransform.markDirty();
+    });
   }
 
   /**
-   * Sets the world Y position of the actor.
-   * @param offsetY - World Y position
+   * Recomputes the local transformation matrix from local position,
+   * rotation, and scale.
    */
-  set offsetY(offsetY) {
-    this.relativeOffsetY = offsetY - this._getPropertyFromParent('offsetY', 0);
+  updateLocalMatrix(): void {
+    const cos = Math.cos(this.local.rotation);
+    const sin = Math.sin(this.local.rotation);
+
+    this.localMatrix.assign(
+      cos * this.local.scale.x,
+      sin * this.local.scale.x,
+      -sin * this.local.scale.y,
+      cos * this.local.scale.y,
+      this.local.position.x,
+      this.local.position.y,
+    );
   }
 
   /**
-   * Gets the world Y position of the actor.
-   * @returns World Y position
+   * Recomputes the world transformation matrix if the transform is dirty.
+   *
+   * This method ensures parent transforms are updated first and then
+   * composes the local matrix with the parent world matrix.
    */
-  get offsetY(): number {
-    return this.relativeOffsetY + this._getPropertyFromParent('offsetY', 0);
+  updateWorldMatrix(): void {
+    if (!this.dirty) {
+      return;
+    }
+
+    this.updateLocalMatrix();
+
+    const parent = this.getParentComponent();
+
+    if (!parent) {
+      this.worldMatrix.assign(this.localMatrix);
+    } else {
+      parent.updateWorldMatrix();
+      Matrix.multiply(this.worldMatrix, parent.worldMatrix, this.localMatrix);
+    }
+
+    this.dirty = false;
   }
 
   /**
-   * Sets the world rotation of the actor in degrees.
-   * @param rotation - World rotation in degrees
+   * Inverse of the world transformation matrix.
+   * Useful for converting world-space coordinates to local space.
    */
-  set rotation(rotation) {
-    this.relativeRotation =
-      rotation - this._getPropertyFromParent('rotation', 0);
-  }
+  get invertedWorldMatrix(): Matrix {
+    this.updateWorldMatrix();
 
-  /**
-   * Gets the world rotation of the actor in degrees.
-   * @returns World rotation in degrees
-   */
-  get rotation(): number {
-    return this.relativeRotation + this._getPropertyFromParent('rotation', 0);
-  }
+    if (this.invertedDirty) {
+      this._invertedWorldMatrix.assign(this.worldMatrix).invert();
+      this.invertedDirty = false;
+    }
 
-  /**
-   * Sets the X scale factor of the actor.
-   * @param scaleX - X scale factor
-   */
-  set scaleX(scaleX) {
-    this.relativeScaleX = scaleX / this._getPropertyFromParent('scaleX', 1);
-  }
-
-  /**
-   * Gets the X scale factor of the actor.
-   * @returns X scale factor
-   */
-  get scaleX(): number {
-    return this.relativeScaleX * this._getPropertyFromParent('scaleX', 1);
-  }
-
-  /**
-   * Sets the Y scale factor of the actor.
-   * @param scaleY - Y scale factor
-   */
-  set scaleY(scaleY) {
-    this.relativeScaleY = scaleY / this._getPropertyFromParent('scaleY', 1);
-  }
-
-  /**
-   * Gets the Y scale factor of the actor.
-   * @returns Y scale factor
-   */
-  get scaleY(): number {
-    return this.relativeScaleY * this._getPropertyFromParent('scaleY', 1);
+    return this._invertedWorldMatrix;
   }
 
   clone(): Transform {
     return new Transform({
-      offsetX: this.relativeOffsetX,
-      offsetY: this.relativeOffsetY,
-      rotation: this.relativeRotation,
-      scaleX: this.relativeScaleX,
-      scaleY: this.relativeScaleY,
+      offsetX: this.local.position.x,
+      offsetY: this.local.position.y,
+      rotation: MathOps.radToDeg(this.local.rotation),
+      scaleX: this.local.scale.x,
+      scaleY: this.local.scale.y,
     });
   }
 }

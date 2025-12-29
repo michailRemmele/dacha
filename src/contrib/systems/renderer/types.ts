@@ -1,3 +1,7 @@
+import { type ViewContainer } from 'pixi.js';
+
+import type { Component } from '../../../engine/component';
+
 export interface SortingLayer {
   id: string;
   name: string;
@@ -23,8 +27,8 @@ export interface Bounds {
   height: number;
 }
 
-export interface ViewComponent {
+export interface ViewComponent extends Component {
   renderData?: {
-    view: { __dacha: { bounds: Bounds } };
+    view: ViewContainer;
   };
 }
