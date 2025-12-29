@@ -222,8 +222,9 @@ export const getEditorConfig = ({
                   config: {
                     offsetX: 0,
                     offsetY: 0,
-                    offsetZ: 0,
                     rotation: 0,
+                    scaleX: 1,
+                    scaleY: 1,
                   },
                 },
               ],
@@ -241,8 +242,9 @@ export const getEditorConfig = ({
                   'canvas.mainActor.transform.offsetY',
                   0,
                 ),
-                offsetZ: 1,
                 rotation: 0,
+                scaleX: 1,
+                scaleY: 1,
               },
             },
             {
@@ -381,8 +383,9 @@ export const getEditorConfig = ({
           config: {
             offsetX: 0,
             offsetY: 0,
-            offsetZ: 0,
             rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
           },
         },
         {
@@ -417,8 +420,9 @@ export const getEditorConfig = ({
           config: {
             offsetX: 0,
             offsetY: 0,
-            offsetZ: 0,
             rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
           },
         },
         {

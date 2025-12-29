@@ -104,20 +104,20 @@ export class ZoomToolSystem extends SceneSystem {
     const windowCenterX = windowSizeX / 2;
     const windowCenterY = windowSizeY / 2;
 
-    const nextX = (screenX - windowCenterX) / zoom + transform.offsetX;
-    const nextY = (screenY - windowCenterY) / zoom + transform.offsetY;
+    const nextX = (screenX - windowCenterX) / zoom + transform.world.position.x;
+    const nextY = (screenY - windowCenterY) / zoom + transform.world.position.y;
 
     // Move camera in direction of zoom
-    transform.offsetX += x - nextX;
-    transform.offsetY += y - nextY;
+    transform.world.position.x += x - nextX;
+    transform.world.position.y += y - nextY;
 
     persistentStorage.set(
       'canvas.mainActor.transform.offsetX',
-      transform.offsetX,
+      transform.world.position.x,
     );
     persistentStorage.set(
       'canvas.mainActor.transform.offsetY',
-      transform.offsetY,
+      transform.world.position.y,
     );
   }
 }

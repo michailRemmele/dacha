@@ -95,8 +95,8 @@ export class SelectionMovementSubsystem {
       }
 
       this.selectionStart[actor.id] = {
-        x: transform.offsetX,
-        y: transform.offsetY,
+        x: transform.world.position.x,
+        y: transform.world.position.y,
       }
     })
   }
@@ -127,15 +127,15 @@ export class SelectionMovementSubsystem {
       }
 
       if (
-        isFloatEqual(transform.offsetX, selectionStart.x)
-        && isFloatEqual(transform.offsetY, selectionStart.y)
+        isFloatEqual(transform.world.position.x, selectionStart.x)
+        && isFloatEqual(transform.world.position.y, selectionStart.y)
       ) {
         return
       }
 
       newTransformMap.set(actor.id, {
-        offsetX: transform.relativeOffsetX,
-        offsetY: transform.relativeOffsetY,
+        offsetX: transform.local.position.x,
+        offsetY: transform.local.position.y,
       })
     })
 
@@ -197,11 +197,11 @@ export class SelectionMovementSubsystem {
 
         const bounds = rendererService.getBounds(actor)
 
-        transform.offsetX = getGridValue(offsetX, bounds.width, gridStep)
-        transform.offsetY = getGridValue(offsetY, bounds.height, gridStep)
+        transform.world.position.x = getGridValue(offsetX, bounds.width, gridStep)
+        transform.world.position.y = getGridValue(offsetY, bounds.height, gridStep)
       } else {
-        transform.offsetX = Math.round(offsetX)
-        transform.offsetY = Math.round(offsetY)
+        transform.world.position.x = Math.round(offsetX)
+        transform.world.position.y = Math.round(offsetY)
       }
     })
   }
