@@ -10,6 +10,7 @@ declare module 'pixi.js' {
      */
     __dacha: {
       meta: Record<string, unknown>;
+      ownFilters?: Filter[];
     };
   }
   interface ViewContainer {
@@ -24,6 +25,11 @@ declare module 'pixi.js' {
         sortCenter: [number, number];
       };
       meta: Record<string, unknown>;
+    };
+  }
+  interface Filter {
+    __dacha: {
+      effect: unknown;
     };
   }
 }
