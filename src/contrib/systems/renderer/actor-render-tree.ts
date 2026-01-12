@@ -1,4 +1,4 @@
-import { Container, type ViewContainer, type IRenderLayer } from 'pixi.js';
+import { Container, type ViewContainer, type RenderLayer } from 'pixi.js';
 
 import { Actor } from '../../../engine/actor';
 import { type Scene } from '../../../engine/scene';
@@ -36,20 +36,26 @@ interface ActorRenderTreeOptions {
   worldContainer: Container;
   scene: Scene;
   assets: Assets;
-  sortingLayers: Map<string, IRenderLayer>;
+  sortingLayers: Map<string, RenderLayer>;
 }
 
 export class ActorRenderTree {
   private scene: Scene;
   private worldContainer: Container;
   private assets: Assets;
-  private sortingLayers: Map<string, IRenderLayer>;
+  private sortingLayers: Map<string, RenderLayer>;
 
   public viewEntries: Set<ViewContainer>;
 
   private builders: Map<string, Builder>;
   private actorContainerMap: Map<Actor, Container>;
   private actorParentMap: Map<Actor, Actor | Scene | null>;
+
+  private onActorAddCallback?: (actor: Actor) => void;
+  private onActorRemoveCallback?: (actor: Actor) => void;
+  private onActorParentChangeCallback?: (actor: Actor) => void;
+  private onViewAddCallback?: (view: ViewContainer) => void;
+  private onViewRemoveCallback?: (view: ViewContainer) => void;
 
   constructor({
     scene,
@@ -104,6 +110,8 @@ export class ActorRenderTree {
     const view = builder.buildView(component, target);
     this.viewEntries.add(view);
     container.addChild(view);
+
+    this.onViewAddCallback?.(view);
   };
 
   private handleRemoveComponent = (event: RemoveComponentEvent): void => {
@@ -116,6 +124,8 @@ export class ActorRenderTree {
     void this.assets.unload(component);
 
     if (component?.renderData?.view) {
+      this.onViewRemoveCallback?.(component.renderData.view);
+
       this.viewEntries.delete(component.renderData.view);
     }
 
@@ -130,9 +140,17 @@ export class ActorRenderTree {
         this.add(entity);
       }
     });
+
+    if (event.child instanceof Actor) {
+      this.onActorAddCallback?.(event.child);
+    }
   };
 
   private handleRemoveChildEntity = (event: RemoveChildEntityEvent): void => {
+    if (event.child instanceof Actor) {
+      this.onActorRemoveCallback?.(event.child);
+    }
+
     traverseEntity(event.child, (entity) => {
       if (entity instanceof Actor) {
         this.delete(entity as Actor);
@@ -244,6 +262,8 @@ export class ActorRenderTree {
     nextParent.addChild(container);
 
     this.actorParentMap.set(actor, actor.parent);
+
+    this.onActorParentChangeCallback?.(actor);
   }
 
   private updatePosition(container: Container, actor: Actor): void {
@@ -291,6 +311,30 @@ export class ActorRenderTree {
         meta.sortingLayer = sortingLayer;
       }
     });
+  }
+
+  onActorAdd(callback: (actor: Actor) => void): void {
+    this.onActorAddCallback = callback;
+  }
+
+  onActorRemove(callback: (actor: Actor) => void): void {
+    this.onActorRemoveCallback = callback;
+  }
+
+  onActorParentChange(callback: (actor: Actor) => void): void {
+    this.onActorParentChangeCallback = callback;
+  }
+
+  onViewAdd(callback: (view: ViewContainer) => void): void {
+    this.onViewAddCallback = callback;
+  }
+
+  onViewRemove(callback: (view: ViewContainer) => void): void {
+    this.onViewRemoveCallback = callback;
+  }
+
+  getContainer(actor: Actor): Container | undefined {
+    return this.actorContainerMap.get(actor);
   }
 
   update(): void {

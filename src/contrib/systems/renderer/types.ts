@@ -2,6 +2,8 @@ import { type ViewContainer } from 'pixi.js';
 
 import type { Component } from '../../../engine/component';
 
+export type { RenderEffectConstructor } from './filters/render-effect';
+
 export interface SortingLayer {
   id: string;
   name: string;

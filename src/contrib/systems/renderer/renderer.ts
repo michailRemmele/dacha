@@ -4,10 +4,13 @@ import {
   type ViewContainer,
   Color,
   RenderLayer,
-  type IRenderLayer,
 } from 'pixi.js';
 
-import { WorldSystem, type WorldSystemOptions } from '../../../engine/system';
+import {
+  WorldSystem,
+  type WorldSystemOptions,
+  type UpdateOptions,
+} from '../../../engine/system';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
@@ -26,6 +29,7 @@ import { parseSortingLayers } from './sort/utils';
 import type { Sorting } from './types';
 import { Assets } from './assets';
 import { ActorRenderTree } from './actor-render-tree';
+import { FilterSystem } from './filters';
 import { SORTING_ORDER_MAPPING } from './consts';
 
 interface RendererOptions extends WorldSystemOptions {
@@ -44,12 +48,14 @@ export class Renderer extends WorldSystem {
   private window: HTMLElement;
   private application: Application;
   private worldContainer: Container;
-  private sortingLayers: Map<string, IRenderLayer>;
+  private sortingLayers: Map<string, RenderLayer>;
   private sortFn: SortFn;
   private backgroundColor: Color;
   private cameraService: CameraService;
   private assets: Assets;
   private actorRenderTree?: ActorRenderTree;
+  private filterSystem?: FilterSystem;
+  private resources: unknown;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -60,11 +66,14 @@ export class Renderer extends WorldSystem {
       backgroundColor,
       templateCollection,
       world,
+      resources = [],
     } = options as RendererOptions;
 
     this.backgroundColor = new Color(backgroundColor);
 
     this.window = getWindowNode(windowNodeId);
+
+    this.resources = resources;
 
     const sorting = globalOptions.sorting as Sorting | undefined;
     const sortingOrder = SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
@@ -152,9 +161,17 @@ export class Renderer extends WorldSystem {
       assets: this.assets,
       sortingLayers: this.sortingLayers,
     });
+    this.filterSystem = new FilterSystem({
+      scene,
+      actorRenderTree: this.actorRenderTree,
+      resources: this.resources,
+    });
   }
 
   onSceneExit(): void {
+    this.filterSystem?.destroy();
+    this.filterSystem = undefined;
+
     this.actorRenderTree?.destroy();
     this.actorRenderTree = undefined;
 
@@ -182,10 +199,11 @@ export class Renderer extends WorldSystem {
     this.worldContainer.pivot.set(x, y);
   }
 
-  update(): void {
+  update(options: UpdateOptions): void {
     this.updateCamera();
 
     this.actorRenderTree?.update();
+    this.filterSystem?.update(options.deltaTime);
 
     this.application.renderer.render({ container: this.application.stage });
   }
