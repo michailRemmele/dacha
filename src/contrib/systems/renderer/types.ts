@@ -2,7 +2,12 @@ import { type ViewContainer } from 'pixi.js';
 
 import type { Component } from '../../../engine/component';
 
-export type { RenderEffectConstructor } from './filters/render-effect';
+import type { PostEffectConstructor } from './filters/post-effect';
+import type {
+  ShaderConstructor,
+  ShaderUniformDefinitions,
+  ShaderUniforms,
+} from './material/shader';
 
 export interface SortingLayer {
   id: string;
@@ -33,4 +38,20 @@ export interface ViewComponent extends Component {
   renderData?: {
     view: ViewContainer;
   };
+}
+
+export type {
+  PostEffectConstructor,
+  ShaderConstructor,
+  ShaderUniformDefinitions,
+  ShaderUniforms,
+};
+
+export interface RendererResources {
+  postEffects?: PostEffectConstructor[];
+  shaders?: ShaderConstructor[];
+}
+
+export interface Time {
+  elapsed: number;
 }

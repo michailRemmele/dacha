@@ -26,15 +26,18 @@ import {
   sortByXAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
-import type { Sorting } from './types';
+import type { Sorting, RendererResources, Time } from './types';
 import { Assets } from './assets';
 import { ActorRenderTree } from './actor-render-tree';
 import { FilterSystem } from './filters';
+import { MaterialSystem } from './material';
+import type { PostEffectConfig } from './filters/post-effect';
 import { SORTING_ORDER_MAPPING } from './consts';
 
 interface RendererOptions extends WorldSystemOptions {
   windowNodeId: string;
   backgroundColor: string;
+  postEffects?: PostEffectConfig[];
 }
 
 /**
@@ -54,8 +57,10 @@ export class Renderer extends WorldSystem {
   private cameraService: CameraService;
   private assets: Assets;
   private actorRenderTree?: ActorRenderTree;
-  private filterSystem?: FilterSystem;
-  private resources: unknown;
+  private filterSystem: FilterSystem;
+  private materialSystem: MaterialSystem;
+  private resources?: RendererResources;
+  private time: Time;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -67,13 +72,14 @@ export class Renderer extends WorldSystem {
       templateCollection,
       world,
       resources = [],
+      postEffects,
     } = options as RendererOptions;
 
     this.backgroundColor = new Color(backgroundColor);
 
     this.window = getWindowNode(windowNodeId);
 
-    this.resources = resources;
+    this.resources = resources as RendererResources | undefined;
 
     const sorting = globalOptions.sorting as Sorting | undefined;
     const sortingOrder = SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
@@ -102,6 +108,19 @@ export class Renderer extends WorldSystem {
 
     this.assets = new Assets({ templateCollection });
 
+    this.time = { elapsed: 0 };
+
+    this.materialSystem = new MaterialSystem({
+      shaders: this.resources?.shaders,
+      time: this.time,
+    });
+    this.filterSystem = new FilterSystem({
+      application: this.application,
+      time: this.time,
+      postEffects,
+      availablePostEffects: this.resources?.postEffects,
+    });
+
     this.cameraService = world.getService(CameraService);
 
     world.addService(
@@ -111,6 +130,7 @@ export class Renderer extends WorldSystem {
         getViewEntries: (): Set<ViewContainer> | undefined =>
           this.actorRenderTree?.viewEntries,
         sortFn: this.sortFn,
+        filterSystem: this.filterSystem,
       }),
     );
   }
@@ -142,6 +162,8 @@ export class Renderer extends WorldSystem {
   }
 
   onWorldDestroy(): void {
+    this.filterSystem.destroy();
+
     this.window.removeChild(this.application.canvas);
     this.application.destroy();
 
@@ -160,18 +182,11 @@ export class Renderer extends WorldSystem {
       worldContainer: this.worldContainer,
       assets: this.assets,
       sortingLayers: this.sortingLayers,
-    });
-    this.filterSystem = new FilterSystem({
-      scene,
-      actorRenderTree: this.actorRenderTree,
-      resources: this.resources,
+      materialSystem: this.materialSystem,
     });
   }
 
   onSceneExit(): void {
-    this.filterSystem?.destroy();
-    this.filterSystem = undefined;
-
     this.actorRenderTree?.destroy();
     this.actorRenderTree = undefined;
 
@@ -200,10 +215,13 @@ export class Renderer extends WorldSystem {
   }
 
   update(options: UpdateOptions): void {
+    this.time.elapsed += options.deltaTime / 1000;
+
     this.updateCamera();
 
     this.actorRenderTree?.update();
-    this.filterSystem?.update(options.deltaTime);
+
+    this.filterSystem.update();
 
     this.application.renderer.render({ container: this.application.stage });
   }

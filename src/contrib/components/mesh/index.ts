@@ -1,19 +1,22 @@
-import type { Sprite as PixiSprite, TilingSprite } from 'pixi.js';
+import type { Mesh as PixiMesh } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
 import { type BlendingMode } from '../../types/view';
 
 interface RenderData {
-  view: PixiSprite | TilingSprite;
+  view: PixiMesh;
   textureSourceKey?: string;
   textureArrayKey?: string;
 }
 
-type FitType = 'stretch' | 'repeat';
-
 export { type BlendingMode } from '../../types/view';
 
-export interface SpriteConfig {
+export interface MaterialConfig {
+  name: string;
+  options: Record<string, unknown>;
+}
+
+export interface MeshConfig {
   src: string;
   width: number;
   height: number;
@@ -22,23 +25,23 @@ export interface SpriteConfig {
   flipY: boolean;
   sortingLayer: string;
   sortCenter: [number, number];
-  fit: FitType;
   color: string;
   blending: BlendingMode;
   opacity: number;
+  material?: MaterialConfig;
   disabled: boolean;
 }
 
 /**
- * Sprite component for rendering 2D textures.
+ * Mesh component for rendering 2D textures with custom shader.
  *
- * Handles the visual representation of an actor using a texture.
+ * Handles the visual representation of an actor using a texture and shader.
  * It can be used to render a single texture or a texture slice from a sprite sheet.
  *
  * @example
  * ```typescript
- * // Create a basic sprite
- * const sprite = new Sprite({
+ * // Create a basic mesh
+ * const mesh = new Mesh({
  *   src: 'assets/player.png',
  *   width: 64,
  *   height: 64,
@@ -47,61 +50,63 @@ export interface SpriteConfig {
  *   flipY: false,
  *   sortingLayer: 'units',
  *   sortCenter: [0, 0],
- *   fit: 'stretch',
  *   color: '#ffffff',
  *   blending: 'normal',
  *   opacity: 1,
- *   disabled: false
+ *   disabled: false,
+ *   material: {
+ *     name: ''
+ *   }
  * });
  *
  * // Add to actor
- * actor.setComponent(sprite);
+ * actor.setComponent(mesh);
  *
  * // Modify properties
- * sprite.opacity = 0.5; // Make semi-transparent
- * sprite.color = '#ff0000'; // Apply a red tint
+ * mesh.opacity = 0.5; // Make semi-transparent
+ * mesh.color = '#ff0000'; // Apply a red tint
  * ```
  *
  * @category Components
  */
-export class Sprite extends Component {
+export class Mesh extends Component {
   /** Path to the texture image file */
   src: string;
-  /** Width of the sprite in pixels */
+  /** Width of the mesh in pixels */
   width: number;
-  /** Height of the sprite in pixels */
+  /** Height of the mesh in pixels */
   height: number;
   /** Amount of frames in the sprite sheet */
   slice: number;
-  /** Whether to flip the sprite horizontally */
+  /** Whether to flip the mesh horizontally */
   flipX: boolean;
-  /** Whether to flip the sprite vertically */
+  /** Whether to flip the mesh vertically */
   flipY: boolean;
-  /** Whether the sprite is disabled and should not render */
+  /** Whether the mesh is disabled and should not render */
   disabled: boolean;
   /** Sorting layer name for rendering order */
   sortingLayer: string;
   /** Center point for sorting calculations */
   sortCenter: [number, number];
   /** Current frame to render */
-  currentFrame?: number;
-  /** How the texture should fit within the sprite bounds */
-  readonly fit: FitType;
-  /** Color tint applied to the sprite */
+  currentFrame: number;
+  /** Color tint applied to the mesh */
   color: string;
   /** Blending mode for rendering */
   blending: BlendingMode;
   /** Opacity from 0 (transparent) to 1 (opaque) */
   opacity: number;
+  /** Material describes a shader and its options applied to a texture (optional). */
+  material?: MaterialConfig;
   /** Internal rendering data */
   renderData?: RenderData;
 
   /**
-   * Creates a new Sprite component.
+   * Creates a new Mesh component.
    *
    * @param config - Configuration for the sprite
    */
-  constructor(config: SpriteConfig) {
+  constructor(config: MeshConfig) {
     super();
 
     this.src = config.src;
@@ -114,14 +119,14 @@ export class Sprite extends Component {
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
     this.sortCenter = config.sortCenter;
-    this.fit = config.fit;
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';
     this.opacity = config.opacity ?? 1;
+    this.material = config.material;
   }
 
-  clone(): Sprite {
-    return new Sprite({
+  clone(): Mesh {
+    return new Mesh({
       src: this.src,
       width: this.width,
       height: this.height,
@@ -131,12 +136,14 @@ export class Sprite extends Component {
       disabled: this.disabled,
       sortingLayer: this.sortingLayer,
       sortCenter: this.sortCenter.slice(0) as [number, number],
-      fit: this.fit,
       color: this.color,
       blending: this.blending,
       opacity: this.opacity,
+      material: this.material
+        ? { name: this.material.name, options: { ...this.material.options } }
+        : undefined,
     });
   }
 }
 
-Sprite.componentName = 'Sprite';
+Mesh.componentName = 'Mesh';
