@@ -10,7 +10,6 @@ declare module 'pixi.js' {
      */
     __dacha: {
       meta: Record<string, unknown>;
-      ownFilters?: Filter[];
     };
   }
   interface ViewContainer {
@@ -29,7 +28,7 @@ declare module 'pixi.js' {
   }
   interface Filter {
     __dacha: {
-      effect: unknown;
+      name: string;
     };
   }
 }

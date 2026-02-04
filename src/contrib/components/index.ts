@@ -14,4 +14,4 @@ export { AudioSource, type AudioSourceConfig } from './audio-source';
 export { Shape, type ShapeConfig } from './shape';
 export { PixiView } from './pixi-view';
 export { BitmapText, type BitmapTextConfig } from './bitmap-text';
-export { Material, type MaterialConfig } from './material';
+export { Mesh, type MeshConfig } from './mesh';

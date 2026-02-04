@@ -5,6 +5,7 @@ import { type Actor } from '../../../../engine/actor';
 import { type SortFn } from '../sort';
 import { type Bounds, type ViewComponent } from '../types';
 import { VIEW_COMPONENTS } from '../consts';
+import type { FilterSystem } from '../filters';
 
 import { convertBounds } from './utils';
 
@@ -13,6 +14,7 @@ interface RendererServiceOptions {
   worldContainer: Container;
   getViewEntries: () => Set<ViewContainer> | undefined;
   sortFn: SortFn;
+  filterSystem: FilterSystem;
 }
 
 /**
@@ -28,17 +30,20 @@ export class RendererService {
   private worldContainer: Container;
   private getViewEntries: () => Set<ViewContainer> | undefined;
   private sortFn: SortFn;
+  private filterSystem: FilterSystem;
 
   constructor({
     application,
     worldContainer,
     getViewEntries,
     sortFn,
+    filterSystem,
   }: RendererServiceOptions) {
     this.application = application;
     this.worldContainer = worldContainer;
     this.getViewEntries = getViewEntries;
     this.sortFn = sortFn;
+    this.filterSystem = filterSystem;
   }
 
   /**
@@ -160,5 +165,13 @@ export class RendererService {
       width: maxX - minX,
       height: maxY - minY,
     };
+  }
+
+  addPostEffect(name: string, options: Record<string, unknown>): string {
+    return this.filterSystem.addEffect(name, options);
+  }
+
+  removePostEffect(id: string): void {
+    this.filterSystem.removeEffect(id);
   }
 }

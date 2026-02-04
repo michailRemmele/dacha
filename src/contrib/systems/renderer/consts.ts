@@ -5,6 +5,7 @@ import { Sprite, type BlendingMode } from '../../components/sprite';
 import { Shape } from '../../components/shape';
 import { PixiView } from '../../components/pixi-view';
 import { BitmapText } from '../../components/bitmap-text';
+import { Mesh } from '../../components/mesh';
 
 import { type SortingOrder } from './types';
 
@@ -27,4 +28,5 @@ export const VIEW_COMPONENTS: ComponentConstructor[] = [
   Shape,
   PixiView,
   BitmapText,
+  Mesh,
 ];

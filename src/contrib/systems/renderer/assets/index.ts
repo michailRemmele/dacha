@@ -4,6 +4,7 @@ import { Actor } from '../../../../engine/actor';
 import { Scene } from '../../../../engine/scene';
 import { type TemplateCollection } from '../../../../engine/template';
 import { Sprite } from '../../../components/sprite';
+import { Mesh } from '../../../components/mesh';
 import { BitmapText } from '../../../components/bitmap-text';
 import { CacheStore } from '../../../../engine/data-lib';
 import type { ViewComponent } from '../types';
@@ -59,17 +60,12 @@ export class Assets {
     if (entity instanceof Actor) {
       const sprite = entity.getComponent(Sprite);
       if (sprite) {
-        const { src } = sprite;
+        await this.loadViewImage(sprite.src);
+      }
 
-        if (this.imageStore.has(src)) {
-          this.imageStore.retain(src);
-        } else {
-          const image = await loadImage(src);
-          if (image) {
-            this.imageStore.add(src, image);
-            this.imageStore.retain(src);
-          }
-        }
+      const mesh = entity.getComponent(Mesh);
+      if (mesh) {
+        await this.loadViewImage(mesh.src);
       }
 
       const text = entity.getComponent(BitmapText);
@@ -80,18 +76,8 @@ export class Assets {
       return;
     }
 
-    if (entity instanceof Sprite) {
-      const { src } = entity;
-
-      if (this.imageStore.has(src)) {
-        this.imageStore.retain(src);
-      } else {
-        const image = await loadImage(src);
-        if (image) {
-          this.imageStore.add(src, image);
-          this.imageStore.retain(src);
-        }
-      }
+    if (entity instanceof Sprite || entity instanceof Mesh) {
+      await this.loadViewImage(entity.src);
     }
   }
 
@@ -120,16 +106,28 @@ export class Assets {
     }
   }
 
-  get(view: Sprite): HTMLImageElement | undefined;
+  get(view: Sprite | Mesh): HTMLImageElement | undefined;
   get(view: BitmapText): BitmapFont | undefined;
-  get(view: Sprite | BitmapText): unknown {
-    if (view instanceof Sprite) {
+  get(view: Sprite | Mesh | BitmapText): unknown {
+    if (view instanceof Sprite || view instanceof Mesh) {
       return this.imageStore.get(view.src);
     }
 
     if (view instanceof BitmapText) {
       // @ts-expect-error, comment: In order to avoid warning spam if value is missing
       return PixiAssets.cache._cache.get(view.font);
+    }
+  }
+
+  private async loadViewImage(src: string): Promise<void> {
+    if (this.imageStore.has(src)) {
+      this.imageStore.retain(src);
+    } else {
+      const image = await loadImage(src);
+      if (image) {
+        this.imageStore.add(src, image);
+        this.imageStore.retain(src);
+      }
     }
   }
 }
