@@ -19,7 +19,6 @@ import {
   getFilePath,
   getDefaultDirectory,
 } from './utils'
-import type { EntityType } from './types'
 import {
   ModalContentStyled,
   HeaderCSS,
@@ -30,7 +29,7 @@ import {
 
 interface CreateNewModalProps {
   open: boolean
-  type: EntityType
+  type: string
   onClose: () => void
   onCreate: (name: string, path: string) => void
 }

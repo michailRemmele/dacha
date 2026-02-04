@@ -10,7 +10,7 @@ import { addValue } from '../../../../commands'
 import type { SchemasDataEntry } from '../../../../providers'
 import type { WidgetSchema } from '../../../../../types/widget-schema'
 import { formatWidgetName } from '../../../../../utils/format-widget-name'
-import { EntityPicker as EntityPickerComponent } from '../entity-picker'
+import { EntityMultiselect } from '../entity-picker'
 
 import { EntityPickerCSS } from './entity-list.style'
 import { CONFIG_KEY_MAP, PATH_FIELD_MAP } from './consts'
@@ -59,7 +59,7 @@ export const EntityPicker: FC<EntityPickerProps> = ({
   }, [schemasMap, rootPath, type])
 
   return (
-    <EntityPickerComponent
+    <EntityMultiselect
       css={EntityPickerCSS}
       options={options}
       onAdd={handleAdd}
