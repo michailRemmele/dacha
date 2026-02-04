@@ -25,6 +25,8 @@ export interface EditorConfig {
     system: (name: string) => string
     component: (name: string) => string
     behavior: (name: string) => string
+    postEffect?: (name: string) => string
+    shader?: (name: string) => string
   }
   autoSave?: boolean
   autoSaveInterval?: number
@@ -54,7 +56,7 @@ export interface ElectronAPI {
   savePersistentStorage: (state: Record<string, unknown>) => void
   createSystem: (name: string, filepath: string) => void
   createComponent: (name: string, filepath: string) => void
-  createBehavior: (name: string, filepath: string) => void
+  createBehavior: (name: string, filepath: string, type?: string) => void
 }
 
 declare global {

@@ -1,6 +1,9 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
+import { RendererWidget } from './view';
+
 export const renderer: WidgetSchema = {
+  view: RendererWidget,
   fields: [
     {
       name: 'windowNodeId',
@@ -14,5 +17,6 @@ export const renderer: WidgetSchema = {
   getInitialState: () => ({
     windowNodeId: '',
     backgroundColor: '#000',
+    postEffects: [],
   }),
 };

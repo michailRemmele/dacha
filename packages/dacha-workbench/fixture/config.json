@@ -183,7 +183,6 @@
                 "src": "assets/terrain/grass.png",
                 "width": 320,
                 "height": 320,
-                "rotation": 0,
                 "sortCenter": [
                   0,
                   0
@@ -221,7 +220,6 @@
                 "src": "assets/terrain/sea.png",
                 "width": 640,
                 "height": 640,
-                "rotation": 0,
                 "sortCenter": [
                   0,
                   0
@@ -268,7 +266,6 @@
                 "src": "assets/units/human.png",
                 "width": 26,
                 "height": 26,
-                "rotation": 0,
                 "sortCenter": [
                   0,
                   0
@@ -279,7 +276,8 @@
                 "fit": "stretch",
                 "blending": "normal",
                 "color": "#fff",
-                "opacity": 1
+                "opacity": 1,
+                "disabled": false
               }
             }
           ]
@@ -393,7 +391,6 @@
             "src": "assets/units/rooster.png",
             "width": 47,
             "height": 52,
-            "rotation": 0,
             "sortCenter": [
               0,
               0
@@ -712,7 +709,6 @@
             "src": "assets/terrain/space.png",
             "width": 1000,
             "height": 1000,
-            "rotation": 0,
             "sortCenter": [
               0,
               0
@@ -750,7 +746,6 @@
             "src": "assets/terrain/floor.png",
             "width": 408,
             "height": 408,
-            "rotation": 0,
             "sortCenter": [
               0,
               0
