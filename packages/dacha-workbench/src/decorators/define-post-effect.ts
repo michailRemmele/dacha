@@ -12,11 +12,7 @@ interface DefinePostEffectOptions extends Omit<WidgetSchema, 'view'> {
 export function DefinePostEffect(
   options: DefinePostEffectOptions,
 ): (constructor: BehaviorConstructor<PostEffect>) => void {
-  return (
-    constructor: BehaviorConstructor<PostEffect>,
-  ): void => {
-    return DefineBehavior({ ...options, systemName: 'postEffect' })(
-      constructor,
-    );
+  return (constructor: BehaviorConstructor<PostEffect>): void => {
+    return DefineBehavior({ ...options, type: 'postEffect' })(constructor);
   };
 }
