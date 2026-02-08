@@ -131,6 +131,7 @@ export class Renderer extends WorldSystem {
           this.actorRenderTree?.viewEntries,
         sortFn: this.sortFn,
         filterSystem: this.filterSystem,
+        materialSystem: this.materialSystem,
       }),
     );
   }
@@ -162,7 +163,7 @@ export class Renderer extends WorldSystem {
   }
 
   onWorldDestroy(): void {
-    this.filterSystem.destroy();
+    this.filterSystem.clear();
 
     this.window.removeChild(this.application.canvas);
     this.application.destroy();
