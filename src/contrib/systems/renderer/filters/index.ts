@@ -59,7 +59,7 @@ export class FilterSystem {
     );
   }
 
-  destroy(): void {
+  clear(): void {
     this.filtersMap.clear();
     this.application.stage.filters = null;
   }
@@ -97,11 +97,8 @@ export class FilterSystem {
 
   update(): void {
     this.filtersMap.forEach((filter) => {
-      const effectName = filter.__dacha?.name as string | undefined;
-
-      if (effectName) {
-        this.effects[effectName]?.update?.(filter, this.time.elapsed);
-      }
+      const name = filter.__dacha.name;
+      this.effects[name]?.update?.(filter, this.time.elapsed);
     });
   }
 }

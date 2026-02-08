@@ -20,33 +20,43 @@ type MaterialViewComponent = ViewComponent & {
   material?: MaterialConfig;
 };
 
+const createShaderBuilders = (
+  shaders: ShaderConstructor[],
+): Record<string, Shader | undefined> => {
+  return shaders.reduce(
+    (acc, MaterialClass) => {
+      if (MaterialClass.behaviorName === undefined) {
+        throw new Error(
+          `Missing behaviorName field for "${MaterialClass.name}" Shader class.`,
+        );
+      }
+
+      if (acc[MaterialClass.behaviorName] !== undefined) {
+        console.warn(
+          `Material "${MaterialClass.behaviorName}" already exists and will be overridden.`,
+        );
+      }
+
+      acc[MaterialClass.behaviorName] = new MaterialClass();
+      return acc;
+    },
+    {} as Record<string, Shader>,
+  );
+};
+
 export class MaterialSystem {
   private time: Time;
 
   private shaderBuilders: Record<string, Shader | undefined>;
 
+  private currentVersion: number;
+
   constructor({ time, shaders = [] }: MaterialSystemOptions) {
     this.time = time;
 
-    this.shaderBuilders = shaders.reduce(
-      (acc, MaterialClass) => {
-        if (MaterialClass.behaviorName === undefined) {
-          throw new Error(
-            `Missing behaviorName field for "${MaterialClass.name}" Shader class.`,
-          );
-        }
+    this.shaderBuilders = createShaderBuilders(shaders);
 
-        if (acc[MaterialClass.behaviorName] !== undefined) {
-          console.warn(
-            `Material "${MaterialClass.behaviorName}" already exists and will be overridden.`,
-          );
-        }
-
-        acc[MaterialClass.behaviorName] = new MaterialClass();
-        return acc;
-      },
-      {} as Record<string, Shader>,
-    );
+    this.currentVersion = 0;
   }
 
   private createShader(config?: MaterialConfig): PixiShader {
@@ -71,6 +81,8 @@ export class MaterialSystem {
         },
       },
     });
+
+    shader.__dacha = { version: this.currentVersion };
 
     return shader;
   }
@@ -98,7 +110,10 @@ export class MaterialSystem {
       component.material?.name ??
       null;
 
-    if (shaderKey !== meta.materialShaderKey) {
+    if (
+      shaderKey !== meta.materialShaderKey ||
+      (view.shader && view.shader.__dacha.version !== this.currentVersion)
+    ) {
       this.destroyShader(component);
 
       view.shader = this.createShader(component.material);
@@ -136,5 +151,10 @@ export class MaterialSystem {
       material.options,
       view.shader.resources.uniformsGroup.uniforms,
     );
+  }
+
+  reloadShaders(shaders: ShaderConstructor[]): void {
+    this.shaderBuilders = createShaderBuilders(shaders);
+    this.currentVersion += 1;
   }
 }

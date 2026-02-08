@@ -6,6 +6,8 @@ import { type SortFn } from '../sort';
 import { type Bounds, type ViewComponent } from '../types';
 import { VIEW_COMPONENTS } from '../consts';
 import type { FilterSystem } from '../filters';
+import type { MaterialSystem } from '../material';
+import type { ShaderConstructor } from '../material/shader';
 
 import { convertBounds } from './utils';
 
@@ -15,6 +17,7 @@ interface RendererServiceOptions {
   getViewEntries: () => Set<ViewContainer> | undefined;
   sortFn: SortFn;
   filterSystem: FilterSystem;
+  materialSystem: MaterialSystem;
 }
 
 /**
@@ -31,6 +34,7 @@ export class RendererService {
   private getViewEntries: () => Set<ViewContainer> | undefined;
   private sortFn: SortFn;
   private filterSystem: FilterSystem;
+  private materialSystem: MaterialSystem;
 
   constructor({
     application,
@@ -38,12 +42,14 @@ export class RendererService {
     getViewEntries,
     sortFn,
     filterSystem,
+    materialSystem,
   }: RendererServiceOptions) {
     this.application = application;
     this.worldContainer = worldContainer;
     this.getViewEntries = getViewEntries;
     this.sortFn = sortFn;
     this.filterSystem = filterSystem;
+    this.materialSystem = materialSystem;
   }
 
   /**
@@ -173,5 +179,13 @@ export class RendererService {
 
   removePostEffect(id: string): void {
     this.filterSystem.removeEffect(id);
+  }
+
+  clearPostEffects(): void {
+    this.filterSystem.clear();
+  }
+
+  reloadShaders(classDenfinitions: ShaderConstructor[]): void {
+    this.materialSystem.reloadShaders(classDenfinitions);
   }
 }
