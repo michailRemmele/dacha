@@ -1,4 +1,4 @@
-import { TextureSource, Texture, Mesh as PixiMesh } from 'pixi.js';
+import { Texture, Mesh as PixiMesh } from 'pixi.js';
 
 import type { MaterialSystem } from '../../material';
 import type { Assets } from '../../assets';
@@ -6,9 +6,8 @@ import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Mesh } from '../../../../components/mesh';
 import type { Actor } from '../../../../../engine/actor';
-import { CacheStore } from '../../../../../engine/data-lib';
+import { TextureArrayStore } from '../texture-array-store';
 
-import { getTextureSource, getTextureArray } from './utils';
 import { UNIT_QUAD_GEOMETRY } from './consts';
 
 interface MeshBuilderOptions {
@@ -20,27 +19,17 @@ export class MeshBuilder implements Builder<Mesh> {
   private assets: Assets;
   private materialSystem: MaterialSystem;
 
-  private textureSourceMap: CacheStore<TextureSource>;
-  private textureArrayMap: CacheStore<Texture[]>;
+  private textureArrayStore: TextureArrayStore;
 
   constructor({ assets, materialSystem }: MeshBuilderOptions) {
     this.assets = assets;
     this.materialSystem = materialSystem;
 
-    this.textureSourceMap = new CacheStore();
-    this.textureArrayMap = new CacheStore();
+    this.textureArrayStore = new TextureArrayStore(assets);
   }
 
   destroy(mesh: Mesh): void {
-    const textureSourceKey = mesh.renderData?.textureSourceKey;
-    const textureArrayKey = mesh.renderData?.textureArrayKey;
-
-    if (textureSourceKey) {
-      this.textureSourceMap.release(textureSourceKey, true);
-    }
-    if (textureArrayKey) {
-      this.textureArrayMap.release(textureArrayKey, true);
-    }
+    this.textureArrayStore.removeTextureArray(mesh);
 
     this.materialSystem.destroyShader(mesh);
 
@@ -115,58 +104,6 @@ export class MeshBuilder implements Builder<Mesh> {
     this.materialSystem.updateShader(mesh);
   }
 
-  private updateTextureArray(mesh: Mesh): void {
-    const oldTextureSourceKey = mesh.renderData!.textureSourceKey;
-    const oldTextureArrayKey = mesh.renderData!.textureArrayKey;
-
-    if (oldTextureSourceKey) {
-      this.textureSourceMap.release(oldTextureSourceKey, true);
-    }
-    if (oldTextureArrayKey) {
-      this.textureArrayMap.release(oldTextureArrayKey, true);
-    }
-
-    mesh.renderData!.textureSourceKey = mesh.src;
-    mesh.renderData!.textureArrayKey = `${mesh.slice}_${mesh.renderData!.textureSourceKey}`;
-
-    const textureSourceKey = mesh.renderData!.textureSourceKey!;
-    const textureArrayKey = mesh.renderData!.textureArrayKey!;
-
-    if (this.textureArrayMap.has(textureArrayKey)) {
-      this.textureArrayMap.retain(textureArrayKey);
-      this.textureSourceMap.retain(textureSourceKey);
-      return;
-    }
-
-    if (this.textureSourceMap.has(textureSourceKey)) {
-      const textureSource = this.textureSourceMap.get(textureSourceKey)!;
-      const textureArray = getTextureArray(textureSource, mesh);
-      this.textureArrayMap.add(textureArrayKey, textureArray);
-
-      this.textureArrayMap.retain(textureArrayKey);
-      this.textureSourceMap.retain(textureSourceKey);
-    }
-
-    const image = this.assets.get(mesh);
-
-    if (!image) {
-      return undefined;
-    }
-
-    const textureSource = getTextureSource(image);
-    const textureArray = getTextureArray(textureSource, mesh);
-
-    this.textureSourceMap.add(textureSourceKey, textureSource);
-    this.textureArrayMap.add(textureArrayKey, textureArray);
-
-    this.textureArrayMap.retain(textureArrayKey);
-    this.textureSourceMap.retain(textureSourceKey);
-  }
-
-  private getTextureArray(mesh: Mesh): Texture[] | undefined {
-    return this.textureArrayMap.get(mesh.renderData!.textureArrayKey!);
-  }
-
   private updateGeometry(mesh: Mesh): void {
     const view = mesh.renderData!.view;
     const texture = view.texture;
@@ -201,12 +138,12 @@ export class MeshBuilder implements Builder<Mesh> {
       (mesh.src !== meta.src || mesh.slice !== meta.slice)
     ) {
       view.label = mesh.src;
-      this.updateTextureArray(mesh);
+      this.textureArrayStore.updateTextureArray(mesh);
       meta.src = mesh.src;
       meta.slice = mesh.slice;
     }
 
-    const textureArray = this.getTextureArray(mesh);
+    const textureArray = this.textureArrayStore.getTextureArray(mesh);
     const texture = textureArray?.[mesh.currentFrame];
     view.texture = texture ?? Texture.WHITE;
     meta.currentFrame = mesh.currentFrame;
