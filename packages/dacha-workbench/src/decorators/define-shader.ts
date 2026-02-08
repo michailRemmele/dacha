@@ -12,11 +12,7 @@ interface DefineShaderOptions extends Omit<WidgetSchema, 'view'> {
 export function DefineShader(
   options: DefineShaderOptions,
 ): (constructor: BehaviorConstructor<Shader>) => void {
-  return (
-    constructor: BehaviorConstructor<Shader>,
-  ): void => {
-    return DefineBehavior({ ...options, systemName: 'shader' })(
-      constructor,
-    );
+  return (constructor: BehaviorConstructor<Shader>): void => {
+    return DefineBehavior({ ...options, type: 'shader' })(constructor);
   };
 }
