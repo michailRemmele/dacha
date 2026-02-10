@@ -139,9 +139,9 @@ export class MaterialSystem {
     }
 
     view.shader.resources.uniformsGroup.uniforms.uTextureSize[0] =
-      view.texture.width;
+      view.texture.source.width;
     view.shader.resources.uniformsGroup.uniforms.uTextureSize[1] =
-      view.texture.height;
+      view.texture.source.height;
 
     if (!material || !builder) {
       return;
