@@ -1,4 +1,4 @@
-import { Texture, Mesh as PixiMesh } from 'pixi.js';
+import { Texture, Mesh as PixiMesh, MeshGeometry } from 'pixi.js';
 
 import type { MaterialSystem } from '../../material';
 import type { Assets } from '../../assets';
@@ -7,8 +7,7 @@ import { BLEND_MODE_MAPPING } from '../../consts';
 import { Mesh } from '../../../../components/mesh';
 import type { Actor } from '../../../../../engine/actor';
 import { TextureArrayStore } from '../texture-array-store';
-
-import { UNIT_QUAD_GEOMETRY } from './consts';
+import { GEOMETRY_POSITIONS, GEOMETRY_INDICES } from './consts';
 
 interface MeshBuilderOptions {
   assets: Assets;
@@ -38,7 +37,14 @@ export class MeshBuilder implements Builder<Mesh> {
   }
 
   buildView(mesh: Mesh, actor: Actor): PixiMesh {
-    const view = new PixiMesh({ geometry: UNIT_QUAD_GEOMETRY, pivot: 0.5 });
+    const view = new PixiMesh({
+      geometry: new MeshGeometry({
+        positions: GEOMETRY_POSITIONS,
+        uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
+        indices: GEOMETRY_INDICES,
+      }),
+      pivot: 0.5,
+    });
 
     mesh.renderData = { view };
     view.__dacha = {
