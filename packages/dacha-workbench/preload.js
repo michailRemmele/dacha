@@ -55,8 +55,9 @@ contextBridge.exposeInMainWorld('electron', {
     return () => ipcRenderer.removeListener(MESSAGES.COPY, callback);
   },
   onPaste: (callback) => {
-    ipcRenderer.on(MESSAGES.PASTE, (_, ...args) => callback(...args));
-    return () => ipcRenderer.removeListener(MESSAGES.PASTE, callback);
+    const handler = (_, ...args) => callback(...args);
+    ipcRenderer.on(MESSAGES.PASTE, handler);
+    return () => ipcRenderer.removeListener(MESSAGES.PASTE, handler);
   },
   onDelete: (callback) => {
     ipcRenderer.on(MESSAGES.DELETE, callback);

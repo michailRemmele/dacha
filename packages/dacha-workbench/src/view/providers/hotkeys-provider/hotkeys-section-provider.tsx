@@ -100,7 +100,7 @@ export const HotkeysSectionProvider = ({
     } else {
       onCopyTo(clipboard, destinationPath)
     }
-  }, [clipboard, isCut, selectedPaths, childrenFieldMap, rootPath])
+  }, [clipboard, isCut, selectedPaths, childrenFieldMap, rootPath, onMoveTo, onCopyTo])
 
   const handleDelete = useCallback((): void => {
     if (!selectedPaths.length) {
@@ -108,7 +108,7 @@ export const HotkeysSectionProvider = ({
     }
 
     onRemove(selectedPaths)
-  }, [selectedPaths])
+  }, [selectedPaths, onRemove])
 
   useEffect(() => {
     addHotkeyListener(scope, 'cut', handleCut)
