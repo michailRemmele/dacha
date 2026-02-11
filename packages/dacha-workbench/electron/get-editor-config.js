@@ -3,7 +3,7 @@ const path = require('path');
 const getSystemTemplate = require('./script-templates/get-system-template');
 const getComponentTemplate = require('./script-templates/get-component-template');
 const getBehaviorTemplate = require('./script-templates/get-behavior-template');
-const getPostEffectTemplate = require('./script-templates/get-post-effect-template');
+const getFilterEffectTemplate = require('./script-templates/get-filter-effect-template');
 const getShaderTemplate = require('./script-templates/get-shader-template');
 const normalizePath = require('./utils/normilize-path');
 
@@ -19,7 +19,7 @@ const getEditorConfig = () => {
     components: config.components ?? [/\.component\.ts$/],
     behaviors: config.behaviors ?? [
       /\.behavior\.ts$/,
-      /\.post-effect\.ts$/,
+      /\.filter-effect\.ts$/,
       /\.shader\.ts$/,
     ],
     widgets: config.widgets ?? [/\.widget\.(ts|js|tsx|jsx)$/],
@@ -31,7 +31,7 @@ const getEditorConfig = () => {
       system: config.templates?.system ?? getSystemTemplate,
       component: config.templates?.component ?? getComponentTemplate,
       behavior: config.templates?.behavior ?? getBehaviorTemplate,
-      postEffect: config.templates?.postEffect ?? getPostEffectTemplate,
+      filterEffect: config.templates?.filterEffect ?? getFilterEffectTemplate,
       shader: config.templates?.shader ?? getShaderTemplate,
     },
   };

@@ -53,7 +53,7 @@ export const EffectPanel: FC<EffectPanelProps> = ({
     >
       {!schema ? (
         <EffectFormStyled>
-          {t('systems.renderer.postEffect.noSchema.title')}
+          {t('systems.renderer.filterEffect.noSchema.title')}
         </EffectFormStyled>
       ) : schema.fields?.length || schema.view ? (
         <BehaviorWidget

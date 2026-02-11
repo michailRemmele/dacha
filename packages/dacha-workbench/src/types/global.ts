@@ -25,7 +25,7 @@ export interface EditorConfig {
     system: (name: string) => string
     component: (name: string) => string
     behavior: (name: string) => string
-    postEffect?: (name: string) => string
+    filterEffect?: (name: string) => string
     shader?: (name: string) => string
   }
   autoSave?: boolean

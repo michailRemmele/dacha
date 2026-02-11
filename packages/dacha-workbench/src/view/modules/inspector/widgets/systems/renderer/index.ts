@@ -17,6 +17,6 @@ export const renderer: WidgetSchema = {
   getInitialState: () => ({
     windowNodeId: '',
     backgroundColor: '#000',
-    postEffects: [],
+    filterEffects: [],
   }),
 };

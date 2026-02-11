@@ -1,5 +1,5 @@
-const getPostEffectTemplate = (name) => `import { PostEffect } from 'dacha';
-import { DefinePostEffect } from 'dacha-workbench/decorators';
+const getFilterEffectTemplate = (name) => `import { FilterEffect } from 'dacha';
+import { DefineFilterEffect } from 'dacha-workbench/decorators';
 import { BlurFilter } from 'pixi.js';
 
 interface ${name}Options {
@@ -7,7 +7,7 @@ interface ${name}Options {
   quality: number;
 }
 
-@DefinePostEffect({
+@DefineFilterEffect({
   name: '${name}',
   fields: [
     {
@@ -20,11 +20,11 @@ interface ${name}Options {
     },
   ],
 })
-export default class ${name} extends PostEffect {
+export default class ${name} extends FilterEffect {
   create({ strength, quality }: ${name}Options): BlurFilter {
     return new BlurFilter({ strength, quality });
   }
 }
 `;
 
-module.exports = getPostEffectTemplate;
+module.exports = getFilterEffectTemplate;
