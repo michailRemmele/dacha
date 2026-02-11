@@ -31,13 +31,13 @@ import { Assets } from './assets';
 import { ActorRenderTree } from './actor-render-tree';
 import { FilterSystem } from './filters';
 import { MaterialSystem } from './material';
-import type { PostEffectConfig } from './filters/post-effect';
+import type { FilterEffectConfig } from './filters/filter-effect';
 import { SORTING_ORDER_MAPPING } from './consts';
 
 interface RendererOptions extends WorldSystemOptions {
   windowNodeId: string;
   backgroundColor: string;
-  postEffects?: PostEffectConfig[];
+  filterEffects?: FilterEffectConfig[];
 }
 
 /**
@@ -72,7 +72,7 @@ export class Renderer extends WorldSystem {
       templateCollection,
       world,
       resources = [],
-      postEffects,
+      filterEffects,
     } = options as RendererOptions;
 
     this.backgroundColor = new Color(backgroundColor);
@@ -117,8 +117,8 @@ export class Renderer extends WorldSystem {
     this.filterSystem = new FilterSystem({
       application: this.application,
       time: this.time,
-      postEffects,
-      availablePostEffects: this.resources?.postEffects,
+      filterEffects,
+      availableFilterEffects: this.resources?.filterEffects,
     });
 
     this.cameraService = world.getService(CameraService);

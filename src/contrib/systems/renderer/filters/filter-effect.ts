@@ -2,17 +2,17 @@ import type { Filter } from 'pixi.js';
 
 import type { Constructor } from '../../../../types/utils';
 
-export interface PostEffectConfig {
+export interface FilterEffectConfig {
   name: string;
   options: Record<string, unknown>;
 }
 
-export abstract class PostEffect {
+export abstract class FilterEffect {
   static behaviorName: string;
   abstract create(options: unknown): Filter;
   update?(filter: Filter, elapsedTime: number): void;
 }
 
-export type PostEffectConstructor = Constructor<PostEffect> & {
+export type FilterEffectConstructor = Constructor<FilterEffect> & {
   behaviorName: string;
 };

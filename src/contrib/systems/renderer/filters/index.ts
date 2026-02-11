@@ -4,57 +4,57 @@ import uuid from 'uuid-random';
 import type { Time } from '../types';
 
 import type {
-  PostEffect,
-  PostEffectConstructor,
-  PostEffectConfig,
-} from './post-effect';
+  FilterEffect,
+  FilterEffectConstructor,
+  FilterEffectConfig,
+} from './filter-effect';
 
 export interface FiltersSystemOptions {
   application: Application;
   time: Time;
-  availablePostEffects?: PostEffectConstructor[];
-  postEffects?: PostEffectConfig[];
+  availableFilterEffects?: FilterEffectConstructor[];
+  filterEffects?: FilterEffectConfig[];
 }
 
 export class FilterSystem {
   private application: Application;
   private time: Time;
-  private effects: Record<string, PostEffect | undefined>;
+  private effects: Record<string, FilterEffect | undefined>;
 
   private filtersMap: Map<string, Filter>;
 
   constructor({
     application,
     time,
-    availablePostEffects = [],
-    postEffects = [],
+    availableFilterEffects = [],
+    filterEffects = [],
   }: FiltersSystemOptions) {
     this.application = application;
-    this.effects = availablePostEffects.reduce(
-      (acc, PostEffect) => {
-        if (PostEffect.behaviorName === undefined) {
+    this.effects = availableFilterEffects.reduce(
+      (acc, FilterEffect) => {
+        if (FilterEffect.behaviorName === undefined) {
           throw new Error(
-            `Missing behaviorName field for "${PostEffect.name}" PostEffect class.`,
+            `Missing behaviorName field for "${FilterEffect.name}" FilterEffect class.`,
           );
         }
 
-        if (acc[PostEffect.behaviorName] !== undefined) {
+        if (acc[FilterEffect.behaviorName] !== undefined) {
           console.warn(
-            `PostEffect "${PostEffect.behaviorName}" already exists and will be overridden.`,
+            `FilterEffect "${FilterEffect.behaviorName}" already exists and will be overridden.`,
           );
         }
 
-        acc[PostEffect.behaviorName] = new PostEffect();
+        acc[FilterEffect.behaviorName] = new FilterEffect();
         return acc;
       },
-      {} as Record<string, PostEffect>,
+      {} as Record<string, FilterEffect>,
     );
 
     this.time = time;
 
     this.filtersMap = new Map();
 
-    postEffects.forEach((effect) =>
+    filterEffects.forEach((effect) =>
       this.addEffect(effect.name, effect.options),
     );
   }
@@ -67,7 +67,7 @@ export class FilterSystem {
   addEffect(name: string, options: Record<string, unknown>): string {
     const effect = this.effects[name];
     if (!effect) {
-      throw new Error(`Post effect not found: ${name}`);
+      throw new Error(`Filter effect not found: ${name}`);
     }
 
     const id = uuid();
