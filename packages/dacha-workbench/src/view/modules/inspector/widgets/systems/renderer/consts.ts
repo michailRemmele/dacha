@@ -1,1 +1,1 @@
-export const BEHAVIOR_TYPE = 'postEffect';
+export const BEHAVIOR_TYPE = 'filterEffect';

@@ -63,7 +63,7 @@
     "entityPicker.createNew.modal.system.title": "New System",
     "entityPicker.createNew.modal.component.title": "New Component",
     "entityPicker.createNew.modal.behavior.title": "New Behavior",
-    "entityPicker.createNew.modal.postEffect.title": "New Post Effect",
+    "entityPicker.createNew.modal.filterEffect.title": "New Filter Effect",
     "entityPicker.createNew.modal.shader.title": "New Shader",
     "entityPicker.createNew.modal.field.path.label": "File Path:",
     "entityPicker.createNew.modal.field.baseDirectory.label": "Base Directory",
@@ -166,9 +166,9 @@
   "components.mesh.material.title": "Name",
   "components.mesh.material.noSchema.title": "Schema not found",
 
-  "systems.renderer.postEffect.addNew.title": "Add Effect",
-  "systems.renderer.postEffect.noSchema.title": "Schema not found",
-  "systems.renderer.postEffect.title": "Post Effects",
+  "systems.renderer.filterEffect.addNew.title": "Add Effect",
+  "systems.renderer.filterEffect.noSchema.title": "Schema not found",
+  "systems.renderer.filterEffect.title": "Filter Effects",
 
   "globalOptions.sorting.title": "Sorting",
   "globalOptions.sorting.order.title": "Order",

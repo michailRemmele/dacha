@@ -32,7 +32,7 @@ import {
   SectionHeaderStyled,
 } from './renderer.style';
 
-interface PostEffectEntry {
+interface FilterEffectEntry {
   id: string;
   name: string;
   options: Record<string, unknown>;
@@ -51,12 +51,15 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
 
   const effects = useBehaviors(BEHAVIOR_TYPE);
 
-  const [activeEntry, setActiveEntry] = useState<PostEffectEntry | null>();
+  const [activeEntry, setActiveEntry] = useState<FilterEffectEntry | null>();
 
-  const postEffectsPath = useMemo(() => path.concat('postEffects'), [path]);
+  const filterEffectsPath = useMemo(
+    () => path.concat('filterEffects'),
+    [path],
+  );
 
   const selectedEffects =
-    (useConfig(postEffectsPath) as PostEffectEntry[] | undefined) ?? [];
+    (useConfig(filterEffectsPath) as FilterEffectEntry[] | undefined) ?? [];
 
   const effectsIds = useMemo(
     () => selectedEffects.map((effect) => effect.id),
@@ -73,14 +76,14 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
   const handleAddEffect = useCallback(
     (name: string) => {
       dispatch(
-        addValue(postEffectsPath, {
+        addValue(filterEffectsPath, {
           id: uuidv4(),
           name,
           options: effects?.[name].getInitialState?.() ?? {},
         }),
       );
     },
-    [dispatch, postEffectsPath, effects],
+    [dispatch, filterEffectsPath, effects],
   );
 
   const handleCreate = useCallback((name: string, filepath: string) => {
@@ -93,7 +96,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
         selectedEffects.find((entry) => entry.id === event.active.id),
       );
     },
-    [selectedEffects, dispatch, postEffectsPath],
+    [selectedEffects, dispatch, filterEffectsPath],
   );
 
   const handleDragEnd = useCallback(
@@ -115,7 +118,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
 
       dispatch(
         setValue(
-          postEffectsPath,
+          filterEffectsPath,
           arrayMove(selectedEffects, activeEntryIndex, overEntryIndex),
         ),
       );
@@ -128,7 +131,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
       {fields?.length ? <Widget fields={fields} path={path} /> : null}
 
       <SectionHeaderStyled>
-        {t('systems.renderer.postEffect.title')}
+        {t('systems.renderer.filterEffect.title')}
       </SectionHeaderStyled>
 
       <div>
@@ -145,7 +148,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
               <DraggableEffectPanel
                 key={id}
                 id={id}
-                path={postEffectsPath}
+                path={filterEffectsPath}
                 schema={effects?.[name]}
               />
             ))}
@@ -154,7 +157,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
             {activeEntry ? (
               <DragOverlayEntry
                 id={activeEntry.id}
-                path={postEffectsPath}
+                path={filterEffectsPath}
                 schema={effects?.[activeEntry.name]}
               />
             ) : null}
@@ -165,7 +168,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
       <EntityMultiselect
         css={EntityPickerCSS}
         size="small"
-        placeholder={t('systems.renderer.postEffect.addNew.title')}
+        placeholder={t('systems.renderer.filterEffect.addNew.title')}
         options={availableEffects}
         type={BEHAVIOR_TYPE}
         onAdd={handleAddEffect}
