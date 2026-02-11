@@ -125,7 +125,11 @@ export class MaterialSystem {
       return;
     }
 
-    view.shader.resources.uSampler = view.texture.source;
+    if (meta.materialSampler !== view.texture.source) {
+      meta.materialSampler = view.texture.source;
+      view.shader.resources.uSampler = view.texture.source;
+    }
+
     view.shader.resources.uniformsGroup.uniforms.uTime = this.time.elapsed;
     view.shader.resources.uniformsGroup.uniforms.uAlpha =
       view.getGlobalAlpha(true);
