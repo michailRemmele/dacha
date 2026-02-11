@@ -3,9 +3,9 @@ import { type ViewContainer } from 'pixi.js';
 import type { Component } from '../../../engine/component';
 
 import type {
-  PostEffectConstructor,
-  PostEffectConfig,
-} from './filters/post-effect';
+  FilterEffectConstructor,
+  FilterEffectConfig,
+} from './filters/filter-effect';
 import type {
   ShaderConstructor,
   ShaderUniformDefinitions,
@@ -44,15 +44,15 @@ export interface ViewComponent extends Component {
 }
 
 export type {
-  PostEffectConstructor,
-  PostEffectConfig,
+  FilterEffectConstructor,
+  FilterEffectConfig,
   ShaderConstructor,
   ShaderUniformDefinitions,
   ShaderUniforms,
 };
 
 export interface RendererResources {
-  postEffects?: PostEffectConstructor[];
+  filterEffects?: FilterEffectConstructor[];
   shaders?: ShaderConstructor[];
 }
 

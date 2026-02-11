@@ -173,15 +173,15 @@ export class RendererService {
     };
   }
 
-  addPostEffect(name: string, options: Record<string, unknown>): string {
+  addFilterEffect(name: string, options: Record<string, unknown>): string {
     return this.filterSystem.addEffect(name, options);
   }
 
-  removePostEffect(id: string): void {
+  removeFilterEffect(id: string): void {
     this.filterSystem.removeEffect(id);
   }
 
-  clearPostEffects(): void {
+  clearFilterEffects(): void {
     this.filterSystem.clear();
   }
 
