@@ -72,7 +72,7 @@ export class FilterSystem {
 
     const id = uuid();
     const filter = effect.create(options);
-    filter.__dacha = { name };
+    filter.__dacha = { name, meta: {} };
 
     this.filtersMap.set(id, filter);
 
