@@ -71,7 +71,7 @@ export class Renderer extends WorldSystem {
       backgroundColor,
       templateCollection,
       world,
-      resources = [],
+      resources,
       filterEffects,
     } = options as RendererOptions;
 
