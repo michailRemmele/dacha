@@ -173,18 +173,39 @@ export class RendererService {
     };
   }
 
+  /**
+   * Adds a post-processing effect that applies to the entire scene.
+   * Effects are applied in the order they are added.
+   *
+   * @param name - Filter effect name
+   * @param options - Filter configuration options
+   * @returns Effect id used for removal
+   */
   addFilterEffect(name: string, options: Record<string, unknown>): string {
     return this.filterSystem.addEffect(name, options);
   }
 
+  /**
+   * Removes a filter effect by id.
+   *
+   * @param id - Effect id returned by addFilterEffect
+   */
   removeFilterEffect(id: string): void {
     this.filterSystem.removeEffect(id);
   }
 
+  /**
+   * Clears all active filter effects.
+   */
   clearFilterEffects(): void {
     this.filterSystem.clear();
   }
 
+  /**
+   * Reloads shader classes registered in the renderer.
+   *
+   * @param classDenfinitions - Shader constructors to register
+   */
   reloadShaders(classDenfinitions: ShaderConstructor[]): void {
     this.materialSystem.reloadShaders(classDenfinitions);
   }
