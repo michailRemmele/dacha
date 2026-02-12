@@ -82,26 +82,22 @@ export class MaterialSystem {
       },
     });
 
-    shader.__dacha = { version: this.currentVersion };
+    shader.__dacha = { version: this.currentVersion, meta: {} };
 
     return shader;
   }
 
   destroyShader(component: MaterialViewComponent): void {
     const view = component.renderData!.view as Mesh;
-    const meta = view.__dacha.meta;
 
     if (view.shader) {
       view.shader.destroy();
     }
-
-    delete meta.materialShaderKey;
   }
 
   updateShader(component: MaterialViewComponent): void {
     const view = component.renderData!.view as Mesh<Geometry, PixiShader>;
     const material = component.material;
-    const meta = view.__dacha.meta;
 
     const builder = material ? this.shaderBuilders[material.name] : undefined;
 
@@ -111,19 +107,17 @@ export class MaterialSystem {
       null;
 
     if (
-      shaderKey !== meta.materialShaderKey ||
-      (view.shader && view.shader.__dacha.version !== this.currentVersion)
+      !view.shader ||
+      shaderKey !== view.shader.__dacha.meta.materialShaderKey ||
+      this.currentVersion !== view.shader.__dacha.version
     ) {
       this.destroyShader(component);
 
       view.shader = this.createShader(component.material);
-
-      meta.materialShaderKey = shaderKey;
+      view.shader.__dacha.meta.materialShaderKey = shaderKey;
     }
 
-    if (!view.shader) {
-      return;
-    }
+    const meta = view.shader.__dacha.meta;
 
     if (meta.materialSampler !== view.texture.source) {
       meta.materialSampler = view.texture.source;

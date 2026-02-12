@@ -30,11 +30,13 @@ declare module 'pixi.js' {
     __dacha: {
       name: string;
       version?: number;
+      meta: Record<string, unknown>;
     };
   }
   interface Shader {
     __dacha: {
       version?: number;
+      meta: Record<string, unknown>;
     };
   }
 }
