@@ -33,19 +33,22 @@ export interface MeshConfig {
 }
 
 /**
- * Mesh component for rendering 2D textures with custom shader.
+ * Mesh component for rendering 2D textures with a custom shader.
  *
- * Handles the visual representation of an actor using a texture and shader.
- * It can be used to render a single texture or a texture slice from a sprite sheet.
+ * Handles the visual representation of an actor using a texture.
+ * The material field specifies a shader and its options for the mesh.
+ * Similar to Sprite component,
+ * it can render a single texture or a frame from a sprite sheet.
+ * When a material is not provided, the default shader is used.
  *
  * @example
  * ```typescript
- * // Create a basic mesh
+ * // Create a mesh with a custom material shader
  * const mesh = new Mesh({
- *   src: 'assets/player.png',
+ *   src: 'assets/flame.png',
  *   width: 64,
  *   height: 64,
- *   slice: 0,
+ *   slice: 4,
  *   flipX: false,
  *   flipY: false,
  *   sortingLayer: 'units',
@@ -55,7 +58,8 @@ export interface MeshConfig {
  *   opacity: 1,
  *   disabled: false,
  *   material: {
- *     name: ''
+ *     name: 'HeatDistort',
+ *     options: { strength: 0.2 }
  *   }
  * });
  *
@@ -63,8 +67,7 @@ export interface MeshConfig {
  * actor.setComponent(mesh);
  *
  * // Modify properties
- * mesh.opacity = 0.5; // Make semi-transparent
- * mesh.color = '#ff0000'; // Apply a red tint
+ * mesh.material = undefined; // Remove the heat-distort shader and apply the default one instead
  * ```
  *
  * @category Components
