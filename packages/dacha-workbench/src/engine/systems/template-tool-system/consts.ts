@@ -1,8 +1,8 @@
-import { Sprite, Shape, BitmapText } from 'dacha';
+import { Sprite, Shape, BitmapText, Mesh } from 'dacha';
 
 export const TOOL_NAME = 'template';
 export const PREVIEW_FEATURE_NAME = 'preview';
 
-export const VIEW_COMPONENTS = [Sprite, Shape, BitmapText];
+export const VIEW_COMPONENTS = [Sprite, Shape, BitmapText, Mesh];
 
 export const SCENE_PATH_LEGTH = 2;

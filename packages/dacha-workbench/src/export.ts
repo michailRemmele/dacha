@@ -55,6 +55,8 @@ import {
   DefineComponent,
   DefineField,
   DefineBehavior,
+  DefineFilterEffect,
+  DefineShader,
 } from './decorators';
 
 const commands = {
@@ -107,5 +109,7 @@ window.DachaWorkbench = {
     DefineComponent,
     DefineField,
     DefineBehavior,
+    DefineFilterEffect,
+    DefineShader,
   },
 };

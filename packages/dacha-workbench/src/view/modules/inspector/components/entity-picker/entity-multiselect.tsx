@@ -15,7 +15,7 @@ import {
   ButtonCSS,
 } from './entity-picker.style'
 
-interface EntityPickerProps {
+interface EntityMultiselectProps {
   placeholder: string
   options: {
     label: string
@@ -23,12 +23,12 @@ interface EntityPickerProps {
   }[]
   onAdd: (value: string) => void
   onCreate: (name: string, path: string) => void
-  type: 'system' | 'component' | 'behavior'
+  type: string
   size?: 'middle' | 'small'
   className?: string
 }
 
-export const EntityPicker: FC<EntityPickerProps> = ({
+export const EntityMultiselect: FC<EntityMultiselectProps> = ({
   placeholder,
   options,
   onAdd,

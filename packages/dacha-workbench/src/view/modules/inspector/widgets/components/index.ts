@@ -11,6 +11,7 @@ import {
   Behaviors,
   Transform,
   AudioSource,
+  Mesh,
 } from 'dacha';
 
 import type { WidgetSchema } from '../../../../../types/widget-schema';
@@ -27,6 +28,7 @@ import { rigidBody } from './rigid-body';
 import { behaviors } from './behaviors';
 import { transform } from './transform';
 import { audioSource } from './audio-source';
+import { mesh } from './mesh';
 
 export const componentsSchema: Record<string, WidgetSchema> = {
   [Animatable.componentName]: animatable,
@@ -41,4 +43,5 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [Behaviors.componentName]: behaviors,
   [Transform.componentName]: transform,
   [AudioSource.componentName]: audioSource,
+  [Mesh.componentName]: mesh,
 };
