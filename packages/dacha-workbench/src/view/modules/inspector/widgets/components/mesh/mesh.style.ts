@@ -2,10 +2,6 @@ import styled from '@emotion/styled';
 import { css, useTheme } from '@emotion/react';
 import type { SerializedStyles } from '@emotion/react';
 
-export const MeshStyled = styled.div`
-  margin: px 0;
-`;
-
 export const ShaderFormStyled = styled.div`
   text-align: center;
 `;

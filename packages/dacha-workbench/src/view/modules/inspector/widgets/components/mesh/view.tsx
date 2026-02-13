@@ -10,7 +10,7 @@ import { EntitySelect } from '../../../components/entity-picker';
 import { useConfig, useCommander, useBehaviors } from '../../../../../hooks';
 import { setValue, deleteValue } from '../../../../../commands';
 
-import { MeshStyled, ShaderFormStyled, PanelCSS } from './mesh.style';
+import { ShaderFormStyled, PanelCSS } from './mesh.style';
 
 const BEHAVIOR_TYPE = 'shader';
 
@@ -67,7 +67,7 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
   }, []);
 
   return (
-    <MeshStyled>
+    <div>
       {fields?.length ? <Widget fields={fields} path={path} /> : null}
 
       <Panel
@@ -101,6 +101,6 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
           </>
         ) : null}
       </Panel>
-    </MeshStyled>
+    </div>
   );
 };
