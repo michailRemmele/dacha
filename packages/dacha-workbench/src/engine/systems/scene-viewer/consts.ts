@@ -1,3 +1,3 @@
-import { Transform, Sprite, Shape, BitmapText } from 'dacha';
+import { Transform, Sprite, Shape, BitmapText, Mesh } from 'dacha';
 
-export const ALLOWED_COMPONENTS = [Transform, Sprite, Shape, BitmapText];
+export const ALLOWED_COMPONENTS = [Transform, Sprite, Shape, BitmapText, Mesh];

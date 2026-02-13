@@ -14,6 +14,7 @@ import {
   Sprite,
   BitmapText,
   PixiView,
+  Mesh,
 } from 'dacha';
 import {
   type Sorting,
@@ -92,6 +93,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           Shape,
           Sprite,
           BitmapText,
+          Mesh,
           PixiView,
           Settings,
           Frame,

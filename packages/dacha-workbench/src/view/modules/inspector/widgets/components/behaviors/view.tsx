@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { WidgetProps } from '../../../../../../types/widget-schema'
-import { EntityPicker } from '../../../components/entity-picker'
+import { EntityMultiselect } from '../../../components/entity-picker'
 import {
   useConfig,
   useCommander,
@@ -64,7 +64,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
         ))}
       </div>
 
-      <EntityPicker
+      <EntityMultiselect
         css={EntityPickerCSS}
         size="small"
         placeholder={t('components.behaviors.behavior.addNew.title')}

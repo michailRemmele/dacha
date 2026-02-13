@@ -2,9 +2,12 @@ import { type SortingLayer } from 'dacha/renderer';
 
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
+import { MeshWidget } from './view';
+
 const PATH = ['globalOptions', 'name:sorting', 'options', 'layers'];
 
-export const sprite: WidgetSchema = {
+export const mesh: WidgetSchema = {
+  view: MeshWidget,
   fields: [
     {
       name: 'src',
@@ -48,11 +51,6 @@ export const sprite: WidgetSchema = {
         ((getState(PATH) as SortingLayer[]) ?? []).map((layer) => layer.name),
     },
     {
-      name: 'fit',
-      type: 'select',
-      options: ['stretch', 'repeat'],
-    },
-    {
       name: 'blending',
       type: 'select',
       options: ['normal', 'addition', 'substract', 'multiply'],
@@ -80,7 +78,6 @@ export const sprite: WidgetSchema = {
     flipX: false,
     flipY: false,
     sortingLayer: 'default',
-    fit: 'stretch',
     blending: 'normal',
     color: '#fff',
     opacity: 1,

@@ -1,47 +1,50 @@
-import type { WidgetSchema, Field } from '../types/widget-schema'
-import { type BehaviorConstructor } from '../types/engine'
-import { widgetRegistry } from '../hocs/widget-registry'
+import type { WidgetSchema, Field } from '../types/widget-schema';
+import { type BehaviorConstructor } from '../types/engine';
+import { widgetRegistry } from '../hocs/widget-registry';
 
-import { schemaRegistry } from './schema-registry'
+import { schemaRegistry } from './schema-registry';
+import { classRegistry } from './class-registry';
 
 import {
   defineMetaProperty,
   mergeFields,
   buildInitialState,
   isEditor,
-} from './utils'
+} from './utils';
 
 interface DefineBehaviorOptions extends Omit<WidgetSchema, 'view'> {
-  name: string
-  systemName?: string
+  name: string;
+  type?: string;
 }
 
 export function DefineBehavior({
   name,
-  systemName,
+  type,
   ...widget
 }: DefineBehaviorOptions): (constructor: BehaviorConstructor) => void {
   return (constructor: BehaviorConstructor): void => {
-    defineMetaProperty(constructor, 'behaviorName', name)
+    defineMetaProperty(constructor, 'behaviorName', name);
 
     if (!isEditor()) {
-      return
+      return;
     }
 
     const fields = mergeFields(
       widget.fields,
       Reflect.getMetadata('schema:fields', constructor) as Field[] | undefined,
-    )
-    const getInitialState = (): Record<string, unknown> => buildInitialState(
-      fields,
-      widget.getInitialState,
-    )
+    );
+    const getInitialState = (): Record<string, unknown> =>
+      buildInitialState(fields, widget.getInitialState);
 
-    schemaRegistry.addWidget(systemName ? `behavior.${systemName}` : 'behavior', name, {
+    const groupName = type ? `behavior.${type}` : 'behavior';
+
+    schemaRegistry.addWidget(groupName, name, {
       ...widget,
       view: widgetRegistry.getWidget(name),
       fields,
       getInitialState,
-    })
-  }
+    });
+
+    classRegistry.addClass(groupName, name, constructor);
+  };
 }
