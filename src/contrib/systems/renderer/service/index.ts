@@ -6,6 +6,7 @@ import { type SortFn } from '../sort';
 import { type Bounds, type ViewComponent } from '../types';
 import { VIEW_COMPONENTS } from '../consts';
 import type { FilterSystem } from '../filters';
+import type { FilterEffectConfig } from '../filters/filter-effect';
 import type { MaterialSystem } from '../material';
 import type { ShaderConstructor } from '../material/shader';
 
@@ -177,21 +178,19 @@ export class RendererService {
    * Adds a post-processing effect that applies to the entire scene.
    * Effects are applied in the order they are added.
    *
-   * @param name - Filter effect name
-   * @param options - Filter configuration options
-   * @returns Effect id used for removal
+   * @param config - Filter effect config with name and options
    */
-  addFilterEffect(name: string, options: Record<string, unknown>): string {
-    return this.filterSystem.addEffect(name, options);
+  addFilterEffect(config: FilterEffectConfig): void {
+    this.filterSystem.addEffect(config);
   }
 
   /**
-   * Removes a filter effect by id.
+   * Removes a filter effect by config object reference.
    *
-   * @param id - Effect id returned by addFilterEffect
+   * @param config - Same config object passed to addFilterEffect
    */
-  removeFilterEffect(id: string): void {
-    this.filterSystem.removeEffect(id);
+  removeFilterEffect(config: FilterEffectConfig): void {
+    this.filterSystem.removeEffect(config);
   }
 
   /**
@@ -199,6 +198,15 @@ export class RendererService {
    */
   clearFilterEffects(): void {
     this.filterSystem.clear();
+  }
+
+  /**
+   * Returns the current filter effect configs in the order they were added.
+   *
+   * @returns Effect config objects
+   */
+  getFilterEffects(): FilterEffectConfig[] {
+    return this.filterSystem.getEffects();
   }
 
   /**

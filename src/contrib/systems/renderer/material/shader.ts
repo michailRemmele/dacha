@@ -48,7 +48,7 @@ export abstract class Shader {
   abstract vertex(options: unknown): string;
   abstract fragment(options: unknown): string;
   uniforms?(options: unknown): ShaderUniformDefinitions;
-  updateUniforms?(options: unknown, uniforms: ShaderUniforms): void;
+  updateUniforms?(uniforms: ShaderUniforms, options: unknown): void;
 }
 
 export type ShaderConstructor = Constructor<Shader> & {

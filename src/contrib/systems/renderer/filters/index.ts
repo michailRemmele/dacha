@@ -1,5 +1,4 @@
 import type { Filter, Application } from 'pixi.js';
-import uuid from 'uuid-random';
 
 import type { Time } from '../types';
 
@@ -21,7 +20,7 @@ export class FilterSystem {
   private time: Time;
   private effects: Record<string, FilterEffect | undefined>;
 
-  private filtersMap: Map<string, Filter>;
+  private filtersMap: Map<FilterEffectConfig, Filter>;
 
   constructor({
     application,
@@ -54,9 +53,7 @@ export class FilterSystem {
 
     this.filtersMap = new Map();
 
-    filterEffects.forEach((effect) =>
-      this.addEffect(effect.name, effect.options),
-    );
+    filterEffects.forEach((effect) => this.addEffect(effect));
   }
 
   clear(): void {
@@ -64,41 +61,54 @@ export class FilterSystem {
     this.application.stage.filters = null;
   }
 
-  addEffect(name: string, options: Record<string, unknown>): string {
-    const effect = this.effects[name];
+  addEffect(config: FilterEffectConfig): void {
+    const effect = this.effects[config.name];
     if (!effect) {
-      throw new Error(`Filter effect not found: ${name}`);
+      throw new Error(`Filter effect not found: ${config.name}`);
     }
 
-    const id = uuid();
-    const filter = effect.create(options);
-    filter.__dacha = { name, meta: {} };
+    const filter = effect.create(config.options);
+    filter.__dacha = { meta: { name: config.name } };
 
-    this.filtersMap.set(id, filter);
+    this.filtersMap.set(config, filter);
 
     const currentFilters = this.application.stage.filters ?? [];
     this.application.stage.filters = [...currentFilters, filter];
-
-    return id;
   }
 
-  removeEffect(id: string): void {
-    const filter = this.filtersMap.get(id);
+  removeEffect(config: FilterEffectConfig): void {
+    const filter = this.filtersMap.get(config);
     if (!filter) {
       return;
     }
 
-    this.filtersMap.delete(id);
+    this.filtersMap.delete(config);
 
     const currentFilters = this.application.stage.filters ?? [];
     const nextFilters = currentFilters.filter((entry) => entry !== filter);
     this.application.stage.filters = nextFilters.length ? nextFilters : null;
   }
 
+  getEffects(): FilterEffectConfig[] {
+    return Array.from(this.filtersMap.keys());
+  }
+
   update(): void {
-    this.filtersMap.forEach((filter) => {
-      const name = filter.__dacha.name;
-      this.effects[name]?.update?.(filter, this.time.elapsed);
+    this.filtersMap.forEach((filter, config) => {
+      const meta = filter.__dacha.meta;
+
+      if (config.name !== meta.name) {
+        this.removeEffect(config);
+        this.addEffect(config);
+      }
+    });
+
+    this.filtersMap.forEach((filter, config) => {
+      this.effects[config.name]?.update?.(
+        filter,
+        config.options,
+        this.time.elapsed,
+      );
     });
   }
 }

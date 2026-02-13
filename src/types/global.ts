@@ -28,7 +28,6 @@ declare module 'pixi.js' {
   }
   interface Filter {
     __dacha: {
-      name: string;
       version?: number;
       meta: Record<string, unknown>;
     };

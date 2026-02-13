@@ -10,7 +10,7 @@ export interface FilterEffectConfig {
 export abstract class FilterEffect {
   static behaviorName: string;
   abstract create(options: unknown): Filter;
-  update?(filter: Filter, elapsedTime: number): void;
+  update?(filter: Filter, options: unknown, elapsedTime: number): void;
 }
 
 export type FilterEffectConstructor = Constructor<FilterEffect> & {
