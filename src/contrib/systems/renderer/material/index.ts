@@ -146,8 +146,8 @@ export class MaterialSystem {
     }
 
     builder.updateUniforms?.(
-      material.options,
       view.shader.resources.uniformsGroup.uniforms,
+      material.options,
     );
   }
 
