@@ -35,7 +35,7 @@ export class BehaviorSystem extends SceneSystem {
       world,
       scene,
       globalOptions,
-      resources = {},
+      resources = [],
     } = options;
 
     this.world = world;

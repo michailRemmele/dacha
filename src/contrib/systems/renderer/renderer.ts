@@ -4,10 +4,13 @@ import {
   type ViewContainer,
   Color,
   RenderLayer,
-  type IRenderLayer,
 } from 'pixi.js';
 
-import { WorldSystem, type WorldSystemOptions } from '../../../engine/system';
+import {
+  WorldSystem,
+  type WorldSystemOptions,
+  type UpdateOptions,
+} from '../../../engine/system';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
@@ -23,14 +26,18 @@ import {
   sortByXAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
-import type { Sorting } from './types';
+import type { Sorting, RendererResources, Time } from './types';
 import { Assets } from './assets';
 import { ActorRenderTree } from './actor-render-tree';
+import { FilterSystem } from './filters';
+import { MaterialSystem } from './material';
+import type { FilterEffectConfig } from './filters/filter-effect';
 import { SORTING_ORDER_MAPPING } from './consts';
 
 interface RendererOptions extends WorldSystemOptions {
   windowNodeId: string;
   backgroundColor: string;
+  filterEffects?: FilterEffectConfig[];
 }
 
 /**
@@ -44,12 +51,16 @@ export class Renderer extends WorldSystem {
   private window: HTMLElement;
   private application: Application;
   private worldContainer: Container;
-  private sortingLayers: Map<string, IRenderLayer>;
+  private sortingLayers: Map<string, RenderLayer>;
   private sortFn: SortFn;
   private backgroundColor: Color;
   private cameraService: CameraService;
   private assets: Assets;
   private actorRenderTree?: ActorRenderTree;
+  private filterSystem: FilterSystem;
+  private materialSystem: MaterialSystem;
+  private resources?: RendererResources;
+  private time: Time;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -60,11 +71,15 @@ export class Renderer extends WorldSystem {
       backgroundColor,
       templateCollection,
       world,
+      resources,
+      filterEffects,
     } = options as RendererOptions;
 
     this.backgroundColor = new Color(backgroundColor);
 
     this.window = getWindowNode(windowNodeId);
+
+    this.resources = resources as RendererResources | undefined;
 
     const sorting = globalOptions.sorting as Sorting | undefined;
     const sortingOrder = SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
@@ -93,6 +108,19 @@ export class Renderer extends WorldSystem {
 
     this.assets = new Assets({ templateCollection });
 
+    this.time = { elapsed: 0 };
+
+    this.materialSystem = new MaterialSystem({
+      shaders: this.resources?.shaders,
+      time: this.time,
+    });
+    this.filterSystem = new FilterSystem({
+      application: this.application,
+      time: this.time,
+      filterEffects,
+      availableFilterEffects: this.resources?.filterEffects,
+    });
+
     this.cameraService = world.getService(CameraService);
 
     world.addService(
@@ -102,6 +130,8 @@ export class Renderer extends WorldSystem {
         getViewEntries: (): Set<ViewContainer> | undefined =>
           this.actorRenderTree?.viewEntries,
         sortFn: this.sortFn,
+        filterSystem: this.filterSystem,
+        materialSystem: this.materialSystem,
       }),
     );
   }
@@ -133,6 +163,8 @@ export class Renderer extends WorldSystem {
   }
 
   onWorldDestroy(): void {
+    this.filterSystem.clear();
+
     this.window.removeChild(this.application.canvas);
     this.application.destroy();
 
@@ -151,6 +183,7 @@ export class Renderer extends WorldSystem {
       worldContainer: this.worldContainer,
       assets: this.assets,
       sortingLayers: this.sortingLayers,
+      materialSystem: this.materialSystem,
     });
   }
 
@@ -182,10 +215,14 @@ export class Renderer extends WorldSystem {
     this.worldContainer.pivot.set(x, y);
   }
 
-  update(): void {
+  update(options: UpdateOptions): void {
+    this.time.elapsed += options.deltaTime / 1000;
+
     this.updateCamera();
 
     this.actorRenderTree?.update();
+
+    this.filterSystem.update();
 
     this.application.renderer.render({ container: this.application.stage });
   }

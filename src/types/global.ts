@@ -26,4 +26,16 @@ declare module 'pixi.js' {
       meta: Record<string, unknown>;
     };
   }
+  interface Filter {
+    __dacha: {
+      version?: number;
+      meta: Record<string, unknown>;
+    };
+  }
+  interface Shader {
+    __dacha: {
+      version?: number;
+      meta: Record<string, unknown>;
+    };
+  }
 }

@@ -1,4 +1,4 @@
-import { Container, type ViewContainer, type IRenderLayer } from 'pixi.js';
+import { Container, type ViewContainer, type RenderLayer } from 'pixi.js';
 
 import { Actor } from '../../../engine/actor';
 import { type Scene } from '../../../engine/scene';
@@ -7,6 +7,7 @@ import { Sprite } from '../../components/sprite';
 import { Shape } from '../../components/shape';
 import { PixiView } from '../../components/pixi-view';
 import { BitmapText } from '../../components/bitmap-text';
+import { Mesh } from '../../components/mesh';
 import { traverseEntity } from '../../../engine/entity';
 import {
   AddComponent,
@@ -22,11 +23,13 @@ import type {
 } from '../../../engine/events';
 
 import type { Assets } from './assets';
+import { MaterialSystem } from './material';
 import {
   SpriteBuilder,
   ShapeBuilder,
   PixiViewBuilder,
   BitmapTextBuilder,
+  MeshBuilder,
 } from './builders';
 import type { Builder } from './builders';
 import { floatEquals } from './utils';
@@ -36,14 +39,15 @@ interface ActorRenderTreeOptions {
   worldContainer: Container;
   scene: Scene;
   assets: Assets;
-  sortingLayers: Map<string, IRenderLayer>;
+  sortingLayers: Map<string, RenderLayer>;
+  materialSystem: MaterialSystem;
 }
 
 export class ActorRenderTree {
   private scene: Scene;
   private worldContainer: Container;
   private assets: Assets;
-  private sortingLayers: Map<string, IRenderLayer>;
+  private sortingLayers: Map<string, RenderLayer>;
 
   public viewEntries: Set<ViewContainer>;
 
@@ -56,6 +60,7 @@ export class ActorRenderTree {
     worldContainer,
     assets,
     sortingLayers,
+    materialSystem,
   }: ActorRenderTreeOptions) {
     this.scene = scene;
     this.worldContainer = worldContainer;
@@ -74,6 +79,10 @@ export class ActorRenderTree {
     this.builders.set(
       BitmapText.componentName,
       new BitmapTextBuilder({ assets }),
+    );
+    this.builders.set(
+      Mesh.componentName,
+      new MeshBuilder({ assets, materialSystem }),
     );
 
     this.scene.children.forEach((actor) =>
