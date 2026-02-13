@@ -1,23 +1,17 @@
-export { Camera } from './camera';
-export type { CameraConfig } from './camera';
-export { KeyboardControl } from './keyboard-control';
-export type { KeyboardControlConfig } from './keyboard-control';
-export { Collider } from './collider';
-export type { ColliderConfig } from './collider';
-export { RigidBody } from './rigid-body';
-export type { RigidBodyConfig } from './rigid-body';
-export { Animatable } from './animatable';
-export type { AnimatableConfig } from './animatable';
-export { Sprite } from './sprite';
-export type { SpriteConfig } from './sprite';
-export { Transform } from './transform';
-export type { TransformConfig } from './transform';
-export { MouseControl } from './mouse-control';
-export type { MouseControlConfig } from './mouse-control';
-export { Behaviors } from './behaviors';
-export type { BehaviorsConfig } from './behaviors';
-export { AudioSource } from './audio-source';
-export type { AudioSourceConfig } from './audio-source';
+export { Camera, type CameraConfig } from './camera';
+export {
+  KeyboardControl,
+  type KeyboardControlConfig,
+} from './keyboard-control';
+export { Collider, type ColliderConfig } from './collider';
+export { RigidBody, type RigidBodyConfig } from './rigid-body';
+export { Animatable, type AnimatableConfig } from './animatable';
+export { Sprite, type SpriteConfig } from './sprite';
+export { Transform, type TransformConfig } from './transform';
+export { MouseControl, type MouseControlConfig } from './mouse-control';
+export { Behaviors, type BehaviorsConfig } from './behaviors';
+export { AudioSource, type AudioSourceConfig } from './audio-source';
 export { Shape, type ShapeConfig } from './shape';
 export { PixiView } from './pixi-view';
 export { BitmapText, type BitmapTextConfig } from './bitmap-text';
+export { Mesh, type MeshConfig } from './mesh';

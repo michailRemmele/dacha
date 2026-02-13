@@ -1,4 +1,5 @@
 import { Sprite } from '../../../components/sprite';
+import { Mesh } from '../../../components/mesh';
 import { BitmapText } from '../../../components/bitmap-text';
 import type { Actor } from '../../../../engine/actor';
 import type { Template } from '../../../../engine/template';
@@ -31,6 +32,11 @@ export const getAllImageSources = (actors: (Actor | Template)[]): string[] => {
       const sprite = entity.getComponent(Sprite);
       if (sprite?.src) {
         sources.push(sprite.src);
+      }
+
+      const mesh = entity.getComponent(Mesh);
+      if (mesh?.src) {
+        sources.push(mesh.src);
       }
     });
   });

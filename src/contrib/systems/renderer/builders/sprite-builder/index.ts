@@ -1,18 +1,11 @@
-import {
-  TextureSource,
-  Texture,
-  Sprite as PixiSprite,
-  TilingSprite,
-} from 'pixi.js';
+import { Texture, Sprite as PixiSprite, TilingSprite } from 'pixi.js';
 
 import type { Assets } from '../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Sprite } from '../../../../components/sprite';
 import type { Actor } from '../../../../../engine/actor';
-import { CacheStore } from '../../../../../engine/data-lib';
-
-import { getTextureSource, getTextureArray } from './utils';
+import { TextureArrayStore } from '../texture-array-store';
 
 interface SpriteBuilderOptions {
   assets: Assets;
@@ -21,26 +14,16 @@ interface SpriteBuilderOptions {
 export class SpriteBuilder implements Builder<Sprite> {
   private assets: Assets;
 
-  private textureSourceMap: CacheStore<TextureSource>;
-  private textureArrayMap: CacheStore<Texture[]>;
+  private textureArrayStore: TextureArrayStore;
 
   constructor({ assets }: SpriteBuilderOptions) {
     this.assets = assets;
 
-    this.textureSourceMap = new CacheStore();
-    this.textureArrayMap = new CacheStore();
+    this.textureArrayStore = new TextureArrayStore(assets);
   }
 
   destroy(sprite: Sprite): void {
-    const textureSourceKey = sprite.renderData?.textureSourceKey;
-    const textureArrayKey = sprite.renderData?.textureArrayKey;
-
-    if (textureSourceKey) {
-      this.textureSourceMap.release(textureSourceKey, true);
-    }
-    if (textureArrayKey) {
-      this.textureArrayMap.release(textureArrayKey, true);
-    }
+    this.textureArrayStore.removeTextureArray(sprite);
 
     sprite.renderData?.view.destroy();
     sprite.renderData = undefined;
@@ -95,12 +78,12 @@ export class SpriteBuilder implements Builder<Sprite> {
       (sprite.src !== meta.src || sprite.slice !== meta.slice)
     ) {
       view.label = sprite.src;
-      this.updateTextureArray(sprite);
+      this.textureArrayStore.updateTextureArray(sprite);
       meta.src = sprite.src;
       meta.slice = sprite.slice;
     }
 
-    const textureArray = this.getTextureArray(sprite);
+    const textureArray = this.textureArrayStore.getTextureArray(sprite);
     const texture = textureArray?.[sprite.currentFrame ?? 0];
     view.texture = texture ?? Texture.WHITE;
 
@@ -130,57 +113,5 @@ export class SpriteBuilder implements Builder<Sprite> {
       meta.width = sprite.width;
       meta.height = sprite.height;
     }
-  }
-
-  private updateTextureArray(sprite: Sprite): void {
-    const oldTextureSourceKey = sprite.renderData!.textureSourceKey;
-    const oldTextureArrayKey = sprite.renderData!.textureArrayKey;
-
-    if (oldTextureSourceKey) {
-      this.textureSourceMap.release(oldTextureSourceKey, true);
-    }
-    if (oldTextureArrayKey) {
-      this.textureArrayMap.release(oldTextureArrayKey, true);
-    }
-
-    sprite.renderData!.textureSourceKey = sprite.src;
-    sprite.renderData!.textureArrayKey = `${sprite.slice}_${sprite.renderData!.textureSourceKey}`;
-
-    const textureSourceKey = sprite.renderData!.textureSourceKey!;
-    const textureArrayKey = sprite.renderData!.textureArrayKey!;
-
-    if (this.textureArrayMap.has(textureArrayKey)) {
-      this.textureArrayMap.retain(textureArrayKey);
-      this.textureSourceMap.retain(textureSourceKey);
-      return;
-    }
-
-    if (this.textureSourceMap.has(textureSourceKey)) {
-      const textureSource = this.textureSourceMap.get(textureSourceKey)!;
-      const textureArray = getTextureArray(textureSource, sprite);
-      this.textureArrayMap.add(textureArrayKey, textureArray);
-
-      this.textureArrayMap.retain(textureArrayKey);
-      this.textureSourceMap.retain(textureSourceKey);
-    }
-
-    const image = this.assets.get(sprite);
-
-    if (!image) {
-      return undefined;
-    }
-
-    const textureSource = getTextureSource(image);
-    const textureArray = getTextureArray(textureSource, sprite);
-
-    this.textureSourceMap.add(textureSourceKey, textureSource);
-    this.textureArrayMap.add(textureArrayKey, textureArray);
-
-    this.textureArrayMap.retain(textureArrayKey);
-    this.textureSourceMap.retain(textureSourceKey);
-  }
-
-  private getTextureArray(sprite: Sprite): Texture[] | undefined {
-    return this.textureArrayMap.get(sprite.renderData!.textureArrayKey!);
   }
 }

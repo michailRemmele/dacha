@@ -5,6 +5,10 @@ import { type Actor } from '../../../../engine/actor';
 import { type SortFn } from '../sort';
 import { type Bounds, type ViewComponent } from '../types';
 import { VIEW_COMPONENTS } from '../consts';
+import type { FilterSystem } from '../filters';
+import type { FilterEffectConfig } from '../filters/filter-effect';
+import type { MaterialSystem } from '../material';
+import type { ShaderConstructor } from '../material/shader';
 
 import { convertBounds } from './utils';
 
@@ -13,6 +17,8 @@ interface RendererServiceOptions {
   worldContainer: Container;
   getViewEntries: () => Set<ViewContainer> | undefined;
   sortFn: SortFn;
+  filterSystem: FilterSystem;
+  materialSystem: MaterialSystem;
 }
 
 /**
@@ -28,17 +34,23 @@ export class RendererService {
   private worldContainer: Container;
   private getViewEntries: () => Set<ViewContainer> | undefined;
   private sortFn: SortFn;
+  private filterSystem: FilterSystem;
+  private materialSystem: MaterialSystem;
 
   constructor({
     application,
     worldContainer,
     getViewEntries,
     sortFn,
+    filterSystem,
+    materialSystem,
   }: RendererServiceOptions) {
     this.application = application;
     this.worldContainer = worldContainer;
     this.getViewEntries = getViewEntries;
     this.sortFn = sortFn;
+    this.filterSystem = filterSystem;
+    this.materialSystem = materialSystem;
   }
 
   /**
@@ -160,5 +172,49 @@ export class RendererService {
       width: maxX - minX,
       height: maxY - minY,
     };
+  }
+
+  /**
+   * Adds a post-processing effect that applies to the entire scene.
+   * Effects are applied in the order they are added.
+   *
+   * @param config - Filter effect config with name and options
+   */
+  addFilterEffect(config: FilterEffectConfig): void {
+    this.filterSystem.addEffect(config);
+  }
+
+  /**
+   * Removes a filter effect by config object reference.
+   *
+   * @param config - Same config object passed to addFilterEffect
+   */
+  removeFilterEffect(config: FilterEffectConfig): void {
+    this.filterSystem.removeEffect(config);
+  }
+
+  /**
+   * Clears all active filter effects.
+   */
+  clearFilterEffects(): void {
+    this.filterSystem.clear();
+  }
+
+  /**
+   * Returns the current filter effect configs in the order they were added.
+   *
+   * @returns Effect config objects
+   */
+  getFilterEffects(): FilterEffectConfig[] {
+    return this.filterSystem.getEffects();
+  }
+
+  /**
+   * Reloads shader classes registered in the renderer.
+   *
+   * @param classDenfinitions - Shader constructors to register
+   */
+  reloadShaders(classDenfinitions: ShaderConstructor[]): void {
+    this.materialSystem.reloadShaders(classDenfinitions);
   }
 }
