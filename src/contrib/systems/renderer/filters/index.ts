@@ -1,4 +1,4 @@
-import type { Filter, Application } from 'pixi.js';
+import { Filter, type Application } from 'pixi.js';
 
 import type { Time } from '../types';
 
@@ -28,6 +28,8 @@ export class FilterSystem {
     availableFilterEffects = [],
     filterEffects = [],
   }: FiltersSystemOptions) {
+    Filter.defaultOptions.resolution = window.devicePixelRatio;
+
     this.application = application;
     this.effects = availableFilterEffects.reduce(
       (acc, FilterEffect) => {
