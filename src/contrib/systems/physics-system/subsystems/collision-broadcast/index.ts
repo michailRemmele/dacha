@@ -1,12 +1,11 @@
-import type { SceneSystemOptions } from '../../../../../engine/system';
-import type { Scene } from '../../../../../engine/scene';
+import type { Actor } from '../../../../../engine/actor';
+import type { Vector2 } from '../../../../../engine/math-lib';
 import {
-  Collision as RawCollision,
   CollisionEnter,
   CollisionStay,
   CollisionLeave,
 } from '../../../../events';
-import type { CollisionEvent } from '../../../../events';
+import type { DetectedCollision } from '../collision-detection/types';
 
 import { Collision } from './collision';
 import type { CollisionState } from './collision';
@@ -20,28 +19,20 @@ const STATE_TO_EVENT: Record<CollisionState, CollisionStateEvent> = {
 };
 
 export class CollisionBroadcastSubsystem {
-  private scene: Scene;
   private collisionMap: Record<string, Record<string, Collision>>;
   private activeCollisions: Collision[];
 
-  constructor(options: SceneSystemOptions) {
-    this.scene = options.scene;
-
+  constructor() {
     this.collisionMap = {};
     this.activeCollisions = [];
-
-    this.scene.addEventListener(RawCollision, this.handleCollision);
   }
 
-  destroy(): void {
-    this.scene.removeEventListener(RawCollision, this.handleCollision);
-  }
-
-  private handleCollision = (event: CollisionEvent): void => {
-    const {
-      actor1, actor2, mtv1, mtv2,
-    } = event;
-
+  private trackCollision(
+    actor1: Actor,
+    actor2: Actor,
+    mtv1: Vector2,
+    mtv2: Vector2,
+  ): void {
     this.collisionMap[actor1.id] = this.collisionMap[actor1.id] || {};
 
     if (!this.collisionMap[actor1.id][actor2.id]) {
@@ -53,7 +44,7 @@ export class CollisionBroadcastSubsystem {
       this.collisionMap[actor1.id][actor2.id].mtv2 = mtv2;
       this.collisionMap[actor1.id][actor2.id].signal();
     }
-  };
+  }
 
   private publishEvent(collision: Collision): void {
     const {
@@ -66,7 +57,22 @@ export class CollisionBroadcastSubsystem {
     });
   }
 
-  update(): void {
+  update(collisions: DetectedCollision[]): void {
+    collisions.forEach((collision) => {
+      this.trackCollision(
+        collision.actor1,
+        collision.actor2,
+        collision.mtv1,
+        collision.mtv2,
+      );
+      this.trackCollision(
+        collision.actor2,
+        collision.actor1,
+        collision.mtv2,
+        collision.mtv1,
+      );
+    });
+
     this.activeCollisions = this.activeCollisions.filter((collision) => {
       const { actor1, actor2 } = collision;
 
