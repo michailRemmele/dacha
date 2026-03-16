@@ -30,8 +30,6 @@ export {
   CollisionEnter,
   CollisionStay,
   CollisionLeave,
-  AddForce,
-  AddImpulse,
   PlayAudio,
   StopAudio,
   SetAudioVolume,
@@ -45,8 +43,6 @@ export type {
   CollisionEnterEvent,
   CollisionStayEvent,
   CollisionLeaveEvent,
-  AddForceEvent,
-  AddImpulseEvent,
   SetAudioGroupVolumeEvent,
   SetAudioSourceVolumeEvent,
 } from '../contrib/events';
