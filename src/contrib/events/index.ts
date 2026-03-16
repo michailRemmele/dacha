@@ -77,36 +77,6 @@ export const CollisionStay = 'CollisionStay';
 export const CollisionLeave = 'CollisionLeave';
 
 /**
- * Dispatched to add force to an actor
- *
- * @event
- * @type {AddForceEvent}
- * 
- * @category Events
- */
-export const AddForce = 'AddForce';
-
-/**
- * Dispatched to add impulse to an actor
- *
- * @event
- * @type {AddImpulseEvent}
- * 
- * @category Events
- */
-export const AddImpulse = 'AddImpulse';
-
-/**
- * Dispatched to stop physical movement of an actor
- *
- * @event
- * @type {ActorEvent}
- * 
- * @category Events
- */
-export const StopMovement = 'StopMovement';
-
-/**
  * Dispatched to play audio on an actor
  *
  * @event
@@ -229,24 +199,6 @@ export type CollisionStayEvent = CollisionStateEvent;
  */
 export type CollisionLeaveEvent = CollisionStateEvent;
 
-/** Event signature for the {@link AddForce} event
- * 
- * @category Events
- */
-export type AddForceEvent = ActorEvent<{
-  /** Force vector to apply to the actor */
-  value: Vector2;
-}>;
-
-/** Event signature for the {@link AddImpulse} event
- * 
- * @category Events
- */
-export type AddImpulseEvent = ActorEvent<{
-  /** Impulse vector to apply to the actor */
-  value: Vector2;
-}>;
-
 /** Event signature for the {@link SetAudioVolume} event when used on actor level
  * 
  * @category Events
@@ -272,9 +224,6 @@ declare module '../../types/events' {
     [CollisionEnter]: CollisionEnterEvent;
     [CollisionStay]: CollisionStayEvent;
     [CollisionLeave]: CollisionLeaveEvent;
-    [AddForce]: AddForceEvent;
-    [AddImpulse]: AddImpulseEvent;
-    [StopMovement]: ActorEvent;
     [PlayAudio]: ActorEvent;
     [StopAudio]: ActorEvent;
     [SetAudioVolume]: SetAudioSourceVolumeEvent;

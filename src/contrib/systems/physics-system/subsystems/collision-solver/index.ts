@@ -4,7 +4,7 @@ import type { Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { PhysicsSystemOptions } from '../../types';
-import { Collision, AddForce, StopMovement } from '../../../../events';
+import { Collision } from '../../../../events';
 import type { CollisionEvent } from '../../../../events';
 import { RIGID_BODY_TYPE } from '../../consts';
 
@@ -45,26 +45,25 @@ export class CollisionSolver {
     if (!rigidBody1 || !rigidBody2) {
       return false;
     }
-    if (rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
-      return !rigidBody1.ghost && !rigidBody2.ghost;
-    }
-
-    return !rigidBody1.ghost && !rigidBody1.isPermeable
-      && !rigidBody2.ghost && !rigidBody2.isPermeable;
+    return (
+      rigidBody1.type !== RIGID_BODY_TYPE.STATIC ||
+      rigidBody2.type !== RIGID_BODY_TYPE.STATIC
+    );
   }
 
   private addReactionForce(actor: Actor, mtv: Vector2): void {
     const rigidBody = actor.getComponent(RigidBody);
-    const { useGravity, mass } = rigidBody;
+    const { gravityScale, mass, linearVelocity } = rigidBody;
 
-    if (useGravity && mtv.y && Math.sign(mtv.y) === -1 && !mtv.x) {
-      const reactionForce = new Vector2(REACTION_FORCE_VECTOR_X, REACTION_FORCE_VECTOR_Y);
-      reactionForce.multiplyNumber(mass * this.gravity);
+    if (gravityScale && mtv.y && Math.sign(mtv.y) === -1 && !mtv.x) {
+      const reactionForce = new Vector2(
+        REACTION_FORCE_VECTOR_X,
+        REACTION_FORCE_VECTOR_Y,
+      );
+      reactionForce.multiplyNumber(mass * this.gravity * gravityScale);
 
-      actor.dispatchEventImmediately(AddForce, {
-        value: reactionForce,
-      });
-      actor.dispatchEventImmediately(StopMovement);
+      rigidBody.applyForce(reactionForce);
+      linearVelocity.multiplyNumber(0);
     }
   }
 }

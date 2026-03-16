@@ -63,20 +63,7 @@ export class ConstraintSolver {
     ) {
       return false;
     }
-
-    if (
-      rigidBody1.type === RIGID_BODY_TYPE.STATIC ||
-      rigidBody2.type === RIGID_BODY_TYPE.STATIC
-    ) {
-      return !rigidBody1.ghost && !rigidBody2.ghost;
-    }
-
-    return (
-      !rigidBody1.ghost &&
-      !rigidBody1.isPermeable &&
-      !rigidBody2.ghost &&
-      !rigidBody2.isPermeable
-    );
+    return true;
   }
 
   private setMtv(
