@@ -1,42 +1,22 @@
 import { Vector2 } from '../../../../../engine/math-lib';
 import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
-import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { PhysicsSystemOptions } from '../../types';
-import { Collision } from '../../../../events';
-import type { CollisionEvent } from '../../../../events';
 import { RIGID_BODY_TYPE } from '../../consts';
+import type { DetectedCollision } from '../collision-detection/types';
 
 const REACTION_FORCE_VECTOR_X = 0;
 const REACTION_FORCE_VECTOR_Y = -1;
 
 export class CollisionSolver {
-  private scene: Scene;
   private gravity: number;
 
   constructor(options: SceneSystemOptions) {
-    const { scene, gravity } = options as PhysicsSystemOptions;
+    const { gravity } = options as PhysicsSystemOptions;
 
-    this.scene = scene;
     this.gravity = gravity;
-
-    this.scene.addEventListener(Collision, this.handleCollision);
   }
-
-  destroy(): void {
-    this.scene.removeEventListener(Collision, this.handleCollision);
-  }
-
-  private handleCollision = (event: CollisionEvent): void => {
-    const { actor1, actor2, mtv1 } = event;
-
-    if (!this.validateCollision(actor1, actor2)) {
-      return;
-    }
-
-    this.addReactionForce(actor1, mtv1);
-  };
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
     const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
@@ -65,5 +45,20 @@ export class CollisionSolver {
       rigidBody.applyForce(reactionForce);
       linearVelocity.multiplyNumber(0);
     }
+  }
+
+  update(collisions: DetectedCollision[]): void {
+    collisions.forEach((collision) => {
+      const {
+        actor1, actor2, mtv1, mtv2,
+      } = collision;
+
+      if (!this.validateCollision(actor1, actor2)) {
+        return;
+      }
+
+      this.addReactionForce(actor1, mtv1);
+      this.addReactionForce(actor2, mtv2);
+    });
   }
 }

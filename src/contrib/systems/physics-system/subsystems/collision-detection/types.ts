@@ -80,6 +80,13 @@ export interface Axes {
 
 export type CollisionPair = [CollisionEntry, CollisionEntry];
 
+export interface DetectedCollision {
+  actor1: Actor
+  actor2: Actor
+  mtv1: Vector2
+  mtv2: Vector2
+}
+
 export interface Intersection {
   mtv1: Vector2
   mtv2: Vector2

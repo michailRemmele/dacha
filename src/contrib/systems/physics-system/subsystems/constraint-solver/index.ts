@@ -1,53 +1,17 @@
 import { Vector2 } from '../../../../../engine/math-lib';
-import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
-import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { RigidBodyType } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
-import { Collision } from '../../../../events';
-import type { CollisionEvent } from '../../../../events';
 import { RIGID_BODY_TYPE } from '../../consts';
+import type { DetectedCollision } from '../collision-detection/types';
 
 export class ConstraintSolver {
-  private scene: Scene;
-  private processedPairs: Map<Actor, Set<Actor>>;
   private mtvMap: Map<Actor, Record<string, Vector2>>;
 
-  constructor(options: SceneSystemOptions) {
-    this.scene = options.scene;
-    this.processedPairs = new Map();
+  constructor() {
     this.mtvMap = new Map();
-
-    this.scene.addEventListener(Collision, this.handleCollision);
   }
-
-  destroy(): void {
-    this.scene.removeEventListener(Collision, this.handleCollision);
-  }
-
-  private handleCollision = (event: CollisionEvent): void => {
-    const { actor1, actor2, mtv1, mtv2 } = event;
-
-    if (
-      this.processedPairs.has(actor2) &&
-      this.processedPairs.get(actor2)!.has(actor1)
-    ) {
-      return;
-    }
-
-    if (!this.processedPairs.has(actor1)) {
-      this.processedPairs.set(actor1, new Set());
-    }
-
-    this.processedPairs.get(actor1)!.add(actor2);
-
-    if (!this.validateCollision(actor1, actor2)) {
-      return;
-    }
-
-    this.resolveCollision(actor1, actor2, mtv1, mtv2);
-  };
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
     const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
@@ -115,7 +79,19 @@ export class ConstraintSolver {
     }
   }
 
-  update(): void {
+  update(collisions: DetectedCollision[]): void {
+    collisions.forEach((collision) => {
+      const {
+        actor1, actor2, mtv1, mtv2,
+      } = collision;
+
+      if (!this.validateCollision(actor1, actor2)) {
+        return;
+      }
+
+      this.resolveCollision(actor1, actor2, mtv1, mtv2);
+    });
+
     for (const [actor, entry] of this.mtvMap) {
       const transform = actor.getComponent(Transform);
 
@@ -136,7 +112,6 @@ export class ConstraintSolver {
       transform.world.position.y += (staticMtv?.y ?? 0) + (dynamicMtv?.y ?? 0);
     }
 
-    this.processedPairs.clear();
     this.mtvMap.clear();
   }
 }

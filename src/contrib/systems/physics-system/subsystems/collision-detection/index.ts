@@ -1,14 +1,12 @@
 import { ActorQuery } from '../../../../../engine/actor';
 import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
-import type { Scene } from '../../../../../engine/scene';
 import { Transform, Collider, RigidBody } from '../../../../components';
 import { AddActor, RemoveActor } from '../../../../../engine/events';
 import type {
   AddActorEvent,
   RemoveActorEvent,
 } from '../../../../../engine/events';
-import { Collision } from '../../../../events';
 import { insertionSort } from '../../../../../engine/data-lib';
 
 import { geometryBuilders } from './geometry-builders';
@@ -22,16 +20,17 @@ import type {
   Axis,
   Axes,
   CollisionPair,
+  DetectedCollision,
   Intersection,
   OrientationData,
 } from './types';
 
 export class CollisionDetectionSubsystem {
   private actorQuery: ActorQuery;
-  private scene: Scene;
   private axis: Axes;
   private entriesMap: Map<string, CollisionEntry>;
   private collisionPairs: CollisionPair[];
+  private collisions: DetectedCollision[];
   private entriesToDelete: Set<string>;
 
   constructor(options: SceneSystemOptions) {
@@ -39,7 +38,6 @@ export class CollisionDetectionSubsystem {
       scene: options.scene,
       filter: [Collider, Transform],
     });
-    this.scene = options.scene;
 
     this.axis = {
       x: {
@@ -53,6 +51,7 @@ export class CollisionDetectionSubsystem {
     };
     this.entriesMap = new Map();
     this.collisionPairs = [];
+    this.collisions = [];
     this.entriesToDelete = new Set();
 
     this.actorQuery
@@ -269,25 +268,23 @@ export class CollisionDetectionSubsystem {
     return intersectionCheckers[type1][type2](arg1, arg2);
   }
 
-  private sendCollisionEvent(
+  private addCollision(
+    collisionIndex: number,
     actor1: Actor,
     actor2: Actor,
     intersection: Intersection,
   ): void {
-    const { mtv1, mtv2 } = intersection;
-
-    this.scene.dispatchEventImmediately(Collision, {
+    this.collisions[collisionIndex] ??= {
       actor1,
       actor2,
-      mtv1,
-      mtv2,
-    });
-    this.scene.dispatchEventImmediately(Collision, {
-      actor1: actor2,
-      actor2: actor1,
-      mtv1: mtv2,
-      mtv2: mtv1,
-    });
+      mtv1: intersection.mtv1,
+      mtv2: intersection.mtv2,
+    };
+
+    this.collisions[collisionIndex].actor1 = actor1;
+    this.collisions[collisionIndex].actor2 = actor2;
+    this.collisions[collisionIndex].mtv1 = intersection.mtv1;
+    this.collisions[collisionIndex].mtv2 = intersection.mtv2;
   }
 
   private clearDeletedEntries(): void {
@@ -310,7 +307,7 @@ export class CollisionDetectionSubsystem {
     this.entriesToDelete.clear();
   }
 
-  update(): void {
+  update(): DetectedCollision[] {
     this.clearDeletedEntries();
 
     this.actorQuery.getActors().forEach((actor) => {
@@ -323,11 +320,19 @@ export class CollisionDetectionSubsystem {
 
     this.sweepAndPrune();
 
+    let collisionIndex = 0;
     this.collisionPairs.forEach((pair) => {
       const intersection = this.checkOnIntersection(pair);
       if (intersection) {
-        this.sendCollisionEvent(pair[0].actor, pair[1].actor, intersection);
+        this.addCollision(collisionIndex, pair[0].actor, pair[1].actor, intersection);
+        collisionIndex += 1;
       }
     });
+
+    if (this.collisions.length > collisionIndex) {
+      this.collisions.length = collisionIndex;
+    }
+
+    return this.collisions;
   }
 }

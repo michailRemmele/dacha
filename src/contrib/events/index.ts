@@ -4,34 +4,24 @@ import type {
   CustomMouseEvent,
   CustomKeyboardEvent,
 } from '../types/input-events';
-import type { ActorEvent, SceneEvent, WorldEvent } from '../../types/events';
+import type { ActorEvent, WorldEvent } from '../../types/events';
 
 /**
  * Dispatched when game statistics are updated
  *
  * @event
  * @type {GameStatsUpdateEvent}
- * 
+ *
  * @category Events
  */
 export const GameStatsUpdate = 'GameStatsUpdate';
-
-/**
- * Dispatched when two actors collide
- *
- * @event
- * @type {CollisionEvent}
- * 
- * @category Events
- */
-export const Collision = 'Collision';
 
 /**
  * Dispatched when keyboard input is received
  *
  * @event
  * @type {KeyboardInputEvent}
- * 
+ *
  * @category Events
  */
 export const KeyboardInput = 'KeyboardInput';
@@ -41,7 +31,7 @@ export const KeyboardInput = 'KeyboardInput';
  *
  * @event
  * @type {MouseInputEvent}
- * 
+ *
  * @category Events
  */
 export const MouseInput = 'MouseInput';
@@ -51,7 +41,7 @@ export const MouseInput = 'MouseInput';
  *
  * @event
  * @type {CollisionEnterEvent}
- * 
+ *
  * @category Events
  */
 export const CollisionEnter = 'CollisionEnter';
@@ -61,7 +51,7 @@ export const CollisionEnter = 'CollisionEnter';
  *
  * @event
  * @type {CollisionStayEvent}
- * 
+ *
  * @category Events
  */
 export const CollisionStay = 'CollisionStay';
@@ -71,7 +61,7 @@ export const CollisionStay = 'CollisionStay';
  *
  * @event
  * @type {CollisionLeaveEvent}
- * 
+ *
  * @category Events
  */
 export const CollisionLeave = 'CollisionLeave';
@@ -81,7 +71,7 @@ export const CollisionLeave = 'CollisionLeave';
  *
  * @event
  * @type {ActorEvent}
- * 
+ *
  * @category Events
  */
 export const PlayAudio = 'PlayAudio';
@@ -91,7 +81,7 @@ export const PlayAudio = 'PlayAudio';
  *
  * @event
  * @type {ActorEvent}
- * 
+ *
  * @category Events
  */
 export const StopAudio = 'StopAudio';
@@ -101,25 +91,25 @@ export const StopAudio = 'StopAudio';
  *
  * @event
  * @type {SetAudioSourceVolumeEvent} (for actors) or {@link SetAudioGroupVolumeEvent} (for whole groups)
- * 
+ *
  * @category Events
  */
 export const SetAudioVolume = 'SetAudioVolume';
 
 /** Event signature for the {@link MouseInput} event
- * 
+ *
  * @category Events
  */
 export type MouseInputEvent = WorldEvent<CustomMouseEvent>;
 
 /** Event signature for the {@link KeyboardInput} event
- * 
+ *
  * @category Events
  */
 export type KeyboardInputEvent = WorldEvent<CustomKeyboardEvent>;
 
 /** Event signature for the {@link GameStatsUpdate} event
- * 
+ *
  * @category Events
  */
 export type GameStatsUpdateEvent = WorldEvent<{
@@ -130,7 +120,7 @@ export type GameStatsUpdateEvent = WorldEvent<{
 }>;
 
 /** Event signature for the {@link SetAudioVolume} event when used on world level
- * 
+ *
  * @category Events
  */
 export type SetAudioGroupVolumeEvent = WorldEvent<{
@@ -140,23 +130,8 @@ export type SetAudioGroupVolumeEvent = WorldEvent<{
   value: number;
 }>;
 
-/** Event signature for the {@link Collision} event
- * 
- * @category Events
- */
-export type CollisionEvent = SceneEvent<{
-  /** First actor involved in the collision */
-  actor1: Actor;
-  /** Second actor involved in the collision */
-  actor2: Actor;
-  /** Minimum translation vector for the first actor */
-  mtv1: Vector2;
-  /** Minimum translation vector for the second actor */
-  mtv2: Vector2;
-}>;
-
 /** Event signature for mouse control events
- * 
+ *
  * @category Events
  */
 export type MouseControlEvent<T = Record<string, never>> = ActorEvent<
@@ -165,13 +140,13 @@ export type MouseControlEvent<T = Record<string, never>> = ActorEvent<
   T;
 
 /** Event signature for keyboard control events
- * 
+ *
  * @category Events
  */
 export type KeyboardControlEvent<T = Record<string, never>> = ActorEvent<T>;
 
 /** Base event signature for collision state events
- * 
+ *
  * @category Events
  */
 type CollisionStateEvent = ActorEvent<{
@@ -182,25 +157,25 @@ type CollisionStateEvent = ActorEvent<{
 }>;
 
 /** Event signature for the {@link CollisionEnter} event
- * 
+ *
  * @category Events
  */
 export type CollisionEnterEvent = CollisionStateEvent;
 
 /** Event signature for the {@link CollisionStay} event
- * 
+ *
  * @category Events
  */
 export type CollisionStayEvent = CollisionStateEvent;
 
 /** Event signature for the {@link CollisionLeave} event
- * 
+ *
  * @category Events
  */
 export type CollisionLeaveEvent = CollisionStateEvent;
 
 /** Event signature for the {@link SetAudioVolume} event when used on actor level
- * 
+ *
  * @category Events
  */
 export type SetAudioSourceVolumeEvent = ActorEvent<{
@@ -214,10 +189,6 @@ declare module '../../types/events' {
     [KeyboardInput]: KeyboardInputEvent;
     [GameStatsUpdate]: GameStatsUpdateEvent;
     [SetAudioVolume]: SetAudioGroupVolumeEvent;
-  }
-
-  export interface SceneEventMap {
-    [Collision]: CollisionEvent;
   }
 
   export interface ActorEventMap {
