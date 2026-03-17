@@ -5,7 +5,7 @@ import {
   CollisionStay,
   CollisionLeave,
 } from '../../../../events';
-import type { DetectedCollision } from '../collision-detection/types';
+import type { Contact } from '../collision-detection/types';
 
 import { Collision } from './collision';
 import type { CollisionState } from './collision';
@@ -57,19 +57,19 @@ export class CollisionBroadcastSubsystem {
     });
   }
 
-  update(collisions: DetectedCollision[]): void {
-    collisions.forEach((collision) => {
+  update(contacts: Contact[]): void {
+    contacts.forEach((contact) => {
       this.trackCollision(
-        collision.actor1,
-        collision.actor2,
-        collision.mtv1,
-        collision.mtv2,
+        contact.actor1,
+        contact.actor2,
+        contact.mtv1,
+        contact.mtv2,
       );
       this.trackCollision(
-        collision.actor2,
-        collision.actor1,
-        collision.mtv2,
-        collision.mtv1,
+        contact.actor2,
+        contact.actor1,
+        contact.mtv2,
+        contact.mtv1,
       );
     });
 

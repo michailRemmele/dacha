@@ -43,11 +43,11 @@ export class PhysicsSystem extends SceneSystem {
   fixedUpdate(options: UpdateOptions): void {
     this.physicsSubsystem.update(options);
 
-    const collisions = this.collisionDetectionSubsystem.update();
+    const contacts = this.collisionDetectionSubsystem.update();
 
-    this.collisionSolver.update(collisions);
-    this.constraintSolver.update(collisions);
-    this.collisionBroadcastSubsystem.update(collisions);
+    this.collisionSolver.update(contacts);
+    this.constraintSolver.update(contacts);
+    this.collisionBroadcastSubsystem.update(contacts);
   }
 }
 

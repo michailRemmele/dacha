@@ -1,18 +1,18 @@
 import { Vector2 } from '../../../../../../engine/math-lib';
-import type { CollisionEntry, CircleGeometry, Intersection } from '../types';
+import type { Proxy, CircleGeometry, Intersection } from '../types';
 
 /**
-  * Checks circles at the intersection.
-  * Steps of the alghorith:
-  * 1. Calculate distance between circles centers.
-  * 2. If distance greater or equal to summ of circles radiuses then is no intersection.
-  * 3. If distance is zero then circles centers lie at the same point, so just X axis used for mtv.
-  * 4. If distance less than summ of circles radiuses and it's non-zero
-  *  then circles centers used to get the axis.
-  */
+ * Checks circles at the intersection.
+ * Steps of the alghorith:
+ * 1. Calculate distance between circles centers.
+ * 2. If distance greater or equal to summ of circles radiuses then is no intersection.
+ * 3. If distance is zero then circles centers lie at the same point, so just X axis used for mtv.
+ * 4. If distance less than summ of circles radiuses and it's non-zero
+ *  then circles centers used to get the axis.
+ */
 export const checkCirclesIntersection = (
-  arg1: CollisionEntry,
-  arg2: CollisionEntry,
+  arg1: Proxy,
+  arg2: Proxy,
 ): Intersection | false => {
   const { radius: rArg1 } = arg1.geometry as CircleGeometry;
   const { radius: rArg2 } = arg2.geometry as CircleGeometry;
@@ -21,7 +21,7 @@ export const checkCirclesIntersection = (
 
   const x = xArg1 - xArg2;
   const y = yArg1 - yArg2;
-  const distance = Math.sqrt((x ** 2) + (y ** 2));
+  const distance = Math.sqrt(x ** 2 + y ** 2);
 
   if (distance >= rArg1 + rArg2) {
     return false;
