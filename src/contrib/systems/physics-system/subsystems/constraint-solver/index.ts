@@ -4,7 +4,7 @@ import { RigidBody } from '../../../../components/rigid-body';
 import type { RigidBodyType } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import { RIGID_BODY_TYPE } from '../../consts';
-import type { DetectedCollision } from '../collision-detection/types';
+import type { Contact } from '../collision-detection/types';
 
 export class ConstraintSolver {
   private mtvMap: Map<Actor, Record<string, Vector2>>;
@@ -79,11 +79,11 @@ export class ConstraintSolver {
     }
   }
 
-  update(collisions: DetectedCollision[]): void {
-    collisions.forEach((collision) => {
+  update(contacts: Contact[]): void {
+    contacts.forEach((contact) => {
       const {
         actor1, actor2, mtv1, mtv2,
-      } = collision;
+      } = contact;
 
       if (!this.validateCollision(actor1, actor2)) {
         return;

@@ -1,13 +1,19 @@
 import { Vector2, VectorOps } from '../../../../../../engine/math-lib';
-import type { CollisionEntry, BoxGeometry, Intersection } from '../types';
+import type { Proxy, BoxGeometry, Intersection } from '../types';
 
 interface PolygonProjection {
-  min: number
-  max: number
+  min: number;
+  max: number;
 }
 
-const projectPolygon = (polygon: BoxGeometry, axisVector: Vector2): PolygonProjection => {
-  const initialProjectionValue = VectorOps.dotProduct(polygon.edges[0].point1, axisVector);
+const projectPolygon = (
+  polygon: BoxGeometry,
+  axisVector: Vector2,
+): PolygonProjection => {
+  const initialProjectionValue = VectorOps.dotProduct(
+    polygon.edges[0].point1,
+    axisVector,
+  );
 
   const projection = {
     min: initialProjectionValue,
@@ -15,7 +21,10 @@ const projectPolygon = (polygon: BoxGeometry, axisVector: Vector2): PolygonProje
   };
 
   for (let i = 1; i < polygon.edges.length; i += 1) {
-    const projectionValue = VectorOps.dotProduct(polygon.edges[i].point1, axisVector);
+    const projectionValue = VectorOps.dotProduct(
+      polygon.edges[i].point1,
+      axisVector,
+    );
 
     if (projectionValue < projection.min) {
       projection.min = projectionValue;
@@ -28,12 +37,12 @@ const projectPolygon = (polygon: BoxGeometry, axisVector: Vector2): PolygonProje
 };
 
 /**
-  * Checks boxes colliders at the intersection.
-  * The SAT (separating axis theorem) is used to determine an intersection and mtvs.
-  */
+ * Checks boxes colliders at the intersection.
+ * The SAT (separating axis theorem) is used to determine an intersection and mtvs.
+ */
 export const checkBoxesIntersection = (
-  arg1: CollisionEntry,
-  arg2: CollisionEntry,
+  arg1: Proxy,
+  arg2: Proxy,
 ): Intersection | false => {
   let overlap = Infinity;
   let normal: Vector2 | undefined;

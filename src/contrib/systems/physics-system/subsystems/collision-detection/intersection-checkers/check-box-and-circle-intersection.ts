@@ -1,7 +1,7 @@
 import { Collider } from '../../../../../components';
 import { MathOps, Vector2, VectorOps } from '../../../../../../engine/math-lib';
 import type {
-  CollisionEntry,
+  Proxy,
   BoxGeometry,
   CircleGeometry,
   Point,
@@ -43,8 +43,8 @@ const getMtvs = (axis: Vector2, overlap: number, point1: Point, point2: Point): 
   *    Otherwise compute mtv vectors considering relative position of circle and box centers
   */
 export const checkBoxAndCircleIntersection = (
-  arg1: CollisionEntry,
-  arg2: CollisionEntry,
+  arg1: Proxy,
+  arg2: Proxy,
 ): Intersection | false => {
   let box: BoxGeometry;
   let circle: CircleGeometry;

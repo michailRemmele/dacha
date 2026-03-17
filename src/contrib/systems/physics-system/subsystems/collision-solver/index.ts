@@ -4,7 +4,7 @@ import type { Actor } from '../../../../../engine/actor';
 import { RigidBody } from '../../../../components/rigid-body';
 import type { PhysicsSystemOptions } from '../../types';
 import { RIGID_BODY_TYPE } from '../../consts';
-import type { DetectedCollision } from '../collision-detection/types';
+import type { Contact } from '../collision-detection/types';
 
 const REACTION_FORCE_VECTOR_X = 0;
 const REACTION_FORCE_VECTOR_Y = -1;
@@ -47,11 +47,11 @@ export class CollisionSolver {
     }
   }
 
-  update(collisions: DetectedCollision[]): void {
-    collisions.forEach((collision) => {
+  update(contacts: Contact[]): void {
+    contacts.forEach((contact) => {
       const {
         actor1, actor2, mtv1, mtv2,
-      } = collision;
+      } = contact;
 
       if (!this.validateCollision(actor1, actor2)) {
         return;
