@@ -152,8 +152,12 @@ export type KeyboardControlEvent<T = Record<string, never>> = ActorEvent<T>;
 type CollisionStateEvent = ActorEvent<{
   /** Actor that is colliding with the target */
   actor: Actor;
-  /** Minimum translation vector for the target to resolve the collision */
-  mtv: Vector2;
+  /** Collision normal pointing from the target actor to the colliding actor */
+  normal: Vector2;
+  /** Depth of penetration along the collision normal */
+  penetration: number;
+  /** Contact manifold points in world space */
+  contactPoints: { x: number; y: number }[];
 }>;
 
 /** Event signature for the {@link CollisionEnter} event

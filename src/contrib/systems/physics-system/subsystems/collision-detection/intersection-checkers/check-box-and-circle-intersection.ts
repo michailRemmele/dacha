@@ -8,40 +8,43 @@ import type {
   Intersection,
 } from '../types';
 
-const getMtvs = (axis: Vector2, overlap: number, point1: Point, point2: Point): Intersection => {
-  axis.multiplyNumber((1 / axis.magnitude) * overlap);
+const buildIntersection = (
+  normal: Vector2,
+  penetration: number,
+  from: Point,
+  to: Point,
+  contactPoint: Point,
+): Intersection => {
+  normal.normalize();
+  if (normal.magnitude === 0) {
+    normal.x = 1;
+  }
 
-  const positiveX = Math.abs(axis.x);
-  const negativeX = -Math.abs(axis.x);
-  const positiveY = Math.abs(axis.y);
-  const negativeY = -Math.abs(axis.y);
+  if (normal.x * (to.x - from.x) + normal.y * (to.y - from.y) < 0) {
+    normal.multiplyNumber(-1);
+  }
 
   return {
-    mtv1: new Vector2(
-      point1.x < point2.x ? negativeX : positiveX,
-      point1.y < point2.y ? negativeY : positiveY,
-    ),
-    mtv2: new Vector2(
-      point2.x > point1.x ? positiveX : negativeX,
-      point2.y > point1.y ? positiveY : negativeY,
-    ),
+    normal,
+    penetration,
+    contactPoints: [contactPoint],
   };
 };
 
 /**
-  * Checks box and circle colliders at the intersection.
-  * The main target is to check two possible scenarios:
-  * - circle lies inside box
-  * - circle intersects one of the boxe's edges
-  * Steps of the algorithm:
-  * 1. Find the nearest edge to circle center and check wether it intersects with circle or not
-  *    For each edge three points should be considered: corners and circle center projection
-  * 2. Determine is the circle center lies inside of the box or not.
-  *    This affects how we should compute mtv distance
-  * 3. If circle doesn't have any intersection with boxe's edges
-  *    and circle center lies outside of the box – return false.
-  *    Otherwise compute mtv vectors considering relative position of circle and box centers
-  */
+ * Checks box and circle colliders at the intersection.
+ * The main target is to check two possible scenarios:
+ * - circle lies inside box
+ * - circle intersects one of the boxe's edges
+ * Steps of the algorithm:
+ * 1. Find the nearest edge to circle center and check wether it intersects with circle or not
+ *    For each edge three points should be considered: corners and circle center projection
+ * 2. Determine is the circle center lies inside of the box or not.
+ *    This affects how penetration depth should be computed.
+ * 3. If circle doesn't have any intersection with boxe's edges
+ *    and circle center lies outside of the box – return false.
+ *    Otherwise compute the collision normal and contact point considering relative positions.
+ */
 export const checkBoxAndCircleIntersection = (
   arg1: Proxy,
   arg2: Proxy,
@@ -56,76 +59,46 @@ export const checkBoxAndCircleIntersection = (
     circle = arg1.geometry as CircleGeometry;
   }
 
-  let isIntersection = false;
   let minDistance = Infinity;
-  let minDistanceAxis: Vector2;
+  let closestPoint = box.points[0];
 
   const { center: circleCenter } = circle;
 
   for (const edge of box.edges) {
-    const projectedPoint = VectorOps.projectPointToEdge(circleCenter, edge);
-
-    const minX = Math.min(edge.point1.x, edge.point2.x);
-    const maxX = Math.max(edge.point1.x, edge.point2.x);
-
-    const minY = Math.min(edge.point1.y, edge.point2.y);
-    const maxY = Math.max(edge.point1.y, edge.point2.y);
-
-    const isPointOnEdge = projectedPoint.x >= minX
-      && projectedPoint.x <= maxX
-      && projectedPoint.y >= minY
-      && projectedPoint.y <= maxY;
-
-    const distanceProjection = isPointOnEdge ? MathOps.getDistanceBetweenTwoPoints(
-      circleCenter.x,
-      projectedPoint.x,
-      circleCenter.y,
-      projectedPoint.y,
-    ) : Infinity;
-    const distance1 = MathOps.getDistanceBetweenTwoPoints(
-      circleCenter.x,
-      edge.point1.x,
-      circleCenter.y,
-      edge.point1.y,
+    const closestEdgePoint = VectorOps.getClosestPointOnEdge(
+      circleCenter,
+      edge,
     );
-    const distance2 = MathOps.getDistanceBetweenTwoPoints(
+    const distance = MathOps.getDistanceBetweenTwoPoints(
       circleCenter.x,
-      edge.point2.x,
+      closestEdgePoint.x,
       circleCenter.y,
-      edge.point2.y,
+      closestEdgePoint.y,
     );
 
-    const isInsideCircle = Math.min(distanceProjection, distance1, distance2) < circle.radius;
-    isIntersection = isIntersection || isInsideCircle;
-
-    if (isPointOnEdge && distanceProjection < minDistance) {
-      minDistance = distanceProjection;
-      minDistanceAxis = edge.normal.clone();
-    }
-    if (distance1 < minDistance) {
-      minDistance = distance1;
-      minDistanceAxis = minDistance !== 0
-        ? new Vector2(edge.point1.x - circleCenter.x, edge.point1.y - circleCenter.y)
-        : edge.normal.clone();
-    }
-    if (distance2 < minDistance) {
-      minDistance = distance2;
-      minDistanceAxis = minDistance !== 0
-        ? new Vector2(edge.point2.x - circleCenter.x, edge.point2.y - circleCenter.y)
-        : edge.normal.clone();
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestPoint = closestEdgePoint;
     }
   }
 
   const isInsidePolygon = VectorOps.isPointInPolygon(circleCenter, box.edges);
+  const isIntersection = isInsidePolygon || minDistance < circle.radius;
 
-  if (!isIntersection && !isInsidePolygon) {
+  if (!isIntersection) {
     return false;
   }
 
-  return getMtvs(
-    minDistanceAxis!,
+  const normal = new Vector2(
+    closestPoint.x - circleCenter.x,
+    closestPoint.y - circleCenter.y,
+  );
+
+  return buildIntersection(
+    normal,
     isInsidePolygon ? circle.radius + minDistance : circle.radius - minDistance,
     arg1.geometry.center,
     arg2.geometry.center,
+    closestPoint,
   );
 };
