@@ -83,11 +83,13 @@ export type ProxyPair = [Proxy, Proxy];
 export interface Contact {
   actor1: Actor;
   actor2: Actor;
-  mtv1: Vector2;
-  mtv2: Vector2;
+  normal: Vector2;
+  penetration: number;
+  contactPoints: Point[];
 }
 
 export interface Intersection {
-  mtv1: Vector2;
-  mtv2: Vector2;
+  normal: Vector2;
+  penetration: number;
+  contactPoints: Point[];
 }

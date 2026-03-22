@@ -279,14 +279,16 @@ export class CollisionDetectionSubsystem {
     this.contacts[contactIndex] ??= {
       actor1,
       actor2,
-      mtv1: intersection.mtv1,
-      mtv2: intersection.mtv2,
+      normal: intersection.normal,
+      penetration: intersection.penetration,
+      contactPoints: intersection.contactPoints,
     };
 
     this.contacts[contactIndex].actor1 = actor1;
     this.contacts[contactIndex].actor2 = actor2;
-    this.contacts[contactIndex].mtv1 = intersection.mtv1;
-    this.contacts[contactIndex].mtv2 = intersection.mtv2;
+    this.contacts[contactIndex].normal = intersection.normal;
+    this.contacts[contactIndex].penetration = intersection.penetration;
+    this.contacts[contactIndex].contactPoints = intersection.contactPoints;
   }
 
   private clearDeletedProxies(): void {

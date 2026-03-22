@@ -63,11 +63,16 @@ export class ConstraintSolver {
   private resolveCollision(
     actor1: Actor,
     actor2: Actor,
-    mtv1: Vector2,
-    mtv2: Vector2,
+    normal: Vector2,
+    penetration: number,
   ): void {
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
+    const mtv1 = normal.clone();
+    const mtv2 = normal.clone();
+
+    mtv1.multiplyNumber(-penetration);
+    mtv2.multiplyNumber(penetration);
 
     if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
       this.setMtv(actor2, mtv2.x, mtv2.y, rigidBody1.type);
@@ -82,14 +87,14 @@ export class ConstraintSolver {
   update(contacts: Contact[]): void {
     contacts.forEach((contact) => {
       const {
-        actor1, actor2, mtv1, mtv2,
+        actor1, actor2, normal, penetration,
       } = contact;
 
       if (!this.validateCollision(actor1, actor2)) {
         return;
       }
 
-      this.resolveCollision(actor1, actor2, mtv1, mtv2);
+      this.resolveCollision(actor1, actor2, normal, penetration);
     });
 
     for (const [actor, entry] of this.mtvMap) {

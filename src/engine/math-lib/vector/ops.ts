@@ -36,7 +36,7 @@ interface Edge {
  * // Check if point is inside polygon
  * const inside = VectorOps.isPointInPolygon(point, polygonEdges);
  * ```
- * 
+ *
  * @category Core
  */
 export class VectorOps {
@@ -110,21 +110,21 @@ export class VectorOps {
   }
 
   /**
-   * Projects a point onto a given edge, returning the closest point
+   * Returns the closest point on an edge segment to the given point.
    *
    * @param {Point} point - Point to project. Should have properties `x` and `y`.
    * @param {Edge} edge - Edge to project onto, defined by two endpoints `point1` and `point2`.
    *                      Each endpoint should have properties `x` and `y`.
    * @returns {Point} Projected point on the edge, with `x` and `y` coordinates.
-   * 
+   *
    * @example
    * ```typescript
    * const point = { x: 3, y: 4 };
    * const edge = { point1: { x: 0, y: 0 }, point2: { x: 10, y: 0 } };
-   * const projected = VectorOps.projectPointToEdge(point, edge);
+   * const projected = VectorOps.getClosestPointOnEdge(point, edge);
    * ```
    */
-  static projectPointToEdge(point: Point, edge: Edge): Point {
+  static getClosestPointOnEdge(point: Point, edge: Edge): Point {
     const abVector = new Vector2(
       edge.point2.x - edge.point1.x,
       edge.point2.y - edge.point1.y,
@@ -134,10 +134,15 @@ export class VectorOps {
       point.y - edge.point1.y,
     );
 
-    const dotProduct = VectorOps.dotProduct(apVector, abVector);
     const lengthSquared = abVector.x * abVector.x + abVector.y * abVector.y;
 
-    const t = dotProduct / lengthSquared;
+    if (lengthSquared === 0) {
+      return edge.point1;
+    }
+
+    const dotProduct = VectorOps.dotProduct(apVector, abVector);
+
+    const t = Math.max(0, Math.min(1, dotProduct / lengthSquared));
 
     return {
       x: edge.point1.x + t * abVector.x,
@@ -156,7 +161,7 @@ export class VectorOps {
    *
    * @note The algorithm may be inaccurate in edge cases,
    *       such as when the point lies exactly on a polygon corner.
-   * 
+   *
    * @example
    * ```typescript
    * const point = { x: 5, y: 5 };

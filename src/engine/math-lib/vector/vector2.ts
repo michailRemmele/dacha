@@ -46,6 +46,20 @@ export class Vector2 {
   }
 
   /**
+   * Normalizes the current vector to unit length.
+   * If vector magnitude is zero, it remains unchanged.
+   */
+  normalize(): void {
+    const magnitude = this.magnitude;
+
+    if (magnitude === 0) {
+      return;
+    }
+
+    this.multiplyNumber(1 / magnitude);
+  }
+
+  /**
    * Checks if the current vector is equal to the given vector.
    * @param vector - Vector to compare with
    * @returns True if the vectors are equal, false otherwise

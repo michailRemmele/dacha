@@ -6,7 +6,7 @@ import type { Proxy, CircleGeometry, Intersection } from '../types';
  * Steps of the alghorith:
  * 1. Calculate distance between circles centers.
  * 2. If distance greater or equal to summ of circles radiuses then is no intersection.
- * 3. If distance is zero then circles centers lie at the same point, so just X axis used for mtv.
+ * 3. If distance is zero then circles centers lie at the same point, so X axis is used as a fallback normal.
  * 4. If distance less than summ of circles radiuses and it's non-zero
  *  then circles centers used to get the axis.
  */
@@ -19,38 +19,40 @@ export const checkCirclesIntersection = (
   const { x: xArg1, y: yArg1 } = arg1.geometry.center;
   const { x: xArg2, y: yArg2 } = arg2.geometry.center;
 
-  const x = xArg1 - xArg2;
-  const y = yArg1 - yArg2;
+  const x = xArg2 - xArg1;
+  const y = yArg2 - yArg1;
   const distance = Math.sqrt(x ** 2 + y ** 2);
 
   if (distance >= rArg1 + rArg2) {
     return false;
   }
 
+  const penetration = rArg1 + rArg2 - distance;
+
   if (distance === 0) {
     return {
-      mtv1: new Vector2(rArg1 + rArg2, 0),
-      mtv2: new Vector2(-(rArg1 + rArg2), 0),
+      normal: new Vector2(1, 0),
+      penetration,
+      contactPoints: [
+        {
+          x: xArg1 + rArg1,
+          y: yArg1,
+        },
+      ],
     };
   }
 
-  const mtv = new Vector2(x, y);
-  const overlap = rArg1 + rArg2 - distance;
-  mtv.multiplyNumber((1 / distance) * overlap);
-
-  const positiveX = Math.abs(mtv.x);
-  const negativeX = -Math.abs(mtv.x);
-  const positiveY = Math.abs(mtv.y);
-  const negativeY = -Math.abs(mtv.y);
+  const normal = new Vector2(x, y);
+  normal.normalize();
 
   return {
-    mtv1: new Vector2(
-      xArg1 < xArg2 ? negativeX : positiveX,
-      yArg1 < yArg2 ? negativeY : positiveY,
-    ),
-    mtv2: new Vector2(
-      xArg2 < xArg1 ? negativeX : positiveX,
-      yArg2 < yArg1 ? negativeY : positiveY,
-    ),
+    normal,
+    penetration,
+    contactPoints: [
+      {
+        x: xArg1 + normal.x * rArg1,
+        y: yArg1 + normal.y * rArg1,
+      },
+    ],
   };
 };

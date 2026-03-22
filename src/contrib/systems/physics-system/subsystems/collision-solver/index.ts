@@ -49,13 +49,17 @@ export class CollisionSolver {
 
   update(contacts: Contact[]): void {
     contacts.forEach((contact) => {
-      const {
-        actor1, actor2, mtv1, mtv2,
-      } = contact;
+      const { actor1, actor2, normal, penetration } = contact;
 
       if (!this.validateCollision(actor1, actor2)) {
         return;
       }
+
+      const mtv1 = normal.clone();
+      const mtv2 = normal.clone();
+
+      mtv1.multiplyNumber(-penetration);
+      mtv2.multiplyNumber(penetration);
 
       this.addReactionForce(actor1, mtv1);
       this.addReactionForce(actor2, mtv2);
