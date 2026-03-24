@@ -15,25 +15,14 @@ import type {
 import { orientNormal, INTERSECTION_EPSILON } from '../utils';
 
 const buildNormal = (
-  box: BoxGeometry,
   circle: CircleGeometry,
-  isCircleInsideBox: boolean,
   closestEdge: EdgeWithNormal,
   closestPoint: Point,
 ): Vector2 => {
-  let normal: Vector2;
-
-  if (isCircleInsideBox) {
-    normal = new Vector2(
-      circle.center.x - closestPoint.x,
-      circle.center.y - closestPoint.y,
-    );
-  } else {
-    normal = new Vector2(
-      circle.center.x - box.center.x,
-      circle.center.y - box.center.y,
-    );
-  }
+  let normal = new Vector2(
+    circle.center.x - closestPoint.x,
+    circle.center.y - closestPoint.y,
+  );
 
   if (normal.magnitude === 0) {
     normal = closestEdge.normal.clone();
@@ -95,7 +84,7 @@ export const checkBoxAndCircleIntersection = (
 
   return {
     normal: orientNormal(
-      buildNormal(box, circle, isCircleInsideBox, closestEdge, closestPoint),
+      buildNormal(circle, closestEdge, closestPoint),
       arg1.geometry.center,
       arg2.geometry.center,
     ),
