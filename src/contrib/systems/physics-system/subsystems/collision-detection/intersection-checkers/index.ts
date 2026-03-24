@@ -1,8 +1,8 @@
 import type { Proxy, Intersection } from '../types';
 
-import { checkBoxAndCircleIntersection } from './check-box-and-circle-intersection';
-import { checkBoxesIntersection } from './check-boxes-intersection';
-import { checkCirclesIntersection } from './check-circles-intersection';
+import { checkBoxAndCircleIntersection } from './box-circle/check-box-and-circle-intersection';
+import { checkBoxesIntersection } from './box-box/check-boxes-intersection';
+import { checkCirclesIntersection } from './circle-circle/check-circles-intersection';
 
 export type CheckIntersectionFn = (
   arg1: Proxy,
