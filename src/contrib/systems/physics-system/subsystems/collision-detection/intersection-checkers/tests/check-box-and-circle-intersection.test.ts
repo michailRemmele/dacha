@@ -1,4 +1,4 @@
-import { checkBoxAndCircleIntersection } from '../check-box-and-circle-intersection';
+import { checkBoxAndCircleIntersection } from '../box-circle/check-box-and-circle-intersection';
 import {
   createBoxGeometry,
   createCircleGeometry,
@@ -29,6 +29,20 @@ describe('PhysicsSystem -> collision-detection -> checkBoxAndCircleIntersection(
     expectToBeClose(intersection.contactPoints[0], 1, 0);
   });
 
+  it('Returns zero-penetration contact when circle is just touching the box', () => {
+    const box = createProxy('box', createBoxGeometry(0, 0, 2, 2));
+    const circle = createProxy('circle', createCircleGeometry(1.6, 0, 0.6));
+
+    const intersection = expectIntersection(
+      checkBoxAndCircleIntersection(box, circle),
+    );
+
+    expectToBeClose(intersection.normal, 1, 0);
+    expect(intersection.penetration).toBeCloseTo(0);
+    expect(intersection.contactPoints).toHaveLength(1);
+    expectToBeClose(intersection.contactPoints[0], 1, 0);
+  });
+
   it('Returns collision when circle center is inside the box', () => {
     const box = createProxy('box', createBoxGeometry(0, 0, 4, 4));
     const circle = createProxy('circle', createCircleGeometry(0, 0, 0.5));
@@ -39,5 +53,7 @@ describe('PhysicsSystem -> collision-detection -> checkBoxAndCircleIntersection(
 
     expect(intersection.penetration).toBeGreaterThan(0);
     expect(intersection.contactPoints).toHaveLength(1);
+    expect(intersection.normal.magnitude).toBeCloseTo(1);
+    expectToBeClose(intersection.contactPoints[0], -2, 0);
   });
 });

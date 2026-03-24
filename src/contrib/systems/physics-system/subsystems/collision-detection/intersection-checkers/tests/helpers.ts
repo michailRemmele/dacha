@@ -104,3 +104,14 @@ export const expectIntersection = (
 
   return intersection;
 };
+
+export const sortPoints = (
+  points: { x: number; y: number }[],
+): { x: number; y: number }[] =>
+  [...points].sort((point1, point2) => {
+    if (point1.x !== point2.x) {
+      return point1.x - point2.x;
+    }
+
+    return point1.y - point2.y;
+  });
