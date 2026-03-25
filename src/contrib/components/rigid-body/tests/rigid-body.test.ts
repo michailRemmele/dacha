@@ -13,6 +13,7 @@ describe('Contrib -> components -> RigidBody', () => {
 
     expect(rigidBody.type).toEqual('dynamic');
     expect(rigidBody.mass).toEqual(10);
+    expect(rigidBody.inverseMass).toEqual(0.1);
     expect(rigidBody.gravityScale).toEqual(1);
     expect(rigidBody.linearDamping).toEqual(1);
     expect(rigidBody.linearVelocity.equals(new Vector2(0, 0))).toEqual(true);
@@ -39,6 +40,7 @@ describe('Contrib -> components -> RigidBody', () => {
 
     expect(rigidBody.type).toEqual('static');
     expect(rigidBody.mass).toEqual(20);
+    expect(rigidBody.inverseMass).toEqual(0.05);
     expect(rigidBody.gravityScale).toEqual(0);
     expect(rigidBody.linearDamping).toEqual(2);
     expect(rigidBody.linearVelocity.equals(new Vector2(1, 2))).toEqual(true);
@@ -75,5 +77,21 @@ describe('Contrib -> components -> RigidBody', () => {
     const cloneRigidBody = originalRigidBody.clone();
 
     expect(originalRigidBody).not.toBe(cloneRigidBody);
+  });
+
+  it('Returns zero inverse mass for zero or negative mass', () => {
+    const rigidBody = new RigidBody({
+      type: 'dynamic',
+      mass: 10,
+      gravityScale: 1,
+      linearDamping: 1,
+      disabled: false,
+    });
+
+    rigidBody.mass = 0;
+    expect(rigidBody.inverseMass).toEqual(0);
+
+    rigidBody.mass = -10;
+    expect(rigidBody.inverseMass).toEqual(0);
   });
 });

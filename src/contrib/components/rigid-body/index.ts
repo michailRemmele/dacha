@@ -39,10 +39,12 @@ export interface RigidBodyConfig {
  * @category Components
  */
 export class RigidBody extends Component {
+  private _mass: number;
+  private _inverseMass: number;
+
   /** Type of the rigid body */
   type: RigidBodyType;
   /** Mass of the rigid body */
-  mass: number;
   /** Gravity scale of the rigid body */
   gravityScale: number;
   /** Linear damping value used to slow down movement over time */
@@ -64,6 +66,9 @@ export class RigidBody extends Component {
   constructor(config: RigidBodyConfig) {
     super();
 
+    this._mass = 0;
+    this._inverseMass = 0;
+
     this.type = config.type;
     this.mass = config.mass;
     this.gravityScale = config.gravityScale;
@@ -74,6 +79,19 @@ export class RigidBody extends Component {
 
     this.force = new Vector2(0, 0);
     this.impulse = new Vector2(0, 0);
+  }
+
+  get mass(): number {
+    return this._mass;
+  }
+
+  set mass(value: number) {
+    this._mass = value;
+    this._inverseMass = value > 0 ? 1 / value : 0;
+  }
+
+  get inverseMass(): number {
+    return this._inverseMass;
   }
 
   applyForce(force: Vector2): void {
