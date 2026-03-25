@@ -1,4 +1,3 @@
-import { Vector2 } from '../../../../../engine/math-lib';
 import type {
   SceneSystemOptions,
   UpdateOptions,
@@ -7,13 +6,6 @@ import { ActorQuery } from '../../../../../engine/actor';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { PhysicsSystemOptions } from '../../types';
-
-const DIRECTION_VECTOR = {
-  UP: new Vector2(0, -1),
-  LEFT: new Vector2(-1, 0),
-  RIGHT: new Vector2(1, 0),
-  DOWN: new Vector2(0, 1),
-};
 
 export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
@@ -45,11 +37,10 @@ export class PhysicsSubsystem {
     const forceToVelocityMultiplier = deltaTime / mass;
     const slowdownValue = dragForceValue * forceToVelocityMultiplier;
     const normalizationMultiplier = 1 / linearVelocity.magnitude;
+    const slowdownMultiplier = slowdownValue * normalizationMultiplier;
 
-    const slowdown = linearVelocity.clone();
-    slowdown.multiplyNumber(slowdownValue * normalizationMultiplier);
-
-    linearVelocity.add(slowdown);
+    linearVelocity.x += linearVelocity.x * slowdownMultiplier;
+    linearVelocity.y += linearVelocity.y * slowdownMultiplier;
 
     if (
       Math.sign(linearVelocity.x) !== velocitySignX &&
@@ -59,28 +50,10 @@ export class PhysicsSubsystem {
     }
   }
 
-  private getGravityForce(rigidBody: RigidBody): Vector2 {
-    const { mass, gravityScale } = rigidBody;
-
-    const gravityVector = new Vector2(0, 0);
-
-    if (gravityScale) {
-      gravityVector.add(DIRECTION_VECTOR.DOWN);
-      gravityVector.multiplyNumber(mass * this.gravity * gravityScale);
-    }
-
-    return gravityVector;
-  }
-
-  update(options: UpdateOptions): void {
-    const { deltaTime } = options;
-    const deltaTimeInMsec = deltaTime;
-    const deltaTimeInSeconds = deltaTimeInMsec / 1000;
-
+  private integrateVelocities(deltaTimeInSeconds: number): void {
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
-      const transform = actor.getComponent(Transform);
-      const { mass } = rigidBody;
+      const { mass, inverseMass } = rigidBody;
 
       if (rigidBody.disabled || rigidBody.type === 'static' || mass <= 0) {
         rigidBody.clearForces();
@@ -98,24 +71,51 @@ export class PhysicsSubsystem {
         }
       }
 
-      force.add(this.getGravityForce(rigidBody));
+      if (rigidBody.gravityScale) {
+        force.y += mass * this.gravity * rigidBody.gravityScale;
+      }
 
       if (force.x || force.y) {
-        force.multiplyNumber(deltaTimeInSeconds / mass);
+        force.multiplyNumber(deltaTimeInSeconds * inverseMass);
         velocity.add(force);
       }
 
       if (impulse.x || impulse.y) {
-        impulse.multiplyNumber(1 / mass);
+        impulse.multiplyNumber(inverseMass);
         velocity.add(impulse);
       }
 
       this.applyLinearDamping(rigidBody, deltaTimeInSeconds);
 
-      transform.world.position.x += velocity.x * deltaTimeInSeconds;
-      transform.world.position.y += velocity.y * deltaTimeInSeconds;
-
       rigidBody.clearForces();
     });
+  }
+
+  private integratePositions(deltaTimeInSeconds: number): void {
+    this.actorQuery.getActors().forEach((actor) => {
+      const rigidBody = actor.getComponent(RigidBody);
+      const transform = actor.getComponent(Transform);
+
+      if (
+        rigidBody.disabled ||
+        rigidBody.type === 'static' ||
+        rigidBody.mass <= 0 ||
+        rigidBody.sleeping
+      ) {
+        return;
+      }
+
+      transform.world.position.x +=
+        rigidBody.linearVelocity.x * deltaTimeInSeconds;
+      transform.world.position.y +=
+        rigidBody.linearVelocity.y * deltaTimeInSeconds;
+    });
+  }
+
+  update(options: UpdateOptions): void {
+    const deltaTimeInSeconds = options.deltaTime / 1000;
+
+    this.integrateVelocities(deltaTimeInSeconds);
+    this.integratePositions(deltaTimeInSeconds);
   }
 }

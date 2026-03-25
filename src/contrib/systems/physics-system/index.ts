@@ -5,7 +5,6 @@ import {
   PhysicsSubsystem,
   CollisionDetectionSubsystem,
   CollisionBroadcastSubsystem,
-  CollisionSolver,
   ConstraintSolver,
 } from './subsystems';
 
@@ -22,7 +21,6 @@ export class PhysicsSystem extends SceneSystem {
   private physicsSubsystem: PhysicsSubsystem;
   private collisionDetectionSubsystem: CollisionDetectionSubsystem;
   private collisionBroadcastSubsystem: CollisionBroadcastSubsystem;
-  private collisionSolver: CollisionSolver;
   private constraintSolver: ConstraintSolver;
 
   constructor(options: SceneSystemOptions) {
@@ -31,7 +29,6 @@ export class PhysicsSystem extends SceneSystem {
     this.physicsSubsystem = new PhysicsSubsystem(options);
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
     this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
-    this.collisionSolver = new CollisionSolver(options);
     this.constraintSolver = new ConstraintSolver();
   }
 
@@ -45,7 +42,6 @@ export class PhysicsSystem extends SceneSystem {
 
     const contacts = this.collisionDetectionSubsystem.update();
 
-    this.collisionSolver.update(contacts);
     this.constraintSolver.update(contacts);
     this.collisionBroadcastSubsystem.update(contacts);
   }
