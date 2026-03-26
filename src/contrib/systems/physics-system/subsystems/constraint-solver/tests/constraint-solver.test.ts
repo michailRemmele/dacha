@@ -71,4 +71,48 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(0);
   });
+
+  it('Reduces tangential sliding velocity when contact has closing normal velocity', () => {
+    const solver = new ConstraintSolver();
+    const actor1 = createActor('sliding-body', 'dynamic');
+    const actor2 = createActor('floor', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(3, 1);
+
+    const contacts: Contact[] = [{
+      actor1,
+      actor2,
+      normal: new Vector2(0, 1),
+      penetration: 0.2,
+      contactPoints: [{ x: 0, y: 0 }],
+    }];
+
+    solver.update(contacts);
+
+    expect(rigidBody1.linearVelocity.x).toBeLessThan(3);
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(0, 2);
+  });
+
+  it('Does not apply wall friction without a closing normal velocity', () => {
+    const solver = new ConstraintSolver();
+    const actor1 = createActor('body', 'dynamic');
+    const actor2 = createActor('wall', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(0, 2);
+
+    const contacts: Contact[] = [{
+      actor1,
+      actor2,
+      normal: new Vector2(1, 0),
+      penetration: 0.2,
+      contactPoints: [{ x: 0, y: 0 }],
+    }];
+
+    solver.update(contacts);
+
+    expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(2);
+  });
 });
