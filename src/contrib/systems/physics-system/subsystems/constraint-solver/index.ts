@@ -7,6 +7,7 @@ import type { Contact } from '../collision-detection/types';
 const SOLVER_ITERATIONS = 8;
 const POSITION_CORRECTION_PERCENT = 0.8;
 const PENETRATION_SLOP = 0.01;
+const DEFAULT_CONTACT_FRICTION = 0.6;
 
 export class ConstraintSolver {
   private validContacts: Contact[] = [];
@@ -36,10 +37,58 @@ export class ConstraintSolver {
     return rigidBody.inverseMass;
   }
 
-  private applyNormalImpulse(contact: Contact): void {
+  private applyNormalImpulse(contact: Contact): number {
     const { actor1, actor2, normal } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
+    const inverseMass1 = this.getInverseMass(rigidBody1);
+    const inverseMass2 = this.getInverseMass(rigidBody2);
+    const inverseMassSum = inverseMass1 + inverseMass2;
+
+    if (inverseMassSum === 0) {
+      return 0;
+    }
+
+    const relativeVelocityX =
+      rigidBody2.linearVelocity.x - rigidBody1.linearVelocity.x;
+    const relativeVelocityY =
+      rigidBody2.linearVelocity.y - rigidBody1.linearVelocity.y;
+    const velocityAlongNormal =
+      relativeVelocityX * normal.x + relativeVelocityY * normal.y;
+
+    if (velocityAlongNormal >= 0) {
+      return 0;
+    }
+
+    const impulseMagnitude = -velocityAlongNormal / inverseMassSum;
+
+    const impulseX = normal.x * impulseMagnitude;
+    const impulseY = normal.y * impulseMagnitude;
+
+    if (inverseMass1 > 0) {
+      rigidBody1.linearVelocity.x -= impulseX * inverseMass1;
+      rigidBody1.linearVelocity.y -= impulseY * inverseMass1;
+    }
+
+    if (inverseMass2 > 0) {
+      rigidBody2.linearVelocity.x += impulseX * inverseMass2;
+      rigidBody2.linearVelocity.y += impulseY * inverseMass2;
+    }
+
+    return impulseMagnitude;
+  }
+
+  private applyFrictionImpulse(
+    contact: Contact,
+    normalImpulseMagnitude: number,
+  ): void {
+    if (normalImpulseMagnitude <= 0) {
+      return;
+    }
+
+    const { normal } = contact;
+    const rigidBody1 = contact.actor1.getComponent(RigidBody);
+    const rigidBody2 = contact.actor2.getComponent(RigidBody);
     const inverseMass1 = this.getInverseMass(rigidBody1);
     const inverseMass2 = this.getInverseMass(rigidBody2);
     const inverseMassSum = inverseMass1 + inverseMass2;
@@ -54,14 +103,29 @@ export class ConstraintSolver {
       rigidBody2.linearVelocity.y - rigidBody1.linearVelocity.y;
     const velocityAlongNormal =
       relativeVelocityX * normal.x + relativeVelocityY * normal.y;
+    const tangentX = relativeVelocityX - normal.x * velocityAlongNormal;
+    const tangentY = relativeVelocityY - normal.y * velocityAlongNormal;
+    const tangentMagnitude = Math.sqrt(tangentX ** 2 + tangentY ** 2);
 
-    if (velocityAlongNormal >= 0) {
+    if (tangentMagnitude === 0) {
       return;
     }
 
-    const impulseMagnitude = -velocityAlongNormal / inverseMassSum;
-    const impulseX = normal.x * impulseMagnitude;
-    const impulseY = normal.y * impulseMagnitude;
+    const normalizedTangentX = tangentX / tangentMagnitude;
+    const normalizedTangentY = tangentY / tangentMagnitude;
+    const velocityAlongTangent =
+      relativeVelocityX * normalizedTangentX +
+      relativeVelocityY * normalizedTangentY;
+    const unclampedImpulseMagnitude = -velocityAlongTangent / inverseMassSum;
+    const maxFrictionImpulseMagnitude =
+      DEFAULT_CONTACT_FRICTION * normalImpulseMagnitude;
+    const impulseMagnitude = Math.max(
+      -maxFrictionImpulseMagnitude,
+      Math.min(unclampedImpulseMagnitude, maxFrictionImpulseMagnitude),
+    );
+
+    const impulseX = normalizedTangentX * impulseMagnitude;
+    const impulseY = normalizedTangentY * impulseMagnitude;
 
     if (inverseMass1 > 0) {
       rigidBody1.linearVelocity.x -= impulseX * inverseMass1;
@@ -128,7 +192,9 @@ export class ConstraintSolver {
 
     for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
       this.validContacts.forEach((contact) => {
-        this.applyNormalImpulse(contact);
+        const normalImpulseMagnitude = this.applyNormalImpulse(contact);
+
+        this.applyFrictionImpulse(contact, normalImpulseMagnitude);
       });
     }
 
