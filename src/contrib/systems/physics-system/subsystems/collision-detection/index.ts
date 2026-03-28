@@ -14,6 +14,7 @@ import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
 import { checkTransform, checkCollider } from './reorientation-checkers';
+import type { PhysicsSettings } from '../../types';
 import type {
   SortedItem,
   Proxy,
@@ -32,8 +33,13 @@ export class CollisionDetectionSubsystem {
   private proxyPairs: ProxyPair[];
   private contacts: Contact[];
   private actorIdsToDelete: Set<string>;
+  private collisionMatrix: PhysicsSettings['collisionMatrix'];
 
   constructor(options: SceneSystemOptions) {
+    const settings = options.globalOptions.physics as
+      | PhysicsSettings
+      | undefined;
+
     this.actorQuery = new ActorQuery({
       scene: options.scene,
       filter: [Collider, Transform],
@@ -53,10 +59,9 @@ export class CollisionDetectionSubsystem {
     this.proxyPairs = [];
     this.contacts = [];
     this.actorIdsToDelete = new Set();
+    this.collisionMatrix = settings?.collisionMatrix ?? {};
 
-    this.actorQuery
-      .getActors()
-      .forEach((actor) => this.addProxy(actor));
+    this.actorQuery.getActors().forEach((actor) => this.addProxy(actor));
 
     this.actorQuery.addEventListener(AddActor, this.handleActorAdd);
     this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
@@ -113,6 +118,7 @@ export class CollisionDetectionSubsystem {
         sizeX: collider.sizeX,
         sizeY: collider.sizeY,
         radius: collider.radius,
+        layer: collider.layer,
       },
     };
   }
@@ -196,10 +202,7 @@ export class CollisionDetectionSubsystem {
     return xDispersion >= yDispersion ? ['x', 'y'] : ['y', 'x'];
   }
 
-  private areStaticBodies(
-    proxy1: Proxy,
-    proxy2: Proxy,
-  ): boolean {
+  private areStaticBodies(proxy1: Proxy, proxy2: Proxy): boolean {
     const { actor: actor1 } = proxy1;
     const { actor: actor2 } = proxy2;
 
@@ -209,17 +212,20 @@ export class CollisionDetectionSubsystem {
     return rigidBody1?.type === 'static' && rigidBody2?.type === 'static';
   }
 
-  private testAABB(
-    proxy1: Proxy,
-    proxy2: Proxy,
-    axis: Axis,
-  ): boolean {
+  private testAABB(proxy1: Proxy, proxy2: Proxy, axis: Axis): boolean {
     const aabb1 = proxy1.aabb;
     const aabb2 = proxy2.aabb;
 
     return (
       aabb1.max[axis] > aabb2.min[axis] && aabb1.min[axis] < aabb2.max[axis]
     );
+  }
+
+  private testCollisionLayers(proxy1: Proxy, proxy2: Proxy): boolean {
+    const collider1 = proxy1.actor.getComponent(Collider);
+    const collider2 = proxy2.actor.getComponent(Collider);
+
+    return this.collisionMatrix[collider1.layer]?.[collider2.layer] ?? true;
   }
 
   private sweepAndPrune(): void {
@@ -245,6 +251,10 @@ export class CollisionDetectionSubsystem {
             return;
           }
 
+          if (!this.testCollisionLayers(proxy, activeProxy)) {
+            return;
+          }
+
           this.proxyPairs[proxyPairIndex] = [proxy, activeProxy];
           proxyPairIndex += 1;
         });
@@ -259,9 +269,7 @@ export class CollisionDetectionSubsystem {
     }
   }
 
-  private checkOnIntersection(
-    proxyPair: ProxyPair,
-  ): Intersection | false {
+  private checkOnIntersection(proxyPair: ProxyPair): Intersection | false {
     const [proxy1, proxy2] = proxyPair;
 
     const type1 = proxy1.actor.getComponent(Collider).type;

@@ -50,6 +50,7 @@ export interface OrientationData {
     radius?: number;
     sizeX?: number;
     sizeY?: number;
+    layer: string;
   };
 }
 
