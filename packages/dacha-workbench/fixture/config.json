@@ -368,10 +368,9 @@
           "config": {
             "type": "dynamic",
             "mass": 2,
-            "useGravity": false,
-            "isPermeable": false,
-            "ghost": false,
-            "drag": 0.5
+            "gravityScale": 0,
+            "linearDamping": 0,
+            "disabled": false
           }
         },
         {
