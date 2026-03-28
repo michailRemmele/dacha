@@ -9,7 +9,6 @@ export interface RigidBodyConfig {
   gravityScale: number;
   linearDamping: number;
   disabled: boolean;
-  sleeping?: boolean;
 }
 
 /**
@@ -131,7 +130,6 @@ export class RigidBody extends Component {
       gravityScale: this.gravityScale,
       linearDamping: this.linearDamping,
       disabled: this.disabled,
-      sleeping: this.sleeping,
       type: this.type,
     });
   }
