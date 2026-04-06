@@ -1,0 +1,1 @@
+export { PhysicsWidget } from './view';
