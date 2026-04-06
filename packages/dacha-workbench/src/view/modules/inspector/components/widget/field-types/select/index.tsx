@@ -1,7 +1,7 @@
 import { useMemo, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useStore } from '../../../../../../hooks';
+import { useStore, useConfig } from '../../../../../../hooks';
 import { LabelledSelect } from '../../../select';
 import type {
   SelectProps,
@@ -16,10 +16,16 @@ type SelectFieldProps = {
 } & Omit<SelectProps, 'options'> &
   LabelledProps;
 
-export const SelectField: FC<SelectFieldProps> = ({ options, ...props }) => {
+export const SelectField: FC<SelectFieldProps> = ({
+  options,
+  value,
+  ...props
+}) => {
   const { t } = useTranslation();
   const store = useStore();
   const context = useContext(WidgetFieldContext);
+
+  const projectConfig = useConfig([]);
 
   const formattedOptions = useMemo(() => {
     const list =
@@ -32,7 +38,18 @@ export const SelectField: FC<SelectFieldProps> = ({ options, ...props }) => {
         ? { title: String(option), value: option }
         : { title: t(option.title), value: option.value },
     );
-  }, [store, context, options]);
+  }, [store, context, options, projectConfig]);
 
-  return <LabelledSelect options={formattedOptions} {...props} />;
+  const formattedValue = useMemo(() => {
+    const option = formattedOptions.find((opt) => opt.value === value);
+    return option ? value : t('inspector.components.select.option.none.title');
+  }, [value, formattedOptions]);
+
+  return (
+    <LabelledSelect
+      options={formattedOptions}
+      value={formattedValue}
+      {...props}
+    />
+  );
 };

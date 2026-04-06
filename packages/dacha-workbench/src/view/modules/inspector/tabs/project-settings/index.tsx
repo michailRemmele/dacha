@@ -1,49 +1,29 @@
-import {
-  useMemo,
-  useEffect,
-  useRef,
-  useContext,
-  FC,
-} from 'react'
-import { useTranslation } from 'react-i18next'
-import type { SceneConfig } from 'dacha'
+import { useMemo, FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { SceneConfig } from 'dacha';
 
-import { useConfig } from '../../../../hooks'
-import { NeedsReloadContext } from '../../../../providers'
-import {
-  Field,
-  LabelledSelect,
-  Form,
-} from '../../components'
+import { useConfig } from '../../../../hooks';
+import { Field, LabelledSelect, Form } from '../../components';
 import {
   SortingWidget,
   AudioGroupsWidget,
   PerformanceWidget,
-} from '../../widgets/global-options'
+  PhysicsWidget,
+} from '../../widgets/global-options';
 
 export const ProjectSettings: FC = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const scenes = useConfig('scenes') as SceneConfig[]
-  const globalOptions = useConfig('globalOptions')
+  const scenes = useConfig('scenes') as SceneConfig[];
 
-  const prevGlobalOptions = useRef(globalOptions)
-
-  const { setNeedsReload } = useContext(NeedsReloadContext)
-
-  useEffect(() => {
-    if (globalOptions === prevGlobalOptions.current) {
-      return
-    }
-
-    setNeedsReload(true)
-    prevGlobalOptions.current = globalOptions
-  }, [globalOptions])
-
-  const sceneOptions = useMemo(() => scenes.map((scene) => ({
-    title: scene.name,
-    value: scene.id,
-  })), [scenes])
+  const sceneOptions = useMemo(
+    () =>
+      scenes.map((scene) => ({
+        title: scene.name,
+        value: scene.id,
+      })),
+    [scenes],
+  );
 
   return (
     <Form>
@@ -54,13 +34,12 @@ export const ProjectSettings: FC = () => {
         options={sceneOptions}
         allowEmpty
       />
-      <div>
-        {t('inspector.projectSettings.globalOptions.title')}
-      </div>
+      <div>{t('inspector.projectSettings.globalOptions.title')}</div>
 
       <PerformanceWidget />
       <SortingWidget />
       <AudioGroupsWidget />
+      <PhysicsWidget />
     </Form>
-  )
-}
+  );
+};

@@ -184,5 +184,12 @@
 
   "globalOptions.performance.title": "Performance",
   "globalOptions.performance.maxFPS.title": "Max FPS",
-  "globalOptions.performance.fixedUpdateRate.title": "Fixed Update Rate"
+  "globalOptions.performance.fixedUpdateRate.title": "Fixed Update Rate",
+
+  "globalOptions.physics.title": "Physics",
+  "globalOptions.physics.collisionLayers.title": "Collision Layers",
+  "globalOptions.physics.collisionLayers.empty.placeholder": "No collision layers defined",
+  "globalOptions.physics.collisionMatrix.title": "Collision Matrix",
+  "globalOptions.physics.collisionLayers.addNew.title": "Add Collision Layer",
+  "globalOptions.physics.collisionLayers.name.title": "Layer {{index}}"
 }
