@@ -9,6 +9,10 @@ export const checkCollider = (
     return true;
   }
 
+  if (collider.layer !== colliderOld.layer) {
+    return true;
+  }
+
   if (collider.type === 'box') {
     return collider.centerX !== colliderOld.centerX
       || collider.centerY !== colliderOld.centerY

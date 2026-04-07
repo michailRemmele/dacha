@@ -1,5 +1,6 @@
 import type { Actor } from '../../../../../engine/actor';
 import type { Vector2 } from '../../../../../engine/math-lib';
+import type { Point } from '../collision-detection/types';
 
 const STATE: Record<number, CollisionState> = {
   2: 'enter',
@@ -14,15 +15,23 @@ export class Collision {
 
   actor1: Actor;
   actor2: Actor;
-  mtv1: Vector2;
-  mtv2: Vector2;
+  normal: Vector2;
+  penetration: number;
+  contactPoints: Point[];
 
-  constructor(actor1: Actor, actor2: Actor, mtv1: Vector2, mtv2: Vector2) {
+  constructor(
+    actor1: Actor,
+    actor2: Actor,
+    normal: Vector2,
+    penetration: number,
+    contactPoints: Point[],
+  ) {
     this.actor1 = actor1;
     this.actor2 = actor2;
     this.lifetime = 2;
-    this.mtv1 = mtv1;
-    this.mtv2 = mtv2;
+    this.normal = normal;
+    this.penetration = penetration;
+    this.contactPoints = contactPoints;
   }
 
   isFinished(): boolean {

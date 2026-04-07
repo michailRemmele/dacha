@@ -1,6 +1,6 @@
 /**
  * A 2D vector with x and y coordinates.
- * 
+ *
  * @category Core
  */
 export class Vector2 {
@@ -20,7 +20,8 @@ export class Vector2 {
   }
 
   /**
-   * Calculates the magnitude of the vector.
+   * Returns the Euclidean length of the vector.
+   *
    * @returns Magnitude of the vector
    */
   get magnitude(): number {
@@ -28,25 +29,53 @@ export class Vector2 {
   }
 
   /**
-   * Adds the given vector to the current vector.
+   * Adds another vector to the current vector in place.
+   *
    * @param vector - Vector to add
+   * @returns The current vector after the addition
    */
-  add(vector: Vector2): void {
+  add(vector: Vector2): Vector2 {
     this.x += vector.x;
     this.y += vector.y;
+
+    return this;
   }
 
   /**
-   * Multiplies the current vector by the given number.
+   * Multiplies the current vector by a scalar in place.
+   *
    * @param number - Number to multiply by
+   * @returns The current vector after scaling
    */
-  multiplyNumber(number: number): void {
+  multiplyNumber(number: number): Vector2 {
     this.x *= number;
     this.y *= number;
+
+    return this;
   }
 
   /**
-   * Checks if the current vector is equal to the given vector.
+   * Normalizes the current vector to unit length in place.
+   *
+   * If the vector magnitude is zero, it remains unchanged.
+   *
+   * @returns The current vector after normalization
+   */
+  normalize(): Vector2 {
+    const magnitude = this.magnitude;
+
+    if (magnitude === 0) {
+      return this;
+    }
+
+    this.multiplyNumber(1 / magnitude);
+
+    return this;
+  }
+
+  /**
+   * Checks whether another vector has the same coordinates.
+   *
    * @param vector - Vector to compare with
    * @returns True if the vectors are equal, false otherwise
    */
@@ -55,7 +84,8 @@ export class Vector2 {
   }
 
   /**
-   * Creates a new vector with the same x and y coordinates as the current vector.
+   * Creates a new vector with the same coordinates.
+   *
    * @returns A new vector with the same x and y coordinates
    */
   clone(): Vector2 {

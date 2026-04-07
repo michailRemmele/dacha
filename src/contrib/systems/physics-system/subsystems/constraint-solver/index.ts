@@ -1,53 +1,16 @@
-import { Vector2 } from '../../../../../engine/math-lib';
-import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
-import type { Scene } from '../../../../../engine/scene';
 import { RigidBody } from '../../../../components/rigid-body';
-import type { RigidBodyType } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
-import { Collision } from '../../../../events';
-import type { CollisionEvent } from '../../../../events';
 import { RIGID_BODY_TYPE } from '../../consts';
+import type { Contact } from '../collision-detection/types';
+
+const SOLVER_ITERATIONS = 8;
+const POSITION_CORRECTION_PERCENT = 0.8;
+const PENETRATION_SLOP = 0.01;
+const DEFAULT_CONTACT_FRICTION = 0.6;
 
 export class ConstraintSolver {
-  private scene: Scene;
-  private processedPairs: Map<Actor, Set<Actor>>;
-  private mtvMap: Map<Actor, Record<string, Vector2>>;
-
-  constructor(options: SceneSystemOptions) {
-    this.scene = options.scene;
-    this.processedPairs = new Map();
-    this.mtvMap = new Map();
-
-    this.scene.addEventListener(Collision, this.handleCollision);
-  }
-
-  destroy(): void {
-    this.scene.removeEventListener(Collision, this.handleCollision);
-  }
-
-  private handleCollision = (event: CollisionEvent): void => {
-    const { actor1, actor2, mtv1, mtv2 } = event;
-
-    if (
-      this.processedPairs.has(actor2) &&
-      this.processedPairs.get(actor2)!.has(actor1)
-    ) {
-      return;
-    }
-
-    if (!this.processedPairs.has(actor1)) {
-      this.processedPairs.set(actor1, new Set());
-    }
-
-    this.processedPairs.get(actor1)!.add(actor2);
-
-    if (!this.validateCollision(actor1, actor2)) {
-      return;
-    }
-
-    this.resolveCollision(actor1, actor2, mtv1, mtv2);
-  };
+  private validContacts: Contact[] = [];
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
     const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
@@ -63,93 +26,180 @@ export class ConstraintSolver {
     ) {
       return false;
     }
-
-    if (
-      rigidBody1.type === RIGID_BODY_TYPE.STATIC ||
-      rigidBody2.type === RIGID_BODY_TYPE.STATIC
-    ) {
-      return !rigidBody1.ghost && !rigidBody2.ghost;
-    }
-
-    return (
-      !rigidBody1.ghost &&
-      !rigidBody1.isPermeable &&
-      !rigidBody2.ghost &&
-      !rigidBody2.isPermeable
-    );
+    return true;
   }
 
-  private setMtv(
-    actor: Actor,
-    mtvX: number,
-    mtvY: number,
-    type: RigidBodyType,
-  ): void {
-    if (!this.mtvMap.has(actor)) {
-      this.mtvMap.set(actor, {});
+  private getInverseMass(rigidBody: RigidBody): number {
+    if (rigidBody.disabled || rigidBody.type === RIGID_BODY_TYPE.STATIC) {
+      return 0;
     }
 
-    const mtvs = this.mtvMap.get(actor)!;
+    return rigidBody.inverseMass;
+  }
 
-    if (!mtvs?.[type]) {
-      mtvs[type] = new Vector2(mtvX, mtvY);
+  private applyNormalImpulse(contact: Contact): number {
+    const { actor1, actor2, normal } = contact;
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
+    const inverseMass1 = this.getInverseMass(rigidBody1);
+    const inverseMass2 = this.getInverseMass(rigidBody2);
+    const inverseMassSum = inverseMass1 + inverseMass2;
+
+    if (inverseMassSum === 0) {
+      return 0;
+    }
+
+    const relativeVelocityX =
+      rigidBody2.linearVelocity.x - rigidBody1.linearVelocity.x;
+    const relativeVelocityY =
+      rigidBody2.linearVelocity.y - rigidBody1.linearVelocity.y;
+    const velocityAlongNormal =
+      relativeVelocityX * normal.x + relativeVelocityY * normal.y;
+
+    if (velocityAlongNormal >= 0) {
+      return 0;
+    }
+
+    const impulseMagnitude = -velocityAlongNormal / inverseMassSum;
+
+    const impulseX = normal.x * impulseMagnitude;
+    const impulseY = normal.y * impulseMagnitude;
+
+    if (inverseMass1 > 0) {
+      rigidBody1.linearVelocity.x -= impulseX * inverseMass1;
+      rigidBody1.linearVelocity.y -= impulseY * inverseMass1;
+    }
+
+    if (inverseMass2 > 0) {
+      rigidBody2.linearVelocity.x += impulseX * inverseMass2;
+      rigidBody2.linearVelocity.y += impulseY * inverseMass2;
+    }
+
+    return impulseMagnitude;
+  }
+
+  private applyFrictionImpulse(
+    contact: Contact,
+    normalImpulseMagnitude: number,
+  ): void {
+    if (normalImpulseMagnitude <= 0) {
       return;
     }
 
-    switch (type) {
-      case 'static':
-        mtvs[type].x =
-          Math.abs(mtvX) > Math.abs(mtvs[type].x) ? mtvX : mtvs[type].x;
-        mtvs[type].y =
-          Math.abs(mtvY) > Math.abs(mtvs[type].y) ? mtvY : mtvs[type].y;
-        break;
-      case 'dynamic':
-        mtvs[type].x += mtvX;
-        mtvs[type].y += mtvY;
+    const { normal } = contact;
+    const rigidBody1 = contact.actor1.getComponent(RigidBody);
+    const rigidBody2 = contact.actor2.getComponent(RigidBody);
+    const inverseMass1 = this.getInverseMass(rigidBody1);
+    const inverseMass2 = this.getInverseMass(rigidBody2);
+    const inverseMassSum = inverseMass1 + inverseMass2;
+
+    if (inverseMassSum === 0) {
+      return;
+    }
+
+    const relativeVelocityX =
+      rigidBody2.linearVelocity.x - rigidBody1.linearVelocity.x;
+    const relativeVelocityY =
+      rigidBody2.linearVelocity.y - rigidBody1.linearVelocity.y;
+    const velocityAlongNormal =
+      relativeVelocityX * normal.x + relativeVelocityY * normal.y;
+    const tangentX = relativeVelocityX - normal.x * velocityAlongNormal;
+    const tangentY = relativeVelocityY - normal.y * velocityAlongNormal;
+    const tangentMagnitude = Math.sqrt(tangentX ** 2 + tangentY ** 2);
+
+    if (tangentMagnitude === 0) {
+      return;
+    }
+
+    const normalizedTangentX = tangentX / tangentMagnitude;
+    const normalizedTangentY = tangentY / tangentMagnitude;
+    const velocityAlongTangent =
+      relativeVelocityX * normalizedTangentX +
+      relativeVelocityY * normalizedTangentY;
+    const unclampedImpulseMagnitude = -velocityAlongTangent / inverseMassSum;
+    const maxFrictionImpulseMagnitude =
+      DEFAULT_CONTACT_FRICTION * normalImpulseMagnitude;
+    const impulseMagnitude = Math.max(
+      -maxFrictionImpulseMagnitude,
+      Math.min(unclampedImpulseMagnitude, maxFrictionImpulseMagnitude),
+    );
+
+    const impulseX = normalizedTangentX * impulseMagnitude;
+    const impulseY = normalizedTangentY * impulseMagnitude;
+
+    if (inverseMass1 > 0) {
+      rigidBody1.linearVelocity.x -= impulseX * inverseMass1;
+      rigidBody1.linearVelocity.y -= impulseY * inverseMass1;
+    }
+
+    if (inverseMass2 > 0) {
+      rigidBody2.linearVelocity.x += impulseX * inverseMass2;
+      rigidBody2.linearVelocity.y += impulseY * inverseMass2;
     }
   }
 
-  private resolveCollision(
-    actor1: Actor,
-    actor2: Actor,
-    mtv1: Vector2,
-    mtv2: Vector2,
-  ): void {
+  private applyPositionCorrection(contact: Contact): void {
+    const { actor1, actor2, normal, penetration } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
+    const inverseMass1 = this.getInverseMass(rigidBody1);
+    const inverseMass2 = this.getInverseMass(rigidBody2);
+    const inverseMassSum = inverseMass1 + inverseMass2;
 
-    if (rigidBody1.type === RIGID_BODY_TYPE.STATIC) {
-      this.setMtv(actor2, mtv2.x, mtv2.y, rigidBody1.type);
-    } else if (rigidBody2.type === RIGID_BODY_TYPE.STATIC) {
-      this.setMtv(actor1, mtv1.x, mtv1.y, rigidBody2.type);
-    } else {
-      this.setMtv(actor1, mtv1.x / 2, mtv1.y / 2, rigidBody2.type);
-      this.setMtv(actor2, mtv2.x / 2, mtv2.y / 2, rigidBody1.type);
+    if (inverseMassSum === 0) {
+      return;
+    }
+
+    const correctionMagnitude =
+      (Math.max(penetration - PENETRATION_SLOP, 0) *
+        POSITION_CORRECTION_PERCENT) /
+      inverseMassSum;
+
+    if (correctionMagnitude === 0) {
+      return;
+    }
+
+    const correctionX = normal.x * correctionMagnitude;
+    const correctionY = normal.y * correctionMagnitude;
+
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+
+    if (inverseMass1 > 0) {
+      transform1.world.position.x -= correctionX * inverseMass1;
+      transform1.world.position.y -= correctionY * inverseMass1;
+    }
+
+    if (inverseMass2 > 0) {
+      transform2.world.position.x += correctionX * inverseMass2;
+      transform2.world.position.y += correctionY * inverseMass2;
     }
   }
 
-  update(): void {
-    for (const [actor, entry] of this.mtvMap) {
-      const transform = actor.getComponent(Transform);
+  update(contacts: Contact[]): void {
+    let validContactsCount = 0;
 
-      const { static: staticMtv, dynamic: dynamicMtv } = entry;
+    contacts.forEach((contact) => {
+      if (!this.validateCollision(contact.actor1, contact.actor2)) {
+        return;
+      }
 
-      /*
-       * TODO:: Enable this part when it will be possible to run
-       * phycics pipeline several times per single game loop iteration
-       */
-      // transform.world.position.x += Math.sign(staticMtv.x) === Math.sign(dynamicMtv.x)
-      //   ? staticMtv.x + dynamicMtv.x
-      //   : staticMtv.x || dynamicMtv.x;
-      // transform.world.position.y += Math.sign(staticMtv.y) === Math.sign(dynamicMtv.y)
-      //   ? staticMtv.y + dynamicMtv.y
-      //   : staticMtv.y || dynamicMtv.y;
+      this.validContacts[validContactsCount] = contact;
+      validContactsCount += 1;
+    });
 
-      transform.world.position.x += (staticMtv?.x ?? 0) + (dynamicMtv?.x ?? 0);
-      transform.world.position.y += (staticMtv?.y ?? 0) + (dynamicMtv?.y ?? 0);
+    this.validContacts.length = validContactsCount;
+
+    for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
+      this.validContacts.forEach((contact) => {
+        const normalImpulseMagnitude = this.applyNormalImpulse(contact);
+
+        this.applyFrictionImpulse(contact, normalImpulseMagnitude);
+      });
     }
 
-    this.processedPairs.clear();
-    this.mtvMap.clear();
+    this.validContacts.forEach((contact) => {
+      this.applyPositionCorrection(contact);
+    });
   }
 }

@@ -7,6 +7,7 @@ export interface ColliderConfig {
   sizeX?: number;
   sizeY?: number;
   radius?: number;
+  layer: string;
 }
 
 /**
@@ -23,7 +24,8 @@ export interface ColliderConfig {
  *   centerX: 0,
  *   centerY: 0,
  *   sizeX: 64,
- *   sizeY: 64
+ *   sizeY: 64,
+ *   layer: 'default',
  * });
  *
  * // Create a circle collider
@@ -31,13 +33,14 @@ export interface ColliderConfig {
  *   type: 'circle',
  *   centerX: 0,
  *   centerY: 0,
- *   radius: 32
+ *   radius: 32,
+ *   layer: 'default',
  * });
  *
  * // Add to actor
  * actor.setComponent(boxCollider);
  * ```
- * 
+ *
  * @category Components
  */
 export class Collider extends Component {
@@ -51,6 +54,8 @@ export class Collider extends Component {
 
   radius?: number;
 
+  layer: string;
+
   constructor(config: ColliderConfig) {
     super();
 
@@ -63,6 +68,8 @@ export class Collider extends Component {
     this.sizeY = config.sizeY;
 
     this.radius = config.radius;
+
+    this.layer = config.layer;
   }
 
   clone(): Collider {
@@ -73,6 +80,7 @@ export class Collider extends Component {
       sizeX: this.sizeX,
       sizeY: this.sizeY,
       radius: this.radius,
+      layer: this.layer,
     });
   }
 }
