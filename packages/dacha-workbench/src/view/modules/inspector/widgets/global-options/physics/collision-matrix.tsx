@@ -81,6 +81,7 @@ export const CollisionMatrixField: FC<CollisionMatrixProps> = ({ layers }) => {
             .map((columnLayer) => (
               <MatrixCellStyled key={columnLayer.id}>
                 <Checkbox
+                  title={`${rowLayer.name} ✕ ${columnLayer.name}`}
                   checked={matrix?.[rowLayer.id]?.[columnLayer.id] ?? true}
                   onChange={(event) =>
                     handleChange(
