@@ -1,17 +1,19 @@
-import type { SceneSystemOptions } from '../../../../../engine/system';
-import type { Scene } from '../../../../../engine/scene';
+import type { Actor } from '../../../../../engine/actor';
+import type { Vector2 } from '../../../../../engine/math-lib';
 import {
-  Collision as RawCollision,
   CollisionEnter,
   CollisionStay,
   CollisionLeave,
 } from '../../../../events';
-import type { CollisionEvent } from '../../../../events';
+import type { Contact, Point } from '../collision-detection/types';
 
 import { Collision } from './collision';
 import type { CollisionState } from './collision';
 
-type CollisionStateEvent = typeof CollisionEnter | typeof CollisionStay | typeof CollisionLeave;
+type CollisionStateEvent =
+  | typeof CollisionEnter
+  | typeof CollisionStay
+  | typeof CollisionLeave;
 
 const STATE_TO_EVENT: Record<CollisionState, CollisionStateEvent> = {
   enter: CollisionEnter,
@@ -20,53 +22,63 @@ const STATE_TO_EVENT: Record<CollisionState, CollisionStateEvent> = {
 };
 
 export class CollisionBroadcastSubsystem {
-  private scene: Scene;
   private collisionMap: Record<string, Record<string, Collision>>;
   private activeCollisions: Collision[];
 
-  constructor(options: SceneSystemOptions) {
-    this.scene = options.scene;
-
+  constructor() {
     this.collisionMap = {};
     this.activeCollisions = [];
-
-    this.scene.addEventListener(RawCollision, this.handleCollision);
   }
 
-  destroy(): void {
-    this.scene.removeEventListener(RawCollision, this.handleCollision);
-  }
-
-  private handleCollision = (event: CollisionEvent): void => {
-    const {
-      actor1, actor2, mtv1, mtv2,
-    } = event;
-
+  private trackCollision(
+    actor1: Actor,
+    actor2: Actor,
+    normal: Vector2,
+    penetration: number,
+    contactPoints: Point[],
+  ): void {
     this.collisionMap[actor1.id] = this.collisionMap[actor1.id] || {};
 
     if (!this.collisionMap[actor1.id][actor2.id]) {
-      const collision = new Collision(actor1, actor2, mtv1, mtv2);
+      const collision = new Collision(
+        actor1,
+        actor2,
+        normal,
+        penetration,
+        contactPoints,
+      );
       this.collisionMap[actor1.id][actor2.id] = collision;
       this.activeCollisions.push(collision);
     } else {
-      this.collisionMap[actor1.id][actor2.id].mtv1 = mtv1;
-      this.collisionMap[actor1.id][actor2.id].mtv2 = mtv2;
+      this.collisionMap[actor1.id][actor2.id].normal = normal;
+      this.collisionMap[actor1.id][actor2.id].penetration = penetration;
+      this.collisionMap[actor1.id][actor2.id].contactPoints = contactPoints;
       this.collisionMap[actor1.id][actor2.id].signal();
     }
-  };
+  }
 
   private publishEvent(collision: Collision): void {
-    const {
-      actor1, actor2, mtv1,
-    } = collision;
+    const { actor1, actor2, normal, penetration, contactPoints } = collision;
 
     actor1.dispatchEvent(STATE_TO_EVENT[collision.getState()], {
       actor: actor2,
-      mtv: mtv1,
+      normal,
+      penetration,
+      contactPoints,
     });
   }
 
-  update(): void {
+  update(contacts: Contact[]): void {
+    contacts.forEach((contact) => {
+      const { actor1, actor2, normal, penetration, contactPoints } = contact;
+
+      const normal2 = contact.normal.clone();
+      normal2.multiplyNumber(-1);
+
+      this.trackCollision(actor1, actor2, normal, penetration, contactPoints);
+      this.trackCollision(actor2, actor1, normal2, penetration, contactPoints);
+    });
+
     this.activeCollisions = this.activeCollisions.filter((collision) => {
       const { actor1, actor2 } = collision;
 

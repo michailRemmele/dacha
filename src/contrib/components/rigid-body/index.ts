@@ -1,14 +1,14 @@
 import { Component } from '../../../engine/component';
+import { Vector2 } from '../../../engine/math-lib';
 
 export type RigidBodyType = 'dynamic' | 'static';
 
 export interface RigidBodyConfig {
   type: RigidBodyType;
   mass: number;
-  useGravity: boolean;
-  drag: number;
-  isPermeable: boolean;
-  ghost: boolean;
+  gravityScale: number;
+  linearDamping: number;
+  disabled: boolean;
 }
 
 /**
@@ -23,10 +23,9 @@ export interface RigidBodyConfig {
  * const rigidBody = new RigidBody({
  *   type: 'dynamic',
  *   mass: 10,
- *   useGravity: true,
- *   isPermeable: false,
- *   ghost: false,
- *   drag: 1,
+ *   gravityScale: 1,
+ *   linearDamping: 1,
+ *   disabled: false,
  * });
  *
  * // Add to actor
@@ -35,22 +34,29 @@ export interface RigidBodyConfig {
  * // Modify properties
  * rigidBody.mass = 20;
  * ```
- * 
+ *
  * @category Components
  */
 export class RigidBody extends Component {
+  private _mass: number;
+  private _inverseMass: number;
+
   /** Type of the rigid body */
   type: RigidBodyType;
   /** Mass of the rigid body */
-  mass: number;
-  /** Whether the rigid body is affected by gravity */
-  useGravity: boolean;
-  /** Whether the dynamic rigid body can pass through another dynamic body */
-  isPermeable: boolean;
-  /** Whether the rigid body can pass through any other rigid bodies */
-  ghost: boolean;
-  /** Drag of the rigid body, meaning it will slow down over time */
-  drag: number;
+  /** Gravity scale of the rigid body */
+  gravityScale: number;
+  /** Linear damping value used to slow down movement over time */
+  linearDamping: number;
+  /** Current linear velocity of the rigid body */
+  linearVelocity: Vector2;
+  /** Whether rigid body simulation is disabled */
+  disabled: boolean;
+  /** Whether rigid body is sleeping */
+  sleeping: boolean;
+
+  force: Vector2;
+  impulse: Vector2;
 
   /**
    * Creates a new RigidBody component.
@@ -59,22 +65,72 @@ export class RigidBody extends Component {
   constructor(config: RigidBodyConfig) {
     super();
 
+    this._mass = 0;
+    this._inverseMass = 0;
+
     this.type = config.type;
     this.mass = config.mass;
-    this.useGravity = config.useGravity;
-    this.isPermeable = config.isPermeable;
-    this.ghost = config.ghost;
-    this.drag = config.drag;
+    this.gravityScale = config.gravityScale;
+    this.linearDamping = config.linearDamping;
+    this.linearVelocity = new Vector2(0, 0);
+    this.disabled = config.disabled;
+    this.sleeping = false;
+
+    this.force = new Vector2(0, 0);
+    this.impulse = new Vector2(0, 0);
+  }
+
+  get mass(): number {
+    return this._mass;
+  }
+
+  set mass(value: number) {
+    this._mass = value;
+    this._inverseMass = value > 0 ? 1 / value : 0;
+  }
+
+  get inverseMass(): number {
+    return this._inverseMass;
+  }
+
+  applyForce(force: Vector2): void {
+    if (this.disabled || this.type === 'static') {
+      return;
+    }
+
+    this.wakeUp();
+    this.force.add(force);
+  }
+
+  applyImpulse(impulse: Vector2): void {
+    if (this.disabled || this.type === 'static') {
+      return;
+    }
+
+    this.wakeUp();
+    this.impulse.add(impulse);
+  }
+
+  wakeUp(): void {
+    this.sleeping = false;
+  }
+
+  sleep(): void {
+    this.sleeping = true;
+  }
+
+  clearForces(): void {
+    this.force.multiplyNumber(0);
+    this.impulse.multiplyNumber(0);
   }
 
   clone(): RigidBody {
     return new RigidBody({
       mass: this.mass,
-      useGravity: this.useGravity,
-      isPermeable: this.isPermeable,
-      ghost: this.ghost,
+      gravityScale: this.gravityScale,
+      linearDamping: this.linearDamping,
+      disabled: this.disabled,
       type: this.type,
-      drag: this.drag,
     });
   }
 }

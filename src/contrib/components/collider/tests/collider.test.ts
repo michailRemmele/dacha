@@ -8,12 +8,14 @@ describe('Contrib -> components -> Collider', () => {
       sizeY: 20,
       centerX: 1,
       centerY: 2,
+      layer: 'player',
     }).clone();
     const circle = new Collider({
       type: 'circle',
       centerX: 1,
       centerY: 2,
       radius: 20,
+      layer: 'enemy',
     }).clone();
 
     expect(box.type).toEqual('box');
@@ -21,11 +23,13 @@ describe('Contrib -> components -> Collider', () => {
     expect(box.sizeY).toEqual(20);
     expect(box.centerX).toEqual(1);
     expect(box.centerY).toEqual(2);
+    expect(box.layer).toEqual('player');
 
     expect(circle.type).toEqual('circle');
     expect(circle.radius).toEqual(20);
     expect(circle.centerX).toEqual(1);
     expect(circle.centerY).toEqual(2);
+    expect(circle.layer).toEqual('enemy');
   });
 
   it('Correct updates values ', () => {
@@ -35,12 +39,14 @@ describe('Contrib -> components -> Collider', () => {
       sizeY: 20,
       centerX: 1,
       centerY: 2,
+      layer: 'default',
     }).clone();
     const circle = new Collider({
       type: 'circle',
       radius: 20,
       centerX: 1,
       centerY: 2,
+      layer: 'default',
     }).clone();
 
     box.sizeX = 20;
@@ -51,6 +57,7 @@ describe('Contrib -> components -> Collider', () => {
     circle.radius = 40;
     circle.centerX = 3;
     circle.centerY = 6;
+    circle.layer = 'trigger';
 
     expect(box.sizeX).toEqual(20);
     expect(box.sizeY).toEqual(40);
@@ -60,6 +67,7 @@ describe('Contrib -> components -> Collider', () => {
     expect(circle.radius).toEqual(40);
     expect(circle.centerX).toEqual(3);
     expect(circle.centerY).toEqual(6);
+    expect(circle.layer).toEqual('trigger');
   });
 
   it('Clones return deep copy of original component', () => {
@@ -69,6 +77,7 @@ describe('Contrib -> components -> Collider', () => {
       sizeY: 20,
       centerX: 1,
       centerY: 2,
+      layer: 'default',
     });
     const cloneBox = originalBox.clone();
 
@@ -79,6 +88,7 @@ describe('Contrib -> components -> Collider', () => {
       radius: 20,
       centerX: 1,
       centerY: 2,
+      layer: 'default',
     });
     const cloneCircle = originalCircle.clone();
 

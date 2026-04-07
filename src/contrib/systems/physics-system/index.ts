@@ -5,7 +5,6 @@ import {
   PhysicsSubsystem,
   CollisionDetectionSubsystem,
   CollisionBroadcastSubsystem,
-  CollisionSolver,
   ConstraintSolver,
 } from './subsystems';
 
@@ -15,14 +14,13 @@ import {
  * Manages rigid body physics and collision detection and resolution.
  *
  * @extends SceneSystem
- * 
+ *
  * @category Systems
  */
 export class PhysicsSystem extends SceneSystem {
   private physicsSubsystem: PhysicsSubsystem;
   private collisionDetectionSubsystem: CollisionDetectionSubsystem;
   private collisionBroadcastSubsystem: CollisionBroadcastSubsystem;
-  private collisionSolver: CollisionSolver;
   private constraintSolver: ConstraintSolver;
 
   constructor(options: SceneSystemOptions) {
@@ -30,24 +28,22 @@ export class PhysicsSystem extends SceneSystem {
 
     this.physicsSubsystem = new PhysicsSubsystem(options);
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
-    this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem(options);
-    this.collisionSolver = new CollisionSolver(options);
-    this.constraintSolver = new ConstraintSolver(options);
+    this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
+    this.constraintSolver = new ConstraintSolver();
   }
 
   onSceneDestroy(): void {
     this.physicsSubsystem.destroy();
     this.collisionDetectionSubsystem.destroy();
-    this.collisionSolver.destroy();
-    this.constraintSolver.destroy();
-    this.collisionBroadcastSubsystem.destroy();
   }
 
   fixedUpdate(options: UpdateOptions): void {
     this.physicsSubsystem.update(options);
-    this.collisionDetectionSubsystem.update();
-    this.constraintSolver.update();
-    this.collisionBroadcastSubsystem.update();
+
+    const contacts = this.collisionDetectionSubsystem.update();
+
+    this.constraintSolver.update(contacts);
+    this.collisionBroadcastSubsystem.update(contacts);
   }
 }
 

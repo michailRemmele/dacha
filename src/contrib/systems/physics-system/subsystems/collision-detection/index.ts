@@ -1,14 +1,12 @@
 import { ActorQuery } from '../../../../../engine/actor';
 import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
-import type { Scene } from '../../../../../engine/scene';
 import { Transform, Collider, RigidBody } from '../../../../components';
 import { AddActor, RemoveActor } from '../../../../../engine/events';
 import type {
   AddActorEvent,
   RemoveActorEvent,
 } from '../../../../../engine/events';
-import { Collision } from '../../../../events';
 import { insertionSort } from '../../../../../engine/data-lib';
 
 import { geometryBuilders } from './geometry-builders';
@@ -16,30 +14,36 @@ import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
 import { checkTransform, checkCollider } from './reorientation-checkers';
+import type { PhysicsSettings } from '../../types';
 import type {
   SortedItem,
-  CollisionEntry,
+  Proxy,
   Axis,
   Axes,
-  CollisionPair,
+  ProxyPair,
+  Contact,
   Intersection,
   OrientationData,
 } from './types';
 
 export class CollisionDetectionSubsystem {
   private actorQuery: ActorQuery;
-  private scene: Scene;
   private axis: Axes;
-  private entriesMap: Map<string, CollisionEntry>;
-  private collisionPairs: CollisionPair[];
-  private entriesToDelete: Set<string>;
+  private proxiesByActorId: Map<string, Proxy>;
+  private proxyPairs: ProxyPair[];
+  private contacts: Contact[];
+  private actorIdsToDelete: Set<string>;
+  private collisionMatrix: PhysicsSettings['collisionMatrix'];
 
   constructor(options: SceneSystemOptions) {
+    const settings = options.globalOptions.physics as
+      | PhysicsSettings
+      | undefined;
+
     this.actorQuery = new ActorQuery({
       scene: options.scene,
       filter: [Collider, Transform],
     });
-    this.scene = options.scene;
 
     this.axis = {
       x: {
@@ -51,13 +55,13 @@ export class CollisionDetectionSubsystem {
         dispersionCalculator: new DispersionCalculator('y'),
       },
     };
-    this.entriesMap = new Map();
-    this.collisionPairs = [];
-    this.entriesToDelete = new Set();
+    this.proxiesByActorId = new Map();
+    this.proxyPairs = [];
+    this.contacts = [];
+    this.actorIdsToDelete = new Set();
+    this.collisionMatrix = settings?.collisionMatrix ?? {};
 
-    this.actorQuery
-      .getActors()
-      .forEach((actor) => this.addCollisionEntry(actor));
+    this.actorQuery.getActors().forEach((actor) => this.addProxy(actor));
 
     this.actorQuery.addEventListener(AddActor, this.handleActorAdd);
     this.actorQuery.addEventListener(RemoveActor, this.handleActorRemove);
@@ -69,25 +73,25 @@ export class CollisionDetectionSubsystem {
   }
 
   private handleActorAdd = (event: AddActorEvent): void => {
-    this.addCollisionEntry(event.actor);
+    this.addProxy(event.actor);
   };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
-    this.entriesToDelete.add(event.actor.id);
+    this.actorIdsToDelete.add(event.actor.id);
   };
 
   private checkOnReorientation(actor: Actor): boolean {
-    const entry = this.entriesMap.get(actor.id);
+    const proxy = this.proxiesByActorId.get(actor.id);
 
-    if (!entry) {
+    if (!proxy) {
       return true;
     }
 
     const transform = actor.getComponent(Transform);
     const collider = actor.getComponent(Collider);
 
-    const transformOld = entry.orientationData.transform;
-    const colliderOld = entry.orientationData.collider;
+    const transformOld = proxy.orientationData.transform;
+    const colliderOld = proxy.orientationData.collider;
 
     return (
       checkTransform(transform, transformOld) ||
@@ -114,79 +118,80 @@ export class CollisionDetectionSubsystem {
         sizeX: collider.sizeX,
         sizeY: collider.sizeY,
         radius: collider.radius,
+        layer: collider.layer,
       },
     };
   }
 
-  private addCollisionEntry(actor: Actor): void {
+  private addProxy(actor: Actor): void {
     const transform = actor.getComponent(Transform);
     const collider = actor.getComponent(Collider);
 
     const geometry = geometryBuilders[collider.type](collider, transform);
     const aabb = aabbBuilders[collider.type](geometry);
 
-    const entry = {
+    const proxy = {
       actor,
       aabb,
       geometry,
       orientationData: this.getOrientationData(actor),
-    } as CollisionEntry;
+    } as Proxy;
 
     this.axis.x.dispersionCalculator.addToSample(aabb);
-    this.addToSortedList(entry, 'x');
+    this.addToSortedList(proxy, 'x');
 
     this.axis.y.dispersionCalculator.addToSample(aabb);
-    this.addToSortedList(entry, 'y');
+    this.addToSortedList(proxy, 'y');
 
-    this.entriesMap.set(actor.id, entry);
+    this.proxiesByActorId.set(actor.id, proxy);
   }
 
-  private updateCollisionEntry(actor: Actor): void {
+  private updateProxy(actor: Actor): void {
     const transform = actor.getComponent(Transform);
     const collider = actor.getComponent(Collider);
 
     const geometry = geometryBuilders[collider.type](collider, transform);
     const aabb = aabbBuilders[collider.type](geometry);
 
-    const entry = this.entriesMap.get(actor.id)!;
-    const prevAABB = entry.aabb;
+    const proxy = this.proxiesByActorId.get(actor.id)!;
+    const prevAABB = proxy.aabb;
 
-    entry.aabb = aabb;
-    entry.geometry = geometry;
-    entry.orientationData = this.getOrientationData(actor);
+    proxy.aabb = aabb;
+    proxy.geometry = geometry;
+    proxy.orientationData = this.getOrientationData(actor);
 
     this.axis.x.dispersionCalculator.removeFromSample(prevAABB);
     this.axis.x.dispersionCalculator.addToSample(aabb);
-    this.updateSortedList(entry, 'x');
+    this.updateSortedList(proxy, 'x');
 
     this.axis.y.dispersionCalculator.removeFromSample(prevAABB);
     this.axis.y.dispersionCalculator.addToSample(aabb);
-    this.updateSortedList(entry, 'y');
+    this.updateSortedList(proxy, 'y');
   }
 
-  private addToSortedList(entry: CollisionEntry, axis: Axis): void {
-    const min = { value: entry.aabb.min[axis], entry };
-    const max = { value: entry.aabb.max[axis], entry };
+  private addToSortedList(proxy: Proxy, axis: Axis): void {
+    const min = { value: proxy.aabb.min[axis], proxy };
+    const max = { value: proxy.aabb.max[axis], proxy };
 
     this.axis[axis].sortedList.push(min, max);
 
-    entry.edges ??= {} as Record<Axis, [SortedItem, SortedItem]>;
-    entry.edges[axis] = [min, max];
+    proxy.edges ??= {} as Record<Axis, [SortedItem, SortedItem]>;
+    proxy.edges[axis] = [min, max];
   }
 
-  private updateSortedList(entry: CollisionEntry, axis: Axis): void {
-    const [min, max] = entry.edges[axis];
+  private updateSortedList(proxy: Proxy, axis: Axis): void {
+    const [min, max] = proxy.edges[axis];
 
-    min.value = entry.aabb.min[axis];
-    min.entry = entry;
+    min.value = proxy.aabb.min[axis];
+    min.proxy = proxy;
 
-    max.value = entry.aabb.max[axis];
-    max.entry = entry;
+    max.value = proxy.aabb.max[axis];
+    max.proxy = proxy;
   }
 
   private clearSortedList(axis: Axis): void {
     this.axis[axis].sortedList = this.axis[axis].sortedList.filter(
-      (item) => !this.entriesToDelete.has(item.entry.actor.id),
+      (item) => !this.actorIdsToDelete.has(item.proxy.actor.id),
     );
   }
 
@@ -197,12 +202,9 @@ export class CollisionDetectionSubsystem {
     return xDispersion >= yDispersion ? ['x', 'y'] : ['y', 'x'];
   }
 
-  private areStaticBodies(
-    entry1: CollisionEntry,
-    entry2: CollisionEntry,
-  ): boolean {
-    const { actor: actor1 } = entry1;
-    const { actor: actor2 } = entry2;
+  private areStaticBodies(proxy1: Proxy, proxy2: Proxy): boolean {
+    const { actor: actor1 } = proxy1;
+    const { actor: actor2 } = proxy2;
 
     const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
     const rigidBody2 = actor2.getComponent(RigidBody) as RigidBody | undefined;
@@ -210,17 +212,20 @@ export class CollisionDetectionSubsystem {
     return rigidBody1?.type === 'static' && rigidBody2?.type === 'static';
   }
 
-  private testAABB(
-    entry1: CollisionEntry,
-    entry2: CollisionEntry,
-    axis: Axis,
-  ): boolean {
-    const aabb1 = entry1.aabb;
-    const aabb2 = entry2.aabb;
+  private testAABB(proxy1: Proxy, proxy2: Proxy, axis: Axis): boolean {
+    const aabb1 = proxy1.aabb;
+    const aabb2 = proxy2.aabb;
 
     return (
       aabb1.max[axis] > aabb2.min[axis] && aabb1.min[axis] < aabb2.max[axis]
     );
+  }
+
+  private testCollisionLayers(proxy1: Proxy, proxy2: Proxy): boolean {
+    const collider1 = proxy1.actor.getComponent(Collider);
+    const collider2 = proxy2.actor.getComponent(Collider);
+
+    return this.collisionMatrix[collider1.layer]?.[collider2.layer] ?? true;
   }
 
   private sweepAndPrune(): void {
@@ -230,104 +235,121 @@ export class CollisionDetectionSubsystem {
 
     insertionSort(sortedList, (arg1, arg2) => arg1.value - arg2.value);
 
-    const activeEntries = new Set<CollisionEntry>();
+    const activeProxies = new Set<Proxy>();
 
-    let collisionIndex = 0;
+    let proxyPairIndex = 0;
     for (const item of sortedList) {
-      const { entry } = item;
+      const { proxy } = item;
 
-      if (!activeEntries.has(entry)) {
-        activeEntries.forEach((activeEntry) => {
-          if (!this.testAABB(entry, activeEntry, secondAxis)) {
+      if (!activeProxies.has(proxy)) {
+        activeProxies.forEach((activeProxy) => {
+          if (!this.testAABB(proxy, activeProxy, secondAxis)) {
             return;
           }
 
-          if (this.areStaticBodies(entry, activeEntry)) {
+          if (this.areStaticBodies(proxy, activeProxy)) {
             return;
           }
 
-          this.collisionPairs[collisionIndex] = [entry, activeEntry];
-          collisionIndex += 1;
+          if (!this.testCollisionLayers(proxy, activeProxy)) {
+            return;
+          }
+
+          this.proxyPairs[proxyPairIndex] = [proxy, activeProxy];
+          proxyPairIndex += 1;
         });
-        activeEntries.add(entry);
+        activeProxies.add(proxy);
       } else {
-        activeEntries.delete(entry);
+        activeProxies.delete(proxy);
       }
     }
 
-    if (this.collisionPairs.length > collisionIndex) {
-      this.collisionPairs.length = collisionIndex;
+    if (this.proxyPairs.length > proxyPairIndex) {
+      this.proxyPairs.length = proxyPairIndex;
     }
   }
 
-  private checkOnIntersection(pair: CollisionPair): Intersection | false {
-    const [arg1, arg2] = pair;
+  private checkOnIntersection(proxyPair: ProxyPair): Intersection | false {
+    const [proxy1, proxy2] = proxyPair;
 
-    const type1 = arg1.actor.getComponent(Collider).type;
-    const type2 = arg2.actor.getComponent(Collider).type;
+    const type1 = proxy1.actor.getComponent(Collider).type;
+    const type2 = proxy2.actor.getComponent(Collider).type;
 
-    return intersectionCheckers[type1][type2](arg1, arg2);
+    return intersectionCheckers[type1][type2](proxy1, proxy2);
   }
 
-  private sendCollisionEvent(
+  private storeContact(
+    contactIndex: number,
     actor1: Actor,
     actor2: Actor,
     intersection: Intersection,
   ): void {
-    const { mtv1, mtv2 } = intersection;
-
-    this.scene.dispatchEventImmediately(Collision, {
+    this.contacts[contactIndex] ??= {
       actor1,
       actor2,
-      mtv1,
-      mtv2,
-    });
-    this.scene.dispatchEventImmediately(Collision, {
-      actor1: actor2,
-      actor2: actor1,
-      mtv1: mtv2,
-      mtv2: mtv1,
-    });
+      normal: intersection.normal,
+      penetration: intersection.penetration,
+      contactPoints: intersection.contactPoints,
+    };
+
+    this.contacts[contactIndex].actor1 = actor1;
+    this.contacts[contactIndex].actor2 = actor2;
+    this.contacts[contactIndex].normal = intersection.normal;
+    this.contacts[contactIndex].penetration = intersection.penetration;
+    this.contacts[contactIndex].contactPoints = intersection.contactPoints;
   }
 
-  private clearDeletedEntries(): void {
-    if (this.entriesToDelete.size === 0) {
+  private clearDeletedProxies(): void {
+    if (this.actorIdsToDelete.size === 0) {
       return;
     }
 
     this.clearSortedList('x');
     this.clearSortedList('y');
 
-    this.entriesToDelete.forEach((id) => {
-      const entry = this.entriesMap.get(id)!;
+    this.actorIdsToDelete.forEach((id) => {
+      const proxy = this.proxiesByActorId.get(id)!;
 
-      this.axis.x.dispersionCalculator.removeFromSample(entry.aabb);
-      this.axis.y.dispersionCalculator.removeFromSample(entry.aabb);
+      this.axis.x.dispersionCalculator.removeFromSample(proxy.aabb);
+      this.axis.y.dispersionCalculator.removeFromSample(proxy.aabb);
 
-      this.entriesMap.delete(id);
+      this.proxiesByActorId.delete(id);
     });
 
-    this.entriesToDelete.clear();
+    this.actorIdsToDelete.clear();
   }
 
-  update(): void {
-    this.clearDeletedEntries();
+  update(): Contact[] {
+    this.clearDeletedProxies();
 
     this.actorQuery.getActors().forEach((actor) => {
       if (!this.checkOnReorientation(actor)) {
         return;
       }
 
-      this.updateCollisionEntry(actor);
+      this.updateProxy(actor);
     });
 
     this.sweepAndPrune();
 
-    this.collisionPairs.forEach((pair) => {
-      const intersection = this.checkOnIntersection(pair);
+    let contactIndex = 0;
+    this.proxyPairs.forEach((proxyPair) => {
+      const intersection = this.checkOnIntersection(proxyPair);
       if (intersection) {
-        this.sendCollisionEvent(pair[0].actor, pair[1].actor, intersection);
+        this.storeContact(
+          contactIndex,
+          proxyPair[0].actor,
+          proxyPair[1].actor,
+          intersection,
+        );
+        contactIndex += 1;
       }
     });
+
+    if (this.contacts.length > contactIndex) {
+      this.contacts.length = contactIndex;
+    }
+
+    return this.contacts;
   }
 }
