@@ -256,7 +256,8 @@
                 "type": "circle",
                 "radius": 0,
                 "centerX": 0,
-                "centerY": 0
+                "centerY": 0,
+                "layer": "default"
               }
             },
             {
@@ -368,10 +369,9 @@
           "config": {
             "type": "dynamic",
             "mass": 2,
-            "useGravity": false,
-            "isPermeable": false,
-            "ghost": false,
-            "drag": 0.5
+            "gravityScale": 0,
+            "linearDamping": 0,
+            "disabled": false
           }
         },
         {
@@ -381,7 +381,8 @@
             "sizeX": 12,
             "sizeY": 16,
             "centerX": 0,
-            "centerY": 0
+            "centerY": 0,
+            "layer": "default"
           }
         },
         {
@@ -810,6 +811,51 @@
       "options": {
         "maxFPS": 0,
         "fixedUpdateRate": 50
+      }
+    },
+    {
+      "name": "physics",
+      "options": {
+        "collisionLayers": [
+          {
+            "id": "5bbeb118-1d85-4772-8baf-e84ec6c59f69",
+            "name": "layer 1"
+          },
+          {
+            "id": "1b63bd7f-fd5c-4061-ae33-17fe4a3ef03a",
+            "name": "layer 2"
+          },
+          {
+            "id": "f9aed59e-ed46-4434-8228-ff023c9beb69",
+            "name": "layer 3"
+          }
+        ],
+        "collisionMatrix": {
+          "default": {
+            "default": true,
+            "5bbeb118-1d85-4772-8baf-e84ec6c59f69": true,
+            "1b63bd7f-fd5c-4061-ae33-17fe4a3ef03a": true,
+            "f9aed59e-ed46-4434-8228-ff023c9beb69": true
+          },
+          "5bbeb118-1d85-4772-8baf-e84ec6c59f69": {
+            "default": true,
+            "5bbeb118-1d85-4772-8baf-e84ec6c59f69": true,
+            "1b63bd7f-fd5c-4061-ae33-17fe4a3ef03a": true,
+            "f9aed59e-ed46-4434-8228-ff023c9beb69": true
+          },
+          "1b63bd7f-fd5c-4061-ae33-17fe4a3ef03a": {
+            "default": true,
+            "5bbeb118-1d85-4772-8baf-e84ec6c59f69": true,
+            "1b63bd7f-fd5c-4061-ae33-17fe4a3ef03a": true,
+            "f9aed59e-ed46-4434-8228-ff023c9beb69": true
+          },
+          "f9aed59e-ed46-4434-8228-ff023c9beb69": {
+            "default": true,
+            "5bbeb118-1d85-4772-8baf-e84ec6c59f69": true,
+            "1b63bd7f-fd5c-4061-ae33-17fe4a3ef03a": true,
+            "f9aed59e-ed46-4434-8228-ff023c9beb69": true
+          }
+        }
       }
     }
   ],

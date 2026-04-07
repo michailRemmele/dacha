@@ -1,4 +1,4 @@
-import { useEffect, useCallback, FC } from 'react';
+import { useEffect, useCallback, useRef, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +11,7 @@ import { useConfig, useCommander } from '../../../../../hooks';
 import { addValue, setValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import { CollapsePanel } from '../../../components/collapse-panel';
+import { NeedsReloadContext } from '../../../../../providers';
 
 import { SectionHeaderStyled, LayersStyled, ButtonCSS } from './sorting.style';
 import { DraggableSortingLayers } from './draggable-sorting-layers';
@@ -20,7 +21,20 @@ export const SortingWidget: FC = () => {
   const { t } = useTranslation();
   const { dispatch } = useCommander();
 
+  const { setNeedsReload } = useContext(NeedsReloadContext);
+
   const layers = useConfig(LAYERS_PATH) as SortingLayer[] | undefined;
+
+  const prevLayers = useRef(layers);
+
+  useEffect(() => {
+    if (layers === prevLayers.current) {
+      return;
+    }
+
+    setNeedsReload(true);
+    prevLayers.current = layers;
+  }, [layers]);
 
   useEffect(() => {
     if (layers) {
