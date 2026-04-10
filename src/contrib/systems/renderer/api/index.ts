@@ -12,7 +12,7 @@ import type { ShaderConstructor } from '../material/shader';
 
 import { convertBounds } from './utils';
 
-interface RendererServiceOptions {
+interface RendererAPIOptions {
   application: Application;
   worldContainer: Container;
   getViewEntries: () => Set<ViewContainer> | undefined;
@@ -22,14 +22,14 @@ interface RendererServiceOptions {
 }
 
 /**
- * Service that provides rendering utilities and view management
+ * API that provides rendering utilities and view management
  *
  * Offers methods for view intersection testing, bounds calculation, and
  * direct access to the underlying PIXI.js application
  *
  * @category Systems
  */
-export class RendererService {
+export class RendererAPI {
   private application: Application;
   private worldContainer: Container;
   private getViewEntries: () => Set<ViewContainer> | undefined;
@@ -44,7 +44,7 @@ export class RendererService {
     sortFn,
     filterSystem,
     materialSystem,
-  }: RendererServiceOptions) {
+  }: RendererAPIOptions) {
     this.application = application;
     this.worldContainer = worldContainer;
     this.getViewEntries = getViewEntries;

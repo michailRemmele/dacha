@@ -13,7 +13,7 @@ import type {
   ListenerFn,
   EventPayload,
 } from '../event-target';
-import type { Constructor } from '../../types/utils';
+import { SystemAPIRegistry } from './system-api-registry';
 
 type WorldListenerFn<T extends EventType> = (
   event: T extends keyof WorldEventMap
@@ -27,15 +27,15 @@ type WorldListenerFn<T extends EventType> = (
 
 /**
  * A world is the root container for all scenes and actors.
- * It is used to contain the overall game state and provide system services.
+ * It is also provide an access to system APIs.
  *
  * @extends {Entity}
- * 
+ *
  * @category Core
  */
 export class World extends Entity {
-  /** Services registered in the world by systems */
-  private services: Record<string, unknown>;
+  /** Registry of system APIs */
+  readonly systemApi: SystemAPIRegistry;
 
   declare public readonly children: Scene[];
 
@@ -47,8 +47,8 @@ export class World extends Entity {
   constructor(options: EntityOptions) {
     super(options);
 
+    this.systemApi = new SystemAPIRegistry();
     this.data = {};
-    this.services = {};
   }
 
   override addEventListener<T extends EventType>(
@@ -109,40 +109,5 @@ export class World extends Entity {
     recursive = true,
   ): Scene | Actor | undefined {
     return super.findChildByName(name, recursive) as Scene | Actor | undefined;
-  }
-
-  /**
-   * Adds a service to the world.
-   * Usually added by systems to share their functionality with other systems or behaviors
-   *
-   * @param service - Service to add to the world
-   */
-  addService(service: object): void {
-    this.services[service.constructor.name] = service;
-  }
-
-  /**
-   * Removes a service from the world.
-   *
-   * @param serviceClass - Class of the service to remove
-   */
-  removeService<T>(serviceClass: Constructor<T>): void {
-    delete this.services[serviceClass.name];
-  }
-
-  /**
-   * Gets a service from the world.
-   *
-   * @param serviceClass - Class of the service to get
-   * @returns service
-   */
-  getService<T>(serviceClass: Constructor<T>): T {
-    if (this.services[serviceClass.name] === undefined) {
-      throw new Error(
-        `Can't find service with the following name: ${serviceClass.name}`,
-      );
-    }
-
-    return this.services[serviceClass.name] as T;
   }
 }
