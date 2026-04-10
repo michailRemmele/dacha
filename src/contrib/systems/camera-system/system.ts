@@ -6,7 +6,7 @@ import type { Actor } from '../../../engine/actor';
 import { Camera } from '../../components/camera';
 import { getWindowNode } from '../../utils/get-window-node';
 
-import { CameraService } from './service';
+import { CameraAPI } from './api';
 
 interface CameraSystemOptions extends WorldSystemOptions {
   windowNodeId: string;
@@ -16,13 +16,13 @@ interface CameraSystemOptions extends WorldSystemOptions {
  * Camera system that manages camera control and current camera tracking
  *
  * Integrates with the renderer system for viewport transformations.
- * 
+ *
  * @category Systems
  */
 export class CameraSystem extends WorldSystem {
   private actorQuery?: ActorQuery;
   private window: Window & HTMLElement;
-  private cameraService: CameraService;
+  private cameraApi: CameraAPI;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -33,11 +33,11 @@ export class CameraSystem extends WorldSystem {
 
     this.window = windowNode as Window & HTMLElement;
 
-    this.cameraService = new CameraService({
+    this.cameraApi = new CameraAPI({
       onCameraUpdate: this.handleCameraUpdate,
       findCurrentCamera: this.findCurrentCamera,
     });
-    world.addService(this.cameraService);
+    world.systemApi.register(this.cameraApi);
 
     window.addEventListener('resize', this.handleWindowResize);
   }
@@ -52,6 +52,7 @@ export class CameraSystem extends WorldSystem {
   }
 
   onSceneExit(): void {
+    this.actorQuery?.destroy();
     this.actorQuery = undefined;
   }
 
