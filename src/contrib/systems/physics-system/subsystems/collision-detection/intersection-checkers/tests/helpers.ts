@@ -1,9 +1,11 @@
-import { VectorOps } from '../../../../../../../engine/math-lib';
+import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
 import type {
   BoxGeometry,
   CircleGeometry,
   Intersection,
+  PointGeometry,
   Proxy,
+  RayGeometry,
 } from '../../types';
 
 export const createBoxGeometry = (
@@ -71,15 +73,29 @@ export const createCircleGeometry = (
   radius,
 });
 
+export const createPointGeometry = (
+  centerX: number,
+  centerY: number,
+): PointGeometry => ({
+  center: { x: centerX, y: centerY },
+});
+
+export const createRayGeometry = (
+  originX: number,
+  originY: number,
+  directionX: number,
+  directionY: number,
+  maxDistance: number,
+): RayGeometry => ({
+  origin: { x: originX, y: originY },
+  direction: new Vector2(directionX, directionY).normalize(),
+  maxDistance,
+});
+
 export const createProxy = (
-  type: 'box' | 'circle',
-  geometry: BoxGeometry | CircleGeometry,
+  geometry: BoxGeometry | CircleGeometry | PointGeometry | RayGeometry,
 ): Proxy =>
   ({
-    actor: {
-      id: `${type}-${Math.random()}`,
-      getComponent: () => ({ type }),
-    } as unknown as Proxy['actor'],
     geometry,
   }) as unknown as Proxy;
 

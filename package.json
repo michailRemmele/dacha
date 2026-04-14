@@ -16,6 +16,9 @@
     },
     "./renderer": {
       "types": "./build/contrib/systems/renderer/types.d.ts"
+    },
+    "./physics": {
+      "types": "./build/contrib/systems/physics-system/types.d.ts"
     }
   },
   "dependencies": {
