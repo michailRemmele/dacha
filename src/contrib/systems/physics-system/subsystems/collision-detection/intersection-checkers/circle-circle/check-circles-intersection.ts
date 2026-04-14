@@ -16,10 +16,14 @@ export const checkCirclesIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const { radius: radius1 } = arg1.geometry as CircleGeometry;
-  const { radius: radius2 } = arg2.geometry as CircleGeometry;
-  const { x: x1, y: y1 } = arg1.geometry.center;
-  const { x: x2, y: y2 } = arg2.geometry.center;
+  const {
+    radius: radius1,
+    center: { x: x1, y: y1 },
+  } = arg1.geometry as CircleGeometry;
+  const {
+    radius: radius2,
+    center: { x: x2, y: y2 },
+  } = arg2.geometry as CircleGeometry;
 
   const offsetX = x2 - x1;
   const offsetY = y2 - y1;

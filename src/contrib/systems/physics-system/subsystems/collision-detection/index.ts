@@ -14,10 +14,20 @@ import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
 import { checkTransform, checkCollider } from './reorientation-checkers';
-import type { PhysicsSettings } from '../../types';
+import { buildQueryProxy, raycast, raycastAll, overlap } from './query-utils';
+import type {
+  PhysicsSettings,
+  RaycastParams,
+  RaycastHit,
+  OverlapPointParams,
+  OverlapCircleParams,
+  OverlapBoxParams,
+} from '../../types';
 import type {
   SortedItem,
   Proxy,
+  ActorProxy,
+  QueryProxy,
   Axis,
   Axes,
   ProxyPair,
@@ -29,11 +39,12 @@ import type {
 export class CollisionDetectionSubsystem {
   private actorQuery: ActorQuery;
   private axis: Axes;
-  private proxiesByActorId: Map<string, Proxy>;
+  private proxiesByActorId: Map<string, ActorProxy>;
   private proxyPairs: ProxyPair[];
   private contacts: Contact[];
   private actorIdsToDelete: Set<string>;
   private collisionMatrix: PhysicsSettings['collisionMatrix'];
+  private queryCandidates: ActorProxy[];
 
   constructor(options: SceneSystemOptions) {
     const settings = options.globalOptions.physics as
@@ -60,6 +71,7 @@ export class CollisionDetectionSubsystem {
     this.contacts = [];
     this.actorIdsToDelete = new Set();
     this.collisionMatrix = settings?.collisionMatrix ?? {};
+    this.queryCandidates = [];
 
     this.actorQuery.getActors().forEach((actor) => this.addProxy(actor));
 
@@ -70,6 +82,47 @@ export class CollisionDetectionSubsystem {
   destroy(): void {
     this.actorQuery.removeEventListener(AddActor, this.handleActorAdd);
     this.actorQuery.removeEventListener(RemoveActor, this.handleActorRemove);
+    this.actorQuery.destroy();
+  }
+
+  raycast(params: RaycastParams): RaycastHit | null {
+    const queryProxy = buildQueryProxy('ray', params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return raycast(queryProxy, this.queryCandidates);
+  }
+
+  raycastAll(params: RaycastParams): RaycastHit[] {
+    const queryProxy = buildQueryProxy('ray', params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return raycastAll(queryProxy, this.queryCandidates);
+  }
+
+  overlapPoint(params: OverlapPointParams): Actor[] {
+    const queryProxy = buildQueryProxy('point', params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return overlap('point', queryProxy, this.queryCandidates);
+  }
+
+  overlapCircle(params: OverlapCircleParams): Actor[] {
+    const queryProxy = buildQueryProxy('circle', params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return overlap('circle', queryProxy, this.queryCandidates);
+  }
+
+  overlapBox(params: OverlapBoxParams): Actor[] {
+    const queryProxy = buildQueryProxy('box', params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return overlap('box', queryProxy, this.queryCandidates);
   }
 
   private handleActorAdd = (event: AddActorEvent): void => {
@@ -135,7 +188,8 @@ export class CollisionDetectionSubsystem {
       aabb,
       geometry,
       orientationData: this.getOrientationData(actor),
-    } as Proxy;
+      layer: collider.layer,
+    } as ActorProxy;
 
     this.axis.x.dispersionCalculator.addToSample(aabb);
     this.addToSortedList(proxy, 'x');
@@ -159,6 +213,7 @@ export class CollisionDetectionSubsystem {
     proxy.aabb = aabb;
     proxy.geometry = geometry;
     proxy.orientationData = this.getOrientationData(actor);
+    proxy.layer = collider.layer;
 
     this.axis.x.dispersionCalculator.removeFromSample(prevAABB);
     this.axis.x.dispersionCalculator.addToSample(aabb);
@@ -169,7 +224,7 @@ export class CollisionDetectionSubsystem {
     this.updateSortedList(proxy, 'y');
   }
 
-  private addToSortedList(proxy: Proxy, axis: Axis): void {
+  private addToSortedList(proxy: ActorProxy, axis: Axis): void {
     const min = { value: proxy.aabb.min[axis], proxy };
     const max = { value: proxy.aabb.max[axis], proxy };
 
@@ -179,7 +234,7 @@ export class CollisionDetectionSubsystem {
     proxy.edges[axis] = [min, max];
   }
 
-  private updateSortedList(proxy: Proxy, axis: Axis): void {
+  private updateSortedList(proxy: ActorProxy, axis: Axis): void {
     const [min, max] = proxy.edges[axis];
 
     min.value = proxy.aabb.min[axis];
@@ -202,7 +257,7 @@ export class CollisionDetectionSubsystem {
     return xDispersion >= yDispersion ? ['x', 'y'] : ['y', 'x'];
   }
 
-  private areStaticBodies(proxy1: Proxy, proxy2: Proxy): boolean {
+  private areStaticBodies(proxy1: ActorProxy, proxy2: ActorProxy): boolean {
     const { actor: actor1 } = proxy1;
     const { actor: actor2 } = proxy2;
 
@@ -221,11 +276,57 @@ export class CollisionDetectionSubsystem {
     );
   }
 
-  private testCollisionLayers(proxy1: Proxy, proxy2: Proxy): boolean {
-    const collider1 = proxy1.actor.getComponent(Collider);
-    const collider2 = proxy2.actor.getComponent(Collider);
+  private testCollisionLayers(
+    proxy1: Required<Proxy>,
+    proxy2: Required<Proxy>,
+  ): boolean {
+    return this.collisionMatrix[proxy1.layer]?.[proxy2.layer] ?? true;
+  }
 
-    return this.collisionMatrix[collider1.layer]?.[collider2.layer] ?? true;
+  private sweepAndPruneQuery(queryProxy: QueryProxy): void {
+    const [mainAxis, secondAxis] = this.getAxes();
+    const sortedList = this.axis[mainAxis].sortedList;
+
+    const candidates = new Set<ActorProxy>();
+
+    for (const item of sortedList) {
+      const { proxy, value } = item;
+
+      if (value < queryProxy.aabb.min[mainAxis]) {
+        if (candidates.has(proxy)) {
+          candidates.delete(proxy);
+        } else {
+          candidates.add(proxy);
+        }
+
+        continue;
+      }
+
+      if (value > queryProxy.aabb.max[mainAxis]) {
+        break;
+      }
+
+      if (!candidates.has(proxy)) {
+        candidates.add(proxy);
+      }
+    }
+
+    let candidateIndex = 0;
+    candidates.forEach((proxy) => {
+      if (!this.testAABB(proxy, queryProxy, secondAxis)) {
+        return;
+      }
+      if (
+        queryProxy.layer !== undefined &&
+        !this.testCollisionLayers(proxy, queryProxy as Required<QueryProxy>)
+      ) {
+        return;
+      }
+
+      this.queryCandidates[candidateIndex] = proxy;
+      candidateIndex += 1;
+    });
+    this.queryCandidates.length = candidateIndex;
   }
 
   private sweepAndPrune(): void {
@@ -235,7 +336,7 @@ export class CollisionDetectionSubsystem {
 
     insertionSort(sortedList, (arg1, arg2) => arg1.value - arg2.value);
 
-    const activeProxies = new Set<Proxy>();
+    const activeProxies = new Set<ActorProxy>();
 
     let proxyPairIndex = 0;
     for (const item of sortedList) {
