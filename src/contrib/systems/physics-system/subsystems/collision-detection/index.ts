@@ -166,12 +166,14 @@ export class CollisionDetectionSubsystem {
       },
       collider: {
         type: collider.type,
+        layer: collider.layer,
         centerX: collider.centerX,
         centerY: collider.centerY,
         sizeX: collider.sizeX,
         sizeY: collider.sizeY,
         radius: collider.radius,
-        layer: collider.layer,
+        point1: collider.point1 ? { ...collider.point1 } : undefined,
+        point2: collider.point2 ? { ...collider.point2 } : undefined,
       },
     };
   }
@@ -375,8 +377,13 @@ export class CollisionDetectionSubsystem {
 
     const type1 = proxy1.actor.getComponent(Collider).type;
     const type2 = proxy2.actor.getComponent(Collider).type;
+    const intersectionChecker = intersectionCheckers[type1]?.[type2];
 
-    return intersectionCheckers[type1][type2](proxy1, proxy2);
+    if (!intersectionChecker) {
+      return false;
+    }
+
+    return intersectionChecker(proxy1, proxy2);
   }
 
   private storeContact(

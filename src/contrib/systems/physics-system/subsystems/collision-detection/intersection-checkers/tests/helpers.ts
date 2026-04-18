@@ -1,4 +1,10 @@
-import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
+import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Collider, Transform } from '../../../../../../components';
+import { buildBoxGeometry } from '../../geometry-builders/build-box-geometry';
+import { buildCircleGeometry } from '../../geometry-builders/build-circle-geometry';
+import { buildPointGeometry } from '../../geometry-builders/build-point-geometry';
+import { buildRayGeometry } from '../../geometry-builders/build-ray-geometry';
+import { buildSegmentGeometry } from '../../geometry-builders/build-segment-geometry';
 import type {
   BoxGeometry,
   CircleGeometry,
@@ -6,6 +12,7 @@ import type {
   PointGeometry,
   Proxy,
   RayGeometry,
+  SegmentGeometry,
 } from '../../types';
 
 export const createBoxGeometry = (
@@ -24,61 +31,60 @@ export const createRotatedBoxGeometry = (
   sizeY: number,
   rotation: number,
 ): BoxGeometry => {
-  const halfX = sizeX / 2;
-  const halfY = sizeY / 2;
-  const cos = Math.cos(rotation);
-  const sin = Math.sin(rotation);
-
-  const points = [
-    { x: -halfX, y: -halfY },
-    { x: -halfX, y: halfY },
-    { x: halfX, y: halfY },
-    { x: halfX, y: -halfY },
-  ];
-
-  for (const point of points) {
-    const rotatedX = point.x * cos - point.y * sin;
-    const rotatedY = point.x * sin + point.y * cos;
-
-    point.x = rotatedX + centerX;
-    point.y = rotatedY + centerY;
-  }
-
-  const edges = points.map((point1, index, array) => {
-    const point2 = array[(index + 1) % array.length];
-
-    return {
-      point1,
-      point2,
-      normal: VectorOps.getNormal(point1.x, point2.x, point1.y, point2.y),
-    };
+  return buildBoxGeometry({
+    center: { x: centerX, y: centerY },
+    size: { x: sizeX, y: sizeY },
+    rotation,
   });
-
-  return {
-    center: {
-      x: centerX,
-      y: centerY,
-    },
-    points,
-    edges,
-  };
 };
 
 export const createCircleGeometry = (
   centerX: number,
   centerY: number,
   radius: number,
-): CircleGeometry => ({
-  center: { x: centerX, y: centerY },
-  radius,
-});
+): CircleGeometry =>
+  buildCircleGeometry({
+    center: { x: centerX, y: centerY },
+    radius,
+  });
+
+export const createSegmentGeometry = (
+  point1X: number,
+  point1Y: number,
+  point2X: number,
+  point2Y: number,
+): SegmentGeometry => {
+  const centerX = (point1X + point2X) / 2;
+  const centerY = (point1Y + point2Y) / 2;
+
+  return buildSegmentGeometry(
+    new Collider({
+      type: 'segment',
+      centerX,
+      centerY,
+      point1X: point1X - centerX,
+      point1Y: point1Y - centerY,
+      point2X: point2X - centerX,
+      point2Y: point2Y - centerY,
+      layer: 'default',
+    }),
+    new Transform({
+      offsetX: 0,
+      offsetY: 0,
+      rotation: 0,
+      scaleX: 1,
+      scaleY: 1,
+    }),
+  );
+};
 
 export const createPointGeometry = (
   centerX: number,
   centerY: number,
-): PointGeometry => ({
-  center: { x: centerX, y: centerY },
-});
+): PointGeometry =>
+  buildPointGeometry({
+    point: { x: centerX, y: centerY },
+  });
 
 export const createRayGeometry = (
   originX: number,
@@ -86,14 +92,20 @@ export const createRayGeometry = (
   directionX: number,
   directionY: number,
   maxDistance: number,
-): RayGeometry => ({
-  origin: { x: originX, y: originY },
-  direction: new Vector2(directionX, directionY).normalize(),
-  maxDistance,
-});
+): RayGeometry =>
+  buildRayGeometry({
+    origin: { x: originX, y: originY },
+    direction: new Vector2(directionX, directionY),
+    maxDistance,
+  });
 
 export const createProxy = (
-  geometry: BoxGeometry | CircleGeometry | PointGeometry | RayGeometry,
+  geometry:
+    | BoxGeometry
+    | CircleGeometry
+    | SegmentGeometry
+    | PointGeometry
+    | RayGeometry,
 ): Proxy =>
   ({
     geometry,

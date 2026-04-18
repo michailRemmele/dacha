@@ -30,6 +30,13 @@ export interface CircleGeometry {
   radius: number;
 }
 
+export interface SegmentGeometry {
+  center: Point;
+  point1: Point;
+  point2: Point;
+  normal: Vector2;
+}
+
 export interface PointGeometry {
   center: Point;
 }
@@ -43,6 +50,7 @@ export interface RayGeometry {
 export type Geometry =
   | BoxGeometry
   | CircleGeometry
+  | SegmentGeometry
   | PointGeometry
   | RayGeometry;
 
@@ -56,12 +64,14 @@ export interface OrientationData {
   };
   collider: {
     type: string;
+    layer: string;
     centerX: number;
     centerY: number;
     radius?: number;
     sizeX?: number;
     sizeY?: number;
-    layer: string;
+    point1?: Point;
+    point2?: Point;
   };
 }
 
