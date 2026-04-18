@@ -9,7 +9,7 @@ export const collider: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
-      options: ['box', 'circle'],
+      options: ['box', 'circle', 'segment'],
     },
     {
       name: 'sizeX',
@@ -33,6 +33,38 @@ export const collider: WidgetSchema = {
       dependency: {
         name: 'type',
         value: 'circle',
+      },
+    },
+    {
+      name: 'point1X',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
+      },
+    },
+    {
+      name: 'point1Y',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
+      },
+    },
+    {
+      name: 'point2X',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
+      },
+    },
+    {
+      name: 'point2Y',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
       },
     },
     {
