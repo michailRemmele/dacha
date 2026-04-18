@@ -57,6 +57,11 @@ export function buildBoxGeometry(
   centerX += positionX;
   centerY += positionY;
 
+  const center = {
+    x: centerX,
+    y: centerY,
+  };
+
   const points = [
     { x: x1, y: y1 },
     { x: x1, y: y2 },
@@ -73,25 +78,28 @@ export function buildBoxGeometry(
     const rotatedX = scaledX * cos - scaledY * sin;
     const rotatedY = scaledX * sin + scaledY * cos;
 
-    point.x = rotatedX + centerX;
-    point.y = rotatedY + centerY;
+    point.x = rotatedX + center.x;
+    point.y = rotatedY + center.y;
   });
 
   const edges = points.map((point1, index, array) => {
     const point2 = array[(index + 1) % array.length];
+    const normal = VectorOps.getNormal(point1.x, point2.x, point1.y, point2.y);
+    const offset = VectorOps.dotProduct(point1, normal);
+
+    if (VectorOps.dotProduct(center, normal) - offset > 0) {
+      normal.multiplyNumber(-1);
+    }
 
     return {
       point1,
       point2,
-      normal: VectorOps.getNormal(point1.x, point2.x, point1.y, point2.y),
+      normal,
     };
   });
 
   return {
-    center: {
-      x: centerX,
-      y: centerY,
-    },
+    center,
     points,
     edges,
   };

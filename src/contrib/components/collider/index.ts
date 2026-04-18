@@ -1,11 +1,16 @@
 import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
 
 export interface ColliderConfig {
-  type: 'box' | 'circle';
+  type: 'box' | 'circle' | 'segment';
   centerX: number;
   centerY: number;
   sizeX?: number;
   sizeY?: number;
+  point1X?: number;
+  point1Y?: number;
+  point2X?: number;
+  point2Y?: number;
   radius?: number;
   layer: string;
 }
@@ -44,7 +49,7 @@ export interface ColliderConfig {
  * @category Components
  */
 export class Collider extends Component {
-  type: 'box' | 'circle';
+  type: 'box' | 'circle' | 'segment';
 
   centerX: number;
   centerY: number;
@@ -53,6 +58,9 @@ export class Collider extends Component {
   sizeY?: number;
 
   radius?: number;
+
+  point1?: Point;
+  point2?: Point;
 
   layer: string;
 
@@ -68,6 +76,18 @@ export class Collider extends Component {
     this.sizeY = config.sizeY;
 
     this.radius = config.radius;
+    this.point1 = config.point1X !== undefined || config.point1Y !== undefined
+      ? {
+        x: config.point1X ?? 0,
+        y: config.point1Y ?? 0,
+      }
+      : undefined;
+    this.point2 = config.point2X !== undefined || config.point2Y !== undefined
+      ? {
+        x: config.point2X ?? 0,
+        y: config.point2Y ?? 0,
+      }
+      : undefined;
 
     this.layer = config.layer;
   }
@@ -80,6 +100,10 @@ export class Collider extends Component {
       sizeX: this.sizeX,
       sizeY: this.sizeY,
       radius: this.radius,
+      point1X: this.point1?.x,
+      point1Y: this.point1?.y,
+      point2X: this.point2?.x,
+      point2Y: this.point2?.y,
       layer: this.layer,
     });
   }

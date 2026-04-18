@@ -105,6 +105,50 @@ const createCircleActor = (
   return actor;
 };
 
+const createSegmentActor = (
+  id: string,
+  positionX: number,
+  positionY: number,
+  point1X: number,
+  point1Y: number,
+  point2X: number,
+  point2Y: number,
+  type?: 'dynamic' | 'static',
+  colliderConfig: Pick<Collider, 'layer'> = { layer: 'default' },
+): Actor => {
+  const actor = new Actor({ id, name: id });
+  const transform = actor.getComponent(Transform);
+
+  transform.world.position.x = positionX;
+  transform.world.position.y = positionY;
+  actor.setComponent(
+    new Collider({
+      type: 'segment',
+      centerX: 0,
+      centerY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
+      layer: colliderConfig.layer,
+    }),
+  );
+
+  if (type) {
+    actor.setComponent(
+      new RigidBody({
+        type,
+        mass: 1,
+        gravityScale: 0,
+        linearDamping: 0,
+        disabled: false,
+      }),
+    );
+  }
+
+  return actor;
+};
+
 describe('PhysicsSystem', () => {
   it('Stops a falling body from continuing through a static floor', () => {
     const scene = createScene();
@@ -271,5 +315,76 @@ describe('PhysicsSystem', () => {
         })
         .map((actor) => actor.id),
     ).toStrictEqual(['circle']);
+  });
+
+  it('Raycasts against segment colliders', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const segment = createSegmentActor('segment', 4, 0, 0, -2, 0, 2);
+
+    scene.appendChild(segment);
+
+    const firstHit = physicsApi.raycast({
+      origin: { x: 0, y: 0 },
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+    });
+    const allHits = physicsApi.raycastAll({
+      origin: { x: 0, y: 0 },
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+    });
+
+    expect(firstHit?.actor.id).toBe('segment');
+    expect(firstHit?.distance).toBeCloseTo(4);
+    expect(allHits.map((hit) => hit.actor.id)).toStrictEqual(['segment']);
+  });
+
+  it('Supports overlap queries against segment colliders', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const segment = createSegmentActor('segment', 4, 0, -2, 0, 2, 0);
+
+    scene.appendChild(segment);
+
+    expect(
+      physicsApi
+        .overlapPoint({
+          point: { x: 4, y: 0 },
+        })
+        .map((actor) => actor.id),
+    ).toStrictEqual(['segment']);
+  });
+
+  it('Resolves a falling circle against a static segment floor', () => {
+    const scene = createScene();
+    const { physicsSystem } = createPhysicsSystem(scene);
+    const floor = createSegmentActor('floor', 0, 3, -5, 0, 5, 0, 'static');
+    const body = createCircleActor('body', 0, 0, 0.75);
+    body.setComponent(
+      new RigidBody({
+        type: 'dynamic',
+        mass: 1,
+        gravityScale: 0,
+        linearDamping: 0,
+        disabled: false,
+      }),
+    );
+    const rigidBody = body.getComponent(RigidBody);
+    const transform = body.getComponent(Transform);
+
+    rigidBody.linearVelocity.y = 15;
+
+    scene.appendChild(floor);
+    scene.appendChild(body);
+
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
+    expect(transform.world.position.y).toBeLessThanOrEqual(2.3);
   });
 });

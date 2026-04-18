@@ -13,14 +13,28 @@ export const checkCollider = (
     return true;
   }
 
-  if (collider.type === 'box') {
-    return collider.centerX !== colliderOld.centerX
-      || collider.centerY !== colliderOld.centerY
-      || collider.sizeX !== colliderOld.sizeX
-      || collider.sizeY !== colliderOld.sizeY;
+  if (
+    collider.centerX !== colliderOld.centerX ||
+    collider.centerY !== colliderOld.centerY
+  ) {
+    return true;
   }
 
-  return collider.centerX !== colliderOld.centerX
-    || collider.centerY !== colliderOld.centerY
-    || collider.radius !== colliderOld.radius;
+  if (collider.type === 'box') {
+    return (
+      collider.sizeX !== colliderOld.sizeX ||
+      collider.sizeY !== colliderOld.sizeY
+    );
+  }
+
+  if (collider.type === 'circle') {
+    return collider.radius !== colliderOld.radius;
+  }
+
+  return (
+    collider.point1?.x !== colliderOld.point1?.x ||
+    collider.point1?.y !== colliderOld.point1?.y ||
+    collider.point2?.x !== colliderOld.point2?.x ||
+    collider.point2?.y !== colliderOld.point2?.y
+  );
 };
