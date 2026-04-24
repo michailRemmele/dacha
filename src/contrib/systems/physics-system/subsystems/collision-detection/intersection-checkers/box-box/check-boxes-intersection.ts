@@ -35,8 +35,8 @@ export const checkBoxesIntersection = (
 
   const normal = orientNormal(
     referenceOverlap.axis.clone(),
-    arg1.geometry.center,
-    arg2.geometry.center,
+    geometry1.center,
+    geometry2.center,
   );
   const referenceNormal = normal.clone();
 

@@ -7,12 +7,12 @@ import type { TemplateCollection } from '../template';
 import { Actor } from './actor';
 
 export interface ActorOptions {
-  id?: string
-  name?: string
-  children?: ActorOptions[]
-  components?: ComponentConfig[]
-  templateId?: string
-  isNew?: boolean
+  id?: string;
+  name?: string;
+  children?: ActorOptions[];
+  components?: ComponentConfig[];
+  templateId?: string;
+  isNew?: boolean;
 }
 
 export class ActorCreator {
@@ -23,10 +23,13 @@ export class ActorCreator {
     components: ComponentConstructor[],
     templateCollection: TemplateCollection,
   ) {
-    this.components = components.reduce((acc, ComponentClass) => {
-      acc[ComponentClass.componentName] = ComponentClass;
-      return acc;
-    }, {} as Record<string, ComponentConstructor>);
+    this.components = components.reduce(
+      (acc, ComponentClass) => {
+        acc[ComponentClass.componentName] = ComponentClass;
+        return acc;
+      },
+      {} as Record<string, ComponentConstructor>,
+    );
     this.templateCollection = templateCollection;
   }
 
@@ -42,11 +45,15 @@ export class ActorCreator {
     id = id || uuid();
     name = name || id;
 
-    const template = templateId ? this.templateCollection.get(templateId) : undefined;
+    const template = templateId
+      ? this.templateCollection.get(templateId)
+      : undefined;
 
     if (!template) {
-      throw new Error(`Can't create actor ${name} from template. `
-        + `The template with id ${String(templateId)} is null.`);
+      throw new Error(
+        `Can't create actor ${name} from template. ` +
+          `The template with id ${String(templateId)} is null.`,
+      );
     }
 
     const actor = new Actor({
@@ -86,11 +93,7 @@ export class ActorCreator {
   }
 
   private buildFromScratch(options: ActorOptions): Actor {
-    const {
-      name,
-      components = [],
-      children = [],
-    } = options;
+    const { name, components = [], children = [] } = options;
     let { id } = options;
 
     id = id || uuid();

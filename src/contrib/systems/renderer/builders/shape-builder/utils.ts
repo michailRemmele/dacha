@@ -6,6 +6,7 @@ import {
   type RoundRectangle,
   type Circle,
   type Ellipse,
+  type Line,
 } from '../../../../components/shape';
 
 export const getGraphicsContext = (shape: Shape): GraphicsContext => {
@@ -102,6 +103,27 @@ export const getGraphicsContext = (shape: Shape): GraphicsContext => {
       }
       return ellipse;
     }
+    case 'line': {
+      const {
+        point1X,
+        point1Y,
+        point2X,
+        point2Y,
+        strokeWidth,
+        strokeColor,
+        strokeAlignment,
+        pixelLine,
+      } = shape as Line;
+      return new GraphicsContext()
+        .moveTo(point1X, point1Y)
+        .lineTo(point2X, point2Y)
+        .stroke({
+          width: strokeWidth,
+          alignment: strokeAlignment,
+          color: strokeColor,
+          pixelLine,
+        });
+    }
   }
 };
 
@@ -158,6 +180,20 @@ export const getGraphicsContextKey = (shape: Shape): string => {
         pixelLine,
       } = shape as Ellipse;
       return `${type}_${radiusX}_${radiusY}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
+    }
+    case 'line': {
+      const {
+        type,
+        point1X,
+        point1Y,
+        point2X,
+        point2Y,
+        strokeWidth,
+        strokeColor,
+        strokeAlignment,
+        pixelLine,
+      } = shape as Line;
+      return `${type}_${point1X}_${point1Y}_${point2X}_${point2Y}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${pixelLine}`;
     }
   }
 };

@@ -194,9 +194,6 @@ export class ActorRenderTree {
       }
     });
 
-    this.updateParent(container, actor);
-    this.updatePosition(container, actor);
-
     return container;
   }
 
@@ -299,6 +296,8 @@ export class ActorRenderTree {
 
         meta.sortingLayer = sortingLayer;
       }
+
+      view.__dacha.isReady = true;
     });
   }
 

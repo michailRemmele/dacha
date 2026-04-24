@@ -1,6 +1,5 @@
 import { type ViewContainer, type Application, type Container } from 'pixi.js';
 
-import { Transform } from '../../../components/transform';
 import { type Actor } from '../../../../engine/actor';
 import { type SortFn } from '../sort';
 import { type Bounds, type ViewComponent } from '../types';
@@ -10,9 +9,9 @@ import type { FilterEffectConfig } from '../filters/filter-effect';
 import type { MaterialSystem } from '../material';
 import type { ShaderConstructor } from '../material/shader';
 
-import { convertBounds } from './utils';
+import { convertBounds, getWorldPosition } from './utils';
 
-interface RendererServiceOptions {
+interface RendererAPIOptions {
   application: Application;
   worldContainer: Container;
   getViewEntries: () => Set<ViewContainer> | undefined;
@@ -22,14 +21,14 @@ interface RendererServiceOptions {
 }
 
 /**
- * Service that provides rendering utilities and view management
+ * API that provides rendering utilities and view management
  *
  * Offers methods for view intersection testing, bounds calculation, and
  * direct access to the underlying PIXI.js application
  *
  * @category Systems
  */
-export class RendererService {
+export class RendererAPI {
   private application: Application;
   private worldContainer: Container;
   private getViewEntries: () => Set<ViewContainer> | undefined;
@@ -44,7 +43,7 @@ export class RendererService {
     sortFn,
     filterSystem,
     materialSystem,
-  }: RendererServiceOptions) {
+  }: RendererAPIOptions) {
     this.application = application;
     this.worldContainer = worldContainer;
     this.getViewEntries = getViewEntries;
@@ -75,6 +74,10 @@ export class RendererService {
     const inverseMatrix = this.worldContainer.worldTransform.clone().invert();
 
     this.getViewEntries()?.forEach((entry) => {
+      if (!entry.__dacha.isReady) {
+        return;
+      }
+
       const { minX, minY, maxX, maxY } = convertBounds(entry, inverseMatrix);
 
       if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
@@ -108,8 +111,14 @@ export class RendererService {
   ): Actor[] {
     const actors = new Set<Actor>();
 
+    const inverseMatrix = this.worldContainer.worldTransform.clone().invert();
+
     this.getViewEntries()?.forEach((entry) => {
-      const { x, y } = entry.position;
+      if (!entry.__dacha.isReady) {
+        return;
+      }
+
+      const { x, y } = getWorldPosition(entry, inverseMatrix);
       if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
         actors.add(entry.__dacha.actor);
       }
@@ -123,11 +132,9 @@ export class RendererService {
    * the bounds will be the smallest rectangle that contains all views
    *
    * @param actor - Actor to get the bounds of
-   * @returns Bounds of the actor
+   * @returns Bounds of the actor or null if the actor has no available views
    */
-  getBounds(actor: Actor): Bounds {
-    const { world } = actor.getComponent(Transform);
-
+  getBounds(actor: Actor): Bounds | null {
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
@@ -138,7 +145,7 @@ export class RendererService {
     VIEW_COMPONENTS.forEach((ViewComponent) => {
       const viewComponent = actor.getComponent(ViewComponent) as ViewComponent;
 
-      if (!viewComponent?.renderData?.view) {
+      if (!viewComponent?.renderData?.view?.__dacha.isReady) {
         return;
       }
 
@@ -154,14 +161,7 @@ export class RendererService {
     });
 
     if (minX === Infinity) {
-      return {
-        minX: world.position.x,
-        minY: world.position.y,
-        maxX: world.position.x,
-        maxY: world.position.y,
-        width: 0,
-        height: 0,
-      };
+      return null;
     }
 
     return {

@@ -19,3 +19,13 @@ export const convertBounds = (container: Container, matrix: Matrix): Bounds => {
     height: bottomRight.y - topLeft.y,
   };
 };
+
+export const getWorldPosition = (
+  container: Container,
+  matrix: Matrix,
+): Point => {
+  const worldPoint = new Point();
+  container.getGlobalPosition(worldPoint, true);
+
+  return matrix.apply(worldPoint);
+};

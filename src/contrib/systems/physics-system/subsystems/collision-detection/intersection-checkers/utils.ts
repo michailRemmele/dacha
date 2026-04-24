@@ -16,3 +16,25 @@ export const orientNormal = (
 
   return normal;
 };
+
+export interface Projection {
+  min: number;
+  max: number;
+}
+
+export const projectPolygon = (points: Point[], axis: Vector2): Projection => {
+  let min = VectorOps.dotProduct(points[0], axis);
+  let max = min;
+
+  for (let i = 1; i < points.length; i += 1) {
+    const value = VectorOps.dotProduct(points[i], axis);
+
+    if (value < min) {
+      min = value;
+    } else if (value > max) {
+      max = value;
+    }
+  }
+
+  return { min, max };
+};

@@ -1,14 +1,14 @@
 export { Animator } from './animator';
-export { CameraSystem, CameraService } from './camera-system';
+export { CameraSystem, CameraAPI } from './camera-system';
 export { GameStatsMeter } from './game-stats-meter';
 export { KeyboardInputSystem } from './keyboard-input-system';
 export { KeyboardControlSystem } from './keyboard-control-system';
 export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
-export { PhysicsSystem } from './physics-system';
+export { PhysicsSystem, PhysicsAPI } from './physics-system';
 export { BehaviorSystem, Behavior } from './behavior-system';
 export type { BehaviorOptions } from './behavior-system';
 export { UIBridge } from './ui-bridge';
 export type { UIOptions, UIInitFn, UIDestroyFn, LoadUIFn } from './ui-bridge';
 export { AudioSystem } from './audio-system';
-export { Renderer, RendererService, FilterEffect, Shader } from './renderer';
+export { Renderer, RendererAPI, FilterEffect, Shader } from './renderer';

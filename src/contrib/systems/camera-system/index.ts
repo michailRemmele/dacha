@@ -1,2 +1,2 @@
 export { CameraSystem } from './system';
-export { CameraService } from './service';
+export { CameraAPI } from './api';

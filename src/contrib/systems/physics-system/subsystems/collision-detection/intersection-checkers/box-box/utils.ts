@@ -1,43 +1,14 @@
 import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, EdgeWithNormal, Point } from '../../types';
-import { INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON, projectPolygon } from '../utils';
 
 export const CONTACT_EPSILON = 1e-4;
 export const MAX_CONTACT_POINTS = 2;
-
-interface Projection {
-  min: number;
-  max: number;
-}
 
 export interface AxisOverlap {
   axis: Vector2;
   overlap: number;
 }
-
-export const projectPolygon = (
-  polygon: BoxGeometry,
-  axis: Vector2,
-): Projection => {
-  const initialProjection = VectorOps.dotProduct(polygon.points[0], axis);
-
-  const projection = {
-    min: initialProjection,
-    max: initialProjection,
-  };
-
-  for (let i = 1; i < polygon.points.length; i += 1) {
-    const value = VectorOps.dotProduct(polygon.points[i], axis);
-
-    if (value < projection.min) {
-      projection.min = value;
-    } else if (value > projection.max) {
-      projection.max = value;
-    }
-  }
-
-  return projection;
-};
 
 export const findMinBoxesOverlap = (
   geometry1: BoxGeometry,
@@ -49,8 +20,8 @@ export const findMinBoxesOverlap = (
   for (const edge of geometry1.edges) {
     const axis = edge.normal;
 
-    const projection1 = projectPolygon(geometry1, axis);
-    const projection2 = projectPolygon(geometry2, axis);
+    const projection1 = projectPolygon(geometry1.points, axis);
+    const projection2 = projectPolygon(geometry2.points, axis);
 
     const distance1 = projection1.min - projection2.max;
     const distance2 = projection2.min - projection1.max;

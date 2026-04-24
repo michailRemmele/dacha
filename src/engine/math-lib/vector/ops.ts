@@ -85,6 +85,10 @@ export class VectorOps {
    * ```
    */
   static getNormal(x1: number, x2: number, y1: number, y2: number): Vector2 {
+    if (x1 === x2 && y1 === y2) {
+      return VectorOps.getVectorByAngle(0);
+    }
+
     const normal = new Vector2(y1 - y2, x2 - x1);
     normal.multiplyNumber(1 / normal.magnitude);
 
@@ -107,6 +111,24 @@ export class VectorOps {
    */
   static dotProduct(point: Point, vector: Vector2): number {
     return point.x * vector.x + point.y * vector.y;
+  }
+
+  /**
+   * Calculates the cross product of two points.
+   *
+   * @param point1 - First point to use in the cross product
+   * @param point2 - Second point to use in the cross product
+   * @returns Scalar value representing the cross product of the two points
+   *
+   * @example
+   * ```typescript
+   * const point1 = { x: 3, y: 4 };
+   * const point2 = { x: 1, y: 2 };
+   * const cross = VectorOps.crossProduct(point1, point2);
+   * ```
+   */
+  static crossProduct(point1: Point, point2: Point): number {
+    return point1.x * point2.y - point1.y * point2.x;
   }
 
   /**
