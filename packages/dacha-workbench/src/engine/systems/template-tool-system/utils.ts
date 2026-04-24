@@ -1,6 +1,6 @@
 import {
   Transform,
-  RendererService,
+  RendererAPI,
 } from 'dacha'
 import type {
   ActorConfig,
@@ -84,8 +84,12 @@ export const updatePreviewPosition = (
     return
   }
 
-  const rendererService = world.getService(RendererService)
-  const bounds = rendererService.getBounds(preview)
+  const rendererApi = world.systemApi.get(RendererAPI)
+  const bounds = rendererApi.getBounds(preview)
+
+  if (!bounds) {
+    return
+  }
 
   transform.world.position.x = getGridValue(cursor.x, bounds.width, gridStep)
   transform.world.position.y = getGridValue(cursor.y, bounds.height, gridStep)

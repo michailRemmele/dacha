@@ -7,3 +7,4 @@ export { PointerToolSystem } from './pointer-tool-system';
 export { TemplateToolSystem } from './template-tool-system';
 export { GridSystem } from './grid-system';
 export { SettingsSystem } from './settings-system';
+export { DebugVisualizer } from './debug-visualizer';

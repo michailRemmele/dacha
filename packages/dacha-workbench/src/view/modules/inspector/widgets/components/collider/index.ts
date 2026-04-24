@@ -86,6 +86,10 @@ export const collider: WidgetSchema = {
         })),
       ],
     },
+    {
+      name: 'debugColor',
+      type: 'color',
+    },
   ],
   getInitialState: () => ({
     type: 'box',
@@ -94,5 +98,6 @@ export const collider: WidgetSchema = {
     centerX: 0,
     centerY: 0,
     layer: DEFAULT_LAYER,
+    debugColor: '#4DFFB8',
   }),
 };
