@@ -2,7 +2,7 @@ const { app, Menu, clipboard } = require('electron');
 
 const MESSAGES = require('./messages');
 
-module.exports = (window) =>
+module.exports = (window, debugLayers = []) =>
   Menu.buildFromTemplate([
     {
       label: app.name,
@@ -97,6 +97,21 @@ module.exports = (window) =>
         {
           label: 'Grid Settings',
           click: () => window.webContents.send(MESSAGES.SETTINGS, 'grid'),
+        },
+
+        {
+          label: 'Debug Layers',
+          submenu: debugLayers.map((layer) => ({
+            label: layer.title,
+            type: 'checkbox',
+            checked: layer.enabled,
+            click: (menuItem) =>
+              window.webContents.send(
+                MESSAGES.TOGGLE_DEBUG_LAYER,
+                layer.id,
+                menuItem.checked,
+              ),
+          })),
         },
 
         { type: 'separator' },

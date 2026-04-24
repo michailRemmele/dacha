@@ -8,6 +8,7 @@ export {
   TemplateToolSystem,
   GridSystem,
   SettingsSystem,
+  DebugVisualizer,
 } from './systems';
 
-export { Tool, ToolController, Settings, Frame } from './components';
+export { Tool, ToolController, Settings, Frame, Technical } from './components';

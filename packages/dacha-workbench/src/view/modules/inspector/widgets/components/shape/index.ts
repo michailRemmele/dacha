@@ -9,7 +9,7 @@ export const shape: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
-      options: ['rectangle', 'roundRectangle', 'circle', 'ellipse'],
+      options: ['rectangle', 'roundRectangle', 'circle', 'ellipse', 'line'],
     },
     {
       name: 'width',
@@ -50,6 +50,38 @@ export const shape: WidgetSchema = {
       dependency: {
         name: 'type',
         value: 'ellipse',
+      },
+    },
+    {
+      name: 'point1X',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'line',
+      },
+    },
+    {
+      name: 'point1Y',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'line',
+      },
+    },
+    {
+      name: 'point2X',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'line',
+      },
+    },
+    {
+      name: 'point2Y',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'line',
       },
     },
     {

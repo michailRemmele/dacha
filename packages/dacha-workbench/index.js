@@ -77,6 +77,9 @@ const createWindow = () => {
       win.on('close', handleCloseApp)
     }
   })
+  ipcMain.on(MESSAGES.SET_DEBUG_LAYERS, (_, nextDebugLayers) => {
+    Menu.setApplicationMenu(getMenu(win, nextDebugLayers))
+  })
 
   win.loadURL(`http://localhost:${server.address().port}`)
 

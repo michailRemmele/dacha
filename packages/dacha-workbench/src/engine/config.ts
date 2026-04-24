@@ -81,6 +81,10 @@ export const getEditorConfig = ({
                     ],
                   },
                 },
+                {
+                  name: 'Technical',
+                  config: {},
+                },
               ],
             },
             {
@@ -111,6 +115,10 @@ export const getEditorConfig = ({
                       },
                     ],
                   },
+                },
+                {
+                  name: 'Technical',
+                  config: {},
                 },
               ],
             },
@@ -162,6 +170,10 @@ export const getEditorConfig = ({
                     ],
                   },
                 },
+                {
+                  name: 'Technical',
+                  config: {},
+                },
               ],
             },
             {
@@ -210,6 +222,10 @@ export const getEditorConfig = ({
                     ],
                   },
                 },
+                {
+                  name: 'Technical',
+                  config: {},
+                },
               ],
             },
             {
@@ -226,6 +242,10 @@ export const getEditorConfig = ({
                     scaleX: 1,
                     scaleY: 1,
                   },
+                },
+                {
+                  name: 'Technical',
+                  config: {},
                 },
               ],
             },
@@ -299,6 +319,10 @@ export const getEditorConfig = ({
                 ),
               },
             },
+            {
+              name: 'Technical',
+              config: {},
+            },
           ],
         },
       ],
@@ -361,6 +385,10 @@ export const getEditorConfig = ({
       options: {},
     },
     {
+      name: 'DebugVisualizer',
+      options: {},
+    },
+    {
       name: 'UIBridge',
       options: {},
     },
@@ -408,6 +436,10 @@ export const getEditorConfig = ({
           name: 'Frame',
           config: {},
         },
+        {
+          name: 'Technical',
+          config: {},
+        },
       ],
     },
     {
@@ -442,6 +474,31 @@ export const getEditorConfig = ({
             sortCenter: [0, 0],
           },
         },
+        {
+          name: 'Technical',
+          config: {},
+        },
+      ],
+    },
+    {
+      id: 'debugActor',
+      name: 'debugActor',
+      children: [],
+      components: [
+        {
+          name: 'Transform',
+          config: {
+            offsetX: 0,
+            offsetY: 0,
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+          },
+        },
+        {
+          name: 'Technical',
+          config: {},
+        },
       ],
     },
   ],
@@ -452,6 +509,10 @@ export const getEditorConfig = ({
         order: sorting.order,
         layers: [
           ...sorting.layers,
+          {
+            id: 'editor-layer-0',
+            name: 'editor-layer-0',
+          },
           {
             id: 'editor-layer-1',
             name: 'editor-layer-1',
