@@ -13,6 +13,7 @@ export interface ColliderConfig {
   point2Y?: number;
   radius?: number;
   layer: string;
+  debugColor?: string;
 }
 
 /**
@@ -64,6 +65,8 @@ export class Collider extends Component {
 
   layer: string;
 
+  debugColor?: string;
+
   constructor(config: ColliderConfig) {
     super();
 
@@ -76,20 +79,24 @@ export class Collider extends Component {
     this.sizeY = config.sizeY;
 
     this.radius = config.radius;
-    this.point1 = config.point1X !== undefined || config.point1Y !== undefined
-      ? {
-        x: config.point1X ?? 0,
-        y: config.point1Y ?? 0,
-      }
-      : undefined;
-    this.point2 = config.point2X !== undefined || config.point2Y !== undefined
-      ? {
-        x: config.point2X ?? 0,
-        y: config.point2Y ?? 0,
-      }
-      : undefined;
+    this.point1 =
+      config.point1X !== undefined || config.point1Y !== undefined
+        ? {
+            x: config.point1X ?? 0,
+            y: config.point1Y ?? 0,
+          }
+        : undefined;
+    this.point2 =
+      config.point2X !== undefined || config.point2Y !== undefined
+        ? {
+            x: config.point2X ?? 0,
+            y: config.point2Y ?? 0,
+          }
+        : undefined;
 
     this.layer = config.layer;
+
+    this.debugColor = config.debugColor;
   }
 
   clone(): Collider {
@@ -105,6 +112,7 @@ export class Collider extends Component {
       point2X: this.point2?.x,
       point2Y: this.point2?.y,
       layer: this.layer,
+      debugColor: this.debugColor,
     });
   }
 }
