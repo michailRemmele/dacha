@@ -8,7 +8,12 @@ interface RenderData {
   graphicsContextKey?: string;
 }
 
-export type ShapeType = 'rectangle' | 'roundRectangle' | 'circle' | 'ellipse';
+export type ShapeType =
+  | 'rectangle'
+  | 'roundRectangle'
+  | 'circle'
+  | 'ellipse'
+  | 'line';
 
 export interface BaseShape {
   type: ShapeType;
@@ -48,8 +53,16 @@ export interface Ellipse extends BaseShape {
   radiusY: number;
 }
 
+export interface Line extends BaseShape {
+  type: 'line';
+  point1X: number;
+  point1Y: number;
+  point2X: number;
+  point2Y: number;
+}
+
 export type ShapeConfig = BaseShape &
-  Partial<Rectangle | RoundRectangle | Circle | Ellipse>;
+  Partial<Rectangle | RoundRectangle | Circle | Ellipse | Line>;
 
 /**
  * Shape component for rendering 2D geometry.
@@ -82,7 +95,7 @@ export type ShapeConfig = BaseShape &
  * shape.opacity = 0.5; // Make semi-transparent
  * shape.color = '#ff0000'; // Apply a red tint
  * ```
- * 
+ *
  * @category Components
  */
 export class Shape extends Component {
@@ -93,7 +106,7 @@ export class Shape extends Component {
   /** Width of the stroke */
   strokeWidth: number;
   /** Alignment of the stroke relative to the path
-   * 
+   *
    * 0 - Outside of the shape
    * 0.5 - Center of the path
    * 1 - Inside of the shape
@@ -123,12 +136,20 @@ export class Shape extends Component {
   radiusX?: number;
   /** Radius Y of the shape */
   radiusY?: number;
+  /** Start point X coordinate for line shape */
+  point1X?: number;
+  /** Start point Y coordinate for line shape */
+  point1Y?: number;
+  /** End point X coordinate for line shape */
+  point2X?: number;
+  /** End point Y coordinate for line shape */
+  point2Y?: number;
   /** Internal rendering data */
   renderData?: RenderData;
 
   /**
    * Creates a new Shape component.
-   * 
+   *
    * @param config - Configuration for the shape
    */
   constructor(config: ShapeConfig) {
@@ -150,6 +171,10 @@ export class Shape extends Component {
     this.radius = (config as RoundRectangle | Circle).radius;
     this.radiusX = (config as Ellipse).radiusX;
     this.radiusY = (config as Ellipse).radiusY;
+    this.point1X = (config as Line).point1X;
+    this.point1Y = (config as Line).point1Y;
+    this.point2X = (config as Line).point2X;
+    this.point2Y = (config as Line).point2Y;
   }
 
   clone(): Shape {
@@ -169,6 +194,10 @@ export class Shape extends Component {
       radius: this.radius,
       radiusX: this.radiusX,
       radiusY: this.radiusY,
+      point1X: this.point1X,
+      point1Y: this.point1Y,
+      point2X: this.point2X,
+      point2Y: this.point2Y,
       fill: this.fill,
     });
   }

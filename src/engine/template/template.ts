@@ -37,17 +37,22 @@ export class Template extends Entity {
     return super.findChildById(id, recursive) as Template | undefined;
   }
 
-  override findChildByName(name: string, recursive = true): Template | undefined {
+  override findChildByName(
+    name: string,
+    recursive = true,
+  ): Template | undefined {
     return super.findChildByName(name, recursive) as Template | undefined;
   }
 
   setComponent(component: Component): void {
-    const { componentName } = (component.constructor as ComponentConstructor);
+    const { componentName } = component.constructor as ComponentConstructor;
 
     this.components[componentName] = component;
   }
 
-  getComponent<T extends Component>(componentClass: ComponentConstructor<T>): T {
+  getComponent<T extends Component>(
+    componentClass: ComponentConstructor<T>,
+  ): T {
     return this.components[componentClass.componentName] as T;
   }
 
