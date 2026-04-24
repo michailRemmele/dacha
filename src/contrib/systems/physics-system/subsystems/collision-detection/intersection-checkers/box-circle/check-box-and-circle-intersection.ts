@@ -1,4 +1,3 @@
-import { Collider } from '../../../../../../components';
 import {
   MathOps,
   Vector2,
@@ -42,7 +41,7 @@ export const checkBoxAndCircleIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isBoxFirst = arg1.actor.getComponent(Collider).type === 'box';
+  const isBoxFirst = 'radius' in arg2.geometry;
   const box = (isBoxFirst ? arg1.geometry : arg2.geometry) as BoxGeometry;
   const circle = (isBoxFirst ? arg2.geometry : arg1.geometry) as CircleGeometry;
 
@@ -85,8 +84,8 @@ export const checkBoxAndCircleIntersection = (
   return {
     normal: orientNormal(
       buildNormal(circle, closestEdge, closestPoint),
-      arg1.geometry.center,
-      arg2.geometry.center,
+      (arg1.geometry as BoxGeometry | CircleGeometry).center,
+      (arg2.geometry as BoxGeometry | CircleGeometry).center,
     ),
     penetration,
     contactPoints: [closestPoint],

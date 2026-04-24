@@ -1,23 +1,23 @@
 import type { Actor } from '../../../engine/actor';
 import { Camera } from '../../components';
 
-interface CameraServiceOptions {
+interface CameraAPIOptions {
   onCameraUpdate: (actor: Actor) => void;
   findCurrentCamera: () => Actor | undefined;
 }
 
 /**
- * Service that manages camera control and current camera tracking
+ * API that manages camera control and current camera tracking
  *
  * Provides methods to set and get the current camera actor
- * 
+ *
  * @category Systems
  */
-export class CameraService {
+export class CameraAPI {
   private onCameraUpdate: (actor: Actor) => void;
   private findCurrentCamera: () => Actor | undefined;
 
-  constructor({ onCameraUpdate, findCurrentCamera }: CameraServiceOptions) {
+  constructor({ onCameraUpdate, findCurrentCamera }: CameraAPIOptions) {
     this.onCameraUpdate = onCameraUpdate;
     this.findCurrentCamera = findCurrentCamera;
   }

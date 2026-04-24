@@ -24,6 +24,10 @@ declare module 'pixi.js' {
         sortCenter: [number, number];
       };
       meta: Record<string, unknown>;
+      /**
+       * Flag to indicate if the view is fully initialized and ready (parent set and position updated)
+       */
+      isReady?: boolean;
     };
   }
   interface Filter {

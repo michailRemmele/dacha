@@ -17,6 +17,16 @@ describe('Contrib -> components -> Collider', () => {
       radius: 20,
       layer: 'enemy',
     }).clone();
+    const segment = new Collider({
+      type: 'segment',
+      centerX: 0,
+      centerY: 0,
+      point1X: -1,
+      point1Y: 0,
+      point2X: 1,
+      point2Y: 0,
+      layer: 'ground',
+    }).clone();
 
     expect(box.type).toEqual('box');
     expect(box.sizeX).toEqual(10);
@@ -30,6 +40,11 @@ describe('Contrib -> components -> Collider', () => {
     expect(circle.centerX).toEqual(1);
     expect(circle.centerY).toEqual(2);
     expect(circle.layer).toEqual('enemy');
+
+    expect(segment.type).toEqual('segment');
+    expect(segment.point1).toStrictEqual({ x: -1, y: 0 });
+    expect(segment.point2).toStrictEqual({ x: 1, y: 0 });
+    expect(segment.layer).toEqual('ground');
   });
 
   it('Correct updates values ', () => {
@@ -48,6 +63,16 @@ describe('Contrib -> components -> Collider', () => {
       centerY: 2,
       layer: 'default',
     }).clone();
+    const segment = new Collider({
+      type: 'segment',
+      centerX: 0,
+      centerY: 0,
+      point1X: -1,
+      point1Y: 0,
+      point2X: 1,
+      point2Y: 0,
+      layer: 'default',
+    }).clone();
 
     box.sizeX = 20;
     box.sizeY = 40;
@@ -58,6 +83,8 @@ describe('Contrib -> components -> Collider', () => {
     circle.centerX = 3;
     circle.centerY = 6;
     circle.layer = 'trigger';
+    segment.point1 = { x: -2, y: 0 };
+    segment.point2 = { x: 1, y: 3 };
 
     expect(box.sizeX).toEqual(20);
     expect(box.sizeY).toEqual(40);
@@ -68,6 +95,9 @@ describe('Contrib -> components -> Collider', () => {
     expect(circle.centerX).toEqual(3);
     expect(circle.centerY).toEqual(6);
     expect(circle.layer).toEqual('trigger');
+
+    expect(segment.point1).toStrictEqual({ x: -2, y: 0 });
+    expect(segment.point2).toStrictEqual({ x: 1, y: 3 });
   });
 
   it('Clones return deep copy of original component', () => {
@@ -93,5 +123,19 @@ describe('Contrib -> components -> Collider', () => {
     const cloneCircle = originalCircle.clone();
 
     expect(originalCircle).not.toBe(cloneCircle);
+
+    const originalSegment = new Collider({
+      type: 'segment',
+      centerX: 0,
+      centerY: 0,
+      point1X: -1,
+      point1Y: 0,
+      point2X: 1,
+      point2Y: 0,
+      layer: 'default',
+    });
+    const cloneSegment = originalSegment.clone();
+
+    expect(originalSegment).not.toBe(cloneSegment);
   });
 });

@@ -1,12 +1,9 @@
-import type { Vector2 } from '../../../../../engine/math-lib';
+import type { Vector2, Point } from '../../../../../engine/math-lib';
 import type { Actor } from '../../../../../engine/actor';
 
 import type { DispersionCalculator } from './dispersion-calculator';
 
-export interface Point {
-  x: number;
-  y: number;
-}
+export type { Point };
 
 export interface AABB {
   min: Point;
@@ -33,7 +30,29 @@ export interface CircleGeometry {
   radius: number;
 }
 
-export type Geometry = BoxGeometry | CircleGeometry;
+export interface SegmentGeometry {
+  center: Point;
+  point1: Point;
+  point2: Point;
+  normal: Vector2;
+}
+
+export interface PointGeometry {
+  center: Point;
+}
+
+export interface RayGeometry {
+  origin: Point;
+  direction: Vector2;
+  maxDistance: number;
+}
+
+export type Geometry =
+  | BoxGeometry
+  | CircleGeometry
+  | SegmentGeometry
+  | PointGeometry
+  | RayGeometry;
 
 export interface OrientationData {
   transform: {
@@ -45,25 +64,36 @@ export interface OrientationData {
   };
   collider: {
     type: string;
+    layer: string;
     centerX: number;
     centerY: number;
     radius?: number;
     sizeX?: number;
     sizeY?: number;
-    layer: string;
+    point1?: Point;
+    point2?: Point;
   };
 }
 
-export interface Proxy {
+export interface ActorProxy {
   actor: Actor;
   aabb: AABB;
   geometry: Geometry;
   orientationData: OrientationData;
   edges: Record<Axis, [SortedItem, SortedItem]>;
+  layer: string;
 }
 
+export interface QueryProxy {
+  aabb: AABB;
+  geometry: Geometry;
+  layer?: string;
+}
+
+export type Proxy = ActorProxy | QueryProxy;
+
 export interface SortedItem {
-  proxy: Proxy;
+  proxy: ActorProxy;
   value: number;
 }
 
@@ -79,7 +109,7 @@ export interface Axes {
   y: AxisEntry;
 }
 
-export type ProxyPair = [Proxy, Proxy];
+export type ProxyPair = [ActorProxy, ActorProxy];
 
 export interface Contact {
   actor1: Actor;
@@ -93,4 +123,5 @@ export interface Intersection {
   normal: Vector2;
   penetration: number;
   contactPoints: Point[];
+  distance?: number;
 }

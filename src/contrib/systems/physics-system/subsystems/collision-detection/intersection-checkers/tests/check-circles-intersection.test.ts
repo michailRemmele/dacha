@@ -8,15 +8,15 @@ import {
 
 describe('PhysicsSystem -> collision-detection -> checkCirclesIntersection()', () => {
   it('Returns false when circles are separated', () => {
-    const circle1 = createProxy('circle', createCircleGeometry(0, 0, 1));
-    const circle2 = createProxy('circle', createCircleGeometry(3, 0, 1));
+    const circle1 = createProxy(createCircleGeometry(0, 0, 1));
+    const circle2 = createProxy(createCircleGeometry(3, 0, 1));
 
     expect(checkCirclesIntersection(circle1, circle2)).toBe(false);
   });
 
   it('Returns normal/penetration/contact for overlapping circles', () => {
-    const circle1 = createProxy('circle', createCircleGeometry(0, 0, 2));
-    const circle2 = createProxy('circle', createCircleGeometry(3, 0, 2));
+    const circle1 = createProxy(createCircleGeometry(0, 0, 2));
+    const circle2 = createProxy(createCircleGeometry(3, 0, 2));
 
     const intersection = expectIntersection(
       checkCirclesIntersection(circle1, circle2),
@@ -29,8 +29,8 @@ describe('PhysicsSystem -> collision-detection -> checkCirclesIntersection()', (
   });
 
   it('Returns zero-penetration contact when circles are just touching', () => {
-    const circle1 = createProxy('circle', createCircleGeometry(0, 0, 1));
-    const circle2 = createProxy('circle', createCircleGeometry(2, 0, 1));
+    const circle1 = createProxy(createCircleGeometry(0, 0, 1));
+    const circle2 = createProxy(createCircleGeometry(2, 0, 1));
 
     const intersection = expectIntersection(
       checkCirclesIntersection(circle1, circle2),
@@ -43,8 +43,8 @@ describe('PhysicsSystem -> collision-detection -> checkCirclesIntersection()', (
   });
 
   it('Uses fallback normal for concentric circles (same center)', () => {
-    const circle1 = createProxy('circle', createCircleGeometry(5, -2, 2));
-    const circle2 = createProxy('circle', createCircleGeometry(5, -2, 1));
+    const circle1 = createProxy(createCircleGeometry(5, -2, 2));
+    const circle2 = createProxy(createCircleGeometry(5, -2, 1));
 
     const intersection = expectIntersection(
       checkCirclesIntersection(circle1, circle2),

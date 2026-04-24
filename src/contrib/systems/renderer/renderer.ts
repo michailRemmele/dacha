@@ -14,10 +14,10 @@ import {
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
-import { CameraService } from '../camera-system';
+import { CameraAPI } from '../camera-system';
 import { getWindowNode } from '../../utils/get-window-node';
 
-import { RendererService } from './service';
+import { RendererAPI } from './api';
 import {
   composeSort,
   SortFn,
@@ -54,13 +54,14 @@ export class Renderer extends WorldSystem {
   private sortingLayers: Map<string, RenderLayer>;
   private sortFn: SortFn;
   private backgroundColor: Color;
-  private cameraService: CameraService;
+  private cameraApi: CameraAPI;
   private assets: Assets;
   private actorRenderTree?: ActorRenderTree;
   private filterSystem: FilterSystem;
   private materialSystem: MaterialSystem;
   private resources?: RendererResources;
   private time: Time;
+  private rendererApi: RendererAPI;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -121,19 +122,19 @@ export class Renderer extends WorldSystem {
       availableFilterEffects: this.resources?.filterEffects,
     });
 
-    this.cameraService = world.getService(CameraService);
+    this.cameraApi = world.systemApi.get(CameraAPI);
 
-    world.addService(
-      new RendererService({
-        application: this.application,
-        worldContainer: this.worldContainer,
-        getViewEntries: (): Set<ViewContainer> | undefined =>
-          this.actorRenderTree?.viewEntries,
-        sortFn: this.sortFn,
-        filterSystem: this.filterSystem,
-        materialSystem: this.materialSystem,
-      }),
-    );
+    this.rendererApi = new RendererAPI({
+      application: this.application,
+      worldContainer: this.worldContainer,
+      getViewEntries: (): Set<ViewContainer> | undefined =>
+        this.actorRenderTree?.viewEntries,
+      sortFn: this.sortFn,
+      filterSystem: this.filterSystem,
+      materialSystem: this.materialSystem,
+    });
+
+    world.systemApi.register(this.rendererApi);
   }
 
   async onWorldLoad(): Promise<void> {
@@ -199,7 +200,7 @@ export class Renderer extends WorldSystem {
   }
 
   private updateCamera(): void {
-    const currentCamera = this.cameraService.getCurrentCamera();
+    const currentCamera = this.cameraApi.getCurrentCamera();
     const transform = currentCamera?.getComponent(Transform);
     const camera = currentCamera?.getComponent(Camera);
 

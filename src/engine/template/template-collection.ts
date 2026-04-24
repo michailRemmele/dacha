@@ -8,20 +8,18 @@ export class TemplateCollection {
   private storage: Record<string, Template>;
 
   constructor(components: ComponentConstructor[]) {
-    this.components = components.reduce((acc, ComponentClass) => {
-      acc[ComponentClass.componentName] = ComponentClass;
-      return acc;
-    }, {} as Record<string, ComponentConstructor>);
+    this.components = components.reduce(
+      (acc, ComponentClass) => {
+        acc[ComponentClass.componentName] = ComponentClass;
+        return acc;
+      },
+      {} as Record<string, ComponentConstructor>,
+    );
     this.storage = {};
   }
 
   private buildTemplate(options: TemplateConfig): Template {
-    const {
-      id,
-      name,
-      components = [],
-      children = [],
-    } = options;
+    const { id, name, components = [], children = [] } = options;
 
     const template = new Template({ id, name });
 

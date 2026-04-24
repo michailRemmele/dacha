@@ -70,7 +70,11 @@ export class ShapeBuilder implements Builder<Shape> {
       shape.height !== meta.height ||
       shape.radius !== meta.radius ||
       shape.radiusX !== meta.radiusX ||
-      shape.radiusY !== meta.radiusY
+      shape.radiusY !== meta.radiusY ||
+      shape.point1X !== meta.point1X ||
+      shape.point1Y !== meta.point1Y ||
+      shape.point2X !== meta.point2X ||
+      shape.point2Y !== meta.point2Y
     ) {
       view.label = shape.type;
       this.updateGraphicsContext(shape);
@@ -83,6 +87,10 @@ export class ShapeBuilder implements Builder<Shape> {
       meta.radius = shape.radius;
       meta.radiusX = shape.radiusX;
       meta.radiusY = shape.radiusY;
+      meta.point1X = shape.point1X;
+      meta.point1Y = shape.point1Y;
+      meta.point2X = shape.point2X;
+      meta.point2Y = shape.point2Y;
     }
 
     const graphicsContext = this.getGraphicsContext(shape)!;

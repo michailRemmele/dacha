@@ -10,15 +10,15 @@ import {
 
 describe('PhysicsSystem -> collision-detection -> checkBoxesIntersection()', () => {
   it('Returns false for separated boxes', () => {
-    const box1 = createProxy('box', createBoxGeometry(0, 0, 2, 2));
-    const box2 = createProxy('box', createBoxGeometry(5, 0, 2, 2));
+    const box1 = createProxy(createBoxGeometry(0, 0, 2, 2));
+    const box2 = createProxy(createBoxGeometry(5, 0, 2, 2));
 
     expect(checkBoxesIntersection(box1, box2)).toBe(false);
   });
 
   it('Returns manifold for overlapping axis-aligned boxes', () => {
-    const box1 = createProxy('box', createBoxGeometry(0, 0, 2, 2));
-    const box2 = createProxy('box', createBoxGeometry(1.5, 0, 2, 2));
+    const box1 = createProxy(createBoxGeometry(0, 0, 2, 2));
+    const box2 = createProxy(createBoxGeometry(1.5, 0, 2, 2));
 
     const intersection = expectIntersection(checkBoxesIntersection(box1, box2));
     const [point1, point2] = sortPoints(intersection.contactPoints);
@@ -32,8 +32,8 @@ describe('PhysicsSystem -> collision-detection -> checkBoxesIntersection()', () 
   });
 
   it('Returns zero-penetration manifold when boxes are just touching', () => {
-    const box1 = createProxy('box', createBoxGeometry(0, 0, 2, 2));
-    const box2 = createProxy('box', createBoxGeometry(2, 0, 2, 2));
+    const box1 = createProxy(createBoxGeometry(0, 0, 2, 2));
+    const box2 = createProxy(createBoxGeometry(2, 0, 2, 2));
 
     const intersection = expectIntersection(checkBoxesIntersection(box1, box2));
     const [point1, point2] = sortPoints(intersection.contactPoints);
@@ -50,8 +50,8 @@ describe('PhysicsSystem -> collision-detection -> checkBoxesIntersection()', () 
     const box1Geometry = createBoxGeometry(0, 0, 4, 2);
     const box2Geometry = createRotatedBoxGeometry(1.2, 0.2, 2, 2, Math.PI / 4);
 
-    const box1 = createProxy('box', box1Geometry);
-    const box2 = createProxy('box', box2Geometry);
+    const box1 = createProxy(box1Geometry);
+    const box2 = createProxy(box2Geometry);
 
     const intersection = expectIntersection(checkBoxesIntersection(box1, box2));
 
@@ -62,8 +62,8 @@ describe('PhysicsSystem -> collision-detection -> checkBoxesIntersection()', () 
   });
 
   it('Returns two contact points for a face-like overlap case', () => {
-    const box1 = createProxy('box', createBoxGeometry(0, 0, 4, 2));
-    const box2 = createProxy('box', createBoxGeometry(0, 0.8, 4, 2));
+    const box1 = createProxy(createBoxGeometry(0, 0, 4, 2));
+    const box2 = createProxy(createBoxGeometry(0, 0.8, 4, 2));
 
     const intersection = expectIntersection(checkBoxesIntersection(box1, box2));
     const [point1, point2] = sortPoints(intersection.contactPoints);
@@ -75,9 +75,8 @@ describe('PhysicsSystem -> collision-detection -> checkBoxesIntersection()', () 
   });
 
   it('Returns a bounded manifold for a corner-vs-face overlap', () => {
-    const box1 = createProxy('box', createBoxGeometry(0, 0, 2, 2));
+    const box1 = createProxy(createBoxGeometry(0, 0, 2, 2));
     const box2 = createProxy(
-      'box',
       createRotatedBoxGeometry(0.9, 0.9, 2, 2, Math.PI / 4),
     );
 

@@ -10,12 +10,12 @@ export interface EntityOptions {
   /** Id of the entity */
   id: string;
   /** Name of the entity */
-  name: string
+  name: string;
 }
 
 /**
  * Base class for all entities.
- * 
+ *
  * @category Core
  */
 export class Entity extends EventTarget {
@@ -60,7 +60,9 @@ export class Entity extends EventTarget {
    * @param child - Child to remove
    */
   removeChild(child: Entity): void {
-    const index = this.children.findIndex((currentChild) => currentChild === child);
+    const index = this.children.findIndex(
+      (currentChild) => currentChild === child,
+    );
     if (index === -1) {
       return;
     }
@@ -90,7 +92,10 @@ export class Entity extends EventTarget {
    * @param recursive - Whether to search recursively through the children
    * @returns Child entity or undefined
    */
-  findChild(predicate: (entity: Entity) => boolean, recursive = true): Entity | undefined {
+  findChild(
+    predicate: (entity: Entity) => boolean,
+    recursive = true,
+  ): Entity | undefined {
     return findChild(this, predicate, recursive);
   }
 
