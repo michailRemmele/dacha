@@ -1,5 +1,5 @@
 import {
-  RendererService,
+  RendererAPI,
   Transform,
 } from 'dacha'
 import type {
@@ -173,7 +173,7 @@ export class SelectionMovementSubsystem {
     const tool = getTool(this.world)
     const snapToGrid = tool.features.grid.value as boolean
 
-    const rendererService = this.world.getService(RendererService)
+    const rendererApi = this.world.systemApi.get(RendererAPI)
 
     this.selectedActors.frames.forEach((frame) => {
       const { selectedActorId } = frame.getComponent(Frame)
@@ -195,7 +195,10 @@ export class SelectionMovementSubsystem {
       if (snapToGrid) {
         const gridStep = getGridStep(this.world)
 
-        const bounds = rendererService.getBounds(actor)
+        const bounds = rendererApi.getBounds(actor)
+        if (!bounds) {
+          return
+        }
 
         transform.world.position.x = getGridValue(offsetX, bounds.width, gridStep)
         transform.world.position.y = getGridValue(offsetY, bounds.height, gridStep)

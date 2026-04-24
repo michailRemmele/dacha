@@ -9,7 +9,7 @@ export const collider: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
-      options: ['box', 'circle'],
+      options: ['box', 'circle', 'segment'],
     },
     {
       name: 'sizeX',
@@ -36,6 +36,38 @@ export const collider: WidgetSchema = {
       },
     },
     {
+      name: 'point1X',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
+      },
+    },
+    {
+      name: 'point1Y',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
+      },
+    },
+    {
+      name: 'point2X',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
+      },
+    },
+    {
+      name: 'point2Y',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'segment',
+      },
+    },
+    {
       name: 'centerX',
       type: 'number',
     },
@@ -54,6 +86,10 @@ export const collider: WidgetSchema = {
         })),
       ],
     },
+    {
+      name: 'debugColor',
+      type: 'color',
+    },
   ],
   getInitialState: () => ({
     type: 'box',
@@ -62,5 +98,6 @@ export const collider: WidgetSchema = {
     centerX: 0,
     centerY: 0,
     layer: DEFAULT_LAYER,
+    debugColor: '#4DFFB8',
   }),
 };

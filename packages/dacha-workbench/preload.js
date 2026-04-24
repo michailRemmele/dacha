@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld('electron', {
   setUnsavedChanges: (unsavedChanges) => {
     ipcRenderer.send(MESSAGES.SET_UNSAVED_CHANGES, unsavedChanges);
   },
+  setDebugLayers: (layers) => {
+    ipcRenderer.send(MESSAGES.SET_DEBUG_LAYERS, layers);
+  },
   onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
   onSettings: (callback) =>
     ipcRenderer.on(MESSAGES.SETTINGS, (_, ...args) => callback(...args)),
@@ -62,6 +65,11 @@ contextBridge.exposeInMainWorld('electron', {
   onDelete: (callback) => {
     ipcRenderer.on(MESSAGES.DELETE, callback);
     return () => ipcRenderer.removeListener(MESSAGES.DELETE, callback);
+  },
+  onToggleDebugLayer: (callback) => {
+    const handler = (_, ...args) => callback(...args);
+    ipcRenderer.on(MESSAGES.TOGGLE_DEBUG_LAYER, handler);
+    return () => ipcRenderer.removeListener(MESSAGES.TOGGLE_DEBUG_LAYER, handler);
   },
   onExtensionBuildStart: (callback) => {
     ipcRenderer.on(MESSAGES.EXTENSION_BUILD_START, callback);

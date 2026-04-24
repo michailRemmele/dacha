@@ -34,10 +34,12 @@ import {
   TemplateToolSystem,
   GridSystem,
   SettingsSystem,
+  DebugVisualizer,
   Tool,
   ToolController,
   Settings,
   Frame,
+  Technical,
 } from '../../../engine';
 
 interface EngineProviderProps {
@@ -83,6 +85,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           TemplateToolSystem,
           GridSystem,
           SettingsSystem,
+          DebugVisualizer,
         ],
         components: [
           Transform,
@@ -97,6 +100,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           PixiView,
           Settings,
           Frame,
+          Technical,
         ],
         resources: {
           [ProjectLoader.systemName]: {

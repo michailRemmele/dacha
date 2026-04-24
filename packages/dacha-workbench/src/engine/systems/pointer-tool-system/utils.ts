@@ -1,11 +1,4 @@
-import {
-  Transform,
-  Shape,
-  Actor,
-  Camera,
-  CameraService,
-  type World,
-} from 'dacha';
+import { Transform, Shape, Actor } from 'dacha';
 import { type Bounds } from 'dacha/renderer';
 
 import { getIdByPath } from '../../../utils/get-id-by-path';
@@ -91,12 +84,4 @@ export const getActorIdByPath = (
     return getIdByPath(path);
   }
   return undefined;
-};
-
-export const getCurrentZoom = (world: World): number => {
-  const cameraService = world.getService(CameraService);
-  const cameraActor = cameraService.getCurrentCamera();
-  const camera = cameraActor?.getComponent(Camera);
-
-  return camera?.zoom ?? 1;
 };

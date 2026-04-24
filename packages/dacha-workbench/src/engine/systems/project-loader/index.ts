@@ -1,4 +1,4 @@
-import { WorldSystem, RendererService } from 'dacha';
+import { WorldSystem, RendererAPI } from 'dacha';
 import type { World, Config, WorldSystemOptions, UpdateOptions } from 'dacha';
 import * as Events from 'dacha/events';
 
@@ -100,10 +100,8 @@ export class ProjectLoader extends WorldSystem {
       locales,
     };
 
-    const rendererService = this.world.getService(RendererService);
-    rendererService.reloadShaders(
-      classRegistry.getGroup('behavior.shader') ?? [],
-    );
+    const rendererApi = this.world.systemApi.get(RendererAPI);
+    rendererApi.reloadShaders(classRegistry.getGroup('behavior.shader') ?? []);
   }
 
   private saveProjectConfig(): void {
