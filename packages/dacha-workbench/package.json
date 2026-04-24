@@ -1,6 +1,6 @@
 {
   "name": "dacha-workbench",
-  "version": "0.0.34-alpha.0",
+  "version": "0.0.34-alpha.1",
   "description": "GUI editor for dacha game engine",
   "exports": {
     ".": {
