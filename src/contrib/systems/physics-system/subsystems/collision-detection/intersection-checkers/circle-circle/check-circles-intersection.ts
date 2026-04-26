@@ -1,6 +1,6 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
 import type { Proxy, CircleGeometry, Intersection } from '../../types';
-import { INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
 
 /**
  * Checks circles for intersection.

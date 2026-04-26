@@ -37,6 +37,10 @@ export interface SegmentGeometry {
   normal: Vector2;
 }
 
+export interface CapsuleGeometry extends SegmentGeometry {
+  radius: number;
+}
+
 export interface PointGeometry {
   center: Point;
 }
@@ -51,6 +55,7 @@ export type Geometry =
   | BoxGeometry
   | CircleGeometry
   | SegmentGeometry
+  | CapsuleGeometry
   | PointGeometry
   | RayGeometry;
 

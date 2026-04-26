@@ -149,6 +149,52 @@ const createSegmentActor = (
   return actor;
 };
 
+const createCapsuleActor = (
+  id: string,
+  positionX: number,
+  positionY: number,
+  point1X: number,
+  point1Y: number,
+  point2X: number,
+  point2Y: number,
+  radius: number,
+  type?: 'dynamic' | 'static',
+  colliderConfig: Pick<Collider, 'layer'> = { layer: 'default' },
+): Actor => {
+  const actor = new Actor({ id, name: id });
+  const transform = actor.getComponent(Transform);
+
+  transform.world.position.x = positionX;
+  transform.world.position.y = positionY;
+  actor.setComponent(
+    new Collider({
+      type: 'capsule',
+      centerX: 0,
+      centerY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
+      radius,
+      layer: colliderConfig.layer,
+    }),
+  );
+
+  if (type) {
+    actor.setComponent(
+      new RigidBody({
+        type,
+        mass: 1,
+        gravityScale: 0,
+        linearDamping: 0,
+        disabled: false,
+      }),
+    );
+  }
+
+  return actor;
+};
+
 describe('PhysicsSystem', () => {
   it('Stops a falling body from continuing through a static floor', () => {
     const scene = createScene();
@@ -356,6 +402,35 @@ describe('PhysicsSystem', () => {
         })
         .map((actor) => actor.id),
     ).toStrictEqual(['segment']);
+  });
+
+  it('Raycasts and overlaps capsule colliders', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const capsule = createCapsuleActor('capsule', 4, 0, -2, 0, 2, 0, 1);
+
+    scene.appendChild(capsule);
+
+    const hit = physicsApi.raycast({
+      origin: { x: 0, y: 0 },
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+    });
+
+    expect(hit?.actor.id).toBe('capsule');
+    expect(hit?.distance).toBeCloseTo(1);
+    expect(hit?.point.x).toBeCloseTo(1);
+    expect(hit?.point.y).toBeCloseTo(0);
+
+    expect(
+      physicsApi
+        .overlapCircle({
+          center: { x: 4, y: 1.25 },
+          radius: 0.5,
+        })
+        .map((actor) => actor.id),
+    ).toStrictEqual(['capsule']);
   });
 
   it('Resolves a falling circle against a static segment floor', () => {

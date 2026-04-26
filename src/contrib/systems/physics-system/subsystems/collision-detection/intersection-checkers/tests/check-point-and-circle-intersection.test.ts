@@ -23,7 +23,7 @@ describe('PhysicsSystem -> collision-detection -> checkPointAndCircleIntersectio
       checkPointAndCircleIntersection(point, circle),
     );
 
-    expectToBeClose(intersection.normal, -1, 0);
+    expectToBeClose(intersection.normal, 1, 0);
     expect(intersection.penetration).toBeCloseTo(1);
     expect(intersection.contactPoints).toHaveLength(1);
     expectToBeClose(intersection.contactPoints[0], 2, 0);
@@ -34,7 +34,7 @@ describe('PhysicsSystem -> collision-detection -> checkPointAndCircleIntersectio
     const circle = createProxy(createCircleGeometry(5, -2, 3));
 
     const intersection = expectIntersection(
-      checkPointAndCircleIntersection(circle, point),
+      checkPointAndCircleIntersection(point, circle),
     );
 
     expectToBeClose(intersection.normal, 1, 0);

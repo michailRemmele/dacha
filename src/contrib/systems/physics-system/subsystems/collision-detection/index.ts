@@ -274,7 +274,7 @@ export class CollisionDetectionSubsystem {
     const aabb2 = proxy2.aabb;
 
     return (
-      aabb1.max[axis] > aabb2.min[axis] && aabb1.min[axis] < aabb2.max[axis]
+      aabb1.max[axis] >= aabb2.min[axis] && aabb1.min[axis] <= aabb2.max[axis]
     );
   }
 

@@ -5,7 +5,7 @@ import type {
   PointGeometry,
   Intersection,
 } from '../../types';
-import { orientNormal, INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
 
 /**
  * Checks point and circle colliders for intersection.
@@ -18,13 +18,8 @@ export const checkPointAndCircleIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isCircleFirst = 'radius' in arg1.geometry;
-  const circle = (
-    isCircleFirst ? arg1.geometry : arg2.geometry
-  ) as CircleGeometry;
-  const point = (
-    isCircleFirst ? arg2.geometry : arg1.geometry
-  ) as PointGeometry;
+  const point = arg1.geometry as PointGeometry;
+  const circle = arg2.geometry as CircleGeometry;
 
   const offsetX = point.center.x - circle.center.x;
   const offsetY = point.center.y - circle.center.y;
@@ -40,11 +35,7 @@ export const checkPointAndCircleIntersection = (
       : new Vector2(offsetX, offsetY).normalize();
 
   return {
-    normal: orientNormal(
-      normal,
-      (arg1.geometry as CircleGeometry | PointGeometry).center,
-      (arg2.geometry as CircleGeometry | PointGeometry).center,
-    ),
+    normal,
     penetration: Math.max(0, circle.radius - distance),
     contactPoints: [
       {
