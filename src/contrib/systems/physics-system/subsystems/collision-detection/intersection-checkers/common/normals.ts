@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
+import type { Vector2 } from '../../../../../../../engine/math-lib';
 import type { Point } from '../../types';
 
 export const orientNormal = (
@@ -6,9 +6,10 @@ export const orientNormal = (
   from: Point,
   to: Point,
 ): Vector2 => {
-  const direction = new Vector2(to.x - from.x, to.y - from.y);
+  const directionX = to.x - from.x;
+  const directionY = to.y - from.y;
 
-  if (VectorOps.dotProduct(direction, normal) < 0) {
+  if (directionX * normal.x + directionY * normal.y < 0) {
     return normal.clone().multiplyNumber(-1);
   }
 

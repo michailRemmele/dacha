@@ -39,7 +39,8 @@ export const findMinBoxSegmentOverlap = (
   let minOverlap = Infinity;
   let bestAxis = box.edges[0].normal;
 
-  for (const edge of box.edges) {
+  for (let i = 0; i < 2; i += 1) {
+    const edge = box.edges[i];
     const overlap = getBoxSegmentAxisOverlap(box, segment, edge.normal);
 
     if (overlap === false) {

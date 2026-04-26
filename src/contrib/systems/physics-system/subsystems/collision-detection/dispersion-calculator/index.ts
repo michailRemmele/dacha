@@ -23,15 +23,31 @@ export class DispersionCalculator {
   }
 
   removeFromSample(aabb: AABB): void {
-    const average = (aabb.min[this.axis] + aabb.max[this.axis]) * 0.5;
-
-    this.sum -= average;
-    this.squaredSum -= average ** 2;
+    if (this.sampleSize === 0) {
+      return;
+    }
 
     this.sampleSize -= 1;
+
+    if (this.sampleSize === 0) {
+      this.sum = 0;
+      this.squaredSum = 0;
+    } else {
+      const average = (aabb.min[this.axis] + aabb.max[this.axis]) * 0.5;
+
+      this.sum -= average;
+      this.squaredSum -= average ** 2;
+    }
   }
 
   getDispersion(): number {
-    return (this.squaredSum / this.sampleSize) - (this.sum / this.sampleSize) ** 2;
+    if (this.sampleSize <= 1) {
+      return 0;
+    }
+
+    const average = this.sum / this.sampleSize;
+    const dispersion = this.squaredSum / this.sampleSize - average ** 2;
+
+    return Math.max(0, dispersion);
   }
 }

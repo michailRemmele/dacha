@@ -176,7 +176,8 @@ export const buildBoxCapsuleIntersection = (
   let minOverlap = Infinity;
   let bestAxis = box.edges[0].normal;
 
-  for (const edge of box.edges) {
+  for (let i = 0; i < 2; i += 1) {
+    const edge = box.edges[i];
     const overlap = getAxisOverlap(box, capsule, edge.normal);
 
     if (overlap === false) {
