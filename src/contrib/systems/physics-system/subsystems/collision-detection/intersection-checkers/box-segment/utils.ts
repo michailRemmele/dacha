@@ -4,48 +4,67 @@ import {
   type Vector2,
 } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, Point, SegmentGeometry } from '../../types';
-import { INTERSECTION_EPSILON, projectPolygon } from '../utils';
+import { arePointsEqual, lerpPoint } from '../common/points';
+import { INTERSECTION_EPSILON } from '../../constants';
+import {
+  getProjectionOverlap,
+  projectPolygon,
+  projectSegment,
+} from '../common/projections';
 
-const arePointsEqual = (point1: Point, point2: Point): boolean =>
-  Math.abs(point1.x - point2.x) <= INTERSECTION_EPSILON &&
-  Math.abs(point1.y - point2.y) <= INTERSECTION_EPSILON;
+const getBoxSegmentAxisOverlap = (
+  box: BoxGeometry,
+  segment: SegmentGeometry,
+  axis: Vector2,
+): number | false => {
+  const boxProjection = projectPolygon(box.points, axis);
+  const segmentProjection = projectSegment(
+    segment.point1,
+    segment.point2,
+    axis,
+  );
 
-export const lerpPoint = (
-  point1: Point,
-  point2: Point,
-  value: number,
-): Point => ({
-  x: point1.x + (point2.x - point1.x) * value,
-  y: point1.y + (point2.y - point1.y) * value,
-});
+  return getProjectionOverlap(
+    segmentProjection.min,
+    segmentProjection.max,
+    boxProjection.min,
+    boxProjection.max,
+  );
+};
 
 export const findMinBoxSegmentOverlap = (
   box: BoxGeometry,
   segment: SegmentGeometry,
 ): { axis: Vector2; overlap: number } | false => {
-  const axes = [...box.edges.map((edge) => edge.normal), segment.normal];
   let minOverlap = Infinity;
-  let bestAxis = axes[0];
+  let bestAxis = box.edges[0].normal;
 
-  for (const axis of axes) {
-    const boxProjection = projectPolygon(box.points, axis);
-    const segmentProjection = projectPolygon(
-      [segment.point1, segment.point2],
-      axis,
-    );
-    const distance1 = segmentProjection.min - boxProjection.max;
-    const distance2 = boxProjection.min - segmentProjection.max;
+  for (const edge of box.edges) {
+    const overlap = getBoxSegmentAxisOverlap(box, segment, edge.normal);
 
-    if (distance1 > INTERSECTION_EPSILON || distance2 > INTERSECTION_EPSILON) {
+    if (overlap === false) {
       return false;
     }
 
-    const overlap = Math.min(Math.abs(distance1), Math.abs(distance2));
-
     if (overlap < minOverlap) {
       minOverlap = overlap;
-      bestAxis = axis;
+      bestAxis = edge.normal;
     }
+  }
+
+  const segmentAxisOverlap = getBoxSegmentAxisOverlap(
+    box,
+    segment,
+    segment.normal,
+  );
+
+  if (segmentAxisOverlap === false) {
+    return false;
+  }
+
+  if (segmentAxisOverlap < minOverlap) {
+    minOverlap = segmentAxisOverlap;
+    bestAxis = segment.normal;
   }
 
   return {

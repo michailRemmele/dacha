@@ -6,7 +6,7 @@ import type {
   EdgeWithNormal,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
 
 /**
  * Checks a ray against a convex box using half-space clipping.
@@ -21,9 +21,8 @@ export const checkRayAndBoxIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isBoxFirst = 'edges' in arg1.geometry;
-  const box = (isBoxFirst ? arg1.geometry : arg2.geometry) as BoxGeometry;
-  const ray = (isBoxFirst ? arg2.geometry : arg1.geometry) as RayGeometry;
+  const ray = arg1.geometry as RayGeometry;
+  const box = arg2.geometry as BoxGeometry;
 
   let tEnter = -Infinity;
   let tExit = ray.maxDistance;

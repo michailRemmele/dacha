@@ -5,7 +5,7 @@ import type {
   RayGeometry,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
 
 /**
  * Checks a ray against a circle.
@@ -19,11 +19,8 @@ export const checkRayAndCircleIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isCircleFirst = 'radius' in arg1.geometry;
-  const circle = (
-    isCircleFirst ? arg1.geometry : arg2.geometry
-  ) as CircleGeometry;
-  const ray = (isCircleFirst ? arg2.geometry : arg1.geometry) as RayGeometry;
+  const ray = arg1.geometry as RayGeometry;
+  const circle = arg2.geometry as CircleGeometry;
 
   const offsetX = ray.origin.x - circle.center.x;
   const offsetY = ray.origin.y - circle.center.y;
