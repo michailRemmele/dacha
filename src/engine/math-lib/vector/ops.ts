@@ -147,28 +147,24 @@ export class VectorOps {
    * ```
    */
   static getClosestPointOnEdge(point: Point, edge: Edge): Point {
-    const abVector = new Vector2(
-      edge.point2.x - edge.point1.x,
-      edge.point2.y - edge.point1.y,
-    );
-    const apVector = new Vector2(
-      point.x - edge.point1.x,
-      point.y - edge.point1.y,
-    );
+    const abX = edge.point2.x - edge.point1.x;
+    const abY = edge.point2.y - edge.point1.y;
+    const apX = point.x - edge.point1.x;
+    const apY = point.y - edge.point1.y;
 
-    const lengthSquared = abVector.x * abVector.x + abVector.y * abVector.y;
+    const lengthSquared = abX * abX + abY * abY;
 
     if (lengthSquared === 0) {
       return edge.point1;
     }
 
-    const dotProduct = VectorOps.dotProduct(apVector, abVector);
+    const dotProduct = apX * abX + apY * abY;
 
     const t = Math.max(0, Math.min(1, dotProduct / lengthSquared));
 
     return {
-      x: edge.point1.x + t * abVector.x,
-      y: edge.point1.y + t * abVector.y,
+      x: edge.point1.x + t * abX,
+      y: edge.point1.y + t * abY,
     };
   }
 

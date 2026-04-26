@@ -25,7 +25,8 @@ export const findMinBoxesOverlap = (
   let minOverlap = Infinity;
   let bestAxis = geometry1.edges[0].normal;
 
-  for (const edge of geometry1.edges) {
+  for (let i = 0; i < 2; i += 1) {
+    const edge = geometry1.edges[i];
     const axis = edge.normal;
 
     const projection1 = projectPolygon(geometry1.points, axis);
