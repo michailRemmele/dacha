@@ -20,8 +20,9 @@ export const ButtonCSS = css`
   margin: 5px 0;
 `;
 
-export const RemoveButtonCSS = css`
+export const FieldButtonCSS = css`
   flex-shrink: 0;
+  margin-left: 5px;
 `;
 
 export const LayerStyled = styled.div`
@@ -33,7 +34,7 @@ export const LayerStyled = styled.div`
 
 export const FieldWrapperStyled = styled.div`
   width: 100%;
-  margin: 0 5px;
+  margin-left: 5px;
 
   & label {
     margin: 0;

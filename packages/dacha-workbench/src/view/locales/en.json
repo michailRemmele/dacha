@@ -191,5 +191,7 @@
   "globalOptions.physics.collisionLayers.empty.placeholder": "No collision layers defined",
   "globalOptions.physics.collisionMatrix.title": "Collision Matrix",
   "globalOptions.physics.collisionLayers.addNew.title": "Add Collision Layer",
-  "globalOptions.physics.collisionLayers.name.title": "Layer {{index}}"
+  "globalOptions.physics.collisionLayers.name.title": "Layer {{index}}",
+  "globalOptions.physics.collisionLayers.copy.title": "Copy",
+  "globalOptions.physics.collisionLayers.delete.title": "Delete"
 }
