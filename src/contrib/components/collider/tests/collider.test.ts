@@ -27,6 +27,17 @@ describe('Contrib -> components -> Collider', () => {
       point2Y: 0,
       layer: 'ground',
     }).clone();
+    const capsule = new Collider({
+      type: 'capsule',
+      centerX: 0,
+      centerY: 0,
+      point1X: -2,
+      point1Y: 0,
+      point2X: 2,
+      point2Y: 0,
+      radius: 1,
+      layer: 'body',
+    }).clone();
 
     expect(box.type).toEqual('box');
     expect(box.sizeX).toEqual(10);
@@ -45,6 +56,12 @@ describe('Contrib -> components -> Collider', () => {
     expect(segment.point1).toStrictEqual({ x: -1, y: 0 });
     expect(segment.point2).toStrictEqual({ x: 1, y: 0 });
     expect(segment.layer).toEqual('ground');
+
+    expect(capsule.type).toEqual('capsule');
+    expect(capsule.point1).toStrictEqual({ x: -2, y: 0 });
+    expect(capsule.point2).toStrictEqual({ x: 2, y: 0 });
+    expect(capsule.radius).toEqual(1);
+    expect(capsule.layer).toEqual('body');
   });
 
   it('Correct updates values ', () => {
@@ -73,6 +90,17 @@ describe('Contrib -> components -> Collider', () => {
       point2Y: 0,
       layer: 'default',
     }).clone();
+    const capsule = new Collider({
+      type: 'capsule',
+      centerX: 0,
+      centerY: 0,
+      point1X: -1,
+      point1Y: 0,
+      point2X: 1,
+      point2Y: 0,
+      radius: 1,
+      layer: 'default',
+    }).clone();
 
     box.sizeX = 20;
     box.sizeY = 40;
@@ -85,6 +113,9 @@ describe('Contrib -> components -> Collider', () => {
     circle.layer = 'trigger';
     segment.point1 = { x: -2, y: 0 };
     segment.point2 = { x: 1, y: 3 };
+    capsule.radius = 2;
+    capsule.point1 = { x: -3, y: 0 };
+    capsule.point2 = { x: 3, y: 0 };
 
     expect(box.sizeX).toEqual(20);
     expect(box.sizeY).toEqual(40);
@@ -98,6 +129,10 @@ describe('Contrib -> components -> Collider', () => {
 
     expect(segment.point1).toStrictEqual({ x: -2, y: 0 });
     expect(segment.point2).toStrictEqual({ x: 1, y: 3 });
+
+    expect(capsule.radius).toEqual(2);
+    expect(capsule.point1).toStrictEqual({ x: -3, y: 0 });
+    expect(capsule.point2).toStrictEqual({ x: 3, y: 0 });
   });
 
   it('Clones return deep copy of original component', () => {
@@ -137,5 +172,20 @@ describe('Contrib -> components -> Collider', () => {
     const cloneSegment = originalSegment.clone();
 
     expect(originalSegment).not.toBe(cloneSegment);
+
+    const originalCapsule = new Collider({
+      type: 'capsule',
+      centerX: 0,
+      centerY: 0,
+      point1X: -1,
+      point1Y: 0,
+      point2X: 1,
+      point2Y: 0,
+      radius: 1,
+      layer: 'default',
+    });
+    const cloneCapsule = originalCapsule.clone();
+
+    expect(originalCapsule).not.toBe(cloneCapsule);
   });
 });

@@ -1,12 +1,14 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
 import { Collider, Transform } from '../../../../../../components';
 import { buildBoxGeometry } from '../../geometry-builders/build-box-geometry';
+import { buildCapsuleGeometry } from '../../geometry-builders/build-capsule-geometry';
 import { buildCircleGeometry } from '../../geometry-builders/build-circle-geometry';
 import { buildPointGeometry } from '../../geometry-builders/build-point-geometry';
 import { buildRayGeometry } from '../../geometry-builders/build-ray-geometry';
 import { buildSegmentGeometry } from '../../geometry-builders/build-segment-geometry';
 import type {
   BoxGeometry,
+  CapsuleGeometry,
   CircleGeometry,
   Intersection,
   PointGeometry,
@@ -48,24 +50,23 @@ export const createCircleGeometry = (
     radius,
   });
 
-export const createSegmentGeometry = (
+export const createCapsuleGeometry = (
   point1X: number,
   point1Y: number,
   point2X: number,
   point2Y: number,
-): SegmentGeometry => {
-  const centerX = (point1X + point2X) / 2;
-  const centerY = (point1Y + point2Y) / 2;
-
-  return buildSegmentGeometry(
+  radius: number,
+): CapsuleGeometry =>
+  buildCapsuleGeometry(
     new Collider({
-      type: 'segment',
-      centerX,
-      centerY,
-      point1X: point1X - centerX,
-      point1Y: point1Y - centerY,
-      point2X: point2X - centerX,
-      point2Y: point2Y - centerY,
+      type: 'capsule',
+      centerX: 0,
+      centerY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
+      radius,
       layer: 'default',
     }),
     new Transform({
@@ -76,7 +77,32 @@ export const createSegmentGeometry = (
       scaleY: 1,
     }),
   );
-};
+
+export const createSegmentGeometry = (
+  point1X: number,
+  point1Y: number,
+  point2X: number,
+  point2Y: number,
+): SegmentGeometry =>
+  buildSegmentGeometry(
+    new Collider({
+      type: 'segment',
+      centerX: 0,
+      centerY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
+      layer: 'default',
+    }),
+    new Transform({
+      offsetX: 0,
+      offsetY: 0,
+      rotation: 0,
+      scaleX: 1,
+      scaleY: 1,
+    }),
+  );
 
 export const createPointGeometry = (
   centerX: number,
@@ -102,6 +128,7 @@ export const createRayGeometry = (
 export const createProxy = (
   geometry:
     | BoxGeometry
+    | CapsuleGeometry
     | CircleGeometry
     | SegmentGeometry
     | PointGeometry

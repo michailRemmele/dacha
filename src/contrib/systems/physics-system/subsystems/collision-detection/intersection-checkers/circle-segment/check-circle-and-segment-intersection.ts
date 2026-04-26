@@ -9,7 +9,8 @@ import type {
   SegmentGeometry,
   Intersection,
 } from '../../types';
-import { orientNormal, INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
+import { orientNormal } from '../common/normals';
 
 /**
  * Checks a circle against a segment.
@@ -23,13 +24,8 @@ export const checkCircleAndSegmentIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isSegmentFirst = 'point1' in arg1.geometry;
-  const segment = (
-    isSegmentFirst ? arg1.geometry : arg2.geometry
-  ) as SegmentGeometry;
-  const circle = (
-    isSegmentFirst ? arg2.geometry : arg1.geometry
-  ) as CircleGeometry;
+  const circle = arg1.geometry as CircleGeometry;
+  const segment = arg2.geometry as SegmentGeometry;
   const closestPoint = VectorOps.getClosestPointOnEdge(circle.center, segment);
   const distance = MathOps.getDistanceBetweenTwoPoints(
     circle.center.x,
@@ -55,11 +51,7 @@ export const checkCircleAndSegmentIntersection = (
   }
 
   return {
-    normal: orientNormal(
-      normal,
-      (arg1.geometry as CircleGeometry | SegmentGeometry).center,
-      (arg2.geometry as CircleGeometry | SegmentGeometry).center,
-    ),
+    normal: orientNormal(normal, circle.center, segment.center),
     penetration: Math.max(0, circle.radius - distance),
     contactPoints: [closestPoint],
   };

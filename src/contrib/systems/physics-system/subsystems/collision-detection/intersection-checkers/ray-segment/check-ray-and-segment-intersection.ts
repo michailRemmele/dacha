@@ -5,7 +5,7 @@ import type {
   SegmentGeometry,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
 
 import { subtractPoints } from './utils';
 
@@ -27,11 +27,8 @@ export const checkRayAndSegmentIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isSegmentFirst = 'point1' in arg1.geometry;
-  const segment = (
-    isSegmentFirst ? arg1.geometry : arg2.geometry
-  ) as SegmentGeometry;
-  const ray = (isSegmentFirst ? arg2.geometry : arg1.geometry) as RayGeometry;
+  const ray = arg1.geometry as RayGeometry;
+  const segment = arg2.geometry as SegmentGeometry;
   const segmentDirection = subtractPoints(segment.point2, segment.point1);
   const delta = subtractPoints(segment.point1, ray.origin);
   const denominator = VectorOps.crossProduct(ray.direction, segmentDirection);

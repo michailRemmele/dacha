@@ -11,7 +11,8 @@ import type {
   EdgeWithNormal,
   Point,
 } from '../../types';
-import { orientNormal, INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
+import { orientNormal } from '../common/normals';
 
 const buildNormal = (
   circle: CircleGeometry,
@@ -41,9 +42,8 @@ export const checkBoxAndCircleIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isBoxFirst = 'radius' in arg2.geometry;
-  const box = (isBoxFirst ? arg1.geometry : arg2.geometry) as BoxGeometry;
-  const circle = (isBoxFirst ? arg2.geometry : arg1.geometry) as CircleGeometry;
+  const box = arg1.geometry as BoxGeometry;
+  const circle = arg2.geometry as CircleGeometry;
 
   let closestEdge = box.edges[0];
   let closestPoint = box.points[0];
@@ -84,8 +84,8 @@ export const checkBoxAndCircleIntersection = (
   return {
     normal: orientNormal(
       buildNormal(circle, closestEdge, closestPoint),
-      (arg1.geometry as BoxGeometry | CircleGeometry).center,
-      (arg2.geometry as BoxGeometry | CircleGeometry).center,
+      box.center,
+      circle.center,
     ),
     penetration,
     contactPoints: [closestPoint],
