@@ -1,5 +1,5 @@
 import type { Proxy, BoxGeometry, Intersection } from '../../types';
-import { orientNormal } from '../utils';
+import { orientNormal } from '../common/normals';
 
 import { findMinBoxesOverlap, buildContactPoints } from './utils';
 

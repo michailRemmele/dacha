@@ -2,7 +2,7 @@ import { Component } from '../../../engine/component';
 import type { Point } from '../../../engine/math-lib';
 
 export interface ColliderConfig {
-  type: 'box' | 'circle' | 'segment';
+  type: 'box' | 'circle' | 'segment' | 'capsule';
   centerX: number;
   centerY: number;
   sizeX?: number;
@@ -50,7 +50,7 @@ export interface ColliderConfig {
  * @category Components
  */
 export class Collider extends Component {
-  type: 'box' | 'circle' | 'segment';
+  type: 'box' | 'circle' | 'segment' | 'capsule';
 
   centerX: number;
   centerY: number;

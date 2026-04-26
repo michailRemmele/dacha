@@ -1,5 +1,5 @@
 import type { AABB, Geometry, SegmentGeometry } from '../types';
-import { INTERSECTION_EPSILON } from '../intersection-checkers/utils';
+import { INTERSECTION_EPSILON } from '../constants';
 
 export const buildSegmentAABB = (geometry: Geometry): AABB => {
   const { point1, point2 } = geometry as SegmentGeometry;

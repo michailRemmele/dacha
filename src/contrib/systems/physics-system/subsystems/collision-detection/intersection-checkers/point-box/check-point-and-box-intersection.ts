@@ -6,7 +6,8 @@ import type {
   Intersection,
   EdgeWithNormal,
 } from '../../types';
-import { orientNormal, INTERSECTION_EPSILON } from '../utils';
+import { INTERSECTION_EPSILON } from '../../constants';
+import { orientNormal } from '../common/normals';
 
 /**
  * Checks point and box colliders for intersection.
@@ -19,9 +20,8 @@ export const checkPointAndBoxIntersection = (
   arg1: Proxy,
   arg2: Proxy,
 ): Intersection | false => {
-  const isBoxFirst = 'edges' in arg1.geometry;
-  const box = (isBoxFirst ? arg1.geometry : arg2.geometry) as BoxGeometry;
-  const point = (isBoxFirst ? arg2.geometry : arg1.geometry) as PointGeometry;
+  const point = arg1.geometry as PointGeometry;
+  const box = arg2.geometry as BoxGeometry;
 
   let bestEdge: EdgeWithNormal = box.edges[0];
   let bestSignedDistance = -Infinity;
@@ -50,11 +50,7 @@ export const checkPointAndBoxIntersection = (
     Math.abs(bestSignedDistance) <= INTERSECTION_EPSILON;
 
   return {
-    normal: orientNormal(
-      bestEdge.normal.clone(),
-      (arg1.geometry as BoxGeometry | PointGeometry).center,
-      (arg2.geometry as BoxGeometry | PointGeometry).center,
-    ),
+    normal: orientNormal(bestEdge.normal.clone(), point.center, box.center),
     penetration: isPointOnBoxBoundary ? 0 : -bestSignedDistance,
     contactPoints: [contactPoint],
   };

@@ -1,6 +1,6 @@
 import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, EdgeWithNormal, Point } from '../../types';
-import { INTERSECTION_EPSILON, projectPolygon } from '../utils';
+import { getProjectionOverlap, projectPolygon } from '../common/projections';
 
 export const CONTACT_EPSILON = 1e-4;
 export const MAX_CONTACT_POINTS = 2;
@@ -10,6 +10,14 @@ export interface AxisOverlap {
   overlap: number;
 }
 
+/**
+ * Runs the SAT pass for one box's face normals against another box.
+ *
+ * Each face normal is a potential separating axis. If any projection pair does
+ * not overlap, the boxes cannot intersect. Otherwise, the axis with the
+ * smallest overlap is the least expensive direction to separate the boxes, so
+ * it becomes the candidate collision normal for this polygon.
+ */
 export const findMinBoxesOverlap = (
   geometry1: BoxGeometry,
   geometry2: BoxGeometry,
@@ -23,14 +31,16 @@ export const findMinBoxesOverlap = (
     const projection1 = projectPolygon(geometry1.points, axis);
     const projection2 = projectPolygon(geometry2.points, axis);
 
-    const distance1 = projection1.min - projection2.max;
-    const distance2 = projection2.min - projection1.max;
+    const overlap = getProjectionOverlap(
+      projection1.min,
+      projection1.max,
+      projection2.min,
+      projection2.max,
+    );
 
-    if (distance1 > INTERSECTION_EPSILON || distance2 > INTERSECTION_EPSILON) {
+    if (overlap === false) {
       return false;
     }
-
-    const overlap = Math.min(Math.abs(distance1), Math.abs(distance2));
 
     if (overlap < minOverlap) {
       minOverlap = overlap;
@@ -76,6 +86,12 @@ const clipSegmentToLine = (
   return clipped;
 };
 
+/**
+ * Selects the incident edge for clipping.
+ *
+ * The incident edge should face into the reference face, so it is the edge
+ * whose normal points most strongly opposite the reference collision normal.
+ */
 const getMostAntiParallelEdge = (
   polygon: BoxGeometry,
   normal: Vector2,
@@ -95,6 +111,12 @@ const getMostAntiParallelEdge = (
   return bestEdge;
 };
 
+/**
+ * Selects the reference edge that owns the collision plane.
+ *
+ * The reference edge is the edge whose normal most closely matches the chosen
+ * collision normal. Its side planes bound the incident edge during clipping.
+ */
 const getMostParallelEdge = (
   polygon: BoxGeometry,
   normal: Vector2,
@@ -142,8 +164,11 @@ const dedupePoints = (points: Point[]): Point[] => {
  * Builds up to two box-vs-box contact points by clipping the incident edge
  * against the side planes of the reference edge.
  *
- * The returned points lie on the reference face plane, which makes them
- * suitable to use as world-space contact points in a simple impulse solver.
+ * The process mirrors the standard contact manifold construction for SAT:
+ * choose a reference face, choose the incident face most opposed to it, clip
+ * the incident segment by the reference face's tangent bounds, then project
+ * surviving points back onto the reference face plane. The projected points are
+ * suitable as world-space contacts for impulse resolution.
  */
 export const buildContactPoints = (
   referencePolygon: BoxGeometry,
