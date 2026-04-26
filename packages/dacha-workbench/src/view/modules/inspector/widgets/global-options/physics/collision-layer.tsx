@@ -1,6 +1,6 @@
-import { useMemo, FC } from 'react';
+import { useCallback, useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, CopyOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
 import { LabelledTextInput } from '../../../components/text-input';
@@ -9,7 +9,7 @@ import { Field } from '../../../components/field';
 import {
   LayerStyled,
   FieldWrapperStyled,
-  RemoveButtonCSS,
+  FieldButtonCSS,
 } from './physics.style';
 import { COLLISION_LAYERS_PATH } from './consts';
 
@@ -32,6 +32,10 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
   );
   const namePath = useMemo(() => layerPath.concat('name'), [layerPath]);
 
+  const handleCopyId = useCallback(() => {
+    void navigator.clipboard.writeText(id);
+  }, [id]);
+
   return (
     <LayerStyled>
       <FieldWrapperStyled>
@@ -45,10 +49,19 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
       </FieldWrapperStyled>
 
       <Button
-        css={RemoveButtonCSS}
+        css={FieldButtonCSS}
+        icon={<CopyOutlined />}
+        size="small"
+        onClick={handleCopyId}
+        title={t('globalOptions.physics.collisionLayers.copy.title')}
+      />
+
+      <Button
+        css={FieldButtonCSS}
         icon={<DeleteOutlined />}
         size="small"
         onClick={() => onDelete(id)}
+        title={t('globalOptions.physics.collisionLayers.delete.title')}
       />
     </LayerStyled>
   );

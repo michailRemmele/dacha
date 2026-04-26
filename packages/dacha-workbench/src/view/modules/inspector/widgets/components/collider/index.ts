@@ -9,7 +9,7 @@ export const collider: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
-      options: ['box', 'circle', 'segment'],
+      options: ['box', 'capsule', 'circle', 'segment'],
     },
     {
       name: 'sizeX',
@@ -32,7 +32,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'circle',
+        value: 'capsule|circle',
       },
     },
     {
@@ -40,7 +40,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'segment',
+        value: 'capsule|segment',
       },
     },
     {
@@ -48,7 +48,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'segment',
+        value: 'capsule|segment',
       },
     },
     {
@@ -56,7 +56,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'segment',
+        value: 'capsule|segment',
       },
     },
     {
@@ -64,7 +64,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'segment',
+        value: 'capsule|segment',
       },
     },
     {

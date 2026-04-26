@@ -19,6 +19,39 @@ const DEFAULT_PROPS = {
   sortCenter: [0, 0] as Shape['sortCenter'],
 };
 
+const getCapsuleShape = (
+  collider: Collider,
+  transform: Transform,
+  color: string,
+  fillColor: string,
+): Shape => {
+  const { centerX, centerY } = collider;
+  const point1X = collider.point1?.x ?? 0;
+  const point1Y = collider.point1?.y ?? 0;
+  const point2X = collider.point2?.x ?? 0;
+  const point2Y = collider.point2?.y ?? 0;
+
+  const dx = point2X - point1X;
+  const dy = point2Y - point1Y;
+
+  transform.local.rotation = Math.atan2(dy, dx);
+  transform.local.position.x = centerX + (point1X + point2X) / 2;
+  transform.local.position.y = centerY + (point1Y + point2Y) / 2;
+
+  const length = Math.hypot(dx, dy);
+  const radius = collider.radius ?? 0;
+
+  return new Shape({
+    type: 'roundRectangle',
+    width: length + radius * 2,
+    height: radius * 2,
+    radius,
+    strokeColor: color,
+    fill: fillColor,
+    ...DEFAULT_PROPS,
+  });
+};
+
 export const colliderViewer: DebugViewModule = {
   id: 'collider-viewer',
   title: 'Colliders',
@@ -50,6 +83,9 @@ export const colliderViewer: DebugViewModule = {
           fill: fillColor,
           ...DEFAULT_PROPS,
         });
+        break;
+      case 'capsule':
+        shape = getCapsuleShape(collider, transform, color, fillColor);
         break;
       case 'circle':
         shape = new Shape({
