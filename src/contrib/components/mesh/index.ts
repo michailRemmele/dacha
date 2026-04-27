@@ -1,6 +1,7 @@
 import type { Mesh as PixiMesh } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
 import { type BlendingMode } from '../../types/view';
 
 interface RenderData {
@@ -24,7 +25,7 @@ export interface MeshConfig {
   flipX: boolean;
   flipY: boolean;
   sortingLayer: string;
-  sortCenter: [number, number];
+  sortOffset: Point;
   color: string;
   blending: BlendingMode;
   opacity: number;
@@ -52,7 +53,7 @@ export interface MeshConfig {
  *   flipX: false,
  *   flipY: false,
  *   sortingLayer: 'units',
- *   sortCenter: [0, 0],
+ *   sortOffset: { x: 0, y: 0 },
  *   color: '#ffffff',
  *   blending: 'normal',
  *   opacity: 1,
@@ -90,7 +91,7 @@ export class Mesh extends Component {
   /** Sorting layer name for rendering order */
   sortingLayer: string;
   /** Center point for sorting calculations */
-  sortCenter: [number, number];
+  sortOffset: Point;
   /** Current frame to render */
   currentFrame: number;
   /** Color tint applied to the mesh */
@@ -121,7 +122,7 @@ export class Mesh extends Component {
     this.flipY = config.flipY;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
-    this.sortCenter = config.sortCenter;
+    this.sortOffset = { ...config.sortOffset };
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';
     this.opacity = config.opacity ?? 1;
@@ -138,7 +139,7 @@ export class Mesh extends Component {
       flipY: this.flipY,
       disabled: this.disabled,
       sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter.slice(0) as [number, number],
+      sortOffset: { ...this.sortOffset },
       color: this.color,
       blending: this.blending,
       opacity: this.opacity,

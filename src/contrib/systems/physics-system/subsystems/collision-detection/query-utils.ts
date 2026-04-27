@@ -53,7 +53,7 @@ export const overlap = (
 
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
-    const intersection = intersectionCheckers[type][collider.type](
+    const intersection = intersectionCheckers[type][collider.shape.type](
       queryProxy,
       proxy,
     );
@@ -77,7 +77,7 @@ export const raycast = (
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
 
-    const intersection = intersectionCheckers.ray[collider.type](
+    const intersection = intersectionCheckers.ray[collider.shape.type](
       queryProxy,
       proxy,
     );
@@ -110,7 +110,7 @@ export const raycastAll = (
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
 
-    const intersection = intersectionCheckers.ray[collider.type](
+    const intersection = intersectionCheckers.ray[collider.shape.type](
       queryProxy,
       proxy,
     );

@@ -15,7 +15,7 @@ describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
     src: 'some-path',
     width: 0,
     height: 0,
-    sortCenter: [0, 0],
+    sortOffset: { x: 0, y: 0 },
     slice: 1,
     flipX: false,
     flipY: false,

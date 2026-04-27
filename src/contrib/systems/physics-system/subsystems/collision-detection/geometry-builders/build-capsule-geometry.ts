@@ -6,12 +6,15 @@ export function buildCapsuleGeometry(
   collider: Collider,
   transform: Transform,
 ): CapsuleGeometry {
-  const centerX = collider.centerX + transform.world.position.x;
-  const centerY = collider.centerY + transform.world.position.y;
-  const point1X = collider.point1?.x ?? 0;
-  const point1Y = collider.point1?.y ?? 0;
-  const point2X = collider.point2?.x ?? 0;
-  const point2Y = collider.point2?.y ?? 0;
+  if (collider.shape.type !== 'capsule') {
+    throw new Error(`Expected capsule collider, got ${collider.shape.type}.`);
+  }
+
+  const centerX = collider.offset.x + transform.world.position.x;
+  const centerY = collider.offset.y + transform.world.position.y;
+
+  const { point1, point2, radius } = collider.shape;
+
   const rotation = transform.world.rotation;
   const scaleX = transform.world.scale.x;
   const scaleY = transform.world.scale.y;
@@ -28,17 +31,22 @@ export function buildCapsuleGeometry(
     };
   };
 
-  const point1 = buildPoint(point1X, point1Y);
-  const point2 = buildPoint(point2X, point2Y);
+  const geometryPoint1 = buildPoint(point1.x, point1.y);
+  const geometryPoint2 = buildPoint(point2.x, point2.y);
 
   return {
     center: {
-      x: (point1.x + point2.x) / 2,
-      y: (point1.y + point2.y) / 2,
+      x: (geometryPoint1.x + geometryPoint2.x) / 2,
+      y: (geometryPoint1.y + geometryPoint2.y) / 2,
     },
-    point1,
-    point2,
-    normal: VectorOps.getNormal(point1.x, point2.x, point1.y, point2.y),
-    radius: (collider.radius ?? 0) * Math.max(scaleX, scaleY),
+    point1: geometryPoint1,
+    point2: geometryPoint2,
+    normal: VectorOps.getNormal(
+      geometryPoint1.x,
+      geometryPoint2.x,
+      geometryPoint1.y,
+      geometryPoint2.y,
+    ),
+    radius: radius * Math.max(scaleX, scaleY),
   };
 }

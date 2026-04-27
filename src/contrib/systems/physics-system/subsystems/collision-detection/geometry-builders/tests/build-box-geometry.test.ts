@@ -7,10 +7,8 @@ describe('PhysicsSystem -> collision-detection -> buildBoxGeometry()', () => {
   it('Builds outward normals for mirrored boxes', () => {
     const collider = new Collider({
       type: 'box',
-      centerX: 0,
-      centerY: 0,
-      sizeX: 4,
-      sizeY: 2,
+      offset: { x: 0, y: 0 },
+      size: { x: 4, y: 2 },
       layer: 'default',
     });
     const transform = new Transform({
@@ -24,7 +22,8 @@ describe('PhysicsSystem -> collision-detection -> buildBoxGeometry()', () => {
 
     geometry.edges.forEach((edge) => {
       const offset = VectorOps.dotProduct(edge.point1, edge.normal);
-      const centerDistance = VectorOps.dotProduct(geometry.center, edge.normal) - offset;
+      const centerDistance =
+        VectorOps.dotProduct(geometry.center, edge.normal) - offset;
 
       expect(centerDistance).toBeLessThanOrEqual(0);
     });

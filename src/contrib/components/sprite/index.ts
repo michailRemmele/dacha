@@ -1,6 +1,7 @@
 import type { Sprite as PixiSprite, TilingSprite } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
 import { type BlendingMode } from '../../types/view';
 
 interface RenderData {
@@ -21,7 +22,7 @@ export interface SpriteConfig {
   flipX: boolean;
   flipY: boolean;
   sortingLayer: string;
-  sortCenter: [number, number];
+  sortOffset: Point;
   fit: FitType;
   color: string;
   blending: BlendingMode;
@@ -46,7 +47,7 @@ export interface SpriteConfig {
  *   flipX: false,
  *   flipY: false,
  *   sortingLayer: 'units',
- *   sortCenter: [0, 0],
+ *   sortOffset: { x: 0, y: 0 },
  *   fit: 'stretch',
  *   color: '#ffffff',
  *   blending: 'normal',
@@ -82,7 +83,7 @@ export class Sprite extends Component {
   /** Sorting layer name for rendering order */
   sortingLayer: string;
   /** Center point for sorting calculations */
-  sortCenter: [number, number];
+  sortOffset: Point;
   /** Current frame to render */
   currentFrame?: number;
   /** How the texture should fit within the sprite bounds */
@@ -113,7 +114,7 @@ export class Sprite extends Component {
     this.flipY = config.flipY;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
-    this.sortCenter = config.sortCenter;
+    this.sortOffset = { ...config.sortOffset };
     this.fit = config.fit;
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';
@@ -130,7 +131,7 @@ export class Sprite extends Component {
       flipY: this.flipY,
       disabled: this.disabled,
       sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter.slice(0) as [number, number],
+      sortOffset: { ...this.sortOffset },
       fit: this.fit,
       color: this.color,
       blending: this.blending,

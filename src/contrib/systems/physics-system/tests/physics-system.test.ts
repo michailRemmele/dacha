@@ -60,10 +60,8 @@ const createBoxActor = (
   actor.setComponent(
     new Collider({
       type: 'box',
-      centerX: 0,
-      centerY: 0,
-      sizeX: 2,
-      sizeY: 2,
+      offset: { x: 0, y: 0 },
+      size: { x: 2, y: 2 },
       layer: colliderConfig.layer,
     }),
   );
@@ -95,8 +93,7 @@ const createCircleActor = (
   actor.setComponent(
     new Collider({
       type: 'circle',
-      centerX: 0,
-      centerY: 0,
+      offset: { x: 0, y: 0 },
       radius,
       layer: colliderConfig.layer,
     }),
@@ -124,12 +121,9 @@ const createSegmentActor = (
   actor.setComponent(
     new Collider({
       type: 'segment',
-      centerX: 0,
-      centerY: 0,
-      point1X,
-      point1Y,
-      point2X,
-      point2Y,
+      offset: { x: 0, y: 0 },
+      point1: { x: point1X, y: point1Y },
+      point2: { x: point2X, y: point2Y },
       layer: colliderConfig.layer,
     }),
   );
@@ -169,12 +163,9 @@ const createCapsuleActor = (
   actor.setComponent(
     new Collider({
       type: 'capsule',
-      centerX: 0,
-      centerY: 0,
-      point1X,
-      point1Y,
-      point2X,
-      point2Y,
+      offset: { x: 0, y: 0 },
+      point1: { x: point1X, y: point1Y },
+      point2: { x: point2X, y: point2Y },
       radius,
       layer: colliderConfig.layer,
     }),
