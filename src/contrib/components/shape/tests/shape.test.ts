@@ -12,15 +12,16 @@ describe('Contrib -> components -> Shape', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'units',
-      sortCenter: [0, 0],
-      width: 100,
-      height: 200,
+      sortOffset: { x: 0, y: 0 },
+      size: { x: 100, y: 200 },
       fill: '#999',
     }).clone();
 
-    expect(shape.type).toEqual('rectangle');
-    expect(shape.width).toEqual(100);
-    expect(shape.height).toEqual(200);
+    expect(shape.geometry.type).toEqual('rectangle');
+    expect(shape.geometry).toStrictEqual({
+      type: 'rectangle',
+      size: { x: 100, y: 200 },
+    });
     expect(shape.strokeWidth).toEqual(2);
     expect(shape.strokeColor).toEqual('#000');
     expect(shape.strokeAlignment).toEqual(0.5);
@@ -41,17 +42,21 @@ describe('Contrib -> components -> Shape', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'units',
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
       radius: 100,
       fill: '#999',
     }).clone();
 
-    shape.width = 200;
-    shape.height = 400;
+    shape.geometry = {
+      type: 'rectangle',
+      size: { x: 200, y: 400 },
+    };
     shape.fill = '#111';
 
-    expect(shape.width).toEqual(200);
-    expect(shape.height).toEqual(400);
+    expect(shape.geometry).toStrictEqual({
+      type: 'rectangle',
+      size: { x: 200, y: 400 },
+    });
     expect(shape.fill).toEqual('#111');
   });
 
@@ -66,7 +71,7 @@ describe('Contrib -> components -> Shape', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'units',
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
       radius: 100,
       fill: '#999',
     }).clone();

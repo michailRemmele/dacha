@@ -1,6 +1,7 @@
 import type { ViewContainer } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
 
 interface RenderData {
   view: ViewContainer;
@@ -9,7 +10,7 @@ interface RenderData {
 export interface PixiViewConfig {
   createView: () => ViewContainer;
   sortingLayer: string;
-  sortCenter: [number, number];
+  sortOffset: Point;
 }
 
 /**
@@ -31,7 +32,7 @@ export interface PixiViewConfig {
  *     return graphics;
  *   },
  *   sortingLayer: 'units',
- *   sortCenter: [0, 0],
+ *   sortOffset: { x: 0, y: 0 },
  * });
  *
  * // Add to actor
@@ -46,7 +47,7 @@ export class PixiView extends Component {
   /** Sorting layer of the pixi view */
   sortingLayer: string;
   /** Center point of the pixi view */
-  sortCenter: [number, number];
+  sortOffset: Point;
   /** Internal rendering data */
   renderData?: RenderData;
 
@@ -60,7 +61,7 @@ export class PixiView extends Component {
 
     this.createView = config.createView;
     this.sortingLayer = config.sortingLayer;
-    this.sortCenter = config.sortCenter;
+    this.sortOffset = { ...config.sortOffset };
   }
 
   /** Get the pixi.js view. It's only available after the actor with this component is added to a scene */
@@ -72,7 +73,7 @@ export class PixiView extends Component {
     return new PixiView({
       createView: this.createView,
       sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter.slice(0) as [number, number],
+      sortOffset: { ...this.sortOffset },
     });
   }
 }

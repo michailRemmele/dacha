@@ -12,7 +12,7 @@ describe('Contrib -> components -> BitmapText', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'text',
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
     }).clone();
 
     expect(text.text).toEqual('Hello World');
@@ -24,7 +24,7 @@ describe('Contrib -> components -> BitmapText', () => {
     expect(text.blending).toEqual('normal');
     expect(text.disabled).toEqual(false);
     expect(text.sortingLayer).toEqual('text');
-    expect(text.sortCenter).toEqual([0, 0]);
+    expect(text.sortOffset).toEqual({ x: 0, y: 0 });
   });
 
   it('Correct updates values ', () => {
@@ -38,7 +38,7 @@ describe('Contrib -> components -> BitmapText', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'text',
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
     }).clone();
 
     text.fontSize = 48;
@@ -61,7 +61,7 @@ describe('Contrib -> components -> BitmapText', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'text',
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
     }).clone();
     const cloneText = originalText.clone();
 

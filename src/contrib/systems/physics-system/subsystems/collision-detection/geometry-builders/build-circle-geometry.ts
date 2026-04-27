@@ -23,9 +23,14 @@ export function buildCircleGeometry(
 
   if (transform !== undefined) {
     const collider = colliderOrOverlap as Collider;
-    centerX = collider.centerX;
-    centerY = collider.centerY;
-    radius = collider.radius!;
+
+    if (collider.shape.type !== 'circle') {
+      throw new Error(`Expected circle collider, got ${collider.shape.type}.`);
+    }
+
+    centerX = collider.offset.x;
+    centerY = collider.offset.y;
+    radius = collider.shape.radius;
     positionX = transform.world.position.x;
     positionY = transform.world.position.y;
     scaleX = transform.world.scale.x;

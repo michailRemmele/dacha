@@ -1,6 +1,7 @@
 import type { Graphics } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
 import { type BlendingMode } from '../../types/view';
 
 interface RenderData {
@@ -15,8 +16,7 @@ export type ShapeType =
   | 'ellipse'
   | 'line';
 
-export interface BaseShape {
-  type: ShapeType;
+export interface BaseShapeConfig {
   strokeColor?: string;
   strokeWidth: number;
   strokeAlignment: number;
@@ -26,43 +26,44 @@ export interface BaseShape {
   blending: BlendingMode;
   disabled: boolean;
   sortingLayer: string;
-  sortCenter: [number, number];
+  sortOffset: Point;
 }
 
-export interface Rectangle extends BaseShape {
+export interface RectangleGeometry {
   type: 'rectangle';
-  width: number;
-  height: number;
+  size: Point;
 }
 
-export interface RoundRectangle extends BaseShape {
+export interface RoundRectangleGeometry {
   type: 'roundRectangle';
-  width: number;
-  height: number;
+  size: Point;
   radius: number;
 }
 
-export interface Circle extends BaseShape {
+export interface CircleGeometry {
   type: 'circle';
   radius: number;
 }
 
-export interface Ellipse extends BaseShape {
+export interface EllipseGeometry {
   type: 'ellipse';
-  radiusX: number;
-  radiusY: number;
+  radius: Point;
 }
 
-export interface Line extends BaseShape {
+export interface LineGeometry {
   type: 'line';
-  point1X: number;
-  point1Y: number;
-  point2X: number;
-  point2Y: number;
+  point1: Point;
+  point2: Point;
 }
 
-export type ShapeConfig = BaseShape &
-  Partial<Rectangle | RoundRectangle | Circle | Ellipse | Line>;
+export type ShapeGeometry =
+  | RectangleGeometry
+  | RoundRectangleGeometry
+  | CircleGeometry
+  | EllipseGeometry
+  | LineGeometry;
+
+export type ShapeConfig = BaseShapeConfig & ShapeGeometry;
 
 /**
  * Shape component for rendering 2D geometry.
@@ -75,8 +76,7 @@ export type ShapeConfig = BaseShape &
  * // Create a basic shape
  * const shape = new Shape({
  *   type: 'rectangle',
- *   width: 100,
- *   height: 100,
+ *   size: { x: 100, y: 100 },
  *   strokeWidth: 2,
  *   strokeColor: '#000',
  *   strokeAlignment: 0.5,
@@ -85,7 +85,7 @@ export type ShapeConfig = BaseShape &
  *   blending: 'normal',
  *   disabled: false,
  *   sortingLayer: 'units',
- *   sortCenter: [0, 0],
+ *   sortOffset: { x: 0, y: 0 },
  * });
  *
  * // Add to actor
@@ -99,8 +99,8 @@ export type ShapeConfig = BaseShape &
  * @category Components
  */
 export class Shape extends Component {
-  /** Type of the shape */
-  type: ShapeType;
+  /** Geometry of the shape */
+  geometry: ShapeGeometry;
   /** Color of the stroke */
   strokeColor?: string;
   /** Width of the stroke */
@@ -125,25 +125,7 @@ export class Shape extends Component {
   /** Sorting layer of the shape */
   sortingLayer: string;
   /** Center point of the shape */
-  sortCenter: [number, number];
-  /** Width of the shape */
-  width?: number;
-  /** Height of the shape */
-  height?: number;
-  /** Radius of the shape */
-  radius?: number;
-  /** Radius X of the shape */
-  radiusX?: number;
-  /** Radius Y of the shape */
-  radiusY?: number;
-  /** Start point X coordinate for line shape */
-  point1X?: number;
-  /** Start point Y coordinate for line shape */
-  point1Y?: number;
-  /** End point X coordinate for line shape */
-  point2X?: number;
-  /** End point Y coordinate for line shape */
-  point2Y?: number;
+  sortOffset: Point;
   /** Internal rendering data */
   renderData?: RenderData;
 
@@ -155,7 +137,6 @@ export class Shape extends Component {
   constructor(config: ShapeConfig) {
     super();
 
-    this.type = config.type;
     this.strokeColor = config.strokeColor;
     this.strokeWidth = config.strokeWidth;
     this.strokeAlignment = config.strokeAlignment;
@@ -165,21 +146,45 @@ export class Shape extends Component {
     this.blending = config.blending;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
-    this.sortCenter = config.sortCenter;
-    this.width = (config as Rectangle | RoundRectangle).width;
-    this.height = (config as Rectangle | RoundRectangle).height;
-    this.radius = (config as RoundRectangle | Circle).radius;
-    this.radiusX = (config as Ellipse).radiusX;
-    this.radiusY = (config as Ellipse).radiusY;
-    this.point1X = (config as Line).point1X;
-    this.point1Y = (config as Line).point1Y;
-    this.point2X = (config as Line).point2X;
-    this.point2Y = (config as Line).point2Y;
+    this.sortOffset = { ...config.sortOffset };
+
+    switch (config.type) {
+      case 'rectangle':
+        this.geometry = {
+          type: config.type,
+          size: { ...config.size },
+        };
+        break;
+      case 'roundRectangle':
+        this.geometry = {
+          type: config.type,
+          size: { ...config.size },
+          radius: config.radius,
+        };
+        break;
+      case 'circle':
+        this.geometry = {
+          type: config.type,
+          radius: config.radius,
+        };
+        break;
+      case 'ellipse':
+        this.geometry = {
+          type: config.type,
+          radius: { ...config.radius },
+        };
+        break;
+      case 'line':
+        this.geometry = {
+          type: config.type,
+          point1: { ...config.point1 },
+          point2: { ...config.point2 },
+        };
+    }
   }
 
   clone(): Shape {
-    return new Shape({
-      type: this.type,
+    const baseConfig = {
       strokeColor: this.strokeColor,
       strokeWidth: this.strokeWidth,
       strokeAlignment: this.strokeAlignment,
@@ -188,18 +193,44 @@ export class Shape extends Component {
       blending: this.blending,
       disabled: this.disabled,
       sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter.slice(0) as [number, number],
-      width: this.width,
-      height: this.height,
-      radius: this.radius,
-      radiusX: this.radiusX,
-      radiusY: this.radiusY,
-      point1X: this.point1X,
-      point1Y: this.point1Y,
-      point2X: this.point2X,
-      point2Y: this.point2Y,
+      sortOffset: { ...this.sortOffset },
       fill: this.fill,
-    });
+    };
+
+    switch (this.geometry.type) {
+      case 'rectangle':
+        return new Shape({
+          ...baseConfig,
+          type: this.geometry.type,
+          size: { ...this.geometry.size },
+        });
+      case 'roundRectangle':
+        return new Shape({
+          ...baseConfig,
+          type: this.geometry.type,
+          size: { ...this.geometry.size },
+          radius: this.geometry.radius,
+        });
+      case 'circle':
+        return new Shape({
+          ...baseConfig,
+          type: this.geometry.type,
+          radius: this.geometry.radius,
+        });
+      case 'ellipse':
+        return new Shape({
+          ...baseConfig,
+          type: this.geometry.type,
+          radius: { ...this.geometry.radius },
+        });
+      case 'line':
+        return new Shape({
+          ...baseConfig,
+          type: this.geometry.type,
+          point1: { ...this.geometry.point1 },
+          point2: { ...this.geometry.point2 },
+        });
+    }
   }
 }
 

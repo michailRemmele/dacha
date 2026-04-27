@@ -7,7 +7,7 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
       flipX: false,
       flipY: true,
       disabled: false,
@@ -22,7 +22,7 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.width).toEqual(100);
     expect(sprite.height).toEqual(200);
     expect(sprite.slice).toEqual(10);
-    expect(sprite.sortCenter).toEqual([0, 0]);
+    expect(sprite.sortOffset).toEqual({ x: 0, y: 0 });
     expect(sprite.flipX).toEqual(false);
     expect(sprite.flipY).toEqual(true);
     expect(sprite.disabled).toEqual(false);
@@ -39,7 +39,7 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
       flipX: false,
       flipY: true,
       disabled: false,
@@ -54,7 +54,7 @@ describe('Contrib -> components -> Sprite', () => {
     sprite.width = 200;
     sprite.height = 400;
     sprite.slice = 55;
-    sprite.sortCenter = [5, 10];
+    sprite.sortOffset = { x: 5, y: 10 };
     sprite.flipX = true;
     sprite.flipY = false;
     sprite.disabled = true;
@@ -67,7 +67,7 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.width).toEqual(200);
     expect(sprite.height).toEqual(400);
     expect(sprite.slice).toEqual(55);
-    expect(sprite.sortCenter).toEqual([5, 10]);
+    expect(sprite.sortOffset).toEqual({ x: 5, y: 10 });
     expect(sprite.flipX).toEqual(true);
     expect(sprite.flipY).toEqual(false);
     expect(sprite.disabled).toEqual(true);
@@ -83,7 +83,7 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      sortCenter: [0, 0],
+      sortOffset: { x: 0, y: 0 },
       flipX: false,
       flipY: true,
       disabled: false,
@@ -96,6 +96,6 @@ describe('Contrib -> components -> Sprite', () => {
     const cloneSprite = originalSprite.clone();
 
     expect(originalSprite).not.toBe(cloneSprite);
-    expect(originalSprite.sortCenter).not.toBe(cloneSprite.sortCenter);
+    expect(originalSprite.sortOffset).not.toBe(cloneSprite.sortOffset);
   });
 });

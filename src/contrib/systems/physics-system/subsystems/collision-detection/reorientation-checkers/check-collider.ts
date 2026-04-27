@@ -5,7 +5,7 @@ export const checkCollider = (
   collider: Collider,
   colliderOld: OrientationData['collider'],
 ): boolean => {
-  if (collider.type !== colliderOld.type) {
+  if (collider.shape.type !== colliderOld.type) {
     return true;
   }
 
@@ -14,27 +14,37 @@ export const checkCollider = (
   }
 
   if (
-    collider.centerX !== colliderOld.centerX ||
-    collider.centerY !== colliderOld.centerY
+    collider.offset.x !== colliderOld.offsetX ||
+    collider.offset.y !== colliderOld.offsetY
   ) {
     return true;
   }
 
-  if (collider.type === 'box') {
+  if (collider.shape.type === 'box') {
     return (
-      collider.sizeX !== colliderOld.sizeX ||
-      collider.sizeY !== colliderOld.sizeY
+      collider.shape.size.x !== colliderOld.sizeX ||
+      collider.shape.size.y !== colliderOld.sizeY
     );
   }
 
-  if (collider.type === 'circle') {
-    return collider.radius !== colliderOld.radius;
+  if (collider.shape.type === 'circle') {
+    return collider.shape.radius !== colliderOld.radius;
+  }
+
+  if (collider.shape.type === 'segment') {
+    return (
+      collider.shape.point1.x !== colliderOld.point1X ||
+      collider.shape.point1.y !== colliderOld.point1Y ||
+      collider.shape.point2.x !== colliderOld.point2X ||
+      collider.shape.point2.y !== colliderOld.point2Y
+    );
   }
 
   return (
-    collider.point1?.x !== colliderOld.point1?.x ||
-    collider.point1?.y !== colliderOld.point1?.y ||
-    collider.point2?.x !== colliderOld.point2?.x ||
-    collider.point2?.y !== colliderOld.point2?.y
+    collider.shape.point1.x !== colliderOld.point1X ||
+    collider.shape.point1.y !== colliderOld.point1Y ||
+    collider.shape.point2.x !== colliderOld.point2X ||
+    collider.shape.point2.y !== colliderOld.point2Y ||
+    collider.shape.radius !== colliderOld.radius
   );
 };
