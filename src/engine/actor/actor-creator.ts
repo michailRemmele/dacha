@@ -80,14 +80,8 @@ export class ActorCreator {
       });
     }
 
-    template.getComponents().forEach((component) => {
-      actor.setComponent(component);
-    });
-
-    components.forEach((componentOptions) => {
-      const Component = this.components[componentOptions.name];
-      actor.setComponent(new Component(componentOptions.config));
-    });
+    this.addComponents(actor, template.components);
+    this.addComponents(actor, components);
 
     return actor;
   }
@@ -108,12 +102,19 @@ export class ActorCreator {
       actor.appendChild(actorChild);
     });
 
+    this.addComponents(actor, components);
+
+    return actor;
+  }
+
+  private addComponents(
+    actor: Actor,
+    components: ComponentConfig[] = [],
+  ): void {
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
       actor.setComponent(new Component(componentOptions.config));
     });
-
-    return actor;
   }
 
   private build(options: ActorOptions): Actor {

@@ -70,11 +70,11 @@ export interface MouseControlConfig {
  *     },
  *   ],
  * });
- * 
+ *
  * // Add to actor
  * actor.setComponent(mouseControl);
  * ```
- * 
+ *
  * @category Components
  */
 export class MouseControl extends Component {
@@ -83,7 +83,7 @@ export class MouseControl extends Component {
 
   /**
    * Creates a new MouseControl component.
-   * 
+   *
    * @param config - Configuration for the mouse control
    */
   constructor(config: MouseControlConfig) {
@@ -105,31 +105,6 @@ export class MouseControl extends Component {
       },
       {},
     );
-  }
-
-  clone(): MouseControl {
-    return new MouseControl({
-      inputEventBindings: Object.keys(this.inputEventBindings).reduce(
-        (acc, inputEvent) => {
-          const buttonBinds = this.inputEventBindings[inputEvent];
-
-          Object.keys(buttonBinds).forEach((button) => {
-            acc.push({
-              event: inputEvent,
-              button: Number(button),
-              eventType: buttonBinds[button].eventType,
-              attrs: Object.keys(buttonBinds[button].attrs).map((name) => ({
-                name,
-                value: buttonBinds[button].attrs[name],
-              })),
-            });
-          });
-
-          return acc;
-        },
-        [] as MouseEventBindConfig[],
-      ),
-    });
   }
 }
 

@@ -9,7 +9,7 @@ describe('Contrib -> components -> RigidBody', () => {
       gravityScale: 1,
       linearDamping: 1,
       disabled: false,
-    }).clone();
+    });
 
     expect(rigidBody.type).toEqual('dynamic');
     expect(rigidBody.mass).toEqual(10);
@@ -28,7 +28,7 @@ describe('Contrib -> components -> RigidBody', () => {
       gravityScale: 1,
       linearDamping: 1,
       disabled: false,
-    }).clone();
+    });
 
     rigidBody.type = 'static';
     rigidBody.mass = 20;
@@ -64,19 +64,6 @@ describe('Contrib -> components -> RigidBody', () => {
     rigidBody.wakeUp();
     expect(rigidBody.sleeping).toEqual(false);
     expect(rigidBody.disabled).toEqual(false);
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalRigidBody = new RigidBody({
-      type: 'dynamic',
-      mass: 10,
-      gravityScale: 1,
-      linearDamping: 1,
-      disabled: false,
-    });
-    const cloneRigidBody = originalRigidBody.clone();
-
-    expect(originalRigidBody).not.toBe(cloneRigidBody);
   });
 
   it('Returns zero inverse mass for zero or negative mass', () => {

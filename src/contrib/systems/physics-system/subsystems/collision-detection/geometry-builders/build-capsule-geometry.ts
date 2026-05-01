@@ -13,8 +13,6 @@ export function buildCapsuleGeometry(
   const centerX = collider.offset.x + transform.world.position.x;
   const centerY = collider.offset.y + transform.world.position.y;
 
-  const { point1, point2, radius } = collider.shape;
-
   const rotation = transform.world.rotation;
   const scaleX = transform.world.scale.x;
   const scaleY = transform.world.scale.y;
@@ -31,8 +29,14 @@ export function buildCapsuleGeometry(
     };
   };
 
-  const geometryPoint1 = buildPoint(point1.x, point1.y);
-  const geometryPoint2 = buildPoint(point2.x, point2.y);
+  const geometryPoint1 = buildPoint(
+    collider.shape.point1.x,
+    collider.shape.point1.y,
+  );
+  const geometryPoint2 = buildPoint(
+    collider.shape.point2.x,
+    collider.shape.point2.y,
+  );
 
   return {
     center: {
@@ -47,6 +51,6 @@ export function buildCapsuleGeometry(
       geometryPoint1.y,
       geometryPoint2.y,
     ),
-    radius: radius * Math.max(scaleX, scaleY),
+    radius: collider.shape.radius * Math.max(scaleX, scaleY),
   };
 }

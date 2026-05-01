@@ -52,7 +52,7 @@ export interface BitmapTextConfig {
  * // Modify properties
  * bitmapText.text = 'Stay a while and listen!';
  * ```
- * 
+ *
  * @category Components
  */
 export class BitmapText extends Component {
@@ -96,21 +96,6 @@ export class BitmapText extends Component {
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
     this.sortOffset = { ...config.sortOffset };
-  }
-
-  clone(): BitmapText {
-    return new BitmapText({
-      text: this.text,
-      font: this.font,
-      fontSize: this.fontSize,
-      align: this.align,
-      color: this.color,
-      opacity: this.opacity,
-      blending: this.blending,
-      disabled: this.disabled,
-      sortingLayer: this.sortingLayer,
-      sortOffset: { ...this.sortOffset },
-    });
   }
 }
 

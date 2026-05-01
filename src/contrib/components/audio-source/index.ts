@@ -1,11 +1,11 @@
 import { Component } from '../../../engine/component';
 
 export interface AudioSourceConfig {
-  src: string
-  group: string
-  looped: boolean
-  volume: number
-  autoplay: boolean
+  src: string;
+  group: string;
+  looped: boolean;
+  volume: number;
+  autoplay: boolean;
 }
 
 /**
@@ -13,7 +13,7 @@ export interface AudioSourceConfig {
  *
  * It handles the playing of audio for an actor.
  * It allows to play audio files and control the volume and looping of the audio.
- * 
+ *
  * @example
  * ```typescript
  * // Create an audio source
@@ -30,11 +30,11 @@ export interface AudioSourceConfig {
  *
  * // Modify properties
  * audioSource.volume = 0.5; // Set volume to 50%
- * 
+ *
  * // Play the audio
  * actor.dispatchEvent(PlayAudio);
  * ```
- * 
+ *
  * @category Components
  */
 export class AudioSource extends Component {
@@ -60,16 +60,6 @@ export class AudioSource extends Component {
     this.volume = config.volume;
     this.autoplay = config.autoplay;
     this.playing = false;
-  }
-
-  clone(): AudioSource {
-    return new AudioSource({
-      src: this.src,
-      group: this.group,
-      looped: this.looped,
-      volume: this.volume,
-      autoplay: this.autoplay,
-    });
   }
 }
 

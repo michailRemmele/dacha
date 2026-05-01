@@ -1,9 +1,26 @@
 import type { Actor } from '../../../engine/actor';
-import type { Template } from '../../../engine/template';
+import type { TemplateConfig } from '../../../engine/types';
 import { AudioSource } from '../../components';
 import { traverseEntity } from '../../../engine/entity';
 
-export const getAllSources = (actors: (Actor | Template)[]): string[] => {
+export const getAllTemplateSources = (templates: TemplateConfig[]): string[] => {
+  const sources: string[] = [];
+
+  templates.forEach((template) => {
+    traverseEntity(template, (entity) => {
+      const audioSource = entity.components.find(
+        (component) => component.name === AudioSource.componentName,
+      );
+      if (audioSource && typeof audioSource.config.src === 'string') {
+        sources.push(audioSource.config.src);
+      }
+    });
+  });
+
+  return sources;
+};
+
+export const getAllSources = (actors: Actor[]): string[] => {
   const sources: string[] = [];
 
   actors.forEach((actor) => {

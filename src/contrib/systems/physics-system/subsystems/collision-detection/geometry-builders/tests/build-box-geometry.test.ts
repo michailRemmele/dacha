@@ -7,8 +7,10 @@ describe('PhysicsSystem -> collision-detection -> buildBoxGeometry()', () => {
   it('Builds outward normals for mirrored boxes', () => {
     const collider = new Collider({
       type: 'box',
-      offset: { x: 0, y: 0 },
-      size: { x: 4, y: 2 },
+      offsetX: 0,
+      offsetY: 0,
+      sizeX: 4,
+      sizeY: 2,
       layer: 'default',
     });
     const transform = new Transform({

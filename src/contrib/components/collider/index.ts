@@ -5,14 +5,16 @@ export type ColliderType = 'box' | 'circle' | 'segment' | 'capsule';
 
 export interface BaseColliderConfig {
   type: ColliderType;
-  offset: Point;
+  offsetX: number;
+  offsetY: number;
   layer: string;
   debugColor?: string;
 }
 
 export interface BoxColliderConfig extends BaseColliderConfig {
   type: 'box';
-  size: Point;
+  sizeX: number;
+  sizeY: number;
 }
 
 export interface CircleColliderConfig extends BaseColliderConfig {
@@ -22,14 +24,18 @@ export interface CircleColliderConfig extends BaseColliderConfig {
 
 export interface SegmentColliderConfig extends BaseColliderConfig {
   type: 'segment';
-  point1: Point;
-  point2: Point;
+  point1X: number;
+  point1Y: number;
+  point2X: number;
+  point2Y: number;
 }
 
 export interface CapsuleColliderConfig extends BaseColliderConfig {
   type: 'capsule';
-  point1: Point;
-  point2: Point;
+  point1X: number;
+  point1Y: number;
+  point2X: number;
+  point2Y: number;
   radius: number;
 }
 
@@ -39,11 +45,34 @@ export type ColliderConfig =
   | SegmentColliderConfig
   | CapsuleColliderConfig;
 
+export interface BoxColliderShape {
+  type: 'box';
+  size: Point;
+}
+
+export interface CircleColliderShape {
+  type: 'circle';
+  radius: number;
+}
+
+export interface SegmentColliderShape {
+  type: 'segment';
+  point1: Point;
+  point2: Point;
+}
+
+export interface CapsuleColliderShape {
+  type: 'capsule';
+  point1: Point;
+  point2: Point;
+  radius: number;
+}
+
 export type ColliderShape =
-  | Pick<BoxColliderConfig, 'type' | 'size'>
-  | Pick<CircleColliderConfig, 'type' | 'radius'>
-  | Pick<SegmentColliderConfig, 'type' | 'point1' | 'point2'>
-  | Pick<CapsuleColliderConfig, 'type' | 'point1' | 'point2' | 'radius'>;
+  | BoxColliderShape
+  | CircleColliderShape
+  | SegmentColliderShape
+  | CapsuleColliderShape;
 
 /**
  * Collider component for defining collision boundaries.
@@ -56,15 +85,18 @@ export type ColliderShape =
  * // Create a box collider
  * const boxCollider = new Collider({
  *   type: 'box',
- *   offset: { x: 0, y: 0 },
- *   size: { x: 64, y: 64 },
+ *   offsetX: 0,
+ *   offsetY: 0,
+ *   sizeX: 64,
+ *   sizeY: 64,
  *   layer: 'default',
  * });
  *
  * // Create a circle collider
  * const circleCollider = new Collider({
  *   type: 'circle',
- *   offset: { x: 0, y: 0 },
+ *   offsetX: 0,
+ *   offsetY: 0,
  *   radius: 32,
  *   layer: 'default',
  * });
@@ -85,7 +117,7 @@ export class Collider extends Component {
   constructor(config: ColliderConfig) {
     super();
 
-    this.offset = { ...config.offset };
+    this.offset = { x: config.offsetX, y: config.offsetY };
     this.layer = config.layer;
     this.debugColor = config.debugColor;
 
@@ -93,7 +125,7 @@ export class Collider extends Component {
       case 'box':
         this.shape = {
           type: config.type,
-          size: { ...config.size },
+          size: { x: config.sizeX, y: config.sizeY },
         };
         break;
       case 'circle':
@@ -105,55 +137,17 @@ export class Collider extends Component {
       case 'segment':
         this.shape = {
           type: config.type,
-          point1: { ...config.point1 },
-          point2: { ...config.point2 },
+          point1: { x: config.point1X, y: config.point1Y },
+          point2: { x: config.point2X, y: config.point2Y },
         };
         break;
       case 'capsule':
         this.shape = {
           type: config.type,
-          point1: { ...config.point1 },
-          point2: { ...config.point2 },
+          point1: { x: config.point1X, y: config.point1Y },
+          point2: { x: config.point2X, y: config.point2Y },
           radius: config.radius,
         };
-    }
-  }
-
-  clone(): Collider {
-    const baseConfig = {
-      offset: { ...this.offset },
-      layer: this.layer,
-      debugColor: this.debugColor,
-    };
-
-    switch (this.shape.type) {
-      case 'box':
-        return new Collider({
-          ...baseConfig,
-          type: this.shape.type,
-          size: { ...this.shape.size },
-        });
-      case 'circle':
-        return new Collider({
-          ...baseConfig,
-          type: this.shape.type,
-          radius: this.shape.radius,
-        });
-      case 'segment':
-        return new Collider({
-          ...baseConfig,
-          type: this.shape.type,
-          point1: { ...this.shape.point1 },
-          point2: { ...this.shape.point2 },
-        });
-      case 'capsule':
-        return new Collider({
-          ...baseConfig,
-          type: this.shape.type,
-          point1: { ...this.shape.point1 },
-          point2: { ...this.shape.point2 },
-          radius: this.shape.radius,
-        });
     }
   }
 }
