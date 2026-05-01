@@ -1,4 +1,4 @@
-import { Transform, Shape, Actor } from 'dacha';
+import { Transform, Shape, Actor, type RectangleShapeGeometry } from 'dacha';
 import { type Bounds } from 'dacha/renderer';
 
 import { getIdByPath } from '../../../utils/get-id-by-path';
@@ -34,16 +34,17 @@ export const updateFrameSize = (
   bounds: Bounds,
   zoom: number,
 ): void => {
-  const frameTransform = frame.getComponent(Transform);
-  const frameShape = frame.getComponent(Shape);
+  const transform = frame.getComponent(Transform);
+  const shape = frame.getComponent(Shape);
+  const shapeGeometry = shape.geometry as RectangleShapeGeometry;
 
   const actorTransform = actor.getComponent(Transform);
 
-  frameTransform.world.position.x = actorTransform.world.position.x;
-  frameTransform.world.position.y = actorTransform.world.position.y;
-  frameShape.width = bounds.width;
-  frameShape.height = bounds.height;
-  frameShape.strokeWidth = FRAME_STROKE_WIDTH / zoom;
+  transform.world.position.x = actorTransform.world.position.x;
+  transform.world.position.y = actorTransform.world.position.y;
+  shapeGeometry.size.x = bounds.width;
+  shapeGeometry.size.y = bounds.height;
+  shape.strokeWidth = FRAME_STROKE_WIDTH / zoom;
 };
 
 export const updateAreaSize = (
@@ -54,11 +55,12 @@ export const updateAreaSize = (
 
   const transform = area.getComponent(Transform);
   const shape = area.getComponent(Shape);
+  const shapeGeometry = shape.geometry as RectangleShapeGeometry;
 
   transform.world.position.x = (sceneSize.x0 + sceneSize.x1) / 2;
   transform.world.position.y = (sceneSize.y0 + sceneSize.y1) / 2;
-  shape.width = Math.abs(sceneSize.x0 - sceneSize.x1);
-  shape.height = Math.abs(sceneSize.y0 - sceneSize.y1);
+  shapeGeometry.size.x = Math.abs(sceneSize.x0 - sceneSize.x1);
+  shapeGeometry.size.y = Math.abs(sceneSize.y0 - sceneSize.y1);
   shape.strokeWidth = AREA_STROKE_WIDTH / zoom;
 };
 

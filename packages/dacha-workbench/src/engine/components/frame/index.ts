@@ -1,11 +1,7 @@
-import { Component } from 'dacha'
+import { Component } from 'dacha';
 
 export class Frame extends Component {
-  selectedActorId?: string
-
-  clone(): Frame {
-    return new Frame()
-  }
+  selectedActorId?: string;
 }
 
-Frame.componentName = 'Frame'
+Frame.componentName = 'Frame';

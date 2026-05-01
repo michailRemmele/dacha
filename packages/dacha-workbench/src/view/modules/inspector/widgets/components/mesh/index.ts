@@ -27,13 +27,11 @@ export const mesh: WidgetSchema = {
       type: 'number',
     },
     {
-      name: 'sortCenter.0',
-      title: 'components.renderable.sortCenterX.title',
+      name: 'sortOffsetX',
       type: 'number',
     },
     {
-      name: 'sortCenter.1',
-      title: 'components.renderable.sortCenterY.title',
+      name: 'sortOffsetY',
       type: 'number',
     },
     {
@@ -74,7 +72,8 @@ export const mesh: WidgetSchema = {
     width: 0,
     height: 0,
     slice: 1,
-    sortCenter: [0, 0],
+    sortOffsetX: 0,
+    sortOffsetY: 0,
     flipX: false,
     flipY: false,
     sortingLayer: 'default',

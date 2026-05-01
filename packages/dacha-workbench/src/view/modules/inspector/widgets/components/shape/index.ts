@@ -12,7 +12,7 @@ export const shape: WidgetSchema = {
       options: ['rectangle', 'roundRectangle', 'circle', 'ellipse', 'line'],
     },
     {
-      name: 'width',
+      name: 'sizeX',
       type: 'number',
       dependency: {
         name: 'type',
@@ -20,7 +20,7 @@ export const shape: WidgetSchema = {
       },
     },
     {
-      name: 'height',
+      name: 'sizeY',
       type: 'number',
       dependency: {
         name: 'type',
@@ -123,13 +123,11 @@ export const shape: WidgetSchema = {
       type: 'color',
     },
     {
-      name: 'sortCenter.0',
-      title: 'components.renderable.sortCenterX.title',
+      name: 'sortOffsetX',
       type: 'number',
     },
     {
-      name: 'sortCenter.1',
-      title: 'components.renderable.sortCenterY.title',
+      name: 'sortOffsetY',
       type: 'number',
     },
     {
@@ -154,14 +152,15 @@ export const shape: WidgetSchema = {
   ],
   getInitialState: () => ({
     type: 'rectangle',
-    width: 10,
-    height: 10,
+    sizeX: 10,
+    sizeY: 10,
     strokeWidth: 0,
     strokeColor: '#fff',
     strokeAlignment: 0.5,
     fill: '#fff',
     pixelLine: false,
-    sortCenter: [0, 0],
+    sortOffsetX: 0,
+    sortOffsetY: 0,
     sortingLayer: 'default',
     blending: 'normal',
     opacity: 1,

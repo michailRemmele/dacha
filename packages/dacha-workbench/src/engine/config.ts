@@ -420,8 +420,8 @@ export const getEditorConfig = ({
           name: 'Shape',
           config: {
             type: 'rectangle',
-            width: 0,
-            height: 0,
+            sizeX: 0,
+            sizeY: 0,
             strokeWidth: 1,
             strokeColor: '#fff',
             strokeAlignment: 0,
@@ -429,7 +429,8 @@ export const getEditorConfig = ({
             blending: 'normal',
             disabled: false,
             sortingLayer: 'editor-layer-2',
-            sortCenter: [0, 0],
+            sortOffsetX: 0,
+            sortOffsetY: 0,
           },
         },
         {
@@ -461,8 +462,8 @@ export const getEditorConfig = ({
           name: 'Shape',
           config: {
             type: 'rectangle',
-            width: 0,
-            height: 0,
+            sizeX: 0,
+            sizeY: 0,
             strokeWidth: 1,
             strokeColor: '#1890FF',
             strokeAlignment: 0.5,
@@ -471,7 +472,8 @@ export const getEditorConfig = ({
             blending: 'normal',
             disabled: false,
             sortingLayer: 'editor-layer-3',
-            sortCenter: [0, 0],
+            sortOffsetX: 0,
+            sortOffsetY: 0,
           },
         },
         {
