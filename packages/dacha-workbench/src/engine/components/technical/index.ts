@@ -1,9 +1,5 @@
 import { Component } from 'dacha';
 
-export class Technical extends Component {
-  clone(): Technical {
-    return new Technical();
-  }
-}
+export class Technical extends Component {}
 
 Technical.componentName = 'Technical';

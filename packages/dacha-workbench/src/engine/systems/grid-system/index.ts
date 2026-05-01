@@ -77,7 +77,8 @@ export class GridSystem extends SceneSystem {
           return gridView;
         },
         sortingLayer: 'editor-layer-1',
-        sortCenter: [0, 0],
+        sortOffsetX: 0,
+        sortOffsetY: 0,
       }),
     );
 

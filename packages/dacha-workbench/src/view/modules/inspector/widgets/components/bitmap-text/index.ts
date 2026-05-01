@@ -38,13 +38,11 @@ export const bitmapText: WidgetSchema = {
       options: ['normal', 'addition', 'substract', 'multiply'],
     },
     {
-      name: 'sortCenter.0',
-      title: 'components.renderable.sortCenterX.title',
+      name: 'sortOffsetX',
       type: 'number',
     },
     {
-      name: 'sortCenter.1',
-      title: 'components.renderable.sortCenterY.title',
+      name: 'sortOffsetY',
       type: 'number',
     },
     {
@@ -67,7 +65,8 @@ export const bitmapText: WidgetSchema = {
     opacity: 1,
     blending: 'normal',
     sortingLayer: 'default',
-    sortCenter: [0, 0],
+    sortOffsetX: 0,
+    sortOffsetY: 0,
     disabled: false,
   }),
 };

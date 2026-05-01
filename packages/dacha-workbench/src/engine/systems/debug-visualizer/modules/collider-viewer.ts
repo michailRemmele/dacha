@@ -1,4 +1,4 @@
-import { Collider, Shape, Transform } from 'dacha';
+import { Collider, Shape, Transform, type CapsuleColliderShape } from 'dacha';
 import { Color } from 'pixi.js';
 
 import { getCurrentZoom } from '../../../../utils/get-current-zoom';
@@ -16,7 +16,8 @@ const DEFAULT_PROPS = {
   blending: 'normal' as Shape['blending'],
   disabled: false,
   sortingLayer: 'editor-layer-0',
-  sortCenter: [0, 0] as Shape['sortCenter'],
+  sortOffsetX: 0,
+  sortOffsetY: 0,
 };
 
 const getCapsuleShape = (
@@ -25,26 +26,22 @@ const getCapsuleShape = (
   color: string,
   fillColor: string,
 ): Shape => {
-  const { centerX, centerY } = collider;
-  const point1X = collider.point1?.x ?? 0;
-  const point1Y = collider.point1?.y ?? 0;
-  const point2X = collider.point2?.x ?? 0;
-  const point2Y = collider.point2?.y ?? 0;
+  const { offset } = collider;
+  const { point1, point2, radius } = collider.shape as CapsuleColliderShape;
 
-  const dx = point2X - point1X;
-  const dy = point2Y - point1Y;
+  const dx = point2.x - point1.x;
+  const dy = point2.y - point1.y;
 
   transform.local.rotation = Math.atan2(dy, dx);
-  transform.local.position.x = centerX + (point1X + point2X) / 2;
-  transform.local.position.y = centerY + (point1Y + point2Y) / 2;
+  transform.local.position.x = offset.x + (point1.x + point2.x) / 2;
+  transform.local.position.y = offset.y + (point1.y + point2.y) / 2;
 
   const length = Math.hypot(dx, dy);
-  const radius = collider.radius ?? 0;
 
   return new Shape({
     type: 'roundRectangle',
-    width: length + radius * 2,
-    height: radius * 2,
+    sizeX: length + radius * 2,
+    sizeY: radius * 2,
     radius,
     strokeColor: color,
     fill: fillColor,
@@ -68,17 +65,17 @@ export const colliderViewer: DebugViewModule = {
 
     const transform = debugActor.getComponent(Transform);
 
-    transform.local.position.x = collider.centerX;
-    transform.local.position.y = collider.centerY;
+    transform.local.position.x = collider.offset.x;
+    transform.local.position.y = collider.offset.y;
 
     let shape: Shape;
 
-    switch (collider.type) {
+    switch (collider.shape.type) {
       case 'box':
         shape = new Shape({
           type: 'rectangle',
-          width: collider.sizeX ?? 0,
-          height: collider.sizeY ?? 0,
+          sizeX: collider.shape.size.x,
+          sizeY: collider.shape.size.y,
           strokeColor: color,
           fill: fillColor,
           ...DEFAULT_PROPS,
@@ -90,7 +87,7 @@ export const colliderViewer: DebugViewModule = {
       case 'circle':
         shape = new Shape({
           type: 'circle',
-          radius: collider.radius ?? 0,
+          radius: collider.shape.radius,
           strokeColor: color,
           fill: fillColor,
           ...DEFAULT_PROPS,
@@ -99,10 +96,10 @@ export const colliderViewer: DebugViewModule = {
       case 'segment':
         shape = new Shape({
           type: 'line',
-          point1X: collider.point1?.x ?? 0,
-          point1Y: collider.point1?.y ?? 0,
-          point2X: collider.point2?.x ?? 0,
-          point2Y: collider.point2?.y ?? 0,
+          point1X: collider.shape.point1.x,
+          point1Y: collider.shape.point1.y,
+          point2X: collider.shape.point2.x,
+          point2Y: collider.shape.point2.y,
           strokeColor: color,
           ...DEFAULT_PROPS,
         });
@@ -119,7 +116,7 @@ export const colliderViewer: DebugViewModule = {
     const debugTransform = debugActor.getComponent(Transform);
     const debugShape = debugActor.getComponent(Shape);
 
-    if (debugShape.type === 'circle') {
+    if (debugShape.geometry.type === 'circle') {
       const maxScale = Math.max(
         transform.world.scale.x,
         transform.world.scale.y,

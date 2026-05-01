@@ -73,7 +73,7 @@ export class SceneViewer extends SceneSystem {
 
     this.world.data.mainActor = mainActor
 
-    const templateCollection = new TemplateCollection(ALLOWED_COMPONENTS)
+    const templateCollection = new TemplateCollection()
     const templates = this.configStore.get(['templates']) as TemplateConfig[]
 
     templates.forEach((template) => {
