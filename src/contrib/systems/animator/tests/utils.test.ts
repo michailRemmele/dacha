@@ -3,7 +3,7 @@ import { Actor } from '../../../../engine/actor/actor';
 import { getValue, setValue } from '../utils';
 
 interface TestComponentConfig extends Record<string, unknown> {
-  testField: string
+  testField: string;
 }
 
 class TestComponent extends Component {
@@ -14,12 +14,6 @@ class TestComponent extends Component {
     super();
 
     this.testField = (config as TestComponentConfig).testField;
-  }
-
-  clone(): Component {
-    return new TestComponent({
-      testField: this.testField,
-    });
   }
 }
 
@@ -34,8 +28,12 @@ describe('Contrib -> Animator -> utils', () => {
       const component = new TestComponent({ testField: 'testFieldValue' });
       actor.setComponent(component);
 
-      expect(getValue(actor, ['components', 'TestComponent', 'testField'])).toBe('testFieldValue');
-      expect(getValue(actor, ['components', 'TestComponent', 'notExistField'])).toBeUndefined();
+      expect(
+        getValue(actor, ['components', 'TestComponent', 'testField']),
+      ).toBe('testFieldValue');
+      expect(
+        getValue(actor, ['components', 'TestComponent', 'notExistField']),
+      ).toBeUndefined();
     });
 
     it('Returns child component value', () => {
@@ -54,16 +52,22 @@ describe('Contrib -> Animator -> utils', () => {
       actor2.setComponent(component);
 
       expect(
-        getValue(
-          actor1,
-          ['children', 'actor-2', 'components', 'TestComponent', 'testField'],
-        ),
+        getValue(actor1, [
+          'children',
+          'actor-2',
+          'components',
+          'TestComponent',
+          'testField',
+        ]),
       ).toBe('testFieldValue2');
       expect(
-        getValue(
-          actor1,
-          ['children', 'actor-2', 'components', 'NotExistComponent', 'testField'],
-        ),
+        getValue(actor1, [
+          'children',
+          'actor-2',
+          'components',
+          'NotExistComponent',
+          'testField',
+        ]),
       ).toBeUndefined();
     });
 
@@ -88,16 +92,26 @@ describe('Contrib -> Animator -> utils', () => {
       actor3.setComponent(component);
 
       expect(
-        getValue(
-          actor1,
-          ['children', 'actor-2', 'children', 'actor-3', 'components', 'TestComponent', 'testField'],
-        ),
+        getValue(actor1, [
+          'children',
+          'actor-2',
+          'children',
+          'actor-3',
+          'components',
+          'TestComponent',
+          'testField',
+        ]),
       ).toBe('testFieldValue3');
       expect(
-        getValue(
-          actor1,
-          ['children', 'actor-2', 'children', 'notExistActor', 'components', 'TestComponent', 'testField'],
-        ),
+        getValue(actor1, [
+          'children',
+          'actor-2',
+          'children',
+          'notExistActor',
+          'components',
+          'TestComponent',
+          'testField',
+        ]),
       ).toBeUndefined();
     });
   });
@@ -112,9 +126,13 @@ describe('Contrib -> Animator -> utils', () => {
       const component = new TestComponent({ testField: 'testFieldValue' });
       actor.setComponent(component);
 
-      setValue(actor, ['components', 'TestComponent', 'testField'], 'updatedValue');
+      setValue(
+        actor,
+        ['components', 'TestComponent', 'testField'],
+        'updatedValue',
+      );
 
-      expect((actor.getComponent(TestComponent)).testField).toBe('updatedValue');
+      expect(actor.getComponent(TestComponent).testField).toBe('updatedValue');
     });
 
     it('Updates child component value', () => {
@@ -138,7 +156,9 @@ describe('Contrib -> Animator -> utils', () => {
         'updatedValue2',
       );
 
-      expect((actor2.getComponent(TestComponent)).testField).toBe('updatedValue2');
+      expect(actor2.getComponent(TestComponent).testField).toBe(
+        'updatedValue2',
+      );
     });
 
     it('Updates grandchild component value', () => {
@@ -163,11 +183,21 @@ describe('Contrib -> Animator -> utils', () => {
 
       setValue(
         actor1,
-        ['children', 'actor-2', 'children', 'actor-3', 'components', 'TestComponent', 'testField'],
+        [
+          'children',
+          'actor-2',
+          'children',
+          'actor-3',
+          'components',
+          'TestComponent',
+          'testField',
+        ],
         'updatedValue3',
       );
 
-      expect((actor3.getComponent(TestComponent)).testField).toBe('updatedValue3');
+      expect(actor3.getComponent(TestComponent).testField).toBe(
+        'updatedValue3',
+      );
     });
   });
 });

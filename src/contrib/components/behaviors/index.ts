@@ -25,7 +25,7 @@ export interface BehaviorsConfig {
  * // Add to actor
  * actor.setComponent(behaviors);
  * ```
- * 
+ *
  * @category Components
  */
 export class Behaviors extends Component {
@@ -36,16 +36,10 @@ export class Behaviors extends Component {
 
     const { list } = config;
 
-    this.list = list;
-  }
-
-  clone(): Behaviors {
-    return new Behaviors({
-      list: this.list.map(({ name, options }) => ({
-        name,
-        options: { ...options },
-      })),
-    });
+    this.list = list.map(({ name, options }) => ({
+      name,
+      options: { ...options },
+    }));
   }
 }
 

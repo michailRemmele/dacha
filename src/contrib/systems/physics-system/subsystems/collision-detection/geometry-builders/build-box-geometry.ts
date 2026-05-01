@@ -24,10 +24,15 @@ export function buildBoxGeometry(
 
   if (transform !== undefined) {
     const collider = colliderOrOverlap as Collider;
-    centerX = collider.centerX;
-    centerY = collider.centerY;
-    sizeX = collider.sizeX!;
-    sizeY = collider.sizeY!;
+
+    if (collider.shape.type !== 'box') {
+      throw new Error(`Expected box collider, got ${collider.shape.type}.`);
+    }
+
+    centerX = collider.offset.x;
+    centerY = collider.offset.y;
+    sizeX = collider.shape.size.x;
+    sizeY = collider.shape.size.y;
     positionX = transform.world.position.x;
     positionY = transform.world.position.y;
     rotation = transform.world.rotation;

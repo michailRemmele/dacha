@@ -2,7 +2,7 @@ import { Sprite } from '../../../components/sprite';
 import { Mesh } from '../../../components/mesh';
 import { BitmapText } from '../../../components/bitmap-text';
 import type { Actor } from '../../../../engine/actor';
-import type { Template } from '../../../../engine/template';
+import type { TemplateConfig } from '../../../../engine/types';
 import { ResourceLoader } from '../../../../engine/resource-loader';
 import { traverseEntity } from '../../../../engine/entity';
 
@@ -24,7 +24,47 @@ export const loadImage = async (
   }
 };
 
-export const getAllImageSources = (actors: (Actor | Template)[]): string[] => {
+export const getAllTemplateImageSources = (
+  templates: TemplateConfig[],
+): string[] => {
+  const sources: string[] = [];
+
+  templates.forEach((template) => {
+    traverseEntity(template, (entity) => {
+      const imageSource = entity.components.find(
+        (component) =>
+          component.name === Sprite.componentName ||
+          component.name === Mesh.componentName,
+      );
+      if (imageSource && typeof imageSource.config.src === 'string') {
+        sources.push(imageSource.config.src);
+      }
+    });
+  });
+
+  return sources;
+};
+
+export const getAllTemplateFontSources = (
+  templates: TemplateConfig[],
+): string[] => {
+  const sources: string[] = [];
+
+  templates.forEach((template) => {
+    traverseEntity(template, (entity) => {
+      const fontSource = entity.components.find(
+        (component) => component.name === BitmapText.componentName,
+      );
+      if (fontSource && typeof fontSource.config.font === 'string') {
+        sources.push(fontSource.config.font);
+      }
+    });
+  });
+
+  return sources;
+};
+
+export const getAllImageSources = (actors: Actor[]): string[] => {
   const sources: string[] = [];
 
   actors.forEach((actor) => {
@@ -44,7 +84,7 @@ export const getAllImageSources = (actors: (Actor | Template)[]): string[] => {
   return sources;
 };
 
-export const getAllFontSources = (actors: (Actor | Template)[]): string[] => {
+export const getAllFontSources = (actors: Actor[]): string[] => {
   const sources: string[] = [];
 
   actors.forEach((actor) => {

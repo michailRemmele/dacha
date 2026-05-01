@@ -16,7 +16,7 @@ import type {
 import type { ActorEvent } from '../../../types/events';
 
 import type { AudioGroups, AudioStateNode } from './types';
-import { getAllSources, loadAudio } from './utils';
+import { getAllSources, getAllTemplateSources, loadAudio } from './utils';
 
 const MASTER_GROUP = 'master';
 const VOLUME_TOLERANCE = 0.001;
@@ -25,7 +25,7 @@ const VOLUME_TOLERANCE = 0.001;
  * Audio system that manages audio playback for actors with {@link AudioSource} components
  *
  * @extends WorldSystem
- * 
+ *
  * @category Systems
  */
 export class AudioSystem extends WorldSystem {
@@ -92,7 +92,7 @@ export class AudioSystem extends WorldSystem {
 
   async onSceneLoad(scene: Scene): Promise<void> {
     const allSources = [
-      ...getAllSources(this.templateCollection.getAll()),
+      ...getAllTemplateSources(this.templateCollection.getAll()),
       ...getAllSources(scene.children),
     ];
     const uniqueSources = [...new Set(allSources)];
@@ -136,7 +136,7 @@ export class AudioSystem extends WorldSystem {
 
   onSceneDestroy(scene: Scene): void {
     const allSources = [
-      ...getAllSources(this.templateCollection.getAll()),
+      ...getAllTemplateSources(this.templateCollection.getAll()),
       ...getAllSources(scene.children),
     ];
 

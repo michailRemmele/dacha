@@ -33,6 +33,4 @@ export abstract class Component {
       this.constructor as ComponentConstructor,
     );
   }
-
-  abstract clone(): Component;
 }

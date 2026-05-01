@@ -35,7 +35,7 @@ export interface KeyboardControlConfig extends Record<string, unknown> {
  *
  * KeyboardControl component handles the keyboard input events for an actor.
  * It can be used to bind keyboard events to game actions.
- * 
+ *
  * @example
  * ```typescript
  * // Create a keyboard control
@@ -56,11 +56,11 @@ export interface KeyboardControlConfig extends Record<string, unknown> {
  *     },
  *   ],
  * });
- * 
+ *
  * // Add to actor
  * actor.setComponent(keyboardControl);
  * ```
- * 
+ *
  * @category Components
  */
 export class KeyboardControl extends Component {
@@ -69,7 +69,7 @@ export class KeyboardControl extends Component {
 
   /**
    * Creates a new KeyboardControl component.
-   * 
+   *
    * @param config - Configuration for the keyboard control
    */
   constructor(config: KeyboardControlConfig) {
@@ -94,43 +94,6 @@ export class KeyboardControl extends Component {
       },
       {},
     );
-  }
-
-  clone(): KeyboardControl {
-    return new KeyboardControl({
-      inputEventBindings: Object.keys(this.inputEventBindings).reduce(
-        (acc, inputEvent) => {
-          const { pressed, released } = this.inputEventBindings[inputEvent];
-
-          if (pressed !== undefined) {
-            acc.push({
-              key: inputEvent,
-              eventType: pressed.eventType,
-              pressed: true,
-              keepEmit: pressed.keepEmit,
-              attrs: Object.keys(pressed.attrs).map((name) => ({
-                name,
-                value: pressed.attrs[name],
-              })),
-            });
-          }
-          if (released !== undefined) {
-            acc.push({
-              key: inputEvent,
-              eventType: released.eventType,
-              pressed: false,
-              attrs: Object.keys(released.attrs).map((name) => ({
-                name,
-                value: released.attrs[name],
-              })),
-            });
-          }
-
-          return acc;
-        },
-        [] as KeyboardEventBindConfig[],
-      ),
-    });
   }
 }
 

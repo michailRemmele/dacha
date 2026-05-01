@@ -1,6 +1,7 @@
 import type { Mesh as PixiMesh } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
 import { type BlendingMode } from '../../types/view';
 
 interface RenderData {
@@ -24,7 +25,8 @@ export interface MeshConfig {
   flipX: boolean;
   flipY: boolean;
   sortingLayer: string;
-  sortCenter: [number, number];
+  sortOffsetX: number;
+  sortOffsetY: number;
   color: string;
   blending: BlendingMode;
   opacity: number;
@@ -52,7 +54,8 @@ export interface MeshConfig {
  *   flipX: false,
  *   flipY: false,
  *   sortingLayer: 'units',
- *   sortCenter: [0, 0],
+ *   sortOffsetX: 0,
+ *   sortOffsetY: 0,
  *   color: '#ffffff',
  *   blending: 'normal',
  *   opacity: 1,
@@ -90,7 +93,7 @@ export class Mesh extends Component {
   /** Sorting layer name for rendering order */
   sortingLayer: string;
   /** Center point for sorting calculations */
-  sortCenter: [number, number];
+  sortOffset: Point;
   /** Current frame to render */
   currentFrame: number;
   /** Color tint applied to the mesh */
@@ -121,31 +124,13 @@ export class Mesh extends Component {
     this.flipY = config.flipY;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
-    this.sortCenter = config.sortCenter;
+    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';
     this.opacity = config.opacity ?? 1;
-    this.material = config.material;
-  }
-
-  clone(): Mesh {
-    return new Mesh({
-      src: this.src,
-      width: this.width,
-      height: this.height,
-      slice: this.slice,
-      flipX: this.flipX,
-      flipY: this.flipY,
-      disabled: this.disabled,
-      sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter.slice(0) as [number, number],
-      color: this.color,
-      blending: this.blending,
-      opacity: this.opacity,
-      material: this.material
-        ? { name: this.material.name, options: { ...this.material.options } }
-        : undefined,
-    });
+    this.material = config.material
+      ? { name: config.material.name, options: { ...config.material.options } }
+      : undefined;
   }
 }
 

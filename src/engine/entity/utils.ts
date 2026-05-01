@@ -1,8 +1,6 @@
 import { Queue } from '../data-lib';
 
-import type { Entity } from './entity';
-
-export const traverseEntity = <T extends Entity>(
+export const traverseEntity = <T extends { children: T[] }>(
   entity: T,
   callback: (entity: T) => void,
 ): void => {
@@ -18,7 +16,7 @@ export const traverseEntity = <T extends Entity>(
   }
 };
 
-export const findChild = <T extends Entity>(
+export const findChild = <T extends { children: T[] }>(
   entity: T,
   predicate: (entity: T) => boolean,
   recursive = true,

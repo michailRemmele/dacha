@@ -8,26 +8,14 @@ import { AddActor, RemoveActor } from '../../events';
 
 class TestComponent1 extends Component {
   static componentName = 'TestComponent1';
-
-  clone(): Component {
-    return new TestComponent1();
-  }
 }
 
 class TestComponent2 extends Component {
   static componentName = 'TestComponent2';
-
-  clone(): Component {
-    return new TestComponent2();
-  }
 }
 
 class TestComponent3 extends Component {
   static componentName = 'TestComponent3';
-
-  clone(): Component {
-    return new TestComponent3();
-  }
 }
 
 describe('Engine -> ActorQuery', () => {
@@ -40,7 +28,7 @@ describe('Engine -> ActorQuery', () => {
   let actor5: Actor;
 
   beforeEach(() => {
-    const templateCollection = new TemplateCollection([]);
+    const templateCollection = new TemplateCollection();
     scene = new Scene({
       id: '000',
       name: 'test-scene',

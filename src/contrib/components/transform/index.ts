@@ -1,5 +1,5 @@
 import { Component } from '../../../engine/component';
-import { Matrix, MathOps } from '../../../engine/math-lib';
+import { Matrix } from '../../../engine/math-lib';
 
 import { LocalTransform } from './local-transform';
 import { WorldTransform } from './world-transform';
@@ -172,16 +172,6 @@ export class Transform extends Component {
     }
 
     return this._invertedWorldMatrix;
-  }
-
-  clone(): Transform {
-    return new Transform({
-      offsetX: this.local.position.x,
-      offsetY: this.local.position.y,
-      rotation: MathOps.radToDeg(this.local.rotation),
-      scaleX: this.local.scale.x,
-      scaleY: this.local.scale.y,
-    });
   }
 }
 

@@ -16,7 +16,7 @@ export interface EngineOptions {
 /**
  * Main game engine responsible for bootstrapping scenes and systems, managing the
  * game loop, and controlling lifecycle actions (play, pause, stop).
- * 
+ *
  * @category Core
  */
 export class Engine {
@@ -88,7 +88,7 @@ export class Engine {
       }
     }
 
-    const templateCollection = new TemplateCollection(components);
+    const templateCollection = new TemplateCollection();
 
     for (const template of templates) {
       templateCollection.register(template);

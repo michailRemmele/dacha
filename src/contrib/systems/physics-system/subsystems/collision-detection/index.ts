@@ -13,7 +13,11 @@ import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { DispersionCalculator } from './dispersion-calculator';
-import { checkTransform, checkCollider } from './reorientation-checkers';
+import {
+  checkTransform,
+  checkCollider,
+  getOrientationData,
+} from './reorientation-checkers';
 import { buildQueryProxy, raycast, raycastAll, overlap } from './query-utils';
 import type {
   PhysicsSettings,
@@ -33,7 +37,6 @@ import type {
   ProxyPair,
   Contact,
   Intersection,
-  OrientationData,
 } from './types';
 
 export class CollisionDetectionSubsystem {
@@ -152,44 +155,18 @@ export class CollisionDetectionSubsystem {
     );
   }
 
-  private getOrientationData(actor: Actor): OrientationData {
-    const transform = actor.getComponent(Transform);
-    const collider = actor.getComponent(Collider);
-
-    return {
-      transform: {
-        positionX: transform.world.position.x,
-        positionY: transform.world.position.y,
-        rotation: transform.world.rotation,
-        scaleX: transform.world.scale.x,
-        scaleY: transform.world.scale.y,
-      },
-      collider: {
-        type: collider.type,
-        layer: collider.layer,
-        centerX: collider.centerX,
-        centerY: collider.centerY,
-        sizeX: collider.sizeX,
-        sizeY: collider.sizeY,
-        radius: collider.radius,
-        point1: collider.point1 ? { ...collider.point1 } : undefined,
-        point2: collider.point2 ? { ...collider.point2 } : undefined,
-      },
-    };
-  }
-
   private addProxy(actor: Actor): void {
     const transform = actor.getComponent(Transform);
     const collider = actor.getComponent(Collider);
 
-    const geometry = geometryBuilders[collider.type](collider, transform);
-    const aabb = aabbBuilders[collider.type](geometry);
+    const geometry = geometryBuilders[collider.shape.type](collider, transform);
+    const aabb = aabbBuilders[collider.shape.type](geometry);
 
     const proxy = {
       actor,
       aabb,
       geometry,
-      orientationData: this.getOrientationData(actor),
+      orientationData: getOrientationData(actor),
       layer: collider.layer,
     } as ActorProxy;
 
@@ -206,15 +183,15 @@ export class CollisionDetectionSubsystem {
     const transform = actor.getComponent(Transform);
     const collider = actor.getComponent(Collider);
 
-    const geometry = geometryBuilders[collider.type](collider, transform);
-    const aabb = aabbBuilders[collider.type](geometry);
+    const geometry = geometryBuilders[collider.shape.type](collider, transform);
+    const aabb = aabbBuilders[collider.shape.type](geometry);
 
     const proxy = this.proxiesByActorId.get(actor.id)!;
     const prevAABB = proxy.aabb;
 
     proxy.aabb = aabb;
     proxy.geometry = geometry;
-    proxy.orientationData = this.getOrientationData(actor);
+    proxy.orientationData = getOrientationData(actor);
     proxy.layer = collider.layer;
 
     this.axis.x.dispersionCalculator.removeFromSample(prevAABB);
@@ -375,8 +352,8 @@ export class CollisionDetectionSubsystem {
   private checkOnIntersection(proxyPair: ProxyPair): Intersection | false {
     const [proxy1, proxy2] = proxyPair;
 
-    const type1 = proxy1.actor.getComponent(Collider).type;
-    const type2 = proxy2.actor.getComponent(Collider).type;
+    const type1 = proxy1.actor.getComponent(Collider).shape.type;
+    const type2 = proxy2.actor.getComponent(Collider).shape.type;
     const intersectionChecker = intersectionCheckers[type1]?.[type2];
 
     if (!intersectionChecker) {

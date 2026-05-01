@@ -12,8 +12,9 @@ describe('Contrib -> components -> BitmapText', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'text',
-      sortCenter: [0, 0],
-    }).clone();
+      sortOffsetX: 0,
+      sortOffsetY: 0,
+    });
 
     expect(text.text).toEqual('Hello World');
     expect(text.font).toEqual('Arial');
@@ -24,7 +25,7 @@ describe('Contrib -> components -> BitmapText', () => {
     expect(text.blending).toEqual('normal');
     expect(text.disabled).toEqual(false);
     expect(text.sortingLayer).toEqual('text');
-    expect(text.sortCenter).toEqual([0, 0]);
+    expect(text.sortOffset).toEqual({ x: 0, y: 0 });
   });
 
   it('Correct updates values ', () => {
@@ -38,8 +39,9 @@ describe('Contrib -> components -> BitmapText', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'text',
-      sortCenter: [0, 0],
-    }).clone();
+      sortOffsetX: 0,
+      sortOffsetY: 0,
+    });
 
     text.fontSize = 48;
     text.color = '#444';
@@ -48,23 +50,5 @@ describe('Contrib -> components -> BitmapText', () => {
     expect(text.fontSize).toEqual(48);
     expect(text.color).toEqual('#444');
     expect(text.align).toEqual('right');
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalText = new BitmapText({
-      text: 'Hello World',
-      font: 'Arial',
-      fontSize: 24,
-      align: 'center',
-      color: '#000',
-      opacity: 1,
-      blending: 'normal',
-      disabled: false,
-      sortingLayer: 'text',
-      sortCenter: [0, 0],
-    }).clone();
-    const cloneText = originalText.clone();
-
-    expect(originalText).not.toBe(cloneText);
   });
 });

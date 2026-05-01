@@ -21,7 +21,7 @@ export interface CameraConfig {
  *
  * // Add to actor
  * actor.setComponent(camera);
- * 
+ *
  * @category Components
  */
 export class Camera extends Component {
@@ -43,13 +43,6 @@ export class Camera extends Component {
 
     this.windowSizeX = 0;
     this.windowSizeY = 0;
-  }
-
-  clone(): Camera {
-    return new Camera({
-      zoom: this.zoom,
-      current: this.current,
-    });
   }
 }
 

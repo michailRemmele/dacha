@@ -1,11 +1,7 @@
 import { findParentComponent, Component } from '../component';
 import { Actor } from '../../actor';
 
-class MockComponent extends Component {
-  clone(): Component {
-    return new MockComponent();
-  }
-}
+class MockComponent extends Component {}
 
 MockComponent.componentName = 'MockComponent';
 

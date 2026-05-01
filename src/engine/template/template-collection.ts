@@ -1,63 +1,53 @@
-import type { ComponentConstructor } from '../component';
 import type { TemplateConfig } from '../types';
 
-import { Template } from './template';
+interface CollectionEntry {
+  config: TemplateConfig;
+  parent?: TemplateConfig;
+}
 
 export class TemplateCollection {
-  private components: Record<string, ComponentConstructor>;
-  private storage: Record<string, Template>;
+  private storage: Map<string, CollectionEntry>;
 
-  constructor(components: ComponentConstructor[]) {
-    this.components = components.reduce(
-      (acc, ComponentClass) => {
-        acc[ComponentClass.componentName] = ComponentClass;
-        return acc;
-      },
-      {} as Record<string, ComponentConstructor>,
-    );
-    this.storage = {};
+  constructor() {
+    this.storage = new Map();
   }
 
-  private buildTemplate(options: TemplateConfig): Template {
-    const { id, name, components = [], children = [] } = options;
+  register(template: TemplateConfig, parent?: TemplateConfig): void {
+    this.storage.set(template.id, { config: template, parent });
 
-    const template = new Template({ id, name });
-
-    children.forEach((child) => {
-      const childTemplate = this.buildTemplate(child);
-      childTemplate.parent = template;
-      template.appendChild(childTemplate);
+    template.children.forEach((child) => {
+      this.register(child, template);
     });
-
-    components.forEach((componentOptions) => {
-      const Component = this.components[componentOptions.name];
-      template.setComponent(new Component(componentOptions.config));
-    });
-
-    this.storage[options.id] = template;
-    return template;
   }
 
-  register(options: TemplateConfig): void {
-    this.buildTemplate(options);
-  }
-
-  get(id: string): Template {
-    if (!this.storage[id]) {
+  get(id: string): TemplateConfig {
+    if (!this.storage.has(id)) {
       throw new Error(`Can't find template with the following id: ${id}`);
     }
 
-    return this.storage[id].clone();
+    return this.storage.get(id)?.config as TemplateConfig;
   }
 
-  getAll(): Template[] {
-    return Object.values(this.storage);
+  getAll(onlyRoots?: boolean): TemplateConfig[] {
+    const templates: TemplateConfig[] = [];
+
+    this.storage.forEach((entry) => {
+      if (onlyRoots) {
+        if (!entry.parent) {
+          templates.push(entry.config);
+        }
+      } else {
+        templates.push(entry.config);
+      }
+    });
+
+    return templates;
   }
 
   delete(id: string): void {
     const template = this.get(id);
     template.children.forEach((child) => this.delete(child.id));
 
-    delete this.storage[id];
+    this.storage.delete(id);
   }
 }
