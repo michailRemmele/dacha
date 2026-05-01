@@ -96,7 +96,7 @@ export class Entity extends EventTarget {
     predicate: (entity: Entity) => boolean,
     recursive = true,
   ): Entity | undefined {
-    return findChild(this, predicate, recursive);
+    return findChild(this as Entity, predicate, recursive);
   }
 
   /**

@@ -10,8 +10,8 @@ export const sortByXAxis =
     const aX = a.getGlobalPosition(undefined, true).x;
     const bX = b.getGlobalPosition(undefined, true).x;
 
-    const aOffsetX = aX + aComponent.sortCenter[0];
-    const bOffsetX = bX + bComponent.sortCenter[0];
+    const aOffsetX = aX + aComponent.sortOffset.x;
+    const bOffsetX = bX + bComponent.sortOffset.x;
 
     return (aOffsetX - bOffsetX) * direction;
   };

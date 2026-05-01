@@ -1,28 +1,20 @@
 import { GraphicsContext } from 'pixi.js';
 
-import {
-  Shape,
-  type Rectangle,
-  type RoundRectangle,
-  type Circle,
-  type Ellipse,
-  type Line,
-} from '../../../../components/shape';
+import { Shape } from '../../../../components/shape';
 
 export const getGraphicsContext = (shape: Shape): GraphicsContext => {
-  switch (shape.type) {
+  switch (shape.geometry.type) {
     case 'rectangle': {
+      const { size } = shape.geometry;
       const {
-        width,
-        height,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as Rectangle;
+      } = shape;
       const rectangle = new GraphicsContext()
-        .rect(-width / 2, -height / 2, width, height)
+        .rect(-size.x / 2, -size.y / 2, size.x, size.y)
         .stroke({
           width: strokeWidth,
           alignment: strokeAlignment,
@@ -35,18 +27,16 @@ export const getGraphicsContext = (shape: Shape): GraphicsContext => {
       return rectangle;
     }
     case 'roundRectangle': {
+      const { size, radius } = shape.geometry;
       const {
-        width,
-        height,
-        radius,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as RoundRectangle;
+      } = shape;
       const rectangle = new GraphicsContext()
-        .roundRect(-width / 2, -height / 2, width, height, radius)
+        .roundRect(-size.x / 2, -size.y / 2, size.x, size.y, radius)
         .stroke({
           width: strokeWidth,
           alignment: strokeAlignment,
@@ -59,14 +49,14 @@ export const getGraphicsContext = (shape: Shape): GraphicsContext => {
       return rectangle;
     }
     case 'circle': {
+      const { radius } = shape.geometry;
       const {
-        radius,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as Circle;
+      } = shape;
       const circle = new GraphicsContext()
         .circle(0, 0, radius)
         .stroke({
@@ -81,17 +71,16 @@ export const getGraphicsContext = (shape: Shape): GraphicsContext => {
       return circle;
     }
     case 'ellipse': {
+      const { radius } = shape.geometry;
       const {
-        radiusX,
-        radiusY,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as Ellipse;
+      } = shape;
       const ellipse = new GraphicsContext()
-        .ellipse(0, 0, radiusX, radiusY)
+        .ellipse(0, 0, radius.x, radius.y)
         .stroke({
           width: strokeWidth,
           alignment: strokeAlignment,
@@ -104,19 +93,16 @@ export const getGraphicsContext = (shape: Shape): GraphicsContext => {
       return ellipse;
     }
     case 'line': {
+      const { point1, point2 } = shape.geometry;
       const {
-        point1X,
-        point1Y,
-        point2X,
-        point2Y,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         pixelLine,
-      } = shape as Line;
+      } = shape;
       return new GraphicsContext()
-        .moveTo(point1X, point1Y)
-        .lineTo(point2X, point2Y)
+        .moveTo(point1.x, point1.y)
+        .lineTo(point2.x, point2.y)
         .stroke({
           width: strokeWidth,
           alignment: strokeAlignment,
@@ -128,72 +114,60 @@ export const getGraphicsContext = (shape: Shape): GraphicsContext => {
 };
 
 export const getGraphicsContextKey = (shape: Shape): string => {
-  switch (shape.type) {
+  switch (shape.geometry.type) {
     case 'rectangle': {
+      const { type, size } = shape.geometry;
       const {
-        type,
-        width,
-        height,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as Rectangle;
-      return `${type}_${width}_${height}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
+      } = shape;
+      return `${type}_${size.x}_${size.y}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
     }
     case 'roundRectangle': {
+      const { type, size, radius } = shape.geometry;
       const {
-        type,
-        width,
-        height,
-        radius,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as RoundRectangle;
-      return `${type}_${width}_${height}_${radius}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
+      } = shape;
+      return `${type}_${size.x}_${size.y}_${radius}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
     }
     case 'circle': {
+      const { type, radius } = shape.geometry;
       const {
-        type,
-        radius,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as Circle;
+      } = shape;
       return `${type}_${radius}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
     }
     case 'ellipse': {
+      const { type, radius } = shape.geometry;
       const {
-        type,
-        radiusX,
-        radiusY,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         fill,
         pixelLine,
-      } = shape as Ellipse;
-      return `${type}_${radiusX}_${radiusY}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
+      } = shape;
+      return `${type}_${radius.x}_${radius.y}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${fill}_${pixelLine}`;
     }
     case 'line': {
+      const { type, point1, point2 } = shape.geometry;
       const {
-        type,
-        point1X,
-        point1Y,
-        point2X,
-        point2Y,
         strokeWidth,
         strokeColor,
         strokeAlignment,
         pixelLine,
-      } = shape as Line;
-      return `${type}_${point1X}_${point1Y}_${point2X}_${point2Y}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${pixelLine}`;
+      } = shape;
+      return `${type}_${point1.x}_${point1.y}_${point2.x}_${point2.y}_${strokeWidth}_${strokeColor}_${strokeAlignment}_${pixelLine}`;
     }
   }
 };

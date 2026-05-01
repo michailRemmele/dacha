@@ -29,7 +29,7 @@ describe('Contrib -> components -> MouseControl', () => {
           ],
         },
       ],
-    }).clone();
+    });
 
     expect(mouseControl.inputEventBindings.mousedown[0]).toStrictEqual({
       eventType: 'ATTACK',
@@ -61,7 +61,7 @@ describe('Contrib -> components -> MouseControl', () => {
           ],
         },
       ],
-    }).clone();
+    });
 
     mouseControl.inputEventBindings = {
       mousedown: {
@@ -80,39 +80,5 @@ describe('Contrib -> components -> MouseControl', () => {
         someOption: 20,
       },
     });
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalMouseControl = new MouseControl({
-      inputEventBindings: [
-        {
-          event: 'dblclick',
-          eventType: 'ATTACK',
-          attrs: [
-            {
-              name: 'someOption',
-              type: 'number',
-              value: 10,
-            },
-          ],
-        },
-      ],
-    });
-    const cloneMouseControl = originalMouseControl.clone();
-
-    expect(originalMouseControl).not.toBe(cloneMouseControl);
-
-    expect(originalMouseControl.inputEventBindings.dblclick[0]).toBeDefined();
-    expect(cloneMouseControl.inputEventBindings.dblclick[0]).toBeDefined();
-
-    expect(originalMouseControl.inputEventBindings).not.toBe(cloneMouseControl.inputEventBindings);
-    expect(originalMouseControl.inputEventBindings.dblclick[0]).not.toBe(
-      cloneMouseControl.inputEventBindings.dblclick[0],
-    );
-    expect(
-      originalMouseControl.inputEventBindings.dblclick[0].attrs,
-    ).not.toBe(
-      cloneMouseControl.inputEventBindings.dblclick[0].attrs,
-    );
   });
 });

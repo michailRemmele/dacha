@@ -61,40 +61,92 @@ export class ShapeBuilder implements Builder<Shape> {
       meta.opacity = shape.opacity;
     }
 
-    if (
-      shape.type !== meta.type ||
-      shape.strokeWidth !== meta.strokeWidth ||
-      shape.strokeColor !== meta.strokeColor ||
-      shape.fill !== meta.fill ||
-      shape.width !== meta.width ||
-      shape.height !== meta.height ||
-      shape.radius !== meta.radius ||
-      shape.radiusX !== meta.radiusX ||
-      shape.radiusY !== meta.radiusY ||
-      shape.point1X !== meta.point1X ||
-      shape.point1Y !== meta.point1Y ||
-      shape.point2X !== meta.point2X ||
-      shape.point2Y !== meta.point2Y
-    ) {
-      view.label = shape.type;
+    if (this.shouldUpdateGraphicsContext(shape)) {
+      view.label = shape.geometry.type;
       this.updateGraphicsContext(shape);
-      meta.type = shape.type;
-      meta.strokeWidth = shape.strokeWidth;
-      meta.strokeColor = shape.strokeColor;
-      meta.fill = shape.fill;
-      meta.width = shape.width;
-      meta.height = shape.height;
-      meta.radius = shape.radius;
-      meta.radiusX = shape.radiusX;
-      meta.radiusY = shape.radiusY;
-      meta.point1X = shape.point1X;
-      meta.point1Y = shape.point1Y;
-      meta.point2X = shape.point2X;
-      meta.point2Y = shape.point2Y;
+      this.updateGraphicsContextMeta(shape);
     }
 
     const graphicsContext = this.getGraphicsContext(shape)!;
     view.context = graphicsContext;
+  }
+
+  private shouldUpdateGraphicsContext(shape: Shape): boolean {
+    const meta = shape.renderData!.view.__dacha.meta;
+    const { geometry } = shape;
+
+    if (
+      geometry.type !== meta.type ||
+      shape.strokeWidth !== meta.strokeWidth ||
+      shape.strokeColor !== meta.strokeColor ||
+      shape.strokeAlignment !== meta.strokeAlignment ||
+      shape.fill !== meta.fill ||
+      shape.pixelLine !== meta.pixelLine
+    ) {
+      return true;
+    }
+
+    switch (geometry.type) {
+      case 'rectangle':
+        return geometry.size.x !== meta.sizeX || geometry.size.y !== meta.sizeY;
+      case 'roundRectangle':
+        return (
+          geometry.size.x !== meta.sizeX ||
+          geometry.size.y !== meta.sizeY ||
+          geometry.radius !== meta.radius
+        );
+      case 'circle':
+        return geometry.radius !== meta.radius;
+      case 'ellipse':
+        return (
+          geometry.radius.x !== meta.radiusX ||
+          geometry.radius.y !== meta.radiusY
+        );
+      case 'line':
+        return (
+          geometry.point1.x !== meta.point1X ||
+          geometry.point1.y !== meta.point1Y ||
+          geometry.point2.x !== meta.point2X ||
+          geometry.point2.y !== meta.point2Y
+        );
+    }
+  }
+
+  private updateGraphicsContextMeta(shape: Shape): void {
+    const meta = shape.renderData!.view.__dacha.meta;
+    const { geometry } = shape;
+
+    meta.type = geometry.type;
+    meta.strokeWidth = shape.strokeWidth;
+    meta.strokeColor = shape.strokeColor;
+    meta.strokeAlignment = shape.strokeAlignment;
+    meta.fill = shape.fill;
+    meta.pixelLine = shape.pixelLine;
+
+    switch (geometry.type) {
+      case 'rectangle':
+        meta.sizeX = geometry.size.x;
+        meta.sizeY = geometry.size.y;
+        break;
+      case 'roundRectangle':
+        meta.sizeX = geometry.size.x;
+        meta.sizeY = geometry.size.y;
+        meta.radius = geometry.radius;
+        break;
+      case 'circle':
+        meta.radius = geometry.radius;
+        break;
+      case 'ellipse':
+        meta.radiusX = geometry.radius.x;
+        meta.radiusY = geometry.radius.y;
+        break;
+      case 'line':
+        meta.point1X = geometry.point1.x;
+        meta.point1Y = geometry.point1.y;
+        meta.point2X = geometry.point2.x;
+        meta.point2Y = geometry.point2.y;
+        break;
+    }
   }
 
   private updateGraphicsContext(shape: Shape): void {
@@ -104,9 +156,9 @@ export class ShapeBuilder implements Builder<Shape> {
       this.graphicsContextMap.release(oldGraphicsContextKey, true);
     }
 
-    shape.renderData!.graphicsContextKey = getGraphicsContextKey(shape);
+    const graphicsContextKey = getGraphicsContextKey(shape);
 
-    const graphicsContextKey = shape.renderData!.graphicsContextKey!;
+    shape.renderData!.graphicsContextKey = graphicsContextKey;
 
     if (this.graphicsContextMap.has(graphicsContextKey)) {
       this.graphicsContextMap.retain(graphicsContextKey);

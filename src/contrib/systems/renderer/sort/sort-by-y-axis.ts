@@ -10,8 +10,8 @@ export const sortByYAxis =
     const aY = a.getGlobalPosition(undefined, true).y;
     const bY = b.getGlobalPosition(undefined, true).y;
 
-    const aOffsetY = aY + aComponent.sortCenter[1];
-    const bOffsetY = bY + bComponent.sortCenter[1];
+    const aOffsetY = aY + aComponent.sortOffset.y;
+    const bOffsetY = bY + bComponent.sortOffset.y;
 
     return (aOffsetY - bOffsetY) * direction;
   };

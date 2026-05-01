@@ -21,7 +21,7 @@ declare module 'pixi.js' {
       builderKey: string;
       viewComponent: Component & {
         sortingLayer: string;
-        sortCenter: [number, number];
+        sortOffset: { x: number; y: number };
       };
       meta: Record<string, unknown>;
       /**

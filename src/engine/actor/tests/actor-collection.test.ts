@@ -8,26 +8,14 @@ import { AddActor, RemoveActor } from '../../events';
 
 class TestComponent1 extends Component {
   static componentName = 'TestComponent1';
-
-  clone(): Component {
-    return new TestComponent1();
-  }
 }
 
 class TestComponent2 extends Component {
   static componentName = 'TestComponent2';
-
-  clone(): Component {
-    return new TestComponent2();
-  }
 }
 
 class TestComponent3 extends Component {
   static componentName = 'TestComponent3';
-
-  clone(): Component {
-    return new TestComponent3();
-  }
 }
 
 describe('Engine -> ActorCollection', () => {
@@ -40,7 +28,7 @@ describe('Engine -> ActorCollection', () => {
   let actor5: Actor;
 
   beforeEach(() => {
-    const templateCollection = new TemplateCollection([]);
+    const templateCollection = new TemplateCollection();
     scene = new Scene({
       id: '000',
       name: 'test-scene',
@@ -116,17 +104,21 @@ describe('Engine -> ActorCollection', () => {
     scene.appendChild(actor1);
 
     expect(testFn1.mock.calls.length).toEqual(1);
-    expect(testFn1.mock.calls[0]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor1,
-    }]);
+    expect(testFn1.mock.calls[0]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor1,
+      },
+    ]);
     expect(testFn2.mock.calls.length).toEqual(1);
-    expect(testFn2.mock.calls[0]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor1,
-    }]);
+    expect(testFn2.mock.calls[0]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor1,
+      },
+    ]);
     expect(actorCollection.size).toEqual(1);
 
     scene.appendChild(actor3);
@@ -138,44 +130,56 @@ describe('Engine -> ActorCollection', () => {
     actor3.setComponent(new TestComponent1());
 
     expect(testFn1.mock.calls.length).toEqual(2);
-    expect(testFn1.mock.calls[1]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor3,
-    }]);
+    expect(testFn1.mock.calls[1]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor3,
+      },
+    ]);
     expect(testFn2.mock.calls.length).toEqual(2);
-    expect(testFn2.mock.calls[1]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor3,
-    }]);
+    expect(testFn2.mock.calls[1]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor3,
+      },
+    ]);
     expect(actorCollection.size).toEqual(2);
 
     scene.appendChild(actor4);
     scene.appendChild(actor5);
 
     expect(testFn1.mock.calls.length).toEqual(4);
-    expect(testFn1.mock.calls[2]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor4,
-    }]);
-    expect(testFn1.mock.calls[3]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor5,
-    }]);
+    expect(testFn1.mock.calls[2]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor4,
+      },
+    ]);
+    expect(testFn1.mock.calls[3]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor5,
+      },
+    ]);
     expect(testFn2.mock.calls.length).toEqual(4);
-    expect(testFn2.mock.calls[2]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor4,
-    }]);
-    expect(testFn2.mock.calls[3]).toMatchObject([{
-      type: AddActor,
-      target: actorCollection,
-      actor: actor5,
-    }]);
+    expect(testFn2.mock.calls[2]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor4,
+      },
+    ]);
+    expect(testFn2.mock.calls[3]).toMatchObject([
+      {
+        type: AddActor,
+        target: actorCollection,
+        actor: actor5,
+      },
+    ]);
     expect(actorCollection.size).toEqual(4);
   });
 
@@ -203,17 +207,21 @@ describe('Engine -> ActorCollection', () => {
     actor1.removeComponent(TestComponent1);
 
     expect(testFn1.mock.calls.length).toEqual(1);
-    expect(testFn1.mock.calls[0]).toMatchObject([{
-      type: RemoveActor,
-      target: actorCollection,
-      actor: actor1,
-    }]);
+    expect(testFn1.mock.calls[0]).toMatchObject([
+      {
+        type: RemoveActor,
+        target: actorCollection,
+        actor: actor1,
+      },
+    ]);
     expect(testFn2.mock.calls.length).toEqual(1);
-    expect(testFn2.mock.calls[0]).toMatchObject([{
-      type: RemoveActor,
-      target: actorCollection,
-      actor: actor1,
-    }]);
+    expect(testFn2.mock.calls[0]).toMatchObject([
+      {
+        type: RemoveActor,
+        target: actorCollection,
+        actor: actor1,
+      },
+    ]);
     expect(actorCollection.size).toEqual(3);
 
     scene.removeChild(actor3);
@@ -221,27 +229,35 @@ describe('Engine -> ActorCollection', () => {
     actor5.removeComponent(TestComponent1);
 
     expect(testFn1.mock.calls.length).toEqual(3);
-    expect(testFn1.mock.calls[1]).toMatchObject([{
-      type: RemoveActor,
-      target: actorCollection,
-      actor: actor4,
-    }]);
-    expect(testFn1.mock.calls[2]).toMatchObject([{
-      type: RemoveActor,
-      target: actorCollection,
-      actor: actor5,
-    }]);
+    expect(testFn1.mock.calls[1]).toMatchObject([
+      {
+        type: RemoveActor,
+        target: actorCollection,
+        actor: actor4,
+      },
+    ]);
+    expect(testFn1.mock.calls[2]).toMatchObject([
+      {
+        type: RemoveActor,
+        target: actorCollection,
+        actor: actor5,
+      },
+    ]);
     expect(testFn2.mock.calls.length).toEqual(3);
-    expect(testFn2.mock.calls[1]).toMatchObject([{
-      type: RemoveActor,
-      target: actorCollection,
-      actor: actor4,
-    }]);
-    expect(testFn2.mock.calls[2]).toMatchObject([{
-      type: RemoveActor,
-      target: actorCollection,
-      actor: actor5,
-    }]);
+    expect(testFn2.mock.calls[1]).toMatchObject([
+      {
+        type: RemoveActor,
+        target: actorCollection,
+        actor: actor4,
+      },
+    ]);
+    expect(testFn2.mock.calls[2]).toMatchObject([
+      {
+        type: RemoveActor,
+        target: actorCollection,
+        actor: actor5,
+      },
+    ]);
     expect(actorCollection.size).toEqual(1);
   });
 
@@ -301,8 +317,12 @@ describe('Engine -> ActorCollection', () => {
     });
 
     actorCollection.sort((a, b) => {
-      if (a.id < b.id) { return -1; }
-      if (a.id > b.id) { return 1; }
+      if (a.id < b.id) {
+        return -1;
+      }
+      if (a.id > b.id) {
+        return 1;
+      }
       return 0;
     });
 

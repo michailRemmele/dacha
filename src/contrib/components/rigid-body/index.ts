@@ -123,16 +123,6 @@ export class RigidBody extends Component {
     this.force.multiplyNumber(0);
     this.impulse.multiplyNumber(0);
   }
-
-  clone(): RigidBody {
-    return new RigidBody({
-      mass: this.mass,
-      gravityScale: this.gravityScale,
-      linearDamping: this.linearDamping,
-      disabled: this.disabled,
-      type: this.type,
-    });
-  }
 }
 
 RigidBody.componentName = 'RigidBody';

@@ -9,7 +9,7 @@ import { PhysicsSystem, PhysicsAPI } from '../index';
 import type { PhysicsSettings } from '../types';
 
 const createScene = (): Scene => {
-  const templateCollection = new TemplateCollection([]);
+  const templateCollection = new TemplateCollection();
   const actorCreator = new ActorCreator([], templateCollection);
 
   return new Scene({
@@ -26,7 +26,7 @@ const createPhysicsSystem = (
   settings?: PhysicsSettings,
 ): { physicsSystem: PhysicsSystem; world: World } => {
   const world = new World({ id: 'world', name: 'world' });
-  const templateCollection = new TemplateCollection([]);
+  const templateCollection = new TemplateCollection();
   const actorCreator = new ActorCreator([], templateCollection);
 
   world.appendChild(scene);
@@ -60,8 +60,8 @@ const createBoxActor = (
   actor.setComponent(
     new Collider({
       type: 'box',
-      centerX: 0,
-      centerY: 0,
+      offsetX: 0,
+      offsetY: 0,
       sizeX: 2,
       sizeY: 2,
       layer: colliderConfig.layer,
@@ -95,8 +95,8 @@ const createCircleActor = (
   actor.setComponent(
     new Collider({
       type: 'circle',
-      centerX: 0,
-      centerY: 0,
+      offsetX: 0,
+      offsetY: 0,
       radius,
       layer: colliderConfig.layer,
     }),
@@ -124,8 +124,8 @@ const createSegmentActor = (
   actor.setComponent(
     new Collider({
       type: 'segment',
-      centerX: 0,
-      centerY: 0,
+      offsetX: 0,
+      offsetY: 0,
       point1X,
       point1Y,
       point2X,
@@ -169,8 +169,8 @@ const createCapsuleActor = (
   actor.setComponent(
     new Collider({
       type: 'capsule',
-      centerX: 0,
-      centerY: 0,
+      offsetX: 0,
+      offsetY: 0,
       point1X,
       point1Y,
       point2X,

@@ -70,13 +70,15 @@ export interface OrientationData {
   collider: {
     type: string;
     layer: string;
-    centerX: number;
-    centerY: number;
+    offsetX: number;
+    offsetY: number;
     radius?: number;
     sizeX?: number;
     sizeY?: number;
-    point1?: Point;
-    point2?: Point;
+    point1X?: number;
+    point1Y?: number;
+    point2X?: number;
+    point2Y?: number;
   };
 }
 

@@ -6,8 +6,8 @@ describe('Contrib -> systems -> PhysicsSystem -> collision-detection -> geometry
     const geometry = buildCapsuleGeometry(
       new Collider({
         type: 'capsule',
-        centerX: 1,
-        centerY: 2,
+        offsetX: 1,
+        offsetY: 2,
         point1X: -1,
         point1Y: 0,
         point2X: 1,

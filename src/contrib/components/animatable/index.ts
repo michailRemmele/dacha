@@ -29,7 +29,7 @@ export type { AnimatableConfig };
  *
  * It is better to use an editor to create the animatable component
  * since it has a quite complex structure.
- * 
+ *
  * @category Components
  */
 export class Animatable extends Component {
@@ -76,13 +76,6 @@ export class Animatable extends Component {
     }
 
     this.currentState = newState;
-  }
-
-  clone(): Animatable {
-    return new Animatable({
-      states: this.states,
-      initialState: this.initialState,
-    });
   }
 }
 

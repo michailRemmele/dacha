@@ -60,8 +60,8 @@ export const createCapsuleGeometry = (
   buildCapsuleGeometry(
     new Collider({
       type: 'capsule',
-      centerX: 0,
-      centerY: 0,
+      offsetX: 0,
+      offsetY: 0,
       point1X,
       point1Y,
       point2X,
@@ -87,8 +87,8 @@ export const createSegmentGeometry = (
   buildSegmentGeometry(
     new Collider({
       type: 'segment',
-      centerX: 0,
-      centerY: 0,
+      offsetX: 0,
+      offsetY: 0,
       point1X,
       point1Y,
       point2X,

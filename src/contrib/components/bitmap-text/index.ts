@@ -1,6 +1,7 @@
 import type { BitmapText as PixiBitmapText } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
 import { type BlendingMode } from '../../types/view';
 
 interface RenderData {
@@ -20,7 +21,8 @@ export interface BitmapTextConfig {
   blending: BlendingMode;
   disabled: boolean;
   sortingLayer: string;
-  sortCenter: [number, number];
+  sortOffsetX: number;
+  sortOffsetY: number;
 }
 
 /**
@@ -42,7 +44,8 @@ export interface BitmapTextConfig {
  *   blending: 'normal',
  *   disabled: false,
  *   sortingLayer: 'text',
- *   sortCenter: [0, 0],
+ *   sortOffsetX: 0,
+ *   sortOffsetY: 0
  * });
  *
  * // Add to actor
@@ -51,7 +54,7 @@ export interface BitmapTextConfig {
  * // Modify properties
  * bitmapText.text = 'Stay a while and listen!';
  * ```
- * 
+ *
  * @category Components
  */
 export class BitmapText extends Component {
@@ -78,7 +81,7 @@ export class BitmapText extends Component {
   /** Sorting layer of the text */
   sortingLayer: string;
   /** Center point of the text */
-  sortCenter: [number, number];
+  sortOffset: Point;
   /** Internal rendering data */
   renderData?: RenderData;
 
@@ -94,22 +97,7 @@ export class BitmapText extends Component {
     this.blending = config.blending;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
-    this.sortCenter = config.sortCenter;
-  }
-
-  clone(): BitmapText {
-    return new BitmapText({
-      text: this.text,
-      font: this.font,
-      fontSize: this.fontSize,
-      align: this.align,
-      color: this.color,
-      opacity: this.opacity,
-      blending: this.blending,
-      disabled: this.disabled,
-      sortingLayer: this.sortingLayer,
-      sortCenter: this.sortCenter.slice(0) as [number, number],
-    });
+    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
   }
 }
 
