@@ -7,7 +7,8 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      sortOffset: { x: 0, y: 0 },
+      sortOffsetX: 1,
+      sortOffsetY: 2,
       flipX: false,
       flipY: true,
       disabled: false,
@@ -16,13 +17,13 @@ describe('Contrib -> components -> Sprite', () => {
       color: '#fff',
       blending: 'normal',
       opacity: 1,
-    }).clone();
+    });
 
     expect(sprite.src).toEqual('some-path-to-texture');
     expect(sprite.width).toEqual(100);
     expect(sprite.height).toEqual(200);
     expect(sprite.slice).toEqual(10);
-    expect(sprite.sortOffset).toEqual({ x: 0, y: 0 });
+    expect(sprite.sortOffset).toEqual({ x: 1, y: 2 });
     expect(sprite.flipX).toEqual(false);
     expect(sprite.flipY).toEqual(true);
     expect(sprite.disabled).toEqual(false);
@@ -39,7 +40,8 @@ describe('Contrib -> components -> Sprite', () => {
       width: 100,
       height: 200,
       slice: 10,
-      sortOffset: { x: 0, y: 0 },
+      sortOffsetX: 0,
+      sortOffsetY: 0,
       flipX: false,
       flipY: true,
       disabled: false,
@@ -48,7 +50,7 @@ describe('Contrib -> components -> Sprite', () => {
       color: '#fff',
       blending: 'normal',
       opacity: 1,
-    }).clone();
+    });
 
     sprite.src = 'another-path-to-texture';
     sprite.width = 200;
@@ -75,27 +77,5 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.color).toEqual('#000');
     expect(sprite.blending).toEqual('multiply');
     expect(sprite.opacity).toEqual(0.5);
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalSprite = new Sprite({
-      src: 'some-path-to-texture',
-      width: 100,
-      height: 200,
-      slice: 10,
-      sortOffset: { x: 0, y: 0 },
-      flipX: false,
-      flipY: true,
-      disabled: false,
-      sortingLayer: 'terrain',
-      fit: 'stretch',
-      color: '#fff',
-      blending: 'normal',
-      opacity: 1,
-    });
-    const cloneSprite = originalSprite.clone();
-
-    expect(originalSprite).not.toBe(cloneSprite);
-    expect(originalSprite.sortOffset).not.toBe(cloneSprite.sortOffset);
   });
 });

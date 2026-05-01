@@ -12,10 +12,12 @@ describe('Contrib -> components -> Shape', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'units',
-      sortOffset: { x: 0, y: 0 },
-      size: { x: 100, y: 200 },
+      sortOffsetX: 1,
+      sortOffsetY: 2,
+      sizeX: 100,
+      sizeY: 200,
       fill: '#999',
-    }).clone();
+    });
 
     expect(shape.geometry.type).toEqual('rectangle');
     expect(shape.geometry).toStrictEqual({
@@ -28,6 +30,7 @@ describe('Contrib -> components -> Shape', () => {
     expect(shape.opacity).toEqual(1);
     expect(shape.disabled).toEqual(false);
     expect(shape.sortingLayer).toEqual('units');
+    expect(shape.sortOffset).toEqual({ x: 1, y: 2 });
     expect(shape.fill).toEqual('#999');
   });
 
@@ -42,10 +45,11 @@ describe('Contrib -> components -> Shape', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'units',
-      sortOffset: { x: 0, y: 0 },
+      sortOffsetX: 0,
+      sortOffsetY: 0,
       radius: 100,
       fill: '#999',
-    }).clone();
+    });
 
     shape.geometry = {
       type: 'rectangle',
@@ -58,25 +62,5 @@ describe('Contrib -> components -> Shape', () => {
       size: { x: 200, y: 400 },
     });
     expect(shape.fill).toEqual('#111');
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalShape = new Shape({
-      type: 'circle',
-      strokeWidth: 2,
-      strokeColor: '#000',
-      strokeAlignment: 0.5,
-      pixelLine: false,
-      opacity: 1,
-      blending: 'normal',
-      disabled: false,
-      sortingLayer: 'units',
-      sortOffset: { x: 0, y: 0 },
-      radius: 100,
-      fill: '#999',
-    }).clone();
-    const cloneShape = originalShape.clone();
-
-    expect(originalShape).not.toBe(cloneShape);
   });
 });

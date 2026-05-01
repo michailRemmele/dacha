@@ -29,14 +29,6 @@ class TestComponent1 extends Component {
     this.testField2 = testField2;
     this.testField3 = testField3;
   }
-
-  clone(): Component {
-    return new TestComponent1({
-      testField1: this.testField1,
-      testField2: this.testField2,
-      testField3: this.testField3,
-    });
-  }
 }
 
 interface TestComponent2Config extends Record<string, unknown> {
@@ -62,14 +54,6 @@ class TestComponent2 extends Component {
     this.testField5 = testField5;
     this.testField6 = testField6;
   }
-
-  clone(): Component {
-    return new TestComponent2({
-      testField4: this.testField4,
-      testField5: this.testField5,
-      testField6: this.testField6,
-    });
-  }
 }
 
 describe('Engine -> ActorCreator', () => {
@@ -78,7 +62,7 @@ describe('Engine -> ActorCreator', () => {
   let templateCollection: TemplateCollection;
 
   beforeEach(() => {
-    templateCollection = new TemplateCollection(components);
+    templateCollection = new TemplateCollection();
     templateCollection.register(templateExample);
   });
 

@@ -13,7 +13,7 @@ describe('Contrib -> components -> BitmapText', () => {
       disabled: false,
       sortingLayer: 'text',
       sortOffset: { x: 0, y: 0 },
-    }).clone();
+    });
 
     expect(text.text).toEqual('Hello World');
     expect(text.font).toEqual('Arial');
@@ -39,7 +39,7 @@ describe('Contrib -> components -> BitmapText', () => {
       disabled: false,
       sortingLayer: 'text',
       sortOffset: { x: 0, y: 0 },
-    }).clone();
+    });
 
     text.fontSize = 48;
     text.color = '#444';
@@ -48,23 +48,5 @@ describe('Contrib -> components -> BitmapText', () => {
     expect(text.fontSize).toEqual(48);
     expect(text.color).toEqual('#444');
     expect(text.align).toEqual('right');
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalText = new BitmapText({
-      text: 'Hello World',
-      font: 'Arial',
-      fontSize: 24,
-      align: 'center',
-      color: '#000',
-      opacity: 1,
-      blending: 'normal',
-      disabled: false,
-      sortingLayer: 'text',
-      sortOffset: { x: 0, y: 0 },
-    }).clone();
-    const cloneText = originalText.clone();
-
-    expect(originalText).not.toBe(cloneText);
   });
 });

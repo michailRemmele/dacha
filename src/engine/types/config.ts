@@ -11,15 +11,15 @@ export interface ComponentConfig {
 export interface TemplateConfig {
   id: string;
   name: string;
-  components?: ComponentConfig[];
-  children?: TemplateConfig[];
+  components: ComponentConfig[];
+  children: TemplateConfig[];
 }
 
 export interface ActorConfig {
   id: string;
   name: string;
-  children?: ActorConfig[];
-  components?: ComponentConfig[];
+  children: ActorConfig[];
+  components: ComponentConfig[];
   templateId?: string;
 }
 

@@ -60,9 +60,12 @@ export const createCapsuleGeometry = (
   buildCapsuleGeometry(
     new Collider({
       type: 'capsule',
-      offset: { x: 0, y: 0 },
-      point1: { x: point1X, y: point1Y },
-      point2: { x: point2X, y: point2Y },
+      offsetX: 0,
+      offsetY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
       radius,
       layer: 'default',
     }),
@@ -84,9 +87,12 @@ export const createSegmentGeometry = (
   buildSegmentGeometry(
     new Collider({
       type: 'segment',
-      offset: { x: 0, y: 0 },
-      point1: { x: point1X, y: point1Y },
-      point2: { x: point2X, y: point2Y },
+      offsetX: 0,
+      offsetY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
       layer: 'default',
     }),
     new Transform({

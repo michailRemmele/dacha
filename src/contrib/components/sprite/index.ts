@@ -22,7 +22,8 @@ export interface SpriteConfig {
   flipX: boolean;
   flipY: boolean;
   sortingLayer: string;
-  sortOffset: Point;
+  sortOffsetX: number;
+  sortOffsetY: number;
   fit: FitType;
   color: string;
   blending: BlendingMode;
@@ -47,7 +48,8 @@ export interface SpriteConfig {
  *   flipX: false,
  *   flipY: false,
  *   sortingLayer: 'units',
- *   sortOffset: { x: 0, y: 0 },
+ *   sortOffsetX: 0,
+ *   sortOffsetY: 0,
  *   fit: 'stretch',
  *   color: '#ffffff',
  *   blending: 'normal',
@@ -114,29 +116,11 @@ export class Sprite extends Component {
     this.flipY = config.flipY;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
-    this.sortOffset = { ...config.sortOffset };
+    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
     this.fit = config.fit;
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';
     this.opacity = config.opacity ?? 1;
-  }
-
-  clone(): Sprite {
-    return new Sprite({
-      src: this.src,
-      width: this.width,
-      height: this.height,
-      slice: this.slice,
-      flipX: this.flipX,
-      flipY: this.flipY,
-      disabled: this.disabled,
-      sortingLayer: this.sortingLayer,
-      sortOffset: { ...this.sortOffset },
-      fit: this.fit,
-      color: this.color,
-      blending: this.blending,
-      opacity: this.opacity,
-    });
   }
 }
 

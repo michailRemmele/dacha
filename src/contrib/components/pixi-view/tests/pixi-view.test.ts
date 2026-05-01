@@ -11,35 +11,26 @@ describe('Contrib -> components -> PixiView', () => {
     const pixiView = new PixiView({
       createView: (): ViewContainer => new Sprite(),
       sortingLayer: 'units',
-      sortOffset: { x: 0, y: 0 },
-    }).clone();
+      sortOffsetX: 1,
+      sortOffsetY: 2,
+    });
 
     expect(pixiView.sortingLayer).toEqual('units');
-    expect(pixiView.sortOffset).toEqual({ x: 0, y: 0 });
+    expect(pixiView.sortOffset).toEqual({ x: 1, y: 2 });
   });
 
   it('Correct updates values ', () => {
     const pixiView = new PixiView({
       createView: (): ViewContainer => new Sprite(),
       sortingLayer: 'units',
-      sortOffset: { x: 0, y: 0 },
-    }).clone();
+      sortOffsetX: 0,
+      sortOffsetY: 0,
+    });
 
     pixiView.sortingLayer = 'background';
     pixiView.sortOffset = { x: 10, y: 10 };
 
     expect(pixiView.sortingLayer).toEqual('background');
     expect(pixiView.sortOffset).toEqual({ x: 10, y: 10 });
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalShape = new PixiView({
-      createView: (): ViewContainer => new Sprite(),
-      sortingLayer: 'units',
-      sortOffset: { x: 0, y: 0 },
-    }).clone();
-    const cloneShape = originalShape.clone();
-
-    expect(originalShape).not.toBe(cloneShape);
   });
 });

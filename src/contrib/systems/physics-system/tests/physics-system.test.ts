@@ -9,7 +9,7 @@ import { PhysicsSystem, PhysicsAPI } from '../index';
 import type { PhysicsSettings } from '../types';
 
 const createScene = (): Scene => {
-  const templateCollection = new TemplateCollection([]);
+  const templateCollection = new TemplateCollection();
   const actorCreator = new ActorCreator([], templateCollection);
 
   return new Scene({
@@ -26,7 +26,7 @@ const createPhysicsSystem = (
   settings?: PhysicsSettings,
 ): { physicsSystem: PhysicsSystem; world: World } => {
   const world = new World({ id: 'world', name: 'world' });
-  const templateCollection = new TemplateCollection([]);
+  const templateCollection = new TemplateCollection();
   const actorCreator = new ActorCreator([], templateCollection);
 
   world.appendChild(scene);
@@ -60,8 +60,10 @@ const createBoxActor = (
   actor.setComponent(
     new Collider({
       type: 'box',
-      offset: { x: 0, y: 0 },
-      size: { x: 2, y: 2 },
+      offsetX: 0,
+      offsetY: 0,
+      sizeX: 2,
+      sizeY: 2,
       layer: colliderConfig.layer,
     }),
   );
@@ -93,7 +95,8 @@ const createCircleActor = (
   actor.setComponent(
     new Collider({
       type: 'circle',
-      offset: { x: 0, y: 0 },
+      offsetX: 0,
+      offsetY: 0,
       radius,
       layer: colliderConfig.layer,
     }),
@@ -121,9 +124,12 @@ const createSegmentActor = (
   actor.setComponent(
     new Collider({
       type: 'segment',
-      offset: { x: 0, y: 0 },
-      point1: { x: point1X, y: point1Y },
-      point2: { x: point2X, y: point2Y },
+      offsetX: 0,
+      offsetY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
       layer: colliderConfig.layer,
     }),
   );
@@ -163,9 +169,12 @@ const createCapsuleActor = (
   actor.setComponent(
     new Collider({
       type: 'capsule',
-      offset: { x: 0, y: 0 },
-      point1: { x: point1X, y: point1Y },
-      point2: { x: point2X, y: point2Y },
+      offsetX: 0,
+      offsetY: 0,
+      point1X,
+      point1Y,
+      point2X,
+      point2Y,
       radius,
       layer: colliderConfig.layer,
     }),

@@ -9,7 +9,13 @@ import { BitmapText } from '../../../components/bitmap-text';
 import { CacheStore } from '../../../../engine/data-lib';
 import type { ViewComponent } from '../types';
 
-import { getAllImageSources, getAllFontSources, loadImage } from './utils';
+import {
+  getAllFontSources,
+  getAllTemplateFontSources,
+  getAllImageSources,
+  getAllTemplateImageSources,
+  loadImage,
+} from './utils';
 
 interface AssetsOptions {
   templateCollection: TemplateCollection;
@@ -28,7 +34,7 @@ export class Assets {
   async load(entity: Actor | Scene | ViewComponent): Promise<void> {
     if (entity instanceof Scene) {
       const allImageSources = [
-        ...getAllImageSources(this.templateCollection.getAll()),
+        ...getAllTemplateImageSources(this.templateCollection.getAll()),
         ...getAllImageSources(entity.children),
       ];
       const uniqueImageSources = [...new Set(allImageSources)];
@@ -47,7 +53,7 @@ export class Assets {
       allImageSources.forEach((src) => this.imageStore.retain(src));
 
       const allFontSources = [
-        ...getAllFontSources(this.templateCollection.getAll()),
+        ...getAllTemplateFontSources(this.templateCollection.getAll()),
         ...getAllFontSources(entity.children),
       ];
       const uniqueFontSources = [...new Set(allFontSources)];
@@ -84,7 +90,7 @@ export class Assets {
   unload(entity: Scene | Actor | ViewComponent): void {
     if (entity instanceof Scene) {
       const allSources = [
-        ...getAllImageSources(this.templateCollection.getAll()),
+        ...getAllTemplateImageSources(this.templateCollection.getAll()),
         ...getAllImageSources(entity.children),
       ];
 

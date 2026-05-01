@@ -10,7 +10,8 @@ interface RenderData {
 export interface PixiViewConfig {
   createView: () => ViewContainer;
   sortingLayer: string;
-  sortOffset: Point;
+  sortOffsetX: number;
+  sortOffsetY: number;
 }
 
 /**
@@ -32,13 +33,14 @@ export interface PixiViewConfig {
  *     return graphics;
  *   },
  *   sortingLayer: 'units',
- *   sortOffset: { x: 0, y: 0 },
+ *   sortOffsetX: 0,
+ *   sortOffsetY: 0,
  * });
  *
  * // Add to actor
  * actor.setComponent(pixiView);
  * ```
- * 
+ *
  * @category Components
  */
 export class PixiView extends Component {
@@ -53,7 +55,7 @@ export class PixiView extends Component {
 
   /**
    * Creates a new PixiView component.
-   * 
+   *
    * @param config - Configuration for the pixi view
    */
   constructor(config: PixiViewConfig) {
@@ -61,20 +63,12 @@ export class PixiView extends Component {
 
     this.createView = config.createView;
     this.sortingLayer = config.sortingLayer;
-    this.sortOffset = { ...config.sortOffset };
+    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
   }
 
   /** Get the pixi.js view. It's only available after the actor with this component is added to a scene */
   get view(): ViewContainer | undefined {
     return this.renderData?.view;
-  }
-
-  clone(): PixiView {
-    return new PixiView({
-      createView: this.createView,
-      sortingLayer: this.sortingLayer,
-      sortOffset: { ...this.sortOffset },
-    });
   }
 }
 

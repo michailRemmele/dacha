@@ -34,18 +34,20 @@ describe('Engine -> SceneManager', () => {
 
   beforeEach(() => {
     loadWorldFn = jest.fn();
-    loadWorldAsyncFn = (): Promise<void> => new Promise<void>((resolve) => {
-      loadWorldFn();
-      resolve();
-    });
+    loadWorldAsyncFn = (): Promise<void> =>
+      new Promise<void>((resolve) => {
+        loadWorldFn();
+        resolve();
+      });
     readyWorldFn = jest.fn();
     destroyWorldFn = jest.fn();
 
     loadSceneFn = jest.fn();
-    loadSceneAsyncFn = (): Promise<void> => new Promise<void>((resolve) => {
-      loadSceneFn();
-      resolve();
-    });
+    loadSceneAsyncFn = (): Promise<void> =>
+      new Promise<void>((resolve) => {
+        loadSceneFn();
+        resolve();
+      });
     enterSceneFn = jest.fn();
     exitSceneFn = jest.fn();
     destroySceneFn = jest.fn();
@@ -102,7 +104,7 @@ describe('Engine -> SceneManager', () => {
           destroySceneFn,
         },
       },
-      templateCollection: new TemplateCollection([]),
+      templateCollection: new TemplateCollection(),
     });
   });
 
@@ -137,7 +139,7 @@ describe('Engine -> SceneManager', () => {
     expect(destroyWorldFn.mock.calls.length).toBe(2);
   });
 
-  it('Can\'t exit or destroy the same scene more than once', async () => {
+  it("Can't exit or destroy the same scene more than once", async () => {
     await sceneManager.loadWorld();
     await sceneManager.loadScene('scene-3', true);
 
@@ -198,7 +200,7 @@ describe('Engine -> SceneManager', () => {
     expect(enterSceneFn.mock.calls.length).toBe(4);
   });
 
-  it('Can\'t enter already active scene', async () => {
+  it("Can't enter already active scene", async () => {
     await sceneManager.loadWorld();
     await sceneManager.loadScene('scene-3', true);
 

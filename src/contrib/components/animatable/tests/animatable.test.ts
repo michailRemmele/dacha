@@ -10,7 +10,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct initial state', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     expect(animatable.currentState).toEqual(animatable.states[0]);
 
@@ -20,7 +20,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct states ', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     expect(animatable.states.length).toEqual(3);
 
@@ -43,7 +43,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct group state', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     const currentState = animatable.currentState as GroupState;
 
@@ -57,7 +57,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct individual state', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     const individualState = animatable.states[2] as IndividualState;
 
@@ -68,7 +68,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct transitions', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     const currentState = animatable.currentState as GroupState;
 
@@ -84,7 +84,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct conditions', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     const currentState = animatable.currentState as GroupState;
     const transition1 = currentState.transitions?.[0];
@@ -110,7 +110,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct group state\'s substates', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     const currentState = animatable.currentState as GroupState;
 
@@ -148,7 +148,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Returns correct substate timeline\'s frames', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     const currentState = animatable.currentState as GroupState;
     const substate1 = currentState.substates[0];
@@ -240,7 +240,7 @@ describe('Contrib -> components -> Animatable', () => {
   it('Correct updates current state', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     animatable.setCurrentState('2');
 
@@ -250,103 +250,10 @@ describe('Contrib -> components -> Animatable', () => {
   it('Correct updates duration', () => {
     const animatable = new Animatable({
       ...animationExample,
-    }).clone();
+    });
 
     animatable.duration += 1000;
 
     expect(animatable.duration).toEqual(1000);
-  });
-
-  it('Clones return deep copy of original component', () => {
-    const originalAnimatable = new Animatable({
-      ...animationExample,
-    });
-    const cloneAnimatable = originalAnimatable.clone();
-
-    expect(originalAnimatable.currentState).not.toBe(cloneAnimatable.currentState);
-    expect(originalAnimatable.states).not.toBe(cloneAnimatable.states);
-
-    const originalState1 = originalAnimatable.states[0];
-    const originalState2 = originalAnimatable.states[1];
-    const originalState3 = originalAnimatable.states[2];
-    const cloneState1 = cloneAnimatable.states[0];
-    const cloneState2 = cloneAnimatable.states[1];
-    const cloneState3 = cloneAnimatable.states[2];
-
-    expect(originalState1).not.toBe(cloneState1);
-    expect(originalState2).not.toBe(cloneState2);
-    expect(originalState3).not.toBe(cloneState3);
-
-    expect(originalState1.transitions).not.toBe(cloneState1.transitions);
-    expect(originalState2.transitions).not.toBe(cloneState2.transitions);
-    expect(originalState3.transitions).not.toBe(cloneState3.transitions);
-
-    expect(originalState1.transitions[0]).not.toBe(cloneState1.transitions[0]);
-    expect(originalState1.transitions[1]).not.toBe(cloneState1.transitions[1]);
-    expect(originalState1.transitions[2]).not.toBe(cloneState1.transitions[2]);
-
-    expect(originalState1.transitions[0].conditions).not.toBe(
-      cloneState1.transitions[0].conditions,
-    );
-    expect(originalState1.transitions[1].conditions).not.toBe(
-      cloneState1.transitions[1].conditions,
-    );
-    expect(originalState1.transitions[2].conditions).not.toBe(
-      cloneState1.transitions[2].conditions,
-    );
-
-    expect(originalState1.transitions[0].conditions[0]).not.toBe(
-      cloneState1.transitions[0].conditions[0],
-    );
-
-    expect(originalState1.transitions[0].conditions[0].props).not.toBe(
-      cloneState1.transitions[0].conditions[0].props,
-    );
-    expect(originalState1.transitions[1].conditions[0].props).not.toBe(
-      cloneState1.transitions[1].conditions[0].props,
-    );
-    expect(originalState1.transitions[2].conditions[0].props).not.toBe(
-      cloneState1.transitions[2].conditions[0].props,
-    );
-
-    expect(
-      (originalState1.transitions[1].conditions[0].props as ComparatorConditionProps).arg1,
-    ).not.toBe(
-      (cloneState1.transitions[1].conditions[0].props as ComparatorConditionProps).arg1,
-    );
-    expect(
-      (originalState1.transitions[1].conditions[0].props as ComparatorConditionProps).arg2,
-    ).not.toBe(
-      (cloneState1.transitions[1].conditions[0].props as ComparatorConditionProps).arg2,
-    );
-
-    expect((originalState3 as IndividualState).timeline).not.toBe(
-      (cloneState3 as IndividualState).timeline,
-    );
-    expect((originalState3 as IndividualState).timeline.frames).not.toBe(
-      (cloneState3 as IndividualState).timeline.frames,
-    );
-    expect((originalState3 as IndividualState).timeline.frames[0]).not.toBe(
-      (cloneState3 as IndividualState).timeline.frames[0],
-    );
-
-    expect((originalState1 as GroupState).pickProps).not.toBe(
-      (cloneState1 as GroupState).pickProps,
-    );
-    expect((originalState1 as GroupState).substates).not.toBe(
-      (cloneState1 as GroupState).substates,
-    );
-    expect((originalState1 as GroupState).substates[0]).not.toBe(
-      (cloneState1 as GroupState).substates[0],
-    );
-    expect((originalState1 as GroupState).substates[0].timeline).not.toBe(
-      (cloneState1 as GroupState).substates[0].timeline,
-    );
-    expect((originalState1 as GroupState).substates[0].timeline.frames).not.toBe(
-      (cloneState1 as GroupState).substates[0].timeline.frames,
-    );
-    expect((originalState1 as GroupState).substates[0].timeline.frames[0]).not.toBe(
-      (cloneState1 as GroupState).substates[0].timeline.frames[0],
-    );
   });
 });
