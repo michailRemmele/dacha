@@ -68,11 +68,11 @@ export const collider: WidgetSchema = {
       },
     },
     {
-      name: 'centerX',
+      name: 'offsetX',
       type: 'number',
     },
     {
-      name: 'centerY',
+      name: 'offsetY',
       type: 'number',
     },
     {
@@ -95,8 +95,8 @@ export const collider: WidgetSchema = {
     type: 'box',
     sizeX: 1,
     sizeY: 1,
-    centerX: 0,
-    centerY: 0,
+    offsetX: 0,
+    offsetY: 0,
     layer: DEFAULT_LAYER,
     debugColor: '#4DFFB8',
   }),

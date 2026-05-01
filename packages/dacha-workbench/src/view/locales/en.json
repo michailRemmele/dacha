@@ -156,9 +156,6 @@
   "components.mouseControl.bind.attributes.title": "Attributes",
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
-  "components.renderable.sortCenterX.title": "Sort Center X",
-  "components.renderable.sortCenterY.title": "Sort Center Y",
-
   "components.behaviors.behavior.addNew.title": "Add Behavior",
   "components.behaviors.behavior.noSchema.title": "Schema not found",
 
