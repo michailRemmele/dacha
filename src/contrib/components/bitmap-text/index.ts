@@ -21,7 +21,8 @@ export interface BitmapTextConfig {
   blending: BlendingMode;
   disabled: boolean;
   sortingLayer: string;
-  sortOffset: Point;
+  sortOffsetX: number;
+  sortOffsetY: number;
 }
 
 /**
@@ -43,7 +44,8 @@ export interface BitmapTextConfig {
  *   blending: 'normal',
  *   disabled: false,
  *   sortingLayer: 'text',
- *   sortOffset: { x: 0, y: 0 },
+ *   sortOffsetX: 0,
+ *   sortOffsetY: 0
  * });
  *
  * // Add to actor
@@ -95,7 +97,7 @@ export class BitmapText extends Component {
     this.blending = config.blending;
     this.disabled = config.disabled;
     this.sortingLayer = config.sortingLayer;
-    this.sortOffset = { ...config.sortOffset };
+    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
   }
 }
 

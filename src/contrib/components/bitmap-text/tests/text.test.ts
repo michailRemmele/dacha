@@ -12,7 +12,8 @@ describe('Contrib -> components -> BitmapText', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'text',
-      sortOffset: { x: 0, y: 0 },
+      sortOffsetX: 0,
+      sortOffsetY: 0,
     });
 
     expect(text.text).toEqual('Hello World');
@@ -38,7 +39,8 @@ describe('Contrib -> components -> BitmapText', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'text',
-      sortOffset: { x: 0, y: 0 },
+      sortOffsetX: 0,
+      sortOffsetY: 0,
     });
 
     text.fontSize = 48;
