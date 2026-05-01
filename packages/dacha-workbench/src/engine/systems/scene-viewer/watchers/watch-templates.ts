@@ -26,7 +26,7 @@ export const watchTemplates: WatcherFn = ({
       new Set<string>(),
     )
 
-    const templates = templateCollection.getAll().filter((template) => !template.parent)
+    const templates = templateCollection.getAll(true)
     const templatesMap = templates.reduce(
       (acc, template) => acc.add(template.id),
       new Set<string>(),

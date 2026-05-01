@@ -183,10 +183,8 @@
                 "src": "assets/terrain/grass.png",
                 "width": 320,
                 "height": 320,
-                "sortCenter": [
-                  0,
-                  0
-                ],
+                "sortOffsetX": 0,
+                "sortOffsetY": 0,
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "terrain",
@@ -220,10 +218,8 @@
                 "src": "assets/terrain/sea.png",
                 "width": 640,
                 "height": 640,
-                "sortCenter": [
-                  0,
-                  0
-                ],
+                "sortOffsetX": 0,
+                "sortOffsetY": 0,
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "background",
@@ -255,8 +251,8 @@
               "config": {
                 "type": "circle",
                 "radius": 0,
-                "centerX": 0,
-                "centerY": 0,
+                "offsetX": 0,
+                "offsetY": 0,
                 "layer": "default"
               }
             },
@@ -267,10 +263,8 @@
                 "src": "assets/units/human.png",
                 "width": 26,
                 "height": 26,
-                "sortCenter": [
-                  0,
-                  0
-                ],
+                "sortOffsetX": 0,
+                "sortOffsetY": 0,
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "units",
@@ -378,11 +372,11 @@
           "name": "Collider",
           "config": {
             "type": "box",
-            "sizeX": 12,
-            "sizeY": 16,
-            "centerX": 0,
-            "centerY": 0,
-            "layer": "default"
+            "layer": "default",
+            "offsetX": 0,
+            "offsetY": 0,
+            "sizeX": 10,
+            "sizeY": 10
           }
         },
         {
@@ -392,10 +386,8 @@
             "src": "assets/units/rooster.png",
             "width": 47,
             "height": 52,
-            "sortCenter": [
-              0,
-              0
-            ],
+            "sortOffsetX": 0,
+            "sortOffsetY": 0,
             "flipX": true,
             "flipY": false,
             "sortingLayer": "units",
@@ -710,10 +702,8 @@
             "src": "assets/terrain/space.png",
             "width": 1000,
             "height": 1000,
-            "sortCenter": [
-              0,
-              0
-            ],
+            "sortOffsetX": 0,
+            "sortOffsetY": 0,
             "flipX": false,
             "flipY": false,
             "sortingLayer": "background",
@@ -747,10 +737,8 @@
             "src": "assets/terrain/floor.png",
             "width": 408,
             "height": 408,
-            "sortCenter": [
-              0,
-              0
-            ],
+            "sortOffsetX": 0,
+            "sortOffsetY": 0,
             "flipX": false,
             "flipY": false,
             "sortingLayer": "terrain",
