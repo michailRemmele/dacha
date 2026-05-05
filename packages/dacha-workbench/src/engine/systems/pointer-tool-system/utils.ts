@@ -1,6 +1,13 @@
-import { Transform, Shape, Actor, type RectangleShapeGeometry } from 'dacha';
+import {
+  Transform,
+  Shape,
+  Actor,
+  RendererAPI,
+  type RectangleShapeGeometry,
+} from 'dacha';
 import { type Bounds } from 'dacha/renderer';
 
+import { Technical } from '../../components';
 import { getIdByPath } from '../../../utils/get-id-by-path';
 
 import type { SelectionArea } from './types';
@@ -30,7 +37,6 @@ export const buildActorPath = (actor: Actor, sceneId: string): string[] => {
 
 export const updateFrameSize = (
   frame: Actor,
-  actor: Actor,
   bounds: Bounds,
   zoom: number,
 ): void => {
@@ -38,10 +44,8 @@ export const updateFrameSize = (
   const shape = frame.getComponent(Shape);
   const shapeGeometry = shape.geometry as RectangleShapeGeometry;
 
-  const actorTransform = actor.getComponent(Transform);
-
-  transform.world.position.x = actorTransform.world.position.x;
-  transform.world.position.y = actorTransform.world.position.y;
+  transform.world.position.x = (bounds.minX + bounds.maxX) / 2;
+  transform.world.position.y = (bounds.minY + bounds.maxY) / 2;
   shapeGeometry.size.x = bounds.width;
   shapeGeometry.size.y = bounds.height;
   shape.strokeWidth = FRAME_STROKE_WIDTH / zoom;
@@ -86,4 +90,64 @@ export const getActorIdByPath = (
     return getIdByPath(path);
   }
   return undefined;
+};
+
+const findSelectableActor = (actor: Actor): Actor | undefined => {
+  if (!actor.getComponent(Technical)) {
+    return actor;
+  }
+
+  return actor.parent instanceof Actor
+    ? findSelectableActor(actor.parent)
+    : undefined;
+};
+
+export const getSelectableActors = (actors: Actor[]): Actor[] => {
+  const selection = new Set<Actor>();
+
+  actors.forEach((actor) => {
+    const selectableActor = findSelectableActor(actor);
+
+    if (selectableActor) {
+      selection.add(selectableActor);
+    }
+  });
+
+  return Array.from(selection);
+};
+
+export const findDebugBounds = (
+  actor: Actor,
+  rendererApi: RendererAPI,
+): Bounds | null => {
+  const maxBounds: Bounds = {
+    minX: Infinity,
+    minY: Infinity,
+    maxX: -Infinity,
+    maxY: -Infinity,
+    width: 0,
+    height: 0,
+  };
+
+  actor.children.forEach((child) => {
+    if (child.getComponent(Technical)) {
+      const bounds = rendererApi.getBounds(child);
+
+      if (bounds) {
+        maxBounds.minX = Math.min(maxBounds.minX, bounds.minX);
+        maxBounds.minY = Math.min(maxBounds.minY, bounds.minY);
+        maxBounds.maxX = Math.max(maxBounds.maxX, bounds.maxX);
+        maxBounds.maxY = Math.max(maxBounds.maxY, bounds.maxY);
+      }
+    }
+  });
+
+  if (maxBounds.minX === Infinity) {
+    return null;
+  }
+
+  maxBounds.width = maxBounds.maxX - maxBounds.minX;
+  maxBounds.height = maxBounds.maxY - maxBounds.minY;
+
+  return maxBounds;
 };
