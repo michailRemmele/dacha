@@ -44,7 +44,8 @@ export class DebugVisualizer extends SceneSystem {
       }
     });
 
-    window.electron.setDebugLayers(
+    window.electron.updateMenuState(
+      'debugLayers',
       modules.map((module) => ({
         id: module.id,
         title: module.title,

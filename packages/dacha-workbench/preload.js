@@ -31,15 +31,16 @@ contextBridge.exposeInMainWorld('electron', {
   setUnsavedChanges: (unsavedChanges) => {
     ipcRenderer.send(MESSAGES.SET_UNSAVED_CHANGES, unsavedChanges);
   },
-  setDebugLayers: (layers) => {
-    ipcRenderer.send(MESSAGES.SET_DEBUG_LAYERS, layers);
+  updateMenuState: (field, value) => {
+    ipcRenderer.send(MESSAGES.UPDATE_MENU_STATE, field, value);
   },
   onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
   onSettings: (callback) =>
     ipcRenderer.on(MESSAGES.SETTINGS, (_, ...args) => callback(...args)),
   onSwitchTheme: (callback) => {
-    ipcRenderer.on(MESSAGES.SWITCH_THEME, callback);
-    return () => ipcRenderer.removeListener(MESSAGES.SWITCH_THEME, callback);
+    const handler = (_, ...args) => callback(...args);
+    ipcRenderer.on(MESSAGES.SWITCH_THEME, handler);
+    return () => ipcRenderer.removeListener(MESSAGES.SWITCH_THEME, handler);
   },
   onUndo: (callback) => {
     ipcRenderer.on(MESSAGES.UNDO, callback);
@@ -69,7 +70,8 @@ contextBridge.exposeInMainWorld('electron', {
   onToggleDebugLayer: (callback) => {
     const handler = (_, ...args) => callback(...args);
     ipcRenderer.on(MESSAGES.TOGGLE_DEBUG_LAYER, handler);
-    return () => ipcRenderer.removeListener(MESSAGES.TOGGLE_DEBUG_LAYER, handler);
+    return () =>
+      ipcRenderer.removeListener(MESSAGES.TOGGLE_DEBUG_LAYER, handler);
   },
   onExtensionBuildStart: (callback) => {
     ipcRenderer.on(MESSAGES.EXTENSION_BUILD_START, callback);
