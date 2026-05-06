@@ -2,8 +2,11 @@ const { app, Menu, clipboard } = require('electron');
 
 const MESSAGES = require('./messages');
 
-module.exports = (window, debugLayers = []) =>
-  Menu.buildFromTemplate([
+module.exports = (window, menuState) => {
+  const debugLayers = menuState.debugLayers ?? [];
+  const themePreference = menuState.themePreference ?? 'system';
+
+  return Menu.buildFromTemplate([
     {
       label: app.name,
       submenu: [{ role: 'quit' }],
@@ -127,9 +130,16 @@ module.exports = (window, debugLayers = []) =>
         { type: 'separator' },
 
         {
-          label: 'Switch Theme',
-          click: () => window.webContents.send(MESSAGES.SWITCH_THEME, 'grid'),
+          label: 'Theme',
+          submenu: ['system', 'light', 'dark'].map((preference) => ({
+            label: preference.charAt(0).toUpperCase() + preference.slice(1),
+            type: 'radio',
+            checked: themePreference === preference,
+            click: () =>
+              window.webContents.send(MESSAGES.SWITCH_THEME, preference),
+          })),
         },
       ].filter(Boolean),
     },
   ]);
+};

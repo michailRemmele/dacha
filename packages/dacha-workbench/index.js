@@ -1,48 +1,43 @@
-const {
-  app,
-  BrowserWindow,
-  Menu,
-  ipcMain,
-} = require('electron')
-const express = require('express')
-const path = require('path')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const express = require('express');
+const path = require('path');
 
-const getMenu = require('./electron/get-menu')
-const getAssetsDialog = require('./electron/get-assets-dialog')
-const getPathSelectionDialog = require('./electron/get-path-selection-dialog')
-const handleCloseApp = require('./electron/handle-close-app')
-const MESSAGES = require('./electron/messages')
-const getEditorConfig = require('./electron/get-editor-config')
-const applyExtension = require('./electron/apply-extension')
-const watchProjectConfig = require('./electron/watch-project-config')
-const normalizePath = require('./electron/utils/normilize-path')
+const getMenu = require('./electron/get-menu');
+const getAssetsDialog = require('./electron/get-assets-dialog');
+const getPathSelectionDialog = require('./electron/get-path-selection-dialog');
+const handleCloseApp = require('./electron/handle-close-app');
+const MESSAGES = require('./electron/messages');
+const getEditorConfig = require('./electron/get-editor-config');
+const applyExtension = require('./electron/apply-extension');
+const watchProjectConfig = require('./electron/watch-project-config');
+const normalizePath = require('./electron/utils/normilize-path');
 
-const editorConfig = getEditorConfig()
+const editorConfig = getEditorConfig();
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === 'development';
 
-const expressApp = express()
+const expressApp = express();
 
 if (isDev) {
-  const webpack = require('webpack')
-  const middleware = require('webpack-dev-middleware')
+  const webpack = require('webpack');
+  const middleware = require('webpack-dev-middleware');
 
-  const webpackConfig = require('./webpack.config')
+  const webpackConfig = require('./webpack.config');
 
-  const compiler = webpack(webpackConfig)
+  const compiler = webpack(webpackConfig);
 
-  expressApp.use(
-    middleware(compiler),
-  )
-  expressApp.use(express.static(webpackConfig.devServer.static.directory))
+  expressApp.use(middleware(compiler));
+  expressApp.use(express.static(webpackConfig.devServer.static.directory));
 }
 
 if (!isDev) {
-  expressApp.use(express.static(path.join(__dirname, 'build')))
+  expressApp.use(express.static(path.join(__dirname, 'build')));
 }
-expressApp.use(express.static(path.resolve(editorConfig.assets)))
+expressApp.use(express.static(path.resolve(editorConfig.assets)));
 
-const server = expressApp.listen(0)
+const server = expressApp.listen(0);
+
+const menuState = {};
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -56,40 +51,39 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
       sandbox: false,
     },
-  })
+  });
   win.once('ready-to-show', () => {
-    win.show()
-  })
+    win.show();
+  });
 
-  Menu.setApplicationMenu(getMenu(win))
+  Menu.setApplicationMenu(getMenu(win, menuState));
 
-  ipcMain.handle(
-    MESSAGES.ASSETS_DIALOG,
-    (_, ...args) => getAssetsDialog(editorConfig.assets, ...args),
-  )
-  ipcMain.handle(
-    MESSAGES.PATH_DIALOG,
-    (_, ...args) => getPathSelectionDialog(normalizePath(editorConfig.contextRoot), ...args),
-  )
+  ipcMain.handle(MESSAGES.ASSETS_DIALOG, (_, ...args) =>
+    getAssetsDialog(editorConfig.assets, ...args),
+  );
+  ipcMain.handle(MESSAGES.PATH_DIALOG, (_, ...args) =>
+    getPathSelectionDialog(normalizePath(editorConfig.contextRoot), ...args),
+  );
   ipcMain.on(MESSAGES.SET_UNSAVED_CHANGES, (_, unsavedChanges) => {
-    win.off('close', handleCloseApp)
+    win.off('close', handleCloseApp);
     if (unsavedChanges) {
-      win.on('close', handleCloseApp)
+      win.on('close', handleCloseApp);
     }
-  })
-  ipcMain.on(MESSAGES.SET_DEBUG_LAYERS, (_, nextDebugLayers) => {
-    Menu.setApplicationMenu(getMenu(win, nextDebugLayers))
-  })
+  });
+  ipcMain.on(MESSAGES.UPDATE_MENU_STATE, (_, field, value) => {
+    menuState[field] = value;
+    Menu.setApplicationMenu(getMenu(win, menuState));
+  });
 
-  win.loadURL(`http://localhost:${server.address().port}`)
+  win.loadURL(`http://localhost:${server.address().port}`);
 
   if (!isDev) {
-    applyExtension(expressApp, win)
+    applyExtension(expressApp, win);
   }
 
-  watchProjectConfig(editorConfig.projectConfig, win)
-}
+  watchProjectConfig(editorConfig.projectConfig, win);
+};
 
 app.whenReady().then(() => {
-  createWindow()
-})
+  createWindow();
+});
