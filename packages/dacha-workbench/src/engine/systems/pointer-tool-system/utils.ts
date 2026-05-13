@@ -4,10 +4,12 @@ import {
   Actor,
   RendererAPI,
   type RectangleShapeGeometry,
+  type World,
 } from 'dacha';
 import { type Bounds } from 'dacha/renderer';
 
 import { Technical } from '../../components';
+import { DebugVisualizerAPI } from '../../systems';
 import { getIdByPath } from '../../../utils/get-id-by-path';
 
 import type { SelectionArea } from './types';
@@ -93,13 +95,13 @@ export const getActorIdByPath = (
 };
 
 const findSelectableActor = (actor: Actor): Actor | undefined => {
-  if (!actor.getComponent(Technical)) {
+  const technical = actor.getComponent(Technical);
+
+  if (!technical) {
     return actor;
   }
 
-  return actor.parent instanceof Actor
-    ? findSelectableActor(actor.parent)
-    : undefined;
+  return technical.source;
 };
 
 export const getSelectableActors = (actors: Actor[]): Actor[] => {
@@ -116,10 +118,12 @@ export const getSelectableActors = (actors: Actor[]): Actor[] => {
   return Array.from(selection);
 };
 
-export const findDebugBounds = (
-  actor: Actor,
-  rendererApi: RendererAPI,
-): Bounds | null => {
+export const findDebugBounds = (actor: Actor, world: World): Bounds | null => {
+  const debugVisualizerApi = world.systemApi.get(DebugVisualizerAPI);
+  const rendererApi = world.systemApi.get(RendererAPI);
+
+  const debugActors = debugVisualizerApi.getDebugActors(actor);
+
   const maxBounds: Bounds = {
     minX: Infinity,
     minY: Infinity,
@@ -129,16 +133,14 @@ export const findDebugBounds = (
     height: 0,
   };
 
-  actor.children.forEach((child) => {
-    if (child.getComponent(Technical)) {
-      const bounds = rendererApi.getBounds(child);
+  debugActors.forEach((debugActor) => {
+    const bounds = rendererApi.getBounds(debugActor);
 
-      if (bounds) {
-        maxBounds.minX = Math.min(maxBounds.minX, bounds.minX);
-        maxBounds.minY = Math.min(maxBounds.minY, bounds.minY);
-        maxBounds.maxX = Math.max(maxBounds.maxX, bounds.maxX);
-        maxBounds.maxY = Math.max(maxBounds.maxY, bounds.maxY);
-      }
+    if (bounds) {
+      maxBounds.minX = Math.min(maxBounds.minX, bounds.minX);
+      maxBounds.minY = Math.min(maxBounds.minY, bounds.minY);
+      maxBounds.maxX = Math.max(maxBounds.maxX, bounds.maxX);
+      maxBounds.maxY = Math.max(maxBounds.maxY, bounds.maxY);
     }
   });
 

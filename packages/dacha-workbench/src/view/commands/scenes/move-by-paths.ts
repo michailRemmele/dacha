@@ -45,7 +45,7 @@ export const moveByPaths = (
   }, { values: [] as unknown[], parent: destination.slice(0) })
 
   if (values.length) {
-    dispatch(addValues(destinationPath, values))
-    dispatch(deleteByPaths(filteredPaths, true))
+    dispatch(deleteByPaths(filteredPaths))
+    dispatch(addValues(destinationPath, values, true))
   }
 }
