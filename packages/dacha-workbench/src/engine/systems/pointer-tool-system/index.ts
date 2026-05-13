@@ -9,7 +9,7 @@ import { getSavedEntitySelection } from '../../../utils/get-saved-entity-selecti
 import { getIdByPath } from '../../../utils/get-id-by-path';
 import { getCurrentZoom } from '../../../utils/get-current-zoom';
 import type { CommanderStore } from '../../../store';
-import { Frame, Technical } from '../../components';
+import { Frame } from '../../components';
 
 import { SelectionMovementSubsystem } from './selection-movement';
 import {
@@ -17,6 +17,8 @@ import {
   updateFrameSize,
   updateAreaSize,
   getActorIdByPath,
+  getSelectableActors,
+  findDebugBounds,
 } from './utils';
 import type { SelectedActors, SelectionArea } from './types';
 
@@ -210,9 +212,9 @@ export class PointerToolSystem extends SceneSystem {
     const maxY = Math.max(sceneSize.y0, sceneSize.y1);
 
     const rendererApi = this.world.systemApi.get(RendererAPI);
-    const actors = rendererApi
-      .intersectsWithRectangle(minX, minY, maxX, maxY)
-      .filter((actor) => !actor.getComponent(Technical));
+    const actors = getSelectableActors(
+      rendererApi.intersectsWithRectangle(minX, minY, maxX, maxY),
+    );
 
     const selectedActorIds = new Set(
       actorPaths.map((path) => getIdByPath(path)),
@@ -249,9 +251,7 @@ export class PointerToolSystem extends SceneSystem {
 
   private selectActor(x: number, y: number): Actor | undefined {
     const rendererApi = this.world.systemApi.get(RendererAPI);
-    return rendererApi
-      .intersectsWithPoint(x, y)
-      .find((actor) => !actor.getComponent(Technical));
+    return getSelectableActors(rendererApi.intersectsWithPoint(x, y))[0];
   }
 
   private updateFrames(): void {
@@ -296,12 +296,13 @@ export class PointerToolSystem extends SceneSystem {
         return;
       }
 
-      const bounds = rendererApi.getBounds(actor);
+      const bounds =
+        rendererApi.getBounds(actor) ?? findDebugBounds(actor, this.world);
       if (!bounds) {
         return;
       }
 
-      updateFrameSize(frame, actor, bounds, getCurrentZoom(this.world));
+      updateFrameSize(frame, bounds, getCurrentZoom(this.world));
     });
   }
 

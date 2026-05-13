@@ -3,6 +3,7 @@ import type { Resource } from 'i18next';
 import type { GlobalToken } from 'antd';
 
 import type { CustomToken } from '../view/themes/types';
+import type { ThemePreference } from '../view/providers/theme-provider/types';
 import '../events';
 
 export interface Extension {
@@ -40,16 +41,10 @@ export interface ElectronAPI {
   openPathSelectionDialog: () => Promise<string | undefined>;
   saveProjectConfig: (config: Config) => void;
   setUnsavedChanges: (unsavedChanges: boolean) => void;
-  setDebugLayers: (
-    layers: {
-      id: string;
-      title: string;
-      enabled: boolean;
-    }[],
-  ) => void;
+  updateMenuState: (field: string, value: unknown) => void;
   onSave: (callback: () => void) => void;
   onSettings: (callback: (type: string) => void) => void;
-  onSwitchTheme: (callback: () => void) => () => void;
+  onSwitchTheme: (callback: (theme: ThemePreference) => void) => () => void;
   onUndo: (callback: () => void) => () => void;
   onRedo: (callback: () => void) => () => void;
   onCut: (callback: () => void) => () => void;

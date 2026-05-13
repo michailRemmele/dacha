@@ -1,5 +1,7 @@
 import { Transform, Sprite, Shape, BitmapText, Mesh, Collider } from 'dacha';
 
+import { EditorMarker } from '../../components';
+
 export const ALLOWED_COMPONENTS = [
   Transform,
   Sprite,
@@ -7,4 +9,5 @@ export const ALLOWED_COMPONENTS = [
   BitmapText,
   Mesh,
   Collider,
+  EditorMarker,
 ];

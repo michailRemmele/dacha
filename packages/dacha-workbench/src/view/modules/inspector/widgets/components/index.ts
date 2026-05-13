@@ -14,6 +14,7 @@ import {
   Mesh,
 } from 'dacha';
 
+import { EditorMarker } from '../../../../../engine/components';
 import type { WidgetSchema } from '../../../../../types/widget-schema';
 
 import { animatable } from './animatable';
@@ -29,6 +30,7 @@ import { behaviors } from './behaviors';
 import { transform } from './transform';
 import { audioSource } from './audio-source';
 import { mesh } from './mesh';
+import { editorMarker } from './editor-marker';
 
 export const componentsSchema: Record<string, WidgetSchema> = {
   [Animatable.componentName]: animatable,
@@ -44,4 +46,5 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [Transform.componentName]: transform,
   [AudioSource.componentName]: audioSource,
   [Mesh.componentName]: mesh,
+  [EditorMarker.componentName]: editorMarker,
 };
