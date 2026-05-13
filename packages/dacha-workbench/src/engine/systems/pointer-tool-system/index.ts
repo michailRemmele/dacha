@@ -297,7 +297,7 @@ export class PointerToolSystem extends SceneSystem {
       }
 
       const bounds =
-        rendererApi.getBounds(actor) ?? findDebugBounds(actor, rendererApi);
+        rendererApi.getBounds(actor) ?? findDebugBounds(actor, this.world);
       if (!bounds) {
         return;
       }
