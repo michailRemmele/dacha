@@ -3,3 +3,4 @@ export { ToolController } from './tool-controller';
 export { Settings } from './settings';
 export { Frame } from './frame';
 export { Technical } from './technical';
+export { EditorMarker } from './editor-marker';

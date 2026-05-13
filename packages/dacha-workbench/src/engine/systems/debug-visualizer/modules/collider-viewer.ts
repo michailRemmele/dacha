@@ -1,6 +1,13 @@
-import { Collider, Shape, Transform, type CapsuleColliderShape } from 'dacha';
+import {
+  Collider,
+  Shape,
+  Transform,
+  type CapsuleColliderShape,
+  type Actor,
+} from 'dacha';
 import { Color } from 'pixi.js';
 
+import { Technical } from '../../../components';
 import { getCurrentZoom } from '../../../../utils/get-current-zoom';
 import type { DebugViewModule } from '../types';
 
@@ -61,7 +68,10 @@ export const colliderViewer: DebugViewModule = {
     const color = collider.debugColor ?? DEFAULT_COLLIDER_COLOR;
     const fillColor = new Color(color).setAlpha(FILL_COLOR_ALPHA).toHexa();
 
+    const debugActorWrapper = actorSpawner.spawn('debugActor');
     const debugActor = actorSpawner.spawn('debugActor');
+
+    debugActorWrapper.appendChild(debugActor);
 
     const transform = debugActor.getComponent(Transform);
 
@@ -108,13 +118,24 @@ export const colliderViewer: DebugViewModule = {
 
     debugActor.setComponent(shape);
 
-    return debugActor;
+    const technical = debugActor.getComponent(Technical);
+    technical.source = actor;
+
+    return debugActorWrapper;
   },
-  update: (actor, debugActor, options) => {
+  update: (actor, debugActorWrapper, options) => {
+    const debugActor = debugActorWrapper.children.find((child) =>
+      child.getComponent(Shape),
+    ) as Actor;
+
     const transform = actor.getComponent(Transform);
 
-    const debugTransform = debugActor.getComponent(Transform);
+    const debugTransform = debugActorWrapper.getComponent(Transform);
     const debugShape = debugActor.getComponent(Shape);
+
+    debugTransform.world.position.x = transform.world.position.x;
+    debugTransform.world.position.y = transform.world.position.y;
+    debugTransform.world.rotation = transform.world.rotation;
 
     if (debugShape.geometry.type === 'circle') {
       const maxScale = Math.max(
@@ -124,6 +145,9 @@ export const colliderViewer: DebugViewModule = {
 
       debugTransform.world.scale.x = maxScale;
       debugTransform.world.scale.y = maxScale;
+    } else {
+      debugTransform.world.scale.x = transform.world.scale.x;
+      debugTransform.world.scale.y = transform.world.scale.y;
     }
 
     const zoom = getCurrentZoom(options.world);
