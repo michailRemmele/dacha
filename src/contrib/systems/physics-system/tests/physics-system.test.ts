@@ -65,6 +65,7 @@ const createBoxActor = (
       sizeX: 2,
       sizeY: 2,
       layer: colliderConfig.layer,
+      disabled: false,
     }),
   );
   actor.setComponent(
@@ -99,6 +100,7 @@ const createCircleActor = (
       offsetY: 0,
       radius,
       layer: colliderConfig.layer,
+      disabled: false,
     }),
   );
 
@@ -131,6 +133,7 @@ const createSegmentActor = (
       point2X,
       point2Y,
       layer: colliderConfig.layer,
+      disabled: false,
     }),
   );
 
@@ -177,6 +180,7 @@ const createCapsuleActor = (
       point2Y,
       radius,
       layer: colliderConfig.layer,
+      disabled: false,
     }),
   );
 

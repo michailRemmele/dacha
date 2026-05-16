@@ -14,6 +14,7 @@ describe('Contrib -> systems -> PhysicsSystem -> collision-detection -> geometry
         point2Y: 0,
         radius: 0.5,
         layer: 'default',
+        disabled: false,
       }),
       new Transform({
         offsetX: 10,

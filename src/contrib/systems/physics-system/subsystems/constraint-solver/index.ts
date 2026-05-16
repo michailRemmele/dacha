@@ -20,6 +20,10 @@ export class ConstraintSolver {
       return false;
     }
 
+    if (rigidBody1.disabled || rigidBody2.disabled) {
+      return false;
+    }
+
     if (
       rigidBody1.type === RIGID_BODY_TYPE.STATIC &&
       rigidBody2.type === RIGID_BODY_TYPE.STATIC
@@ -30,7 +34,7 @@ export class ConstraintSolver {
   }
 
   private getInverseMass(rigidBody: RigidBody): number {
-    if (rigidBody.disabled || rigidBody.type === RIGID_BODY_TYPE.STATIC) {
+    if (rigidBody.type === RIGID_BODY_TYPE.STATIC) {
       return 0;
     }
 
