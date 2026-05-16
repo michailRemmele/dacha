@@ -90,6 +90,10 @@ export const collider: WidgetSchema = {
       name: 'debugColor',
       type: 'color',
     },
+    {
+      name: 'disabled',
+      type: 'boolean',
+    },
   ],
   getInitialState: () => ({
     type: 'box',
@@ -99,5 +103,6 @@ export const collider: WidgetSchema = {
     offsetY: 0,
     layer: DEFAULT_LAYER,
     debugColor: '#4DFFB8',
+    disabled: false,
   }),
 };
