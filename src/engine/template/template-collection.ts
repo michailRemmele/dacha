@@ -13,6 +13,12 @@ export class TemplateCollection {
   }
 
   register(template: TemplateConfig, parent?: TemplateConfig): void {
+    if (this.storage.has(template.id)) {
+      throw new Error(
+        `Template with the following id is already registered: ${template.id}`,
+      );
+    }
+
     this.storage.set(template.id, { config: template, parent });
 
     template.children.forEach((child) => {

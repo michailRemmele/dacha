@@ -12,6 +12,7 @@ describe('PhysicsSystem -> collision-detection -> buildBoxGeometry()', () => {
       sizeX: 4,
       sizeY: 2,
       layer: 'default',
+      disabled: true,
     });
     const transform = new Transform({
       offsetX: 3,

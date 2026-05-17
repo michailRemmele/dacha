@@ -68,6 +68,7 @@ export const createCapsuleGeometry = (
       point2Y,
       radius,
       layer: 'default',
+      disabled: false,
     }),
     new Transform({
       offsetX: 0,
@@ -94,6 +95,7 @@ export const createSegmentGeometry = (
       point2X,
       point2Y,
       layer: 'default',
+      disabled: false,
     }),
     new Transform({
       offsetX: 0,

@@ -1,4 +1,5 @@
 import type { Actor } from '../../../../../engine/actor';
+import { VectorOps, type Point } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import { RIGID_BODY_TYPE } from '../../consts';
@@ -11,12 +12,18 @@ const DEFAULT_CONTACT_FRICTION = 0.6;
 
 export class ConstraintSolver {
   private validContacts: Contact[] = [];
+  private ignoredOneWayContacts = new Map<Actor, Map<Actor, number>>();
+  private oneWayContactUpdateIndex = 0;
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
     const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
     const rigidBody2 = actor2.getComponent(RigidBody) as RigidBody | undefined;
 
     if (!rigidBody1 || !rigidBody2) {
+      return false;
+    }
+
+    if (rigidBody1.disabled || rigidBody2.disabled) {
       return false;
     }
 
@@ -29,8 +36,89 @@ export class ConstraintSolver {
     return true;
   }
 
+  private trackOneWayContact(oneWayActor: Actor, otherActor: Actor): void {
+    let ignoredContacts = this.ignoredOneWayContacts.get(oneWayActor);
+
+    if (!ignoredContacts) {
+      ignoredContacts = new Map();
+      this.ignoredOneWayContacts.set(oneWayActor, ignoredContacts);
+    }
+
+    ignoredContacts.set(otherActor, this.oneWayContactUpdateIndex);
+  }
+
+  private validateOneWayColliderContact(
+    oneWayActor: Actor,
+    otherActor: Actor,
+    normal: Point,
+  ): boolean {
+    if (this.ignoredOneWayContacts.get(oneWayActor)?.has(otherActor)) {
+      this.trackOneWayContact(oneWayActor, otherActor);
+      return false;
+    }
+
+    const rigidBody = oneWayActor.getComponent(RigidBody);
+    const transform = oneWayActor.getComponent(Transform);
+
+    const oneWayNormal = VectorOps.rotatePoint(
+      rigidBody.oneWayNormal!,
+      transform.world.rotation,
+    );
+
+    if (VectorOps.dotProduct(oneWayNormal, normal) > 0) {
+      return true;
+    }
+
+    this.trackOneWayContact(oneWayActor, otherActor);
+
+    return false;
+  }
+
+  private validateOneWayContact(contact: Contact): boolean {
+    const rigidBody1 = contact.actor1.getComponent(RigidBody);
+    const rigidBody2 = contact.actor2.getComponent(RigidBody);
+
+    if (
+      rigidBody1.oneWay &&
+      !this.validateOneWayColliderContact(
+        contact.actor1,
+        contact.actor2,
+        contact.normal,
+      )
+    ) {
+      return false;
+    }
+
+    if (!rigidBody2.oneWay) {
+      return true;
+    }
+
+    return this.validateOneWayColliderContact(contact.actor2, contact.actor1, {
+      x: -contact.normal.x,
+      y: -contact.normal.y,
+    });
+  }
+
+  private clearOneWayContacts(): void {
+    this.ignoredOneWayContacts.forEach((ignoredContacts, oneWayActor) => {
+      ignoredContacts.forEach((lastSeenUpdate, otherActor) => {
+        if (lastSeenUpdate !== this.oneWayContactUpdateIndex) {
+          ignoredContacts.delete(otherActor);
+        }
+      });
+
+      if (ignoredContacts.size === 0) {
+        this.ignoredOneWayContacts.delete(oneWayActor);
+      }
+    });
+
+    if (this.ignoredOneWayContacts.size === 0) {
+      this.oneWayContactUpdateIndex = 0;
+    }
+  }
+
   private getInverseMass(rigidBody: RigidBody): number {
-    if (rigidBody.disabled || rigidBody.type === RIGID_BODY_TYPE.STATIC) {
+    if (rigidBody.type === RIGID_BODY_TYPE.STATIC) {
       return 0;
     }
 
@@ -177,10 +265,14 @@ export class ConstraintSolver {
   }
 
   update(contacts: Contact[]): void {
+    this.oneWayContactUpdateIndex += 1;
     let validContactsCount = 0;
 
     contacts.forEach((contact) => {
       if (!this.validateCollision(contact.actor1, contact.actor2)) {
+        return;
+      }
+      if (!this.validateOneWayContact(contact)) {
         return;
       }
 
@@ -189,6 +281,8 @@ export class ConstraintSolver {
     });
 
     this.validContacts.length = validContactsCount;
+
+    this.clearOneWayContacts();
 
     for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
       this.validContacts.forEach((contact) => {

@@ -262,6 +262,16 @@ export class CollisionDetectionSubsystem {
     return this.collisionMatrix[proxy1.layer]?.[proxy2.layer] ?? true;
   }
 
+  private testState(proxy1: Proxy, proxy2: Proxy): boolean {
+    const actor1 = 'actor' in proxy1 ? proxy1.actor : undefined;
+    const actor2 = 'actor' in proxy2 ? proxy2.actor : undefined;
+
+    const collider1 = actor1?.getComponent(Collider);
+    const collider2 = actor2?.getComponent(Collider);
+
+    return !collider1?.disabled && !collider2?.disabled;
+  }
+
   private sweepAndPruneQuery(queryProxy: QueryProxy): void {
     const [mainAxis, secondAxis] = this.getAxes();
     const sortedList = this.axis[mainAxis].sortedList;
@@ -292,6 +302,9 @@ export class CollisionDetectionSubsystem {
 
     let candidateIndex = 0;
     candidates.forEach((proxy) => {
+      if (!this.testState(proxy, queryProxy)) {
+        return;
+      }
       if (!this.testAABB(proxy, queryProxy, secondAxis)) {
         return;
       }
@@ -323,14 +336,15 @@ export class CollisionDetectionSubsystem {
 
       if (!activeProxies.has(proxy)) {
         activeProxies.forEach((activeProxy) => {
+          if (!this.testState(proxy, activeProxy)) {
+            return;
+          }
           if (!this.testAABB(proxy, activeProxy, secondAxis)) {
             return;
           }
-
           if (this.areStaticBodies(proxy, activeProxy)) {
             return;
           }
-
           if (!this.testCollisionLayers(proxy, activeProxy)) {
             return;
           }

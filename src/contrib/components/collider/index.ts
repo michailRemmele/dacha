@@ -9,6 +9,7 @@ export interface BaseColliderConfig {
   offsetY: number;
   layer: string;
   debugColor?: string;
+  disabled: boolean;
 }
 
 export interface BoxColliderConfig extends BaseColliderConfig {
@@ -90,6 +91,7 @@ export type ColliderShape =
  *   sizeX: 64,
  *   sizeY: 64,
  *   layer: 'default',
+ *   disabled: false,
  * });
  *
  * // Create a circle collider
@@ -99,6 +101,7 @@ export type ColliderShape =
  *   offsetY: 0,
  *   radius: 32,
  *   layer: 'default',
+ *   disabled: false,
  * });
  *
  * // Add to actor
@@ -111,6 +114,7 @@ export class Collider extends Component {
   offset: Point;
   layer: string;
   debugColor?: string;
+  disabled: boolean;
 
   shape: ColliderShape;
 
@@ -120,6 +124,7 @@ export class Collider extends Component {
     this.offset = { x: config.offsetX, y: config.offsetY };
     this.layer = config.layer;
     this.debugColor = config.debugColor;
+    this.disabled = config.disabled;
 
     switch (config.type) {
       case 'box':

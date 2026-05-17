@@ -1,6 +1,15 @@
 import { VectorOps } from '../ops';
 
 describe('MathLib -> vector -> ops', () => {
+  describe('rotatePoint()', () => {
+    it('Rotates a point around the origin', () => {
+      const point = VectorOps.rotatePoint({ x: 1, y: 0 }, Math.PI / 2);
+
+      expect(point.x).toBeCloseTo(0);
+      expect(point.y).toBeCloseTo(1);
+    });
+  });
+
   describe('getClosestPointOnEdge()', () => {
     it('Returns correct closest point on horizontal edge', () => {
       const edge = { point1: { x: 1, y: 10 }, point2: { x: 5, y: 10 } };

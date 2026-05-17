@@ -9,6 +9,9 @@ export interface RigidBodyConfig {
   gravityScale: number;
   linearDamping: number;
   disabled: boolean;
+  oneWay: boolean;
+  oneWayNormalX?: number;
+  oneWayNormalY?: number;
 }
 
 /**
@@ -55,8 +58,15 @@ export class RigidBody extends Component {
   /** Whether rigid body is sleeping */
   sleeping: boolean;
 
+  /** Force applied to the rigid body */
   force: Vector2;
+  /** Impulse applied to the rigid body */
   impulse: Vector2;
+
+  /** Whether contacts should only be resolved from one side */
+  oneWay: boolean;
+  /** Local-space normal that points toward the blocking side */
+  oneWayNormal?: Vector2;
 
   /**
    * Creates a new RigidBody component.
@@ -78,6 +88,19 @@ export class RigidBody extends Component {
 
     this.force = new Vector2(0, 0);
     this.impulse = new Vector2(0, 0);
+
+    this.oneWay = config.oneWay ?? false;
+
+    if (this.oneWay) {
+      this.oneWayNormal = new Vector2(
+        config.oneWayNormalX ?? 0,
+        config.oneWayNormalY ?? 0,
+      ).normalize();
+
+      if (this.oneWayNormal.magnitude === 0) {
+        throw new Error('One-way rigid body normal must be non-zero');
+      }
+    }
   }
 
   get mass(): number {
