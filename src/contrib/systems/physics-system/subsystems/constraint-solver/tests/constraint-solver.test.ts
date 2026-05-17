@@ -12,13 +12,16 @@ const createActor = (
 ): Actor => {
   const actor = new Actor({ id, name: id });
 
-  actor.setComponent(new RigidBody({
-    type,
-    mass,
-    gravityScale: 0,
-    linearDamping: 0,
-    disabled: false,
-  }));
+  actor.setComponent(
+    new RigidBody({
+      type,
+      mass,
+      gravityScale: 0,
+      linearDamping: 0,
+      disabled: false,
+      oneWay: false,
+    }),
+  );
 
   return actor;
 };
@@ -34,13 +37,15 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     rigidBody1.linearVelocity = new Vector2(0, 5);
     transform1.world.position.y = 2;
 
-    const contacts: Contact[] = [{
-      actor1,
-      actor2,
-      normal: new Vector2(0, 1),
-      penetration: 0.5,
-      contactPoints: [{ x: 0, y: 0 }],
-    }];
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0.5,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
 
     solver.update(contacts);
 
@@ -58,13 +63,15 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     rigidBody1.linearVelocity = new Vector2(1, 0);
     rigidBody2.linearVelocity = new Vector2(-1, 0);
 
-    const contacts: Contact[] = [{
-      actor1,
-      actor2,
-      normal: new Vector2(1, 0),
-      penetration: 0.25,
-      contactPoints: [{ x: 0, y: 0 }],
-    }];
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(1, 0),
+        penetration: 0.25,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
 
     solver.update(contacts);
 
@@ -80,13 +87,15 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
     rigidBody1.linearVelocity = new Vector2(3, 1);
 
-    const contacts: Contact[] = [{
-      actor1,
-      actor2,
-      normal: new Vector2(0, 1),
-      penetration: 0.2,
-      contactPoints: [{ x: 0, y: 0 }],
-    }];
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0.2,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
 
     solver.update(contacts);
 
@@ -102,13 +111,15 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
     rigidBody1.linearVelocity = new Vector2(0, 2);
 
-    const contacts: Contact[] = [{
-      actor1,
-      actor2,
-      normal: new Vector2(1, 0),
-      penetration: 0.2,
-      contactPoints: [{ x: 0, y: 0 }],
-    }];
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(1, 0),
+        penetration: 0.2,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
 
     solver.update(contacts);
 
