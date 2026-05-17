@@ -20,6 +20,26 @@ export const rigidBody: WidgetSchema = {
       type: 'number',
     },
     {
+      name: 'oneWay',
+      type: 'boolean',
+    },
+    {
+      name: 'oneWayNormalX',
+      type: 'number',
+      dependency: {
+        name: 'oneWay',
+        value: true,
+      },
+    },
+    {
+      name: 'oneWayNormalY',
+      type: 'number',
+      dependency: {
+        name: 'oneWay',
+        value: true,
+      },
+    },
+    {
       name: 'disabled',
       type: 'boolean',
     },
@@ -29,6 +49,7 @@ export const rigidBody: WidgetSchema = {
     mass: 1,
     gravityScale: 0,
     linearDamping: 0,
+    oneWay: false,
     disabled: false,
   }),
 };
