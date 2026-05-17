@@ -9,6 +9,7 @@ describe('Contrib -> components -> Collider', () => {
       offsetX: 1,
       offsetY: 2,
       layer: 'player',
+      disabled: false,
     });
     const circle = new Collider({
       type: 'circle',
@@ -16,6 +17,7 @@ describe('Contrib -> components -> Collider', () => {
       offsetY: 2,
       radius: 20,
       layer: 'enemy',
+      disabled: false,
     });
     const segment = new Collider({
       type: 'segment',
@@ -26,6 +28,7 @@ describe('Contrib -> components -> Collider', () => {
       point2X: 1,
       point2Y: 0,
       layer: 'ground',
+      disabled: false,
     });
     const capsule = new Collider({
       type: 'capsule',
@@ -37,6 +40,7 @@ describe('Contrib -> components -> Collider', () => {
       point2Y: 0,
       radius: 1,
       layer: 'body',
+      disabled: false,
     });
 
     expect(box.shape.type).toEqual('box');
@@ -78,6 +82,7 @@ describe('Contrib -> components -> Collider', () => {
       offsetX: 1,
       offsetY: 2,
       layer: 'default',
+      disabled: false,
     });
     const circle = new Collider({
       type: 'circle',
@@ -85,6 +90,7 @@ describe('Contrib -> components -> Collider', () => {
       offsetX: 1,
       offsetY: 2,
       layer: 'default',
+      disabled: false,
     });
     const segment = new Collider({
       type: 'segment',
@@ -95,6 +101,7 @@ describe('Contrib -> components -> Collider', () => {
       point2X: 1,
       point2Y: 0,
       layer: 'default',
+      disabled: false,
     });
     const capsule = new Collider({
       type: 'capsule',
@@ -106,6 +113,7 @@ describe('Contrib -> components -> Collider', () => {
       point2Y: 0,
       radius: 1,
       layer: 'default',
+      disabled: false,
     });
 
     if (box.shape.type === 'box') {

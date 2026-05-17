@@ -70,6 +70,23 @@ export class VectorOps {
   }
 
   /**
+   * Rotates a point around the origin by the given angle.
+   *
+   * @param point - Point to rotate
+   * @param angle - Angle in radians
+   * @returns Rotated point
+   */
+  static rotatePoint(point: Point, angle: number): Point {
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    return {
+      x: point.x * cos - point.y * sin,
+      y: point.x * sin + point.y * cos,
+    };
+  }
+
+  /**
    * Calculates the normal vector of a line segment.
    *
    * @param x1 - X coordinate of the first point
@@ -109,7 +126,7 @@ export class VectorOps {
    * const dot = VectorOps.dotProduct(point, vector);
    * ```
    */
-  static dotProduct(point: Point, vector: Vector2): number {
+  static dotProduct(point: Point, vector: Point): number {
     return point.x * vector.x + point.y * vector.y;
   }
 

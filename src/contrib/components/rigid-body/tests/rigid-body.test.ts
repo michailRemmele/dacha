@@ -9,6 +9,7 @@ describe('Contrib -> components -> RigidBody', () => {
       gravityScale: 1,
       linearDamping: 1,
       disabled: false,
+      oneWay: false,
     });
 
     expect(rigidBody.type).toEqual('dynamic');
@@ -18,7 +19,42 @@ describe('Contrib -> components -> RigidBody', () => {
     expect(rigidBody.linearDamping).toEqual(1);
     expect(rigidBody.linearVelocity.equals(new Vector2(0, 0))).toEqual(true);
     expect(rigidBody.disabled).toEqual(false);
+    expect(rigidBody.oneWay).toEqual(false);
+    expect(rigidBody.oneWayNormal).toBeUndefined();
     expect(rigidBody.sleeping).toEqual(false);
+  });
+
+  it('Normalizes one-way normals', () => {
+    const rigidBody = new RigidBody({
+      type: 'static',
+      mass: 10,
+      gravityScale: 1,
+      linearDamping: 1,
+      disabled: false,
+      oneWay: true,
+      oneWayNormalX: 0,
+      oneWayNormalY: -10,
+    });
+
+    expect(rigidBody.oneWay).toEqual(true);
+    expect(rigidBody.oneWayNormal?.x).toStrictEqual(0);
+    expect(rigidBody.oneWayNormal?.y).toStrictEqual(-1);
+  });
+
+  it('Requires one-way rigid bodies to have a non-zero normal', () => {
+    expect(
+      () =>
+        new RigidBody({
+          type: 'static',
+          mass: 10,
+          gravityScale: 1,
+          linearDamping: 1,
+          disabled: false,
+          oneWay: true,
+          oneWayNormalX: 0,
+          oneWayNormalY: 0,
+        }),
+    ).toThrow('One-way rigid body normal must be non-zero');
   });
 
   it('Correct updates values ', () => {
@@ -28,6 +64,7 @@ describe('Contrib -> components -> RigidBody', () => {
       gravityScale: 1,
       linearDamping: 1,
       disabled: false,
+      oneWay: false,
     });
 
     rigidBody.type = 'static';
@@ -55,6 +92,7 @@ describe('Contrib -> components -> RigidBody', () => {
       gravityScale: 1,
       linearDamping: 1,
       disabled: false,
+      oneWay: false,
     });
 
     rigidBody.sleep();
@@ -73,6 +111,7 @@ describe('Contrib -> components -> RigidBody', () => {
       gravityScale: 1,
       linearDamping: 1,
       disabled: false,
+      oneWay: false,
     });
 
     rigidBody.mass = 0;
