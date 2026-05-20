@@ -2,7 +2,7 @@ import type {
   SceneSystemOptions,
   UpdateOptions,
 } from '../../../../../engine/system';
-import { ActorQuery } from '../../../../../engine/actor';
+import { ActorQuery, type Actor } from '../../../../../engine/actor';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { PhysicsSystemOptions } from '../../types';
@@ -11,11 +11,15 @@ export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
   private gravity: number;
 
+  private kinematicMovedActors: Set<Actor>;
+
   constructor(options: SceneSystemOptions) {
     const { gravity, scene } = options as PhysicsSystemOptions;
 
     this.actorQuery = new ActorQuery({ scene, filter: [RigidBody, Transform] });
     this.gravity = gravity;
+
+    this.kinematicMovedActors = new Set();
   }
 
   destroy(): void {
@@ -53,9 +57,37 @@ export class PhysicsSubsystem {
   private integrateVelocities(deltaTimeInSeconds: number): void {
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
+      const transform = actor.getComponent(Transform);
       const { mass, inverseMass } = rigidBody;
 
-      if (rigidBody.disabled || rigidBody.type === 'static' || mass <= 0) {
+      if (rigidBody.disabled) {
+        rigidBody._movementTarget = null;
+        rigidBody.clearForces();
+        return;
+      }
+
+      if (rigidBody.type === 'static') {
+        return;
+      }
+
+      if (rigidBody.type === 'kinematic') {
+        const { _movementTarget } = rigidBody;
+
+        if (_movementTarget === null) {
+          return;
+        }
+
+        rigidBody.linearVelocity.x =
+          (_movementTarget.x - transform.world.position.x) / deltaTimeInSeconds;
+        rigidBody.linearVelocity.y =
+          (_movementTarget.y - transform.world.position.y) / deltaTimeInSeconds;
+
+        this.kinematicMovedActors.add(actor);
+
+        return;
+      }
+
+      if (mass <= 0) {
         rigidBody.clearForces();
         return;
       }
@@ -96,12 +128,20 @@ export class PhysicsSubsystem {
       const rigidBody = actor.getComponent(RigidBody);
       const transform = actor.getComponent(Transform);
 
-      if (
-        rigidBody.disabled ||
-        rigidBody.type === 'static' ||
-        rigidBody.mass <= 0 ||
-        rigidBody.sleeping
-      ) {
+      if (rigidBody.disabled || rigidBody.type === 'static') {
+        return;
+      }
+
+      if (rigidBody.type === 'kinematic') {
+        transform.world.position.x +=
+          rigidBody.linearVelocity.x * deltaTimeInSeconds;
+        transform.world.position.y +=
+          rigidBody.linearVelocity.y * deltaTimeInSeconds;
+
+        return;
+      }
+
+      if (rigidBody.mass <= 0 || rigidBody.sleeping) {
         return;
       }
 
@@ -117,5 +157,15 @@ export class PhysicsSubsystem {
 
     this.integrateVelocities(deltaTimeInSeconds);
     this.integratePositions(deltaTimeInSeconds);
+  }
+
+  lateUpdate(): void {
+    this.kinematicMovedActors.forEach((actor) => {
+      const rigidBody = actor.getComponent(RigidBody);
+      rigidBody.linearVelocity.multiplyNumber(0);
+      rigidBody._movementTarget = null;
+    });
+
+    this.kinematicMovedActors.clear();
   }
 }
