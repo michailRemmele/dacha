@@ -1,7 +1,7 @@
 import { Component } from '../../../engine/component';
 import { Vector2 } from '../../../engine/math-lib';
 
-export type RigidBodyType = 'dynamic' | 'static';
+export type RigidBodyType = 'dynamic' | 'static' | 'kinematic';
 
 export interface RigidBodyConfig {
   type: RigidBodyType;
@@ -44,9 +44,11 @@ export class RigidBody extends Component {
   private _mass: number;
   private _inverseMass: number;
 
-  /** Type of the rigid body */
-  type: RigidBodyType;
-  /** Mass of the rigid body */
+  /** @internal Pending one-step kinematic movement target */
+  _movementTarget: Vector2 | null;
+
+  /** Body type that defines how the rigid body participates in simulation */
+  readonly type: RigidBodyType;
   /** Gravity scale of the rigid body */
   gravityScale: number;
   /** Linear damping value used to slow down movement over time */
@@ -78,6 +80,8 @@ export class RigidBody extends Component {
     this._mass = 0;
     this._inverseMass = 0;
 
+    this._movementTarget = null;
+
     this.type = config.type;
     this.mass = config.mass;
     this.gravityScale = config.gravityScale;
@@ -107,17 +111,32 @@ export class RigidBody extends Component {
     return this._mass;
   }
 
+  /**
+   * Sets the mass used by dynamic bodies.
+   *
+   * Non-positive values make the body immovable by forces and impulses.
+   */
   set mass(value: number) {
     this._mass = value;
     this._inverseMass = value > 0 ? 1 / value : 0;
   }
 
+  /**
+   * Returns the inverse mass.
+   *
+   * Bodies with zero or negative mass return `0`.
+   */
   get inverseMass(): number {
     return this._inverseMass;
   }
 
+  /**
+   * Adds a continuous force to a dynamic body for the next physics step.
+   *
+   * Affects only active dynamic bodies.
+   */
   applyForce(force: Vector2): void {
-    if (this.disabled || this.type === 'static') {
+    if (this.disabled || this.type !== 'dynamic') {
       return;
     }
 
@@ -125,8 +144,13 @@ export class RigidBody extends Component {
     this.force.add(force);
   }
 
+  /**
+   * Adds an instantaneous impulse to a dynamic body for the next physics step.
+   *
+   * Affects only active dynamic bodies.
+   */
   applyImpulse(impulse: Vector2): void {
-    if (this.disabled || this.type === 'static') {
+    if (this.disabled || this.type !== 'dynamic') {
       return;
     }
 
@@ -134,17 +158,40 @@ export class RigidBody extends Component {
     this.impulse.add(impulse);
   }
 
+  /**
+   * Marks the rigid body as awake so it can be simulated.
+   */
   wakeUp(): void {
     this.sleeping = false;
   }
 
+  /**
+   * Marks the rigid body as sleeping so dynamic integration can skip it.
+   */
   sleep(): void {
     this.sleeping = true;
   }
 
+  /**
+   * Clears all accumulated force and impulse values.
+   */
   clearForces(): void {
     this.force.multiplyNumber(0);
     this.impulse.multiplyNumber(0);
+  }
+
+  /**
+   * Moves a kinematic body to a target position on the next physics step.
+   *
+   * The physics system computes a one-step velocity from the current position
+   * to this target so contacts can react to the kinematic movement.
+   */
+  movePosition(position: Vector2): void {
+    if (this.disabled || this.type !== 'kinematic') {
+      return;
+    }
+
+    this._movementTarget = position.clone();
   }
 }
 
