@@ -5,9 +5,9 @@ export type RigidBodyType = 'dynamic' | 'static' | 'kinematic';
 
 export interface RigidBodyConfig {
   type: RigidBodyType;
-  mass: number;
-  gravityScale: number;
-  linearDamping: number;
+  mass?: number;
+  gravityScale?: number;
+  linearDamping?: number;
   disabled: boolean;
   oneWay: boolean;
   oneWayNormalX?: number;
@@ -83,9 +83,9 @@ export class RigidBody extends Component {
     this._movementTarget = null;
 
     this.type = config.type;
-    this.mass = config.mass;
-    this.gravityScale = config.gravityScale;
-    this.linearDamping = config.linearDamping;
+    this.mass = config.mass ?? 0;
+    this.gravityScale = config.gravityScale ?? 0;
+    this.linearDamping = config.linearDamping ?? 0;
     this.linearVelocity = new Vector2(0, 0);
     this.disabled = config.disabled;
     this.sleeping = false;

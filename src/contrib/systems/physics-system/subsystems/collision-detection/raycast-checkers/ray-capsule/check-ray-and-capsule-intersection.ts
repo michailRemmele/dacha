@@ -1,33 +1,14 @@
 import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
-import type {
-  CapsuleGeometry,
-  Intersection,
-  Point,
-  Proxy,
-  RayGeometry,
-} from '../../types';
+import type { CapsuleGeometry, Point, RayGeometry } from '../../types';
 import { INTERSECTION_EPSILON } from '../../constants';
-
-const chooseNearest = (
-  nearest: Intersection | false,
-  candidate: Intersection | false,
-): Intersection | false => {
-  if (!candidate) {
-    return nearest;
-  }
-
-  if (!nearest || candidate.distance! < nearest.distance!) {
-    return candidate;
-  }
-
-  return nearest;
-};
+import { chooseNearestIntersection } from '../../intersection-checkers/common/cast';
+import type { RaycastCheckerFn, RaycastCheckerHit } from '../types';
 
 const checkRayAndCap = (
   ray: RayGeometry,
   center: Point,
   radius: number,
-): Intersection | false => {
+): RaycastCheckerHit | false => {
   const offsetX = ray.origin.x - center.x;
   const offsetY = ray.origin.y - center.y;
   const b = offsetX * ray.direction.x + offsetY * ray.direction.y;
@@ -65,8 +46,7 @@ const checkRayAndCap = (
   return {
     normal,
     distance: hitDistance,
-    penetration: 0,
-    contactPoints: [hitPoint],
+    point: hitPoint,
   };
 };
 
@@ -83,7 +63,7 @@ const checkRayAndSide = (
   point1: Point,
   point2: Point,
   sideNormal: Vector2,
-): Intersection | false => {
+): RaycastCheckerHit | false => {
   const segmentDirection = {
     x: point2.x - point1.x,
     y: point2.y - point1.y,
@@ -128,8 +108,7 @@ const checkRayAndSide = (
   return {
     normal,
     distance: rayDistance,
-    penetration: 0,
-    contactPoints: [point],
+    point,
   };
 };
 
@@ -142,12 +121,12 @@ const checkRayAndSide = (
  * parametric intersection. The nearest valid boundary hit within
  * `maxDistance` is returned.
  */
-export const checkRayAndCapsuleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
-): Intersection | false => {
-  const ray = arg1.geometry as RayGeometry;
-  const capsule = arg2.geometry as CapsuleGeometry;
+export const checkRayAndCapsuleIntersection: RaycastCheckerFn = (
+  queryProxy,
+  targetProxy,
+) => {
+  const ray = queryProxy.geometry as RayGeometry;
+  const capsule = targetProxy.geometry as CapsuleGeometry;
   const sideNormal = capsule.normal;
   const side1Point1 = {
     x: capsule.point1.x + sideNormal.x * capsule.radius,
@@ -167,15 +146,15 @@ export const checkRayAndCapsuleIntersection = (
   };
   let nearest = checkRayAndCap(ray, capsule.point1, capsule.radius);
 
-  nearest = chooseNearest(
+  nearest = chooseNearestIntersection(
     nearest,
     checkRayAndCap(ray, capsule.point2, capsule.radius),
   );
-  nearest = chooseNearest(
+  nearest = chooseNearestIntersection(
     nearest,
     checkRayAndSide(ray, side1Point1, side1Point2, sideNormal),
   );
-  nearest = chooseNearest(
+  nearest = chooseNearestIntersection(
     nearest,
     checkRayAndSide(
       ray,

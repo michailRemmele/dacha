@@ -16,6 +16,7 @@ import type {
   RayGeometry,
   SegmentGeometry,
 } from '../../types';
+import type { RaycastCheckerHit } from '../../raycast-checkers/types';
 
 export const createBoxGeometry = (
   centerX: number,
@@ -34,9 +35,12 @@ export const createRotatedBoxGeometry = (
   rotation: number,
 ): BoxGeometry => {
   return buildBoxGeometry({
-    center: { x: centerX, y: centerY },
-    size: { x: sizeX, y: sizeY },
-    rotation,
+    shape: {
+      type: 'box',
+      center: { x: centerX, y: centerY },
+      size: { x: sizeX, y: sizeY },
+      rotation,
+    },
   });
 };
 
@@ -46,8 +50,11 @@ export const createCircleGeometry = (
   radius: number,
 ): CircleGeometry =>
   buildCircleGeometry({
-    center: { x: centerX, y: centerY },
-    radius,
+    shape: {
+      type: 'circle',
+      center: { x: centerX, y: centerY },
+      radius,
+    },
   });
 
 export const createCapsuleGeometry = (
@@ -111,7 +118,10 @@ export const createPointGeometry = (
   centerY: number,
 ): PointGeometry =>
   buildPointGeometry({
-    point: { x: centerX, y: centerY },
+    shape: {
+      type: 'point',
+      point: { x: centerX, y: centerY },
+    },
   });
 
 export const createRayGeometry = (
@@ -160,6 +170,18 @@ export const expectIntersection = (
   }
 
   return intersection;
+};
+
+export const expectCastHit = (
+  hit: RaycastCheckerHit | false,
+): RaycastCheckerHit => {
+  expect(hit).not.toBe(false);
+
+  if (hit === false) {
+    throw new Error('Expected cast hit, received false');
+  }
+
+  return hit;
 };
 
 export const sortPoints = (

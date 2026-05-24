@@ -6,6 +6,7 @@ import { buildCircleAABB } from './build-circle-aabb';
 import { buildPointAABB } from './build-point-aabb';
 import { buildRayAABB } from './build-ray-aabb';
 import { buildSegmentAABB } from './build-segment-aabb';
+import { buildCircleCastAABB } from './build-circle-cast-aabb';
 
 export type BuildAABBFn = (geometry: Geometry) => AABB;
 
@@ -16,4 +17,5 @@ export const aabbBuilders: Record<string, BuildAABBFn> = {
   segment: buildSegmentAABB,
   point: buildPointAABB,
   ray: buildRayAABB,
+  circleCast: buildCircleCastAABB,
 };
