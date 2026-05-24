@@ -12,10 +12,6 @@ import { checkPointAndBoxIntersection } from './point-box/check-point-and-box-in
 import { checkPointAndCapsuleIntersection } from './point-capsule/check-point-and-capsule-intersection';
 import { checkPointAndCircleIntersection } from './point-circle/check-point-and-circle-intersection';
 import { checkPointAndSegmentIntersection } from './point-segment/check-point-and-segment-intersection';
-import { checkRayAndBoxIntersection } from './ray-box/check-ray-and-box-intersection';
-import { checkRayAndCapsuleIntersection } from './ray-capsule/check-ray-and-capsule-intersection';
-import { checkRayAndCircleIntersection } from './ray-circle/check-ray-and-circle-intersection';
-import { checkRayAndSegmentIntersection } from './ray-segment/check-ray-and-segment-intersection';
 import { checkSegmentAndCapsuleIntersection } from './segment-capsule/check-segment-and-capsule-intersection';
 
 export type CheckIntersectionFn = (
@@ -69,11 +65,5 @@ export const intersectionCheckers: Record<
     capsule: checkPointAndCapsuleIntersection,
     circle: checkPointAndCircleIntersection,
     segment: checkPointAndSegmentIntersection,
-  },
-  ray: {
-    box: checkRayAndBoxIntersection,
-    capsule: checkRayAndCapsuleIntersection,
-    circle: checkRayAndCircleIntersection,
-    segment: checkRayAndSegmentIntersection,
   },
 };

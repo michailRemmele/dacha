@@ -3,9 +3,9 @@ import {
   createProxy,
   createRayGeometry,
   createSegmentGeometry,
-  expectIntersection,
+  expectCastHit,
   expectToBeClose,
-} from './helpers';
+} from '../../intersection-checkers/tests/helpers';
 
 describe('PhysicsSystem -> collision-detection -> checkRayAndSegmentIntersection()', () => {
   it('Returns false when the ray misses the segment', () => {
@@ -19,12 +19,10 @@ describe('PhysicsSystem -> collision-detection -> checkRayAndSegmentIntersection
     const ray = createProxy(createRayGeometry(0, 0, 1, 0, 10));
     const segment = createProxy(createSegmentGeometry(4, -2, 4, 2));
 
-    const intersection = expectIntersection(
-      checkRayAndSegmentIntersection(ray, segment),
-    );
+    const hit = expectCastHit(checkRayAndSegmentIntersection(ray, segment));
 
-    expect(intersection.distance).toBeCloseTo(4);
-    expectToBeClose(intersection.contactPoints[0], 4, 0);
-    expectToBeClose(intersection.normal, -1, 0);
+    expect(hit.distance).toBeCloseTo(4);
+    expectToBeClose(hit.point, 4, 0);
+    expectToBeClose(hit.normal, -1, 0);
   });
 });

@@ -1,12 +1,7 @@
 import { VectorOps, type Vector2 } from '../../../../../../../engine/math-lib';
-import type {
-  Proxy,
-  BoxGeometry,
-  RayGeometry,
-  EdgeWithNormal,
-  Intersection,
-} from '../../types';
+import type { BoxGeometry, RayGeometry, EdgeWithNormal } from '../../types';
 import { INTERSECTION_EPSILON } from '../../constants';
+import type { RaycastCheckerFn } from '../types';
 
 /**
  * Checks a ray against a convex box using half-space clipping.
@@ -17,12 +12,12 @@ import { INTERSECTION_EPSILON } from '../../constants';
  *
  * When the ray starts inside the box, the first hit is the exit point.
  */
-export const checkRayAndBoxIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
-): Intersection | false => {
-  const ray = arg1.geometry as RayGeometry;
-  const box = arg2.geometry as BoxGeometry;
+export const checkRayAndBoxIntersection: RaycastCheckerFn = (
+  queryProxy,
+  targetProxy,
+) => {
+  const ray = queryProxy.geometry as RayGeometry;
+  const box = targetProxy.geometry as BoxGeometry;
 
   let tEnter = -Infinity;
   let tExit = ray.maxDistance;
@@ -91,7 +86,6 @@ export const checkRayAndBoxIntersection = (
   return {
     normal,
     distance: hitDistance,
-    penetration: 0,
-    contactPoints: [hitPoint],
+    point: hitPoint,
   };
 };

@@ -3,6 +3,6 @@ import type { OverlapPointParams } from '../../../types';
 
 export function buildPointGeometry(overlap: OverlapPointParams): PointGeometry {
   return {
-    center: overlap.point,
+    center: overlap.shape.point,
   };
 }

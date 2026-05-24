@@ -28,7 +28,7 @@ export interface RaycastParams extends PhysicsQueryFilter {
   maxDistance: number;
 }
 
-export interface RaycastHit {
+export interface CastHit {
   actor: Actor;
   point: Point;
   normal: Vector2;
@@ -36,16 +36,55 @@ export interface RaycastHit {
 }
 
 export interface OverlapPointParams extends PhysicsQueryFilter {
-  point: Point;
+  shape: {
+    type: 'point';
+    point: Point;
+  };
 }
 
 export interface OverlapCircleParams extends PhysicsQueryFilter {
+  shape: {
+    type: 'circle';
+    center: Point;
+    radius: number;
+  };
+}
+
+export interface OverlapBoxParams extends PhysicsQueryFilter {
+  shape: {
+    type: 'box';
+    center: Point;
+    size: Point;
+    rotation?: number;
+  };
+}
+
+export interface OverlapCapsuleParams extends PhysicsQueryFilter {
+  shape: {
+    type: 'capsule';
+    point1: Point;
+    point2: Point;
+    radius: number;
+    rotation?: number;
+  };
+}
+
+export type OverlapParams =
+  | OverlapPointParams
+  | OverlapCircleParams
+  | OverlapBoxParams
+  | OverlapCapsuleParams;
+
+export interface CircleCastShape {
+  type: 'circle';
   center: Point;
   radius: number;
 }
 
-export interface OverlapBoxParams extends PhysicsQueryFilter {
-  center: Point;
-  size: Point;
-  rotation?: number;
+export interface CircleCastParams extends PhysicsQueryFilter {
+  shape: CircleCastShape;
+  direction: Vector2;
+  maxDistance: number;
 }
+
+export type ShapeCastParams = CircleCastParams;

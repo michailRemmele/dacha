@@ -3,9 +3,9 @@ import {
   createBoxGeometry,
   createProxy,
   createRayGeometry,
-  expectIntersection,
+  expectCastHit,
   expectToBeClose,
-} from './helpers';
+} from '../../intersection-checkers/tests/helpers';
 
 describe('PhysicsSystem -> collision-detection -> checkRayAndBoxIntersection()', () => {
   it('Returns false when ray misses the box', () => {
@@ -19,39 +19,33 @@ describe('PhysicsSystem -> collision-detection -> checkRayAndBoxIntersection()',
     const ray = createProxy(createRayGeometry(-3, 0, 1, 0, 10));
     const box = createProxy(createBoxGeometry(0, 0, 2, 2));
 
-    const intersection = expectIntersection(checkRayAndBoxIntersection(ray, box));
+    const hit = expectCastHit(checkRayAndBoxIntersection(ray, box));
 
-    expectToBeClose(intersection.normal, -1, 0);
-    expect(intersection.distance).toBeCloseTo(2);
-    expect(intersection.penetration).toBe(0);
-    expect(intersection.contactPoints).toHaveLength(1);
-    expectToBeClose(intersection.contactPoints[0], -1, 0);
+    expectToBeClose(hit.normal, -1, 0);
+    expect(hit.distance).toBeCloseTo(2);
+    expectToBeClose(hit.point, -1, 0);
   });
 
   it('Returns exit contact when ray starts inside the box', () => {
     const ray = createProxy(createRayGeometry(0, 0, 1, 0, 10));
     const box = createProxy(createBoxGeometry(0, 0, 2, 2));
 
-    const intersection = expectIntersection(checkRayAndBoxIntersection(ray, box));
+    const hit = expectCastHit(checkRayAndBoxIntersection(ray, box));
 
-    expectToBeClose(intersection.normal, 1, 0);
-    expect(intersection.distance).toBeCloseTo(1);
-    expect(intersection.penetration).toBe(0);
-    expect(intersection.contactPoints).toHaveLength(1);
-    expectToBeClose(intersection.contactPoints[0], 1, 0);
+    expectToBeClose(hit.normal, 1, 0);
+    expect(hit.distance).toBeCloseTo(1);
+    expectToBeClose(hit.point, 1, 0);
   });
 
   it('Returns zero-distance contact when ray starts on the box boundary', () => {
     const ray = createProxy(createRayGeometry(-1, 0, 1, 0, 10));
     const box = createProxy(createBoxGeometry(0, 0, 2, 2));
 
-    const intersection = expectIntersection(checkRayAndBoxIntersection(ray, box));
+    const hit = expectCastHit(checkRayAndBoxIntersection(ray, box));
 
-    expectToBeClose(intersection.normal, -1, 0);
-    expect(intersection.distance).toBeCloseTo(0);
-    expect(intersection.penetration).toBe(0);
-    expect(intersection.contactPoints).toHaveLength(1);
-    expectToBeClose(intersection.contactPoints[0], -1, 0);
+    expectToBeClose(hit.normal, -1, 0);
+    expect(hit.distance).toBeCloseTo(0);
+    expectToBeClose(hit.point, -1, 0);
   });
 
   it('Returns false when the hit would be beyond max distance', () => {

@@ -1,11 +1,7 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
-import type {
-  Proxy,
-  CircleGeometry,
-  RayGeometry,
-  Intersection,
-} from '../../types';
+import type { CircleGeometry, RayGeometry } from '../../types';
 import { INTERSECTION_EPSILON } from '../../constants';
+import type { RaycastCheckerFn } from '../types';
 
 /**
  * Checks a ray against a circle.
@@ -15,12 +11,12 @@ import { INTERSECTION_EPSILON } from '../../constants';
  * starts at the circle center, the normal falls back to the opposite ray
  * direction.
  */
-export const checkRayAndCircleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
-): Intersection | false => {
-  const ray = arg1.geometry as RayGeometry;
-  const circle = arg2.geometry as CircleGeometry;
+export const checkRayAndCircleIntersection: RaycastCheckerFn = (
+  queryProxy,
+  targetProxy,
+) => {
+  const ray = queryProxy.geometry as RayGeometry;
+  const circle = targetProxy.geometry as CircleGeometry;
 
   const offsetX = ray.origin.x - circle.center.x;
   const offsetY = ray.origin.y - circle.center.y;
@@ -60,7 +56,6 @@ export const checkRayAndCircleIntersection = (
   return {
     normal,
     distance: hitDistance,
-    penetration: 0,
-    contactPoints: [hitPoint],
+    point: hitPoint,
   };
 };
