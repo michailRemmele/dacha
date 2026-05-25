@@ -1,7 +1,6 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
 import { Collider, Transform } from '../../../../../../components';
 import { buildBoxGeometry } from '../../geometry-builders/build-box-geometry';
-import { buildCapsuleGeometry } from '../../geometry-builders/build-capsule-geometry';
 import { buildCircleGeometry } from '../../geometry-builders/build-circle-geometry';
 import { buildPointGeometry } from '../../geometry-builders/build-point-geometry';
 import { buildRayGeometry } from '../../geometry-builders/build-ray-geometry';
@@ -63,28 +62,21 @@ export const createCapsuleGeometry = (
   point2X: number,
   point2Y: number,
   radius: number,
-): CapsuleGeometry =>
-  buildCapsuleGeometry(
-    new Collider({
-      type: 'capsule',
-      offsetX: 0,
-      offsetY: 0,
-      point1X,
-      point1Y,
-      point2X,
-      point2Y,
-      radius,
-      layer: 'default',
-      disabled: false,
-    }),
-    new Transform({
-      offsetX: 0,
-      offsetY: 0,
-      rotation: 0,
-      scaleX: 1,
-      scaleY: 1,
-    }),
-  );
+): CapsuleGeometry => {
+  const point1 = { x: point1X, y: point1Y };
+  const point2 = { x: point2X, y: point2Y };
+
+  return {
+    center: {
+      x: (point1X + point2X) / 2,
+      y: (point1Y + point2Y) / 2,
+    },
+    point1,
+    point2,
+    normal: VectorOps.getNormal(point1X, point2X, point1Y, point2Y),
+    radius,
+  };
+};
 
 export const createSegmentGeometry = (
   point1X: number,

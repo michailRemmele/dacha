@@ -26,10 +26,7 @@ const getColliderData = (collider: Collider): OrientationData['collider'] => {
       break;
     case 'capsule':
       data.radius = collider.shape.radius;
-      data.point1X = collider.shape.point1.x;
-      data.point1Y = collider.shape.point1.y;
-      data.point2X = collider.shape.point2.x;
-      data.point2Y = collider.shape.point2.y;
+      data.height = collider.shape.height;
   }
 
   return data;

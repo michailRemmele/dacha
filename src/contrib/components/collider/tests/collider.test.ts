@@ -34,10 +34,7 @@ describe('Contrib -> components -> Collider', () => {
       type: 'capsule',
       offsetX: 0,
       offsetY: 0,
-      point1X: -2,
-      point1Y: 0,
-      point2X: 2,
-      point2Y: 0,
+      height: 4,
       radius: 1,
       layer: 'body',
       disabled: false,
@@ -67,8 +64,7 @@ describe('Contrib -> components -> Collider', () => {
     expect(capsule.shape.type).toEqual('capsule');
     expect(capsule.shape).toStrictEqual({
       type: 'capsule',
-      point1: { x: -2, y: 0 },
-      point2: { x: 2, y: 0 },
+      height: 4,
       radius: 1,
     });
     expect(capsule.layer).toEqual('body');
@@ -107,10 +103,7 @@ describe('Contrib -> components -> Collider', () => {
       type: 'capsule',
       offsetX: 0,
       offsetY: 0,
-      point1X: -2,
-      point1Y: 0,
-      point2X: 2,
-      point2Y: 0,
+      height: 4,
       radius: 1,
       layer: 'default',
       disabled: false,
@@ -135,10 +128,7 @@ describe('Contrib -> components -> Collider', () => {
     }
     if (capsule.shape.type === 'capsule') {
       capsule.shape.radius = 2;
-      capsule.shape.point1.x = -3;
-      capsule.shape.point1.y = 0;
-      capsule.shape.point2.x = 3;
-      capsule.shape.point2.y = 0;
+      capsule.shape.height = 6;
     }
 
     expect(box.shape).toStrictEqual({
@@ -159,8 +149,7 @@ describe('Contrib -> components -> Collider', () => {
 
     expect(capsule.shape).toStrictEqual({
       type: 'capsule',
-      point1: { x: -3, y: 0 },
-      point2: { x: 3, y: 0 },
+      height: 6,
       radius: 2,
     });
   });

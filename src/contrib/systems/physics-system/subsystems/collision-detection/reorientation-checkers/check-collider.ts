@@ -41,10 +41,7 @@ export const checkCollider = (
   }
 
   return (
-    collider.shape.point1.x !== colliderOld.point1X ||
-    collider.shape.point1.y !== colliderOld.point1Y ||
-    collider.shape.point2.x !== colliderOld.point2X ||
-    collider.shape.point2.y !== colliderOld.point2Y ||
+    collider.shape.height !== colliderOld.height ||
     collider.shape.radius !== colliderOld.radius
   );
 };

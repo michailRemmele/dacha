@@ -180,7 +180,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     const scene = createScene();
     const { world } = createPhysicsSystem(scene);
     const physicsApi = world.systemApi.get(PhysicsAPI);
-    const capsule = createCapsuleActor('capsule', 4, 0, -2, 0, 2, 0, 1);
+    const capsule = createCapsuleActor('capsule', 4, 0, 4, 1);
 
     scene.appendChild(capsule);
 
@@ -191,8 +191,8 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     });
 
     expect(hit?.actor.id).toBe('capsule');
-    expect(hit?.distance).toBeCloseTo(1);
-    expect(hit?.point.x).toBeCloseTo(1);
+    expect(hit?.distance).toBeCloseTo(3);
+    expect(hit?.point.x).toBeCloseTo(3);
     expect(hit?.point.y).toBeCloseTo(0);
 
     expect(
@@ -221,9 +221,10 @@ describe('Systems -> PhysicsSystem -> queries', () => {
         .overlapShape({
           shape: {
             type: 'capsule',
-            point1: { x: -2, y: 0 },
-            point2: { x: 2, y: 0 },
+            center: { x: 0, y: 0 },
+            height: 4,
             radius: 1,
+            rotation: -Math.PI / 2,
           },
         })
         .map((actor) => actor.id),
@@ -262,7 +263,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     const physicsApi = world.systemApi.get(PhysicsAPI);
     const circle = createCircleActor('circle', 5, 0, 1);
     const segment = createSegmentActor('segment', 5, 5, 0, -2, 0, 2);
-    const capsule = createCapsuleActor('capsule', 5, 10, -1, 0, 1, 0, 1);
+    const capsule = createCapsuleActor('capsule', 5, 10, 2, 1);
 
     scene.appendChild(circle);
     scene.appendChild(segment);
@@ -307,8 +308,8 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     expect(segmentHit?.point.y).toBeCloseTo(5);
 
     expect(capsuleHit?.actor.id).toBe('capsule');
-    expect(capsuleHit?.distance).toBeCloseTo(2);
-    expect(capsuleHit?.point.x).toBeCloseTo(3);
+    expect(capsuleHit?.distance).toBeCloseTo(3);
+    expect(capsuleHit?.point.x).toBeCloseTo(4);
     expect(capsuleHit?.point.y).toBeCloseTo(10);
   });
 

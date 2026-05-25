@@ -16,8 +16,8 @@ export function buildCapsuleGeometry(
 ): CapsuleGeometry {
   let centerX: number;
   let centerY: number;
-  let point1: Point;
-  let point2: Point;
+  let point1Y: number;
+  let point2Y: number;
   let radius: number;
   let rotation: number;
   let scaleX: number;
@@ -32,18 +32,18 @@ export function buildCapsuleGeometry(
 
     centerX = collider.offset.x + transform.world.position.x;
     centerY = collider.offset.y + transform.world.position.y;
-    point1 = collider.shape.point1;
-    point2 = collider.shape.point2;
+    point1Y = -collider.shape.height / 2;
+    point2Y = collider.shape.height / 2;
     radius = collider.shape.radius;
     rotation = transform.world.rotation;
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;
   } else {
     const overlap = (colliderOrOverlap as OverlapCapsuleParams).shape;
-    centerX = 0;
-    centerY = 0;
-    point1 = overlap.point1;
-    point2 = overlap.point2;
+    centerX = overlap.center.x;
+    centerY = overlap.center.y;
+    point1Y = -overlap.height / 2;
+    point2Y = overlap.height / 2;
     radius = overlap.radius;
     rotation = overlap.rotation ?? 0;
     scaleX = 1;
@@ -63,8 +63,8 @@ export function buildCapsuleGeometry(
     };
   };
 
-  const geometryPoint1 = buildPoint(point1.x, point1.y);
-  const geometryPoint2 = buildPoint(point2.x, point2.y);
+  const geometryPoint1 = buildPoint(0, point1Y);
+  const geometryPoint2 = buildPoint(0, point2Y);
 
   return {
     center: {

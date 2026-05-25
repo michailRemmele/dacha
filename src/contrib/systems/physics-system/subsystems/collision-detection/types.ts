@@ -79,6 +79,7 @@ export interface OrientationData {
     offsetX: number;
     offsetY: number;
     radius?: number;
+    height?: number;
     sizeX?: number;
     sizeY?: number;
     point1X?: number;
