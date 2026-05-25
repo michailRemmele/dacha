@@ -62,8 +62,8 @@ export interface OverlapBoxParams extends PhysicsQueryFilter {
 export interface OverlapCapsuleParams extends PhysicsQueryFilter {
   shape: {
     type: 'capsule';
-    point1: Point;
-    point2: Point;
+    center: Point;
+    height: number;
     radius: number;
     rotation?: number;
   };

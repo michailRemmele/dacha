@@ -33,10 +33,7 @@ export interface SegmentColliderConfig extends BaseColliderConfig {
 
 export interface CapsuleColliderConfig extends BaseColliderConfig {
   type: 'capsule';
-  point1X: number;
-  point1Y: number;
-  point2X: number;
-  point2Y: number;
+  height: number;
   radius: number;
 }
 
@@ -64,8 +61,7 @@ export interface SegmentColliderShape {
 
 export interface CapsuleColliderShape {
   type: 'capsule';
-  point1: Point;
-  point2: Point;
+  height: number;
   radius: number;
 }
 
@@ -149,8 +145,7 @@ export class Collider extends Component {
       case 'capsule':
         this.shape = {
           type: config.type,
-          point1: { x: config.point1X, y: config.point1Y },
-          point2: { x: config.point2X, y: config.point2Y },
+          height: config.height,
           radius: config.radius,
         };
     }
