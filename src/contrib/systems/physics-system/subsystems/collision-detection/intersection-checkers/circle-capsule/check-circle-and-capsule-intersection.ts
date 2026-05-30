@@ -5,7 +5,7 @@ import type {
   Intersection,
   Proxy,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -31,7 +31,7 @@ export const checkCircleAndCapsuleIntersection = (
   const distance = normal.magnitude;
   const radiusSum = capsule.radius + circle.radius;
 
-  if (distance > radiusSum + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, radiusSum)) {
     return false;
   }
 

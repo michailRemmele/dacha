@@ -11,7 +11,7 @@ import type {
   EdgeWithNormal,
   Point,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 const buildNormal = (
@@ -70,10 +70,7 @@ export const checkBoxAndCircleIntersection = (
     box.edges,
   );
 
-  if (
-    !isCircleInsideBox &&
-    minDistance > circle.radius + INTERSECTION_EPSILON
-  ) {
+  if (!isCircleInsideBox && isGreaterThan(minDistance, circle.radius)) {
     return false;
   }
 

@@ -5,7 +5,7 @@ import type {
   PointGeometry,
   Proxy,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -29,7 +29,7 @@ export const checkPointAndCapsuleIntersection = (
   );
   const distance = normal.magnitude;
 
-  if (distance > capsule.radius + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, capsule.radius)) {
     return false;
   }
 

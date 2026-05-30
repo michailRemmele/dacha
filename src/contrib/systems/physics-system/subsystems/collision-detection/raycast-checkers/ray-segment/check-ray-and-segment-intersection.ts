@@ -1,6 +1,11 @@
 import { VectorOps } from '../../../../../../../engine/math-lib';
 import type { RayGeometry, SegmentGeometry } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+  isZero,
+} from '../../utils';
 import type { RaycastCheckerFn } from '../types';
 
 import { subtractPoints } from './utils';
@@ -29,7 +34,7 @@ export const checkRayAndSegmentIntersection: RaycastCheckerFn = (
   const delta = subtractPoints(segment.point1, ray.origin);
   const denominator = VectorOps.crossProduct(ray.direction, segmentDirection);
 
-  if (Math.abs(denominator) <= INTERSECTION_EPSILON) {
+  if (isZero(denominator)) {
     return false;
   }
 
@@ -39,10 +44,10 @@ export const checkRayAndSegmentIntersection: RaycastCheckerFn = (
     VectorOps.crossProduct(delta, ray.direction) / denominator;
 
   if (
-    rayDistance < -INTERSECTION_EPSILON ||
-    rayDistance > ray.maxDistance + INTERSECTION_EPSILON ||
-    segmentDistance < -INTERSECTION_EPSILON ||
-    segmentDistance > 1 + INTERSECTION_EPSILON
+    isDefinitelyNegative(rayDistance) ||
+    isGreaterThan(rayDistance, ray.maxDistance) ||
+    isDefinitelyNegative(segmentDistance) ||
+    isGreaterThan(segmentDistance, 1)
   ) {
     return false;
   }
@@ -54,8 +59,9 @@ export const checkRayAndSegmentIntersection: RaycastCheckerFn = (
   const normal = segment.normal.clone();
 
   if (
-    normal.x * ray.direction.x + normal.y * ray.direction.y >
-    INTERSECTION_EPSILON
+    isDefinitelyPositive(
+      normal.x * ray.direction.x + normal.y * ray.direction.y,
+    )
   ) {
     normal.multiplyNumber(-1);
   }

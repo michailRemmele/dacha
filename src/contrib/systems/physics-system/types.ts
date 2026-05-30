@@ -22,10 +22,13 @@ export interface PhysicsQueryFilter {
   layer?: string;
 }
 
-export interface RaycastParams extends PhysicsQueryFilter {
-  origin: Point;
+export interface CommonCastParams extends PhysicsQueryFilter {
   direction: Vector2;
   maxDistance: number;
+}
+
+export interface RaycastParams extends CommonCastParams {
+  origin: Point;
 }
 
 export interface CastHit {
@@ -81,10 +84,34 @@ export interface CircleCastShape {
   radius: number;
 }
 
-export interface CircleCastParams extends PhysicsQueryFilter {
-  shape: CircleCastShape;
-  direction: Vector2;
-  maxDistance: number;
+export interface CapsuleCastShape {
+  type: 'capsule';
+  center: Point;
+  height: number;
+  radius: number;
 }
 
-export type ShapeCastParams = CircleCastParams;
+export interface BoxCastShape {
+  type: 'box';
+  center: Point;
+  size: Point;
+}
+
+export interface CircleCastParams extends PhysicsQueryFilter, CommonCastParams {
+  shape: CircleCastShape;
+}
+
+export interface CapsuleCastParams
+  extends PhysicsQueryFilter,
+    CommonCastParams {
+  shape: CapsuleCastShape;
+}
+
+export interface BoxCastParams extends PhysicsQueryFilter, CommonCastParams {
+  shape: BoxCastShape;
+}
+
+export type ShapeCastParams =
+  | CircleCastParams
+  | CapsuleCastParams
+  | BoxCastParams;

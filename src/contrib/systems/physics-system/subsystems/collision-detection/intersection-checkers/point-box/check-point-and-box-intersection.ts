@@ -6,7 +6,7 @@ import type {
   Intersection,
   EdgeWithNormal,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isDefinitelyPositive, isZero } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -35,7 +35,7 @@ export const checkPointAndBoxIntersection = (
       edge.normal,
     );
 
-    if (signedDistance > INTERSECTION_EPSILON) {
+    if (isDefinitelyPositive(signedDistance)) {
       return false;
     }
 
@@ -46,8 +46,7 @@ export const checkPointAndBoxIntersection = (
   }
 
   const contactPoint = VectorOps.getClosestPointOnEdge(point.center, bestEdge);
-  const isPointOnBoxBoundary =
-    Math.abs(bestSignedDistance) <= INTERSECTION_EPSILON;
+  const isPointOnBoxBoundary = isZero(bestSignedDistance);
 
   return {
     normal: orientNormal(bestEdge.normal.clone(), point.center, box.center),

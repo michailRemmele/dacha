@@ -1,6 +1,10 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
 import type { CircleGeometry, RayGeometry } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+} from '../../utils';
 import type { RaycastCheckerFn } from '../types';
 
 /**
@@ -23,18 +27,18 @@ export const checkRayAndCircleIntersection: RaycastCheckerFn = (
   const b = offsetX * ray.direction.x + offsetY * ray.direction.y;
   const c = offsetX ** 2 + offsetY ** 2 - circle.radius ** 2;
 
-  if (c > INTERSECTION_EPSILON && b > 0) {
+  if (isDefinitelyPositive(c) && b > 0) {
     return false;
   }
 
   const discriminant = b ** 2 - c;
-  if (discriminant < -INTERSECTION_EPSILON) {
+  if (isDefinitelyNegative(discriminant)) {
     return false;
   }
 
   const hitDistance = Math.max(0, -b - Math.sqrt(Math.max(0, discriminant)));
 
-  if (hitDistance > ray.maxDistance + INTERSECTION_EPSILON) {
+  if (isGreaterThan(hitDistance, ray.maxDistance)) {
     return false;
   }
 

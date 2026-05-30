@@ -9,7 +9,7 @@ import type {
   SegmentGeometry,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -34,7 +34,7 @@ export const checkCircleAndSegmentIntersection = (
     closestPoint.y,
   );
 
-  if (distance > circle.radius + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, circle.radius)) {
     return false;
   }
 

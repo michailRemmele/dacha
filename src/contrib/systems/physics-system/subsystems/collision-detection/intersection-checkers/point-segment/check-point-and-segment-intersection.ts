@@ -9,7 +9,7 @@ import type {
   SegmentGeometry,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isDefinitelyPositive } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -33,7 +33,7 @@ export const checkPointAndSegmentIntersection = (
     closestPoint.y,
   );
 
-  if (distance > INTERSECTION_EPSILON) {
+  if (isDefinitelyPositive(distance)) {
     return false;
   }
 

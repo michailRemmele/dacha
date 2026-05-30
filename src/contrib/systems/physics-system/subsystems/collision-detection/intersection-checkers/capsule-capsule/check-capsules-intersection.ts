@@ -9,7 +9,7 @@ import { orientNormal } from '../common/normals';
  * closest points between the two finite center segments define the collision
  * direction. The capsules overlap when that segment distance is less than or
  * equal to the sum of both radii.
- * 
+ *
  * The contact point is placed on the surface
  * of the second capsule along the separating direction, matching the manifold
  * orientation used by the other pair checkers.

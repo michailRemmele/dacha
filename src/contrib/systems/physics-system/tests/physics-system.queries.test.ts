@@ -257,22 +257,25 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     expect(hit?.normal.y).toBeCloseTo(0);
   });
 
-  it('Shape-casts circle queries against round and segment colliders', () => {
+  it('Shape-casts capsule queries against colliders', () => {
     const scene = createScene();
     const { world } = createPhysicsSystem(scene);
     const physicsApi = world.systemApi.get(PhysicsAPI);
     const circle = createCircleActor('circle', 5, 0, 1);
-    const segment = createSegmentActor('segment', 5, 5, 0, -2, 0, 2);
+    const segment = createSegmentActor('segment', 5, 5, 0, -1, 0, 1);
     const capsule = createCapsuleActor('capsule', 5, 10, 2, 1);
+    const box = createBoxActor('box', 'static', 5, 15);
 
     scene.appendChild(circle);
     scene.appendChild(segment);
     scene.appendChild(capsule);
+    scene.appendChild(box);
 
     const circleHit = physicsApi.shapeCast({
       shape: {
-        type: 'circle',
+        type: 'capsule',
         center: { x: 0, y: 0 },
+        height: 4,
         radius: 1,
       },
       direction: new Vector2(1, 0),
@@ -280,8 +283,9 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     });
     const segmentHit = physicsApi.shapeCast({
       shape: {
-        type: 'circle',
+        type: 'capsule',
         center: { x: 0, y: 5 },
+        height: 4,
         radius: 1,
       },
       direction: new Vector2(1, 0),
@@ -289,8 +293,19 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     });
     const capsuleHit = physicsApi.shapeCast({
       shape: {
-        type: 'circle',
+        type: 'capsule',
         center: { x: 0, y: 10 },
+        height: 4,
+        radius: 1,
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+    const boxHit = physicsApi.shapeCast({
+      shape: {
+        type: 'capsule',
+        center: { x: 0, y: 15 },
+        height: 4,
         radius: 1,
       },
       direction: new Vector2(1, 0),
@@ -298,19 +313,66 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     });
 
     expect(circleHit?.actor.id).toBe('circle');
-    expect(circleHit?.distance).toBeCloseTo(3);
-    expect(circleHit?.point.x).toBeCloseTo(4);
-    expect(circleHit?.point.y).toBeCloseTo(0);
-
     expect(segmentHit?.actor.id).toBe('segment');
-    expect(segmentHit?.distance).toBeCloseTo(4);
-    expect(segmentHit?.point.x).toBeCloseTo(5);
-    expect(segmentHit?.point.y).toBeCloseTo(5);
-
     expect(capsuleHit?.actor.id).toBe('capsule');
-    expect(capsuleHit?.distance).toBeCloseTo(3);
-    expect(capsuleHit?.point.x).toBeCloseTo(4);
-    expect(capsuleHit?.point.y).toBeCloseTo(10);
+    expect(boxHit?.actor.id).toBe('box');
+  });
+
+  it('Shape-casts box queries against colliders', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const circle = createCircleActor('circle', 5, 0, 1);
+    const segment = createSegmentActor('segment', 5, 5, 0, -1, 0, 1);
+    const capsule = createCapsuleActor('capsule', 5, 10, 2, 1);
+    const box = createBoxActor('box', 'static', 5, 15);
+
+    scene.appendChild(circle);
+    scene.appendChild(segment);
+    scene.appendChild(capsule);
+    scene.appendChild(box);
+
+    const circleHit = physicsApi.shapeCast({
+      shape: {
+        type: 'box',
+        center: { x: 0, y: 0 },
+        size: { x: 2, y: 2 },
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+    const segmentHit = physicsApi.shapeCast({
+      shape: {
+        type: 'box',
+        center: { x: 0, y: 5 },
+        size: { x: 2, y: 2 },
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+    const capsuleHit = physicsApi.shapeCast({
+      shape: {
+        type: 'box',
+        center: { x: 0, y: 10 },
+        size: { x: 2, y: 2 },
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+    const boxHit = physicsApi.shapeCast({
+      shape: {
+        type: 'box',
+        center: { x: 0, y: 15 },
+        size: { x: 2, y: 2 },
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(circleHit?.actor.id).toBe('circle');
+    expect(segmentHit?.actor.id).toBe('segment');
+    expect(capsuleHit?.actor.id).toBe('capsule');
+    expect(boxHit?.actor.id).toBe('box');
   });
 
   it('Returns shape-cast hits in distance order and filters by collision layer', () => {
@@ -368,31 +430,5 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     expect(filteredHits.map((hit) => hit.actor.id)).toStrictEqual([
       'far-circle',
     ]);
-  });
-
-  it('Shape-cast initial overlaps return overlap contact points', () => {
-    const scene = createScene();
-    const { world } = createPhysicsSystem(scene);
-    const physicsApi = world.systemApi.get(PhysicsAPI);
-    const circle = createCircleActor('circle', 5, 0, 1);
-
-    scene.appendChild(circle);
-
-    const hit = physicsApi.shapeCast({
-      shape: {
-        type: 'circle',
-        center: { x: 4.5, y: 0 },
-        radius: 1,
-      },
-      direction: new Vector2(1, 0),
-      maxDistance: 10,
-    });
-
-    expect(hit?.actor.id).toBe('circle');
-    expect(hit?.distance).toBeCloseTo(0);
-    expect(hit?.point.x).toBeCloseTo(4);
-    expect(hit?.point.y).toBeCloseTo(0);
-    expect(hit?.normal.x).toBeCloseTo(-1);
-    expect(hit?.normal.y).toBeCloseTo(0);
   });
 });

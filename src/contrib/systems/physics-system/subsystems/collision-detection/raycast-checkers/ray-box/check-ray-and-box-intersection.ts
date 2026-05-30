@@ -1,6 +1,11 @@
 import { VectorOps, type Vector2 } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, RayGeometry, EdgeWithNormal } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+  isZero,
+} from '../../utils';
 import type { RaycastCheckerFn } from '../types';
 
 /**
@@ -35,8 +40,8 @@ export const checkRayAndBoxIntersection: RaycastCheckerFn = (
 
     const denominator = VectorOps.dotProduct(ray.direction, edge.normal);
 
-    if (Math.abs(denominator) <= INTERSECTION_EPSILON) {
-      if (signedDistance > INTERSECTION_EPSILON) {
+    if (isZero(denominator)) {
+      if (isDefinitelyPositive(signedDistance)) {
         return false;
       }
 
@@ -45,7 +50,7 @@ export const checkRayAndBoxIntersection: RaycastCheckerFn = (
 
     const t = -signedDistance / denominator;
 
-    if (denominator < 0) {
+    if (isDefinitelyNegative(denominator)) {
       if (t > tEnter) {
         tEnter = t;
         enterEdge = edge;
@@ -57,15 +62,12 @@ export const checkRayAndBoxIntersection: RaycastCheckerFn = (
       }
     }
 
-    if (tEnter - tExit > INTERSECTION_EPSILON) {
+    if (isGreaterThan(tEnter, tExit)) {
       return false;
     }
   }
 
-  if (
-    tExit < -INTERSECTION_EPSILON ||
-    tEnter > ray.maxDistance + INTERSECTION_EPSILON
-  ) {
+  if (isDefinitelyNegative(tExit) || isGreaterThan(tEnter, ray.maxDistance)) {
     return false;
   }
 

@@ -5,7 +5,7 @@ import type {
   PointGeometry,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 
 /**
  * Checks point and circle colliders for intersection.
@@ -25,7 +25,7 @@ export const checkPointAndCircleIntersection = (
   const offsetY = point.center.y - circle.center.y;
   const distance = Math.sqrt(offsetX ** 2 + offsetY ** 2);
 
-  if (distance > circle.radius + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, circle.radius)) {
     return false;
   }
 

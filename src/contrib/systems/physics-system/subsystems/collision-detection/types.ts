@@ -51,9 +51,12 @@ export interface RayGeometry {
   maxDistance: number;
 }
 
-export interface CircleCastGeometry extends CircleGeometry, RayGeometry {
-  direction: Vector2;
-  maxDistance: number;
+export interface CircleCastGeometry extends CircleGeometry, RayGeometry {}
+
+export interface CapsuleCastGeometry extends CapsuleGeometry, RayGeometry {}
+
+export interface BoxCastGeometry extends BoxGeometry, RayGeometry {
+  halfExtents: Point;
 }
 
 export type Geometry =
@@ -63,7 +66,9 @@ export type Geometry =
   | CapsuleGeometry
   | PointGeometry
   | RayGeometry
-  | CircleCastGeometry;
+  | CircleCastGeometry
+  | CapsuleCastGeometry
+  | BoxCastGeometry;
 
 export interface OrientationData {
   transform: {

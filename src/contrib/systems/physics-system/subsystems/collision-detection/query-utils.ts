@@ -11,8 +11,10 @@ import type {
   ActorProxy,
   QueryProxy,
   BoxGeometry,
+  BoxCastGeometry,
   CircleGeometry,
   CircleCastGeometry,
+  CapsuleCastGeometry,
   PointGeometry,
   RayGeometry,
   CapsuleGeometry,
@@ -25,16 +27,26 @@ import type { RaycastCheckerHit } from './raycast-checkers/types';
 import { shapeCastCheckers } from './shape-cast-checkers';
 import type { ShapeCastCheckerHit } from './shape-cast-checkers/types';
 
-type QueryType = 'point' | 'circle' | 'box' | 'capsule' | 'ray' | 'circleCast';
+type QueryType =
+  | 'point'
+  | 'circle'
+  | 'box'
+  | 'capsule'
+  | 'ray'
+  | 'circleCast'
+  | 'capsuleCast'
+  | 'boxCast';
 type OverlapQueryType = 'point' | 'circle' | 'box' | 'capsule';
-type ShapeCastQueryType = 'circleCast';
+type ShapeCastQueryType = 'circleCast' | 'capsuleCast' | 'boxCast';
 type QueryGeometry =
   | BoxGeometry
+  | BoxCastGeometry
   | CircleGeometry
   | CapsuleGeometry
   | PointGeometry
   | RayGeometry
-  | CircleCastGeometry;
+  | CircleCastGeometry
+  | CapsuleCastGeometry;
 type QueryParams = OverlapParams | RaycastParams | ShapeCastParams;
 
 type GeometryBulders = Record<QueryType, (params: unknown) => QueryGeometry>;
@@ -58,6 +70,10 @@ export const getShapeCastQueryType = (
   switch (params.shape.type) {
     case 'circle':
       return 'circleCast';
+    case 'capsule':
+      return 'capsuleCast';
+    case 'box':
+      return 'boxCast';
   }
 };
 

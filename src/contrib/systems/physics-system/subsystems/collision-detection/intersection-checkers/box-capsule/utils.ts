@@ -9,7 +9,7 @@ import type {
   Point,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan, isDefinitelyPositive, isZero } from '../../utils';
 import { orientNormal } from '../common/normals';
 import { arePointsEqual, lerpPoint } from '../common/points';
 import {
@@ -44,15 +44,15 @@ const buildAxisContactPoints = (
       VectorOps.dotProduct(capsule.point2, edge.normal) - offset;
 
     if (
-      point1Distance > INTERSECTION_EPSILON &&
-      point2Distance > INTERSECTION_EPSILON
+      isDefinitelyPositive(point1Distance) &&
+      isDefinitelyPositive(point2Distance)
     ) {
       return [];
     }
 
     if (
-      point1Distance <= INTERSECTION_EPSILON &&
-      point2Distance <= INTERSECTION_EPSILON
+      !isDefinitelyPositive(point1Distance) &&
+      !isDefinitelyPositive(point2Distance)
     ) {
       continue;
     }
@@ -60,13 +60,13 @@ const buildAxisContactPoints = (
     const denominator = point1Distance - point2Distance;
     const t = denominator === 0 ? 0 : point1Distance / denominator;
 
-    if (point1Distance > INTERSECTION_EPSILON) {
+    if (isDefinitelyPositive(point1Distance)) {
       start = Math.max(start, t);
     } else {
       end = Math.min(end, t);
     }
 
-    if (start > end + INTERSECTION_EPSILON) {
+    if (isGreaterThan(start, end)) {
       return [];
     }
   }
@@ -79,7 +79,7 @@ const buildAxisContactPoints = (
   contact1.x -= normal.x * capsule.radius;
   contact1.y -= normal.y * capsule.radius;
 
-  if (Math.abs(end - start) <= INTERSECTION_EPSILON) {
+  if (isZero(end - start)) {
     return [contact1];
   }
 
@@ -156,11 +156,11 @@ export const buildBoxCapsuleIntersection = (
     closestCapsulePoint = capsule.point2;
   }
 
-  if (minDistance > capsule.radius + INTERSECTION_EPSILON) {
+  if (isGreaterThan(minDistance, capsule.radius)) {
     return false;
   }
 
-  if (minDistance > INTERSECTION_EPSILON) {
+  if (isDefinitelyPositive(minDistance)) {
     const normal = new Vector2(
       closestCapsulePoint.x - closestBoxPoint.x,
       closestCapsulePoint.y - closestBoxPoint.y,

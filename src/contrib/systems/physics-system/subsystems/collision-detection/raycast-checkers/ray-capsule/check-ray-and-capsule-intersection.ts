@@ -1,7 +1,12 @@
 import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
 import type { CapsuleGeometry, Point, RayGeometry } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
 import { chooseNearestIntersection } from '../../intersection-checkers/common/cast';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+  isZero,
+} from '../../utils';
 import type { RaycastCheckerFn, RaycastCheckerHit } from '../types';
 
 const checkRayAndCap = (
@@ -14,19 +19,19 @@ const checkRayAndCap = (
   const b = offsetX * ray.direction.x + offsetY * ray.direction.y;
   const c = offsetX ** 2 + offsetY ** 2 - radius ** 2;
 
-  if (c > INTERSECTION_EPSILON && b > 0) {
+  if (isDefinitelyPositive(c) && b > 0) {
     return false;
   }
 
   const discriminant = b ** 2 - c;
 
-  if (discriminant < -INTERSECTION_EPSILON) {
+  if (isDefinitelyNegative(discriminant)) {
     return false;
   }
 
   const hitDistance = Math.max(0, -b - Math.sqrt(Math.max(0, discriminant)));
 
-  if (hitDistance > ray.maxDistance + INTERSECTION_EPSILON) {
+  if (isGreaterThan(hitDistance, ray.maxDistance)) {
     return false;
   }
 
@@ -74,7 +79,7 @@ const checkRayAndSide = (
   };
   const denominator = VectorOps.crossProduct(ray.direction, segmentDirection);
 
-  if (Math.abs(denominator) <= INTERSECTION_EPSILON) {
+  if (isZero(denominator)) {
     return false;
   }
 
@@ -84,10 +89,10 @@ const checkRayAndSide = (
     VectorOps.crossProduct(delta, ray.direction) / denominator;
 
   if (
-    rayDistance < -INTERSECTION_EPSILON ||
-    rayDistance > ray.maxDistance + INTERSECTION_EPSILON ||
-    segmentDistance < -INTERSECTION_EPSILON ||
-    segmentDistance > 1 + INTERSECTION_EPSILON
+    isDefinitelyNegative(rayDistance) ||
+    isGreaterThan(rayDistance, ray.maxDistance) ||
+    isDefinitelyNegative(segmentDistance) ||
+    isGreaterThan(segmentDistance, 1)
   ) {
     return false;
   }
@@ -99,8 +104,9 @@ const checkRayAndSide = (
   const normal = sideNormal.clone();
 
   if (
-    normal.x * ray.direction.x + normal.y * ray.direction.y >
-    INTERSECTION_EPSILON
+    isDefinitelyPositive(
+      normal.x * ray.direction.x + normal.y * ray.direction.y,
+    )
   ) {
     normal.multiplyNumber(-1);
   }
