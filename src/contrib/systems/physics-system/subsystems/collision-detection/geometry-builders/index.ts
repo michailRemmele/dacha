@@ -8,6 +8,8 @@ import { buildPointGeometry } from './build-point-geometry';
 import { buildRayGeometry } from './build-ray-geometry';
 import { buildSegmentGeometry } from './build-segment-geometry';
 import { buildCircleCastGeometry } from './build-circle-cast-geometry';
+import { buildCapsuleCastGeometry } from './build-capsule-cast-geometry';
+import { buildBoxCastGeometry } from './build-box-cast-geometry';
 
 export type BuildGeometryFn = (
   collider: Collider,
@@ -22,4 +24,6 @@ export const geometryBuilders = {
   point: buildPointGeometry,
   ray: buildRayGeometry,
   circleCast: buildCircleCastGeometry,
+  capsuleCast: buildCapsuleCastGeometry,
+  boxCast: buildBoxCastGeometry,
 };

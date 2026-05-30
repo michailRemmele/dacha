@@ -4,7 +4,10 @@ import type {
   SegmentGeometry,
   Intersection,
 } from '../../types';
-import { buildBoxSegmentContactPoints, findMinBoxSegmentOverlap } from './utils';
+import {
+  buildBoxSegmentContactPoints,
+  findMinBoxSegmentOverlap,
+} from './utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -34,11 +37,7 @@ export const checkBoxAndSegmentIntersection = (
   }
 
   return {
-    normal: orientNormal(
-      overlap.axis.clone(),
-      box.center,
-      segment.center,
-    ),
+    normal: orientNormal(overlap.axis.clone(), box.center, segment.center),
     penetration: overlap.overlap,
     contactPoints,
   };

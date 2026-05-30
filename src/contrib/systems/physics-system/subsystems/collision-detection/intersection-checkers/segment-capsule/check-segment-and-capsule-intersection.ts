@@ -35,10 +35,6 @@ export const checkSegmentAndCapsuleIntersection = (
 
   return {
     ...intersection,
-    normal: orientNormal(
-      intersection.normal,
-      segment.center,
-      capsule.center,
-    ),
+    normal: orientNormal(intersection.normal, segment.center, capsule.center),
   };
 };

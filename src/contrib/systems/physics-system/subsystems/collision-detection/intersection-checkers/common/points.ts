@@ -1,9 +1,8 @@
 import type { Point } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isZero } from '../../utils';
 
 export const arePointsEqual = (point1: Point, point2: Point): boolean =>
-  Math.abs(point1.x - point2.x) <= INTERSECTION_EPSILON &&
-  Math.abs(point1.y - point2.y) <= INTERSECTION_EPSILON;
+  isZero(point1.x - point2.x) && isZero(point1.y - point2.y);
 
 export const lerpPoint = (
   point1: Point,

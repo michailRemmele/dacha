@@ -1,6 +1,6 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
 import type { Proxy, CircleGeometry, Intersection } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 
 /**
  * Checks circles for intersection.
@@ -29,7 +29,7 @@ export const checkCirclesIntersection = (
   const offsetY = y2 - y1;
   const distance = Math.sqrt(offsetX ** 2 + offsetY ** 2);
 
-  if (distance > radius1 + radius2 + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, radius1 + radius2)) {
     return false;
   }
 

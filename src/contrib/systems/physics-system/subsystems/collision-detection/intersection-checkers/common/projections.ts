@@ -1,6 +1,6 @@
 import { VectorOps, type Vector2 } from '../../../../../../../engine/math-lib';
 import type { Point } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isDefinitelyPositive } from '../../utils';
 
 export interface Projection {
   min: number;
@@ -47,7 +47,7 @@ export const getProjectionOverlap = (
   const distance1 = min1 - max2;
   const distance2 = min2 - max1;
 
-  if (distance1 > INTERSECTION_EPSILON || distance2 > INTERSECTION_EPSILON) {
+  if (isDefinitelyPositive(distance1) || isDefinitelyPositive(distance2)) {
     return false;
   }
 
