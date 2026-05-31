@@ -1,5 +1,5 @@
 import { VectorOps } from '../../../../../../../engine/math-lib';
-import type { RayGeometry, SegmentGeometry } from '../../types';
+import type { SegmentGeometry } from '../../types';
 import {
   isGreaterThan,
   isDefinitelyNegative,
@@ -24,12 +24,9 @@ import { subtractPoints } from './utils';
  * The contact normal comes from the segment normal and is flipped when needed
  * so it opposes the incoming ray direction.
  */
-export const checkRayAndSegmentIntersection: RaycastCheckerFn = (
-  queryProxy,
-  targetProxy,
-) => {
-  const ray = queryProxy.geometry as RayGeometry;
-  const segment = targetProxy.geometry as SegmentGeometry;
+export const checkRayAndSegmentIntersection: RaycastCheckerFn<
+  SegmentGeometry
+> = (ray, segment) => {
   const segmentDirection = subtractPoints(segment.point2, segment.point1);
   const delta = subtractPoints(segment.point1, ray.origin);
   const denominator = VectorOps.crossProduct(ray.direction, segmentDirection);

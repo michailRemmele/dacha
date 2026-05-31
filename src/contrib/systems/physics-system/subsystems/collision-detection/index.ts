@@ -385,7 +385,7 @@ export class CollisionDetectionSubsystem {
       return false;
     }
 
-    return intersectionChecker(proxy1, proxy2);
+    return intersectionChecker(proxy1.geometry, proxy2.geometry);
   }
 
   private storeContact(

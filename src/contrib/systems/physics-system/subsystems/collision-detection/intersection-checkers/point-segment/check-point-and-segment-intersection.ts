@@ -3,12 +3,7 @@ import {
   Vector2,
   VectorOps,
 } from '../../../../../../../engine/math-lib';
-import type {
-  PointGeometry,
-  Proxy,
-  SegmentGeometry,
-  Intersection,
-} from '../../types';
+import type { PointGeometry, SegmentGeometry, Intersection } from '../../types';
 import { isDefinitelyPositive } from '../../utils';
 import { orientNormal } from '../common/normals';
 
@@ -20,11 +15,9 @@ import { orientNormal } from '../common/normals';
  * the contact point and the stored segment normal is used for orientation.
  */
 export const checkPointAndSegmentIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  point: PointGeometry,
+  segment: SegmentGeometry,
 ): Intersection | false => {
-  const point = arg1.geometry as PointGeometry;
-  const segment = arg2.geometry as SegmentGeometry;
   const closestPoint = VectorOps.getClosestPointOnEdge(point.center, segment);
   const distance = MathOps.getDistanceBetweenTwoPoints(
     point.center.x,

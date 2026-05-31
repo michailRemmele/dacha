@@ -2,22 +2,21 @@ import { checkBoxAndCircleIntersection } from '../box-circle/check-box-and-circl
 import {
   createBoxGeometry,
   createCircleGeometry,
-  createProxy,
   expectIntersection,
   expectToBeClose,
 } from './helpers';
 
 describe('PhysicsSystem -> collision-detection -> checkBoxAndCircleIntersection()', () => {
   it('Returns false when circle is outside and not touching the box', () => {
-    const box = createProxy(createBoxGeometry(0, 0, 4, 4));
-    const circle = createProxy(createCircleGeometry(4, 4, 0.5));
+    const box = createBoxGeometry(0, 0, 4, 4);
+    const circle = createCircleGeometry(4, 4, 0.5);
 
     expect(checkBoxAndCircleIntersection(box, circle)).toBe(false);
   });
 
   it('Returns edge contact for circle touching box from the right', () => {
-    const box = createProxy(createBoxGeometry(0, 0, 2, 2));
-    const circle = createProxy(createCircleGeometry(1.4, 0, 0.6));
+    const box = createBoxGeometry(0, 0, 2, 2);
+    const circle = createCircleGeometry(1.4, 0, 0.6);
 
     const intersection = expectIntersection(
       checkBoxAndCircleIntersection(box, circle),
@@ -30,8 +29,8 @@ describe('PhysicsSystem -> collision-detection -> checkBoxAndCircleIntersection(
   });
 
   it('Returns zero-penetration contact when circle is just touching the box', () => {
-    const box = createProxy(createBoxGeometry(0, 0, 2, 2));
-    const circle = createProxy(createCircleGeometry(1.6, 0, 0.6));
+    const box = createBoxGeometry(0, 0, 2, 2);
+    const circle = createCircleGeometry(1.6, 0, 0.6);
 
     const intersection = expectIntersection(
       checkBoxAndCircleIntersection(box, circle),
@@ -44,8 +43,8 @@ describe('PhysicsSystem -> collision-detection -> checkBoxAndCircleIntersection(
   });
 
   it('Returns collision when circle center is inside the box', () => {
-    const box = createProxy(createBoxGeometry(0, 0, 4, 4));
-    const circle = createProxy(createCircleGeometry(0, 0, 0.5));
+    const box = createBoxGeometry(0, 0, 4, 4);
+    const circle = createCircleGeometry(0, 0, 0.5);
 
     const intersection = expectIntersection(
       checkBoxAndCircleIntersection(box, circle),

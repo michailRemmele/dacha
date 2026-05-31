@@ -2,22 +2,21 @@ import { checkPointAndBoxIntersection } from '../point-box/check-point-and-box-i
 import {
   createBoxGeometry,
   createPointGeometry,
-  createProxy,
   expectIntersection,
   expectToBeClose,
 } from './helpers';
 
 describe('PhysicsSystem -> collision-detection -> checkPointAndBoxIntersection()', () => {
   it('Returns false when point is outside the box', () => {
-    const point = createProxy(createPointGeometry(3, 0));
-    const box = createProxy(createBoxGeometry(0, 0, 2, 2));
+    const point = createPointGeometry(3, 0);
+    const box = createBoxGeometry(0, 0, 2, 2);
 
     expect(checkPointAndBoxIntersection(point, box)).toBe(false);
   });
 
   it('Returns nearest-edge manifold when point is inside the box', () => {
-    const point = createProxy(createPointGeometry(0.75, 0));
-    const box = createProxy(createBoxGeometry(0, 0, 2, 2));
+    const point = createPointGeometry(0.75, 0);
+    const box = createBoxGeometry(0, 0, 2, 2);
 
     const intersection = expectIntersection(
       checkPointAndBoxIntersection(point, box),
@@ -30,8 +29,8 @@ describe('PhysicsSystem -> collision-detection -> checkPointAndBoxIntersection()
   });
 
   it('Returns zero-penetration contact when point lies on the box edge', () => {
-    const point = createProxy(createPointGeometry(1, 0));
-    const box = createProxy(createBoxGeometry(0, 0, 2, 2));
+    const point = createPointGeometry(1, 0);
+    const box = createBoxGeometry(0, 0, 2, 2);
 
     const intersection = expectIntersection(
       checkPointAndBoxIntersection(point, box),

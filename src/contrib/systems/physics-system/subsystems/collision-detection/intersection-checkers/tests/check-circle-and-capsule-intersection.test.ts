@@ -2,22 +2,21 @@ import { checkCircleAndCapsuleIntersection } from '../circle-capsule/check-circl
 import {
   createCapsuleGeometry,
   createCircleGeometry,
-  createProxy,
   expectIntersection,
   expectToBeClose,
 } from './helpers';
 
 describe('PhysicsSystem -> collision-detection -> checkCircleAndCapsuleIntersection()', () => {
   it('Returns false when a circle is outside a capsule', () => {
-    const circle = createProxy(createCircleGeometry(0, 2, 0.5));
-    const capsule = createProxy(createCapsuleGeometry(-2, 0, 2, 0, 1));
+    const circle = createCircleGeometry(0, 2, 0.5);
+    const capsule = createCapsuleGeometry(-2, 0, 2, 0, 1);
 
     expect(checkCircleAndCapsuleIntersection(circle, capsule)).toBe(false);
   });
 
   it('Checks a circle against the swept segment of a capsule', () => {
-    const circle = createProxy(createCircleGeometry(0, 1.25, 0.5));
-    const capsule = createProxy(createCapsuleGeometry(-2, 0, 2, 0, 1));
+    const circle = createCircleGeometry(0, 1.25, 0.5);
+    const capsule = createCapsuleGeometry(-2, 0, 2, 0, 1);
     const intersection = expectIntersection(
       checkCircleAndCapsuleIntersection(circle, capsule),
     );
@@ -28,8 +27,8 @@ describe('PhysicsSystem -> collision-detection -> checkCircleAndCapsuleIntersect
   });
 
   it('Checks a circle against a capsule cap', () => {
-    const circle = createProxy(createCircleGeometry(3.25, 0, 0.5));
-    const capsule = createProxy(createCapsuleGeometry(-2, 0, 2, 0, 1));
+    const circle = createCircleGeometry(3.25, 0, 0.5);
+    const capsule = createCapsuleGeometry(-2, 0, 2, 0, 1);
     const intersection = expectIntersection(
       checkCircleAndCapsuleIntersection(circle, capsule),
     );

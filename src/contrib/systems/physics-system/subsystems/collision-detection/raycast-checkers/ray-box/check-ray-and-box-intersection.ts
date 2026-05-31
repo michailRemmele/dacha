@@ -1,5 +1,5 @@
 import { VectorOps, type Vector2 } from '../../../../../../../engine/math-lib';
-import type { BoxGeometry, RayGeometry, EdgeWithNormal } from '../../types';
+import type { BoxGeometry, EdgeWithNormal } from '../../types';
 import {
   isGreaterThan,
   isDefinitelyNegative,
@@ -17,13 +17,10 @@ import type { RaycastCheckerFn } from '../types';
  *
  * When the ray starts inside the box, the first hit is the exit point.
  */
-export const checkRayAndBoxIntersection: RaycastCheckerFn = (
-  queryProxy,
-  targetProxy,
+export const checkRayAndBoxIntersection: RaycastCheckerFn<BoxGeometry> = (
+  ray,
+  box,
 ) => {
-  const ray = queryProxy.geometry as RayGeometry;
-  const box = targetProxy.geometry as BoxGeometry;
-
   let tEnter = -Infinity;
   let tExit = ray.maxDistance;
   let enterEdge: EdgeWithNormal | null = null;

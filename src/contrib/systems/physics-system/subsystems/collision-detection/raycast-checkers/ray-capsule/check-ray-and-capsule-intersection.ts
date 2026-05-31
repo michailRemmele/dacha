@@ -127,12 +127,9 @@ const checkRayAndSide = (
  * parametric intersection. The nearest valid boundary hit within
  * `maxDistance` is returned.
  */
-export const checkRayAndCapsuleIntersection: RaycastCheckerFn = (
-  queryProxy,
-  targetProxy,
-) => {
-  const ray = queryProxy.geometry as RayGeometry;
-  const capsule = targetProxy.geometry as CapsuleGeometry;
+export const checkRayAndCapsuleIntersection: RaycastCheckerFn<
+  CapsuleGeometry
+> = (ray, capsule) => {
   const sideNormal = capsule.normal;
   const side1Point1 = {
     x: capsule.point1.x + sideNormal.x * capsule.radius,

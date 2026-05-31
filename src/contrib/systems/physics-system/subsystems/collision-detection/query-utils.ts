@@ -87,8 +87,8 @@ export const overlap = (
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
     const intersection = intersectionCheckers[type][collider.shape.type](
-      queryProxy,
-      proxy,
+      queryProxy.geometry,
+      proxy.geometry,
     );
 
     if (intersection) {
@@ -110,7 +110,10 @@ export const raycast = (
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
 
-    const hit = raycastCheckers.ray[collider.shape.type](queryProxy, proxy);
+    const hit = raycastCheckers.ray[collider.shape.type](
+      queryProxy.geometry as RayGeometry,
+      proxy.geometry,
+    );
 
     if (hit && hit.distance < nearestDistance) {
       nearestHit = hit;
@@ -140,7 +143,10 @@ export const raycastAll = (
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
 
-    const hit = raycastCheckers.ray[collider.shape.type](queryProxy, proxy);
+    const hit = raycastCheckers.ray[collider.shape.type](
+      queryProxy.geometry as RayGeometry,
+      proxy.geometry,
+    );
 
     if (hit) {
       hits.push({
@@ -175,7 +181,7 @@ export const shapeCast = (
       continue;
     }
 
-    const castHit = checker(queryProxy, proxy);
+    const castHit = checker(queryProxy.geometry, proxy.geometry);
 
     if (castHit && castHit.distance < nearestDistance) {
       nearestCastHit = castHit;
@@ -211,7 +217,7 @@ export const shapeCastAll = (
       continue;
     }
 
-    const castHit = checker(queryProxy, proxy);
+    const castHit = checker(queryProxy.geometry, proxy.geometry);
 
     if (castHit) {
       hits.push({

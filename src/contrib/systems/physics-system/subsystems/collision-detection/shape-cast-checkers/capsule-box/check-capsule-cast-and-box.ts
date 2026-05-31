@@ -4,58 +4,40 @@ import type { BoxGeometry, CapsuleCastGeometry } from '../../types';
 import { checkCircleCastAndBox } from '../circle-box/check-circle-cast-and-box';
 import type { ShapeCastCheckerFn, ShapeCastCheckerHit } from '../types';
 import { buildInitialOverlapHit } from '../utils';
-import {
-  buildCapCircleCastProxy,
-  buildCapsuleBodyBoxCastProxy,
-  checkReversePointCastAndCapsule,
-} from '../capsule-utils';
+import { checkReversePointCastAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndBox } from '../box-box/check-box-cast-and-box';
 
-export const checkCapsuleCastAndBox: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
-) => {
-  const overlapIntersection = intersectionCheckers.capsule.box(
-    queryProxy,
-    targetProxy,
-  );
+export const checkCapsuleCastAndBox: ShapeCastCheckerFn = (query, target) => {
+  const capsule = query as CapsuleCastGeometry;
+  const box = target as BoxGeometry;
+  const overlapIntersection = intersectionCheckers.capsule.box(capsule, box);
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const capsule = queryProxy.geometry as CapsuleCastGeometry;
-  const box = targetProxy.geometry as BoxGeometry;
   let nearest: ShapeCastCheckerHit | false = false;
 
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndBox(
-      buildCapCircleCastProxy(queryProxy, capsule.point1),
-      targetProxy,
-    ),
+    checkCircleCastAndBox(capsule.cap1, box),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndBox(
-      buildCapCircleCastProxy(queryProxy, capsule.point2),
-      targetProxy,
-    ),
+    checkCircleCastAndBox(capsule.cap2, box),
   );
 
   for (const point of box.points) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkReversePointCastAndCapsule(queryProxy, point),
+      checkReversePointCastAndCapsule(capsule, point),
     );
   }
 
-  const bodyBoxProxy = buildCapsuleBodyBoxCastProxy(queryProxy);
-
-  if (bodyBoxProxy) {
+  if (capsule.box) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkBoxCastAndBox(bodyBoxProxy, targetProxy),
+      checkBoxCastAndBox(capsule.box, box),
     );
   }
 

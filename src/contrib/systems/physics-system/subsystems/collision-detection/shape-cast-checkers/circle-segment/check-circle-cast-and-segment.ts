@@ -1,6 +1,6 @@
 import type {
+  CapsuleGeometry,
   CircleCastGeometry,
-  QueryProxy,
   SegmentGeometry,
 } from '../../types';
 import { intersectionCheckers } from '../../intersection-checkers';
@@ -9,30 +9,26 @@ import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
 export const checkCircleCastAndSegment: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
+  query,
+  target,
 ) => {
+  const circle = query as CircleCastGeometry;
+  const segment = target as SegmentGeometry;
   const overlapIntersection = intersectionCheckers.circle.segment(
-    queryProxy,
-    targetProxy,
+    circle,
+    segment,
   );
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const circle = queryProxy.geometry as CircleCastGeometry;
-  const segment = targetProxy.geometry as SegmentGeometry;
-  const capsuleProxy: QueryProxy = {
-    aabb: targetProxy.aabb,
-    geometry: {
-      ...segment,
-      radius: circle.radius,
-    },
-    layer: targetProxy.layer,
+  const capsule: CapsuleGeometry = {
+    ...segment,
+    radius: circle.radius,
   };
 
-  const hit = raycastCheckers.ray.capsule(queryProxy, capsuleProxy);
+  const hit = raycastCheckers.ray.capsule(circle, capsule);
 
   if (!hit) {
     return false;

@@ -1,6 +1,5 @@
 import { VectorOps } from '../../../../../../../engine/math-lib';
 import type {
-  Proxy,
   BoxGeometry,
   PointGeometry,
   Intersection,
@@ -17,12 +16,9 @@ import { orientNormal } from '../common/normals';
  * When the point lies exactly on the boundary, penetration is reported as zero.
  */
 export const checkPointAndBoxIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  point: PointGeometry,
+  box: BoxGeometry,
 ): Intersection | false => {
-  const point = arg1.geometry as PointGeometry;
-  const box = arg2.geometry as BoxGeometry;
-
   let bestEdge: EdgeWithNormal = box.edges[0];
   let bestSignedDistance = -Infinity;
 

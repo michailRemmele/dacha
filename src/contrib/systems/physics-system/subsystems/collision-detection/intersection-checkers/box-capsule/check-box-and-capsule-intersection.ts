@@ -1,9 +1,4 @@
-import type {
-  BoxGeometry,
-  CapsuleGeometry,
-  Intersection,
-  Proxy,
-} from '../../types';
+import type { BoxGeometry, CapsuleGeometry, Intersection } from '../../types';
 import { orientNormal } from '../common/normals';
 import { buildBoxCapsuleIntersection } from './utils';
 
@@ -26,11 +21,9 @@ import { buildBoxCapsuleIntersection } from './utils';
  * Side and corner contacts use the nearest box point.
  */
 export const checkBoxAndCapsuleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  box: BoxGeometry,
+  capsule: CapsuleGeometry,
 ): Intersection | false => {
-  const box = arg1.geometry as BoxGeometry;
-  const capsule = arg2.geometry as CapsuleGeometry;
   const intersection = buildBoxCapsuleIntersection(box, capsule);
 
   if (!intersection) {

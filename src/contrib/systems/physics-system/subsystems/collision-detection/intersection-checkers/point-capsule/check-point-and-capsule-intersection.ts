@@ -1,10 +1,5 @@
 import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
-import type {
-  CapsuleGeometry,
-  Intersection,
-  PointGeometry,
-  Proxy,
-} from '../../types';
+import type { CapsuleGeometry, Intersection, PointGeometry } from '../../types';
 import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
 
@@ -17,11 +12,9 @@ import { orientNormal } from '../common/normals';
  * contact point, and the normal points from the axis toward the point.
  */
 export const checkPointAndCapsuleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  point: PointGeometry,
+  capsule: CapsuleGeometry,
 ): Intersection | false => {
-  const point = arg1.geometry as PointGeometry;
-  const capsule = arg2.geometry as CapsuleGeometry;
   const closestPoint = VectorOps.getClosestPointOnEdge(point.center, capsule);
   const normal = new Vector2(
     point.center.x - closestPoint.x,

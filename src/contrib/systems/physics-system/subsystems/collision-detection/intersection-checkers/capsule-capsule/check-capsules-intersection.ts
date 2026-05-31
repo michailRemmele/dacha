@@ -1,4 +1,4 @@
-import type { CapsuleGeometry, Intersection, Proxy } from '../../types';
+import type { CapsuleGeometry, Intersection } from '../../types';
 import { buildSegmentCapsuleIntersection } from '../common/capsule';
 import { orientNormal } from '../common/normals';
 
@@ -15,11 +15,9 @@ import { orientNormal } from '../common/normals';
  * orientation used by the other pair checkers.
  */
 export const checkCapsulesIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  capsule1: CapsuleGeometry,
+  capsule2: CapsuleGeometry,
 ): Intersection | false => {
-  const capsule1 = arg1.geometry as CapsuleGeometry;
-  const capsule2 = arg2.geometry as CapsuleGeometry;
   const intersection = buildSegmentCapsuleIntersection(
     capsule1,
     capsule2,

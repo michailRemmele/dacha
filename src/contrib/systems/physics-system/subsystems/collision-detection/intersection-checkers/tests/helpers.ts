@@ -11,7 +11,6 @@ import type {
   CircleGeometry,
   Intersection,
   PointGeometry,
-  Proxy,
   RayGeometry,
   SegmentGeometry,
 } from '../../types';
@@ -128,19 +127,6 @@ export const createRayGeometry = (
     direction: new Vector2(directionX, directionY),
     maxDistance,
   });
-
-export const createProxy = (
-  geometry:
-    | BoxGeometry
-    | CapsuleGeometry
-    | CircleGeometry
-    | SegmentGeometry
-    | PointGeometry
-    | RayGeometry,
-): Proxy =>
-  ({
-    geometry,
-  }) as unknown as Proxy;
 
 export const expectToBeClose = (
   point: { x: number; y: number },

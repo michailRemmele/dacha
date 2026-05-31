@@ -1,5 +1,5 @@
 import { intersectionCheckers } from '../../intersection-checkers';
-import type { CapsuleGeometry } from '../../types';
+import type { BoxCastGeometry, CapsuleGeometry } from '../../types';
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 import {
@@ -8,24 +8,23 @@ import {
 } from '../box-utils';
 
 export const checkBoxCastAndCapsule: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
+  query,
+  target,
 ) => {
+  const box = query as BoxCastGeometry;
+  const capsule = target as CapsuleGeometry;
   const overlapIntersection = intersectionCheckers.box.capsule(
-    queryProxy,
-    targetProxy,
+    box,
+    capsule,
   );
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const hit = checkBoxCastAndCapsuleGeometry(
-    queryProxy,
-    targetProxy.geometry as CapsuleGeometry,
-  );
+  const hit = checkBoxCastAndCapsuleGeometry(box, capsule);
 
-  correctContactPoint(queryProxy, hit);
+  correctContactPoint(box, hit);
 
   return hit;
 };

@@ -1,28 +1,22 @@
 import { intersectionCheckers } from '../../intersection-checkers';
-import type { BoxGeometry } from '../../types';
+import type { BoxCastGeometry, BoxGeometry } from '../../types';
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 import { checkBoxCastAndConvexPoints, correctContactPoint } from '../box-utils';
 
-export const checkBoxCastAndBox: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
-) => {
-  const overlapIntersection = intersectionCheckers.box.box(
-    queryProxy,
-    targetProxy,
-  );
+export const checkBoxCastAndBox: ShapeCastCheckerFn<
+  BoxCastGeometry,
+  BoxGeometry
+> = (boxCast, box) => {
+  const overlapIntersection = intersectionCheckers.box.box(boxCast, box);
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const hit = checkBoxCastAndConvexPoints(
-    queryProxy,
-    (targetProxy.geometry as BoxGeometry).points,
-  );
+  const hit = checkBoxCastAndConvexPoints(boxCast, box.points);
 
-  correctContactPoint(queryProxy, hit);
+  correctContactPoint(boxCast, hit);
 
   return hit;
 };
