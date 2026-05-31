@@ -34,20 +34,15 @@ const getCapsuleShape = (
   fillColor: string,
 ): Shape => {
   const { offset } = collider;
-  const { point1, point2, radius } = collider.shape as CapsuleColliderShape;
+  const { height, radius } = collider.shape as CapsuleColliderShape;
 
-  const dx = point2.x - point1.x;
-  const dy = point2.y - point1.y;
-
-  transform.local.rotation = Math.atan2(dy, dx);
-  transform.local.position.x = offset.x + (point1.x + point2.x) / 2;
-  transform.local.position.y = offset.y + (point1.y + point2.y) / 2;
-
-  const length = Math.hypot(dx, dy);
+  transform.local.rotation = Math.PI / 2;
+  transform.local.position.x = offset.x;
+  transform.local.position.y = offset.y;
 
   return new Shape({
     type: 'roundRectangle',
-    sizeX: length + radius * 2,
+    sizeX: height + radius * 2,
     sizeY: radius * 2,
     radius,
     strokeColor: color,

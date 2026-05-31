@@ -5,19 +5,31 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
-      options: ['dynamic', 'static'],
+      options: ['dynamic', 'static', 'kinematic'],
     },
     {
       name: 'mass',
       type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'dynamic',
+      },
     },
     {
       name: 'gravityScale',
       type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'dynamic',
+      },
     },
     {
       name: 'linearDamping',
       type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'dynamic',
+      },
     },
     {
       name: 'oneWay',
@@ -46,9 +58,6 @@ export const rigidBody: WidgetSchema = {
   ],
   getInitialState: () => ({
     type: 'static',
-    mass: 1,
-    gravityScale: 0,
-    linearDamping: 0,
     oneWay: false,
     disabled: false,
   }),
