@@ -1,5 +1,5 @@
 import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
-import type { CapsuleGeometry, Point, RayGeometry } from '../../types';
+import type { Point, RayGeometry } from '../../types';
 import { chooseNearestIntersection } from '../../intersection-checkers/common/cast';
 import {
   isGreaterThan,
@@ -8,6 +8,13 @@ import {
   isZero,
 } from '../../utils';
 import type { RaycastCheckerFn, RaycastCheckerHit } from '../types';
+
+interface CapsuleLikeGeometry {
+  point1: Point;
+  point2: Point;
+  normal: Vector2;
+  radius?: number;
+}
 
 const checkRayAndCap = (
   ray: RayGeometry,
@@ -127,31 +134,34 @@ const checkRayAndSide = (
  * parametric intersection. The nearest valid boundary hit within
  * `maxDistance` is returned.
  */
-export const checkRayAndCapsuleIntersection: RaycastCheckerFn<
-  CapsuleGeometry
-> = (ray, capsule) => {
+export const checkRayAndCapsuleIntersection = (
+  ray: RayGeometry,
+  capsule: CapsuleLikeGeometry,
+  radiusOffset = 0,
+): ReturnType<RaycastCheckerFn> => {
+  const radius = (capsule?.radius ?? 0) + radiusOffset;
   const sideNormal = capsule.normal;
   const side1Point1 = {
-    x: capsule.point1.x + sideNormal.x * capsule.radius,
-    y: capsule.point1.y + sideNormal.y * capsule.radius,
+    x: capsule.point1.x + sideNormal.x * radius,
+    y: capsule.point1.y + sideNormal.y * radius,
   };
   const side1Point2 = {
-    x: capsule.point2.x + sideNormal.x * capsule.radius,
-    y: capsule.point2.y + sideNormal.y * capsule.radius,
+    x: capsule.point2.x + sideNormal.x * radius,
+    y: capsule.point2.y + sideNormal.y * radius,
   };
   const side2Point1 = {
-    x: capsule.point1.x - sideNormal.x * capsule.radius,
-    y: capsule.point1.y - sideNormal.y * capsule.radius,
+    x: capsule.point1.x - sideNormal.x * radius,
+    y: capsule.point1.y - sideNormal.y * radius,
   };
   const side2Point2 = {
-    x: capsule.point2.x - sideNormal.x * capsule.radius,
-    y: capsule.point2.y - sideNormal.y * capsule.radius,
+    x: capsule.point2.x - sideNormal.x * radius,
+    y: capsule.point2.y - sideNormal.y * radius,
   };
-  let nearest = checkRayAndCap(ray, capsule.point1, capsule.radius);
+  let nearest = checkRayAndCap(ray, capsule.point1, radius);
 
   nearest = chooseNearestIntersection(
     nearest,
-    checkRayAndCap(ray, capsule.point2, capsule.radius),
+    checkRayAndCap(ray, capsule.point2, radius),
   );
   nearest = chooseNearestIntersection(
     nearest,

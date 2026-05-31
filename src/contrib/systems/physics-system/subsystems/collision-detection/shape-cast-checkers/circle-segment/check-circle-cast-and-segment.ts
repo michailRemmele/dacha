@@ -1,10 +1,6 @@
-import type {
-  CapsuleGeometry,
-  CircleCastGeometry,
-  SegmentGeometry,
-} from '../../types';
+import type { CircleCastGeometry, SegmentGeometry } from '../../types';
 import { intersectionCheckers } from '../../intersection-checkers';
-import { raycastCheckers } from '../../raycast-checkers';
+import { checkRayAndCapsuleIntersection } from '../../raycast-checkers/ray-capsule/check-ray-and-capsule-intersection';
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
@@ -23,12 +19,7 @@ export const checkCircleCastAndSegment: ShapeCastCheckerFn = (
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const capsule: CapsuleGeometry = {
-    ...segment,
-    radius: circle.radius,
-  };
-
-  const hit = raycastCheckers.ray.capsule(circle, capsule);
+  const hit = checkRayAndCapsuleIntersection(circle, segment, circle.radius);
 
   if (!hit) {
     return false;

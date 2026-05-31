@@ -1,6 +1,7 @@
 import { VectorOps } from '../../../../../../engine/math-lib';
 import { chooseNearestIntersection } from '../intersection-checkers/common/cast';
 import { raycastCheckers } from '../raycast-checkers';
+import { checkRayAndCapsuleIntersection } from '../raycast-checkers/ray-capsule/check-ray-and-capsule-intersection';
 import type { RaycastCheckerHit } from '../raycast-checkers/types';
 import { isDefinitelyPositive, isZero } from '../utils';
 import type {
@@ -237,23 +238,10 @@ export const checkBoxCastAndCapsuleGeometry = (
 
   const expandedCapsule = buildConvexGeometry(expandedPoints);
 
-  const edgeCapsule: CapsuleGeometry = {
-    center: { x: 0, y: 0 },
-    point1: capsule.point1,
-    point2: capsule.point2,
-    normal: capsule.normal,
-    radius: capsule.radius,
-  };
   for (const edge of expandedCapsule.edges) {
-    edgeCapsule.center.x = (edge.point1.x + edge.point2.x) / 2;
-    edgeCapsule.center.y = (edge.point1.y + edge.point2.y) / 2;
-    edgeCapsule.point1 = edge.point1;
-    edgeCapsule.point2 = edge.point2;
-    edgeCapsule.normal = edge.normal;
-
     nearest = chooseNearestIntersection(
       nearest,
-      raycastCheckers.ray.capsule(box, edgeCapsule),
+      checkRayAndCapsuleIntersection(box, edge, capsule.radius),
     );
   }
 

@@ -4,7 +4,7 @@ import type { CapsuleCastGeometry, SegmentGeometry } from '../../types';
 import { checkCircleCastAndSegment } from '../circle-segment/check-circle-cast-and-segment';
 import type { ShapeCastCheckerFn, ShapeCastCheckerHit } from '../types';
 import { buildInitialOverlapHit } from '../utils';
-import { checkReversePointCastAndCapsule } from '../capsule-utils';
+import { checkReverseRayAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndSegment } from '../box-segment/check-box-cast-and-segment';
 
 export const checkCapsuleCastAndSegment: ShapeCastCheckerFn = (
@@ -34,11 +34,11 @@ export const checkCapsuleCastAndSegment: ShapeCastCheckerFn = (
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReversePointCastAndCapsule(capsule, segment.point1),
+    checkReverseRayAndCapsule(capsule, segment.point1),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReversePointCastAndCapsule(capsule, segment.point2),
+    checkReverseRayAndCapsule(capsule, segment.point2),
   );
 
   if (capsule.box) {
