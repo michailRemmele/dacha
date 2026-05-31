@@ -36,11 +36,19 @@ export const collider: WidgetSchema = {
       },
     },
     {
+      name: 'height',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'capsule',
+      },
+    },
+    {
       name: 'point1X',
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'capsule|segment',
+        value: 'segment',
       },
     },
     {
@@ -48,7 +56,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'capsule|segment',
+        value: 'segment',
       },
     },
     {
@@ -56,7 +64,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'capsule|segment',
+        value: 'segment',
       },
     },
     {
@@ -64,7 +72,7 @@ export const collider: WidgetSchema = {
       type: 'number',
       dependency: {
         name: 'type',
-        value: 'capsule|segment',
+        value: 'segment',
       },
     },
     {

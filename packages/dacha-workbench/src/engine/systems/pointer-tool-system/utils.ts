@@ -133,7 +133,9 @@ export const findDebugBounds = (actor: Actor, world: World): Bounds | null => {
     height: 0,
   };
 
-  debugActors.forEach((debugActor) => {
+  while (debugActors.length > 0) {
+    const debugActor = debugActors.pop()!;
+
     const bounds = rendererApi.getBounds(debugActor);
 
     if (bounds) {
@@ -142,7 +144,9 @@ export const findDebugBounds = (actor: Actor, world: World): Bounds | null => {
       maxBounds.maxX = Math.max(maxBounds.maxX, bounds.maxX);
       maxBounds.maxY = Math.max(maxBounds.maxY, bounds.maxY);
     }
-  });
+
+    debugActors.push(...debugActor.children);
+  }
 
   if (maxBounds.minX === Infinity) {
     return null;
