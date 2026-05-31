@@ -7,14 +7,12 @@ import {
   correctContactPoint,
 } from '../box-utils';
 
-export const checkBoxCastAndCapsule: ShapeCastCheckerFn = (
-  query,
-  target,
-) => {
-  const box = query as BoxCastGeometry;
-  const capsule = target as CapsuleGeometry;
+export const checkBoxCastAndCapsule: ShapeCastCheckerFn<
+  BoxCastGeometry,
+  CapsuleGeometry
+> = (boxCast, capsule) => {
   const overlapIntersection = intersectionCheckers.box.capsule(
-    box,
+    boxCast,
     capsule,
   );
 
@@ -22,9 +20,9 @@ export const checkBoxCastAndCapsule: ShapeCastCheckerFn = (
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const hit = checkBoxCastAndCapsuleGeometry(box, capsule);
+  const hit = checkBoxCastAndCapsuleGeometry(boxCast, capsule);
 
-  correctContactPoint(box, hit);
+  correctContactPoint(boxCast, hit);
 
   return hit;
 };

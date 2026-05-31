@@ -6,10 +6,11 @@ import type { ShapeCastCheckerFn } from '../types';
 import type { RaycastCheckerHit } from '../../raycast-checkers/types';
 import { buildInitialOverlapHit } from '../utils';
 
-export const checkCircleCastAndBox: ShapeCastCheckerFn = (query, target) => {
-  const circle = query as CircleCastGeometry;
-  const box = target as BoxGeometry;
-  const overlapIntersection = intersectionCheckers.circle.box(circle, box);
+export const checkCircleCastAndBox: ShapeCastCheckerFn<
+  CircleCastGeometry,
+  BoxGeometry
+> = (circleCast, box) => {
+  const overlapIntersection = intersectionCheckers.circle.box(circleCast, box);
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
@@ -20,7 +21,7 @@ export const checkCircleCastAndBox: ShapeCastCheckerFn = (query, target) => {
   for (const edge of box.edges) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkRayAndCapsuleIntersection(circle, edge, circle.radius),
+      checkRayAndCapsuleIntersection(circleCast, edge, circleCast.radius),
     );
   }
 
@@ -29,8 +30,8 @@ export const checkCircleCastAndBox: ShapeCastCheckerFn = (query, target) => {
   }
 
   nearest.point = {
-    x: nearest.point.x - nearest.normal.x * circle.radius,
-    y: nearest.point.y - nearest.normal.y * circle.radius,
+    x: nearest.point.x - nearest.normal.x * circleCast.radius,
+    y: nearest.point.y - nearest.normal.y * circleCast.radius,
   };
 
   return nearest;

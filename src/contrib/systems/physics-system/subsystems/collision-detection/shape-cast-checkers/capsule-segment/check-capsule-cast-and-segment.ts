@@ -7,14 +7,12 @@ import { buildInitialOverlapHit } from '../utils';
 import { checkReverseRayAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndSegment } from '../box-segment/check-box-cast-and-segment';
 
-export const checkCapsuleCastAndSegment: ShapeCastCheckerFn = (
-  query,
-  target,
-) => {
-  const capsule = query as CapsuleCastGeometry;
-  const segment = target as SegmentGeometry;
+export const checkCapsuleCastAndSegment: ShapeCastCheckerFn<
+  CapsuleCastGeometry,
+  SegmentGeometry
+> = (capsuleCast, segment) => {
   const overlapIntersection = intersectionCheckers.capsule.segment(
-    capsule,
+    capsuleCast,
     segment,
   );
 
@@ -26,25 +24,25 @@ export const checkCapsuleCastAndSegment: ShapeCastCheckerFn = (
 
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndSegment(capsule.cap1, segment),
+    checkCircleCastAndSegment(capsuleCast.cap1, segment),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndSegment(capsule.cap2, segment),
+    checkCircleCastAndSegment(capsuleCast.cap2, segment),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReverseRayAndCapsule(capsule, segment.point1),
+    checkReverseRayAndCapsule(capsuleCast, segment.point1),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReverseRayAndCapsule(capsule, segment.point2),
+    checkReverseRayAndCapsule(capsuleCast, segment.point2),
   );
 
-  if (capsule.box) {
+  if (capsuleCast.box) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkBoxCastAndSegment(capsule.box, segment),
+      checkBoxCastAndSegment(capsuleCast.box, segment),
     );
   }
 

@@ -4,27 +4,28 @@ import { checkRayAndCircleIntersection } from '../../raycast-checkers/ray-circle
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
-export const checkCircleCastAndCircle: ShapeCastCheckerFn = (query, target) => {
-  const circle = query as CircleCastGeometry;
-  const targetCircle = target as CircleGeometry;
+export const checkCircleCastAndCircle: ShapeCastCheckerFn<
+  CircleCastGeometry,
+  CircleGeometry
+> = (circleCast, circle) => {
   const overlapIntersection = intersectionCheckers.circle.circle(
+    circleCast,
     circle,
-    targetCircle,
   );
 
   if (overlapIntersection) {
     const normal = overlapIntersection.normal.clone().multiplyNumber(-1);
 
     return buildInitialOverlapHit(overlapIntersection, {
-      x: targetCircle.center.x + normal.x * targetCircle.radius,
-      y: targetCircle.center.y + normal.y * targetCircle.radius,
+      x: circle.center.x + normal.x * circle.radius,
+      y: circle.center.y + normal.y * circle.radius,
     });
   }
 
   const hit = checkRayAndCircleIntersection(
+    circleCast,
     circle,
-    targetCircle,
-    circle.radius,
+    circleCast.radius,
   );
 
   if (!hit) {
@@ -32,8 +33,8 @@ export const checkCircleCastAndCircle: ShapeCastCheckerFn = (query, target) => {
   }
 
   hit.point = {
-    x: hit.point.x - hit.normal.x * circle.radius,
-    y: hit.point.y - hit.normal.y * circle.radius,
+    x: hit.point.x - hit.normal.x * circleCast.radius,
+    y: hit.point.y - hit.normal.y * circleCast.radius,
   };
 
   return hit;

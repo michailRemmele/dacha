@@ -7,15 +7,13 @@ import { buildInitialOverlapHit } from '../utils';
 import { checkReverseRayAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndCapsule } from '../box-capsule/check-box-cast-and-capsule';
 
-export const checkCapsuleCastAndCapsule: ShapeCastCheckerFn = (
-  query,
-  target,
-) => {
-  const capsule = query as CapsuleCastGeometry;
-  const targetCapsule = target as CapsuleGeometry;
+export const checkCapsuleCastAndCapsule: ShapeCastCheckerFn<
+  CapsuleCastGeometry,
+  CapsuleGeometry
+> = (capsuleCast, capsule) => {
   const overlapIntersection = intersectionCheckers.capsule.capsule(
+    capsuleCast,
     capsule,
-    targetCapsule,
   );
 
   if (overlapIntersection) {
@@ -26,33 +24,25 @@ export const checkCapsuleCastAndCapsule: ShapeCastCheckerFn = (
 
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndCapsule(capsule.cap1, targetCapsule),
+    checkCircleCastAndCapsule(capsuleCast.cap1, capsule),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndCapsule(capsule.cap2, targetCapsule),
+    checkCircleCastAndCapsule(capsuleCast.cap2, capsule),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReverseRayAndCapsule(
-      capsule,
-      targetCapsule.point1,
-      targetCapsule.radius,
-    ),
+    checkReverseRayAndCapsule(capsuleCast, capsule.point1, capsule.radius),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReverseRayAndCapsule(
-      capsule,
-      targetCapsule.point2,
-      targetCapsule.radius,
-    ),
+    checkReverseRayAndCapsule(capsuleCast, capsule.point2, capsule.radius),
   );
 
-  if (capsule.box) {
+  if (capsuleCast.box) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkBoxCastAndCapsule(capsule.box, targetCapsule),
+      checkBoxCastAndCapsule(capsuleCast.box, capsule),
     );
   }
 
