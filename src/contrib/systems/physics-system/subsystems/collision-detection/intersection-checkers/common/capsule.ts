@@ -4,7 +4,7 @@ import type {
   Intersection,
   SegmentGeometry,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 
 import { getClosestPointsBetweenSegments } from './segment-distance';
 
@@ -25,7 +25,7 @@ export const buildSegmentCapsuleIntersection = (
 ): Intersection | false => {
   const closest = getClosestPointsBetweenSegments(segment, capsule);
 
-  if (closest.distance > radius + INTERSECTION_EPSILON) {
+  if (isGreaterThan(closest.distance, radius)) {
     return false;
   }
 

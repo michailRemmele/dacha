@@ -1,11 +1,6 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
-import type {
-  Proxy,
-  CircleGeometry,
-  PointGeometry,
-  Intersection,
-} from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import type { CircleGeometry, PointGeometry, Intersection } from '../../types';
+import { isGreaterThan } from '../../utils';
 
 /**
  * Checks point and circle colliders for intersection.
@@ -15,17 +10,14 @@ import { INTERSECTION_EPSILON } from '../../constants';
  * deterministic fallback.
  */
 export const checkPointAndCircleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  point: PointGeometry,
+  circle: CircleGeometry,
 ): Intersection | false => {
-  const point = arg1.geometry as PointGeometry;
-  const circle = arg2.geometry as CircleGeometry;
-
   const offsetX = point.center.x - circle.center.x;
   const offsetY = point.center.y - circle.center.y;
   const distance = Math.sqrt(offsetX ** 2 + offsetY ** 2);
 
-  if (distance > circle.radius + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, circle.radius)) {
     return false;
   }
 

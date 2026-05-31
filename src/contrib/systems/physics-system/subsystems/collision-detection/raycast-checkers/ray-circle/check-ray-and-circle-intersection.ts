@@ -1,11 +1,11 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
-import type {
-  Proxy,
-  CircleGeometry,
-  RayGeometry,
-  Intersection,
-} from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import type { CircleGeometry, RayGeometry } from '../../types';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+} from '../../utils';
+import type { RaycastCheckerFn } from '../types';
 
 /**
  * Checks a ray against a circle.
@@ -16,29 +16,28 @@ import { INTERSECTION_EPSILON } from '../../constants';
  * direction.
  */
 export const checkRayAndCircleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
-): Intersection | false => {
-  const ray = arg1.geometry as RayGeometry;
-  const circle = arg2.geometry as CircleGeometry;
-
+  ray: RayGeometry,
+  circle: CircleGeometry,
+  radiusOffset = 0,
+): ReturnType<RaycastCheckerFn> => {
+  const radius = circle.radius + radiusOffset;
   const offsetX = ray.origin.x - circle.center.x;
   const offsetY = ray.origin.y - circle.center.y;
   const b = offsetX * ray.direction.x + offsetY * ray.direction.y;
-  const c = offsetX ** 2 + offsetY ** 2 - circle.radius ** 2;
+  const c = offsetX ** 2 + offsetY ** 2 - radius ** 2;
 
-  if (c > INTERSECTION_EPSILON && b > 0) {
+  if (isDefinitelyPositive(c) && b > 0) {
     return false;
   }
 
   const discriminant = b ** 2 - c;
-  if (discriminant < -INTERSECTION_EPSILON) {
+  if (isDefinitelyNegative(discriminant)) {
     return false;
   }
 
   const hitDistance = Math.max(0, -b - Math.sqrt(Math.max(0, discriminant)));
 
-  if (hitDistance > ray.maxDistance + INTERSECTION_EPSILON) {
+  if (isGreaterThan(hitDistance, ray.maxDistance)) {
     return false;
   }
 
@@ -60,7 +59,6 @@ export const checkRayAndCircleIntersection = (
   return {
     normal,
     distance: hitDistance,
-    penetration: 0,
-    contactPoints: [hitPoint],
+    point: hitPoint,
   };
 };

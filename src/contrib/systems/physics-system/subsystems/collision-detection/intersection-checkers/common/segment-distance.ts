@@ -1,6 +1,6 @@
 import { MathOps, VectorOps } from '../../../../../../../engine/math-lib';
 import type { Edge, Point } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan, isLessThan, isZero } from '../../utils';
 
 import { getDistanceSquared } from './points';
 
@@ -21,7 +21,7 @@ const getSegmentIntersectionPoint = (
   const deltaY = segment2.point1.y - segment1.point1.y;
   const denominator = direction1X * direction2Y - direction1Y * direction2X;
 
-  if (Math.abs(denominator) <= INTERSECTION_EPSILON) {
+  if (isZero(denominator)) {
     return null;
   }
 
@@ -29,10 +29,10 @@ const getSegmentIntersectionPoint = (
   const u = (deltaX * direction1Y - deltaY * direction1X) / denominator;
 
   if (
-    t < -INTERSECTION_EPSILON ||
-    t > 1 + INTERSECTION_EPSILON ||
-    u < -INTERSECTION_EPSILON ||
-    u > 1 + INTERSECTION_EPSILON
+    isLessThan(t, 0) ||
+    isGreaterThan(t, 1) ||
+    isLessThan(u, 0) ||
+    isGreaterThan(u, 1)
   ) {
     return null;
   }

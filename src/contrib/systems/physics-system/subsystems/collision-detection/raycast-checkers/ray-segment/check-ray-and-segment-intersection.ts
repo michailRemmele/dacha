@@ -1,11 +1,12 @@
 import { VectorOps } from '../../../../../../../engine/math-lib';
-import type {
-  Proxy,
-  RayGeometry,
-  SegmentGeometry,
-  Intersection,
-} from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import type { SegmentGeometry } from '../../types';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+  isZero,
+} from '../../utils';
+import type { RaycastCheckerFn } from '../types';
 
 import { subtractPoints } from './utils';
 
@@ -23,17 +24,14 @@ import { subtractPoints } from './utils';
  * The contact normal comes from the segment normal and is flipped when needed
  * so it opposes the incoming ray direction.
  */
-export const checkRayAndSegmentIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
-): Intersection | false => {
-  const ray = arg1.geometry as RayGeometry;
-  const segment = arg2.geometry as SegmentGeometry;
+export const checkRayAndSegmentIntersection: RaycastCheckerFn<
+  SegmentGeometry
+> = (ray, segment) => {
   const segmentDirection = subtractPoints(segment.point2, segment.point1);
   const delta = subtractPoints(segment.point1, ray.origin);
   const denominator = VectorOps.crossProduct(ray.direction, segmentDirection);
 
-  if (Math.abs(denominator) <= INTERSECTION_EPSILON) {
+  if (isZero(denominator)) {
     return false;
   }
 
@@ -43,10 +41,10 @@ export const checkRayAndSegmentIntersection = (
     VectorOps.crossProduct(delta, ray.direction) / denominator;
 
   if (
-    rayDistance < -INTERSECTION_EPSILON ||
-    rayDistance > ray.maxDistance + INTERSECTION_EPSILON ||
-    segmentDistance < -INTERSECTION_EPSILON ||
-    segmentDistance > 1 + INTERSECTION_EPSILON
+    isDefinitelyNegative(rayDistance) ||
+    isGreaterThan(rayDistance, ray.maxDistance) ||
+    isDefinitelyNegative(segmentDistance) ||
+    isGreaterThan(segmentDistance, 1)
   ) {
     return false;
   }
@@ -58,8 +56,9 @@ export const checkRayAndSegmentIntersection = (
   const normal = segment.normal.clone();
 
   if (
-    normal.x * ray.direction.x + normal.y * ray.direction.y >
-    INTERSECTION_EPSILON
+    isDefinitelyPositive(
+      normal.x * ray.direction.x + normal.y * ray.direction.y,
+    )
   ) {
     normal.multiplyNumber(-1);
   }
@@ -67,7 +66,6 @@ export const checkRayAndSegmentIntersection = (
   return {
     normal,
     distance: rayDistance,
-    penetration: 0,
-    contactPoints: [point],
+    point,
   };
 };

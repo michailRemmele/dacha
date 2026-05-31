@@ -1,7 +1,6 @@
 import type {
   CapsuleGeometry,
   Intersection,
-  Proxy,
   SegmentGeometry,
 } from '../../types';
 import { buildSegmentCapsuleIntersection } from '../common/capsule';
@@ -18,11 +17,9 @@ import { orientNormal } from '../common/normals';
  * overlap exactly.
  */
 export const checkSegmentAndCapsuleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  segment: SegmentGeometry,
+  capsule: CapsuleGeometry,
 ): Intersection | false => {
-  const segment = arg1.geometry as SegmentGeometry;
-  const capsule = arg2.geometry as CapsuleGeometry;
   const intersection = buildSegmentCapsuleIntersection(
     segment,
     capsule,
@@ -35,10 +32,6 @@ export const checkSegmentAndCapsuleIntersection = (
 
   return {
     ...intersection,
-    normal: orientNormal(
-      intersection.normal,
-      segment.center,
-      capsule.center,
-    ),
+    normal: orientNormal(intersection.normal, segment.center, capsule.center),
   };
 };

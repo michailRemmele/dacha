@@ -1,7 +1,6 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
 import { Collider, Transform } from '../../../../../../components';
 import { buildBoxGeometry } from '../../geometry-builders/build-box-geometry';
-import { buildCapsuleGeometry } from '../../geometry-builders/build-capsule-geometry';
 import { buildCircleGeometry } from '../../geometry-builders/build-circle-geometry';
 import { buildPointGeometry } from '../../geometry-builders/build-point-geometry';
 import { buildRayGeometry } from '../../geometry-builders/build-ray-geometry';
@@ -12,10 +11,10 @@ import type {
   CircleGeometry,
   Intersection,
   PointGeometry,
-  Proxy,
   RayGeometry,
   SegmentGeometry,
 } from '../../types';
+import type { RaycastCheckerHit } from '../../raycast-checkers/types';
 
 export const createBoxGeometry = (
   centerX: number,
@@ -34,9 +33,12 @@ export const createRotatedBoxGeometry = (
   rotation: number,
 ): BoxGeometry => {
   return buildBoxGeometry({
-    center: { x: centerX, y: centerY },
-    size: { x: sizeX, y: sizeY },
-    rotation,
+    shape: {
+      type: 'box',
+      center: { x: centerX, y: centerY },
+      size: { x: sizeX, y: sizeY },
+      rotation,
+    },
   });
 };
 
@@ -46,8 +48,11 @@ export const createCircleGeometry = (
   radius: number,
 ): CircleGeometry =>
   buildCircleGeometry({
-    center: { x: centerX, y: centerY },
-    radius,
+    shape: {
+      type: 'circle',
+      center: { x: centerX, y: centerY },
+      radius,
+    },
   });
 
 export const createCapsuleGeometry = (
@@ -56,28 +61,21 @@ export const createCapsuleGeometry = (
   point2X: number,
   point2Y: number,
   radius: number,
-): CapsuleGeometry =>
-  buildCapsuleGeometry(
-    new Collider({
-      type: 'capsule',
-      offsetX: 0,
-      offsetY: 0,
-      point1X,
-      point1Y,
-      point2X,
-      point2Y,
-      radius,
-      layer: 'default',
-      disabled: false,
-    }),
-    new Transform({
-      offsetX: 0,
-      offsetY: 0,
-      rotation: 0,
-      scaleX: 1,
-      scaleY: 1,
-    }),
-  );
+): CapsuleGeometry => {
+  const point1 = { x: point1X, y: point1Y };
+  const point2 = { x: point2X, y: point2Y };
+
+  return {
+    center: {
+      x: (point1X + point2X) / 2,
+      y: (point1Y + point2Y) / 2,
+    },
+    point1,
+    point2,
+    normal: VectorOps.getNormal(point1X, point2X, point1Y, point2Y),
+    radius,
+  };
+};
 
 export const createSegmentGeometry = (
   point1X: number,
@@ -111,7 +109,10 @@ export const createPointGeometry = (
   centerY: number,
 ): PointGeometry =>
   buildPointGeometry({
-    point: { x: centerX, y: centerY },
+    shape: {
+      type: 'point',
+      point: { x: centerX, y: centerY },
+    },
   });
 
 export const createRayGeometry = (
@@ -126,19 +127,6 @@ export const createRayGeometry = (
     direction: new Vector2(directionX, directionY),
     maxDistance,
   });
-
-export const createProxy = (
-  geometry:
-    | BoxGeometry
-    | CapsuleGeometry
-    | CircleGeometry
-    | SegmentGeometry
-    | PointGeometry
-    | RayGeometry,
-): Proxy =>
-  ({
-    geometry,
-  }) as unknown as Proxy;
 
 export const expectToBeClose = (
   point: { x: number; y: number },
@@ -160,6 +148,18 @@ export const expectIntersection = (
   }
 
   return intersection;
+};
+
+export const expectCastHit = (
+  hit: RaycastCheckerHit | false,
+): RaycastCheckerHit => {
+  expect(hit).not.toBe(false);
+
+  if (hit === false) {
+    throw new Error('Expected cast hit, received false');
+  }
+
+  return hit;
 };
 
 export const sortPoints = (

@@ -2,7 +2,6 @@ import type { Actor } from '../../../../../engine/actor';
 import { VectorOps, type Point } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
-import { RIGID_BODY_TYPE } from '../../consts';
 import type { Contact } from '../collision-detection/types';
 
 const SOLVER_ITERATIONS = 8;
@@ -27,10 +26,7 @@ export class ConstraintSolver {
       return false;
     }
 
-    if (
-      rigidBody1.type === RIGID_BODY_TYPE.STATIC &&
-      rigidBody2.type === RIGID_BODY_TYPE.STATIC
-    ) {
+    if (rigidBody1.type === 'static' && rigidBody2.type === 'static') {
       return false;
     }
     return true;
@@ -118,7 +114,7 @@ export class ConstraintSolver {
   }
 
   private getInverseMass(rigidBody: RigidBody): number {
-    if (rigidBody.type === RIGID_BODY_TYPE.STATIC) {
+    if (rigidBody.type === 'static' || rigidBody.type === 'kinematic') {
       return 0;
     }
 

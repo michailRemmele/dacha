@@ -4,14 +4,13 @@ import {
   VectorOps,
 } from '../../../../../../../engine/math-lib';
 import type {
-  Proxy,
   BoxGeometry,
   CircleGeometry,
   Intersection,
   EdgeWithNormal,
   Point,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 const buildNormal = (
@@ -39,12 +38,9 @@ const buildNormal = (
  * collision direction and penetration is measured to that face.
  */
 export const checkBoxAndCircleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  box: BoxGeometry,
+  circle: CircleGeometry,
 ): Intersection | false => {
-  const box = arg1.geometry as BoxGeometry;
-  const circle = arg2.geometry as CircleGeometry;
-
   let closestEdge = box.edges[0];
   let closestPoint = box.points[0];
   let minDistance = Infinity;
@@ -70,10 +66,7 @@ export const checkBoxAndCircleIntersection = (
     box.edges,
   );
 
-  if (
-    !isCircleInsideBox &&
-    minDistance > circle.radius + INTERSECTION_EPSILON
-  ) {
+  if (!isCircleInsideBox && isGreaterThan(minDistance, circle.radius)) {
     return false;
   }
 

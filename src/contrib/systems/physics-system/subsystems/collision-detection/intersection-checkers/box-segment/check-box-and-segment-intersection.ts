@@ -1,10 +1,8 @@
-import type {
-  BoxGeometry,
-  Proxy,
-  SegmentGeometry,
-  Intersection,
-} from '../../types';
-import { buildBoxSegmentContactPoints, findMinBoxSegmentOverlap } from './utils';
+import type { BoxGeometry, SegmentGeometry, Intersection } from '../../types';
+import {
+  buildBoxSegmentContactPoints,
+  findMinBoxSegmentOverlap,
+} from './utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -16,11 +14,9 @@ import { orientNormal } from '../common/normals';
  * segment, and explicit edge/segment intersections.
  */
 export const checkBoxAndSegmentIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  box: BoxGeometry,
+  segment: SegmentGeometry,
 ): Intersection | false => {
-  const box = arg1.geometry as BoxGeometry;
-  const segment = arg2.geometry as SegmentGeometry;
   const overlap = findMinBoxSegmentOverlap(box, segment);
 
   if (overlap === false) {
@@ -34,11 +30,7 @@ export const checkBoxAndSegmentIntersection = (
   }
 
   return {
-    normal: orientNormal(
-      overlap.axis.clone(),
-      box.center,
-      segment.center,
-    ),
+    normal: orientNormal(overlap.axis.clone(), box.center, segment.center),
     penetration: overlap.overlap,
     contactPoints,
   };

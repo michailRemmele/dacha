@@ -1,12 +1,12 @@
 import { VectorOps, type Vector2 } from '../../../../../../../engine/math-lib';
-import type {
-  Proxy,
-  BoxGeometry,
-  RayGeometry,
-  EdgeWithNormal,
-  Intersection,
-} from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import type { BoxGeometry, EdgeWithNormal } from '../../types';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+  isZero,
+} from '../../utils';
+import type { RaycastCheckerFn } from '../types';
 
 /**
  * Checks a ray against a convex box using half-space clipping.
@@ -17,13 +17,10 @@ import { INTERSECTION_EPSILON } from '../../constants';
  *
  * When the ray starts inside the box, the first hit is the exit point.
  */
-export const checkRayAndBoxIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
-): Intersection | false => {
-  const ray = arg1.geometry as RayGeometry;
-  const box = arg2.geometry as BoxGeometry;
-
+export const checkRayAndBoxIntersection: RaycastCheckerFn<BoxGeometry> = (
+  ray,
+  box,
+) => {
   let tEnter = -Infinity;
   let tExit = ray.maxDistance;
   let enterEdge: EdgeWithNormal | null = null;
@@ -40,8 +37,8 @@ export const checkRayAndBoxIntersection = (
 
     const denominator = VectorOps.dotProduct(ray.direction, edge.normal);
 
-    if (Math.abs(denominator) <= INTERSECTION_EPSILON) {
-      if (signedDistance > INTERSECTION_EPSILON) {
+    if (isZero(denominator)) {
+      if (isDefinitelyPositive(signedDistance)) {
         return false;
       }
 
@@ -50,7 +47,7 @@ export const checkRayAndBoxIntersection = (
 
     const t = -signedDistance / denominator;
 
-    if (denominator < 0) {
+    if (isDefinitelyNegative(denominator)) {
       if (t > tEnter) {
         tEnter = t;
         enterEdge = edge;
@@ -62,15 +59,12 @@ export const checkRayAndBoxIntersection = (
       }
     }
 
-    if (tEnter - tExit > INTERSECTION_EPSILON) {
+    if (isGreaterThan(tEnter, tExit)) {
       return false;
     }
   }
 
-  if (
-    tExit < -INTERSECTION_EPSILON ||
-    tEnter > ray.maxDistance + INTERSECTION_EPSILON
-  ) {
+  if (isDefinitelyNegative(tExit) || isGreaterThan(tEnter, ray.maxDistance)) {
     return false;
   }
 
@@ -91,7 +85,6 @@ export const checkRayAndBoxIntersection = (
   return {
     normal,
     distance: hitDistance,
-    penetration: 0,
-    contactPoints: [hitPoint],
+    point: hitPoint,
   };
 };

@@ -39,7 +39,7 @@ export function buildBoxGeometry(
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;
   } else {
-    const overlap = colliderOrOverlap as OverlapBoxParams;
+    const overlap = (colliderOrOverlap as OverlapBoxParams).shape;
     centerX = 0;
     centerY = 0;
     sizeX = overlap.size.x;
