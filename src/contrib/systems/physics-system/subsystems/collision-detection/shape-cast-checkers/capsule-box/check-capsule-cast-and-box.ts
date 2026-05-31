@@ -4,7 +4,7 @@ import type { BoxGeometry, CapsuleCastGeometry } from '../../types';
 import { checkCircleCastAndBox } from '../circle-box/check-circle-cast-and-box';
 import type { ShapeCastCheckerFn, ShapeCastCheckerHit } from '../types';
 import { buildInitialOverlapHit } from '../utils';
-import { checkReversePointCastAndCapsule } from '../capsule-utils';
+import { checkReverseRayAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndBox } from '../box-box/check-box-cast-and-box';
 
 export const checkCapsuleCastAndBox: ShapeCastCheckerFn = (query, target) => {
@@ -30,7 +30,7 @@ export const checkCapsuleCastAndBox: ShapeCastCheckerFn = (query, target) => {
   for (const point of box.points) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkReversePointCastAndCapsule(capsule, point),
+      checkReverseRayAndCapsule(capsule, point),
     );
   }
 

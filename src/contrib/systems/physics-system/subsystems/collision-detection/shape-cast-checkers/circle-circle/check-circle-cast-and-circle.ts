@@ -1,16 +1,10 @@
-import type {
-  CircleCastGeometry,
-  CircleGeometry,
-} from '../../types';
+import type { CircleCastGeometry, CircleGeometry } from '../../types';
 import { intersectionCheckers } from '../../intersection-checkers';
-import { raycastCheckers } from '../../raycast-checkers';
+import { checkRayAndCircleIntersection } from '../../raycast-checkers/ray-circle/check-ray-and-circle-intersection';
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
-export const checkCircleCastAndCircle: ShapeCastCheckerFn = (
-  query,
-  target,
-) => {
+export const checkCircleCastAndCircle: ShapeCastCheckerFn = (query, target) => {
   const circle = query as CircleCastGeometry;
   const targetCircle = target as CircleGeometry;
   const overlapIntersection = intersectionCheckers.circle.circle(
@@ -27,12 +21,11 @@ export const checkCircleCastAndCircle: ShapeCastCheckerFn = (
     });
   }
 
-  const inflatedCircle: CircleGeometry = {
-    center: targetCircle.center,
-    radius: targetCircle.radius + circle.radius,
-  };
-
-  const hit = raycastCheckers.ray.circle(circle, inflatedCircle);
+  const hit = checkRayAndCircleIntersection(
+    circle,
+    targetCircle,
+    circle.radius,
+  );
 
   if (!hit) {
     return false;

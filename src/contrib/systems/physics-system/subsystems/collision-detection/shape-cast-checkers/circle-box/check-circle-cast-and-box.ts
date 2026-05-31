@@ -1,10 +1,6 @@
-import type {
-  BoxGeometry,
-  CapsuleGeometry,
-  CircleCastGeometry,
-} from '../../types';
+import type { BoxGeometry, CircleCastGeometry } from '../../types';
 import { intersectionCheckers } from '../../intersection-checkers';
-import { raycastCheckers } from '../../raycast-checkers';
+import { checkRayAndCapsuleIntersection } from '../../raycast-checkers/ray-capsule/check-ray-and-capsule-intersection';
 import { chooseNearestIntersection } from '../../intersection-checkers/common/cast';
 import type { ShapeCastCheckerFn } from '../types';
 import type { RaycastCheckerHit } from '../../raycast-checkers/types';
@@ -22,20 +18,9 @@ export const checkCircleCastAndBox: ShapeCastCheckerFn = (query, target) => {
   let nearest: RaycastCheckerHit | false = false;
 
   for (const edge of box.edges) {
-    const capsule: CapsuleGeometry = {
-      center: {
-        x: (edge.point1.x + edge.point2.x) / 2,
-        y: (edge.point1.y + edge.point2.y) / 2,
-      },
-      point1: edge.point1,
-      point2: edge.point2,
-      normal: edge.normal,
-      radius: circle.radius,
-    };
-
     nearest = chooseNearestIntersection(
       nearest,
-      raycastCheckers.ray.capsule(circle, capsule),
+      checkRayAndCapsuleIntersection(circle, edge, circle.radius),
     );
   }
 
