@@ -61,6 +61,9 @@ export function buildQueryProxy(
     aabb: aabbBuilders[type](geometry),
     geometry,
     layer: params.layer,
+    excludedActors: params.excludeActors
+      ? new Set(params.excludeActors)
+      : undefined,
   };
 }
 
