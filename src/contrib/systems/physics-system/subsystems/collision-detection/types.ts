@@ -53,7 +53,11 @@ export interface RayGeometry {
 
 export interface CircleCastGeometry extends CircleGeometry, RayGeometry {}
 
-export interface CapsuleCastGeometry extends CapsuleGeometry, RayGeometry {}
+export interface CapsuleCastGeometry extends CapsuleGeometry, RayGeometry {
+  cap1: CircleCastGeometry;
+  cap2: CircleCastGeometry;
+  box: BoxCastGeometry | null;
+}
 
 export interface BoxCastGeometry extends BoxGeometry, RayGeometry {
   halfExtents: Point;

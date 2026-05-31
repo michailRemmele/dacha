@@ -6,16 +6,8 @@ import type {
   BoxCastGeometry,
   CapsuleCastGeometry,
   CircleCastGeometry,
-  Geometry,
-  Proxy,
-  QueryProxy,
 } from '../../types';
 import type { ShapeCastCheckerHit } from '../types';
-
-const aabb = {
-  min: { x: -Infinity, y: -Infinity },
-  max: { x: Infinity, y: Infinity },
-};
 
 export const createCircleCastGeometry = (
   centerX: number,
@@ -73,19 +65,6 @@ export const createBoxCastGeometry = (
     direction: new Vector2(directionX, directionY),
     maxDistance,
   });
-
-export const createQueryProxy = (
-  geometry: CircleCastGeometry | CapsuleCastGeometry | BoxCastGeometry,
-): QueryProxy => ({
-  aabb,
-  geometry,
-});
-
-export const createTargetProxy = (geometry: Geometry): Proxy =>
-  ({
-    aabb,
-    geometry,
-  }) as Proxy;
 
 export const expectShapeCastHit = (
   hit: ShapeCastCheckerHit | false,

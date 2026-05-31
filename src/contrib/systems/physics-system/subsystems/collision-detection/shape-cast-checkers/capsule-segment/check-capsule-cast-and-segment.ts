@@ -4,59 +4,47 @@ import type { CapsuleCastGeometry, SegmentGeometry } from '../../types';
 import { checkCircleCastAndSegment } from '../circle-segment/check-circle-cast-and-segment';
 import type { ShapeCastCheckerFn, ShapeCastCheckerHit } from '../types';
 import { buildInitialOverlapHit } from '../utils';
-import {
-  buildCapCircleCastProxy,
-  buildCapsuleBodyBoxCastProxy,
-  checkReversePointCastAndCapsule,
-} from '../capsule-utils';
+import { checkReversePointCastAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndSegment } from '../box-segment/check-box-cast-and-segment';
 
 export const checkCapsuleCastAndSegment: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
+  query,
+  target,
 ) => {
+  const capsule = query as CapsuleCastGeometry;
+  const segment = target as SegmentGeometry;
   const overlapIntersection = intersectionCheckers.capsule.segment(
-    queryProxy,
-    targetProxy,
+    capsule,
+    segment,
   );
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const capsule = queryProxy.geometry as CapsuleCastGeometry;
-  const segment = targetProxy.geometry as SegmentGeometry;
   let nearest: ShapeCastCheckerHit | false = false;
 
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndSegment(
-      buildCapCircleCastProxy(queryProxy, capsule.point1),
-      targetProxy,
-    ),
+    checkCircleCastAndSegment(capsule.cap1, segment),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndSegment(
-      buildCapCircleCastProxy(queryProxy, capsule.point2),
-      targetProxy,
-    ),
+    checkCircleCastAndSegment(capsule.cap2, segment),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReversePointCastAndCapsule(queryProxy, segment.point1),
+    checkReversePointCastAndCapsule(capsule, segment.point1),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReversePointCastAndCapsule(queryProxy, segment.point2),
+    checkReversePointCastAndCapsule(capsule, segment.point2),
   );
 
-  const bodyBoxProxy = buildCapsuleBodyBoxCastProxy(queryProxy);
-
-  if (bodyBoxProxy) {
+  if (capsule.box) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkBoxCastAndSegment(bodyBoxProxy, targetProxy),
+      checkBoxCastAndSegment(capsule.box, segment),
     );
   }
 

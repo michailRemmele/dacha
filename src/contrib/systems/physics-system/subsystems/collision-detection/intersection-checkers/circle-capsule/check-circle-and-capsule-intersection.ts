@@ -3,7 +3,6 @@ import type {
   CapsuleGeometry,
   CircleGeometry,
   Intersection,
-  Proxy,
 } from '../../types';
 import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
@@ -18,11 +17,9 @@ import { orientNormal } from '../common/normals';
  * surface in the direction of the circle center.
  */
 export const checkCircleAndCapsuleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  circle: CircleGeometry,
+  capsule: CapsuleGeometry,
 ): Intersection | false => {
-  const circle = arg1.geometry as CircleGeometry;
-  const capsule = arg2.geometry as CapsuleGeometry;
   const closestPoint = VectorOps.getClosestPointOnEdge(circle.center, capsule);
   const normal = new Vector2(
     circle.center.x - closestPoint.x,

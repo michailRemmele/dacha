@@ -1,7 +1,6 @@
 import { checkRayAndCircleIntersection } from '../ray-circle/check-ray-and-circle-intersection';
 import {
   createCircleGeometry,
-  createProxy,
   createRayGeometry,
   expectCastHit,
   expectToBeClose,
@@ -9,15 +8,15 @@ import {
 
 describe('PhysicsSystem -> collision-detection -> checkRayAndCircleIntersection()', () => {
   it('Returns false when ray misses the circle', () => {
-    const ray = createProxy(createRayGeometry(-3, 2, 1, 0, 10));
-    const circle = createProxy(createCircleGeometry(0, 0, 1));
+    const ray = createRayGeometry(-3, 2, 1, 0, 10);
+    const circle = createCircleGeometry(0, 0, 1);
 
     expect(checkRayAndCircleIntersection(ray, circle)).toBe(false);
   });
 
   it('Returns entry contact when ray starts outside the circle', () => {
-    const ray = createProxy(createRayGeometry(-3, 0, 1, 0, 10));
-    const circle = createProxy(createCircleGeometry(0, 0, 1));
+    const ray = createRayGeometry(-3, 0, 1, 0, 10);
+    const circle = createCircleGeometry(0, 0, 1);
 
     const hit = expectCastHit(checkRayAndCircleIntersection(ray, circle));
 
@@ -27,8 +26,8 @@ describe('PhysicsSystem -> collision-detection -> checkRayAndCircleIntersection(
   });
 
   it('Returns zero-distance contact when ray starts inside the circle', () => {
-    const ray = createProxy(createRayGeometry(0.5, 0, 1, 0, 10));
-    const circle = createProxy(createCircleGeometry(0, 0, 1));
+    const ray = createRayGeometry(0.5, 0, 1, 0, 10);
+    const circle = createCircleGeometry(0, 0, 1);
 
     const hit = expectCastHit(checkRayAndCircleIntersection(ray, circle));
 
@@ -38,8 +37,8 @@ describe('PhysicsSystem -> collision-detection -> checkRayAndCircleIntersection(
   });
 
   it('Uses the fallback normal when ray starts at the circle center', () => {
-    const ray = createProxy(createRayGeometry(0, 0, 0, 1, 10));
-    const circle = createProxy(createCircleGeometry(0, 0, 2));
+    const ray = createRayGeometry(0, 0, 0, 1, 10);
+    const circle = createCircleGeometry(0, 0, 2);
 
     const hit = expectCastHit(checkRayAndCircleIntersection(ray, circle));
 
@@ -49,8 +48,8 @@ describe('PhysicsSystem -> collision-detection -> checkRayAndCircleIntersection(
   });
 
   it('Returns tangent contact when ray just touches the circle', () => {
-    const ray = createProxy(createRayGeometry(-3, 1, 1, 0, 10));
-    const circle = createProxy(createCircleGeometry(0, 0, 1));
+    const ray = createRayGeometry(-3, 1, 1, 0, 10);
+    const circle = createCircleGeometry(0, 0, 1);
 
     const hit = expectCastHit(checkRayAndCircleIntersection(ray, circle));
 
@@ -60,8 +59,8 @@ describe('PhysicsSystem -> collision-detection -> checkRayAndCircleIntersection(
   });
 
   it('Returns false when the hit would be beyond max distance', () => {
-    const ray = createProxy(createRayGeometry(-3, 0, 1, 0, 1));
-    const circle = createProxy(createCircleGeometry(0, 0, 1));
+    const ray = createRayGeometry(-3, 0, 1, 0, 1);
+    const circle = createCircleGeometry(0, 0, 1);
 
     expect(checkRayAndCircleIntersection(ray, circle)).toBe(false);
   });

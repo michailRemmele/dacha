@@ -1,9 +1,4 @@
-import type {
-  BoxGeometry,
-  Proxy,
-  SegmentGeometry,
-  Intersection,
-} from '../../types';
+import type { BoxGeometry, SegmentGeometry, Intersection } from '../../types';
 import {
   buildBoxSegmentContactPoints,
   findMinBoxSegmentOverlap,
@@ -19,11 +14,9 @@ import { orientNormal } from '../common/normals';
  * segment, and explicit edge/segment intersections.
  */
 export const checkBoxAndSegmentIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  box: BoxGeometry,
+  segment: SegmentGeometry,
 ): Intersection | false => {
-  const box = arg1.geometry as BoxGeometry;
-  const segment = arg2.geometry as SegmentGeometry;
   const overlap = findMinBoxSegmentOverlap(box, segment);
 
   if (overlap === false) {

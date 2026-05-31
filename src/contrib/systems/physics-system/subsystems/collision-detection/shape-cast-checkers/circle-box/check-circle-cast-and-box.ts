@@ -1,4 +1,8 @@
-import type { BoxGeometry, CircleCastGeometry, QueryProxy } from '../../types';
+import type {
+  BoxGeometry,
+  CapsuleGeometry,
+  CircleCastGeometry,
+} from '../../types';
 import { intersectionCheckers } from '../../intersection-checkers';
 import { raycastCheckers } from '../../raycast-checkers';
 import { chooseNearestIntersection } from '../../intersection-checkers/common/cast';
@@ -6,42 +10,32 @@ import type { ShapeCastCheckerFn } from '../types';
 import type { RaycastCheckerHit } from '../../raycast-checkers/types';
 import { buildInitialOverlapHit } from '../utils';
 
-export const checkCircleCastAndBox: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
-) => {
-  const overlapIntersection = intersectionCheckers.circle.box(
-    queryProxy,
-    targetProxy,
-  );
+export const checkCircleCastAndBox: ShapeCastCheckerFn = (query, target) => {
+  const circle = query as CircleCastGeometry;
+  const box = target as BoxGeometry;
+  const overlapIntersection = intersectionCheckers.circle.box(circle, box);
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const circle = queryProxy.geometry as CircleCastGeometry;
-  const box = targetProxy.geometry as BoxGeometry;
   let nearest: RaycastCheckerHit | false = false;
 
   for (const edge of box.edges) {
-    const capsuleProxy: QueryProxy = {
-      aabb: targetProxy.aabb,
-      geometry: {
-        center: {
-          x: (edge.point1.x + edge.point2.x) / 2,
-          y: (edge.point1.y + edge.point2.y) / 2,
-        },
-        point1: edge.point1,
-        point2: edge.point2,
-        normal: edge.normal,
-        radius: circle.radius,
+    const capsule: CapsuleGeometry = {
+      center: {
+        x: (edge.point1.x + edge.point2.x) / 2,
+        y: (edge.point1.y + edge.point2.y) / 2,
       },
-      layer: targetProxy.layer,
+      point1: edge.point1,
+      point2: edge.point2,
+      normal: edge.normal,
+      radius: circle.radius,
     };
 
     nearest = chooseNearestIntersection(
       nearest,
-      raycastCheckers.ray.capsule(queryProxy, capsuleProxy),
+      raycastCheckers.ray.capsule(circle, capsule),
     );
   }
 

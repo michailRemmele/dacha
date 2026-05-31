@@ -1,7 +1,6 @@
 import type {
   CircleCastGeometry,
   CircleGeometry,
-  QueryProxy,
 } from '../../types';
 import { intersectionCheckers } from '../../intersection-checkers';
 import { raycastCheckers } from '../../raycast-checkers';
@@ -9,36 +8,31 @@ import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
 export const checkCircleCastAndCircle: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
+  query,
+  target,
 ) => {
+  const circle = query as CircleCastGeometry;
+  const targetCircle = target as CircleGeometry;
   const overlapIntersection = intersectionCheckers.circle.circle(
-    queryProxy,
-    targetProxy,
+    circle,
+    targetCircle,
   );
 
   if (overlapIntersection) {
-    const target = targetProxy.geometry as CircleGeometry;
     const normal = overlapIntersection.normal.clone().multiplyNumber(-1);
 
     return buildInitialOverlapHit(overlapIntersection, {
-      x: target.center.x + normal.x * target.radius,
-      y: target.center.y + normal.y * target.radius,
+      x: targetCircle.center.x + normal.x * targetCircle.radius,
+      y: targetCircle.center.y + normal.y * targetCircle.radius,
     });
   }
 
-  const circle = queryProxy.geometry as CircleCastGeometry;
-  const target = targetProxy.geometry as CircleGeometry;
-  const inflatedCircleProxy: QueryProxy = {
-    aabb: targetProxy.aabb,
-    geometry: {
-      center: target.center,
-      radius: target.radius + circle.radius,
-    },
-    layer: targetProxy.layer,
+  const inflatedCircle: CircleGeometry = {
+    center: targetCircle.center,
+    radius: targetCircle.radius + circle.radius,
   };
 
-  const hit = raycastCheckers.ray.circle(queryProxy, inflatedCircleProxy);
+  const hit = raycastCheckers.ray.circle(circle, inflatedCircle);
 
   if (!hit) {
     return false;

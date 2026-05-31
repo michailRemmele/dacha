@@ -1,5 +1,5 @@
 import { intersectionCheckers } from '../../intersection-checkers';
-import type { CircleGeometry } from '../../types';
+import type { BoxCastGeometry, CircleGeometry } from '../../types';
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 import {
@@ -8,27 +8,20 @@ import {
 } from '../box-utils';
 
 export const checkBoxCastAndCircle: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
+  query,
+  target,
 ) => {
-  const overlapIntersection = intersectionCheckers.box.circle(
-    queryProxy,
-    targetProxy,
-  );
+  const box = query as BoxCastGeometry;
+  const circle = target as CircleGeometry;
+  const overlapIntersection = intersectionCheckers.box.circle(box, circle);
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const circle = targetProxy.geometry as CircleGeometry;
+  const hit = checkBoxCastAndCircleGeometry(box, circle.center, circle.radius);
 
-  const hit = checkBoxCastAndCircleGeometry(
-    queryProxy,
-    circle.center,
-    circle.radius,
-  );
-
-  correctContactPoint(queryProxy, hit);
+  correctContactPoint(box, hit);
 
   return hit;
 };

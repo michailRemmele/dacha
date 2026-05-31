@@ -4,55 +4,43 @@ import type { CapsuleCastGeometry, CircleGeometry } from '../../types';
 import { checkCircleCastAndCircle } from '../circle-circle/check-circle-cast-and-circle';
 import type { ShapeCastCheckerFn, ShapeCastCheckerHit } from '../types';
 import { buildInitialOverlapHit } from '../utils';
-import {
-  buildCapCircleCastProxy,
-  buildCapsuleBodyBoxCastProxy,
-  checkReversePointCastAndCapsule,
-} from '../capsule-utils';
+import { checkReversePointCastAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndCircle } from '../box-circle/check-box-cast-and-circle';
 
 export const checkCapsuleCastAndCircle: ShapeCastCheckerFn = (
-  queryProxy,
-  targetProxy,
+  query,
+  target,
 ) => {
+  const capsule = query as CapsuleCastGeometry;
+  const circle = target as CircleGeometry;
   const overlapIntersection = intersectionCheckers.capsule.circle(
-    queryProxy,
-    targetProxy,
+    capsule,
+    circle,
   );
 
   if (overlapIntersection) {
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const capsule = queryProxy.geometry as CapsuleCastGeometry;
-  const circle = targetProxy.geometry as CircleGeometry;
   let nearest: ShapeCastCheckerHit | false = false;
 
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndCircle(
-      buildCapCircleCastProxy(queryProxy, capsule.point1),
-      targetProxy,
-    ),
+    checkCircleCastAndCircle(capsule.cap1, circle),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkCircleCastAndCircle(
-      buildCapCircleCastProxy(queryProxy, capsule.point2),
-      targetProxy,
-    ),
+    checkCircleCastAndCircle(capsule.cap2, circle),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkReversePointCastAndCapsule(queryProxy, circle.center, circle.radius),
+    checkReversePointCastAndCapsule(capsule, circle.center, circle.radius),
   );
 
-  const bodyBoxProxy = buildCapsuleBodyBoxCastProxy(queryProxy);
-
-  if (bodyBoxProxy) {
+  if (capsule.box) {
     nearest = chooseNearestIntersection(
       nearest,
-      checkBoxCastAndCircle(bodyBoxProxy, targetProxy),
+      checkBoxCastAndCircle(capsule.box, circle),
     );
   }
 

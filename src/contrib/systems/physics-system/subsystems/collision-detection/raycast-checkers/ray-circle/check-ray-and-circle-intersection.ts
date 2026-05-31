@@ -1,5 +1,5 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
-import type { CircleGeometry, RayGeometry } from '../../types';
+import type { CircleGeometry } from '../../types';
 import {
   isGreaterThan,
   isDefinitelyNegative,
@@ -15,13 +15,10 @@ import type { RaycastCheckerFn } from '../types';
  * starts at the circle center, the normal falls back to the opposite ray
  * direction.
  */
-export const checkRayAndCircleIntersection: RaycastCheckerFn = (
-  queryProxy,
-  targetProxy,
+export const checkRayAndCircleIntersection: RaycastCheckerFn<CircleGeometry> = (
+  ray,
+  circle,
 ) => {
-  const ray = queryProxy.geometry as RayGeometry;
-  const circle = targetProxy.geometry as CircleGeometry;
-
   const offsetX = ray.origin.x - circle.center.x;
   const offsetY = ray.origin.y - circle.center.y;
   const b = offsetX * ray.direction.x + offsetY * ray.direction.y;

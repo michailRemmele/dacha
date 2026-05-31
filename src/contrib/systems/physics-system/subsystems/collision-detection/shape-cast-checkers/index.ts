@@ -12,10 +12,7 @@ import { checkBoxCastAndCapsule } from './box-capsule/check-box-cast-and-capsule
 import { checkBoxCastAndCircle } from './box-circle/check-box-cast-and-circle';
 import { checkBoxCastAndSegment } from './box-segment/check-box-cast-and-segment';
 
-export const shapeCastCheckers: Record<
-  string,
-  Record<string, ShapeCastCheckerFn>
-> = {
+export const shapeCastCheckers = {
   circleCast: {
     box: checkCircleCastAndBox,
     capsule: checkCircleCastAndCapsule,
@@ -34,4 +31,4 @@ export const shapeCastCheckers: Record<
     circle: checkBoxCastAndCircle,
     segment: checkBoxCastAndSegment,
   },
-};
+} as Record<string, Record<string, ShapeCastCheckerFn>>;

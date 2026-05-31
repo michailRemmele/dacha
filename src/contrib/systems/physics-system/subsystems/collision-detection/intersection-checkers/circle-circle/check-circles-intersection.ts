@@ -1,5 +1,5 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
-import type { Proxy, CircleGeometry, Intersection } from '../../types';
+import type { CircleGeometry, Intersection } from '../../types';
 import { isGreaterThan } from '../../utils';
 
 /**
@@ -13,17 +13,17 @@ import { isGreaterThan } from '../../utils';
  * When both centers are equal, the X axis is used as a deterministic fallback.
  */
 export const checkCirclesIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  circle1: CircleGeometry,
+  circle2: CircleGeometry,
 ): Intersection | false => {
   const {
     radius: radius1,
     center: { x: x1, y: y1 },
-  } = arg1.geometry as CircleGeometry;
+  } = circle1;
   const {
     radius: radius2,
     center: { x: x2, y: y2 },
-  } = arg2.geometry as CircleGeometry;
+  } = circle2;
 
   const offsetX = x2 - x1;
   const offsetY = y2 - y1;

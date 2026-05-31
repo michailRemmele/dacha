@@ -9,7 +9,6 @@ import type {
   CapsuleGeometry,
   EdgeWithNormal,
   Point,
-  QueryProxy,
 } from '../types';
 
 import { normalizeValue } from './utils';
@@ -120,15 +119,14 @@ const buildConvexGeometry = (points: Point[]): BoxGeometry => {
 };
 
 export const correctContactPoint = (
-  queryProxy: QueryProxy,
+  box: BoxCastGeometry,
   hit: RaycastCheckerHit | false,
 ): void => {
   if (!hit) {
     return;
   }
 
-  const { center, direction, halfExtents } =
-    queryProxy.geometry as BoxCastGeometry;
+  const { center, direction, halfExtents } = box;
   const { normal, distance } = hit;
 
   const centerX = center.x + direction.x * distance;
@@ -139,10 +137,10 @@ export const correctContactPoint = (
 };
 
 export const checkBoxCastAndConvexPoints = (
-  queryProxy: QueryProxy,
+  box: BoxCastGeometry,
   points: Point[],
 ): ShapeCastCheckerHit | false => {
-  const { halfExtents } = queryProxy.geometry as BoxCastGeometry;
+  const { halfExtents } = box;
 
   const expandedPoints: Point[] = [];
 
@@ -155,21 +153,15 @@ export const checkBoxCastAndConvexPoints = (
     }
   }
 
-  const convexProxy: QueryProxy = {
-    aabb: queryProxy.aabb,
-    geometry: buildConvexGeometry(expandedPoints),
-    layer: queryProxy.layer,
-  };
-
-  return raycastCheckers.ray.box(queryProxy, convexProxy);
+  return raycastCheckers.ray.box(box, buildConvexGeometry(expandedPoints));
 };
 
 export const checkBoxCastAndCircleGeometry = (
-  queryProxy: QueryProxy,
+  box: BoxCastGeometry,
   center: Point,
   radius: number,
 ): ShapeCastCheckerHit | false => {
-  const halfExtents = (queryProxy.geometry as BoxCastGeometry).halfExtents;
+  const { halfExtents } = box;
 
   const horizontalBox = buildConvexGeometry(
     BOX_CORNER_SIGNS.map(([signX, signY]) => ({
@@ -184,29 +176,16 @@ export const checkBoxCastAndCircleGeometry = (
     })),
   );
 
-  let nearest = raycastCheckers.ray.box(queryProxy, {
-    aabb: queryProxy.aabb,
-    geometry: horizontalBox,
-    layer: queryProxy.layer,
-  });
+  let nearest = raycastCheckers.ray.box(box, horizontalBox);
 
   nearest = chooseNearestIntersection(
     nearest,
-    raycastCheckers.ray.box(queryProxy, {
-      aabb: queryProxy.aabb,
-      geometry: verticalBox,
-      layer: queryProxy.layer,
-    }),
+    raycastCheckers.ray.box(box, verticalBox),
   );
 
   const cornerCircle = {
     center: { x: 0, y: 0 },
     radius,
-  };
-  const cornerCircleProxy: QueryProxy = {
-    aabb: queryProxy.aabb,
-    geometry: cornerCircle,
-    layer: queryProxy.layer,
   };
 
   for (const [signX, signY] of BOX_CORNER_SIGNS) {
@@ -215,7 +194,7 @@ export const checkBoxCastAndCircleGeometry = (
 
     nearest = chooseNearestIntersection(
       nearest,
-      raycastCheckers.ray.circle(queryProxy, cornerCircleProxy),
+      raycastCheckers.ray.circle(box, cornerCircle),
     );
   }
 
@@ -223,23 +202,22 @@ export const checkBoxCastAndCircleGeometry = (
 };
 
 export const checkBoxCastAndCapsuleGeometry = (
-  queryProxy: QueryProxy,
+  box: BoxCastGeometry,
   capsule: CapsuleGeometry,
 ): ShapeCastCheckerHit | false => {
-  const box = queryProxy.geometry as BoxCastGeometry;
   const { halfExtents } = box;
-  let nearest = checkBoxCastAndConvexPoints(queryProxy, [
+  let nearest = checkBoxCastAndConvexPoints(box, [
     capsule.point1,
     capsule.point2,
   ]);
 
   nearest = chooseNearestIntersection(
     nearest,
-    checkBoxCastAndCircleGeometry(queryProxy, capsule.point1, capsule.radius),
+    checkBoxCastAndCircleGeometry(box, capsule.point1, capsule.radius),
   );
   nearest = chooseNearestIntersection(
     nearest,
-    checkBoxCastAndCircleGeometry(queryProxy, capsule.point2, capsule.radius),
+    checkBoxCastAndCircleGeometry(box, capsule.point2, capsule.radius),
   );
 
   const expandedPoints: Point[] = [];
@@ -266,12 +244,6 @@ export const checkBoxCastAndCapsuleGeometry = (
     normal: capsule.normal,
     radius: capsule.radius,
   };
-  const edgeCapsuleProxy: QueryProxy = {
-    aabb: queryProxy.aabb,
-    geometry: edgeCapsule,
-    layer: queryProxy.layer,
-  };
-
   for (const edge of expandedCapsule.edges) {
     edgeCapsule.center.x = (edge.point1.x + edge.point2.x) / 2;
     edgeCapsule.center.y = (edge.point1.y + edge.point2.y) / 2;
@@ -281,7 +253,7 @@ export const checkBoxCastAndCapsuleGeometry = (
 
     nearest = chooseNearestIntersection(
       nearest,
-      raycastCheckers.ray.capsule(queryProxy, edgeCapsuleProxy),
+      raycastCheckers.ray.capsule(box, edgeCapsule),
     );
   }
 
