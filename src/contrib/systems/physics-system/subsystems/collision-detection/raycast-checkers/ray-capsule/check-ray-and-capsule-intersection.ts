@@ -1,51 +1,44 @@
 import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
-import type {
-  CapsuleGeometry,
-  Intersection,
-  Point,
-  Proxy,
-  RayGeometry,
-} from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import type { Point, RayGeometry } from '../../types';
+import { chooseNearestIntersection } from '../../intersection-checkers/common/cast';
+import {
+  isGreaterThan,
+  isDefinitelyNegative,
+  isDefinitelyPositive,
+  isZero,
+} from '../../utils';
+import type { RaycastCheckerFn, RaycastCheckerHit } from '../types';
 
-const chooseNearest = (
-  nearest: Intersection | false,
-  candidate: Intersection | false,
-): Intersection | false => {
-  if (!candidate) {
-    return nearest;
-  }
-
-  if (!nearest || candidate.distance! < nearest.distance!) {
-    return candidate;
-  }
-
-  return nearest;
-};
+interface CapsuleLikeGeometry {
+  point1: Point;
+  point2: Point;
+  normal: Vector2;
+  radius?: number;
+}
 
 const checkRayAndCap = (
   ray: RayGeometry,
   center: Point,
   radius: number,
-): Intersection | false => {
+): RaycastCheckerHit | false => {
   const offsetX = ray.origin.x - center.x;
   const offsetY = ray.origin.y - center.y;
   const b = offsetX * ray.direction.x + offsetY * ray.direction.y;
   const c = offsetX ** 2 + offsetY ** 2 - radius ** 2;
 
-  if (c > INTERSECTION_EPSILON && b > 0) {
+  if (isDefinitelyPositive(c) && b > 0) {
     return false;
   }
 
   const discriminant = b ** 2 - c;
 
-  if (discriminant < -INTERSECTION_EPSILON) {
+  if (isDefinitelyNegative(discriminant)) {
     return false;
   }
 
   const hitDistance = Math.max(0, -b - Math.sqrt(Math.max(0, discriminant)));
 
-  if (hitDistance > ray.maxDistance + INTERSECTION_EPSILON) {
+  if (isGreaterThan(hitDistance, ray.maxDistance)) {
     return false;
   }
 
@@ -65,8 +58,7 @@ const checkRayAndCap = (
   return {
     normal,
     distance: hitDistance,
-    penetration: 0,
-    contactPoints: [hitPoint],
+    point: hitPoint,
   };
 };
 
@@ -83,7 +75,7 @@ const checkRayAndSide = (
   point1: Point,
   point2: Point,
   sideNormal: Vector2,
-): Intersection | false => {
+): RaycastCheckerHit | false => {
   const segmentDirection = {
     x: point2.x - point1.x,
     y: point2.y - point1.y,
@@ -94,7 +86,7 @@ const checkRayAndSide = (
   };
   const denominator = VectorOps.crossProduct(ray.direction, segmentDirection);
 
-  if (Math.abs(denominator) <= INTERSECTION_EPSILON) {
+  if (isZero(denominator)) {
     return false;
   }
 
@@ -104,10 +96,10 @@ const checkRayAndSide = (
     VectorOps.crossProduct(delta, ray.direction) / denominator;
 
   if (
-    rayDistance < -INTERSECTION_EPSILON ||
-    rayDistance > ray.maxDistance + INTERSECTION_EPSILON ||
-    segmentDistance < -INTERSECTION_EPSILON ||
-    segmentDistance > 1 + INTERSECTION_EPSILON
+    isDefinitelyNegative(rayDistance) ||
+    isGreaterThan(rayDistance, ray.maxDistance) ||
+    isDefinitelyNegative(segmentDistance) ||
+    isGreaterThan(segmentDistance, 1)
   ) {
     return false;
   }
@@ -119,8 +111,9 @@ const checkRayAndSide = (
   const normal = sideNormal.clone();
 
   if (
-    normal.x * ray.direction.x + normal.y * ray.direction.y >
-    INTERSECTION_EPSILON
+    isDefinitelyPositive(
+      normal.x * ray.direction.x + normal.y * ray.direction.y,
+    )
   ) {
     normal.multiplyNumber(-1);
   }
@@ -128,8 +121,7 @@ const checkRayAndSide = (
   return {
     normal,
     distance: rayDistance,
-    penetration: 0,
-    contactPoints: [point],
+    point,
   };
 };
 
@@ -143,39 +135,39 @@ const checkRayAndSide = (
  * `maxDistance` is returned.
  */
 export const checkRayAndCapsuleIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
-): Intersection | false => {
-  const ray = arg1.geometry as RayGeometry;
-  const capsule = arg2.geometry as CapsuleGeometry;
+  ray: RayGeometry,
+  capsule: CapsuleLikeGeometry,
+  radiusOffset = 0,
+): ReturnType<RaycastCheckerFn> => {
+  const radius = (capsule?.radius ?? 0) + radiusOffset;
   const sideNormal = capsule.normal;
   const side1Point1 = {
-    x: capsule.point1.x + sideNormal.x * capsule.radius,
-    y: capsule.point1.y + sideNormal.y * capsule.radius,
+    x: capsule.point1.x + sideNormal.x * radius,
+    y: capsule.point1.y + sideNormal.y * radius,
   };
   const side1Point2 = {
-    x: capsule.point2.x + sideNormal.x * capsule.radius,
-    y: capsule.point2.y + sideNormal.y * capsule.radius,
+    x: capsule.point2.x + sideNormal.x * radius,
+    y: capsule.point2.y + sideNormal.y * radius,
   };
   const side2Point1 = {
-    x: capsule.point1.x - sideNormal.x * capsule.radius,
-    y: capsule.point1.y - sideNormal.y * capsule.radius,
+    x: capsule.point1.x - sideNormal.x * radius,
+    y: capsule.point1.y - sideNormal.y * radius,
   };
   const side2Point2 = {
-    x: capsule.point2.x - sideNormal.x * capsule.radius,
-    y: capsule.point2.y - sideNormal.y * capsule.radius,
+    x: capsule.point2.x - sideNormal.x * radius,
+    y: capsule.point2.y - sideNormal.y * radius,
   };
-  let nearest = checkRayAndCap(ray, capsule.point1, capsule.radius);
+  let nearest = checkRayAndCap(ray, capsule.point1, radius);
 
-  nearest = chooseNearest(
+  nearest = chooseNearestIntersection(
     nearest,
-    checkRayAndCap(ray, capsule.point2, capsule.radius),
+    checkRayAndCap(ray, capsule.point2, radius),
   );
-  nearest = chooseNearest(
+  nearest = chooseNearestIntersection(
     nearest,
     checkRayAndSide(ray, side1Point1, side1Point2, sideNormal),
   );
-  nearest = chooseNearest(
+  nearest = chooseNearestIntersection(
     nearest,
     checkRayAndSide(
       ray,

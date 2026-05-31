@@ -36,7 +36,7 @@ export function buildCircleGeometry(
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;
   } else {
-    const overlap = colliderOrOverlap as OverlapCircleParams;
+    const overlap = (colliderOrOverlap as OverlapCircleParams).shape;
     centerX = 0;
     centerY = 0;
     radius = overlap.radius;

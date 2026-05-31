@@ -1,6 +1,6 @@
 import { Vector2 } from '../../../../../../../engine/math-lib';
-import type { Proxy, CircleGeometry, Intersection } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import type { CircleGeometry, Intersection } from '../../types';
+import { isGreaterThan } from '../../utils';
 
 /**
  * Checks circles for intersection.
@@ -13,23 +13,23 @@ import { INTERSECTION_EPSILON } from '../../constants';
  * When both centers are equal, the X axis is used as a deterministic fallback.
  */
 export const checkCirclesIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  circle1: CircleGeometry,
+  circle2: CircleGeometry,
 ): Intersection | false => {
   const {
     radius: radius1,
     center: { x: x1, y: y1 },
-  } = arg1.geometry as CircleGeometry;
+  } = circle1;
   const {
     radius: radius2,
     center: { x: x2, y: y2 },
-  } = arg2.geometry as CircleGeometry;
+  } = circle2;
 
   const offsetX = x2 - x1;
   const offsetY = y2 - y1;
   const distance = Math.sqrt(offsetX ** 2 + offsetY ** 2);
 
-  if (distance > radius1 + radius2 + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, radius1 + radius2)) {
     return false;
   }
 

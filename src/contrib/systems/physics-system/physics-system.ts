@@ -59,6 +59,8 @@ export class PhysicsSystem extends SceneSystem {
 
     this.constraintSolver.update(contacts);
     this.collisionBroadcastSubsystem.update(contacts);
+
+    this.physicsSubsystem.lateUpdate();
   }
 }
 

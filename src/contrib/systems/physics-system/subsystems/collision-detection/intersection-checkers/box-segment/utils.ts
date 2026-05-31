@@ -5,7 +5,7 @@ import {
 } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, Point, SegmentGeometry } from '../../types';
 import { arePointsEqual, lerpPoint } from '../common/points';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan, isDefinitelyPositive, isZero } from '../../utils';
 import {
   getProjectionOverlap,
   projectPolygon,
@@ -100,15 +100,15 @@ export const buildBoxSegmentContactPoints = (
       VectorOps.dotProduct(segment.point2, edge.normal) - offset;
 
     if (
-      point1Distance > INTERSECTION_EPSILON &&
-      point2Distance > INTERSECTION_EPSILON
+      isDefinitelyPositive(point1Distance) &&
+      isDefinitelyPositive(point2Distance)
     ) {
       return [];
     }
 
     if (
-      point1Distance <= INTERSECTION_EPSILON &&
-      point2Distance <= INTERSECTION_EPSILON
+      !isDefinitelyPositive(point1Distance) &&
+      !isDefinitelyPositive(point2Distance)
     ) {
       continue;
     }
@@ -116,13 +116,13 @@ export const buildBoxSegmentContactPoints = (
     const denominator = point1Distance - point2Distance;
     const t = denominator === 0 ? 0 : point1Distance / denominator;
 
-    if (point1Distance > INTERSECTION_EPSILON) {
+    if (isDefinitelyPositive(point1Distance)) {
       start = Math.max(start, t);
     } else {
       end = Math.min(end, t);
     }
 
-    if (start > end + INTERSECTION_EPSILON) {
+    if (isGreaterThan(start, end)) {
       return [];
     }
   }
@@ -133,7 +133,7 @@ export const buildBoxSegmentContactPoints = (
     MathOps.clamp(start, 0, 1),
   );
 
-  if (Math.abs(end - start) <= INTERSECTION_EPSILON) {
+  if (isZero(end - start)) {
     return [contact1];
   }
 

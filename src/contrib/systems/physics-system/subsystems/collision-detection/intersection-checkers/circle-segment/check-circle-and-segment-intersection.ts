@@ -5,11 +5,10 @@ import {
 } from '../../../../../../../engine/math-lib';
 import type {
   CircleGeometry,
-  Proxy,
   SegmentGeometry,
   Intersection,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isGreaterThan } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -21,11 +20,9 @@ import { orientNormal } from '../common/normals';
  * the segment toward the circle center.
  */
 export const checkCircleAndSegmentIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  circle: CircleGeometry,
+  segment: SegmentGeometry,
 ): Intersection | false => {
-  const circle = arg1.geometry as CircleGeometry;
-  const segment = arg2.geometry as SegmentGeometry;
   const closestPoint = VectorOps.getClosestPointOnEdge(circle.center, segment);
   const distance = MathOps.getDistanceBetweenTwoPoints(
     circle.center.x,
@@ -34,7 +31,7 @@ export const checkCircleAndSegmentIntersection = (
     closestPoint.y,
   );
 
-  if (distance > circle.radius + INTERSECTION_EPSILON) {
+  if (isGreaterThan(distance, circle.radius)) {
     return false;
   }
 

@@ -1,15 +1,14 @@
 import { Actor } from '../../../../../../engine/actor';
 import { Vector2 } from '../../../../../../engine/math-lib';
-import { RigidBody } from '../../../../../components/rigid-body';
+import {
+  RigidBody,
+  type RigidBodyType,
+} from '../../../../../components/rigid-body';
 import { Transform } from '../../../../../components/transform';
 import { ConstraintSolver } from '../index';
 import type { Contact } from '../../collision-detection/types';
 
-const createActor = (
-  id: string,
-  type: 'dynamic' | 'static',
-  mass = 1,
-): Actor => {
+const createActor = (id: string, type: RigidBodyType, mass = 1): Actor => {
   const actor = new Actor({ id, name: id });
 
   actor.setComponent(
@@ -125,5 +124,71 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(2);
+  });
+
+  it('Cancels dynamic velocity against a kinematic body without moving the kinematic body', () => {
+    const solver = new ConstraintSolver();
+
+    const actor1 = createActor('dynamic-body', 'dynamic');
+    const actor2 = createActor('kinematic-body', 'kinematic');
+
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+
+    rigidBody1.linearVelocity = new Vector2(5, 0);
+    transform1.world.position.x = 2;
+    transform2.world.position.x = 10;
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(1, 0),
+        penetration: 0.5,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
+
+    solver.update(contacts);
+
+    expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
+    expect(rigidBody2.linearVelocity.x).toBeCloseTo(0);
+    expect(transform1.world.position.x).toBeLessThan(2);
+    expect(transform2.world.position.x).toBeCloseTo(10);
+  });
+
+  it('Lets moving kinematic bodies push dynamic bodies', () => {
+    const solver = new ConstraintSolver();
+
+    const actor1 = createActor('kinematic-body', 'kinematic');
+    const actor2 = createActor('dynamic-body', 'dynamic');
+
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+
+    rigidBody1.linearVelocity = new Vector2(5, 0);
+    transform1.world.position.x = 0;
+    transform2.world.position.x = 2;
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(1, 0),
+        penetration: 0.5,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
+
+    solver.update(contacts);
+
+    expect(rigidBody1.linearVelocity.x).toBeCloseTo(5);
+    expect(rigidBody2.linearVelocity.x).toBeCloseTo(5);
+    expect(transform1.world.position.x).toBeCloseTo(0);
+    expect(transform2.world.position.x).toBeGreaterThan(2);
   });
 });

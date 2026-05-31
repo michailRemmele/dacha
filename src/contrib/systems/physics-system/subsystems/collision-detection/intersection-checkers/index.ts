@@ -1,4 +1,4 @@
-import type { Proxy, Intersection } from '../types';
+import type { Geometry, Intersection } from '../types';
 
 import { checkBoxAndCapsuleIntersection } from './box-capsule/check-box-and-capsule-intersection';
 import { checkBoxAndCircleIntersection } from './box-circle/check-box-and-circle-intersection';
@@ -12,20 +12,18 @@ import { checkPointAndBoxIntersection } from './point-box/check-point-and-box-in
 import { checkPointAndCapsuleIntersection } from './point-capsule/check-point-and-capsule-intersection';
 import { checkPointAndCircleIntersection } from './point-circle/check-point-and-circle-intersection';
 import { checkPointAndSegmentIntersection } from './point-segment/check-point-and-segment-intersection';
-import { checkRayAndBoxIntersection } from './ray-box/check-ray-and-box-intersection';
-import { checkRayAndCapsuleIntersection } from './ray-capsule/check-ray-and-capsule-intersection';
-import { checkRayAndCircleIntersection } from './ray-circle/check-ray-and-circle-intersection';
-import { checkRayAndSegmentIntersection } from './ray-segment/check-ray-and-segment-intersection';
 import { checkSegmentAndCapsuleIntersection } from './segment-capsule/check-segment-and-capsule-intersection';
 
 export type CheckIntersectionFn = (
-  arg1: Proxy,
-  arg2: Proxy,
+  arg1: Geometry,
+  arg2: Geometry,
 ) => Intersection | false;
 
-const swapArgs = (checker: CheckIntersectionFn): CheckIntersectionFn => {
-  return (arg1, arg2) => {
-    const intersection = checker(arg2, arg1);
+const swapArgs = <T, U>(
+  checker: (arg1: T, arg2: U) => Intersection | false,
+): CheckIntersectionFn => {
+  return (arg1: unknown, arg2: unknown) => {
+    const intersection = checker(arg2 as T, arg1 as U);
 
     if (!intersection) {
       return false;
@@ -37,10 +35,7 @@ const swapArgs = (checker: CheckIntersectionFn): CheckIntersectionFn => {
   };
 };
 
-export const intersectionCheckers: Record<
-  string,
-  Record<string, CheckIntersectionFn>
-> = {
+export const intersectionCheckers = {
   box: {
     box: checkBoxesIntersection,
     capsule: checkBoxAndCapsuleIntersection,
@@ -70,10 +65,4 @@ export const intersectionCheckers: Record<
     circle: checkPointAndCircleIntersection,
     segment: checkPointAndSegmentIntersection,
   },
-  ray: {
-    box: checkRayAndBoxIntersection,
-    capsule: checkRayAndCapsuleIntersection,
-    circle: checkRayAndCircleIntersection,
-    segment: checkRayAndSegmentIntersection,
-  },
-};
+} as Record<string, Record<string, CheckIntersectionFn>>;

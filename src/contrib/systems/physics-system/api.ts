@@ -1,11 +1,10 @@
 import type { Actor } from '../../../engine/actor';
 import type { CollisionDetectionSubsystem } from './subsystems';
 import type {
-  RaycastHit,
+  CastHit,
   RaycastParams,
-  OverlapBoxParams,
-  OverlapCircleParams,
-  OverlapPointParams,
+  OverlapParams,
+  ShapeCastParams,
 } from './types';
 
 /**
@@ -34,7 +33,7 @@ export class PhysicsAPI {
    * @param params - Raycast parameters
    * @returns The nearest hit or `null` when nothing is hit
    */
-  raycast(params: RaycastParams): RaycastHit | null {
+  raycast(params: RaycastParams): CastHit | null {
     return this.collisionDetectionSubsystem.raycast(params);
   }
 
@@ -47,37 +46,37 @@ export class PhysicsAPI {
    * @param params - Raycast parameters
    * @returns All hits sorted from nearest to farthest
    */
-  raycastAll(params: RaycastParams): RaycastHit[] {
+  raycastAll(params: RaycastParams): CastHit[] {
     return this.collisionDetectionSubsystem.raycastAll(params);
   }
 
   /**
-   * Returns all actors whose colliders contain the given point.
+   * Returns all actors whose colliders overlap the given query shape.
    *
-   * @param params - Point overlap parameters
-   * @returns Actors whose colliders overlap the point
+   * @param params - Overlap parameters
+   * @returns Actors whose colliders overlap the shape
    */
-  overlapPoint(params: OverlapPointParams): Actor[] {
-    return this.collisionDetectionSubsystem.overlapPoint(params);
+  overlapShape(params: OverlapParams): Actor[] {
+    return this.collisionDetectionSubsystem.overlapShape(params);
   }
 
   /**
-   * Returns all actors whose colliders overlap the given circle.
+   * Casts a shape and returns the nearest hit, if any.
    *
-   * @param params - Circle overlap parameters
-   * @returns Actors whose colliders overlap the circle
+   * @param params - Shape cast parameters
+   * @returns The nearest hit or `null` when nothing is hit
    */
-  overlapCircle(params: OverlapCircleParams): Actor[] {
-    return this.collisionDetectionSubsystem.overlapCircle(params);
+  shapeCast(params: ShapeCastParams): CastHit | null {
+    return this.collisionDetectionSubsystem.shapeCast(params);
   }
 
   /**
-   * Returns all actors whose colliders overlap the given box.
+   * Casts a shape and returns all hits sorted by distance.
    *
-   * @param params - Box overlap parameters
-   * @returns Actors whose colliders overlap the box
+   * @param params - Shape cast parameters
+   * @returns All hits sorted from nearest to farthest
    */
-  overlapBox(params: OverlapBoxParams): Actor[] {
-    return this.collisionDetectionSubsystem.overlapBox(params);
+  shapeCastAll(params: ShapeCastParams): CastHit[] {
+    return this.collisionDetectionSubsystem.shapeCastAll(params);
   }
 }

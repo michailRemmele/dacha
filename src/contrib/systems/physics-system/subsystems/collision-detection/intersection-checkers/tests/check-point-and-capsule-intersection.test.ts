@@ -2,22 +2,21 @@ import { checkPointAndCapsuleIntersection } from '../point-capsule/check-point-a
 import {
   createCapsuleGeometry,
   createPointGeometry,
-  createProxy,
   expectIntersection,
   expectToBeClose,
 } from './helpers';
 
 describe('PhysicsSystem -> collision-detection -> checkPointAndCapsuleIntersection()', () => {
   it('Returns false when a point is outside a capsule', () => {
-    const point = createProxy(createPointGeometry(0, 2));
-    const capsule = createProxy(createCapsuleGeometry(-2, 0, 2, 0, 1));
+    const point = createPointGeometry(0, 2);
+    const capsule = createCapsuleGeometry(-2, 0, 2, 0, 1);
 
     expect(checkPointAndCapsuleIntersection(point, capsule)).toBe(false);
   });
 
   it('Returns point contact when a point is inside a capsule side', () => {
-    const point = createProxy(createPointGeometry(0, 0.5));
-    const capsule = createProxy(createCapsuleGeometry(-2, 0, 2, 0, 1));
+    const point = createPointGeometry(0, 0.5);
+    const capsule = createCapsuleGeometry(-2, 0, 2, 0, 1);
     const intersection = expectIntersection(
       checkPointAndCapsuleIntersection(point, capsule),
     );
@@ -28,8 +27,8 @@ describe('PhysicsSystem -> collision-detection -> checkPointAndCapsuleIntersecti
   });
 
   it('Returns zero penetration when a point touches a capsule cap', () => {
-    const point = createProxy(createPointGeometry(3, 0));
-    const capsule = createProxy(createCapsuleGeometry(-2, 0, 2, 0, 1));
+    const point = createPointGeometry(3, 0);
+    const capsule = createCapsuleGeometry(-2, 0, 2, 0, 1);
     const intersection = expectIntersection(
       checkPointAndCapsuleIntersection(point, capsule),
     );

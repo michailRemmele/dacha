@@ -1,12 +1,11 @@
 import { VectorOps } from '../../../../../../../engine/math-lib';
 import type {
-  Proxy,
   BoxGeometry,
   PointGeometry,
   Intersection,
   EdgeWithNormal,
 } from '../../types';
-import { INTERSECTION_EPSILON } from '../../constants';
+import { isDefinitelyPositive, isZero } from '../../utils';
 import { orientNormal } from '../common/normals';
 
 /**
@@ -17,12 +16,9 @@ import { orientNormal } from '../common/normals';
  * When the point lies exactly on the boundary, penetration is reported as zero.
  */
 export const checkPointAndBoxIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  point: PointGeometry,
+  box: BoxGeometry,
 ): Intersection | false => {
-  const point = arg1.geometry as PointGeometry;
-  const box = arg2.geometry as BoxGeometry;
-
   let bestEdge: EdgeWithNormal = box.edges[0];
   let bestSignedDistance = -Infinity;
 
@@ -35,7 +31,7 @@ export const checkPointAndBoxIntersection = (
       edge.normal,
     );
 
-    if (signedDistance > INTERSECTION_EPSILON) {
+    if (isDefinitelyPositive(signedDistance)) {
       return false;
     }
 
@@ -46,8 +42,7 @@ export const checkPointAndBoxIntersection = (
   }
 
   const contactPoint = VectorOps.getClosestPointOnEdge(point.center, bestEdge);
-  const isPointOnBoxBoundary =
-    Math.abs(bestSignedDistance) <= INTERSECTION_EPSILON;
+  const isPointOnBoxBoundary = isZero(bestSignedDistance);
 
   return {
     normal: orientNormal(bestEdge.normal.clone(), point.center, box.center),

@@ -1,4 +1,4 @@
-import type { Proxy, BoxGeometry, Intersection } from '../../types';
+import type { BoxGeometry, Intersection } from '../../types';
 import { orientNormal } from '../common/normals';
 
 import { findMinBoxesOverlap, buildContactPoints } from './utils';
@@ -12,12 +12,9 @@ import { findMinBoxesOverlap, buildContactPoints } from './utils';
  * points for impulse-based collision resolution.
  */
 export const checkBoxesIntersection = (
-  arg1: Proxy,
-  arg2: Proxy,
+  geometry1: BoxGeometry,
+  geometry2: BoxGeometry,
 ): Intersection | false => {
-  const geometry1 = arg1.geometry as BoxGeometry;
-  const geometry2 = arg2.geometry as BoxGeometry;
-
   const overlap1 = findMinBoxesOverlap(geometry1, geometry2);
   if (overlap1 === false) {
     return false;

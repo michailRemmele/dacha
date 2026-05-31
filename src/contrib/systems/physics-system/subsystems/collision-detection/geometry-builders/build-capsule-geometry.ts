@@ -1,21 +1,55 @@
 import { VectorOps, type Point } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
 import type { CapsuleGeometry } from '../types';
+import type { OverlapCapsuleParams } from '../../../types';
 
+export function buildCapsuleGeometry(
+  overlap: OverlapCapsuleParams,
+): CapsuleGeometry;
 export function buildCapsuleGeometry(
   collider: Collider,
   transform: Transform,
+): CapsuleGeometry;
+export function buildCapsuleGeometry(
+  colliderOrOverlap: Collider | OverlapCapsuleParams,
+  transform?: Transform,
 ): CapsuleGeometry {
-  if (collider.shape.type !== 'capsule') {
-    throw new Error(`Expected capsule collider, got ${collider.shape.type}.`);
+  let centerX: number;
+  let centerY: number;
+  let point1Y: number;
+  let point2Y: number;
+  let radius: number;
+  let rotation: number;
+  let scaleX: number;
+  let scaleY: number;
+
+  if (transform !== undefined) {
+    const collider = colliderOrOverlap as Collider;
+
+    if (collider.shape.type !== 'capsule') {
+      throw new Error(`Expected capsule collider, got ${collider.shape.type}.`);
+    }
+
+    centerX = collider.offset.x + transform.world.position.x;
+    centerY = collider.offset.y + transform.world.position.y;
+    point1Y = -collider.shape.height / 2;
+    point2Y = collider.shape.height / 2;
+    radius = collider.shape.radius;
+    rotation = transform.world.rotation;
+    scaleX = transform.world.scale.x;
+    scaleY = transform.world.scale.y;
+  } else {
+    const overlap = (colliderOrOverlap as OverlapCapsuleParams).shape;
+    centerX = overlap.center.x;
+    centerY = overlap.center.y;
+    point1Y = -overlap.height / 2;
+    point2Y = overlap.height / 2;
+    radius = overlap.radius;
+    rotation = overlap.rotation ?? 0;
+    scaleX = 1;
+    scaleY = 1;
   }
 
-  const centerX = collider.offset.x + transform.world.position.x;
-  const centerY = collider.offset.y + transform.world.position.y;
-
-  const rotation = transform.world.rotation;
-  const scaleX = transform.world.scale.x;
-  const scaleY = transform.world.scale.y;
   const cos = Math.cos(rotation);
   const sin = Math.sin(rotation);
 
@@ -29,14 +63,8 @@ export function buildCapsuleGeometry(
     };
   };
 
-  const geometryPoint1 = buildPoint(
-    collider.shape.point1.x,
-    collider.shape.point1.y,
-  );
-  const geometryPoint2 = buildPoint(
-    collider.shape.point2.x,
-    collider.shape.point2.y,
-  );
+  const geometryPoint1 = buildPoint(0, point1Y);
+  const geometryPoint2 = buildPoint(0, point2Y);
 
   return {
     center: {
@@ -51,6 +79,6 @@ export function buildCapsuleGeometry(
       geometryPoint1.y,
       geometryPoint2.y,
     ),
-    radius: collider.shape.radius * Math.max(scaleX, scaleY),
+    radius: radius * Math.max(scaleX, scaleY),
   };
 }

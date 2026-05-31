@@ -23,6 +23,7 @@ export const createScene = (): Scene => {
 export const createPhysicsSystem = (
   scene: Scene,
   settings?: PhysicsSettings,
+  gravity = 0,
 ): { physicsSystem: PhysicsSystem; world: World } => {
   const world = new World({ id: 'world', name: 'world' });
   const templateCollection = new TemplateCollection();
@@ -33,7 +34,7 @@ export const createPhysicsSystem = (
   const physicsSystem = new PhysicsSystem({
     scene,
     world,
-    gravity: 0,
+    gravity,
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: settings ? { physics: settings } : {},
     templateCollection,
@@ -46,7 +47,7 @@ export const createPhysicsSystem = (
 
 export const createBoxActor = (
   id: string,
-  type: 'dynamic' | 'static',
+  type: 'dynamic' | 'static' | 'kinematic',
   positionX: number,
   positionY: number,
   colliderConfig: {
@@ -122,7 +123,7 @@ export const createSegmentActor = (
   point1Y: number,
   point2X: number,
   point2Y: number,
-  type?: 'dynamic' | 'static',
+  type?: 'dynamic' | 'static' | 'kinematic',
   colliderConfig: Pick<Collider, 'layer'> = { layer: 'default' },
 ): Actor => {
   const actor = new Actor({ id, name: id });
@@ -164,12 +165,9 @@ export const createCapsuleActor = (
   id: string,
   positionX: number,
   positionY: number,
-  point1X: number,
-  point1Y: number,
-  point2X: number,
-  point2Y: number,
+  height: number,
   radius: number,
-  type?: 'dynamic' | 'static',
+  type?: 'dynamic' | 'static' | 'kinematic',
   colliderConfig: Pick<Collider, 'layer'> = { layer: 'default' },
 ): Actor => {
   const actor = new Actor({ id, name: id });
@@ -182,10 +180,7 @@ export const createCapsuleActor = (
       type: 'capsule',
       offsetX: 0,
       offsetY: 0,
-      point1X,
-      point1Y,
-      point2X,
-      point2Y,
+      height,
       radius,
       layer: colliderConfig.layer,
       disabled: false,

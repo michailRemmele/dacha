@@ -51,13 +51,28 @@ export interface RayGeometry {
   maxDistance: number;
 }
 
+export interface CircleCastGeometry extends CircleGeometry, RayGeometry {}
+
+export interface CapsuleCastGeometry extends CapsuleGeometry, RayGeometry {
+  cap1: CircleCastGeometry;
+  cap2: CircleCastGeometry;
+  box: BoxCastGeometry | null;
+}
+
+export interface BoxCastGeometry extends BoxGeometry, RayGeometry {
+  halfExtents: Point;
+}
+
 export type Geometry =
   | BoxGeometry
   | CircleGeometry
   | SegmentGeometry
   | CapsuleGeometry
   | PointGeometry
-  | RayGeometry;
+  | RayGeometry
+  | CircleCastGeometry
+  | CapsuleCastGeometry
+  | BoxCastGeometry;
 
 export interface OrientationData {
   transform: {
@@ -73,6 +88,7 @@ export interface OrientationData {
     offsetX: number;
     offsetY: number;
     radius?: number;
+    height?: number;
     sizeX?: number;
     sizeY?: number;
     point1X?: number;

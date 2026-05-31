@@ -22,13 +22,16 @@ export interface PhysicsQueryFilter {
   layer?: string;
 }
 
-export interface RaycastParams extends PhysicsQueryFilter {
-  origin: Point;
+export interface CommonCastParams extends PhysicsQueryFilter {
   direction: Vector2;
   maxDistance: number;
 }
 
-export interface RaycastHit {
+export interface RaycastParams extends CommonCastParams {
+  origin: Point;
+}
+
+export interface CastHit {
   actor: Actor;
   point: Point;
   normal: Vector2;
@@ -36,16 +39,79 @@ export interface RaycastHit {
 }
 
 export interface OverlapPointParams extends PhysicsQueryFilter {
-  point: Point;
+  shape: {
+    type: 'point';
+    point: Point;
+  };
 }
 
 export interface OverlapCircleParams extends PhysicsQueryFilter {
+  shape: {
+    type: 'circle';
+    center: Point;
+    radius: number;
+  };
+}
+
+export interface OverlapBoxParams extends PhysicsQueryFilter {
+  shape: {
+    type: 'box';
+    center: Point;
+    size: Point;
+    rotation?: number;
+  };
+}
+
+export interface OverlapCapsuleParams extends PhysicsQueryFilter {
+  shape: {
+    type: 'capsule';
+    center: Point;
+    height: number;
+    radius: number;
+    rotation?: number;
+  };
+}
+
+export type OverlapParams =
+  | OverlapPointParams
+  | OverlapCircleParams
+  | OverlapBoxParams
+  | OverlapCapsuleParams;
+
+export interface CircleCastShape {
+  type: 'circle';
   center: Point;
   radius: number;
 }
 
-export interface OverlapBoxParams extends PhysicsQueryFilter {
+export interface CapsuleCastShape {
+  type: 'capsule';
+  center: Point;
+  height: number;
+  radius: number;
+}
+
+export interface BoxCastShape {
+  type: 'box';
   center: Point;
   size: Point;
-  rotation?: number;
 }
+
+export interface CircleCastParams extends PhysicsQueryFilter, CommonCastParams {
+  shape: CircleCastShape;
+}
+
+export interface CapsuleCastParams
+  extends PhysicsQueryFilter,
+    CommonCastParams {
+  shape: CapsuleCastShape;
+}
+
+export interface BoxCastParams extends PhysicsQueryFilter, CommonCastParams {
+  shape: BoxCastShape;
+}
+
+export type ShapeCastParams =
+  | CircleCastParams
+  | CapsuleCastParams
+  | BoxCastParams;

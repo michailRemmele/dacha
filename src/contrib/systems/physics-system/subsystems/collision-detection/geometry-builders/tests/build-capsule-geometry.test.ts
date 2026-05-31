@@ -8,10 +8,7 @@ describe('Contrib -> systems -> PhysicsSystem -> collision-detection -> geometry
         type: 'capsule',
         offsetX: 1,
         offsetY: 2,
-        point1X: -1,
-        point1Y: 0,
-        point2X: 1,
-        point2Y: 0,
+        height: 2,
         radius: 0.5,
         layer: 'default',
         disabled: false,
@@ -19,16 +16,16 @@ describe('Contrib -> systems -> PhysicsSystem -> collision-detection -> geometry
       new Transform({
         offsetX: 10,
         offsetY: 20,
-        rotation: 90,
+        rotation: 0,
         scaleX: 2,
         scaleY: 3,
       }),
     );
 
     expect(geometry.point1.x).toBeCloseTo(11);
-    expect(geometry.point1.y).toBeCloseTo(20);
+    expect(geometry.point1.y).toBeCloseTo(19);
     expect(geometry.point2.x).toBeCloseTo(11);
-    expect(geometry.point2.y).toBeCloseTo(24);
+    expect(geometry.point2.y).toBeCloseTo(25);
     expect(geometry.radius).toBeCloseTo(1.5);
   });
 });
