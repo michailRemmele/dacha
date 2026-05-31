@@ -81,6 +81,46 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     ]);
   });
 
+  it('Excludes actors from raycast, shape-cast, and overlap queries', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const nearBox = createBoxActor('near-box', 'static', 4, 0);
+    const farBox = createBoxActor('far-box', 'static', 8, 0);
+
+    scene.appendChild(nearBox);
+    scene.appendChild(farBox);
+
+    const raycastHit = physicsApi.raycast({
+      origin: { x: 0, y: 0 },
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+      excludeActors: [nearBox],
+    });
+    const shapeCastHit = physicsApi.shapeCast({
+      shape: {
+        type: 'circle',
+        center: { x: 0, y: 0 },
+        radius: 1,
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+      excludeActors: [nearBox],
+    });
+    const overlaps = physicsApi.overlapShape({
+      shape: {
+        type: 'box',
+        center: { x: 6, y: 0 },
+        size: { x: 6, y: 2 },
+      },
+      excludeActors: [nearBox],
+    });
+
+    expect(raycastHit?.actor.id).toBe('far-box');
+    expect(shapeCastHit?.actor.id).toBe('far-box');
+    expect(overlaps.map((actor) => actor.id)).toStrictEqual(['far-box']);
+  });
+
   it('Finds overlaps for point, box, and circle queries', () => {
     const scene = createScene();
     const { world } = createPhysicsSystem(scene);

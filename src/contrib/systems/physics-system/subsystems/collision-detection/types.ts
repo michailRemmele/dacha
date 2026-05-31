@@ -111,6 +111,7 @@ export interface QueryProxy {
   aabb: AABB;
   geometry: Geometry;
   layer?: string;
+  excludedActors?: Set<Actor>;
 }
 
 export type Proxy = ActorProxy | QueryProxy;

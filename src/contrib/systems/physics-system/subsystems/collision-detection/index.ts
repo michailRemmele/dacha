@@ -313,6 +313,9 @@ export class CollisionDetectionSubsystem {
 
     let candidateIndex = 0;
     candidates.forEach((proxy) => {
+      if (queryProxy.excludedActors?.has(proxy.actor)) {
+        return;
+      }
       if (!this.testState(proxy, queryProxy)) {
         return;
       }

@@ -20,6 +20,7 @@ export interface PhysicsSettings {
 
 export interface PhysicsQueryFilter {
   layer?: string;
+  excludeActors?: Actor[];
 }
 
 export interface CommonCastParams extends PhysicsQueryFilter {
