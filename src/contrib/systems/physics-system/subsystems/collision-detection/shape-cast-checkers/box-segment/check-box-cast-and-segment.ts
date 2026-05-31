@@ -4,14 +4,12 @@ import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 import { checkBoxCastAndConvexPoints, correctContactPoint } from '../box-utils';
 
-export const checkBoxCastAndSegment: ShapeCastCheckerFn = (
-  query,
-  target,
-) => {
-  const box = query as BoxCastGeometry;
-  const segment = target as SegmentGeometry;
+export const checkBoxCastAndSegment: ShapeCastCheckerFn<
+  BoxCastGeometry,
+  SegmentGeometry
+> = (boxCast, segment) => {
   const overlapIntersection = intersectionCheckers.box.segment(
-    box,
+    boxCast,
     segment,
   );
 
@@ -19,12 +17,12 @@ export const checkBoxCastAndSegment: ShapeCastCheckerFn = (
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const hit = checkBoxCastAndConvexPoints(box, [
+  const hit = checkBoxCastAndConvexPoints(boxCast, [
     segment.point1,
     segment.point2,
   ]);
 
-  correctContactPoint(box, hit);
+  correctContactPoint(boxCast, hit);
 
   return hit;
 };

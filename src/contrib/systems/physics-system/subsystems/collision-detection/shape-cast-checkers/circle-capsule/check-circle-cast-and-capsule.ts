@@ -4,14 +4,12 @@ import { checkRayAndCapsuleIntersection } from '../../raycast-checkers/ray-capsu
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
-export const checkCircleCastAndCapsule: ShapeCastCheckerFn = (
-  query,
-  target,
-) => {
-  const circle = query as CircleCastGeometry;
-  const capsule = target as CapsuleGeometry;
+export const checkCircleCastAndCapsule: ShapeCastCheckerFn<
+  CircleCastGeometry,
+  CapsuleGeometry
+> = (circleCast, capsule) => {
   const overlapIntersection = intersectionCheckers.circle.capsule(
-    circle,
+    circleCast,
     capsule,
   );
 
@@ -19,15 +17,19 @@ export const checkCircleCastAndCapsule: ShapeCastCheckerFn = (
     return buildInitialOverlapHit(overlapIntersection);
   }
 
-  const hit = checkRayAndCapsuleIntersection(circle, capsule, circle.radius);
+  const hit = checkRayAndCapsuleIntersection(
+    circleCast,
+    capsule,
+    circleCast.radius,
+  );
 
   if (!hit) {
     return false;
   }
 
   hit.point = {
-    x: hit.point.x - hit.normal.x * circle.radius,
-    y: hit.point.y - hit.normal.y * circle.radius,
+    x: hit.point.x - hit.normal.x * circleCast.radius,
+    y: hit.point.y - hit.normal.y * circleCast.radius,
   };
 
   return hit;
