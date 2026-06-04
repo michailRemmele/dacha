@@ -1,9 +1,10 @@
 import type { Actor } from '../../../../../engine/actor';
-import { Collider } from '../../../../components';
+import { Collider, Transform } from '../../../../components';
 import type {
   RaycastParams,
   OverlapParams,
   ShapeCastParams,
+  CastActorParams,
   CastHit,
 } from '../../types';
 
@@ -49,7 +50,14 @@ type QueryGeometry =
   | CapsuleCastGeometry;
 type QueryParams = OverlapParams | RaycastParams | ShapeCastParams;
 
-type GeometryBulders = Record<QueryType, (params: unknown) => QueryGeometry>;
+type GeometryBulders = Record<
+  QueryType,
+  (
+    colliderOrParams: Collider | unknown,
+    transform?: Transform,
+    params?: unknown,
+  ) => QueryGeometry
+>;
 
 export function buildQueryProxy(
   type: QueryType,
@@ -67,6 +75,34 @@ export function buildQueryProxy(
   };
 }
 
+export function buildActorCastProxy(
+  type: ShapeCastQueryType,
+  params: CastActorParams,
+): QueryProxy {
+  const { actor, excludeSelf = true, excludeActors } = params;
+
+  const transform = actor.getComponent(Transform);
+  const collider = actor.getComponent(Collider);
+
+  const geometry = (geometryBuilders as GeometryBulders)[type](
+    collider,
+    transform,
+    params,
+  );
+
+  const excludedActors = new Set(excludeActors);
+  if (excludeSelf) {
+    excludedActors.add(actor);
+  }
+
+  return {
+    aabb: aabbBuilders[type](geometry),
+    geometry,
+    layer: params.layer ?? collider.layer,
+    excludedActors,
+  };
+}
+
 export const getShapeCastQueryType = (
   params: ShapeCastParams,
 ): ShapeCastQueryType => {
@@ -77,6 +113,23 @@ export const getShapeCastQueryType = (
       return 'capsuleCast';
     case 'box':
       return 'boxCast';
+  }
+};
+
+export const getActorCastQueryType = (
+  params: CastActorParams,
+): ShapeCastQueryType | null => {
+  const collider = params.actor.getComponent(Collider) as Collider | undefined;
+
+  switch (collider?.shape.type) {
+    case 'circle':
+      return 'circleCast';
+    case 'capsule':
+      return 'capsuleCast';
+    case 'box':
+      return 'boxCast';
+    default:
+      return null;
   }
 };
 

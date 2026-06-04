@@ -1,16 +1,42 @@
+import type { Collider, Transform } from '../../../../../components';
 import type { CapsuleCastGeometry } from '../types';
-import type { CapsuleCastParams } from '../../../types';
+import type { CapsuleCastParams, CastActorParams } from '../../../types';
 import { isZero, isDefinitelyPositive } from '../utils';
 
 import { buildCapsuleGeometry } from './build-capsule-geometry';
 import { buildBoxCastGeometry } from './build-box-cast-geometry';
 
 export function buildCapsuleCastGeometry(
-  shapeCast: CapsuleCastParams,
+  castParams: CapsuleCastParams,
+): CapsuleCastGeometry;
+export function buildCapsuleCastGeometry(
+  collider: Collider,
+  transform: Transform,
+  castParams: CastActorParams,
+): CapsuleCastGeometry;
+export function buildCapsuleCastGeometry(
+  castParamsOrCollider: CapsuleCastParams | Collider,
+  transform?: Transform,
+  castParams?: CastActorParams,
 ): CapsuleCastGeometry {
-  const direction = shapeCast.direction.clone().normalize();
+  const params = castParams ?? (castParamsOrCollider as CapsuleCastParams);
 
-  const capsule = buildCapsuleGeometry(shapeCast);
+  const direction = params.direction.clone().normalize();
+
+  const capsule =
+    transform !== undefined
+      ? buildCapsuleGeometry(castParamsOrCollider as Collider, transform)
+      : buildCapsuleGeometry(castParamsOrCollider as CapsuleCastParams);
+
+  const offset = 'offset' in params ? params.offset : undefined;
+  if (offset) {
+    capsule.center.x += offset.x;
+    capsule.center.y += offset.y;
+    capsule.point1.x += offset.x;
+    capsule.point1.y += offset.y;
+    capsule.point2.x += offset.x;
+    capsule.point2.y += offset.y;
+  }
 
   const boxSizeX = isZero(capsule.point2.x - capsule.point1.x)
     ? capsule.radius * 2
@@ -26,14 +52,14 @@ export function buildCapsuleCastGeometry(
       origin: capsule.point1,
       radius: capsule.radius,
       direction,
-      maxDistance: shapeCast.maxDistance,
+      maxDistance: params.maxDistance,
     },
     cap2: {
       center: capsule.point2,
       origin: capsule.point2,
       radius: capsule.radius,
       direction,
-      maxDistance: shapeCast.maxDistance,
+      maxDistance: params.maxDistance,
     },
     box:
       isDefinitelyPositive(boxSizeX) && isDefinitelyPositive(boxSizeY)
@@ -44,11 +70,11 @@ export function buildCapsuleCastGeometry(
               size: { x: boxSizeX, y: boxSizeY },
             },
             direction,
-            maxDistance: shapeCast.maxDistance,
+            maxDistance: params.maxDistance,
           })
         : null,
     origin: capsule.center,
     direction,
-    maxDistance: shapeCast.maxDistance,
+    maxDistance: params.maxDistance,
   };
 }

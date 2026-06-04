@@ -471,4 +471,232 @@ describe('Systems -> PhysicsSystem -> queries', () => {
       'far-circle',
     ]);
   });
+
+  it('Casts circle actor against colliders', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const caster = createCircleActor('circle-caster', 0, 0, 1);
+    const target = createBoxActor('circle-target', 'static', 5, 0);
+
+    scene.appendChild(caster);
+    scene.appendChild(target);
+
+    const hit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(hit?.actor.id).toBe('circle-target');
+    expect(hit?.distance).toBeCloseTo(3);
+    expect(hit?.point.x).toBeCloseTo(4);
+    expect(hit?.point.y).toBeCloseTo(0);
+    expect(hit?.normal.x).toBeCloseTo(-1);
+    expect(hit?.normal.y).toBeCloseTo(0);
+  });
+
+  it('Casts actor from its current transform plus query offset', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const caster = createCircleActor('caster', 0, 0, 1);
+    const target = createBoxActor('target', 'static', 5, 5);
+
+    scene.appendChild(caster);
+    scene.appendChild(target);
+
+    const withoutOffsetHit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+    const offsetHit = physicsApi.castActor({
+      actor: caster,
+      offset: { x: 0, y: 5 },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(withoutOffsetHit).toBeNull();
+    expect(offsetHit?.actor.id).toBe('target');
+    expect(offsetHit?.distance).toBeCloseTo(3);
+    expect(offsetHit?.point.x).toBeCloseTo(4);
+    expect(offsetHit?.point.y).toBeCloseTo(5);
+  });
+
+  it('Casts box actor against colliders', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const caster = createBoxActor('box-caster', 'static', 0, 0);
+    const target = createCircleActor('box-target', 5, 0, 1);
+
+    scene.appendChild(caster);
+    scene.appendChild(target);
+
+    const hit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(hit?.actor.id).toBe('box-target');
+  });
+
+  it('Casts capsule actor against colliders', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const caster = createCapsuleActor('capsule-caster', 0, 0, 2, 1);
+    const target = createBoxActor('capsule-target', 'static', 5, 0);
+
+    scene.appendChild(caster);
+    scene.appendChild(target);
+
+    const hit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(hit?.actor.id).toBe('capsule-target');
+  });
+
+  it('Returns actor-cast hits in distance order and filters by layer', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene, {
+      collisionLayers: [
+        { id: 'solid', name: 'solid' },
+        { id: 'sensor', name: 'sensor' },
+      ],
+      collisionMatrix: {
+        solid: {
+          sensor: false,
+        },
+        sensor: {
+          sensor: true,
+        },
+      },
+    });
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const caster = createCircleActor('caster', 0, 0, 1);
+    const nearBox = createBoxActor('near-box', 'static', 5, 0, {
+      layer: 'solid',
+    });
+    const farCircle = createCircleActor('far-circle', 8, 0, 1, {
+      layer: 'sensor',
+    });
+
+    scene.appendChild(caster);
+    scene.appendChild(nearBox);
+    scene.appendChild(farCircle);
+
+    const allHits = physicsApi.castActorAll({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+    });
+    const filteredHits = physicsApi.castActorAll({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+      layer: 'sensor',
+    });
+    const excludedHit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+      excludeActors: [nearBox],
+    });
+
+    expect(allHits.map((hit) => hit.actor.id)).toStrictEqual([
+      'near-box',
+      'far-circle',
+    ]);
+    expect(allHits.map((hit) => hit.distance)).toStrictEqual([3, 6]);
+    expect(filteredHits.map((hit) => hit.actor.id)).toStrictEqual([
+      'far-circle',
+    ]);
+    expect(excludedHit?.actor.id).toBe('far-circle');
+  });
+
+  it("Uses the cast actor's collider layer when layer is omitted", () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene, {
+      collisionLayers: [
+        { id: 'solid', name: 'solid' },
+        { id: 'sensor', name: 'sensor' },
+      ],
+      collisionMatrix: {
+        solid: {
+          sensor: false,
+        },
+        sensor: {
+          sensor: true,
+        },
+      },
+    });
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const caster = createCircleActor('caster', 0, 0, 1, {
+      layer: 'sensor',
+    });
+    const nearBox = createBoxActor('near-box', 'static', 5, 0, {
+      layer: 'solid',
+    });
+    const farCircle = createCircleActor('far-circle', 8, 0, 1, {
+      layer: 'sensor',
+    });
+
+    scene.appendChild(caster);
+    scene.appendChild(nearBox);
+    scene.appendChild(farCircle);
+
+    const hits = physicsApi.castActorAll({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+    });
+
+    expect(hits.map((hit) => hit.actor.id)).toStrictEqual(['far-circle']);
+  });
+
+  it('Excludes the cast actor by default and ignores unsupported segment actors', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const caster = createCircleActor('caster', 0, 0, 1);
+    const segment = createSegmentActor('segment', 0, 5, -1, 0, 1, 0);
+
+    scene.appendChild(caster);
+    scene.appendChild(segment);
+
+    const defaultHit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+    const selfHit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+      excludeSelf: false,
+    });
+    const segmentHit = physicsApi.castActor({
+      actor: segment,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+    const segmentHits = physicsApi.castActorAll({
+      actor: segment,
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(defaultHit).toBeNull();
+    expect(selfHit?.actor.id).toBe('caster');
+    expect(selfHit?.distance).toBe(0);
+    expect(segmentHit).toBeNull();
+    expect(segmentHits).toStrictEqual([]);
+  });
 });
