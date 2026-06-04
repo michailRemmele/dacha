@@ -8,6 +8,8 @@ import { buildBoxCastGeometry } from './build-box-cast-geometry';
 export function buildCapsuleCastGeometry(
   shapeCast: CapsuleCastParams,
 ): CapsuleCastGeometry {
+  const direction = shapeCast.direction.clone().normalize();
+
   const capsule = buildCapsuleGeometry(shapeCast);
 
   const boxSizeX = isZero(capsule.point2.x - capsule.point1.x)
@@ -23,14 +25,14 @@ export function buildCapsuleCastGeometry(
       center: capsule.point1,
       origin: capsule.point1,
       radius: capsule.radius,
-      direction: shapeCast.direction,
+      direction,
       maxDistance: shapeCast.maxDistance,
     },
     cap2: {
       center: capsule.point2,
       origin: capsule.point2,
       radius: capsule.radius,
-      direction: shapeCast.direction,
+      direction,
       maxDistance: shapeCast.maxDistance,
     },
     box:
@@ -41,12 +43,12 @@ export function buildCapsuleCastGeometry(
               center: capsule.center,
               size: { x: boxSizeX, y: boxSizeY },
             },
-            direction: shapeCast.direction,
+            direction,
             maxDistance: shapeCast.maxDistance,
           })
         : null,
     origin: capsule.center,
-    direction: shapeCast.direction.normalize(),
+    direction,
     maxDistance: shapeCast.maxDistance,
   };
 }

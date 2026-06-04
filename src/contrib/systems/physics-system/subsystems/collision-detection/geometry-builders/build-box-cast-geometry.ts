@@ -21,7 +21,7 @@ export function buildBoxCastGeometry(
   return {
     ...box,
     origin: box.center,
-    direction: shapeCast.direction.normalize(),
+    direction: shapeCast.direction.clone().normalize(),
     maxDistance: shapeCast.maxDistance,
     halfExtents: {
       x: (maxX - minX) / 2,

@@ -8,7 +8,7 @@ export function buildCircleCastGeometry(
     center: shapeCast.shape.center,
     origin: shapeCast.shape.center,
     radius: shapeCast.shape.radius,
-    direction: shapeCast.direction.normalize(),
+    direction: shapeCast.direction.clone().normalize(),
     maxDistance: shapeCast.maxDistance,
   };
 }
