@@ -12,8 +12,8 @@ export function buildBoxGeometry(
   colliderOrOverlap: Collider | OverlapBoxParams,
   transform?: Transform,
 ): BoxGeometry {
-  let centerX: number;
-  let centerY: number;
+  let offsetX: number;
+  let offsetY: number;
   let sizeX: number;
   let sizeY: number;
   let positionX: number;
@@ -29,8 +29,8 @@ export function buildBoxGeometry(
       throw new Error(`Expected box collider, got ${collider.shape.type}.`);
     }
 
-    centerX = collider.offset.x;
-    centerY = collider.offset.y;
+    offsetX = collider.offset.x;
+    offsetY = collider.offset.y;
     sizeX = collider.shape.size.x;
     sizeY = collider.shape.size.y;
     positionX = transform.world.position.x;
@@ -40,8 +40,8 @@ export function buildBoxGeometry(
     scaleY = transform.world.scale.y;
   } else {
     const overlap = (colliderOrOverlap as OverlapBoxParams).shape;
-    centerX = 0;
-    centerY = 0;
+    offsetX = 0;
+    offsetY = 0;
     sizeX = overlap.size.x;
     sizeY = overlap.size.y;
     positionX = overlap.center.x;
@@ -58,14 +58,15 @@ export function buildBoxGeometry(
 
   const cos = Math.cos(rotation);
   const sin = Math.sin(rotation);
-
-  centerX += positionX;
-  centerY += positionY;
-
-  const center = {
-    x: centerX,
-    y: centerY,
-  };
+  const center = VectorOps.rotatePoint(
+    {
+      x: offsetX * scaleX,
+      y: offsetY * scaleY,
+    },
+    rotation,
+  );
+  center.x += positionX;
+  center.y += positionY;
 
   const points = [
     { x: x1, y: y1 },

@@ -31,4 +31,28 @@ describe('PhysicsSystem -> collision-detection -> buildBoxGeometry()', () => {
       expect(centerDistance).toBeLessThanOrEqual(0);
     });
   });
+
+  it('Rotates collider offset with actor transform', () => {
+    const geometry = buildBoxGeometry(
+      new Collider({
+        type: 'box',
+        offsetX: 2,
+        offsetY: 0,
+        sizeX: 2,
+        sizeY: 2,
+        layer: 'default',
+        disabled: false,
+      }),
+      new Transform({
+        offsetX: 10,
+        offsetY: 20,
+        rotation: 90,
+        scaleX: 1,
+        scaleY: 1,
+      }),
+    );
+
+    expect(geometry.center.x).toBeCloseTo(10);
+    expect(geometry.center.y).toBeCloseTo(22);
+  });
 });
