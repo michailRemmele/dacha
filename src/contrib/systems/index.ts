@@ -3,6 +3,7 @@ export { CameraSystem, CameraAPI } from './camera-system';
 export { GameStatsMeter } from './game-stats-meter';
 export { KeyboardInputSystem } from './keyboard-input-system';
 export { KeyboardControlSystem } from './keyboard-control-system';
+export { CharacterControllerSystem } from './character-controller-system';
 export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
 export { PhysicsSystem, PhysicsAPI } from './physics-system';
