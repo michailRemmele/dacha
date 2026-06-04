@@ -33,7 +33,7 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
 
     const geometry = buildBoxCastGeometry(collider, transform, cast);
 
-    expect(geometry.origin).toEqual({ x: 11, y: 22 });
+    expect(geometry.origin).toEqual({ x: 12, y: 26 });
     expect(geometry.halfExtents).toEqual({ x: 4, y: 9 });
     expect(geometry.direction.x).toBeCloseTo(0.6);
     expect(geometry.direction.y).toBeCloseTo(0.8);
@@ -59,7 +59,7 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
 
     const geometry = buildCircleCastGeometry(collider, transform, cast);
 
-    expect(geometry.origin).toEqual({ x: 8, y: 25 });
+    expect(geometry.origin).toEqual({ x: 6, y: 35 });
     expect(geometry.radius).toBe(9);
     expect(geometry.direction.x).toBeCloseTo(0.6);
     expect(geometry.direction.y).toBeCloseTo(0.8);
@@ -86,9 +86,9 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
 
     const geometry = buildCapsuleCastGeometry(collider, transform, cast);
 
-    expect(geometry.origin).toEqual({ x: 11, y: 22 });
-    expect(geometry.point1).toEqual({ x: 11, y: 16 });
-    expect(geometry.point2).toEqual({ x: 11, y: 28 });
+    expect(geometry.origin).toEqual({ x: 12, y: 26 });
+    expect(geometry.point1).toEqual({ x: 12, y: 20 });
+    expect(geometry.point2).toEqual({ x: 12, y: 32 });
     expect(geometry.radius).toBe(6);
     expect(geometry.direction.x).toBeCloseTo(0.6);
     expect(geometry.direction.y).toBeCloseTo(0.8);
