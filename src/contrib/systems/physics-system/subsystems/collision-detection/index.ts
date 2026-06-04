@@ -26,6 +26,8 @@ import {
   shapeCast,
   shapeCastAll,
   getShapeCastQueryType,
+  buildActorCastProxy,
+  getActorCastQueryType,
 } from './query-utils';
 import type {
   PhysicsSettings,
@@ -33,6 +35,7 @@ import type {
   CastHit,
   OverlapParams,
   ShapeCastParams,
+  CastActorParams,
 } from '../../types';
 import type {
   SortedItem,
@@ -133,6 +136,34 @@ export class CollisionDetectionSubsystem {
     const queryType = getShapeCastQueryType(params);
 
     const queryProxy = buildQueryProxy(queryType, params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return shapeCastAll(queryType, queryProxy, this.queryCandidates);
+  }
+
+  castActor(params: CastActorParams): CastHit | null {
+    const queryType = getActorCastQueryType(params);
+
+    if (!queryType) {
+      return null;
+    }
+
+    const queryProxy = buildActorCastProxy(queryType, params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return shapeCast(queryType, queryProxy, this.queryCandidates);
+  }
+
+  castActorAll(params: CastActorParams): CastHit[] {
+    const queryType = getActorCastQueryType(params);
+
+    if (!queryType) {
+      return [];
+    }
+
+    const queryProxy = buildActorCastProxy(queryType, params);
 
     this.sweepAndPruneQuery(queryProxy);
 

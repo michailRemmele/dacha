@@ -10,7 +10,7 @@ import {
   Transform,
 } from '../../components';
 import { PhysicsAPI } from '../physics-system';
-import type { CastHit, ShapeCastParams } from '../physics-system/types';
+import type { CastHit } from '../physics-system/types';
 
 import { clipAgainstNormal } from './utils';
 
@@ -42,45 +42,6 @@ export class CharacterControllerSystem extends SceneSystem {
 
   onSceneDestroy(): void {
     this.actorQuery.destroy();
-  }
-
-  private getCastShape(
-    transform: Transform,
-    collider: Collider,
-    position: Point,
-  ): ShapeCastParams['shape'] | null {
-    const center = {
-      x: position.x + collider.offset.x,
-      y: position.y + collider.offset.y,
-    };
-    const { scale } = transform.world;
-
-    switch (collider.shape.type) {
-      case 'circle':
-        return {
-          type: 'circle',
-          center,
-          radius: collider.shape.radius * Math.max(scale.x, scale.y),
-        };
-      case 'box':
-        return {
-          type: 'box',
-          center,
-          size: {
-            x: collider.shape.size.x * scale.x,
-            y: collider.shape.size.y * scale.y,
-          },
-        };
-      case 'capsule':
-        return {
-          type: 'capsule',
-          center,
-          height: collider.shape.height * scale.y,
-          radius: collider.shape.radius * Math.max(scale.x, scale.y),
-        };
-      case 'segment':
-        return null;
-    }
   }
 
   private isWalkable(normal: Point, controller: CharacterController): boolean {
@@ -123,7 +84,6 @@ export class CharacterControllerSystem extends SceneSystem {
     const physicsApi = this.world.systemApi.get(PhysicsAPI);
 
     const controller = actor.getComponent(CharacterController);
-    const collider = actor.getComponent(Collider);
     const transform = actor.getComponent(Transform);
 
     const distance = displacement.magnitude;
@@ -132,19 +92,15 @@ export class CharacterControllerSystem extends SceneSystem {
       return null;
     }
 
-    const shape = this.getCastShape(transform, collider, position);
-
-    if (!shape) {
-      return null;
-    }
-
-    const hits = physicsApi.shapeCastAll({
-      shape,
+    const hits = physicsApi.castActorAll({
+      actor,
+      offset: {
+        x: position.x - transform.world.position.x,
+        y: position.y - transform.world.position.y,
+      },
       direction: displacement,
       maxDistance: distance + controller.safeMargin,
-      layer: controller.layer ?? collider.layer,
-      excludeActors: [actor],
-    } as ShapeCastParams);
+    });
 
     for (const hit of hits) {
       if (this.isBlockingHit(hit, displacement)) {

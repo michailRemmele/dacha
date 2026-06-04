@@ -112,7 +112,32 @@ export interface BoxCastParams extends PhysicsQueryFilter, CommonCastParams {
   shape: BoxCastShape;
 }
 
-export type ShapeCastParams =
-  | CircleCastParams
-  | CapsuleCastParams
-  | BoxCastParams;
+export interface ShapeCastParams extends PhysicsQueryFilter, CommonCastParams {
+  shape: CircleCastShape | CapsuleCastShape | BoxCastShape;
+}
+
+/**
+ * Parameters for casting an actor's collider.
+ *
+ * Circle, box, and capsule colliders are supported. Segment colliders are not
+ * castable and produce no hits.
+ */
+export interface CastActorParams extends PhysicsQueryFilter, CommonCastParams {
+  /**
+   * Actor whose components provide the cast geometry.
+   */
+  actor: Actor;
+  /**
+   * World-space offset added to the actor's geometry.
+   */
+  offset?: Point;
+  /**
+   * Collision layer used for filtering. When omitted, the actor collider's
+   * layer is used.
+   */
+  layer?: string;
+  /**
+   * Whether to exclude the cast actor from query results. Defaults to `true`.
+   */
+  excludeSelf?: boolean;
+}

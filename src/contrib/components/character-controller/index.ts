@@ -10,7 +10,6 @@ export interface CharacterControllerConfig {
   maxSlopeAngle?: number;
   maxSlides?: number;
   groundSnapDistance?: number;
-  layer?: string;
 }
 
 /**
@@ -40,8 +39,6 @@ export class CharacterController extends Component {
   maxSlides: number;
   /** Distance used to probe opposite upDirection and keep ground contact over small gaps */
   groundSnapDistance: number;
-  /** Optional query layer used by controller casts instead of the collider layer */
-  layer?: string;
 
   /** Whether the controller is standing on walkable ground after the last fixed update */
   onGround: boolean;
@@ -71,7 +68,6 @@ export class CharacterController extends Component {
     this.maxSlopeAngle = config.maxSlopeAngle ?? Math.PI / 4;
     this.maxSlides = config.maxSlides ?? 4;
     this.groundSnapDistance = config.groundSnapDistance ?? 0.1;
-    this.layer = config.layer;
 
     this.onGround = false;
     this.onWall = false;

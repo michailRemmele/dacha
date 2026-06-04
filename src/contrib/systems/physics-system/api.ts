@@ -5,6 +5,7 @@ import type {
   RaycastParams,
   OverlapParams,
   ShapeCastParams,
+  CastActorParams,
 } from './types';
 
 /**
@@ -78,5 +79,25 @@ export class PhysicsAPI {
    */
   shapeCastAll(params: ShapeCastParams): CastHit[] {
     return this.collisionDetectionSubsystem.shapeCastAll(params);
+  }
+
+  /**
+   * Casts an actor's collider and returns the nearest hit, if any.
+   *
+   * @param params - Actor cast parameters
+   * @returns The nearest hit or `null` when nothing is hit
+   */
+  castActor(params: CastActorParams): CastHit | null {
+    return this.collisionDetectionSubsystem.castActor(params);
+  }
+
+  /**
+   * Casts an actor's collider and returns all hits sorted by distance.
+   *
+   * @param params - Actor cast parameters
+   * @returns All hits sorted from nearest to farthest
+   */
+  castActorAll(params: CastActorParams): CastHit[] {
+    return this.collisionDetectionSubsystem.castActorAll(params);
   }
 }
