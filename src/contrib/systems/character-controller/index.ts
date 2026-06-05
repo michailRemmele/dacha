@@ -5,7 +5,7 @@ import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
 import { Vector2, VectorOps, type Point } from '../../../engine/math-lib';
 import {
   Collider,
-  CharacterController,
+  CharacterBody,
   RigidBody,
   Transform,
 } from '../../components';
@@ -19,14 +19,14 @@ const MIN_DISTANCE = 0.000001;
 /**
  * Kinematic character controller system with sweep/slide collision movement.
  *
- * The system expects actors to have `CharacterController`, `Transform`,
+ * The system expects actors to have `CharacterBody`, `Transform`,
  * `Collider`, and a kinematic `RigidBody`. Put this system before
  * `PhysicsSystem` in system configuration so `movePosition()` targets are
  * consumed by physics in the same fixed step.
  *
  * @category Systems
  */
-export class CharacterControllerSystem extends SceneSystem {
+export class CharacterController extends SceneSystem {
   private actorQuery: ActorQuery;
   private world: SceneSystemOptions['world'];
 
@@ -36,7 +36,7 @@ export class CharacterControllerSystem extends SceneSystem {
     this.world = options.world;
     this.actorQuery = new ActorQuery({
       scene: options.scene,
-      filter: [CharacterController, Transform, Collider, RigidBody],
+      filter: [CharacterBody, Transform, Collider, RigidBody],
     });
   }
 
@@ -44,7 +44,7 @@ export class CharacterControllerSystem extends SceneSystem {
     this.actorQuery.destroy();
   }
 
-  private isWalkable(normal: Point, controller: CharacterController): boolean {
+  private isWalkable(normal: Point, controller: CharacterBody): boolean {
     return (
       VectorOps.dotProduct(normal, controller.upDirection) >=
       Math.cos(controller.maxSlopeAngle)
@@ -83,7 +83,7 @@ export class CharacterControllerSystem extends SceneSystem {
   ): CastHit | null {
     const physicsApi = this.world.systemApi.get(PhysicsAPI);
 
-    const controller = actor.getComponent(CharacterController);
+    const controller = actor.getComponent(CharacterBody);
     const transform = actor.getComponent(Transform);
 
     const distance = displacement.magnitude;
@@ -99,7 +99,7 @@ export class CharacterControllerSystem extends SceneSystem {
         y: position.y - transform.world.position.y,
       },
       direction: displacement,
-      maxDistance: distance + controller.safeMargin,
+      maxDistance: distance + controller.skinWidth,
     });
 
     for (const hit of hits) {
@@ -111,7 +111,7 @@ export class CharacterControllerSystem extends SceneSystem {
     return null;
   }
 
-  private handleHit(controller: CharacterController, hit: CastHit): void {
+  private handleHit(controller: CharacterBody, hit: CastHit): void {
     const upDot = VectorOps.dotProduct(hit.normal, controller.upDirection);
     const threshold = Math.cos(controller.maxSlopeAngle);
 
@@ -131,7 +131,7 @@ export class CharacterControllerSystem extends SceneSystem {
   }
 
   private move(actor: Actor, displacement: Vector2): Point {
-    const controller = actor.getComponent(CharacterController);
+    const controller = actor.getComponent(CharacterBody);
     const transform = actor.getComponent(Transform);
 
     const position = new Vector2(
@@ -153,7 +153,7 @@ export class CharacterControllerSystem extends SceneSystem {
         break;
       }
 
-      const safeDistance = Math.max(hit.distance - controller.safeMargin, 0);
+      const safeDistance = Math.max(hit.distance - controller.skinWidth, 0);
       const direction = displacement.clone().normalize();
 
       position.x += direction.x * safeDistance;
@@ -174,11 +174,11 @@ export class CharacterControllerSystem extends SceneSystem {
   }
 
   private updateGroundState(actor: Actor, position: Point): void {
-    const controller = actor.getComponent(CharacterController);
+    const controller = actor.getComponent(CharacterBody);
 
     const probeDistance = Math.max(
-      controller.groundSnapDistance,
-      controller.safeMargin,
+      controller.groundProbeDistance,
+      controller.skinWidth,
     );
     const hit = this.cast(
       actor,
@@ -197,7 +197,7 @@ export class CharacterControllerSystem extends SceneSystem {
     controller.groundActor = null;
   }
 
-  private resetState(controller: CharacterController): void {
+  private resetState(controller: CharacterBody): void {
     if (controller.onGround) {
       controller.groundActor = null;
       controller.groundNormal = controller.upDirection.clone();
@@ -215,7 +215,7 @@ export class CharacterControllerSystem extends SceneSystem {
     const deltaTimeInSeconds = options.deltaTime / 1000;
 
     this.actorQuery.getActors().forEach((actor) => {
-      const controller = actor.getComponent(CharacterController);
+      const controller = actor.getComponent(CharacterBody);
       const rigidBody = actor.getComponent(RigidBody);
       const collider = actor.getComponent(Collider);
 
@@ -227,6 +227,7 @@ export class CharacterControllerSystem extends SceneSystem {
         collider.disabled ||
         rigidBody.type !== 'kinematic'
       ) {
+        controller._displacement.multiplyNumber(0);
         return;
       }
 
@@ -246,4 +247,4 @@ export class CharacterControllerSystem extends SceneSystem {
   }
 }
 
-CharacterControllerSystem.systemName = 'CharacterControllerSystem';
+CharacterController.systemName = 'CharacterController';

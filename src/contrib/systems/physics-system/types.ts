@@ -3,7 +3,8 @@ import type { Actor } from '../../../engine/actor';
 import type { Vector2, Point } from '../../../engine/math-lib';
 
 export interface PhysicsSystemOptions extends SceneSystemOptions {
-  gravity: number;
+  gravityX: number;
+  gravityY: number;
 }
 
 export interface CollisionLayer {
@@ -90,12 +91,14 @@ export interface CapsuleCastShape {
   center: Point;
   height: number;
   radius: number;
+  rotation?: number;
 }
 
 export interface BoxCastShape {
   type: 'box';
   center: Point;
   size: Point;
+  rotation?: number;
 }
 
 export interface CircleCastParams extends PhysicsQueryFilter, CommonCastParams {

@@ -1,23 +1,26 @@
-import type {
-  SceneSystemOptions,
-  UpdateOptions,
-} from '../../../../../engine/system';
+import type { UpdateOptions } from '../../../../../engine/system';
 import { ActorQuery, type Actor } from '../../../../../engine/actor';
+import type { Scene } from '../../../../../engine/scene';
+import type { Vector2 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
-import type { PhysicsSystemOptions } from '../../types';
+
+export interface PhysicsSubsystemOptions {
+  scene: Scene;
+  getGravity: () => Vector2;
+}
 
 export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
-  private gravity: number;
+  private getGravity: () => Vector2;
 
   private kinematicMovedActors: Set<Actor>;
 
-  constructor(options: SceneSystemOptions) {
-    const { gravity, scene } = options as PhysicsSystemOptions;
+  constructor(options: PhysicsSubsystemOptions) {
+    const { scene, getGravity } = options;
 
     this.actorQuery = new ActorQuery({ scene, filter: [RigidBody, Transform] });
-    this.gravity = gravity;
+    this.getGravity = getGravity;
 
     this.kinematicMovedActors = new Set();
   }
@@ -36,7 +39,9 @@ export class PhysicsSubsystem {
     const velocitySignX = Math.sign(linearVelocity.x);
     const velocitySignY = Math.sign(linearVelocity.y);
 
-    const reactionForceValue = mass * this.gravity;
+    const gravity = this.getGravity();
+
+    const reactionForceValue = mass * gravity.magnitude;
     const dragForceValue = -1 * linearDamping * reactionForceValue;
     const forceToVelocityMultiplier = deltaTime / mass;
     const slowdownValue = dragForceValue * forceToVelocityMultiplier;
@@ -104,7 +109,9 @@ export class PhysicsSubsystem {
       }
 
       if (rigidBody.gravityScale) {
-        force.y += mass * this.gravity * rigidBody.gravityScale;
+        const gravity = this.getGravity();
+        force.x += mass * gravity.x * rigidBody.gravityScale;
+        force.y += mass * gravity.y * rigidBody.gravityScale;
       }
 
       if (force.x || force.y) {

@@ -14,10 +14,7 @@ export {
   type CapsuleColliderShape,
 } from './collider';
 export { RigidBody, type RigidBodyConfig } from './rigid-body';
-export {
-  CharacterController,
-  type CharacterControllerConfig,
-} from './character-controller';
+export { CharacterBody, type CharacterBodyConfig } from './character-body';
 export { Animatable, type AnimatableConfig } from './animatable';
 export { Sprite, type SpriteConfig } from './sprite';
 export { Transform, type TransformConfig } from './transform';

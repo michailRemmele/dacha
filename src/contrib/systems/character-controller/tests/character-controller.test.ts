@@ -2,10 +2,7 @@ import { Actor, ActorCreator, ActorSpawner } from '../../../../engine/actor';
 import { TemplateCollection } from '../../../../engine/template';
 import { World } from '../../../../engine/world';
 import { Vector2 } from '../../../../engine/math-lib';
-import {
-  CharacterController,
-  Transform,
-} from '../../../components';
+import { CharacterBody, Transform } from '../../../components';
 import { PhysicsSystem } from '../../physics-system';
 import {
   createBoxActor,
@@ -13,11 +10,11 @@ import {
   createScene,
   createSegmentActor,
 } from '../../physics-system/tests/helpers';
-import { CharacterControllerSystem } from '../index';
+import { CharacterController } from '../index';
 
 const createSystems = (): {
   scene: ReturnType<typeof createScene>;
-  characterControllerSystem: CharacterControllerSystem;
+  characterController: CharacterController;
   physicsSystem: PhysicsSystem;
 } => {
   const scene = createScene();
@@ -27,7 +24,8 @@ const createSystems = (): {
   const systemOptions = {
     scene,
     world,
-    gravity: 0,
+    gravityX: 0,
+    gravityY: 0,
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: {},
     templateCollection,
@@ -35,42 +33,47 @@ const createSystems = (): {
 
   world.appendChild(scene);
 
-  const characterControllerSystem = new CharacterControllerSystem(
-    systemOptions,
-  );
+  const characterController = new CharacterController(systemOptions);
   const physicsSystem = new PhysicsSystem(systemOptions);
 
   physicsSystem.onSceneEnter?.();
 
   return {
     scene,
-    characterControllerSystem,
+    characterController,
     physicsSystem,
   };
 };
 
-const addController = (actor: Actor): CharacterController => {
+const addController = (actor: Actor): CharacterBody => {
   actor.setComponent(
-    new CharacterController({
-      safeMargin: 0.02,
-      groundSnapDistance: 0.2,
+    new CharacterBody({
+      skinWidth: 0.02,
+      groundProbeDistance: 0.2,
     }),
   );
 
-  return actor.getComponent(CharacterController);
+  return actor.getComponent(CharacterBody);
 };
 
-describe('Systems -> CharacterControllerSystem', () => {
+describe('Systems -> CharacterController', () => {
   it('Moves a kinematic character through PhysicsSystem movePosition', () => {
-    const { scene, characterControllerSystem, physicsSystem } = createSystems();
-    const character = createCapsuleActor('character', 0, 0, 2, 0.5, 'kinematic');
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      0,
+      2,
+      0.5,
+      'kinematic',
+    );
     const controller = addController(character);
     const transform = character.getComponent(Transform);
 
     controller.velocity.x = 10;
     scene.appendChild(character);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(transform.world.position.x).toBeCloseTo(1);
@@ -78,28 +81,42 @@ describe('Systems -> CharacterControllerSystem', () => {
   });
 
   it('Consumes one-step controller move displacement once', () => {
-    const { scene, characterControllerSystem, physicsSystem } = createSystems();
-    const character = createCapsuleActor('character', 0, 0, 2, 0.5, 'kinematic');
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      0,
+      2,
+      0.5,
+      'kinematic',
+    );
     const controller = addController(character);
     const transform = character.getComponent(Transform);
 
     controller.move(new Vector2(2, 0));
     scene.appendChild(character);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(transform.world.position.x).toBeCloseTo(2);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(transform.world.position.x).toBeCloseTo(2);
   });
 
   it('Slides along blocking walls and sets side collision state', () => {
-    const { scene, characterControllerSystem, physicsSystem } = createSystems();
-    const character = createCapsuleActor('character', 0, 0, 2, 0.5, 'kinematic');
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      0,
+      2,
+      0.5,
+      'kinematic',
+    );
     const controller = addController(character);
     const transform = character.getComponent(Transform);
     const wall = createBoxActor('wall', 'static', 3, 0);
@@ -108,7 +125,7 @@ describe('Systems -> CharacterControllerSystem', () => {
     scene.appendChild(character);
     scene.appendChild(wall);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(transform.world.position.x).toBeCloseTo(1.48);
@@ -118,7 +135,7 @@ describe('Systems -> CharacterControllerSystem', () => {
   });
 
   it('Detects ground below a standing character', () => {
-    const { scene, characterControllerSystem, physicsSystem } = createSystems();
+    const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
       'character',
       0,
@@ -133,7 +150,7 @@ describe('Systems -> CharacterControllerSystem', () => {
     scene.appendChild(character);
     scene.appendChild(floor);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(controller.onGround).toBe(true);
@@ -142,8 +159,15 @@ describe('Systems -> CharacterControllerSystem', () => {
   });
 
   it('Sets onCeiling when movement hits a ceiling', () => {
-    const { scene, characterControllerSystem, physicsSystem } = createSystems();
-    const character = createCapsuleActor('character', 0, 0, 2, 0.5, 'kinematic');
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      0,
+      2,
+      0.5,
+      'kinematic',
+    );
     const controller = addController(character);
     const ceiling = createBoxActor('ceiling', 'static', 0, -3);
 
@@ -151,7 +175,7 @@ describe('Systems -> CharacterControllerSystem', () => {
     scene.appendChild(character);
     scene.appendChild(ceiling);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(controller.onCeiling).toBe(true);
@@ -159,7 +183,7 @@ describe('Systems -> CharacterControllerSystem', () => {
   });
 
   it('Treats walkable segment slopes as ground', () => {
-    const { scene, characterControllerSystem, physicsSystem } = createSystems();
+    const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
       'character',
       0,
@@ -175,7 +199,7 @@ describe('Systems -> CharacterControllerSystem', () => {
     scene.appendChild(character);
     scene.appendChild(slope);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(controller.onGround).toBe(true);
@@ -184,7 +208,7 @@ describe('Systems -> CharacterControllerSystem', () => {
   });
 
   it('Uses controller upDirection for ground checks', () => {
-    const { scene, characterControllerSystem, physicsSystem } = createSystems();
+    const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
       'character',
       -0.45,
@@ -200,7 +224,7 @@ describe('Systems -> CharacterControllerSystem', () => {
     scene.appendChild(character);
     scene.appendChild(wall);
 
-    characterControllerSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(controller.onGround).toBe(true);
