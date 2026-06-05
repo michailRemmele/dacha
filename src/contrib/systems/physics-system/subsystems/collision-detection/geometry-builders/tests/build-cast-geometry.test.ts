@@ -40,6 +40,23 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
     expect(geometry.maxDistance).toBe(10);
   });
 
+  it('Builds rotated box cast geometry from shape cast params', () => {
+    const geometry = buildBoxCastGeometry({
+      shape: {
+        type: 'box',
+        center: { x: 0, y: 0 },
+        size: { x: 2, y: 4 },
+        rotation: Math.PI / 2,
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(geometry.origin).toEqual({ x: 0, y: 0 });
+    expect(geometry.halfExtents.x).toBeCloseTo(2);
+    expect(geometry.halfExtents.y).toBeCloseTo(1);
+  });
+
   it('Builds circle cast geometry from collider and transform', () => {
     const collider = new Collider({
       type: 'circle',
@@ -96,5 +113,25 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
     expect(geometry.cap1.maxDistance).toBe(10);
     expect(geometry.cap2.maxDistance).toBe(10);
     expect(geometry.box?.maxDistance).toBe(10);
+  });
+
+  it('Builds rotated capsule cast geometry from shape cast params', () => {
+    const geometry = buildCapsuleCastGeometry({
+      shape: {
+        type: 'capsule',
+        center: { x: 10, y: 20 },
+        height: 2,
+        radius: 0.5,
+        rotation: Math.PI / 2,
+      },
+      direction: new Vector2(1, 0),
+      maxDistance: 10,
+    });
+
+    expect(geometry.origin).toEqual({ x: 10, y: 20 });
+    expect(geometry.point1.x).toBeCloseTo(11);
+    expect(geometry.point1.y).toBeCloseTo(20);
+    expect(geometry.point2.x).toBeCloseTo(9);
+    expect(geometry.point2.y).toBeCloseTo(20);
   });
 });

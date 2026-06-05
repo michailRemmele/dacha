@@ -1,5 +1,5 @@
 import type { Actor } from '../../../engine/actor';
-import type { CollisionDetectionSubsystem } from './subsystems';
+import type { Vector2 } from '../../../engine/math-lib';
 import type {
   CastHit,
   RaycastParams,
@@ -7,6 +7,18 @@ import type {
   ShapeCastParams,
   CastActorParams,
 } from './types';
+
+export interface PhysicsAPIHandlers {
+  raycast(params: RaycastParams): CastHit | null;
+  raycastAll(params: RaycastParams): CastHit[];
+  overlapShape(params: OverlapParams): Actor[];
+  shapeCast(params: ShapeCastParams): CastHit | null;
+  shapeCastAll(params: ShapeCastParams): CastHit[];
+  castActor(params: CastActorParams): CastHit | null;
+  castActorAll(params: CastActorParams): CastHit[];
+  getGravity(): Vector2;
+  setGravity(gravity: Vector2): void;
+}
 
 /**
  * API that provides methods for performing physics queries such as raycasting and overlap tests.
@@ -19,10 +31,26 @@ import type {
  * @category Systems
  */
 export class PhysicsAPI {
-  private collisionDetectionSubsystem: CollisionDetectionSubsystem;
+  private handlers: PhysicsAPIHandlers;
 
-  constructor(collisionDetectionSubsystem: CollisionDetectionSubsystem) {
-    this.collisionDetectionSubsystem = collisionDetectionSubsystem;
+  constructor(handlers: PhysicsAPIHandlers) {
+    this.handlers = handlers;
+  }
+
+  /**
+   * Current gravity vector.
+   */
+  get gravity(): Vector2 {
+    return this.handlers.getGravity();
+  }
+
+  /**
+   * Sets the gravity vector.
+   *
+   * @param gravity - New gravity vector
+   */
+  set gravity(gravity: Vector2) {
+    this.handlers.setGravity(gravity);
   }
 
   /**
@@ -35,7 +63,7 @@ export class PhysicsAPI {
    * @returns The nearest hit or `null` when nothing is hit
    */
   raycast(params: RaycastParams): CastHit | null {
-    return this.collisionDetectionSubsystem.raycast(params);
+    return this.handlers.raycast(params);
   }
 
   /**
@@ -48,7 +76,7 @@ export class PhysicsAPI {
    * @returns All hits sorted from nearest to farthest
    */
   raycastAll(params: RaycastParams): CastHit[] {
-    return this.collisionDetectionSubsystem.raycastAll(params);
+    return this.handlers.raycastAll(params);
   }
 
   /**
@@ -58,7 +86,7 @@ export class PhysicsAPI {
    * @returns Actors whose colliders overlap the shape
    */
   overlapShape(params: OverlapParams): Actor[] {
-    return this.collisionDetectionSubsystem.overlapShape(params);
+    return this.handlers.overlapShape(params);
   }
 
   /**
@@ -68,7 +96,7 @@ export class PhysicsAPI {
    * @returns The nearest hit or `null` when nothing is hit
    */
   shapeCast(params: ShapeCastParams): CastHit | null {
-    return this.collisionDetectionSubsystem.shapeCast(params);
+    return this.handlers.shapeCast(params);
   }
 
   /**
@@ -78,7 +106,7 @@ export class PhysicsAPI {
    * @returns All hits sorted from nearest to farthest
    */
   shapeCastAll(params: ShapeCastParams): CastHit[] {
-    return this.collisionDetectionSubsystem.shapeCastAll(params);
+    return this.handlers.shapeCastAll(params);
   }
 
   /**
@@ -88,7 +116,7 @@ export class PhysicsAPI {
    * @returns The nearest hit or `null` when nothing is hit
    */
   castActor(params: CastActorParams): CastHit | null {
-    return this.collisionDetectionSubsystem.castActor(params);
+    return this.handlers.castActor(params);
   }
 
   /**
@@ -98,6 +126,6 @@ export class PhysicsAPI {
    * @returns All hits sorted from nearest to farthest
    */
   castActorAll(params: CastActorParams): CastHit[] {
-    return this.collisionDetectionSubsystem.castActorAll(params);
+    return this.handlers.castActorAll(params);
   }
 }
