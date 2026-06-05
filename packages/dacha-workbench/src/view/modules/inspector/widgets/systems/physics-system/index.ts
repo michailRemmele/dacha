@@ -3,11 +3,16 @@ import type { WidgetSchema } from '../../../../../../types/widget-schema';
 export const physicsSystem: WidgetSchema = {
   fields: [
     {
-      name: 'gravity',
+      name: 'gravityX',
+      type: 'number',
+    },
+    {
+      name: 'gravityY',
       type: 'number',
     },
   ],
   getInitialState: () => ({
-    gravity: 100,
+    gravityX: 0,
+    gravityY: 100,
   }),
 };
