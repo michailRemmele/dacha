@@ -8,7 +8,7 @@ export interface CharacterBodyConfig {
   skinWidth?: number;
   maxSlopeAngle?: number;
   maxSlides?: number;
-  groundProbeDistance?: number;
+  groundSnapDistance?: number;
   disabled?: boolean;
 }
 
@@ -36,7 +36,7 @@ export class CharacterBody extends Component {
   /** Maximum sweep/slide collision iterations used during one fixed update */
   maxSlides: number;
   /** Distance used to probe opposite upDirection and keep ground contact over small gaps */
-  groundProbeDistance: number;
+  groundSnapDistance: number;
   /** Whether the controller should be ignored by CharacterController */
   disabled: boolean;
 
@@ -67,7 +67,7 @@ export class CharacterBody extends Component {
     this.skinWidth = config.skinWidth ?? 0.1;
     this.maxSlopeAngle = MathOps.degToRad(config.maxSlopeAngle ?? 45);
     this.maxSlides = config.maxSlides ?? 4;
-    this.groundProbeDistance = config.groundProbeDistance ?? 1;
+    this.groundSnapDistance = config.groundSnapDistance ?? 1;
 
     this.onGround = false;
     this.onWall = false;

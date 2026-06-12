@@ -49,7 +49,7 @@ const addController = (actor: Actor): CharacterBody => {
   actor.setComponent(
     new CharacterBody({
       skinWidth: 0.02,
-      groundProbeDistance: 0.2,
+      groundSnapDistance: 0.2,
     }),
   );
 

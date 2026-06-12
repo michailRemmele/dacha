@@ -11,6 +11,7 @@ import {
 } from '../../components';
 import { PhysicsAPI } from '../physics-system';
 import type { CastHit } from '../physics-system/types';
+import { OneWayValidator } from '../../utils/one-way-validator';
 
 import { clipAgainstNormal } from './utils';
 
@@ -30,6 +31,8 @@ export class CharacterController extends SceneSystem {
   private actorQuery: ActorQuery;
   private world: SceneSystemOptions['world'];
 
+  private oneWayValidator: OneWayValidator;
+
   constructor(options: SceneSystemOptions) {
     super();
 
@@ -38,20 +41,15 @@ export class CharacterController extends SceneSystem {
       scene: options.scene,
       filter: [CharacterBody, Transform, Collider, RigidBody],
     });
+
+    this.oneWayValidator = new OneWayValidator();
   }
 
   onSceneDestroy(): void {
     this.actorQuery.destroy();
   }
 
-  private isWalkable(normal: Point, controller: CharacterBody): boolean {
-    return (
-      VectorOps.dotProduct(normal, controller.upDirection) >=
-      Math.cos(controller.maxSlopeAngle)
-    );
-  }
-
-  private isBlockingHit(hit: CastHit, direction: Vector2): boolean {
+  private isBlockingHit(actor: Actor, hit: CastHit): boolean {
     const rigidBody = hit.actor.getComponent(RigidBody) as
       | RigidBody
       | undefined;
@@ -64,15 +62,13 @@ export class CharacterController extends SceneSystem {
       return true;
     }
 
-    const transform = hit.actor.getComponent(Transform);
-    const oneWayNormal = VectorOps.rotatePoint(
-      rigidBody.oneWayNormal,
-      transform.world.rotation,
-    );
+    return this.oneWayValidator.validate(hit.actor, actor, hit.normal);
+  }
 
+  private isWalkable(normal: Point, controller: CharacterBody): boolean {
     return (
-      VectorOps.dotProduct(oneWayNormal, hit.normal) > 0 &&
-      VectorOps.dotProduct(direction, hit.normal) < 0
+      VectorOps.dotProduct(normal, controller.upDirection) >=
+      Math.cos(controller.maxSlopeAngle)
     );
   }
 
@@ -103,7 +99,7 @@ export class CharacterController extends SceneSystem {
     });
 
     for (const hit of hits) {
-      if (this.isBlockingHit(hit, displacement)) {
+      if (this.isBlockingHit(actor, hit)) {
         return hit;
       }
     }
@@ -177,7 +173,7 @@ export class CharacterController extends SceneSystem {
     const controller = actor.getComponent(CharacterBody);
 
     const probeDistance = Math.max(
-      controller.groundProbeDistance,
+      controller.groundSnapDistance,
       controller.skinWidth,
     );
     const hit = this.cast(
@@ -190,6 +186,11 @@ export class CharacterController extends SceneSystem {
       controller.onGround = true;
       controller.groundNormal = hit.normal;
       controller.groundActor = hit.actor;
+
+      const safeDistance = hit.distance - controller.skinWidth;
+      position.x += hit.normal.x * safeDistance;
+      position.y += hit.normal.y * safeDistance;
+
       return;
     }
 
@@ -213,6 +214,8 @@ export class CharacterController extends SceneSystem {
     }
 
     const deltaTimeInSeconds = options.deltaTime / 1000;
+
+    this.oneWayValidator.update();
 
     this.actorQuery.getActors().forEach((actor) => {
       const controller = actor.getComponent(CharacterBody);
@@ -244,6 +247,8 @@ export class CharacterController extends SceneSystem {
 
       controller._displacement.multiplyNumber(0);
     });
+
+    this.oneWayValidator.lateUpdate();
   }
 }
 
