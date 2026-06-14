@@ -1,16 +1,18 @@
 import { VectorOps } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
-import type { BoxGeometry } from '../types';
+import type { ActorGeometryParams, BoxGeometry } from '../types';
 import type { OverlapBoxParams } from '../../../types';
 
 export function buildBoxGeometry(overlap: OverlapBoxParams): BoxGeometry;
 export function buildBoxGeometry(
   collider: Collider,
   transform: Transform,
+  params?: ActorGeometryParams,
 ): BoxGeometry;
 export function buildBoxGeometry(
   colliderOrOverlap: Collider | OverlapBoxParams,
   transform?: Transform,
+  params?: ActorGeometryParams,
 ): BoxGeometry {
   let offsetX: number;
   let offsetY: number;
@@ -33,8 +35,8 @@ export function buildBoxGeometry(
     offsetY = collider.offset.y;
     sizeX = collider.shape.size.x;
     sizeY = collider.shape.size.y;
-    positionX = transform.world.position.x;
-    positionY = transform.world.position.y;
+    positionX = transform.world.position.x + (params?.offset?.x ?? 0);
+    positionY = transform.world.position.y + (params?.offset?.y ?? 0);
     rotation = transform.world.rotation;
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;

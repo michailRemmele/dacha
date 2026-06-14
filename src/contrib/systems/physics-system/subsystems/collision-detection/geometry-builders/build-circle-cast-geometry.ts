@@ -20,14 +20,12 @@ export function buildCircleCastGeometry(
 
   const circle =
     transform !== undefined
-      ? buildCircleGeometry(castParamsOrCollider as Collider, transform)
+      ? buildCircleGeometry(
+          castParamsOrCollider as Collider,
+          transform,
+          castParams,
+        )
       : buildCircleGeometry(castParamsOrCollider as CircleCastParams);
-
-  const offset = 'offset' in params ? params.offset : undefined;
-  if (offset) {
-    circle.center.x += offset.x;
-    circle.center.y += offset.y;
-  }
 
   return {
     ...circle,

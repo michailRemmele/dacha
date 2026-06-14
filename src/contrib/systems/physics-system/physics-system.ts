@@ -1,7 +1,6 @@
 import { SceneSystem } from '../../../engine/system';
 import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
 import type { World } from '../../../engine/world';
-import type { Actor } from '../../../engine/actor';
 import { Vector2 } from '../../../engine/math-lib';
 
 import {
@@ -11,7 +10,7 @@ import {
   ConstraintSolver,
 } from './subsystems';
 import { PhysicsAPI } from './api';
-import type { PhysicsSystemOptions, CastHit } from './types';
+import type { PhysicsSystemOptions, CastHit, OverlapHit } from './types';
 
 /**
  * Physics system that handles 2D physics simulation and collision detection
@@ -52,8 +51,10 @@ export class PhysicsSystem extends SceneSystem {
         this.collisionDetectionSubsystem.raycast(params),
       raycastAll: (params): CastHit[] =>
         this.collisionDetectionSubsystem.raycastAll(params),
-      overlapShape: (params): Actor[] =>
+      overlapShape: (params): OverlapHit[] =>
         this.collisionDetectionSubsystem.overlapShape(params),
+      overlapActor: (params): OverlapHit[] =>
+        this.collisionDetectionSubsystem.overlapActor(params),
       shapeCast: (params): CastHit | null =>
         this.collisionDetectionSubsystem.shapeCast(params),
       shapeCastAll: (params): CastHit[] =>

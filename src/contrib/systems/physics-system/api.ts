@@ -1,9 +1,10 @@
-import type { Actor } from '../../../engine/actor';
 import type { Vector2 } from '../../../engine/math-lib';
 import type {
   CastHit,
+  OverlapHit,
   RaycastParams,
   OverlapParams,
+  OverlapActorParams,
   ShapeCastParams,
   CastActorParams,
 } from './types';
@@ -11,7 +12,8 @@ import type {
 export interface PhysicsAPIHandlers {
   raycast(params: RaycastParams): CastHit | null;
   raycastAll(params: RaycastParams): CastHit[];
-  overlapShape(params: OverlapParams): Actor[];
+  overlapShape(params: OverlapParams): OverlapHit[];
+  overlapActor(params: OverlapActorParams): OverlapHit[];
   shapeCast(params: ShapeCastParams): CastHit | null;
   shapeCastAll(params: ShapeCastParams): CastHit[];
   castActor(params: CastActorParams): CastHit | null;
@@ -80,13 +82,23 @@ export class PhysicsAPI {
   }
 
   /**
-   * Returns all actors whose colliders overlap the given query shape.
+   * Returns all collider intersections for the given query shape.
    *
    * @param params - Overlap parameters
-   * @returns Actors whose colliders overlap the shape
+   * @returns All overlap hits
    */
-  overlapShape(params: OverlapParams): Actor[] {
+  overlapShape(params: OverlapParams): OverlapHit[] {
     return this.handlers.overlapShape(params);
+  }
+
+  /**
+   * Returns all collider intersections for an actor's collider.
+   *
+   * @param params - Actor overlap parameters
+   * @returns All overlap hits
+   */
+  overlapActor(params: OverlapActorParams): OverlapHit[] {
+    return this.handlers.overlapActor(params);
   }
 
   /**

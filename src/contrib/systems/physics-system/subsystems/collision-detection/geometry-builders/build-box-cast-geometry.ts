@@ -20,19 +20,12 @@ export function buildBoxCastGeometry(
 
   const box =
     transform !== undefined
-      ? buildBoxGeometry(castParamsOrCollider as Collider, transform)
+      ? buildBoxGeometry(
+          castParamsOrCollider as Collider,
+          transform,
+          castParams,
+        )
       : buildBoxGeometry(castParamsOrCollider as BoxCastParams);
-
-  const offset = 'offset' in params ? params.offset : undefined;
-  if (offset) {
-    box.center.x += offset.x;
-    box.center.y += offset.y;
-
-    for (const point of box.points) {
-      point.x += offset.x;
-      point.y += offset.y;
-    }
-  }
 
   let minX = Infinity;
   let maxX = -Infinity;

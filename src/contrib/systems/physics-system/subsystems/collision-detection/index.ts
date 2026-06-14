@@ -20,20 +20,23 @@ import {
 } from './reorientation-checkers';
 import {
   buildQueryProxy,
+  buildActorQueryProxy,
   raycast,
   raycastAll,
   overlap,
+  getOverlapQueryType,
   shapeCast,
   shapeCastAll,
   getShapeCastQueryType,
-  buildActorCastProxy,
   getActorCastQueryType,
 } from './query-utils';
 import type {
   PhysicsSettings,
   RaycastParams,
   CastHit,
+  OverlapHit,
   OverlapParams,
+  OverlapActorParams,
   ShapeCastParams,
   CastActorParams,
 } from '../../types';
@@ -114,12 +117,26 @@ export class CollisionDetectionSubsystem {
     return raycastAll(queryProxy, this.queryCandidates);
   }
 
-  overlapShape(params: OverlapParams): Actor[] {
+  overlapShape(params: OverlapParams): OverlapHit[] {
     const queryProxy = buildQueryProxy(params.shape.type, params);
 
     this.sweepAndPruneQuery(queryProxy);
 
     return overlap(params.shape.type, queryProxy, this.queryCandidates);
+  }
+
+  overlapActor(params: OverlapActorParams): OverlapHit[] {
+    const queryType = getOverlapQueryType(params);
+
+    if (!queryType) {
+      return [];
+    }
+
+    const queryProxy = buildActorQueryProxy(queryType, params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return overlap(queryType, queryProxy, this.queryCandidates);
   }
 
   shapeCast(params: ShapeCastParams): CastHit | null {
@@ -149,7 +166,7 @@ export class CollisionDetectionSubsystem {
       return null;
     }
 
-    const queryProxy = buildActorCastProxy(queryType, params);
+    const queryProxy = buildActorQueryProxy(queryType, params);
 
     this.sweepAndPruneQuery(queryProxy);
 
@@ -163,7 +180,7 @@ export class CollisionDetectionSubsystem {
       return [];
     }
 
-    const queryProxy = buildActorCastProxy(queryType, params);
+    const queryProxy = buildActorQueryProxy(queryType, params);
 
     this.sweepAndPruneQuery(queryProxy);
 

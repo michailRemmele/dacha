@@ -118,7 +118,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     expect(raycastHit?.actor.id).toBe('far-box');
     expect(shapeCastHit?.actor.id).toBe('far-box');
-    expect(overlaps.map((actor) => actor.id)).toStrictEqual(['far-box']);
+    expect(overlaps.map((hit) => hit.actor.id)).toStrictEqual(['far-box']);
   });
 
   it('Finds overlaps for point, box, and circle queries', () => {
@@ -143,7 +143,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
             point: { x: 2, y: 2 },
           },
         })
-        .map((actor) => actor.id),
+        .map((hit) => hit.actor.id),
     ).toStrictEqual(['box']);
 
     expect(
@@ -155,7 +155,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
             size: { x: 4, y: 4 },
           },
         })
-        .map((actor) => actor.id),
+        .map((hit) => hit.actor.id),
     ).toStrictEqual(['box']);
 
     expect(
@@ -168,8 +168,64 @@ describe('Systems -> PhysicsSystem -> queries', () => {
           },
           layer: 'sensor',
         })
-        .map((actor) => actor.id),
+        .map((hit) => hit.actor.id),
     ).toStrictEqual(['circle']);
+  });
+
+  it('Returns overlap hit data and supports actor overlap queries', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const query = createCircleActor('query', 0, 0, 1);
+    const target = createCircleActor('target', 1.5, 0, 1);
+
+    scene.appendChild(query);
+    scene.appendChild(target);
+
+    const shapeHits = physicsApi.overlapShape({
+      shape: {
+        type: 'circle',
+        center: { x: 0, y: 0 },
+        radius: 1,
+      },
+      excludeActors: [query],
+    });
+    const actorHits = physicsApi.overlapActor({ actor: query });
+
+    expect(shapeHits.map((hit) => hit.actor.id)).toStrictEqual(['target']);
+    expect(shapeHits[0].normal.x).toBeCloseTo(-1);
+    expect(shapeHits[0].normal.y).toBeCloseTo(0);
+    expect(shapeHits[0].penetration).toBeCloseTo(0.5);
+    expect(shapeHits[0].contactPoints).toHaveLength(1);
+
+    expect(actorHits.map((hit) => hit.actor.id)).toStrictEqual(['target']);
+    expect(actorHits[0].normal.x).toBeCloseTo(-1);
+    expect(actorHits[0].normal.y).toBeCloseTo(0);
+    expect(actorHits[0].penetration).toBeCloseTo(0.5);
+  });
+
+  it('Overlaps actor from its current transform plus query offset', () => {
+    const scene = createScene();
+    const { world } = createPhysicsSystem(scene);
+    const physicsApi = world.systemApi.get(PhysicsAPI);
+    const query = createCircleActor('query', 0, 0, 1);
+    const target = createCircleActor('target', 3, 0, 1);
+
+    scene.appendChild(query);
+    scene.appendChild(target);
+
+    const hitsWithoutOffset = physicsApi.overlapActor({ actor: query });
+    const hitsWithOffset = physicsApi.overlapActor({
+      actor: query,
+      offset: { x: 1.5, y: 0 },
+    });
+
+    expect(hitsWithoutOffset).toHaveLength(0);
+    expect(hitsWithOffset.map((hit) => hit.actor.id)).toStrictEqual([
+      'target',
+    ]);
+    expect(hitsWithOffset[0].normal.x).toBeCloseTo(-1);
+    expect(hitsWithOffset[0].penetration).toBeCloseTo(0.5);
   });
 
   it('Raycasts against segment colliders', () => {
@@ -212,7 +268,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
             point: { x: 4, y: 0 },
           },
         })
-        .map((actor) => actor.id),
+        .map((hit) => hit.actor.id),
     ).toStrictEqual(['segment']);
   });
 
@@ -244,7 +300,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
             radius: 0.5,
           },
         })
-        .map((actor) => actor.id),
+        .map((hit) => hit.actor.id),
     ).toStrictEqual(['capsule']);
   });
 
@@ -267,7 +323,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
             rotation: -Math.PI / 2,
           },
         })
-        .map((actor) => actor.id),
+        .map((hit) => hit.actor.id),
     ).toStrictEqual(['circle']);
   });
 
