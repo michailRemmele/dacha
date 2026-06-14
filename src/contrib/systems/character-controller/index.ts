@@ -16,6 +16,7 @@ import { OneWayValidator } from '../../utils/one-way-validator';
 import { clipAgainstNormal } from './utils';
 
 const MIN_DISTANCE = 0.000001;
+const SNAP_EPSILON = 0.000001;
 
 /**
  * Kinematic character controller system with sweep/slide collision movement.
@@ -65,18 +66,33 @@ export class CharacterController extends SceneSystem {
     return this.oneWayValidator.validate(hit.actor, actor, hit.normal);
   }
 
-  private isWalkable(normal: Point, controller: CharacterBody): boolean {
+  private isWalkable(actor: Actor, normal: Point): boolean {
+    const controller = actor.getComponent(CharacterBody);
     return (
       VectorOps.dotProduct(normal, controller.upDirection) >=
       Math.cos(controller.maxSlopeAngle)
     );
   }
 
-  private cast(
+  private resetGroundState(controller: CharacterBody): void {
+    if (controller.onGround) {
+      controller.groundActor = null;
+      controller.groundNormal = controller.upDirection.clone();
+      controller.onGround = false;
+    }
+  }
+
+  private resetState(controller: CharacterBody): void {
+    this.resetGroundState(controller);
+    controller.onWall = false;
+    controller.onCeiling = false;
+  }
+
+  private castAll(
     actor: Actor,
     position: Point,
     displacement: Vector2,
-  ): CastHit | null {
+  ): CastHit[] {
     const physicsApi = this.world.systemApi.get(PhysicsAPI);
 
     const controller = actor.getComponent(CharacterBody);
@@ -85,10 +101,10 @@ export class CharacterController extends SceneSystem {
     const distance = displacement.magnitude;
 
     if (distance <= MIN_DISTANCE) {
-      return null;
+      return [];
     }
 
-    const hits = physicsApi.castActorAll({
+    return physicsApi.castActorAll({
       actor,
       offset: {
         x: position.x - transform.world.position.x,
@@ -97,9 +113,36 @@ export class CharacterController extends SceneSystem {
       direction: displacement,
       maxDistance: distance + controller.skinWidth,
     });
+  }
+
+  private cast(
+    actor: Actor,
+    position: Point,
+    displacement: Vector2,
+  ): CastHit | null {
+    const hits = this.castAll(actor, position, displacement);
 
     for (const hit of hits) {
       if (this.isBlockingHit(actor, hit)) {
+        return hit;
+      }
+    }
+
+    return null;
+  }
+
+  private castGround(
+    actor: Actor,
+    position: Point,
+    displacement: Vector2,
+  ): CastHit | null {
+    const hits = this.castAll(actor, position, displacement);
+
+    for (const hit of hits) {
+      if (
+        this.isBlockingHit(actor, hit) &&
+        this.isWalkable(actor, hit.normal)
+      ) {
         return hit;
       }
     }
@@ -169,43 +212,44 @@ export class CharacterController extends SceneSystem {
     return position;
   }
 
-  private updateGroundState(actor: Actor, position: Point): void {
+  private updateGroundState(
+    actor: Actor,
+    target: Point,
+    canSnap: boolean,
+  ): void {
     const controller = actor.getComponent(CharacterBody);
+
+    if (!canSnap) {
+      this.resetGroundState(controller);
+      return;
+    }
 
     const probeDistance = Math.max(
       controller.groundSnapDistance,
       controller.skinWidth,
     );
-    const hit = this.cast(
-      actor,
-      position,
-      controller.upDirection.clone().multiplyNumber(-probeDistance),
-    );
+    const probeDirection = controller.upDirection
+      .clone()
+      .multiplyNumber(-probeDistance);
 
-    if (hit && this.isWalkable(hit.normal, controller)) {
-      controller.onGround = true;
-      controller.groundNormal = hit.normal;
-      controller.groundActor = hit.actor;
+    const hit = this.castGround(actor, target, probeDirection);
 
-      const safeDistance = hit.distance - controller.skinWidth;
-      position.x += hit.normal.x * safeDistance;
-      position.y += hit.normal.y * safeDistance;
-
+    if (!hit) {
+      this.resetGroundState(controller);
       return;
     }
 
-    controller.onGround = false;
-    controller.groundActor = null;
-  }
+    controller.onGround = true;
+    controller.groundNormal = hit.normal;
+    controller.groundActor = hit.actor;
 
-  private resetState(controller: CharacterBody): void {
-    if (controller.onGround) {
-      controller.groundActor = null;
-      controller.groundNormal = controller.upDirection.clone();
-      controller.onGround = false;
-    }
-    controller.onWall = false;
-    controller.onCeiling = false;
+    const snapDistance = Math.max(hit.distance - controller.skinWidth, 0);
+    const snapDirection = controller.upDirection
+      .clone()
+      .multiplyNumber(-snapDistance);
+
+    target.x += snapDirection.x;
+    target.y += snapDirection.y;
   }
 
   fixedUpdate(options: UpdateOptions): void {
@@ -239,9 +283,13 @@ export class CharacterController extends SceneSystem {
         .multiplyNumber(deltaTimeInSeconds)
         .add(controller._displacement);
 
+      const movingUp =
+        VectorOps.dotProduct(displacement, controller.upDirection) >
+        SNAP_EPSILON;
+
       const target = this.move(actor, displacement);
 
-      this.updateGroundState(actor, target);
+      this.updateGroundState(actor, target, !movingUp);
 
       rigidBody.movePosition(new Vector2(target.x, target.y));
 

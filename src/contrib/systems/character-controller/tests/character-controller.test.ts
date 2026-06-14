@@ -207,6 +207,58 @@ describe('Systems -> CharacterController', () => {
     expect(controller.groundNormal.y).toBeLessThan(0);
   });
 
+  it('Uses a walkable ground probe hit when a nearer side hit exists', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      -0.55,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const floor = createBoxActor('floor', 'static', 0, 2);
+    const sideBlock = createBoxActor('side-block', 'static', 1.5, 0);
+
+    scene.appendChild(character);
+    scene.appendChild(floor);
+    scene.appendChild(sideBlock);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(controller.onGround).toBe(true);
+    expect(controller.groundActor).toBe(floor);
+    expect(controller.groundNormal.y).toBeCloseTo(-1);
+  });
+
+  it('Does not snap to ground when movement is upward', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      -0.55,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const transform = character.getComponent(Transform);
+    const floor = createBoxActor('floor', 'static', 0, 2);
+
+    controller.move(new Vector2(0, -0.1));
+    scene.appendChild(character);
+    scene.appendChild(floor);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(controller.onGround).toBe(false);
+    expect(controller.groundActor).toBeNull();
+    expect(transform.world.position.y).toBeCloseTo(-0.65);
+  });
+
   it('Uses controller upDirection for ground checks', () => {
     const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
