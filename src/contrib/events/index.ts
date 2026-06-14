@@ -67,6 +67,16 @@ export const CollisionStay = 'CollisionStay';
 export const CollisionLeave = 'CollisionLeave';
 
 /**
+ * Dispatched when a character body hits a blocking actor
+ *
+ * @event
+ * @type {CharacterHitEvent}
+ *
+ * @category Events
+ */
+export const CharacterHit = 'CharacterHit';
+
+/**
  * Dispatched to play audio on an actor
  *
  * @event
@@ -178,6 +188,23 @@ export type CollisionStayEvent = CollisionStateEvent;
  */
 export type CollisionLeaveEvent = CollisionStateEvent;
 
+/** Event signature for the {@link CharacterHit} event
+ *
+ * @category Events
+ */
+export type CharacterHitEvent = ActorEvent<{
+  /** Actor hit by the character body */
+  actor: Actor;
+  /** Hit point in world space */
+  point: { x: number; y: number };
+  /** Hit normal pointing from the hit actor to the character */
+  normal: Vector2;
+  /** Distance from the cast origin to the hit */
+  distance: number;
+  /** Surface classification used by the character controller */
+  kind: 'ground' | 'wall' | 'ceiling';
+}>;
+
 /** Event signature for the {@link SetAudioVolume} event when used on actor level
  *
  * @category Events
@@ -199,6 +226,7 @@ declare module '../../types/events' {
     [CollisionEnter]: CollisionEnterEvent;
     [CollisionStay]: CollisionStayEvent;
     [CollisionLeave]: CollisionLeaveEvent;
+    [CharacterHit]: CharacterHitEvent;
     [PlayAudio]: ActorEvent;
     [StopAudio]: ActorEvent;
     [SetAudioVolume]: SetAudioSourceVolumeEvent;
