@@ -40,6 +40,13 @@ export interface CastHit {
   distance: number;
 }
 
+export interface OverlapHit {
+  actor: Actor;
+  normal: Vector2;
+  penetration: number;
+  contactPoints: Point[];
+}
+
 export interface OverlapPointParams extends PhysicsQueryFilter {
   shape: {
     type: 'point';
@@ -79,6 +86,26 @@ export type OverlapParams =
   | OverlapCircleParams
   | OverlapBoxParams
   | OverlapCapsuleParams;
+
+export interface OverlapActorParams extends PhysicsQueryFilter {
+  /**
+   * Actor whose components provide the overlap geometry.
+   */
+  actor: Actor;
+  /**
+   * World-space offset added to the actor's geometry.
+   */
+  offset?: Point;
+  /**
+   * Collision layer used for filtering. When omitted, the actor collider's
+   * layer is used.
+   */
+  layer?: string;
+  /**
+   * Whether to exclude the overlap actor from query results. Defaults to `true`.
+   */
+  excludeSelf?: boolean;
+}
 
 export interface CircleCastShape {
   type: 'circle';

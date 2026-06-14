@@ -1,10 +1,11 @@
 import { VectorOps, type Point } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
-import type { SegmentGeometry } from '../types';
+import type { ActorGeometryParams, SegmentGeometry } from '../types';
 
 export function buildSegmentGeometry(
   collider: Collider,
   transform: Transform,
+  params?: ActorGeometryParams,
 ): SegmentGeometry {
   if (collider.shape.type !== 'segment') {
     throw new Error(`Expected segment collider, got ${collider.shape.type}.`);
@@ -22,8 +23,8 @@ export function buildSegmentGeometry(
     },
     rotation,
   );
-  center.x += transform.world.position.x;
-  center.y += transform.world.position.y;
+  center.x += transform.world.position.x + (params?.offset?.x ?? 0);
+  center.y += transform.world.position.y + (params?.offset?.y ?? 0);
 
   const buildPoint = (x: number, y: number): Point => {
     const scaledX = x * scaleX;

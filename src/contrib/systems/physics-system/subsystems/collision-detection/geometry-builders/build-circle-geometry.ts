@@ -1,6 +1,6 @@
 import { VectorOps } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
-import type { CircleGeometry } from '../types';
+import type { ActorGeometryParams, CircleGeometry } from '../types';
 import type { OverlapCircleParams } from '../../../types';
 
 export function buildCircleGeometry(
@@ -9,10 +9,12 @@ export function buildCircleGeometry(
 export function buildCircleGeometry(
   collider: Collider,
   transform: Transform,
+  params?: ActorGeometryParams,
 ): CircleGeometry;
 export function buildCircleGeometry(
   colliderOrOverlap: Collider | OverlapCircleParams,
   transform?: Transform,
+  params?: ActorGeometryParams,
 ): CircleGeometry {
   let offsetX: number;
   let offsetY: number;
@@ -33,8 +35,8 @@ export function buildCircleGeometry(
     offsetX = collider.offset.x;
     offsetY = collider.offset.y;
     radius = collider.shape.radius;
-    positionX = transform.world.position.x;
-    positionY = transform.world.position.y;
+    positionX = transform.world.position.x + (params?.offset?.x ?? 0);
+    positionY = transform.world.position.y + (params?.offset?.y ?? 0);
     rotation = transform.world.rotation;
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;

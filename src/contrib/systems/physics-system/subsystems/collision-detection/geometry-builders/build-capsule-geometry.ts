@@ -1,6 +1,6 @@
 import { VectorOps, type Point } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
-import type { CapsuleGeometry } from '../types';
+import type { ActorGeometryParams, CapsuleGeometry } from '../types';
 import type { OverlapCapsuleParams } from '../../../types';
 
 export function buildCapsuleGeometry(
@@ -9,10 +9,12 @@ export function buildCapsuleGeometry(
 export function buildCapsuleGeometry(
   collider: Collider,
   transform: Transform,
+  params?: ActorGeometryParams,
 ): CapsuleGeometry;
 export function buildCapsuleGeometry(
   colliderOrOverlap: Collider | OverlapCapsuleParams,
   transform?: Transform,
+  params?: ActorGeometryParams,
 ): CapsuleGeometry {
   let offsetX: number;
   let offsetY: number;
@@ -34,8 +36,8 @@ export function buildCapsuleGeometry(
 
     offsetX = collider.offset.x;
     offsetY = collider.offset.y;
-    positionX = transform.world.position.x;
-    positionY = transform.world.position.y;
+    positionX = transform.world.position.x + (params?.offset?.x ?? 0);
+    positionY = transform.world.position.y + (params?.offset?.y ?? 0);
     point1Y = -collider.shape.height / 2;
     point2Y = collider.shape.height / 2;
     radius = collider.shape.radius;

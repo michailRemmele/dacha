@@ -25,18 +25,12 @@ export function buildCapsuleCastGeometry(
 
   const capsule =
     transform !== undefined
-      ? buildCapsuleGeometry(castParamsOrCollider as Collider, transform)
+      ? buildCapsuleGeometry(
+          castParamsOrCollider as Collider,
+          transform,
+          castParams,
+        )
       : buildCapsuleGeometry(castParamsOrCollider as CapsuleCastParams);
-
-  const offset = 'offset' in params ? params.offset : undefined;
-  if (offset) {
-    capsule.center.x += offset.x;
-    capsule.center.y += offset.y;
-    capsule.point1.x += offset.x;
-    capsule.point1.y += offset.y;
-    capsule.point2.x += offset.x;
-    capsule.point2.y += offset.y;
-  }
 
   const boxSizeX = isZero(capsule.point2.x - capsule.point1.x)
     ? capsule.radius * 2

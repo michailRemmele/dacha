@@ -45,6 +45,10 @@ export interface PointGeometry {
   center: Point;
 }
 
+export interface ActorGeometryParams {
+  offset?: Point;
+}
+
 export interface RayGeometry {
   origin: Point;
   direction: Vector2;
