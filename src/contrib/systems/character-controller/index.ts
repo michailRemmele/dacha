@@ -10,7 +10,7 @@ import {
   Transform,
 } from '../../components';
 import { PhysicsAPI } from '../physics-system';
-import type { CastHit } from '../physics-system/types';
+import type { CastHit, OverlapHit } from '../physics-system/types';
 import { OneWayValidator } from '../../utils/one-way-validator';
 import { CharacterHit } from '../../events';
 
@@ -75,6 +75,22 @@ export class CharacterController extends SceneSystem {
       VectorOps.dotProduct(normal, character.upDirection) >=
       Math.cos(character.maxSlopeAngle)
     );
+  }
+
+  private isRecoverableOverlap(actor: Actor, hit: OverlapHit): boolean {
+    const rigidBody = hit.actor.getComponent(RigidBody) as
+      | RigidBody
+      | undefined;
+
+    if (!rigidBody || rigidBody.disabled || rigidBody.type === 'dynamic') {
+      return false;
+    }
+
+    if (!rigidBody.oneWay || !rigidBody.oneWayNormal) {
+      return true;
+    }
+
+    return this.oneWayValidator.validate(hit.actor, actor, hit.normal);
   }
 
   private resetGroundState(character: CharacterBody): void {
@@ -153,6 +169,44 @@ export class CharacterController extends SceneSystem {
     return null;
   }
 
+  private recoverOverlaps(actor: Actor, position: Vector2): void {
+    const physicsApi = this.world.systemApi.get(PhysicsAPI);
+    const character = actor.getComponent(CharacterBody);
+    const transform = actor.getComponent(Transform);
+
+    for (let i = 0; i < character.maxRecoveries; i += 1) {
+      const hits = physicsApi.overlapActor({
+        actor,
+        offset: {
+          x: position.x - transform.world.position.x,
+          y: position.y - transform.world.position.y,
+        },
+      });
+      let recovered = false;
+
+      for (const hit of hits) {
+        if (!this.isRecoverableOverlap(actor, hit)) {
+          continue;
+        }
+
+        const correction = hit.penetration + character.skinWidth;
+
+        if (correction <= MIN_DISTANCE) {
+          continue;
+        }
+
+        position.x += hit.normal.x * correction;
+        position.y += hit.normal.y * correction;
+
+        recovered = true;
+      }
+
+      if (!recovered) {
+        break;
+      }
+    }
+  }
+
   private handleHit(actor: Actor, hit: CastHit): void {
     const character = actor.getComponent(CharacterBody);
 
@@ -182,16 +236,10 @@ export class CharacterController extends SceneSystem {
     });
   }
 
-  private move(actor: Actor, displacement: Vector2): Point {
+  private move(actor: Actor, position: Vector2, displacement: Vector2): void {
     const character = actor.getComponent(CharacterBody);
-    const transform = actor.getComponent(Transform);
 
-    const position = new Vector2(
-      transform.world.position.x,
-      transform.world.position.y,
-    );
-
-    for (let iteration = 0; iteration < character.maxSlides; iteration += 1) {
+    for (let i = 0; i < character.maxSlides; i += 1) {
       const distance = displacement.magnitude;
 
       if (distance <= MIN_DISTANCE) {
@@ -221,8 +269,6 @@ export class CharacterController extends SceneSystem {
 
       clipAgainstNormal(displacement, hit.normal);
     }
-
-    return position;
   }
 
   private updateGroundState(
@@ -275,6 +321,7 @@ export class CharacterController extends SceneSystem {
     this.oneWayValidator.update();
 
     this.actorQuery.getActors().forEach((actor) => {
+      const transform = actor.getComponent(Transform);
       const character = actor.getComponent(CharacterBody);
       const rigidBody = actor.getComponent(RigidBody);
       const collider = actor.getComponent(Collider);
@@ -300,11 +347,18 @@ export class CharacterController extends SceneSystem {
         VectorOps.dotProduct(displacement, character.upDirection) >
         SNAP_EPSILON;
 
-      const target = this.move(actor, displacement);
+      const position = new Vector2(
+        transform.world.position.x,
+        transform.world.position.y,
+      );
 
-      this.updateGroundState(actor, target, !movingUp);
+      this.recoverOverlaps(actor, position);
 
-      rigidBody.movePosition(new Vector2(target.x, target.y));
+      this.move(actor, position, displacement);
+
+      this.updateGroundState(actor, position, !movingUp);
+
+      rigidBody.movePosition(position);
 
       character._displacement.multiplyNumber(0);
     });
