@@ -270,6 +270,31 @@ describe('Systems -> CharacterController', () => {
     expect(controller.groundActor).toBe(body);
   });
 
+  it('Ignores near hits when moving away from an overlap', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      0,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const transform = character.getComponent(Transform);
+    const body = createBoxActor('body', 'dynamic', 1.45, 0);
+
+    controller.velocity.x = -10;
+    scene.appendChild(character);
+    scene.appendChild(body);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(transform.world.position.x).toBeCloseTo(-1);
+    expect(controller.onWall).toBe(false);
+  });
+
   it('Does not recover from one-way platforms on the open side', () => {
     const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
