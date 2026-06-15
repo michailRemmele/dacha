@@ -16,7 +16,7 @@ import { CharacterHit } from '../../events';
 
 import { clipAgainstNormal } from './utils';
 
-const MIN_DISTANCE = 0.000001;
+const DISTANCE_EPSILON = 0.000001;
 const SNAP_EPSILON = 0.000001;
 
 type CharacterHitKind = 'ground' | 'wall' | 'ceiling';
@@ -119,7 +119,7 @@ export class CharacterController extends SceneSystem {
 
     const distance = displacement.magnitude;
 
-    if (distance <= MIN_DISTANCE) {
+    if (distance <= DISTANCE_EPSILON) {
       return [];
     }
 
@@ -142,6 +142,13 @@ export class CharacterController extends SceneSystem {
     const hits = this.castAll(actor, position, displacement);
 
     for (const hit of hits) {
+      if (
+        hit.distance <= DISTANCE_EPSILON &&
+        VectorOps.dotProduct(displacement, hit.normal) > DISTANCE_EPSILON
+      ) {
+        continue;
+      }
+
       if (this.isBlockingHit(actor, hit)) {
         return hit;
       }
@@ -191,7 +198,7 @@ export class CharacterController extends SceneSystem {
 
         const correction = hit.penetration + character.skinWidth;
 
-        if (correction <= MIN_DISTANCE) {
+        if (correction <= DISTANCE_EPSILON) {
           continue;
         }
 
@@ -242,7 +249,7 @@ export class CharacterController extends SceneSystem {
     for (let i = 0; i < character.maxSlides; i += 1) {
       const distance = displacement.magnitude;
 
-      if (distance <= MIN_DISTANCE) {
+      if (distance <= DISTANCE_EPSILON) {
         break;
       }
 
