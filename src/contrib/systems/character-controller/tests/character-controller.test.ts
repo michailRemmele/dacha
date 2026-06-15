@@ -196,6 +196,108 @@ describe('Systems -> CharacterController', () => {
     expect(controller.groundNormal.y).toBeCloseTo(-1);
   });
 
+  it('Recovers from initial static overlap before movement', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      -0.45,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const transform = character.getComponent(Transform);
+    const floor = createBoxActor('floor', 'static', 0, 2);
+
+    scene.appendChild(character);
+    scene.appendChild(floor);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(transform.world.position.y).toBeLessThan(-0.45);
+    expect(transform.world.position.y).toBeCloseTo(-0.52);
+    expect(controller.onGround).toBe(true);
+    expect(controller.groundActor).toBe(floor);
+  });
+
+  it('Skips overlap recovery when recovery iterations are disabled', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      -0.45,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const transform = character.getComponent(Transform);
+    const floor = createBoxActor('floor', 'static', 0, 2);
+
+    controller.maxRecoveries = 0;
+    scene.appendChild(character);
+    scene.appendChild(floor);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(transform.world.position.y).toBeCloseTo(-0.45);
+  });
+
+  it('Does not recover character overlaps from dynamic bodies by default', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      -0.45,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const transform = character.getComponent(Transform);
+    const body = createBoxActor('body', 'dynamic', 0, 2);
+
+    scene.appendChild(character);
+    scene.appendChild(body);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(transform.world.position.y).toBeCloseTo(-0.45);
+    expect(controller.groundActor).toBe(body);
+  });
+
+  it('Does not recover from one-way platforms on the open side', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      1.45,
+      2,
+      0.5,
+      'kinematic',
+    );
+    addController(character);
+    const transform = character.getComponent(Transform);
+    const platform = createBoxActor('platform', 'static', 0, 0, {
+      layer: 'default',
+      oneWay: true,
+      oneWayNormalX: 0,
+      oneWayNormalY: -1,
+    });
+
+    scene.appendChild(character);
+    scene.appendChild(platform);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(transform.world.position.y).toBeCloseTo(1.45);
+  });
+
   it('Sets onCeiling when movement hits a ceiling', () => {
     const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(

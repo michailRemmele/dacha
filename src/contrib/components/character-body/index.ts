@@ -8,6 +8,7 @@ export interface CharacterBodyConfig {
   skinWidth?: number;
   maxSlopeAngle?: number;
   maxSlides?: number;
+  maxRecoveries?: number;
   groundSnapDistance?: number;
   disabled?: boolean;
 }
@@ -35,6 +36,8 @@ export class CharacterBody extends Component {
   maxSlopeAngle: number;
   /** Maximum sweep/slide collision iterations used during one fixed update */
   maxSlides: number;
+  /** Maximum overlap depenetration iterations used before sweep/slide movement */
+  maxRecoveries: number;
   /** Distance used to probe opposite upDirection and keep ground contact over small gaps */
   groundSnapDistance: number;
   /** Whether the controller should be ignored by CharacterController */
@@ -67,6 +70,7 @@ export class CharacterBody extends Component {
     this.skinWidth = config.skinWidth ?? 0.1;
     this.maxSlopeAngle = MathOps.degToRad(config.maxSlopeAngle ?? 45);
     this.maxSlides = config.maxSlides ?? 4;
+    this.maxRecoveries = config.maxRecoveries ?? 3;
     this.groundSnapDistance = config.groundSnapDistance ?? 1;
 
     this.onGround = false;
