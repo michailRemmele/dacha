@@ -1,11 +1,26 @@
-import type { Actor } from '../../../engine/actor';
-import type { CollisionDetectionSubsystem } from './subsystems';
+import type { Vector2 } from '../../../engine/math-lib';
 import type {
   CastHit,
+  OverlapHit,
   RaycastParams,
   OverlapParams,
+  OverlapActorParams,
   ShapeCastParams,
+  CastActorParams,
 } from './types';
+
+export interface PhysicsAPIHandlers {
+  raycast(params: RaycastParams): CastHit | null;
+  raycastAll(params: RaycastParams): CastHit[];
+  overlapShape(params: OverlapParams): OverlapHit[];
+  overlapActor(params: OverlapActorParams): OverlapHit[];
+  shapeCast(params: ShapeCastParams): CastHit | null;
+  shapeCastAll(params: ShapeCastParams): CastHit[];
+  castActor(params: CastActorParams): CastHit | null;
+  castActorAll(params: CastActorParams): CastHit[];
+  getGravity(): Vector2;
+  setGravity(gravity: Vector2): void;
+}
 
 /**
  * API that provides methods for performing physics queries such as raycasting and overlap tests.
@@ -18,10 +33,26 @@ import type {
  * @category Systems
  */
 export class PhysicsAPI {
-  private collisionDetectionSubsystem: CollisionDetectionSubsystem;
+  private handlers: PhysicsAPIHandlers;
 
-  constructor(collisionDetectionSubsystem: CollisionDetectionSubsystem) {
-    this.collisionDetectionSubsystem = collisionDetectionSubsystem;
+  constructor(handlers: PhysicsAPIHandlers) {
+    this.handlers = handlers;
+  }
+
+  /**
+   * Current gravity vector.
+   */
+  get gravity(): Vector2 {
+    return this.handlers.getGravity();
+  }
+
+  /**
+   * Sets the gravity vector.
+   *
+   * @param gravity - New gravity vector
+   */
+  set gravity(gravity: Vector2) {
+    this.handlers.setGravity(gravity);
   }
 
   /**
@@ -34,7 +65,7 @@ export class PhysicsAPI {
    * @returns The nearest hit or `null` when nothing is hit
    */
   raycast(params: RaycastParams): CastHit | null {
-    return this.collisionDetectionSubsystem.raycast(params);
+    return this.handlers.raycast(params);
   }
 
   /**
@@ -47,17 +78,27 @@ export class PhysicsAPI {
    * @returns All hits sorted from nearest to farthest
    */
   raycastAll(params: RaycastParams): CastHit[] {
-    return this.collisionDetectionSubsystem.raycastAll(params);
+    return this.handlers.raycastAll(params);
   }
 
   /**
-   * Returns all actors whose colliders overlap the given query shape.
+   * Returns all collider intersections for the given query shape.
    *
    * @param params - Overlap parameters
-   * @returns Actors whose colliders overlap the shape
+   * @returns All overlap hits
    */
-  overlapShape(params: OverlapParams): Actor[] {
-    return this.collisionDetectionSubsystem.overlapShape(params);
+  overlapShape(params: OverlapParams): OverlapHit[] {
+    return this.handlers.overlapShape(params);
+  }
+
+  /**
+   * Returns all collider intersections for an actor's collider.
+   *
+   * @param params - Actor overlap parameters
+   * @returns All overlap hits
+   */
+  overlapActor(params: OverlapActorParams): OverlapHit[] {
+    return this.handlers.overlapActor(params);
   }
 
   /**
@@ -67,7 +108,7 @@ export class PhysicsAPI {
    * @returns The nearest hit or `null` when nothing is hit
    */
   shapeCast(params: ShapeCastParams): CastHit | null {
-    return this.collisionDetectionSubsystem.shapeCast(params);
+    return this.handlers.shapeCast(params);
   }
 
   /**
@@ -77,6 +118,26 @@ export class PhysicsAPI {
    * @returns All hits sorted from nearest to farthest
    */
   shapeCastAll(params: ShapeCastParams): CastHit[] {
-    return this.collisionDetectionSubsystem.shapeCastAll(params);
+    return this.handlers.shapeCastAll(params);
+  }
+
+  /**
+   * Casts an actor's collider and returns the nearest hit, if any.
+   *
+   * @param params - Actor cast parameters
+   * @returns The nearest hit or `null` when nothing is hit
+   */
+  castActor(params: CastActorParams): CastHit | null {
+    return this.handlers.castActor(params);
+  }
+
+  /**
+   * Casts an actor's collider and returns all hits sorted by distance.
+   *
+   * @param params - Actor cast parameters
+   * @returns All hits sorted from nearest to farthest
+   */
+  castActorAll(params: CastActorParams): CastHit[] {
+    return this.handlers.castActorAll(params);
   }
 }

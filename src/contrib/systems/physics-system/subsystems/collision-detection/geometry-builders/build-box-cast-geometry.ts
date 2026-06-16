@@ -1,11 +1,32 @@
+import type { Collider, Transform } from '../../../../../components';
 import type { BoxCastGeometry } from '../types';
-import type { BoxCastParams } from '../../../types';
+import type { BoxCastParams, CastActorParams } from '../../../types';
 import { buildBoxGeometry } from './build-box-geometry';
 
 export function buildBoxCastGeometry(
-  shapeCast: BoxCastParams,
+  castParams: BoxCastParams,
+): BoxCastGeometry;
+export function buildBoxCastGeometry(
+  collider: Collider,
+  transform: Transform,
+  castParams: CastActorParams,
+): BoxCastGeometry;
+export function buildBoxCastGeometry(
+  castParamsOrCollider: BoxCastParams | Collider,
+  transform?: Transform,
+  castParams?: CastActorParams,
 ): BoxCastGeometry {
-  const box = buildBoxGeometry(shapeCast);
+  const params = castParams ?? (castParamsOrCollider as BoxCastParams);
+
+  const box =
+    transform !== undefined
+      ? buildBoxGeometry(
+          castParamsOrCollider as Collider,
+          transform,
+          castParams,
+        )
+      : buildBoxGeometry(castParamsOrCollider as BoxCastParams);
+
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -21,8 +42,8 @@ export function buildBoxCastGeometry(
   return {
     ...box,
     origin: box.center,
-    direction: shapeCast.direction.normalize(),
-    maxDistance: shapeCast.maxDistance,
+    direction: params.direction.clone().normalize(),
+    maxDistance: params.maxDistance,
     halfExtents: {
       x: (maxX - minX) / 2,
       y: (maxY - minY) / 2,

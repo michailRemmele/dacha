@@ -20,19 +20,25 @@ import {
 } from './reorientation-checkers';
 import {
   buildQueryProxy,
+  buildActorQueryProxy,
   raycast,
   raycastAll,
   overlap,
+  getOverlapQueryType,
   shapeCast,
   shapeCastAll,
   getShapeCastQueryType,
+  getActorCastQueryType,
 } from './query-utils';
 import type {
   PhysicsSettings,
   RaycastParams,
   CastHit,
+  OverlapHit,
   OverlapParams,
+  OverlapActorParams,
   ShapeCastParams,
+  CastActorParams,
 } from '../../types';
 import type {
   SortedItem,
@@ -111,12 +117,26 @@ export class CollisionDetectionSubsystem {
     return raycastAll(queryProxy, this.queryCandidates);
   }
 
-  overlapShape(params: OverlapParams): Actor[] {
+  overlapShape(params: OverlapParams): OverlapHit[] {
     const queryProxy = buildQueryProxy(params.shape.type, params);
 
     this.sweepAndPruneQuery(queryProxy);
 
     return overlap(params.shape.type, queryProxy, this.queryCandidates);
+  }
+
+  overlapActor(params: OverlapActorParams): OverlapHit[] {
+    const queryType = getOverlapQueryType(params);
+
+    if (!queryType) {
+      return [];
+    }
+
+    const queryProxy = buildActorQueryProxy(queryType, params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return overlap(queryType, queryProxy, this.queryCandidates);
   }
 
   shapeCast(params: ShapeCastParams): CastHit | null {
@@ -133,6 +153,34 @@ export class CollisionDetectionSubsystem {
     const queryType = getShapeCastQueryType(params);
 
     const queryProxy = buildQueryProxy(queryType, params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return shapeCastAll(queryType, queryProxy, this.queryCandidates);
+  }
+
+  castActor(params: CastActorParams): CastHit | null {
+    const queryType = getActorCastQueryType(params);
+
+    if (!queryType) {
+      return null;
+    }
+
+    const queryProxy = buildActorQueryProxy(queryType, params);
+
+    this.sweepAndPruneQuery(queryProxy);
+
+    return shapeCast(queryType, queryProxy, this.queryCandidates);
+  }
+
+  castActorAll(params: CastActorParams): CastHit[] {
+    const queryType = getActorCastQueryType(params);
+
+    if (!queryType) {
+      return [];
+    }
+
+    const queryProxy = buildActorQueryProxy(queryType, params);
 
     this.sweepAndPruneQuery(queryProxy);
 
@@ -313,6 +361,9 @@ export class CollisionDetectionSubsystem {
 
     let candidateIndex = 0;
     candidates.forEach((proxy) => {
+      if (queryProxy.excludedActors?.has(proxy.actor)) {
+        return;
+      }
       if (!this.testState(proxy, queryProxy)) {
         return;
       }

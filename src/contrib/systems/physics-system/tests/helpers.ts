@@ -23,7 +23,8 @@ export const createScene = (): Scene => {
 export const createPhysicsSystem = (
   scene: Scene,
   settings?: PhysicsSettings,
-  gravity = 0,
+  gravityY = 0,
+  gravityX = 0,
 ): { physicsSystem: PhysicsSystem; world: World } => {
   const world = new World({ id: 'world', name: 'world' });
   const templateCollection = new TemplateCollection();
@@ -34,7 +35,8 @@ export const createPhysicsSystem = (
   const physicsSystem = new PhysicsSystem({
     scene,
     world,
-    gravity,
+    gravityX,
+    gravityY,
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: settings ? { physics: settings } : {},
     templateCollection,

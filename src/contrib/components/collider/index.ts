@@ -14,27 +14,27 @@ export interface BaseColliderConfig {
 
 export interface BoxColliderConfig extends BaseColliderConfig {
   type: 'box';
-  sizeX: number;
-  sizeY: number;
+  sizeX?: number;
+  sizeY?: number;
 }
 
 export interface CircleColliderConfig extends BaseColliderConfig {
   type: 'circle';
-  radius: number;
+  radius?: number;
 }
 
 export interface SegmentColliderConfig extends BaseColliderConfig {
   type: 'segment';
-  point1X: number;
-  point1Y: number;
-  point2X: number;
-  point2Y: number;
+  point1X?: number;
+  point1Y?: number;
+  point2X?: number;
+  point2Y?: number;
 }
 
 export interface CapsuleColliderConfig extends BaseColliderConfig {
   type: 'capsule';
-  height: number;
-  radius: number;
+  height?: number;
+  radius?: number;
 }
 
 export type ColliderConfig =
@@ -126,27 +126,27 @@ export class Collider extends Component {
       case 'box':
         this.shape = {
           type: config.type,
-          size: { x: config.sizeX, y: config.sizeY },
+          size: { x: config.sizeX ?? 0, y: config.sizeY ?? 0 },
         };
         break;
       case 'circle':
         this.shape = {
           type: config.type,
-          radius: config.radius,
+          radius: config.radius ?? 0,
         };
         break;
       case 'segment':
         this.shape = {
           type: config.type,
-          point1: { x: config.point1X, y: config.point1Y },
-          point2: { x: config.point2X, y: config.point2Y },
+          point1: { x: config.point1X ?? 0, y: config.point1Y ?? 0 },
+          point2: { x: config.point2X ?? 0, y: config.point2Y ?? 0 },
         };
         break;
       case 'capsule':
         this.shape = {
           type: config.type,
-          height: config.height,
-          radius: config.radius,
+          height: config.height ?? 0,
+          radius: config.radius ?? 0,
         };
     }
   }

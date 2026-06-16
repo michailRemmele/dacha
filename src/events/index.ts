@@ -30,6 +30,7 @@ export {
   CollisionEnter,
   CollisionStay,
   CollisionLeave,
+  CharacterHit,
   PlayAudio,
   StopAudio,
   SetAudioVolume,
@@ -43,6 +44,7 @@ export type {
   CollisionEnterEvent,
   CollisionStayEvent,
   CollisionLeaveEvent,
+  CharacterHitEvent,
   SetAudioGroupVolumeEvent,
   SetAudioSourceVolumeEvent,
 } from '../contrib/events';

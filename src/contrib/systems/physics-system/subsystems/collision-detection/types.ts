@@ -45,6 +45,10 @@ export interface PointGeometry {
   center: Point;
 }
 
+export interface ActorGeometryParams {
+  offset?: Point;
+}
+
 export interface RayGeometry {
   origin: Point;
   direction: Vector2;
@@ -111,6 +115,7 @@ export interface QueryProxy {
   aabb: AABB;
   geometry: Geometry;
   layer?: string;
+  excludedActors?: Set<Actor>;
 }
 
 export type Proxy = ActorProxy | QueryProxy;
