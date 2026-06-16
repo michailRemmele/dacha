@@ -1,31 +1,38 @@
 import { VectorOps, type Point } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
-import type { SegmentGeometry } from '../types';
+import type { ActorGeometryParams, SegmentGeometry } from '../types';
 
 export function buildSegmentGeometry(
   collider: Collider,
   transform: Transform,
+  params?: ActorGeometryParams,
 ): SegmentGeometry {
   if (collider.shape.type !== 'segment') {
     throw new Error(`Expected segment collider, got ${collider.shape.type}.`);
   }
-
-  const centerX = collider.offset.x + transform.world.position.x;
-  const centerY = collider.offset.y + transform.world.position.y;
 
   const rotation = transform.world.rotation;
   const scaleX = transform.world.scale.x;
   const scaleY = transform.world.scale.y;
   const cos = Math.cos(rotation);
   const sin = Math.sin(rotation);
+  const center = VectorOps.rotatePoint(
+    {
+      x: collider.offset.x * scaleX,
+      y: collider.offset.y * scaleY,
+    },
+    rotation,
+  );
+  center.x += transform.world.position.x + (params?.offset?.x ?? 0);
+  center.y += transform.world.position.y + (params?.offset?.y ?? 0);
 
   const buildPoint = (x: number, y: number): Point => {
     const scaledX = x * scaleX;
     const scaledY = y * scaleY;
 
     return {
-      x: scaledX * cos - scaledY * sin + centerX,
-      y: scaledX * sin + scaledY * cos + centerY,
+      x: scaledX * cos - scaledY * sin + center.x,
+      y: scaledX * sin + scaledY * cos + center.y,
     };
   };
 

@@ -1,5 +1,5 @@
 import type { Collider, Transform } from '../../../../../components';
-import type { Geometry } from '../types';
+import type { ActorGeometryParams, Geometry } from '../types';
 
 import { buildBoxGeometry } from './build-box-geometry';
 import { buildCapsuleGeometry } from './build-capsule-geometry';
@@ -14,6 +14,7 @@ import { buildBoxCastGeometry } from './build-box-cast-geometry';
 export type BuildGeometryFn = (
   collider: Collider,
   transform: Transform,
+  params?: ActorGeometryParams,
 ) => Geometry;
 
 export const geometryBuilders = {

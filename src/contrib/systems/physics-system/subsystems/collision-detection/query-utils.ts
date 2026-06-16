@@ -1,10 +1,13 @@
 import type { Actor } from '../../../../../engine/actor';
-import { Collider } from '../../../../components';
+import { Collider, Transform } from '../../../../components';
 import type {
   RaycastParams,
   OverlapParams,
+  OverlapActorParams,
   ShapeCastParams,
+  CastActorParams,
   CastHit,
+  OverlapHit,
 } from '../../types';
 
 import type {
@@ -18,6 +21,7 @@ import type {
   PointGeometry,
   RayGeometry,
   CapsuleGeometry,
+  SegmentGeometry,
 } from './types';
 import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
@@ -32,11 +36,12 @@ type QueryType =
   | 'circle'
   | 'box'
   | 'capsule'
+  | 'segment'
   | 'ray'
   | 'circleCast'
   | 'capsuleCast'
   | 'boxCast';
-type OverlapQueryType = 'point' | 'circle' | 'box' | 'capsule';
+type OverlapQueryType = 'point' | 'circle' | 'box' | 'capsule' | 'segment';
 type ShapeCastQueryType = 'circleCast' | 'capsuleCast' | 'boxCast';
 type QueryGeometry =
   | BoxGeometry
@@ -44,12 +49,20 @@ type QueryGeometry =
   | CircleGeometry
   | CapsuleGeometry
   | PointGeometry
+  | SegmentGeometry
   | RayGeometry
   | CircleCastGeometry
   | CapsuleCastGeometry;
 type QueryParams = OverlapParams | RaycastParams | ShapeCastParams;
 
-type GeometryBulders = Record<QueryType, (params: unknown) => QueryGeometry>;
+type GeometryBulders = Record<
+  QueryType,
+  (
+    colliderOrParams: Collider | unknown,
+    transform?: Transform,
+    params?: unknown,
+  ) => QueryGeometry
+>;
 
 export function buildQueryProxy(
   type: QueryType,
@@ -61,8 +74,55 @@ export function buildQueryProxy(
     aabb: aabbBuilders[type](geometry),
     geometry,
     layer: params.layer,
+    excludedActors: params.excludeActors
+      ? new Set(params.excludeActors)
+      : undefined,
   };
 }
+
+export function buildActorQueryProxy(
+  type: ShapeCastQueryType,
+  params: CastActorParams,
+): QueryProxy;
+export function buildActorQueryProxy(
+  type: OverlapQueryType,
+  params: OverlapActorParams,
+): QueryProxy;
+export function buildActorQueryProxy(
+  type: ShapeCastQueryType | OverlapQueryType,
+  params: CastActorParams | OverlapActorParams,
+): QueryProxy {
+  const { actor, excludeSelf = true, excludeActors } = params;
+
+  const transform = actor.getComponent(Transform);
+  const collider = actor.getComponent(Collider);
+
+  const geometry = (geometryBuilders as GeometryBulders)[type](
+    collider,
+    transform,
+    params,
+  );
+
+  const excludedActors = new Set(excludeActors);
+  if (excludeSelf) {
+    excludedActors.add(actor);
+  }
+
+  return {
+    aabb: aabbBuilders[type](geometry),
+    geometry,
+    layer: params.layer ?? collider.layer,
+    excludedActors,
+  };
+}
+
+export const getOverlapQueryType = (
+  params: OverlapActorParams,
+): OverlapQueryType | null => {
+  const collider = params.actor.getComponent(Collider) as Collider | undefined;
+
+  return collider ? collider.shape.type : null;
+};
 
 export const getShapeCastQueryType = (
   params: ShapeCastParams,
@@ -77,26 +137,51 @@ export const getShapeCastQueryType = (
   }
 };
 
+export const getActorCastQueryType = (
+  params: CastActorParams,
+): ShapeCastQueryType | null => {
+  const collider = params.actor.getComponent(Collider) as Collider | undefined;
+
+  switch (collider?.shape.type) {
+    case 'circle':
+      return 'circleCast';
+    case 'capsule':
+      return 'capsuleCast';
+    case 'box':
+      return 'boxCast';
+    default:
+      return null;
+  }
+};
+
 export const overlap = (
   type: OverlapQueryType,
   queryProxy: QueryProxy,
   proxies: Iterable<ActorProxy>,
-): Actor[] => {
-  const actors: Actor[] = [];
+): OverlapHit[] => {
+  const hits: OverlapHit[] = [];
 
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
-    const intersection = intersectionCheckers[type][collider.shape.type](
-      queryProxy.geometry,
-      proxy.geometry,
-    );
+    const checker = intersectionCheckers[type]?.[collider.shape.type];
+
+    if (!checker) {
+      continue;
+    }
+
+    const intersection = checker(queryProxy.geometry, proxy.geometry);
 
     if (intersection) {
-      actors.push(proxy.actor);
+      hits.push({
+        actor: proxy.actor,
+        normal: intersection.normal.clone().multiplyNumber(-1),
+        penetration: intersection.penetration,
+        contactPoints: intersection.contactPoints,
+      });
     }
   }
 
-  return actors;
+  return hits;
 };
 
 export const raycast = (
