@@ -217,18 +217,24 @@ export class CharacterController extends SceneSystem {
   private handleHit(actor: Actor, hit: CastHit): void {
     const character = actor.getComponent(CharacterBody);
 
-    const upDot = VectorOps.dotProduct(hit.normal, character.upDirection);
-    const threshold = Math.cos(character.maxSlopeAngle);
     let kind: CharacterHitKind;
 
-    if (upDot >= threshold) {
-      kind = 'ground';
-      character.onGround = true;
-      character.groundNormal = hit.normal;
-      character.groundActor = hit.actor;
-    } else if (upDot <= -threshold) {
-      kind = 'ceiling';
-      character.onCeiling = true;
+    if (character.motionMode === 'surface') {
+      const upDot = VectorOps.dotProduct(hit.normal, character.upDirection);
+      const threshold = Math.cos(character.maxSlopeAngle);
+
+      if (upDot >= threshold) {
+        kind = 'ground';
+        character.onGround = true;
+        character.groundNormal = hit.normal;
+        character.groundActor = hit.actor;
+      } else if (upDot <= -threshold) {
+        kind = 'ceiling';
+        character.onCeiling = true;
+      } else {
+        kind = 'wall';
+        character.onWall = true;
+      }
     } else {
       kind = 'wall';
       character.onWall = true;
@@ -281,11 +287,11 @@ export class CharacterController extends SceneSystem {
   private updateGroundState(
     actor: Actor,
     target: Point,
-    canSnap: boolean,
+    skipSnapping: boolean,
   ): void {
     const character = actor.getComponent(CharacterBody);
 
-    if (!canSnap) {
+    if (skipSnapping) {
       this.resetGroundState(character);
       return;
     }
@@ -363,7 +369,11 @@ export class CharacterController extends SceneSystem {
 
       this.move(actor, position, displacement);
 
-      this.updateGroundState(actor, position, !movingUp);
+      this.updateGroundState(
+        actor,
+        position,
+        movingUp || character.motionMode === 'free',
+      );
 
       rigidBody.movePosition(position);
 

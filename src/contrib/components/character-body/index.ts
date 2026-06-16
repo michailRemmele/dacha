@@ -2,7 +2,10 @@ import { Component } from '../../../engine/component';
 import { MathOps, Vector2 } from '../../../engine/math-lib';
 import type { Actor } from '../../../engine/actor';
 
+export type CharacterMotionMode = 'surface' | 'free';
+
 export interface CharacterBodyConfig {
+  motionMode?: CharacterMotionMode;
   upDirectionX?: number;
   upDirectionY?: number;
   skinWidth?: number;
@@ -28,6 +31,8 @@ export class CharacterBody extends Component {
   /** @internal Pending one-step displacement consumed by CharacterController */
   _displacement: Vector2;
 
+  /** Controls contact classification and whether ground snapping is enabled. */
+  motionMode: CharacterMotionMode;
   /** Desired character velocity in world units per second */
   velocity: Vector2;
   /** Small distance kept between the character shape and blocking colliders */
@@ -65,6 +70,7 @@ export class CharacterBody extends Component {
       config.upDirectionY ?? -1,
     );
 
+    this.motionMode = config.motionMode ?? 'surface';
     this.disabled = config.disabled ?? false;
     this.velocity = new Vector2(0, 0);
     this.skinWidth = config.skinWidth ?? 0.1;
