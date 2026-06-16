@@ -172,6 +172,42 @@ describe('Systems -> CharacterController', () => {
     expect(event.point.x).toBeCloseTo(2);
   });
 
+  it('Reports blocking hits as walls in free motion mode', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      0,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const wall = createBoxActor('wall', 'static', 3, 0);
+    const listener = jest.fn();
+
+    character.addEventListener(CharacterHit, listener);
+    controller.motionMode = 'free';
+    controller.velocity = new Vector2(50, 0);
+    scene.appendChild(character);
+    scene.appendChild(wall);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    eventQueue.update();
+
+    expect(listener.mock.calls.length).toBe(1);
+
+    const event = listener.mock.calls[0][0] as CharacterHitEvent;
+
+    expect(event.actor).toBe(wall);
+    expect(event.kind).toBe('wall');
+    expect(controller.onWall).toBe(true);
+    expect(controller.onGround).toBe(false);
+    expect(controller.onCeiling).toBe(false);
+    expect(controller.groundActor).toBeNull();
+  });
+
   it('Detects ground below a standing character', () => {
     const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
@@ -194,6 +230,32 @@ describe('Systems -> CharacterController', () => {
     expect(controller.onGround).toBe(true);
     expect(controller.groundActor).toBe(floor);
     expect(controller.groundNormal.y).toBeCloseTo(-1);
+  });
+
+  it('Does not detect or snap to ground in free motion mode', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      -0.55,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const transform = character.getComponent(Transform);
+    const floor = createBoxActor('floor', 'static', 0, 2);
+
+    controller.motionMode = 'free';
+    scene.appendChild(character);
+    scene.appendChild(floor);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(transform.world.position.y).toBeCloseTo(-0.55);
+    expect(controller.onGround).toBe(false);
+    expect(controller.groundActor).toBeNull();
   });
 
   it('Recovers from initial static overlap before movement', () => {
