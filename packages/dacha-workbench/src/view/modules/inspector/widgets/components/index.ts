@@ -12,6 +12,7 @@ import {
   Transform,
   AudioSource,
   Mesh,
+  CharacterBody,
 } from 'dacha';
 
 import { EditorMarker } from '../../../../../engine/components';
@@ -30,6 +31,7 @@ import { behaviors } from './behaviors';
 import { transform } from './transform';
 import { audioSource } from './audio-source';
 import { mesh } from './mesh';
+import { characterBody } from './character-body';
 import { editorMarker } from './editor-marker';
 
 export const componentsSchema: Record<string, WidgetSchema> = {
@@ -46,5 +48,6 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [Transform.componentName]: transform,
   [AudioSource.componentName]: audioSource,
   [Mesh.componentName]: mesh,
+  [CharacterBody.componentName]: characterBody,
   [EditorMarker.componentName]: editorMarker,
 };

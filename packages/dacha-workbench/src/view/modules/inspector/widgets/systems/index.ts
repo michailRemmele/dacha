@@ -11,6 +11,7 @@ import {
   Renderer,
   UIBridge,
   AudioSystem,
+  CharacterController,
 } from 'dacha';
 
 import type { WidgetSchema } from '../../../../../types/widget-schema';
@@ -27,6 +28,7 @@ import { behaviorSystem } from './behavior-system';
 import { renderer } from './renderer';
 import { uiBridge } from './ui-bridge';
 import { audioSystem } from './audio-system';
+import { characterController } from './character-controller';
 
 export const systemsSchema: Record<string, WidgetSchema> = {
   [Animator.systemName]: animator,
@@ -41,4 +43,5 @@ export const systemsSchema: Record<string, WidgetSchema> = {
   [Renderer.systemName]: renderer,
   [UIBridge.systemName]: uiBridge,
   [AudioSystem.systemName]: audioSystem,
+  [CharacterController.systemName]: characterController,
 };
