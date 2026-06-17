@@ -193,13 +193,6 @@ export const getEditorConfig = ({
                         ),
                         withClassName: false,
                       },
-                      preview: {
-                        value: persistentStorage.get(
-                          'canvas.mainActor.tools.template.features.preview',
-                          true,
-                        ),
-                        withClassName: false,
-                      },
                       grid: {
                         value: persistentStorage.get(
                           'canvas.mainActor.tools.template.features.grid',

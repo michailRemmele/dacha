@@ -1,32 +1,24 @@
-import {
-  Transform,
-  RendererAPI,
-} from 'dacha'
-import type {
-  ActorConfig,
-  TemplateConfig,
-  World,
-  Actor,
-} from 'dacha'
-import { v4 as uuidv4 } from 'uuid'
+import { Transform, RendererAPI } from 'dacha';
+import type { ActorConfig, TemplateConfig, World, Actor } from 'dacha';
+import { v4 as uuidv4 } from 'uuid';
 
-import {
-  getGridValue,
-  getGridStep,
-} from '../../../utils/grid'
-import { getTool } from '../../../utils/get-tool'
-import { getUniqueName } from '../../../utils/get-unique-name'
+import { getGridValue, getGridStep } from '../../../utils/grid';
+import { getTool } from '../../../utils/get-tool';
+import { getUniqueName } from '../../../utils/get-unique-name';
 
-import { TOOL_NAME, SCENE_PATH_LEGTH } from './consts'
-import type { Position } from './types'
+import { TOOL_NAME, SCENE_PATH_LEGTH } from './consts';
+import type { Position } from './types';
 
-const buildActor = (template: TemplateConfig, actors?: ActorConfig[]): ActorConfig => ({
+const buildActor = (
+  template: TemplateConfig,
+  actors?: ActorConfig[],
+): ActorConfig => ({
   id: uuidv4(),
   templateId: template.id,
   name: actors ? getUniqueName(template.name, actors) : template.name,
   components: [],
   children: (template.children ?? []).map((child) => buildActor(child)),
-})
+});
 
 export const createFromTemplate = (
   template: TemplateConfig,
@@ -34,21 +26,22 @@ export const createFromTemplate = (
   x: number,
   y: number,
 ): ActorConfig => {
-  const templateCopy = structuredClone(template)
-  const actor = buildActor(templateCopy, actors)
+  const templateCopy = structuredClone(template);
+  const actor = buildActor(templateCopy, actors);
 
-  const transform = templateCopy.components
-    ?.find((component) => component.name === Transform.componentName)
+  const transform = templateCopy.components?.find(
+    (component) => component.name === Transform.componentName,
+  );
 
   if (transform !== undefined) {
-    transform.config.offsetX = x
-    transform.config.offsetY = y
+    transform.config.offsetX = x;
+    transform.config.offsetY = y;
 
-    actor.components?.push(transform)
+    actor.components?.push(transform);
   }
 
-  return actor
-}
+  return actor;
+};
 
 export const updatePreviewPosition = (
   cursor: Position,
@@ -56,45 +49,48 @@ export const updatePreviewPosition = (
   preview?: Actor,
 ): void => {
   if (cursor.x === null || cursor.y === null) {
-    return
+    return;
   }
 
-  const tool = getTool(world)
-  const gridStep = getGridStep(world)
+  const tool = getTool(world);
+  const gridStep = getGridStep(world);
 
   if (tool.name !== TOOL_NAME) {
-    return
+    return;
   }
 
-  const templateId = tool.features.templateId.value as string | undefined
-  const snapToGrid = tool.features.grid.value as boolean
+  const templateId = tool.features.templateId.value as string | undefined;
+  const snapToGrid = tool.features.grid.value as boolean;
   if (templateId === undefined) {
-    return
+    return;
   }
 
-  const transform = preview?.getComponent(Transform)
+  const transform = preview?.getComponent(Transform);
 
   if (!preview || !transform) {
-    return
+    return;
   }
 
   if (!snapToGrid) {
-    transform.world.position.x = Math.round(cursor.x)
-    transform.world.position.y = Math.round(cursor.y)
-    return
+    transform.world.position.x = Math.round(cursor.x);
+    transform.world.position.y = Math.round(cursor.y);
+    return;
   }
 
-  const rendererApi = world.systemApi.get(RendererAPI)
-  const bounds = rendererApi.getBounds(preview)
+  const rendererApi = world.systemApi.get(RendererAPI);
+  const bounds = rendererApi.getBounds(preview);
 
-  if (!bounds) {
-    return
-  }
+  transform.world.position.x = getGridValue(
+    cursor.x,
+    bounds?.width ?? 0,
+    gridStep,
+  );
+  transform.world.position.y = getGridValue(
+    cursor.y,
+    bounds?.height ?? 0,
+    gridStep,
+  );
+};
 
-  transform.world.position.x = getGridValue(cursor.x, bounds.width, gridStep)
-  transform.world.position.y = getGridValue(cursor.y, bounds.height, gridStep)
-}
-
-export const isActorPath = (
-  path?: string[],
-): boolean => path !== undefined && path[0] === 'scenes' && path.length > SCENE_PATH_LEGTH
+export const isActorPath = (path?: string[]): boolean =>
+  path !== undefined && path[0] === 'scenes' && path.length > SCENE_PATH_LEGTH;
