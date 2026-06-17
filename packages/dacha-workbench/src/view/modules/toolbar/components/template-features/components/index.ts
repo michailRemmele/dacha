@@ -1,3 +1,2 @@
-export { TemplateFeature } from './template-feature'
-export { PreviewFeature } from './preview-feature'
-export { NestToSelectedFeature } from './nest-to-selected-feature'
+export { TemplateFeature } from './template-feature';
+export { NestToSelectedFeature } from './nest-to-selected-feature';

@@ -15,7 +15,6 @@ import type {
   SelectSceneEvent,
   InspectEntityEvent,
   SelectToolEvent,
-  SetToolFeatureValueEvent,
 } from '../../../events';
 import { ADD_VALUE } from '../../../command-types';
 import { ROOT_SCOPE } from '../../../consts/scopes';
@@ -26,15 +25,14 @@ import { getTool } from '../../../utils/get-tool';
 import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id';
 import { getSavedInspectedEntity } from '../../../utils/get-saved-inspected-entity';
 import { getActorIdByPath } from '../../../utils/get-actor-id-by-path';
-import type { ComponentConstructor } from '../../../types/engine';
 
-import { TOOL_NAME, PREVIEW_FEATURE_NAME, VIEW_COMPONENTS } from './consts';
+import { TOOL_NAME } from './consts';
 import {
   createFromTemplate,
   updatePreviewPosition,
   isActorPath,
 } from './utils';
-import type { Position, ViewComponent } from './types';
+import type { Position } from './types';
 
 export class TemplateToolSystem extends SceneSystem {
   private world: World;
@@ -88,10 +86,6 @@ export class TemplateToolSystem extends SceneSystem {
       this.handleAddFromTemplate,
     );
     this.world.addEventListener(EventType.SelectTool, this.handleSelectTool);
-    this.world.addEventListener(
-      EventType.SetToolFeatureValue,
-      this.handleSetToolFeatureValue,
-    );
     this.unsubscribeStore = this.configStore.subscribe(
       this.handleTemplatesUpdate,
     );
@@ -117,10 +111,6 @@ export class TemplateToolSystem extends SceneSystem {
     this.world.removeEventListener(
       EventType.AddFromTemplate,
       this.handleAddFromTemplate,
-    );
-    this.world.removeEventListener(
-      EventType.SetToolFeatureValue,
-      this.handleSetToolFeatureValue,
     );
     this.world.removeEventListener(EventType.SelectTool, this.handleSelectTool);
     this.unsubscribeStore?.();
@@ -235,23 +225,6 @@ export class TemplateToolSystem extends SceneSystem {
   };
 
   /**
-   * Listens preview visiblity update and reset preview in visible state
-   */
-  private handleSetToolFeatureValue = (
-    event: SetToolFeatureValueEvent,
-  ): void => {
-    const tool = getTool(this.world);
-    if (tool.name !== TOOL_NAME) {
-      return;
-    }
-
-    const { name, value } = event;
-    if (name === PREVIEW_FEATURE_NAME && value === true) {
-      this.deletePreview();
-    }
-  };
-
-  /**
    * Listens template update to sync template feature value and reset preview
    * if selected template was changed
    */
@@ -298,21 +271,6 @@ export class TemplateToolSystem extends SceneSystem {
     this.preview = undefined;
   }
 
-  private hidePreview(): void {
-    if (!this.preview) {
-      return;
-    }
-
-    VIEW_COMPONENTS.forEach((componentClass: ComponentConstructor) => {
-      const viewComponent = this.preview?.getComponent(componentClass) as
-        | ViewComponent
-        | undefined;
-      if (viewComponent) {
-        viewComponent.opacity = 0;
-      }
-    });
-  }
-
   // TODO: Simplify after actor/template creation refactoring
   private spawnPreview(templateId: string): Actor {
     const preview = this.actorCreator.create({
@@ -335,7 +293,6 @@ export class TemplateToolSystem extends SceneSystem {
     }
 
     const templateId = tool.features.templateId.value as string | undefined;
-    const preview = tool.features.preview.value as boolean;
 
     if (!templateId) {
       return;
@@ -345,9 +302,6 @@ export class TemplateToolSystem extends SceneSystem {
     }
     if (!this.preview) {
       this.preview = this.spawnPreview(templateId);
-    }
-    if (!preview) {
-      this.hidePreview();
     }
   }
 
