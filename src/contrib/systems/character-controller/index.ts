@@ -117,11 +117,11 @@ export class CharacterController extends SceneSystem {
     const character = actor.getComponent(CharacterBody);
     const transform = actor.getComponent(Transform);
 
-    const distance = displacement.magnitude;
-
-    if (distance <= DISTANCE_EPSILON) {
+    if (displacement.squaredMagnitude <= DISTANCE_EPSILON) {
       return [];
     }
+
+    const distance = displacement.magnitude;
 
     return physicsApi.castActorAll({
       actor,
@@ -177,9 +177,13 @@ export class CharacterController extends SceneSystem {
   }
 
   private recoverOverlaps(actor: Actor, position: Vector2): void {
-    const physicsApi = this.world.systemApi.get(PhysicsAPI);
     const character = actor.getComponent(CharacterBody);
+    if (!character._needsRecovery) {
+      return;
+    }
+
     const transform = actor.getComponent(Transform);
+    const physicsApi = this.world.systemApi.get(PhysicsAPI);
 
     for (let i = 0; i < character.maxRecoveries; i += 1) {
       const hits = physicsApi.overlapActor({
@@ -209,6 +213,7 @@ export class CharacterController extends SceneSystem {
       }
 
       if (!recovered) {
+        character._needsRecovery = false;
         break;
       }
     }
@@ -250,14 +255,18 @@ export class CharacterController extends SceneSystem {
   }
 
   private move(actor: Actor, position: Vector2, displacement: Vector2): void {
+    if (displacement.squaredMagnitude <= DISTANCE_EPSILON) {
+      return;
+    }
+
     const character = actor.getComponent(CharacterBody);
 
     for (let i = 0; i < character.maxSlides; i += 1) {
-      const distance = displacement.magnitude;
-
-      if (distance <= DISTANCE_EPSILON) {
+      if (displacement.squaredMagnitude <= DISTANCE_EPSILON) {
         break;
       }
+
+      const distance = displacement.magnitude;
 
       const hit = this.cast(actor, position, displacement);
 
@@ -351,6 +360,13 @@ export class CharacterController extends SceneSystem {
         return;
       }
 
+      const position = new Vector2(
+        transform.world.position.x,
+        transform.world.position.y,
+      );
+
+      this.recoverOverlaps(actor, position);
+
       const displacement = character.velocity
         .clone()
         .multiplyNumber(deltaTimeInSeconds)
@@ -360,13 +376,6 @@ export class CharacterController extends SceneSystem {
         VectorOps.dotProduct(displacement, character.upDirection) >
         SNAP_EPSILON;
 
-      const position = new Vector2(
-        transform.world.position.x,
-        transform.world.position.y,
-      );
-
-      this.recoverOverlaps(actor, position);
-
       this.move(actor, position, displacement);
 
       this.updateGroundState(
@@ -375,7 +384,12 @@ export class CharacterController extends SceneSystem {
         movingUp || character.motionMode === 'free',
       );
 
-      rigidBody.movePosition(position);
+      if (
+        Math.abs(position.x - transform.world.position.x) > DISTANCE_EPSILON ||
+        Math.abs(position.y - transform.world.position.y) > DISTANCE_EPSILON
+      ) {
+        rigidBody.movePosition(position);
+      }
 
       character._displacement.multiplyNumber(0);
     });

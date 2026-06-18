@@ -30,6 +30,8 @@ export class CharacterBody extends Component {
 
   /** @internal Pending one-step displacement consumed by CharacterController */
   _displacement: Vector2;
+  /** @internal Whether CharacterController should run overlap recovery */
+  _needsRecovery: boolean;
 
   /** Controls contact classification and whether ground snapping is enabled. */
   motionMode: CharacterMotionMode;
@@ -41,7 +43,7 @@ export class CharacterBody extends Component {
   maxSlopeAngle: number;
   /** Maximum sweep/slide collision iterations used during one fixed update */
   maxSlides: number;
-  /** Maximum overlap depenetration iterations used before sweep/slide movement */
+  /** Maximum overlap depenetration iterations used when recovery is requested */
   maxRecoveries: number;
   /** Distance used to probe opposite upDirection and keep ground contact over small gaps */
   groundSnapDistance: number;
@@ -64,6 +66,7 @@ export class CharacterBody extends Component {
 
     this._up = new Vector2(0, -1);
     this._displacement = new Vector2(0, 0);
+    this._needsRecovery = true;
 
     this.upDirection = new Vector2(
       config.upDirectionX ?? 0,
@@ -107,6 +110,13 @@ export class CharacterBody extends Component {
    */
   move(displacement: Vector2): void {
     this._displacement.add(displacement);
+  }
+
+  /**
+   * Requests overlap depenetration on the next CharacterController update.
+   */
+  recover(): void {
+    this._needsRecovery = true;
   }
 }
 
