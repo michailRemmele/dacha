@@ -25,7 +25,18 @@ export class Vector2 {
    * @returns Magnitude of the vector
    */
   get magnitude(): number {
-    return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+    return Math.sqrt(this.squaredMagnitude);
+  }
+
+  /**
+   * Returns the squared Euclidean length of the vector.
+   *
+   * Useful for distance comparisons that do not need the exact magnitude.
+   *
+   * @returns Squared magnitude of the vector
+   */
+  get squaredMagnitude(): number {
+    return this.x * this.x + this.y * this.y;
   }
 
   /**
