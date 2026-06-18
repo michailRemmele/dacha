@@ -1,4 +1,3 @@
-import type { Actor } from '../../../../../engine/actor';
 import { Collider, Transform } from '../../../../components';
 import type {
   RaycastParams,
@@ -27,9 +26,7 @@ import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
 import { raycastCheckers } from './raycast-checkers';
-import type { RaycastCheckerHit } from './raycast-checkers/types';
 import { shapeCastCheckers } from './shape-cast-checkers';
-import type { ShapeCastCheckerHit } from './shape-cast-checkers/types';
 
 type QueryType =
   | 'point'
@@ -77,6 +74,8 @@ export function buildQueryProxy(
     excludedActors: params.excludeActors
       ? new Set(params.excludeActors)
       : undefined,
+    actorFilter: params.actorFilter,
+    hitFilter: params.hitFilter as (hit: OverlapHit | CastHit) => boolean,
   };
 }
 
@@ -113,6 +112,8 @@ export function buildActorQueryProxy(
     geometry,
     layer: params.layer ?? collider.layer,
     excludedActors,
+    actorFilter: params.actorFilter,
+    hitFilter: params.hitFilter as (hit: OverlapHit | CastHit) => boolean,
   };
 }
 
@@ -171,14 +172,22 @@ export const overlap = (
 
     const intersection = checker(queryProxy.geometry, proxy.geometry);
 
-    if (intersection) {
-      hits.push({
-        actor: proxy.actor,
-        normal: intersection.normal.clone().multiplyNumber(-1),
-        penetration: intersection.penetration,
-        contactPoints: intersection.contactPoints,
-      });
+    if (!intersection) {
+      continue;
     }
+
+    const hit = {
+      actor: proxy.actor,
+      normal: intersection.normal.clone().multiplyNumber(-1),
+      penetration: intersection.penetration,
+      contactPoints: intersection.contactPoints,
+    };
+
+    if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
+      continue;
+    }
+
+    hits.push(hit);
   }
 
   return hits;
@@ -188,9 +197,8 @@ export const raycast = (
   queryProxy: QueryProxy,
   proxies: Iterable<ActorProxy>,
 ): CastHit | null => {
-  let nearestHit: RaycastCheckerHit | null = null;
-  let nearestActor: Actor | null = null;
   let nearestDistance = Infinity;
+  let nearestHit: CastHit | null = null;
 
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
@@ -200,23 +208,28 @@ export const raycast = (
       proxy.geometry,
     );
 
-    if (hit && hit.distance < nearestDistance) {
-      nearestHit = hit;
-      nearestActor = proxy.actor;
+    if (!hit) {
+      continue;
+    }
+
+    const castHit = {
+      actor: proxy.actor,
+      point: hit.point,
+      normal: hit.normal,
+      distance: hit.distance,
+    };
+
+    if (queryProxy.hitFilter && !queryProxy.hitFilter(castHit)) {
+      continue;
+    }
+
+    if (hit.distance < nearestDistance) {
+      nearestHit = castHit;
       nearestDistance = hit.distance;
     }
   }
 
-  if (!nearestHit || !nearestActor) {
-    return null;
-  }
-
-  return {
-    actor: nearestActor,
-    point: nearestHit.point,
-    normal: nearestHit.normal,
-    distance: nearestDistance,
-  };
+  return nearestHit;
 };
 
 export const raycastAll = (
@@ -233,14 +246,22 @@ export const raycastAll = (
       proxy.geometry,
     );
 
-    if (hit) {
-      hits.push({
-        actor: proxy.actor,
-        point: hit.point,
-        normal: hit.normal,
-        distance: hit.distance,
-      });
+    if (!hit) {
+      continue;
     }
+
+    const castHit = {
+      actor: proxy.actor,
+      point: hit.point,
+      normal: hit.normal,
+      distance: hit.distance,
+    };
+
+    if (queryProxy.hitFilter && !queryProxy.hitFilter(castHit)) {
+      continue;
+    }
+
+    hits.push(castHit);
   }
 
   hits.sort((arg1, arg2) => arg1.distance - arg2.distance);
@@ -253,9 +274,8 @@ export const shapeCast = (
   queryProxy: QueryProxy,
   proxies: Iterable<ActorProxy>,
 ): CastHit | null => {
-  let nearestCastHit: ShapeCastCheckerHit | null = null;
-  let nearestActor: Actor | null = null;
   let nearestDistance = Infinity;
+  let nearestHit: CastHit | null = null;
 
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
@@ -268,23 +288,28 @@ export const shapeCast = (
 
     const castHit = checker(queryProxy.geometry, proxy.geometry);
 
-    if (castHit && castHit.distance < nearestDistance) {
-      nearestCastHit = castHit;
-      nearestActor = proxy.actor;
+    if (!castHit) {
+      continue;
+    }
+
+    const hit = {
+      actor: proxy.actor,
+      point: castHit.point,
+      normal: castHit.normal,
+      distance: castHit.distance,
+    };
+
+    if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
+      continue;
+    }
+
+    if (castHit.distance < nearestDistance) {
+      nearestHit = hit;
       nearestDistance = castHit.distance;
     }
   }
 
-  if (!nearestCastHit || !nearestActor) {
-    return null;
-  }
-
-  return {
-    actor: nearestActor,
-    point: nearestCastHit.point,
-    normal: nearestCastHit.normal,
-    distance: nearestCastHit.distance,
-  };
+  return nearestHit;
 };
 
 export const shapeCastAll = (
@@ -304,14 +329,22 @@ export const shapeCastAll = (
 
     const castHit = checker(queryProxy.geometry, proxy.geometry);
 
-    if (castHit) {
-      hits.push({
-        actor: proxy.actor,
-        point: castHit.point,
-        normal: castHit.normal,
-        distance: castHit.distance,
-      });
+    if (!castHit) {
+      continue;
     }
+
+    const hit = {
+      actor: proxy.actor,
+      point: castHit.point,
+      normal: castHit.normal,
+      distance: castHit.distance,
+    };
+
+    if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
+      continue;
+    }
+
+    hits.push(hit);
   }
 
   hits.sort((arg1, arg2) => arg1.distance - arg2.distance);

@@ -191,6 +191,10 @@ describe('Systems -> PhysicsSystem -> queries', () => {
       excludeActors: [query],
     });
     const actorHits = physicsApi.overlapActor({ actor: query });
+    const hitFilteredActorHits = physicsApi.overlapActor({
+      actor: query,
+      hitFilter: (hit) => hit.penetration > 1,
+    });
 
     expect(shapeHits.map((hit) => hit.actor.id)).toStrictEqual(['target']);
     expect(shapeHits[0].normal.x).toBeCloseTo(-1);
@@ -202,6 +206,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
     expect(actorHits[0].normal.x).toBeCloseTo(-1);
     expect(actorHits[0].normal.y).toBeCloseTo(0);
     expect(actorHits[0].penetration).toBeCloseTo(0.5);
+    expect(hitFilteredActorHits).toHaveLength(0);
   });
 
   it('Overlaps actor from its current transform plus query offset', () => {
@@ -665,6 +670,18 @@ describe('Systems -> PhysicsSystem -> queries', () => {
       maxDistance: 12,
       excludeActors: [nearBox],
     });
+    const actorFilteredHits = physicsApi.castActorAll({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+      actorFilter: (actor) => actor.id !== 'near-box',
+    });
+    const hitFilteredHit = physicsApi.castActor({
+      actor: caster,
+      direction: new Vector2(1, 0),
+      maxDistance: 12,
+      hitFilter: (hit) => hit.actor.id !== 'near-box',
+    });
 
     expect(allHits.map((hit) => hit.actor.id)).toStrictEqual([
       'near-box',
@@ -675,6 +692,10 @@ describe('Systems -> PhysicsSystem -> queries', () => {
       'far-circle',
     ]);
     expect(excludedHit?.actor.id).toBe('far-circle');
+    expect(actorFilteredHits.map((hit) => hit.actor.id)).toStrictEqual([
+      'far-circle',
+    ]);
+    expect(hitFilteredHit?.actor.id).toBe('far-circle');
   });
 
   it("Uses the cast actor's collider layer when layer is omitted", () => {

@@ -107,23 +107,22 @@ export class CharacterController extends SceneSystem {
     character.onCeiling = false;
   }
 
-  private castAll(
+  private cast(
     actor: Actor,
     position: Point,
     displacement: Vector2,
-  ): CastHit[] {
-    const physicsApi = this.world.systemApi.get(PhysicsAPI);
-
-    const character = actor.getComponent(CharacterBody);
-    const transform = actor.getComponent(Transform);
-
+    hitFilter: (hit: CastHit) => boolean,
+  ): CastHit | null {
     if (displacement.squaredMagnitude <= DISTANCE_EPSILON) {
-      return [];
+      return null;
     }
 
+    const physicsApi = this.world.systemApi.get(PhysicsAPI);
+    const character = actor.getComponent(CharacterBody);
+    const transform = actor.getComponent(Transform);
     const distance = displacement.magnitude;
 
-    return physicsApi.castActorAll({
+    return physicsApi.castActor({
       actor,
       offset: {
         x: position.x - transform.world.position.x,
@@ -131,30 +130,25 @@ export class CharacterController extends SceneSystem {
       },
       direction: displacement,
       maxDistance: distance + character.skinWidth,
+      hitFilter,
     });
   }
 
-  private cast(
+  private castMotion(
     actor: Actor,
     position: Point,
     displacement: Vector2,
   ): CastHit | null {
-    const hits = this.castAll(actor, position, displacement);
-
-    for (const hit of hits) {
+    return this.cast(actor, position, displacement, (hit) => {
       if (
         hit.distance <= DISTANCE_EPSILON &&
         VectorOps.dotProduct(displacement, hit.normal) > DISTANCE_EPSILON
       ) {
-        continue;
+        return false;
       }
 
-      if (this.isBlockingHit(actor, hit)) {
-        return hit;
-      }
-    }
-
-    return null;
+      return this.isBlockingHit(actor, hit);
+    });
   }
 
   private castGround(
@@ -162,18 +156,13 @@ export class CharacterController extends SceneSystem {
     position: Point,
     displacement: Vector2,
   ): CastHit | null {
-    const hits = this.castAll(actor, position, displacement);
-
-    for (const hit of hits) {
-      if (
-        this.isBlockingHit(actor, hit) &&
-        this.isWalkable(actor, hit.normal)
-      ) {
-        return hit;
-      }
-    }
-
-    return null;
+    return this.cast(
+      actor,
+      position,
+      displacement,
+      (hit) =>
+        this.isBlockingHit(actor, hit) && this.isWalkable(actor, hit.normal),
+    );
   }
 
   private recoverOverlaps(actor: Actor, position: Vector2): void {
@@ -268,7 +257,7 @@ export class CharacterController extends SceneSystem {
 
       const distance = displacement.magnitude;
 
-      const hit = this.cast(actor, position, displacement);
+      const hit = this.castMotion(actor, position, displacement);
 
       if (!hit) {
         position.add(displacement);

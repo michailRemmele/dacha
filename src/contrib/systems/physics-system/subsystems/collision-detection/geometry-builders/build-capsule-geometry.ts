@@ -1,10 +1,10 @@
 import { VectorOps, type Point } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
 import type { ActorGeometryParams, CapsuleGeometry } from '../types';
-import type { OverlapCapsuleParams } from '../../../types';
+import type { OverlapCapsuleParams, CapsuleCastParams } from '../../../types';
 
 export function buildCapsuleGeometry(
-  overlap: OverlapCapsuleParams,
+  overlap: OverlapCapsuleParams | CapsuleCastParams,
 ): CapsuleGeometry;
 export function buildCapsuleGeometry(
   collider: Collider,
@@ -12,7 +12,7 @@ export function buildCapsuleGeometry(
   params?: ActorGeometryParams,
 ): CapsuleGeometry;
 export function buildCapsuleGeometry(
-  colliderOrOverlap: Collider | OverlapCapsuleParams,
+  colliderOrQueryParams: Collider | OverlapCapsuleParams | CapsuleCastParams,
   transform?: Transform,
   params?: ActorGeometryParams,
 ): CapsuleGeometry {
@@ -28,7 +28,7 @@ export function buildCapsuleGeometry(
   let scaleY: number;
 
   if (transform !== undefined) {
-    const collider = colliderOrOverlap as Collider;
+    const collider = colliderOrQueryParams as Collider;
 
     if (collider.shape.type !== 'capsule') {
       throw new Error(`Expected capsule collider, got ${collider.shape.type}.`);
@@ -45,15 +45,15 @@ export function buildCapsuleGeometry(
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;
   } else {
-    const overlap = (colliderOrOverlap as OverlapCapsuleParams).shape;
+    const queryShape = (colliderOrQueryParams as OverlapCapsuleParams).shape;
     offsetX = 0;
     offsetY = 0;
-    positionX = overlap.center.x;
-    positionY = overlap.center.y;
-    point1Y = -overlap.height / 2;
-    point2Y = overlap.height / 2;
-    radius = overlap.radius;
-    rotation = overlap.rotation ?? 0;
+    positionX = queryShape.center.x;
+    positionY = queryShape.center.y;
+    point1Y = -queryShape.height / 2;
+    point2Y = queryShape.height / 2;
+    radius = queryShape.radius;
+    rotation = queryShape.rotation ?? 0;
     scaleX = 1;
     scaleY = 1;
   }
