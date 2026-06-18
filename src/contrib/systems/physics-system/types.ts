@@ -19,12 +19,14 @@ export interface PhysicsSettings {
   collisionMatrix: CollisionMatrix;
 }
 
-export interface PhysicsQueryFilter {
+export interface PhysicsQueryFilter<T> {
   layer?: string;
   excludeActors?: Actor[];
+  actorFilter?: (actor: Actor) => boolean;
+  hitFilter?: (hit: T) => boolean;
 }
 
-export interface CommonCastParams extends PhysicsQueryFilter {
+export interface CommonCastParams extends PhysicsQueryFilter<CastHit> {
   direction: Vector2;
   maxDistance: number;
 }
@@ -47,38 +49,46 @@ export interface OverlapHit {
   contactPoints: Point[];
 }
 
-export interface OverlapPointParams extends PhysicsQueryFilter {
-  shape: {
-    type: 'point';
-    point: Point;
-  };
+export interface PointQueryShape {
+  type: 'point';
+  point: Point;
 }
 
-export interface OverlapCircleParams extends PhysicsQueryFilter {
-  shape: {
-    type: 'circle';
-    center: Point;
-    radius: number;
-  };
+export interface CircleQueryShape {
+  type: 'circle';
+  center: Point;
+  radius: number;
 }
 
-export interface OverlapBoxParams extends PhysicsQueryFilter {
-  shape: {
-    type: 'box';
-    center: Point;
-    size: Point;
-    rotation?: number;
-  };
+export interface CapsuleQueryShape {
+  type: 'capsule';
+  center: Point;
+  height: number;
+  radius: number;
+  rotation?: number;
 }
 
-export interface OverlapCapsuleParams extends PhysicsQueryFilter {
-  shape: {
-    type: 'capsule';
-    center: Point;
-    height: number;
-    radius: number;
-    rotation?: number;
-  };
+export interface BoxQueryShape {
+  type: 'box';
+  center: Point;
+  size: Point;
+  rotation?: number;
+}
+
+export interface OverlapPointParams extends PhysicsQueryFilter<OverlapHit> {
+  shape: PointQueryShape;
+}
+
+export interface OverlapCircleParams extends PhysicsQueryFilter<OverlapHit> {
+  shape: CircleQueryShape;
+}
+
+export interface OverlapBoxParams extends PhysicsQueryFilter<OverlapHit> {
+  shape: BoxQueryShape;
+}
+
+export interface OverlapCapsuleParams extends PhysicsQueryFilter<OverlapHit> {
+  shape: CapsuleQueryShape;
 }
 
 export type OverlapParams =
@@ -87,7 +97,7 @@ export type OverlapParams =
   | OverlapBoxParams
   | OverlapCapsuleParams;
 
-export interface OverlapActorParams extends PhysicsQueryFilter {
+export interface OverlapActorParams extends PhysicsQueryFilter<OverlapHit> {
   /**
    * Actor whose components provide the overlap geometry.
    */
@@ -107,43 +117,20 @@ export interface OverlapActorParams extends PhysicsQueryFilter {
   excludeSelf?: boolean;
 }
 
-export interface CircleCastShape {
-  type: 'circle';
-  center: Point;
-  radius: number;
+export interface CircleCastParams extends CommonCastParams {
+  shape: CircleQueryShape;
 }
 
-export interface CapsuleCastShape {
-  type: 'capsule';
-  center: Point;
-  height: number;
-  radius: number;
-  rotation?: number;
+export interface CapsuleCastParams extends CommonCastParams {
+  shape: CapsuleQueryShape;
 }
 
-export interface BoxCastShape {
-  type: 'box';
-  center: Point;
-  size: Point;
-  rotation?: number;
+export interface BoxCastParams extends CommonCastParams {
+  shape: BoxQueryShape;
 }
 
-export interface CircleCastParams extends PhysicsQueryFilter, CommonCastParams {
-  shape: CircleCastShape;
-}
-
-export interface CapsuleCastParams
-  extends PhysicsQueryFilter,
-    CommonCastParams {
-  shape: CapsuleCastShape;
-}
-
-export interface BoxCastParams extends PhysicsQueryFilter, CommonCastParams {
-  shape: BoxCastShape;
-}
-
-export interface ShapeCastParams extends PhysicsQueryFilter, CommonCastParams {
-  shape: CircleCastShape | CapsuleCastShape | BoxCastShape;
+export interface ShapeCastParams extends CommonCastParams {
+  shape: CircleQueryShape | CapsuleQueryShape | BoxQueryShape;
 }
 
 /**
@@ -152,7 +139,7 @@ export interface ShapeCastParams extends PhysicsQueryFilter, CommonCastParams {
  * Circle, box, and capsule colliders are supported. Segment colliders are not
  * castable and produce no hits.
  */
-export interface CastActorParams extends PhysicsQueryFilter, CommonCastParams {
+export interface CastActorParams extends CommonCastParams {
   /**
    * Actor whose components provide the cast geometry.
    */

@@ -1,10 +1,10 @@
 import { VectorOps } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
 import type { ActorGeometryParams, CircleGeometry } from '../types';
-import type { OverlapCircleParams } from '../../../types';
+import type { OverlapCircleParams, CircleCastParams } from '../../../types';
 
 export function buildCircleGeometry(
-  overlap: OverlapCircleParams,
+  queryParams: OverlapCircleParams | CircleCastParams,
 ): CircleGeometry;
 export function buildCircleGeometry(
   collider: Collider,
@@ -12,7 +12,7 @@ export function buildCircleGeometry(
   params?: ActorGeometryParams,
 ): CircleGeometry;
 export function buildCircleGeometry(
-  colliderOrOverlap: Collider | OverlapCircleParams,
+  colliderOrQueryParams: Collider | OverlapCircleParams | CircleCastParams,
   transform?: Transform,
   params?: ActorGeometryParams,
 ): CircleGeometry {
@@ -26,7 +26,7 @@ export function buildCircleGeometry(
   let scaleY: number;
 
   if (transform !== undefined) {
-    const collider = colliderOrOverlap as Collider;
+    const collider = colliderOrQueryParams as Collider;
 
     if (collider.shape.type !== 'circle') {
       throw new Error(`Expected circle collider, got ${collider.shape.type}.`);
@@ -41,12 +41,12 @@ export function buildCircleGeometry(
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;
   } else {
-    const overlap = (colliderOrOverlap as OverlapCircleParams).shape;
+    const queryShape = (colliderOrQueryParams as OverlapCircleParams).shape;
     offsetX = 0;
     offsetY = 0;
-    radius = overlap.radius;
-    positionX = overlap.center.x;
-    positionY = overlap.center.y;
+    radius = queryShape.radius;
+    positionX = queryShape.center.x;
+    positionY = queryShape.center.y;
     rotation = 0;
     scaleX = 1;
     scaleY = 1;
