@@ -795,13 +795,6 @@
       }
     },
     {
-      "name": "performance",
-      "options": {
-        "maxFPS": 0,
-        "fixedUpdateRate": 50
-      }
-    },
-    {
       "name": "physics",
       "options": {
         "collisionLayers": [
@@ -844,6 +837,15 @@
             "f9aed59e-ed46-4434-8228-ff023c9beb69": true
           }
         }
+      }
+    },
+    {
+      "name": "performance",
+      "options": {
+        "maxFPS": 0,
+        "fixedUpdateRate": 50,
+        "maxFrameDelta": 250,
+        "maxFixedUpdatesPerFrame": 5
       }
     }
   ],
