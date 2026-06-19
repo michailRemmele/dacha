@@ -8,13 +8,8 @@ import { AddActor, RemoveActor } from '../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 import { CacheStore } from '../../../engine/data-lib';
 import { AudioSource } from '../../components';
-import { PlayAudio, StopAudio, SetAudioVolume } from '../../../events';
-import type {
-  SetAudioGroupVolumeEvent,
-  SetAudioSourceVolumeEvent,
-} from '../../../events';
-import type { ActorEvent } from '../../../types/events';
 
+import { AudioAPI } from './api';
 import type { AudioGroups, AudioStateNode } from './types';
 import { getAllSources, getAllTemplateSources, loadAudio } from './utils';
 
@@ -79,9 +74,13 @@ export class AudioSystem extends WorldSystem {
     this.audioStore = new CacheStore<AudioBuffer>();
     this.audioState = new Map();
 
-    this.world.addEventListener(PlayAudio, this.handlePlayAudio);
-    this.world.addEventListener(StopAudio, this.handleStopAudio);
-    this.world.addEventListener(SetAudioVolume, this.handleSetAudioVolume);
+    const audioApi = new AudioAPI({
+      getGroupVolume: (group): number => this.getGroupVolume(group),
+      setGroupVolume: (group, volume): void => {
+        this.setGroupVolume(group, volume);
+      },
+    });
+    this.world.systemApi.register(audioApi);
 
     window.addEventListener('click', this.resumeIfSuspended, { once: true });
     window.addEventListener('keydown', this.resumeIfSuspended, { once: true });
@@ -147,10 +146,6 @@ export class AudioSystem extends WorldSystem {
   onWorldDestroy(): void {
     void this.audioContext.close();
 
-    this.world.removeEventListener(PlayAudio, this.handlePlayAudio);
-    this.world.removeEventListener(StopAudio, this.handleStopAudio);
-    this.world.removeEventListener(SetAudioVolume, this.handleSetAudioVolume);
-
     window.removeEventListener('click', this.resumeIfSuspended);
     window.removeEventListener('keydown', this.resumeIfSuspended);
     window.removeEventListener('touchstart', this.resumeIfSuspended);
@@ -192,37 +187,6 @@ export class AudioSystem extends WorldSystem {
     this.stopAudio(actor);
   };
 
-  private handlePlayAudio = (event: ActorEvent): void => {
-    this.playAudio(event.target);
-  };
-
-  private handleStopAudio = (event: ActorEvent): void => {
-    this.stopAudio(event.target);
-  };
-
-  private handleSetAudioVolume = (
-    event: SetAudioGroupVolumeEvent | SetAudioSourceVolumeEvent,
-  ): void => {
-    if (event.target instanceof Actor) {
-      const audioSource = event.target.getComponent(AudioSource);
-
-      if (!audioSource) {
-        return;
-      }
-
-      audioSource.volume = event.value;
-    } else {
-      const audioGroup =
-        this.audioGroups[(event as SetAudioGroupVolumeEvent).group];
-
-      if (!audioGroup) {
-        return;
-      }
-
-      audioGroup.gain.value = event.value;
-    }
-  };
-
   private resumeIfSuspended = (): void => {
     if (this.audioContext.state === 'suspended') {
       void this.audioContext.resume().catch((err: unknown) => {
@@ -230,6 +194,26 @@ export class AudioSystem extends WorldSystem {
       });
     }
   };
+
+  private getGroup(group: string): GainNode {
+    const audioGroup = this.audioGroups[group];
+
+    if (!audioGroup) {
+      throw new Error(
+        `Can't find audio group with the following name: ${group}`,
+      );
+    }
+
+    return audioGroup;
+  }
+
+  private getGroupVolume(group: string): number {
+    return this.getGroup(group).gain.value;
+  }
+
+  private setGroupVolume(group: string, volume: number): void {
+    this.getGroup(group).gain.value = volume;
+  }
 
   private initAudio(actor: Actor): void {
     const audioSource = actor.getComponent(AudioSource);
@@ -313,6 +297,7 @@ export class AudioSystem extends WorldSystem {
       VOLUME_TOLERANCE
     ) {
       audioState.gainNode.gain.value = audioSource.volume;
+      audioState.properties.volume = audioSource.volume;
     }
   }
 
@@ -335,3 +320,5 @@ export class AudioSystem extends WorldSystem {
 }
 
 AudioSystem.systemName = 'AudioSystem';
+
+export { AudioAPI } from './api';

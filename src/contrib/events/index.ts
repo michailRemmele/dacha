@@ -76,36 +76,6 @@ export const CollisionLeave = 'CollisionLeave';
  */
 export const CharacterHit = 'CharacterHit';
 
-/**
- * Dispatched to play audio on an actor
- *
- * @event
- * @type {ActorEvent}
- *
- * @category Events
- */
-export const PlayAudio = 'PlayAudio';
-
-/**
- * Dispatched to stop audio on an actor
- *
- * @event
- * @type {ActorEvent}
- *
- * @category Events
- */
-export const StopAudio = 'StopAudio';
-
-/**
- * Dispatched to set audio volume
- *
- * @event
- * @type {SetAudioSourceVolumeEvent} (for actors) or {@link SetAudioGroupVolumeEvent} (for whole groups)
- *
- * @category Events
- */
-export const SetAudioVolume = 'SetAudioVolume';
-
 /** Event signature for the {@link MouseInput} event
  *
  * @category Events
@@ -127,17 +97,6 @@ export type GameStatsUpdateEvent = WorldEvent<{
   fps: number;
   /** Current number of actors in the scene */
   actorsCount: number;
-}>;
-
-/** Event signature for the {@link SetAudioVolume} event when used on world level
- *
- * @category Events
- */
-export type SetAudioGroupVolumeEvent = WorldEvent<{
-  /** Audio group name to set volume for */
-  group: string;
-  /** Volume value (0.0 to 1.0) */
-  value: number;
 }>;
 
 /** Event signature for mouse control events
@@ -205,21 +164,11 @@ export type CharacterHitEvent = ActorEvent<{
   kind: 'ground' | 'wall' | 'ceiling';
 }>;
 
-/** Event signature for the {@link SetAudioVolume} event when used on actor level
- *
- * @category Events
- */
-export type SetAudioSourceVolumeEvent = ActorEvent<{
-  /** Volume value (0.0 to 1.0) */
-  value: number;
-}>;
-
 declare module '../../types/events' {
   export interface WorldEventMap {
     [MouseInput]: MouseInputEvent;
     [KeyboardInput]: KeyboardInputEvent;
     [GameStatsUpdate]: GameStatsUpdateEvent;
-    [SetAudioVolume]: SetAudioGroupVolumeEvent;
   }
 
   export interface ActorEventMap {
@@ -227,8 +176,5 @@ declare module '../../types/events' {
     [CollisionStay]: CollisionStayEvent;
     [CollisionLeave]: CollisionLeaveEvent;
     [CharacterHit]: CharacterHitEvent;
-    [PlayAudio]: ActorEvent;
-    [StopAudio]: ActorEvent;
-    [SetAudioVolume]: SetAudioSourceVolumeEvent;
   }
 }

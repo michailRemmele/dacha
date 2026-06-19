@@ -32,7 +32,7 @@ export interface AudioSourceConfig {
  * audioSource.volume = 0.5; // Set volume to 50%
  *
  * // Play the audio
- * actor.dispatchEvent(PlayAudio);
+ * audioSource.playing = true;
  * ```
  *
  * @category Components
