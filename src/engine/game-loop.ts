@@ -1,10 +1,11 @@
 import type { SceneManager } from './scene';
 import { eventQueue } from './event-target';
-
-const DEFAULT_FIXED_UPDATE_RATE = 50;
-const DEFAULT_MAX_FPS = Infinity;
-const DEFAULT_MAX_FRAME_DELTA = 250;
-const DEFAULT_MAX_FIXED_UPDATES_PER_FRAME = 5;
+import {
+  DEFAULT_FIXED_UPDATE_RATE,
+  DEFAULT_MAX_FPS,
+  DEFAULT_MAX_FRAME_DELTA,
+  DEFAULT_MAX_FIXED_UPDATES_PER_FRAME,
+} from './consts';
 
 export interface PerformanceSettings {
   maxFPS?: number;
