@@ -11,5 +11,5 @@ export { BehaviorSystem, Behavior } from './behavior-system';
 export type { BehaviorOptions } from './behavior-system';
 export { UIBridge } from './ui-bridge';
 export type { UIOptions, UIInitFn, UIDestroyFn, LoadUIFn } from './ui-bridge';
-export { AudioSystem } from './audio-system';
+export { AudioSystem, AudioAPI } from './audio-system';
 export { Renderer, RendererAPI, FilterEffect, Shader } from './renderer';

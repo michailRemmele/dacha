@@ -31,9 +31,6 @@ export {
   CollisionStay,
   CollisionLeave,
   CharacterHit,
-  PlayAudio,
-  StopAudio,
-  SetAudioVolume,
 } from '../contrib/events';
 export type {
   GameStatsUpdateEvent,
@@ -45,6 +42,4 @@ export type {
   CollisionStayEvent,
   CollisionLeaveEvent,
   CharacterHitEvent,
-  SetAudioGroupVolumeEvent,
-  SetAudioSourceVolumeEvent,
 } from '../contrib/events';
