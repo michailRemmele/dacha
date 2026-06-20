@@ -1,5 +1,6 @@
 import type { Vector2, Point } from '../../../../../engine/math-lib';
 import type { Actor } from '../../../../../engine/actor';
+import type { CastHit, OverlapHit } from '../../types';
 
 import type { DispersionCalculator } from './dispersion-calculator';
 
@@ -116,6 +117,8 @@ export interface QueryProxy {
   geometry: Geometry;
   layer?: string;
   excludedActors?: Set<Actor>;
+  actorFilter?: (actor: Actor) => boolean;
+  hitFilter?: (hit: OverlapHit | CastHit) => boolean;
 }
 
 export type Proxy = ActorProxy | QueryProxy;

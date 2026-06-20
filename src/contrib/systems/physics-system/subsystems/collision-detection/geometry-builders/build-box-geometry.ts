@@ -1,16 +1,18 @@
 import { VectorOps } from '../../../../../../engine/math-lib';
 import type { Collider, Transform } from '../../../../../components';
 import type { ActorGeometryParams, BoxGeometry } from '../types';
-import type { OverlapBoxParams } from '../../../types';
+import type { OverlapBoxParams, BoxCastParams } from '../../../types';
 
-export function buildBoxGeometry(overlap: OverlapBoxParams): BoxGeometry;
+export function buildBoxGeometry(
+  queryParams: OverlapBoxParams | BoxCastParams,
+): BoxGeometry;
 export function buildBoxGeometry(
   collider: Collider,
   transform: Transform,
   params?: ActorGeometryParams,
 ): BoxGeometry;
 export function buildBoxGeometry(
-  colliderOrOverlap: Collider | OverlapBoxParams,
+  colliderOrQueryParams: Collider | OverlapBoxParams | BoxCastParams,
   transform?: Transform,
   params?: ActorGeometryParams,
 ): BoxGeometry {
@@ -25,7 +27,7 @@ export function buildBoxGeometry(
   let scaleY: number;
 
   if (transform !== undefined) {
-    const collider = colliderOrOverlap as Collider;
+    const collider = colliderOrQueryParams as Collider;
 
     if (collider.shape.type !== 'box') {
       throw new Error(`Expected box collider, got ${collider.shape.type}.`);
@@ -41,14 +43,14 @@ export function buildBoxGeometry(
     scaleX = transform.world.scale.x;
     scaleY = transform.world.scale.y;
   } else {
-    const overlap = (colliderOrOverlap as OverlapBoxParams).shape;
+    const queryShape = (colliderOrQueryParams as OverlapBoxParams).shape;
     offsetX = 0;
     offsetY = 0;
-    sizeX = overlap.size.x;
-    sizeY = overlap.size.y;
-    positionX = overlap.center.x;
-    positionY = overlap.center.y;
-    rotation = overlap.rotation ?? 0;
+    sizeX = queryShape.size.x;
+    sizeY = queryShape.size.y;
+    positionX = queryShape.center.x;
+    positionY = queryShape.center.y;
+    rotation = queryShape.rotation ?? 0;
     scaleX = 1;
     scaleY = 1;
   }

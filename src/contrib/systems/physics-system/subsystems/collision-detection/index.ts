@@ -376,6 +376,9 @@ export class CollisionDetectionSubsystem {
       ) {
         return;
       }
+      if (queryProxy.actorFilter && !queryProxy.actorFilter(proxy.actor)) {
+        return;
+      }
 
       this.queryCandidates[candidateIndex] = proxy;
       candidateIndex += 1;
