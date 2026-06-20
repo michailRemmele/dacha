@@ -5,7 +5,7 @@ import { World } from '../../../../engine/world';
 import { Vector2 } from '../../../../engine/math-lib';
 import { CharacterHit } from '../../../../events';
 import type { CharacterHitEvent } from '../../../../events';
-import { CharacterBody, Transform } from '../../../components';
+import { CharacterBody, RigidBody, Transform } from '../../../components';
 import { PhysicsSystem } from '../../physics-system';
 import {
   createBoxActor,
@@ -308,6 +308,41 @@ describe('Systems -> CharacterController', () => {
     expect(transform.world.position.y).toBeCloseTo(-0.45);
   });
 
+  it('Runs overlap recovery only when requested', () => {
+    const { scene, characterController, physicsSystem } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      -0.45,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const controller = addController(character);
+    const transform = character.getComponent(Transform);
+    const rigidBody = character.getComponent(RigidBody);
+    const floor = createBoxActor('floor', 'static', 0, 2);
+
+    scene.appendChild(character);
+    scene.appendChild(floor);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(transform.world.position.y).toBeCloseTo(-0.52);
+
+    transform.world.position.y = -0.45;
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+
+    expect(rigidBody._movementTarget).toBeNull();
+
+    controller.recover();
+    characterController.fixedUpdate({ deltaTime: 100 });
+
+    expect(rigidBody._movementTarget?.y).toBeCloseTo(-0.52);
+  });
+
   it('Does not recover character overlaps from dynamic bodies by default', () => {
     const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
@@ -330,6 +365,26 @@ describe('Systems -> CharacterController', () => {
 
     expect(transform.world.position.y).toBeCloseTo(-0.45);
     expect(controller.groundActor).toBe(body);
+  });
+
+  it('Does not enqueue movePosition when idle position is unchanged', () => {
+    const { scene, characterController } = createSystems();
+    const character = createCapsuleActor(
+      'character',
+      0,
+      0,
+      2,
+      0.5,
+      'kinematic',
+    );
+    const rigidBody = character.getComponent(RigidBody);
+
+    addController(character);
+    scene.appendChild(character);
+
+    characterController.fixedUpdate({ deltaTime: 100 });
+
+    expect(rigidBody._movementTarget).toBeNull();
   });
 
   it('Ignores near hits when moving away from an overlap', () => {
