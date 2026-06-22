@@ -29,8 +29,7 @@ const setCombinedAABB = (target: AABB, aabb1: AABB, aabb2: AABB): void => {
 
 const getPerimeter = (aabb: AABB): number =>
   2 *
-  (Math.max(0, aabb.max.x - aabb.min.x) +
-    Math.max(0, aabb.max.y - aabb.min.y));
+  (Math.max(0, aabb.max.x - aabb.min.x) + Math.max(0, aabb.max.y - aabb.min.y));
 
 const getCombinedPerimeter = (aabb1: AABB, aabb2: AABB): number => {
   const minX = Math.min(aabb1.min.x, aabb2.min.x);
@@ -246,11 +245,11 @@ export class DynamicAABBTree<T> {
     while (!isLeaf(node)) {
       const child1 = node.child1!;
       const child2 = node.child2!;
-      const area = getPerimeter(node.aabb);
-      const combinedArea = getCombinedPerimeter(node.aabb, aabb);
+      const perimeter = getPerimeter(node.aabb);
+      const combinedPerimeter = getCombinedPerimeter(node.aabb, aabb);
 
-      const inheritedCost = 2 * (combinedArea - area);
-      const cost = 2 * combinedArea;
+      const inheritedCost = 2 * (combinedPerimeter - perimeter);
+      const cost = 2 * combinedPerimeter;
       const cost1 = this.getDescentCost(child1, aabb, inheritedCost);
       const cost2 = this.getDescentCost(child2, aabb, inheritedCost);
 
@@ -269,13 +268,13 @@ export class DynamicAABBTree<T> {
     aabb: AABB,
     inheritedCost: number,
   ): number {
-    const combinedArea = getCombinedPerimeter(child.aabb, aabb);
+    const combinedPerimeter = getCombinedPerimeter(child.aabb, aabb);
 
     if (isLeaf(child)) {
-      return combinedArea + inheritedCost;
+      return combinedPerimeter + inheritedCost;
     }
 
-    return combinedArea - getPerimeter(child.aabb) + inheritedCost;
+    return combinedPerimeter - getPerimeter(child.aabb) + inheritedCost;
   }
 
   private fixAncestors(node: DynamicAABBTreeNode<T> | null): void {
