@@ -4,6 +4,11 @@ import { checkRayAndCircleIntersection } from '../../raycast-checkers/ray-circle
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
+/**
+ * Casts a moving circle against a circle by raycasting the moving center
+ * against the target circle inflated by the moving circle radius. Initial
+ * overlaps return the target surface point along the separation normal.
+ */
 export const checkCircleCastAndCircle: ShapeCastCheckerFn<
   CircleCastGeometry,
   CircleGeometry

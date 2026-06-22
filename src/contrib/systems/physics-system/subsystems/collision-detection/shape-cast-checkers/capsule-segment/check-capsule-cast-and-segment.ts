@@ -7,6 +7,11 @@ import { buildInitialOverlapHit } from '../utils';
 import { checkReverseRayAndCapsule } from '../capsule-utils';
 import { checkBoxCastAndSegment } from '../box-segment/check-box-cast-and-segment';
 
+/**
+ * Casts a moving capsule against a segment by checking both moving circular
+ * caps, reverse capsule casts from both segment endpoints, and the moving
+ * middle box against the segment when the query capsule has one.
+ */
 export const checkCapsuleCastAndSegment: ShapeCastCheckerFn<
   CapsuleCastGeometry,
   SegmentGeometry

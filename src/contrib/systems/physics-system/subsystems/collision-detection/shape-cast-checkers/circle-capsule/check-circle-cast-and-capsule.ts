@@ -4,6 +4,11 @@ import { checkRayAndCapsuleIntersection } from '../../raycast-checkers/ray-capsu
 import type { ShapeCastCheckerFn } from '../types';
 import { buildInitialOverlapHit } from '../utils';
 
+/**
+ * Casts a moving circle against a capsule by raycasting the circle center
+ * against the target capsule inflated by the moving circle radius, then shifts
+ * the hit point back to the moving circle surface.
+ */
 export const checkCircleCastAndCapsule: ShapeCastCheckerFn<
   CircleCastGeometry,
   CapsuleGeometry
