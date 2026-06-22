@@ -6,6 +6,11 @@ import type { ShapeCastCheckerFn } from '../types';
 import type { RaycastCheckerHit } from '../../raycast-checkers/types';
 import { buildInitialOverlapHit } from '../utils';
 
+/**
+ * Casts a moving circle against a box by treating every box edge as a capsule
+ * with the moving circle radius. The ray/capsule hit point is shifted back from
+ * the circle center path to the circle surface contact point.
+ */
 export const checkCircleCastAndBox: ShapeCastCheckerFn<
   CircleCastGeometry,
   BoxGeometry
