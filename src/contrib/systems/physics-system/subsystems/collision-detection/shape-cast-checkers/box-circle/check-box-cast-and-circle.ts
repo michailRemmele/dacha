@@ -7,6 +7,12 @@ import {
   correctContactPoint,
 } from '../box-utils';
 
+/**
+ * Casts a moving box against a circle by treating the target as the union of
+ * two expanded axis-aligned rectangles and four corner circles. The nearest
+ * sub-hit is then shifted back from the center ray to the moving box support
+ * point.
+ */
 export const checkBoxCastAndCircle: ShapeCastCheckerFn<
   BoxCastGeometry,
   CircleGeometry
