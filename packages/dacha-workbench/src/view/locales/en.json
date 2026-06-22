@@ -181,6 +181,8 @@
   "globalOptions.performance.title": "Performance",
   "globalOptions.performance.maxFPS.title": "Max FPS",
   "globalOptions.performance.fixedUpdateRate.title": "Fixed Update Rate",
+  "globalOptions.performance.maxFrameDelta.title": "Max Frame Delta",
+  "globalOptions.performance.maxFixedUpdatesPerFrame.title": "Max Fixed Updates Per Frame",
 
   "globalOptions.physics.title": "Physics",
   "globalOptions.physics.collisionLayers.title": "Collision Layers",
