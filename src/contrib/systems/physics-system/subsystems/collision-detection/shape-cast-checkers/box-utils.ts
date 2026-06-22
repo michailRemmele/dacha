@@ -1,123 +1,16 @@
-import { VectorOps } from '../../../../../../engine/math-lib';
 import { chooseNearestIntersection } from '../intersection-checkers/common/cast';
 import { raycastCheckers } from '../raycast-checkers';
-import { checkRayAndCapsuleIntersection } from '../raycast-checkers/ray-capsule/check-ray-and-capsule-intersection';
 import type { RaycastCheckerHit } from '../raycast-checkers/types';
-import { isDefinitelyPositive, isZero } from '../utils';
-import type {
-  BoxCastGeometry,
-  BoxGeometry,
-  CapsuleGeometry,
-  EdgeWithNormal,
-  Point,
-} from '../types';
+import { BOX_CORNER_SIGNS } from './common/constants';
+import { AxisAlignedBoxWorkspace } from './common/axis-aligned-box-workspace';
+import { ConvexHullWorkspace } from './common/convex-hull-workspace';
+import type { BoxCastGeometry, Point } from '../types';
 
 import { normalizeValue } from './utils';
 import type { ShapeCastCheckerHit } from './types';
 
-const BOX_CORNER_SIGNS = [
-  [-1, -1],
-  [-1, 1],
-  [1, 1],
-  [1, -1],
-] as const;
-
-const getConvexPoints = (points: Point[]): Point[] => {
-  points.sort((point1, point2) => {
-    if (point1.x === point2.x) {
-      return point1.y - point2.y;
-    }
-
-    return point1.x - point2.x;
-  });
-
-  let uniqueLength = 0;
-
-  for (const point of points) {
-    const previous = points[uniqueLength - 1];
-
-    if (
-      uniqueLength === 0 ||
-      !isZero(point.x - previous.x) ||
-      !isZero(point.y - previous.y)
-    ) {
-      points[uniqueLength] = point;
-      uniqueLength += 1;
-    }
-  }
-
-  points.length = uniqueLength;
-
-  if (points.length <= 1) {
-    return points;
-  }
-
-  const cross = (origin: Point, point1: Point, point2: Point): number =>
-    (point1.x - origin.x) * (point2.y - origin.y) -
-    (point1.y - origin.y) * (point2.x - origin.x);
-
-  const lower: Point[] = [];
-
-  for (const point of points) {
-    while (
-      lower.length >= 2 &&
-      !isDefinitelyPositive(
-        cross(lower[lower.length - 2], lower[lower.length - 1], point),
-      )
-    ) {
-      lower.pop();
-    }
-
-    lower.push(point);
-  }
-
-  const upper: Point[] = [];
-
-  for (let i = points.length - 1; i >= 0; i -= 1) {
-    const point = points[i];
-
-    while (
-      upper.length >= 2 &&
-      !isDefinitelyPositive(
-        cross(upper[upper.length - 2], upper[upper.length - 1], point),
-      )
-    ) {
-      upper.pop();
-    }
-
-    upper.push(point);
-  }
-
-  lower.pop();
-  upper.pop();
-
-  return [...lower, ...upper];
-};
-
-const buildConvexGeometry = (points: Point[]): BoxGeometry => {
-  const convexPoints = getConvexPoints(points);
-  const center = {
-    x:
-      convexPoints.reduce((sum, point) => sum + point.x, 0) /
-      convexPoints.length,
-    y:
-      convexPoints.reduce((sum, point) => sum + point.y, 0) /
-      convexPoints.length,
-  };
-  const edges: EdgeWithNormal[] = convexPoints.map((point1, index, array) => {
-    const point2 = array[(index + 1) % array.length];
-    const normal = VectorOps.getNormal(point1.x, point2.x, point1.y, point2.y);
-    const offset = VectorOps.dotProduct(point1, normal);
-
-    if (VectorOps.dotProduct(center, normal) - offset > 0) {
-      normal.multiplyNumber(-1);
-    }
-
-    return { point1, point2, normal };
-  });
-
-  return { center, points: convexPoints, edges };
-};
+const convexHullWorkspace = new ConvexHullWorkspace(16);
+const axisAlignedBoxWorkspace = new AxisAlignedBoxWorkspace();
 
 export const correctContactPoint = (
   box: BoxCastGeometry,
@@ -143,18 +36,31 @@ export const checkBoxCastAndConvexPoints = (
 ): ShapeCastCheckerHit | false => {
   const { halfExtents } = box;
 
-  const expandedPoints: Point[] = [];
-
+  convexHullWorkspace.start();
   for (const point of points) {
-    for (const [signX, signY] of BOX_CORNER_SIGNS) {
-      expandedPoints.push({
-        x: point.x + halfExtents.x * signX,
-        y: point.y + halfExtents.y * signY,
-      });
-    }
+    convexHullWorkspace.addExpandedPoint(point, halfExtents);
   }
 
-  return raycastCheckers.ray.box(box, buildConvexGeometry(expandedPoints));
+  return raycastCheckers.ray.box(box, convexHullWorkspace.buildGeometry());
+};
+
+export const checkBoxCastAndConvexPointPair = (
+  box: BoxCastGeometry,
+  point1: Point,
+  point2: Point,
+): ShapeCastCheckerHit | false => {
+  const { halfExtents } = box;
+
+  convexHullWorkspace.start();
+  convexHullWorkspace.addExpandedPoint(point1, halfExtents);
+  convexHullWorkspace.addExpandedPoint(point2, halfExtents);
+
+  return raycastCheckers.ray.box(box, convexHullWorkspace.buildGeometry());
+};
+
+const CORNER_CIRCLE = {
+  center: { x: 0, y: 0 },
+  radius: 0,
 };
 
 export const checkBoxCastAndCircleGeometry = (
@@ -164,84 +70,36 @@ export const checkBoxCastAndCircleGeometry = (
 ): ShapeCastCheckerHit | false => {
   const { halfExtents } = box;
 
-  const horizontalBox = buildConvexGeometry(
-    BOX_CORNER_SIGNS.map(([signX, signY]) => ({
-      x: center.x + (halfExtents.x + radius) * signX,
-      y: center.y + halfExtents.y * signY,
-    })),
+  let nearest = raycastCheckers.ray.box(
+    box,
+    axisAlignedBoxWorkspace.buildGeometry(
+      center,
+      halfExtents.x + radius,
+      halfExtents.y,
+    ),
   );
-  const verticalBox = buildConvexGeometry(
-    BOX_CORNER_SIGNS.map(([signX, signY]) => ({
-      x: center.x + halfExtents.x * signX,
-      y: center.y + (halfExtents.y + radius) * signY,
-    })),
-  );
-
-  let nearest = raycastCheckers.ray.box(box, horizontalBox);
 
   nearest = chooseNearestIntersection(
     nearest,
-    raycastCheckers.ray.box(box, verticalBox),
+    raycastCheckers.ray.box(
+      box,
+      axisAlignedBoxWorkspace.buildGeometry(
+        center,
+        halfExtents.x,
+        halfExtents.y + radius,
+      ),
+    ),
   );
 
-  const cornerCircle = {
-    center: { x: 0, y: 0 },
-    radius,
-  };
+  CORNER_CIRCLE.radius = radius;
 
   for (const [signX, signY] of BOX_CORNER_SIGNS) {
-    cornerCircle.center.x = center.x + signX * halfExtents.x;
-    cornerCircle.center.y = center.y + signY * halfExtents.y;
+    CORNER_CIRCLE.center.x = center.x + signX * halfExtents.x;
+    CORNER_CIRCLE.center.y = center.y + signY * halfExtents.y;
 
     nearest = chooseNearestIntersection(
       nearest,
-      raycastCheckers.ray.circle(box, cornerCircle),
-    );
-  }
-
-  return nearest;
-};
-
-export const checkBoxCastAndCapsuleGeometry = (
-  box: BoxCastGeometry,
-  capsule: CapsuleGeometry,
-): ShapeCastCheckerHit | false => {
-  const { halfExtents } = box;
-  let nearest = checkBoxCastAndConvexPoints(box, [
-    capsule.point1,
-    capsule.point2,
-  ]);
-
-  nearest = chooseNearestIntersection(
-    nearest,
-    checkBoxCastAndCircleGeometry(box, capsule.point1, capsule.radius),
-  );
-  nearest = chooseNearestIntersection(
-    nearest,
-    checkBoxCastAndCircleGeometry(box, capsule.point2, capsule.radius),
-  );
-
-  const expandedPoints: Point[] = [];
-
-  for (const [signX, signY] of BOX_CORNER_SIGNS) {
-    expandedPoints.push(
-      {
-        x: capsule.point1.x + halfExtents.x * signX,
-        y: capsule.point1.y + halfExtents.y * signY,
-      },
-      {
-        x: capsule.point2.x + halfExtents.x * signX,
-        y: capsule.point2.y + halfExtents.y * signY,
-      },
-    );
-  }
-
-  const expandedCapsule = buildConvexGeometry(expandedPoints);
-
-  for (const edge of expandedCapsule.edges) {
-    nearest = chooseNearestIntersection(
-      nearest,
-      checkRayAndCapsuleIntersection(box, edge, capsule.radius),
+      raycastCheckers.ray.circle(box, CORNER_CIRCLE),
     );
   }
 

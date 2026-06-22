@@ -9,6 +9,7 @@ import type {
 } from '../../../../../engine/events';
 import { insertionSort } from '../../../../../engine/data-lib';
 
+import { DynamicAABBTree } from './dynamic-aabb-tree';
 import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
@@ -55,6 +56,7 @@ import type {
 export class CollisionDetectionSubsystem {
   private actorQuery: ActorQuery;
   private axis: Axes;
+  private queryTree: DynamicAABBTree<ActorProxy>;
   private proxiesByActorId: Map<string, ActorProxy>;
   private proxyPairs: ProxyPair[];
   private contacts: Contact[];
@@ -82,6 +84,7 @@ export class CollisionDetectionSubsystem {
         dispersionCalculator: new DispersionCalculator('y'),
       },
     };
+    this.queryTree = new DynamicAABBTree();
     this.proxiesByActorId = new Map();
     this.proxyPairs = [];
     this.contacts = [];
@@ -99,12 +102,13 @@ export class CollisionDetectionSubsystem {
     this.actorQuery.removeEventListener(AddActor, this.handleActorAdd);
     this.actorQuery.removeEventListener(RemoveActor, this.handleActorRemove);
     this.actorQuery.destroy();
+    this.queryTree.clear();
   }
 
   raycast(params: RaycastParams): CastHit | null {
     const queryProxy = buildQueryProxy('ray', params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return raycast(queryProxy, this.queryCandidates);
   }
@@ -112,7 +116,7 @@ export class CollisionDetectionSubsystem {
   raycastAll(params: RaycastParams): CastHit[] {
     const queryProxy = buildQueryProxy('ray', params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return raycastAll(queryProxy, this.queryCandidates);
   }
@@ -120,7 +124,7 @@ export class CollisionDetectionSubsystem {
   overlapShape(params: OverlapParams): OverlapHit[] {
     const queryProxy = buildQueryProxy(params.shape.type, params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return overlap(params.shape.type, queryProxy, this.queryCandidates);
   }
@@ -134,7 +138,7 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildActorQueryProxy(queryType, params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return overlap(queryType, queryProxy, this.queryCandidates);
   }
@@ -144,7 +148,7 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildQueryProxy(queryType, params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return shapeCast(queryType, queryProxy, this.queryCandidates);
   }
@@ -154,7 +158,7 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildQueryProxy(queryType, params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return shapeCastAll(queryType, queryProxy, this.queryCandidates);
   }
@@ -168,7 +172,7 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildActorQueryProxy(queryType, params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return shapeCast(queryType, queryProxy, this.queryCandidates);
   }
@@ -182,7 +186,7 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildActorQueryProxy(queryType, params);
 
-    this.sweepAndPruneQuery(queryProxy);
+    this.collectQueryCandidates(queryProxy);
 
     return shapeCastAll(queryType, queryProxy, this.queryCandidates);
   }
@@ -226,8 +230,11 @@ export class CollisionDetectionSubsystem {
       aabb,
       geometry,
       orientationData: getOrientationData(actor),
+      treeEntryId: 0,
       layer: collider.layer,
     } as ActorProxy;
+
+    proxy.treeEntryId = this.queryTree.insert(aabb, proxy);
 
     this.axis.x.dispersionCalculator.addToSample(aabb);
     this.addToSortedList(proxy, 'x');
@@ -252,6 +259,8 @@ export class CollisionDetectionSubsystem {
     proxy.geometry = geometry;
     proxy.orientationData = getOrientationData(actor);
     proxy.layer = collider.layer;
+
+    this.queryTree.update(proxy.treeEntryId, aabb);
 
     this.axis.x.dispersionCalculator.removeFromSample(prevAABB);
     this.axis.x.dispersionCalculator.addToSample(aabb);
@@ -331,43 +340,14 @@ export class CollisionDetectionSubsystem {
     return !collider1?.disabled && !collider2?.disabled;
   }
 
-  private sweepAndPruneQuery(queryProxy: QueryProxy): void {
-    const [mainAxis, secondAxis] = this.getAxes();
-    const sortedList = this.axis[mainAxis].sortedList;
-
-    const candidates = new Set<ActorProxy>();
-
-    for (const item of sortedList) {
-      const { proxy, value } = item;
-
-      if (value < queryProxy.aabb.min[mainAxis]) {
-        if (candidates.has(proxy)) {
-          candidates.delete(proxy);
-        } else {
-          candidates.add(proxy);
-        }
-
-        continue;
-      }
-
-      if (value > queryProxy.aabb.max[mainAxis]) {
-        break;
-      }
-
-      if (!candidates.has(proxy)) {
-        candidates.add(proxy);
-      }
-    }
-
+  private collectQueryCandidates(queryProxy: QueryProxy): void {
     let candidateIndex = 0;
-    candidates.forEach((proxy) => {
+
+    this.queryTree.query(queryProxy.aabb, (proxy) => {
       if (queryProxy.excludedActors?.has(proxy.actor)) {
         return;
       }
       if (!this.testState(proxy, queryProxy)) {
-        return;
-      }
-      if (!this.testAABB(proxy, queryProxy, secondAxis)) {
         return;
       }
       if (
@@ -383,6 +363,7 @@ export class CollisionDetectionSubsystem {
       this.queryCandidates[candidateIndex] = proxy;
       candidateIndex += 1;
     });
+
     this.queryCandidates.length = candidateIndex;
   }
 
@@ -473,6 +454,8 @@ export class CollisionDetectionSubsystem {
 
     this.actorIdsToDelete.forEach((id) => {
       const proxy = this.proxiesByActorId.get(id)!;
+
+      this.queryTree.remove(proxy.treeEntryId);
 
       this.axis.x.dispersionCalculator.removeFromSample(proxy.aabb);
       this.axis.y.dispersionCalculator.removeFromSample(proxy.aabb);

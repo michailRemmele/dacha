@@ -1,6 +1,7 @@
 import type { Vector2, Point } from '../../../../../engine/math-lib';
 import type { Actor } from '../../../../../engine/actor';
 import type { CastHit, OverlapHit } from '../../types';
+import type { DynamicAABBTreeEntryId } from './dynamic-aabb-tree';
 
 import type { DispersionCalculator } from './dispersion-calculator';
 
@@ -109,6 +110,7 @@ export interface ActorProxy {
   geometry: Geometry;
   orientationData: OrientationData;
   edges: Record<Axis, [SortedItem, SortedItem]>;
+  treeEntryId: DynamicAABBTreeEntryId;
   layer: string;
 }
 
