@@ -271,7 +271,6 @@ export class CharacterController extends SceneSystem {
       position.y += direction.y * safeDistance;
 
       this.handleHit(actor, hit);
-      clipAgainstNormal(character.velocity, hit.normal);
 
       const remainingDistance = Math.max(distance - safeDistance, 0);
 
