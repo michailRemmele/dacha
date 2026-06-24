@@ -134,7 +134,8 @@ describe('Systems -> CharacterController', () => {
     expect(transform.world.position.x).toBeCloseTo(1.48);
     expect(transform.world.position.y).toBeGreaterThan(0);
     expect(controller.onWall).toBe(true);
-    expect(controller.velocity.x).toBeCloseTo(0);
+    expect(controller.velocity.x).toBeCloseTo(50);
+    expect(controller.velocity.y).toBeCloseTo(20);
   });
 
   it('Dispatches CharacterHit when movement hits a blocking actor', () => {
@@ -461,7 +462,7 @@ describe('Systems -> CharacterController', () => {
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(controller.onCeiling).toBe(true);
-    expect(controller.velocity.y).toBeCloseTo(0);
+    expect(controller.velocity.y).toBeCloseTo(-50);
   });
 
   it('Treats walkable segment slopes as ground', () => {
