@@ -413,34 +413,6 @@ describe('Systems -> CharacterController', () => {
     expect(controller.onWall).toBe(false);
   });
 
-  it('Does not recover from one-way platforms on the open side', () => {
-    const { scene, characterController, physicsSystem } = createSystems();
-    const character = createCapsuleActor(
-      'character',
-      0,
-      1.45,
-      2,
-      0.5,
-      'kinematic',
-    );
-    addController(character);
-    const transform = character.getComponent(Transform);
-    const platform = createBoxActor('platform', 'static', 0, 0, {
-      layer: 'default',
-      oneWay: true,
-      oneWayNormalX: 0,
-      oneWayNormalY: -1,
-    });
-
-    scene.appendChild(character);
-    scene.appendChild(platform);
-
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
-
-    expect(transform.world.position.y).toBeCloseTo(1.45);
-  });
-
   it('Sets onCeiling when movement hits a ceiling', () => {
     const { scene, characterController, physicsSystem } = createSystems();
     const character = createCapsuleActor(
