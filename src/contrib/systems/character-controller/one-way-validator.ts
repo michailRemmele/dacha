@@ -52,7 +52,7 @@ export class OneWayValidator {
     this.touchedActors.add(actor);
   }
 
-  validate(oneWayActor: Actor, otherActor: Actor, normal: Point): boolean {
+  shouldBlock(oneWayActor: Actor, otherActor: Actor, normal: Point): boolean {
     if (this.ignoredOneWayContacts.get(otherActor)?.has(oneWayActor)) {
       this.trackOneWayContact(otherActor, oneWayActor);
       return false;

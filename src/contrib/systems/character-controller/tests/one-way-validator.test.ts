@@ -36,10 +36,10 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     validator.update();
 
     expect(
-      validator.validate(oneWayActor, character, new Vector2(0, 1)),
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, 1)),
     ).toBe(false);
     expect(
-      validator.validate(oneWayActor, character, new Vector2(0, -1)),
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, -1)),
     ).toBe(false);
   });
 
@@ -51,7 +51,7 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     validator.update();
 
     expect(
-      validator.validate(oneWayActor, character, new Vector2(0, -1)),
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, -1)),
     ).toBe(true);
   });
 
@@ -61,7 +61,12 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     const oneWayActor = createOneWayActor('platform');
 
     validator.update();
-    validator.validate(oneWayActor, character, new Vector2(0, 1));
+    validator.touch(character);
+
+    expect(
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, 1)),
+    ).toBe(false);
+
     validator.lateUpdate();
 
     validator.update();
@@ -70,7 +75,7 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     validator.update();
 
     expect(
-      validator.validate(oneWayActor, character, new Vector2(0, -1)),
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, -1)),
     ).toBe(false);
   });
 
@@ -80,7 +85,8 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     const oneWayActor = createOneWayActor('platform');
 
     validator.update();
-    validator.validate(oneWayActor, character, new Vector2(0, 1));
+    validator.touch(character);
+    validator.shouldBlock(oneWayActor, character, new Vector2(0, 1));
     validator.lateUpdate();
 
     validator.update();
@@ -90,7 +96,7 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     validator.update();
 
     expect(
-      validator.validate(oneWayActor, character, new Vector2(0, -1)),
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, -1)),
     ).toBe(true);
   });
 
@@ -100,11 +106,11 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     const oneWayActor = createOneWayActor('platform');
 
     validator.update();
-    validator.validate(oneWayActor, character, new Vector2(0, 1));
+    validator.shouldBlock(oneWayActor, character, new Vector2(0, 1));
     validator.delete(character);
 
     expect(
-      validator.validate(oneWayActor, character, new Vector2(0, -1)),
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, -1)),
     ).toBe(true);
   });
 
@@ -114,11 +120,11 @@ describe('Systems -> CharacterController -> OneWayValidator', () => {
     const oneWayActor = createOneWayActor('platform');
 
     validator.update();
-    validator.validate(oneWayActor, character, new Vector2(0, 1));
+    validator.shouldBlock(oneWayActor, character, new Vector2(0, 1));
     validator.delete(oneWayActor);
 
     expect(
-      validator.validate(oneWayActor, character, new Vector2(0, -1)),
+      validator.shouldBlock(oneWayActor, character, new Vector2(0, -1)),
     ).toBe(true);
   });
 });

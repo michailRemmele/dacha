@@ -74,7 +74,7 @@ export class CharacterController extends SceneSystem {
       return true;
     }
 
-    return this.oneWayValidator.validate(hit.actor, actor, hit.normal);
+    return this.oneWayValidator.shouldBlock(hit.actor, actor, hit.normal);
   }
 
   private isWalkable(actor: Actor, normal: Point): boolean {
