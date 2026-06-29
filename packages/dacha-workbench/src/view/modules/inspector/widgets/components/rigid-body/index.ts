@@ -32,6 +32,14 @@ export const rigidBody: WidgetSchema = {
       },
     },
     {
+      name: 'restitution',
+      type: 'number',
+    },
+    {
+      name: 'friction',
+      type: 'number',
+    },
+    {
       name: 'oneWay',
       type: 'boolean',
     },
@@ -60,5 +68,7 @@ export const rigidBody: WidgetSchema = {
     type: 'static',
     oneWay: false,
     disabled: false,
+    restitution: 0,
+    friction: 0.6,
   }),
 };
