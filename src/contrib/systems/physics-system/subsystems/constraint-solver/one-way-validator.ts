@@ -1,6 +1,6 @@
-import type { Actor } from '../../engine/actor';
-import { RigidBody, Transform } from '../components';
-import { VectorOps, type Point } from '../../engine/math-lib';
+import type { Actor } from '../../../../../engine/actor';
+import { RigidBody, Transform } from '../../../../components';
+import { VectorOps, type Point } from '../../../../../engine/math-lib';
 
 export class OneWayValidator {
   private ignoredOneWayContacts: Map<Actor, Map<Actor, number>>;
@@ -40,7 +40,7 @@ export class OneWayValidator {
     ignoredContacts.set(otherActor, this.oneWayContactUpdateIndex);
   }
 
-  validate(oneWayActor: Actor, otherActor: Actor, normal: Point): boolean {
+  shouldBlock(oneWayActor: Actor, otherActor: Actor, normal: Point): boolean {
     if (this.ignoredOneWayContacts.get(oneWayActor)?.has(otherActor)) {
       this.trackOneWayContact(oneWayActor, otherActor);
       return false;
