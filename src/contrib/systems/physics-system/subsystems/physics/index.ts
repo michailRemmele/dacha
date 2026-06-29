@@ -59,11 +59,17 @@ export class PhysicsSubsystem {
     }
   }
 
-  private integrateVelocities(deltaTimeInSeconds: number): void {
+  integrateVelocities(options: UpdateOptions): void {
+    const deltaTimeInSeconds = options.deltaTime / 1000;
+
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
       const transform = actor.getComponent(Transform);
       const { mass, inverseMass } = rigidBody;
+
+      rigidBody._biasLinearVelocity.multiplyNumber(0);
+      rigidBody._prevLinearVelocity.x = rigidBody.linearVelocity.x;
+      rigidBody._prevLinearVelocity.y = rigidBody.linearVelocity.y;
 
       if (rigidBody.disabled) {
         rigidBody._movementTarget = null;
@@ -130,25 +136,18 @@ export class PhysicsSubsystem {
     });
   }
 
-  private integratePositions(deltaTimeInSeconds: number): void {
+  integrateKinematicPositions(options: UpdateOptions): void {
+    const deltaTimeInSeconds = options.deltaTime / 1000;
+
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
       const transform = actor.getComponent(Transform);
 
-      if (rigidBody.disabled || rigidBody.type === 'static') {
-        return;
-      }
-
-      if (rigidBody.type === 'kinematic') {
-        transform.world.position.x +=
-          rigidBody.linearVelocity.x * deltaTimeInSeconds;
-        transform.world.position.y +=
-          rigidBody.linearVelocity.y * deltaTimeInSeconds;
-
-        return;
-      }
-
-      if (rigidBody.mass <= 0 || rigidBody.sleeping) {
+      if (
+        rigidBody.disabled ||
+        rigidBody.type !== 'kinematic' ||
+        (!rigidBody.linearVelocity.x && !rigidBody.linearVelocity.y)
+      ) {
         return;
       }
 
@@ -159,11 +158,28 @@ export class PhysicsSubsystem {
     });
   }
 
-  update(options: UpdateOptions): void {
+  integrateDynamicPositions(options: UpdateOptions): void {
     const deltaTimeInSeconds = options.deltaTime / 1000;
 
-    this.integrateVelocities(deltaTimeInSeconds);
-    this.integratePositions(deltaTimeInSeconds);
+    this.actorQuery.getActors().forEach((actor) => {
+      const rigidBody = actor.getComponent(RigidBody);
+      const transform = actor.getComponent(Transform);
+
+      if (rigidBody.disabled || rigidBody.type !== 'dynamic') {
+        return;
+      }
+
+      if (rigidBody.mass <= 0 || rigidBody.sleeping) {
+        return;
+      }
+
+      transform.world.position.x +=
+        (rigidBody.linearVelocity.x + rigidBody._biasLinearVelocity.x) *
+        deltaTimeInSeconds;
+      transform.world.position.y +=
+        (rigidBody.linearVelocity.y + rigidBody._biasLinearVelocity.y) *
+        deltaTimeInSeconds;
+    });
   }
 
   lateUpdate(): void {

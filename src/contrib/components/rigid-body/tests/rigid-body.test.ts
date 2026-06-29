@@ -69,4 +69,29 @@ describe('Contrib -> components -> RigidBody', () => {
     rigidBody.mass = -10;
     expect(rigidBody.inverseMass).toEqual(0);
   });
+
+  it('Clamps restitution between zero and one', () => {
+    const rigidBody = new RigidBody({
+      type: 'dynamic',
+      disabled: false,
+      oneWay: false,
+    });
+
+    rigidBody.restitution = 2;
+    expect(rigidBody.restitution).toEqual(1);
+
+    rigidBody.restitution = -1;
+    expect(rigidBody.restitution).toEqual(0);
+  });
+
+  it('Clamps friction to non-negative values', () => {
+    const rigidBody = new RigidBody({
+      type: 'dynamic',
+      disabled: false,
+      oneWay: false,
+    });
+
+    rigidBody.friction = -1;
+    expect(rigidBody.friction).toEqual(0);
+  });
 });
