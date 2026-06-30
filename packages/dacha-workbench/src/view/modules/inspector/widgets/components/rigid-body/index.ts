@@ -32,6 +32,22 @@ export const rigidBody: WidgetSchema = {
       },
     },
     {
+      name: 'angularDamping',
+      type: 'number',
+      dependency: {
+        name: 'type',
+        value: 'dynamic',
+      },
+    },
+    {
+      name: 'lockRotation',
+      type: 'boolean',
+      dependency: {
+        name: 'type',
+        value: 'dynamic',
+      },
+    },
+    {
       name: 'restitution',
       type: 'number',
     },
