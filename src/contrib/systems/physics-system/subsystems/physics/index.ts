@@ -4,6 +4,9 @@ import type { Scene } from '../../../../../engine/scene';
 import type { Vector2 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
+import { Collider } from '../../../../components/collider';
+
+import { calculateInertia } from './mass-properties';
 
 export interface PhysicsSubsystemOptions {
   scene: Scene;
@@ -59,17 +62,29 @@ export class PhysicsSubsystem {
     }
   }
 
+  private applyAngularDamping(rigidBody: RigidBody, deltaTime: number): void {
+    const { angularDamping, angularVelocity } = rigidBody;
+
+    if (!angularDamping || !angularVelocity) {
+      return;
+    }
+
+    rigidBody.angularVelocity *= Math.max(0, 1 - angularDamping * deltaTime);
+  }
+
   integrateVelocities(options: UpdateOptions): void {
     const deltaTimeInSeconds = options.deltaTime / 1000;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
+      const collider = actor.getComponent(Collider) as Collider | undefined;
       const transform = actor.getComponent(Transform);
-      const { mass, inverseMass } = rigidBody;
 
       rigidBody._biasLinearVelocity.multiplyNumber(0);
+      rigidBody._biasAngularVelocity = 0;
       rigidBody._prevLinearVelocity.x = rigidBody.linearVelocity.x;
       rigidBody._prevLinearVelocity.y = rigidBody.linearVelocity.y;
+      rigidBody._prevAngularVelocity = rigidBody.angularVelocity;
 
       if (rigidBody.disabled) {
         rigidBody._movementTarget = null;
@@ -98,36 +113,84 @@ export class PhysicsSubsystem {
         return;
       }
 
-      if (mass <= 0) {
+      if (rigidBody.mass <= 0) {
         rigidBody.clearForces();
         return;
       }
 
-      const { force, impulse } = rigidBody;
-      const velocity = rigidBody.linearVelocity;
+      rigidBody.inertia = calculateInertia(rigidBody.mass, collider, transform);
 
-      if (rigidBody.sleeping) {
-        if (force.x || force.y || impulse.x || impulse.y) {
+      rigidBody._pointForces.forEach(({ force, position }) => {
+        rigidBody._centralForce.add(force);
+        rigidBody._torque +=
+          (position.x - transform.world.position.x) * force.y -
+          (position.y - transform.world.position.y) * force.x;
+      });
+
+      rigidBody._pointImpulses.forEach(({ impulse, position }) => {
+        rigidBody._centralImpulse.add(impulse);
+        rigidBody._angularImpulse +=
+          (position.x - transform.world.position.x) * impulse.y -
+          (position.y - transform.world.position.y) * impulse.x;
+      });
+
+      const {
+        _centralForce,
+        _centralImpulse,
+        linearVelocity,
+        mass,
+        inverseMass,
+        inverseInertia,
+        gravityScale,
+        lockRotation,
+        sleeping,
+      } = rigidBody;
+
+      if (sleeping) {
+        if (
+          _centralForce.x ||
+          _centralForce.y ||
+          _centralImpulse.x ||
+          _centralImpulse.y ||
+          rigidBody._torque ||
+          rigidBody._angularImpulse
+        ) {
           rigidBody.wakeUp();
         } else {
           return;
         }
       }
 
-      if (rigidBody.gravityScale) {
+      if (gravityScale) {
         const gravity = this.getGravity();
-        force.x += mass * gravity.x * rigidBody.gravityScale;
-        force.y += mass * gravity.y * rigidBody.gravityScale;
+        _centralForce.x += mass * gravity.x * gravityScale;
+        _centralForce.y += mass * gravity.y * gravityScale;
       }
 
-      if (force.x || force.y) {
-        force.multiplyNumber(deltaTimeInSeconds * inverseMass);
-        velocity.add(force);
+      if (_centralForce.x || _centralForce.y) {
+        _centralForce.multiplyNumber(deltaTimeInSeconds * inverseMass);
+        linearVelocity.add(_centralForce);
       }
 
-      if (impulse.x || impulse.y) {
-        impulse.multiplyNumber(inverseMass);
-        velocity.add(impulse);
+      if (_centralImpulse.x || _centralImpulse.y) {
+        _centralImpulse.multiplyNumber(inverseMass);
+        linearVelocity.add(_centralImpulse);
+      }
+
+      if (lockRotation) {
+        rigidBody.angularVelocity = 0;
+      } else {
+        if (rigidBody._torque && inverseInertia > 0) {
+          rigidBody.angularVelocity +=
+            rigidBody._torque * inverseInertia * deltaTimeInSeconds;
+        }
+
+        if (rigidBody._angularImpulse && inverseInertia > 0) {
+          rigidBody.angularVelocity +=
+            rigidBody._angularImpulse * inverseInertia;
+        }
+
+        this.applyAngularDamping(rigidBody, deltaTimeInSeconds);
       }
 
       this.applyLinearDamping(rigidBody, deltaTimeInSeconds);
@@ -179,6 +242,12 @@ export class PhysicsSubsystem {
       transform.world.position.y +=
         (rigidBody.linearVelocity.y + rigidBody._biasLinearVelocity.y) *
         deltaTimeInSeconds;
+
+      if (!rigidBody.lockRotation) {
+        transform.world.rotation +=
+          (rigidBody.angularVelocity + rigidBody._biasAngularVelocity) *
+          deltaTimeInSeconds;
+      }
     });
   }
 
