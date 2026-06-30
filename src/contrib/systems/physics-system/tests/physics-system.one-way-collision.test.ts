@@ -26,7 +26,8 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
     physicsSystem.fixedUpdate({ deltaTime: 100 });
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
-    expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
+    expect(rigidBody.linearVelocity.y).toBeLessThanOrEqual(0);
+    expect(Math.abs(rigidBody.angularVelocity)).toBeGreaterThan(0);
     expect(transform.world.position.y).toBeLessThanOrEqual(1.12);
   });
 

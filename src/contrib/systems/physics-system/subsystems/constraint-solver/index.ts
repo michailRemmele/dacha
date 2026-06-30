@@ -1,15 +1,17 @@
 import type { Actor } from '../../../../../engine/actor';
 import type { UpdateOptions } from '../../../../../engine/system';
 import { RigidBody } from '../../../../components/rigid-body';
+import { Transform } from '../../../../components/transform';
 import type { Contact } from '../collision-detection/types';
 
 import { OneWayValidator } from './one-way-validator';
 import {
   getContactFriction,
   getContactRestitution,
-  getVelocityAlongNormal,
-  getInverseMass,
+  getVelocityAlongDirection,
+  getEffectiveMass,
   applyImpulse,
+  applyBiasImpulse,
 } from './utils';
 
 const SOLVER_ITERATIONS = 8;
@@ -74,65 +76,115 @@ export class ConstraintSolver {
   private shouldSkipBias(contact: Contact): boolean {
     const rigidBody1 = contact.actor1.getComponent(RigidBody);
     const rigidBody2 = contact.actor2.getComponent(RigidBody);
+    const transform1 = contact.actor1.getComponent(Transform);
+    const transform2 = contact.actor2.getComponent(Transform);
+    const point = contact.contactPoints[0];
+
+    if (!point) {
+      return false;
+    }
 
     return (
       getContactRestitution(rigidBody1, rigidBody2) > 0 &&
-      (getInverseMass(rigidBody1) === 0 || getInverseMass(rigidBody2) === 0) &&
-      -getVelocityAlongNormal(
+      (rigidBody1.inverseMass === 0 || rigidBody2.inverseMass === 0) &&
+      -getVelocityAlongDirection(
         rigidBody1._prevLinearVelocity,
+        rigidBody1._prevAngularVelocity,
+        transform1,
         rigidBody2._prevLinearVelocity,
+        rigidBody2._prevAngularVelocity,
+        transform2,
+        point,
         contact.normal,
       ) > RESTITUTION_VELOCITY_THRESHOLD
     );
   }
 
   private applyNormalImpulse(contact: Contact): number {
-    const { actor1, actor2, normal } = contact;
+    const { actor1, actor2, normal, contactPoints } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
-    const inverseMass1 = getInverseMass(rigidBody1);
-    const inverseMass2 = getInverseMass(rigidBody2);
-    const inverseMassSum = inverseMass1 + inverseMass2;
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+    const inverseMass1 = rigidBody1.inverseMass;
+    const inverseMass2 = rigidBody2.inverseMass;
+    const inverseInertia1 = rigidBody1.inverseInertia;
+    const inverseInertia2 = rigidBody2.inverseInertia;
+    let totalImpulseMagnitude = 0;
 
-    if (inverseMassSum === 0) {
+    if (inverseMass1 + inverseMass2 + inverseInertia1 + inverseInertia2 === 0) {
       return 0;
     }
 
-    const velocityAlongNormal = getVelocityAlongNormal(
-      rigidBody1.linearVelocity,
-      rigidBody2.linearVelocity,
-      normal,
-    );
-    const prevVelocityAlongNormal = getVelocityAlongNormal(
-      rigidBody1._prevLinearVelocity,
-      rigidBody2._prevLinearVelocity,
-      normal,
-    );
+    contactPoints.forEach((point) => {
+      const effectiveMass = getEffectiveMass(
+        inverseMass1,
+        inverseInertia1,
+        transform1,
+        inverseMass2,
+        inverseInertia2,
+        transform2,
+        point,
+        normal.x,
+        normal.y,
+      );
 
-    if (velocityAlongNormal >= 0) {
-      return 0;
-    }
+      if (effectiveMass === 0) {
+        return;
+      }
 
-    const contactRestitution = getContactRestitution(rigidBody1, rigidBody2);
-    const restitution =
-      -prevVelocityAlongNormal > RESTITUTION_VELOCITY_THRESHOLD
-        ? contactRestitution
-        : 0;
-    const impulseMagnitude =
-      -(velocityAlongNormal + restitution * prevVelocityAlongNormal) /
-      inverseMassSum;
+      const velocityAlongNormal = getVelocityAlongDirection(
+        rigidBody1.linearVelocity,
+        rigidBody1.angularVelocity,
+        transform1,
+        rigidBody2.linearVelocity,
+        rigidBody2.angularVelocity,
+        transform2,
+        point,
+        normal,
+      );
+      const prevVelocityAlongNormal = getVelocityAlongDirection(
+        rigidBody1._prevLinearVelocity,
+        rigidBody1._prevAngularVelocity,
+        transform1,
+        rigidBody2._prevLinearVelocity,
+        rigidBody2._prevAngularVelocity,
+        transform2,
+        point,
+        normal,
+      );
 
-    applyImpulse(
-      rigidBody1.linearVelocity,
-      rigidBody2.linearVelocity,
-      inverseMass1,
-      inverseMass2,
-      normal.x,
-      normal.y,
-      impulseMagnitude,
-    );
+      if (velocityAlongNormal >= 0) {
+        return;
+      }
 
-    return impulseMagnitude;
+      const contactRestitution = getContactRestitution(rigidBody1, rigidBody2);
+      const restitution =
+        -prevVelocityAlongNormal > RESTITUTION_VELOCITY_THRESHOLD
+          ? contactRestitution
+          : 0;
+      const impulseMagnitude =
+        -(velocityAlongNormal + restitution * prevVelocityAlongNormal) /
+        effectiveMass;
+
+      applyImpulse(
+        rigidBody1,
+        transform1,
+        rigidBody2,
+        transform2,
+        inverseMass1,
+        inverseInertia1,
+        inverseMass2,
+        inverseInertia2,
+        point,
+        normal.x * impulseMagnitude,
+        normal.y * impulseMagnitude,
+      );
+
+      totalImpulseMagnitude += impulseMagnitude;
+    });
+
+    return totalImpulseMagnitude;
   }
 
   private applyFrictionImpulse(
@@ -143,64 +195,98 @@ export class ConstraintSolver {
       return;
     }
 
-    const { normal } = contact;
-    const rigidBody1 = contact.actor1.getComponent(RigidBody);
-    const rigidBody2 = contact.actor2.getComponent(RigidBody);
-    const inverseMass1 = getInverseMass(rigidBody1);
-    const inverseMass2 = getInverseMass(rigidBody2);
-    const inverseMassSum = inverseMass1 + inverseMass2;
+    const { actor1, actor2, normal, contactPoints } = contact;
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+    const inverseMass1 = rigidBody1.inverseMass;
+    const inverseMass2 = rigidBody2.inverseMass;
+    const inverseInertia1 = rigidBody1.inverseInertia;
+    const inverseInertia2 = rigidBody2.inverseInertia;
 
-    if (inverseMassSum === 0) {
+    if (inverseMass1 + inverseMass2 + inverseInertia1 + inverseInertia2 === 0) {
       return;
     }
 
-    const relativeVelocityX =
-      rigidBody2.linearVelocity.x - rigidBody1.linearVelocity.x;
-    const relativeVelocityY =
-      rigidBody2.linearVelocity.y - rigidBody1.linearVelocity.y;
-    const velocityAlongNormal =
-      relativeVelocityX * normal.x + relativeVelocityY * normal.y;
-    const tangentX = relativeVelocityX - normal.x * velocityAlongNormal;
-    const tangentY = relativeVelocityY - normal.y * velocityAlongNormal;
-    const tangentMagnitude = Math.sqrt(tangentX ** 2 + tangentY ** 2);
+    contactPoints.forEach((point) => {
+      const relativeVelocityX =
+        rigidBody2.linearVelocity.x -
+        rigidBody2.angularVelocity * (point.y - transform2.world.position.y) -
+        (rigidBody1.linearVelocity.x -
+          rigidBody1.angularVelocity * (point.y - transform1.world.position.y));
+      const relativeVelocityY =
+        rigidBody2.linearVelocity.y +
+        rigidBody2.angularVelocity * (point.x - transform2.world.position.x) -
+        (rigidBody1.linearVelocity.y +
+          rigidBody1.angularVelocity * (point.x - transform1.world.position.x));
+      const velocityAlongNormal =
+        relativeVelocityX * normal.x + relativeVelocityY * normal.y;
+      const tangentX = relativeVelocityX - normal.x * velocityAlongNormal;
+      const tangentY = relativeVelocityY - normal.y * velocityAlongNormal;
+      const tangentMagnitude = Math.sqrt(tangentX ** 2 + tangentY ** 2);
 
-    if (tangentMagnitude === 0) {
-      return;
-    }
+      if (tangentMagnitude === 0) {
+        return;
+      }
 
-    const normalizedTangentX = tangentX / tangentMagnitude;
-    const normalizedTangentY = tangentY / tangentMagnitude;
-    const velocityAlongTangent =
-      relativeVelocityX * normalizedTangentX +
-      relativeVelocityY * normalizedTangentY;
-    const unclampedImpulseMagnitude = -velocityAlongTangent / inverseMassSum;
-    const friction = getContactFriction(rigidBody1, rigidBody2);
-    const maxFrictionImpulseMagnitude = friction * normalImpulseMagnitude;
-    const impulseMagnitude = Math.max(
-      -maxFrictionImpulseMagnitude,
-      Math.min(unclampedImpulseMagnitude, maxFrictionImpulseMagnitude),
-    );
+      const normalizedTangentX = tangentX / tangentMagnitude;
+      const normalizedTangentY = tangentY / tangentMagnitude;
+      const effectiveMass = getEffectiveMass(
+        inverseMass1,
+        inverseInertia1,
+        transform1,
+        inverseMass2,
+        inverseInertia2,
+        transform2,
+        point,
+        normalizedTangentX,
+        normalizedTangentY,
+      );
 
-    applyImpulse(
-      rigidBody1.linearVelocity,
-      rigidBody2.linearVelocity,
-      inverseMass1,
-      inverseMass2,
-      normalizedTangentX,
-      normalizedTangentY,
-      impulseMagnitude,
-    );
+      if (effectiveMass === 0) {
+        return;
+      }
+
+      const velocityAlongTangent =
+        relativeVelocityX * normalizedTangentX +
+        relativeVelocityY * normalizedTangentY;
+      const unclampedImpulseMagnitude = -velocityAlongTangent / effectiveMass;
+      const friction = getContactFriction(rigidBody1, rigidBody2);
+      const maxFrictionImpulseMagnitude = friction * normalImpulseMagnitude;
+      const impulseMagnitude = Math.max(
+        -maxFrictionImpulseMagnitude,
+        Math.min(unclampedImpulseMagnitude, maxFrictionImpulseMagnitude),
+      );
+
+      applyImpulse(
+        rigidBody1,
+        transform1,
+        rigidBody2,
+        transform2,
+        inverseMass1,
+        inverseInertia1,
+        inverseMass2,
+        inverseInertia2,
+        point,
+        normalizedTangentX * impulseMagnitude,
+        normalizedTangentY * impulseMagnitude,
+      );
+    });
   }
 
   private applyBiasImpulse(contact: Contact, deltaTimeInSeconds: number): void {
-    const { actor1, actor2, normal, penetration } = contact;
+    const { actor1, actor2, normal, contactPoints, penetration } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
-    const inverseMass1 = getInverseMass(rigidBody1);
-    const inverseMass2 = getInverseMass(rigidBody2);
-    const inverseMassSum = inverseMass1 + inverseMass2;
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+    const inverseMass1 = rigidBody1.inverseMass;
+    const inverseMass2 = rigidBody2.inverseMass;
+    const inverseInertia1 = rigidBody1.inverseInertia;
+    const inverseInertia2 = rigidBody2.inverseInertia;
 
-    if (inverseMassSum === 0 || deltaTimeInSeconds <= 0) {
+    if (inverseMass1 + inverseMass2 + inverseInertia1 + inverseInertia2 === 0) {
       return;
     }
 
@@ -215,27 +301,54 @@ export class ConstraintSolver {
       return;
     }
 
-    const biasVelocityAlongNormal = getVelocityAlongNormal(
-      rigidBody1._biasLinearVelocity,
-      rigidBody2._biasLinearVelocity,
-      normal,
-    );
-    const impulseMagnitude =
-      (targetBiasVelocity - biasVelocityAlongNormal) / inverseMassSum;
+    contactPoints.forEach((point) => {
+      const effectiveMass = getEffectiveMass(
+        inverseMass1,
+        inverseInertia1,
+        transform1,
+        inverseMass2,
+        inverseInertia2,
+        transform2,
+        point,
+        normal.x,
+        normal.y,
+      );
 
-    if (impulseMagnitude <= 0) {
-      return;
-    }
+      if (effectiveMass === 0) {
+        return;
+      }
 
-    applyImpulse(
-      rigidBody1._biasLinearVelocity,
-      rigidBody2._biasLinearVelocity,
-      inverseMass1,
-      inverseMass2,
-      normal.x,
-      normal.y,
-      impulseMagnitude,
-    );
+      const biasVelocityAlongNormal = getVelocityAlongDirection(
+        rigidBody1._biasLinearVelocity,
+        rigidBody1._biasAngularVelocity,
+        transform1,
+        rigidBody2._biasLinearVelocity,
+        rigidBody2._biasAngularVelocity,
+        transform2,
+        point,
+        normal,
+      );
+      const impulseMagnitude =
+        (targetBiasVelocity - biasVelocityAlongNormal) / effectiveMass;
+
+      if (impulseMagnitude <= 0) {
+        return;
+      }
+
+      applyBiasImpulse(
+        rigidBody1,
+        transform1,
+        rigidBody2,
+        transform2,
+        inverseMass1,
+        inverseInertia1,
+        inverseMass2,
+        inverseInertia2,
+        point,
+        normal.x * impulseMagnitude,
+        normal.y * impulseMagnitude,
+      );
+    });
   }
 
   update(contacts: Contact[], options: UpdateOptions): void {

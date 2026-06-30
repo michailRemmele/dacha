@@ -1,4 +1,5 @@
 import { RigidBody } from '../index';
+import { Vector2 } from '../../../../engine/math-lib';
 
 describe('Contrib -> components -> RigidBody', () => {
   it('Normalizes one-way normals', () => {
@@ -93,5 +94,87 @@ describe('Contrib -> components -> RigidBody', () => {
 
     rigidBody.friction = -1;
     expect(rigidBody.friction).toEqual(0);
+  });
+
+  it('Applies torque and angular impulses only to active unlocked dynamic bodies', () => {
+    const dynamicBody = new RigidBody({
+      type: 'dynamic',
+      disabled: false,
+      oneWay: false,
+    });
+    const staticBody = new RigidBody({
+      type: 'static',
+      disabled: false,
+      oneWay: false,
+    });
+    const lockedBody = new RigidBody({
+      type: 'dynamic',
+      disabled: false,
+      oneWay: false,
+      lockRotation: true,
+    });
+
+    dynamicBody.sleep();
+    dynamicBody.applyTorque(4);
+    dynamicBody.applyAngularImpulse(2);
+    staticBody.applyTorque(4);
+    lockedBody.applyAngularImpulse(2);
+
+    expect(dynamicBody.sleeping).toEqual(false);
+    expect(dynamicBody._torque).toEqual(4);
+    expect(dynamicBody._angularImpulse).toEqual(2);
+    expect(staticBody._torque).toEqual(0);
+    expect(lockedBody._angularImpulse).toEqual(0);
+  });
+
+  it('Stores central and point force accumulators internally', () => {
+    const rigidBody = new RigidBody({
+      type: 'dynamic',
+      disabled: false,
+      oneWay: false,
+    });
+
+    rigidBody.applyForce(new Vector2(1, 2));
+    rigidBody.applyForce(new Vector2(3, 4), { x: 5, y: 6 });
+    rigidBody.applyImpulse(new Vector2(7, 8));
+    rigidBody.applyImpulse(new Vector2(9, 10), { x: 11, y: 12 });
+
+    expect(rigidBody._centralForce).toStrictEqual(new Vector2(1, 2));
+    expect(rigidBody._pointForces).toStrictEqual([
+      {
+        force: new Vector2(3, 4),
+        position: { x: 5, y: 6 },
+      },
+    ]);
+    expect(rigidBody._centralImpulse).toStrictEqual(new Vector2(7, 8));
+    expect(rigidBody._pointImpulses).toStrictEqual([
+      {
+        impulse: new Vector2(9, 10),
+        position: { x: 11, y: 12 },
+      },
+    ]);
+  });
+
+  it('Clears force accumulators', () => {
+    const rigidBody = new RigidBody({
+      type: 'dynamic',
+      disabled: false,
+      oneWay: false,
+    });
+
+    rigidBody.applyForce(new Vector2(1, 2));
+    rigidBody.applyForce(new Vector2(1, 2), { x: 3, y: 4 });
+    rigidBody.applyImpulse(new Vector2(3, 4));
+    rigidBody.applyImpulse(new Vector2(3, 4), { x: 5, y: 6 });
+    rigidBody.applyTorque(5);
+    rigidBody.applyAngularImpulse(6);
+    rigidBody.clearForces();
+
+    expect(rigidBody._centralForce).toStrictEqual(new Vector2(0, 0));
+    expect(rigidBody._centralImpulse).toStrictEqual(new Vector2(0, 0));
+    expect(rigidBody._pointForces).toHaveLength(0);
+    expect(rigidBody._pointImpulses).toHaveLength(0);
+    expect(rigidBody._torque).toEqual(0);
+    expect(rigidBody._angularImpulse).toEqual(0);
   });
 });

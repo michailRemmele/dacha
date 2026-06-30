@@ -1,5 +1,5 @@
 import { Component } from '../../../engine/component';
-import { Vector2 } from '../../../engine/math-lib';
+import { Vector2, type Point } from '../../../engine/math-lib';
 
 export type RigidBodyType = 'dynamic' | 'static' | 'kinematic';
 
@@ -8,6 +8,8 @@ export interface RigidBodyConfig {
   mass?: number;
   gravityScale?: number;
   linearDamping?: number;
+  angularDamping?: number;
+  lockRotation?: boolean;
   restitution?: number;
   friction?: number;
   disabled: boolean;
@@ -16,11 +18,22 @@ export interface RigidBodyConfig {
   oneWayNormalY?: number;
 }
 
+interface PointForce {
+  force: Vector2;
+  position: Point;
+}
+
+interface PointImpulse {
+  impulse: Vector2;
+  position: Point;
+}
+
 /**
  * RigidBody component for defining rigid body physics.
  *
- * Defines the physics properties for an actor. It's used by the
- * physics system to apply forces and impulses to the actor.
+ * Defines the physics properties for an actor. Dynamic bodies react to forces,
+ * impulses, gravity, collisions, and rotation. Static and kinematic bodies can
+ * participate in collisions but are not moved by solver impulses.
  *
  * @example
  * ```typescript
@@ -45,6 +58,8 @@ export interface RigidBodyConfig {
 export class RigidBody extends Component {
   private _mass: number;
   private _inverseMass: number;
+  private _inertia: number;
+  private _inverseInertia: number;
   private _restitution: number;
   private _friction: number;
 
@@ -52,26 +67,44 @@ export class RigidBody extends Component {
   _movementTarget: Vector2 | null;
   /** @internal Linear velocity from the start of the current physics step */
   _prevLinearVelocity: Vector2;
+  /** @internal Angular velocity from the start of the current physics step */
+  _prevAngularVelocity: number;
   /** @internal Temporary solver velocity used for contact separation */
   _biasLinearVelocity: Vector2;
+  /** @internal Temporary solver angular velocity used for contact separation */
+  _biasAngularVelocity: number;
 
   /** Body type that defines how the rigid body participates in simulation */
   readonly type: RigidBodyType;
-  /** Gravity scale of the rigid body */
+  /** Gravity multiplier. `0` ignores gravity, `1` uses normal world gravity. */
   gravityScale: number;
-  /** Linear damping value used to slow down movement over time */
+  /** Linear damping used to slow down movement over time */
   linearDamping: number;
-  /** Current linear velocity of the rigid body */
+  /** Angular damping used to slow down rotation over time */
+  angularDamping: number;
+  /** Current linear velocity in world units per second */
   linearVelocity: Vector2;
+  /** Current angular velocity of the rigid body in radians per second */
+  angularVelocity: number;
+  /** Whether dynamic rotation is locked. Locked bodies do not spin from torque or contacts. */
+  lockRotation: boolean;
   /** Whether rigid body simulation is disabled */
   disabled: boolean;
   /** Whether rigid body is sleeping */
   sleeping: boolean;
 
-  /** Force applied to the rigid body */
-  force: Vector2;
-  /** Impulse applied to the rigid body */
-  impulse: Vector2;
+  /** @internal Force applied at the rigid body center */
+  _centralForce: Vector2;
+  /** @internal Impulse applied at the rigid body center */
+  _centralImpulse: Vector2;
+  /** @internal Forces applied at world-space positions */
+  _pointForces: PointForce[];
+  /** @internal Impulses applied at world-space positions */
+  _pointImpulses: PointImpulse[];
+  /** @internal Torque applied to the rigid body */
+  _torque: number;
+  /** @internal Angular impulse applied to the rigid body */
+  _angularImpulse: number;
 
   /** Whether contacts should only be resolved from one side */
   oneWay: boolean;
@@ -87,25 +120,36 @@ export class RigidBody extends Component {
 
     this._mass = 0;
     this._inverseMass = 0;
+    this._inertia = 0;
+    this._inverseInertia = 0;
     this._restitution = 0;
     this._friction = 0;
 
     this._movementTarget = null;
     this._prevLinearVelocity = new Vector2(0, 0);
+    this._prevAngularVelocity = 0;
     this._biasLinearVelocity = new Vector2(0, 0);
+    this._biasAngularVelocity = 0;
 
     this.type = config.type;
     this.mass = config.mass ?? 0;
     this.gravityScale = config.gravityScale ?? 0;
     this.linearDamping = config.linearDamping ?? 0;
+    this.angularDamping = config.angularDamping ?? 0;
     this.restitution = config.restitution ?? 0;
     this.friction = config.friction ?? 0.6;
-    this.linearVelocity = new Vector2(0, 0);
+    this.lockRotation = config.lockRotation ?? false;
     this.disabled = config.disabled;
+    this.linearVelocity = new Vector2(0, 0);
+    this.angularVelocity = 0;
     this.sleeping = false;
 
-    this.force = new Vector2(0, 0);
-    this.impulse = new Vector2(0, 0);
+    this._centralForce = new Vector2(0, 0);
+    this._centralImpulse = new Vector2(0, 0);
+    this._pointForces = [];
+    this._pointImpulses = [];
+    this._torque = 0;
+    this._angularImpulse = 0;
 
     this.oneWay = config.oneWay ?? false;
 
@@ -141,10 +185,49 @@ export class RigidBody extends Component {
    * Bodies with zero or negative mass return `0`.
    */
   get inverseMass(): number {
+    if (this.type === 'static' || this.type === 'kinematic') {
+      return 0;
+    }
+
     return this._inverseMass;
   }
 
-  /** Bounciness used by contact resolution */
+  get inertia(): number {
+    return this._inertia;
+  }
+
+  /**
+   * Moment of inertia used by dynamic bodies.
+   *
+   * Inertia is the rotational equivalent of mass: higher values make the body
+   * harder to spin. It is automatically computed from the collider shape, mass,
+   * and collider offset every physics step, so user code usually should only
+   * read this value.
+   */
+  set inertia(value: number) {
+    this._inertia = value;
+    this._inverseInertia = value > 0 ? 1 / value : 0;
+  }
+
+  /**
+   * Returns the inverse moment of inertia.
+   *
+   * This is the solver-friendly form of inertia. Static bodies, kinematic
+   * bodies, locked rotation, or non-positive inertia return `0`.
+   */
+  get inverseInertia(): number {
+    if (
+      this.type === 'static' ||
+      this.type === 'kinematic' ||
+      this.lockRotation
+    ) {
+      return 0;
+    }
+
+    return this._inverseInertia;
+  }
+
+  /** Bounciness used by contact resolution. `0` does not bounce, `1` keeps full bounce speed. */
   get restitution(): number {
     return this._restitution;
   }
@@ -153,7 +236,7 @@ export class RigidBody extends Component {
     this._restitution = Math.max(0, Math.min(value, 1));
   }
 
-  /** Surface friction used by contact resolution */
+  /** Surface friction used by contact resolution. Higher values reduce sliding more strongly. */
   get friction(): number {
     return this._friction;
   }
@@ -165,29 +248,81 @@ export class RigidBody extends Component {
   /**
    * Adds a continuous force to a dynamic body for the next physics step.
    *
-   * Affects only active dynamic bodies.
+   * Affects only active dynamic bodies. When `position` is provided, it is a
+   * world-space point where the force is applied; off-center forces can also
+   * rotate the body.
    */
-  applyForce(force: Vector2): void {
+  applyForce(force: Vector2, position?: Point): void {
     if (this.disabled || this.type !== 'dynamic') {
       return;
     }
 
     this.wakeUp();
-    this.force.add(force);
+
+    if (!position) {
+      this._centralForce.add(force);
+      return;
+    }
+
+    this._pointForces.push({
+      force: force.clone(),
+      position: { x: position.x, y: position.y },
+    });
   }
 
   /**
    * Adds an instantaneous impulse to a dynamic body for the next physics step.
    *
-   * Affects only active dynamic bodies.
+   * Affects only active dynamic bodies. An impulse is a one-step velocity kick.
+   * When `position` is provided, it is a world-space point where the impulse is
+   * applied; off-center impulses can also rotate the body.
    */
-  applyImpulse(impulse: Vector2): void {
+  applyImpulse(impulse: Vector2, position?: Point): void {
     if (this.disabled || this.type !== 'dynamic') {
       return;
     }
 
     this.wakeUp();
-    this.impulse.add(impulse);
+
+    if (!position) {
+      this._centralImpulse.add(impulse);
+      return;
+    }
+
+    this._pointImpulses.push({
+      impulse: impulse.clone(),
+      position: { x: position.x, y: position.y },
+    });
+  }
+
+  /**
+   * Adds a continuous torque to a dynamic body for the next physics step.
+   *
+   * Torque is rotational force: it changes angular velocity over time. Affects
+   * only active dynamic bodies with unlocked rotation.
+   */
+  applyTorque(torque: number): void {
+    if (this.disabled || this.type !== 'dynamic' || this.lockRotation) {
+      return;
+    }
+
+    this.wakeUp();
+    this._torque += torque;
+  }
+
+  /**
+   * Adds an instantaneous angular impulse to a dynamic body for the next physics step.
+   *
+   * Angular impulse is an immediate rotational kick. Affects only active dynamic
+   * bodies with unlocked rotation.
+   */
+  applyAngularImpulse(impulse: number): void {
+    if (this.disabled || this.type !== 'dynamic' || this.lockRotation) {
+      return;
+    }
+
+    this.wakeUp();
+    this._angularImpulse += impulse;
   }
 
   /**
@@ -208,8 +343,12 @@ export class RigidBody extends Component {
    * Clears all accumulated force and impulse values.
    */
   clearForces(): void {
-    this.force.multiplyNumber(0);
-    this.impulse.multiplyNumber(0);
+    this._centralForce.multiplyNumber(0);
+    this._centralImpulse.multiplyNumber(0);
+    this._pointForces.length = 0;
+    this._pointImpulses.length = 0;
+    this._torque = 0;
+    this._angularImpulse = 0;
   }
 
   /**
