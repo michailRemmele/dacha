@@ -400,7 +400,7 @@ export class ConstraintSolver {
       return;
     }
 
-    contactPoints.forEach((point) => {
+    contactPoints.forEach((point, index) => {
       const effectiveMass = getEffectiveMass(
         inverseMass1,
         inverseInertia1,
@@ -427,10 +427,25 @@ export class ConstraintSolver {
         point,
         normal,
       );
-      const impulseMagnitude =
+      const impulseMagnitudeDelta =
         (targetBiasVelocity - biasVelocityAlongNormal) / effectiveMass;
+      const oldImpulseMagnitude = this.contactStateManager.getBiasImpulse(
+        state,
+        index,
+      );
+      const newImpulseMagnitude = Math.max(
+        oldImpulseMagnitude + impulseMagnitudeDelta,
+        0,
+      );
+      const impulseMagnitude = newImpulseMagnitude - oldImpulseMagnitude;
 
-      if (impulseMagnitude <= 0) {
+      this.contactStateManager.setBiasImpulse(
+        state,
+        index,
+        newImpulseMagnitude,
+      );
+
+      if (impulseMagnitude === 0) {
         return;
       }
 

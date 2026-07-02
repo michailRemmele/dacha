@@ -3,6 +3,7 @@ import type { BoxGeometry, EdgeWithNormal, Point } from '../../types';
 import { getProjectionOverlap, projectPolygon } from '../common/projections';
 
 export const CONTACT_EPSILON = 1e-4;
+export const OVERLAP_TIE_EPSILON = 1e-4;
 export const MAX_CONTACT_POINTS = 2;
 
 export interface AxisOverlap {
@@ -43,7 +44,7 @@ export const findMinBoxesOverlap = (
       return false;
     }
 
-    if (overlap < minOverlap) {
+    if (overlap < minOverlap - OVERLAP_TIE_EPSILON) {
       minOverlap = overlap;
       bestAxis = axis;
     }

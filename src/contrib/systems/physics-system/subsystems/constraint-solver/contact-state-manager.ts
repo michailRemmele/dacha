@@ -15,6 +15,8 @@ export interface ContactState {
   normalImpulse1: number;
   tangentImpulse0: number;
   tangentImpulse1: number;
+  biasImpulse0: number;
+  biasImpulse1: number;
 
   point0X: number;
   point0Y: number;
@@ -60,6 +62,7 @@ export class ContactStateManager {
       this.clearImpulses(state);
     }
 
+    this.clearBiasImpulses(state);
     this.updateContactIdentity(state, contact);
     state.version = this.version;
 
@@ -118,6 +121,23 @@ export class ContactStateManager {
     state.tangentImpulse1 = 0;
   }
 
+  getBiasImpulse(state: ContactState, index: number): number {
+    return index === 0 ? state.biasImpulse0 : state.biasImpulse1;
+  }
+
+  setBiasImpulse(state: ContactState, index: number, impulse: number): void {
+    if (index === 0) {
+      state.biasImpulse0 = impulse;
+    } else {
+      state.biasImpulse1 = impulse;
+    }
+  }
+
+  private clearBiasImpulses(state: ContactState): void {
+    state.biasImpulse0 = 0;
+    state.biasImpulse1 = 0;
+  }
+
   private get(actor1: Actor, actor2: Actor): ContactState | undefined {
     return this.stateMap.get(actor1)?.get(actor2);
   }
@@ -157,6 +177,8 @@ export class ContactStateManager {
       normalImpulse1: 0,
       tangentImpulse0: 0,
       tangentImpulse1: 0,
+      biasImpulse0: 0,
+      biasImpulse1: 0,
 
       point0X: 0,
       point0Y: 0,
