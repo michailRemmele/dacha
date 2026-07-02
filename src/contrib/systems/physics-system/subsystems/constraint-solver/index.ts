@@ -1,5 +1,6 @@
 import type { Actor } from '../../../../../engine/actor';
 import type { UpdateOptions } from '../../../../../engine/system';
+import { MathOps } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { Contact } from '../collision-detection/types';
@@ -336,12 +337,10 @@ export class ConstraintSolver {
         state,
         index,
       );
-      const newImpulseMagnitude = Math.max(
+      const newImpulseMagnitude = MathOps.clamp(
+        oldImpulseMagnitude + impulseMagnitudeDelta,
         -maxFrictionImpulseMagnitude,
-        Math.min(
-          oldImpulseMagnitude + impulseMagnitudeDelta,
-          maxFrictionImpulseMagnitude,
-        ),
+        maxFrictionImpulseMagnitude,
       );
       const impulseMagnitude = newImpulseMagnitude - oldImpulseMagnitude;
 
@@ -452,8 +451,8 @@ export class ConstraintSolver {
   }
 
   update(contacts: Contact[], options: UpdateOptions): void {
-    this.oneWayValidator.update();
-    this.contactStateManager.beginFrame();
+    this.oneWayValidator.updateVersion();
+    this.contactStateManager.updateVersion();
 
     const deltaTimeInSeconds = options.deltaTime / 1000;
 
@@ -466,7 +465,6 @@ export class ConstraintSolver {
       }
 
       const state = this.contactStateManager.prepare(contact);
-
       this.applyWarmStartImpulse(state);
     });
 
@@ -485,6 +483,6 @@ export class ConstraintSolver {
       });
     }
 
-    this.oneWayValidator.lateUpdate();
+    this.oneWayValidator.clearOneWayContacts();
   }
 }
