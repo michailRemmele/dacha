@@ -24,22 +24,22 @@ export interface ContactState {
 
   normalX: number;
   normalY: number;
-  lastTouchedFrame: number;
+  version: number;
 }
 
 export class ContactStateManager {
   private stateMap: Map<Actor, Map<Actor, ContactState>>;
   private states: ContactState[];
-  private frameId: number;
+  private version: number;
 
   constructor() {
     this.stateMap = new Map();
     this.states = [];
-    this.frameId = 0;
+    this.version = 0;
   }
 
-  beginFrame(): void {
-    this.frameId += 1;
+  updateVersion(): void {
+    this.version += 1;
   }
 
   prepare(contact: Contact): ContactState {
@@ -61,7 +61,7 @@ export class ContactStateManager {
     }
 
     this.updateContactIdentity(state, contact);
-    state.lastTouchedFrame = this.frameId;
+    state.version = this.version;
 
     return state;
   }
@@ -70,7 +70,7 @@ export class ContactStateManager {
     let stateIndex = 0;
 
     for (const state of this.states) {
-      if (state.lastTouchedFrame === this.frameId) {
+      if (state.version === this.version) {
         this.states[stateIndex] = state;
         stateIndex += 1;
         continue;
@@ -166,7 +166,7 @@ export class ContactStateManager {
 
       normalX: contact.normal.x,
       normalY: contact.normal.y,
-      lastTouchedFrame: this.frameId,
+      version: this.version,
     };
   }
 

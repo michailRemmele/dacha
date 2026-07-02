@@ -4,29 +4,11 @@ import { VectorOps, type Point } from '../../../../../engine/math-lib';
 
 export class OneWayValidator {
   private ignoredOneWayContacts: Map<Actor, Map<Actor, number>>;
-  private oneWayContactUpdateIndex: number;
+  private version: number;
 
   constructor() {
     this.ignoredOneWayContacts = new Map();
-    this.oneWayContactUpdateIndex = 0;
-  }
-
-  private clearOneWayContacts(): void {
-    this.ignoredOneWayContacts.forEach((ignoredContacts, oneWayActor) => {
-      ignoredContacts.forEach((lastSeenUpdate, otherActor) => {
-        if (lastSeenUpdate !== this.oneWayContactUpdateIndex) {
-          ignoredContacts.delete(otherActor);
-        }
-      });
-
-      if (ignoredContacts.size === 0) {
-        this.ignoredOneWayContacts.delete(oneWayActor);
-      }
-    });
-
-    if (this.ignoredOneWayContacts.size === 0) {
-      this.oneWayContactUpdateIndex = 0;
-    }
+    this.version = 0;
   }
 
   private trackOneWayContact(oneWayActor: Actor, otherActor: Actor): void {
@@ -37,7 +19,7 @@ export class OneWayValidator {
       this.ignoredOneWayContacts.set(oneWayActor, ignoredContacts);
     }
 
-    ignoredContacts.set(otherActor, this.oneWayContactUpdateIndex);
+    ignoredContacts.set(otherActor, this.version);
   }
 
   shouldBlock(oneWayActor: Actor, otherActor: Actor, normal: Point): boolean {
@@ -63,11 +45,25 @@ export class OneWayValidator {
     return false;
   }
 
-  update(): void {
-    this.oneWayContactUpdateIndex += 1;
+  updateVersion(): void {
+    this.version += 1;
   }
 
-  lateUpdate(): void {
-    this.clearOneWayContacts();
+  clearOneWayContacts(): void {
+    this.ignoredOneWayContacts.forEach((ignoredContacts, oneWayActor) => {
+      ignoredContacts.forEach((lastSeenUpdate, otherActor) => {
+        if (lastSeenUpdate !== this.version) {
+          ignoredContacts.delete(otherActor);
+        }
+      });
+
+      if (ignoredContacts.size === 0) {
+        this.ignoredOneWayContacts.delete(oneWayActor);
+      }
+    });
+
+    if (this.ignoredOneWayContacts.size === 0) {
+      this.version = 0;
+    }
   }
 }
