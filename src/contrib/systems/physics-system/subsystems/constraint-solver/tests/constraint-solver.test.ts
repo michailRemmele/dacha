@@ -87,6 +87,33 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
   });
 
+  it('Applies symmetric two-point bias without angular correction', () => {
+    const solver = new ConstraintSolver();
+    const actor1 = createActor('dynamic-body', 'dynamic');
+    const actor2 = createActor('static-body', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.inertia = 1;
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0.5,
+        contactPoints: [
+          { x: -1, y: 0 },
+          { x: 1, y: 0 },
+        ],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
+    expect(rigidBody1._biasAngularVelocity).toBeCloseTo(0);
+  });
+
   it('Removes relative normal velocity between equal-mass dynamic bodies', () => {
     const solver = new ConstraintSolver();
     const actor1 = createActor('body-1', 'dynamic');
