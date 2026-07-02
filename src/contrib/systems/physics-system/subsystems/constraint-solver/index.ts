@@ -4,6 +4,10 @@ import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { Contact } from '../collision-detection/types';
 
+import {
+  ContactStateManager,
+  type ContactState,
+} from './contact-state-manager';
 import { OneWayValidator } from './one-way-validator';
 import {
   getContactFriction,
@@ -21,12 +25,12 @@ const MAX_BIAS_VELOCITY = 120;
 const RESTITUTION_VELOCITY_THRESHOLD = 1;
 
 export class ConstraintSolver {
-  private validContacts: Contact[];
   private oneWayValidator: OneWayValidator;
+  private contactStateManager: ContactStateManager;
 
   constructor() {
-    this.validContacts = [];
     this.oneWayValidator = new OneWayValidator();
+    this.contactStateManager = new ContactStateManager();
   }
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
@@ -100,7 +104,40 @@ export class ConstraintSolver {
     );
   }
 
-  private applyNormalImpulse(contact: Contact): number {
+  private shouldWarmStart(state: ContactState): boolean {
+    const { contact } = state;
+    const rigidBody1 = contact.actor1.getComponent(RigidBody);
+    const rigidBody2 = contact.actor2.getComponent(RigidBody);
+    const transform1 = contact.actor1.getComponent(Transform);
+    const transform2 = contact.actor2.getComponent(Transform);
+    const point = contact.contactPoints[0];
+
+    if (!point) {
+      return false;
+    }
+
+    return (
+      getContactRestitution(rigidBody1, rigidBody2) === 0 ||
+      -getVelocityAlongDirection(
+        rigidBody1._prevLinearVelocity,
+        rigidBody1._prevAngularVelocity,
+        transform1,
+        rigidBody2._prevLinearVelocity,
+        rigidBody2._prevAngularVelocity,
+        transform2,
+        point,
+        contact.normal,
+      ) <= RESTITUTION_VELOCITY_THRESHOLD
+    );
+  }
+
+  private applyWarmStartImpulse(state: ContactState): void {
+    if (!this.shouldWarmStart(state)) {
+      this.contactStateManager.clearImpulses(state);
+      return;
+    }
+
+    const { contact } = state;
     const { actor1, actor2, normal, contactPoints } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
@@ -110,13 +147,56 @@ export class ConstraintSolver {
     const inverseMass2 = rigidBody2.inverseMass;
     const inverseInertia1 = rigidBody1.inverseInertia;
     const inverseInertia2 = rigidBody2.inverseInertia;
-    let totalImpulseMagnitude = 0;
+    const tangentX = -normal.y;
+    const tangentY = normal.x;
+
+    contactPoints.forEach((point, index) => {
+      const normalImpulse = this.contactStateManager.getNormalImpulse(
+        state,
+        index,
+      );
+      const tangentImpulse = this.contactStateManager.getTangentImpulse(
+        state,
+        index,
+      );
+
+      if (normalImpulse === 0 && tangentImpulse === 0) {
+        return;
+      }
+
+      applyImpulse(
+        rigidBody1,
+        transform1,
+        rigidBody2,
+        transform2,
+        inverseMass1,
+        inverseInertia1,
+        inverseMass2,
+        inverseInertia2,
+        point,
+        normal.x * normalImpulse + tangentX * tangentImpulse,
+        normal.y * normalImpulse + tangentY * tangentImpulse,
+      );
+    });
+  }
+
+  private applyNormalImpulse(state: ContactState): void {
+    const { contact } = state;
+    const { actor1, actor2, normal, contactPoints } = contact;
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+    const inverseMass1 = rigidBody1.inverseMass;
+    const inverseMass2 = rigidBody2.inverseMass;
+    const inverseInertia1 = rigidBody1.inverseInertia;
+    const inverseInertia2 = rigidBody2.inverseInertia;
 
     if (inverseMass1 + inverseMass2 + inverseInertia1 + inverseInertia2 === 0) {
-      return 0;
+      return;
     }
 
-    contactPoints.forEach((point) => {
+    contactPoints.forEach((point, index) => {
       const effectiveMass = getEffectiveMass(
         inverseMass1,
         inverseInertia1,
@@ -153,19 +233,33 @@ export class ConstraintSolver {
         point,
         normal,
       );
-
-      if (velocityAlongNormal >= 0) {
-        return;
-      }
-
       const contactRestitution = getContactRestitution(rigidBody1, rigidBody2);
       const restitution =
         -prevVelocityAlongNormal > RESTITUTION_VELOCITY_THRESHOLD
           ? contactRestitution
           : 0;
-      const impulseMagnitude =
+      const impulseMagnitudeDelta =
         -(velocityAlongNormal + restitution * prevVelocityAlongNormal) /
         effectiveMass;
+      const oldImpulseMagnitude = this.contactStateManager.getNormalImpulse(
+        state,
+        index,
+      );
+      const newImpulseMagnitude = Math.max(
+        oldImpulseMagnitude + impulseMagnitudeDelta,
+        0,
+      );
+      const impulseMagnitude = newImpulseMagnitude - oldImpulseMagnitude;
+
+      this.contactStateManager.setNormalImpulse(
+        state,
+        index,
+        newImpulseMagnitude,
+      );
+
+      if (impulseMagnitude === 0) {
+        return;
+      }
 
       applyImpulse(
         rigidBody1,
@@ -180,21 +274,11 @@ export class ConstraintSolver {
         normal.x * impulseMagnitude,
         normal.y * impulseMagnitude,
       );
-
-      totalImpulseMagnitude += impulseMagnitude;
     });
-
-    return totalImpulseMagnitude;
   }
 
-  private applyFrictionImpulse(
-    contact: Contact,
-    normalImpulseMagnitude: number,
-  ): void {
-    if (normalImpulseMagnitude <= 0) {
-      return;
-    }
-
+  private applyFrictionImpulse(state: ContactState): void {
+    const { contact } = state;
     const { actor1, actor2, normal, contactPoints } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
@@ -209,7 +293,16 @@ export class ConstraintSolver {
       return;
     }
 
-    contactPoints.forEach((point) => {
+    const tangentX = -normal.y;
+    const tangentY = normal.x;
+    const friction = getContactFriction(rigidBody1, rigidBody2);
+
+    contactPoints.forEach((point, index) => {
+      const normalImpulseMagnitude = this.contactStateManager.getNormalImpulse(
+        state,
+        index,
+      );
+      const maxFrictionImpulseMagnitude = friction * normalImpulseMagnitude;
       const relativeVelocityX =
         rigidBody2.linearVelocity.x -
         rigidBody2.angularVelocity * (point.y - transform2.world.position.y) -
@@ -220,18 +313,6 @@ export class ConstraintSolver {
         rigidBody2.angularVelocity * (point.x - transform2.world.position.x) -
         (rigidBody1.linearVelocity.y +
           rigidBody1.angularVelocity * (point.x - transform1.world.position.x));
-      const velocityAlongNormal =
-        relativeVelocityX * normal.x + relativeVelocityY * normal.y;
-      const tangentX = relativeVelocityX - normal.x * velocityAlongNormal;
-      const tangentY = relativeVelocityY - normal.y * velocityAlongNormal;
-      const tangentMagnitude = Math.sqrt(tangentX ** 2 + tangentY ** 2);
-
-      if (tangentMagnitude === 0) {
-        return;
-      }
-
-      const normalizedTangentX = tangentX / tangentMagnitude;
-      const normalizedTangentY = tangentY / tangentMagnitude;
       const effectiveMass = getEffectiveMass(
         inverseMass1,
         inverseInertia1,
@@ -240,8 +321,8 @@ export class ConstraintSolver {
         inverseInertia2,
         transform2,
         point,
-        normalizedTangentX,
-        normalizedTangentY,
+        tangentX,
+        tangentY,
       );
 
       if (effectiveMass === 0) {
@@ -249,15 +330,30 @@ export class ConstraintSolver {
       }
 
       const velocityAlongTangent =
-        relativeVelocityX * normalizedTangentX +
-        relativeVelocityY * normalizedTangentY;
-      const unclampedImpulseMagnitude = -velocityAlongTangent / effectiveMass;
-      const friction = getContactFriction(rigidBody1, rigidBody2);
-      const maxFrictionImpulseMagnitude = friction * normalImpulseMagnitude;
-      const impulseMagnitude = Math.max(
-        -maxFrictionImpulseMagnitude,
-        Math.min(unclampedImpulseMagnitude, maxFrictionImpulseMagnitude),
+        relativeVelocityX * tangentX + relativeVelocityY * tangentY;
+      const impulseMagnitudeDelta = -velocityAlongTangent / effectiveMass;
+      const oldImpulseMagnitude = this.contactStateManager.getTangentImpulse(
+        state,
+        index,
       );
+      const newImpulseMagnitude = Math.max(
+        -maxFrictionImpulseMagnitude,
+        Math.min(
+          oldImpulseMagnitude + impulseMagnitudeDelta,
+          maxFrictionImpulseMagnitude,
+        ),
+      );
+      const impulseMagnitude = newImpulseMagnitude - oldImpulseMagnitude;
+
+      this.contactStateManager.setTangentImpulse(
+        state,
+        index,
+        newImpulseMagnitude,
+      );
+
+      if (impulseMagnitude === 0) {
+        return;
+      }
 
       applyImpulse(
         rigidBody1,
@@ -269,13 +365,17 @@ export class ConstraintSolver {
         inverseMass2,
         inverseInertia2,
         point,
-        normalizedTangentX * impulseMagnitude,
-        normalizedTangentY * impulseMagnitude,
+        tangentX * impulseMagnitude,
+        tangentY * impulseMagnitude,
       );
     });
   }
 
-  private applyBiasImpulse(contact: Contact, deltaTimeInSeconds: number): void {
+  private applyBiasImpulse(
+    state: ContactState,
+    deltaTimeInSeconds: number,
+  ): void {
+    const { contact } = state;
     const { actor1, actor2, normal, contactPoints, penetration } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
@@ -353,9 +453,9 @@ export class ConstraintSolver {
 
   update(contacts: Contact[], options: UpdateOptions): void {
     this.oneWayValidator.update();
+    this.contactStateManager.beginFrame();
 
     const deltaTimeInSeconds = options.deltaTime / 1000;
-    let validContactsCount = 0;
 
     contacts.forEach((contact) => {
       if (!this.validateCollision(contact.actor1, contact.actor2)) {
@@ -365,21 +465,23 @@ export class ConstraintSolver {
         return;
       }
 
-      this.validContacts[validContactsCount] = contact;
-      validContactsCount += 1;
+      const state = this.contactStateManager.prepare(contact);
+
+      this.applyWarmStartImpulse(state);
     });
 
-    this.validContacts.length = validContactsCount;
+    this.contactStateManager.pruneStaleStates();
 
     for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
-      this.validContacts.forEach((contact) => {
+      this.contactStateManager.forEach((state) => {
+        const { contact } = state;
+
         if (!this.shouldSkipBias(contact)) {
-          this.applyBiasImpulse(contact, deltaTimeInSeconds);
+          this.applyBiasImpulse(state, deltaTimeInSeconds);
         }
 
-        const normalImpulseMagnitude = this.applyNormalImpulse(contact);
-
-        this.applyFrictionImpulse(contact, normalImpulseMagnitude);
+        this.applyNormalImpulse(state);
+        this.applyFrictionImpulse(state);
       });
     }
 

@@ -59,6 +59,34 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     expect(transform1.world.position.y).toBeCloseTo(2);
   });
 
+  it('Resets accumulated bias impulses between solver updates', () => {
+    const solver = new ConstraintSolver();
+    const actor1 = createActor('dynamic-body', 'dynamic');
+    const actor2 = createActor('static-body', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0.5,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
+
+    rigidBody1._biasLinearVelocity = new Vector2(0, 0);
+    rigidBody1._biasAngularVelocity = 0;
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
+  });
+
   it('Removes relative normal velocity between equal-mass dynamic bodies', () => {
     const solver = new ConstraintSolver();
     const actor1 = createActor('body-1', 'dynamic');
@@ -344,6 +372,48 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     expect(rigidBody1._biasLinearVelocity.x).toBeCloseTo(-3.2);
     expect(transform1.world.position.x).toBeCloseTo(2);
     expect(transform2.world.position.x).toBeCloseTo(10);
+  });
+
+  it('Does not apply cached impulses with the wrong sign after actor order reverses', () => {
+    const solver = new ConstraintSolver();
+
+    const dynamicActor = createActor('dynamic-body', 'dynamic');
+    const staticActor = createActor('static-body', 'static');
+    const rigidBody = dynamicActor.getComponent(RigidBody);
+
+    rigidBody.linearVelocity = new Vector2(0, 5);
+
+    solver.update(
+      [
+        {
+          actor1: dynamicActor,
+          actor2: staticActor,
+          normal: new Vector2(0, 1),
+          penetration: 0,
+          contactPoints: [{ x: 0, y: 0 }],
+        },
+      ],
+      { deltaTime: 100 },
+    );
+
+    expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
+
+    rigidBody.linearVelocity = new Vector2(0, 0);
+
+    solver.update(
+      [
+        {
+          actor1: staticActor,
+          actor2: dynamicActor,
+          normal: new Vector2(0, -1),
+          penetration: 0,
+          contactPoints: [{ x: 0, y: 0 }],
+        },
+      ],
+      { deltaTime: 100 },
+    );
+
+    expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
   });
 
   it('Lets moving kinematic bodies push dynamic bodies', () => {
