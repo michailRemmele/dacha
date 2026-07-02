@@ -35,8 +35,8 @@ describe('PhysicsSystem -> collision-detection -> checkBoxAndCapsuleIntersection
     );
 
     expect(intersection.contactPoints.length).toBe(2);
-    expectToBeClose(intersection.contactPoints[0], -1, -0.5);
-    expectToBeClose(intersection.contactPoints[1], 1, -0.5);
+    expectToBeClose(intersection.contactPoints[0], 1, -0.5);
+    expectToBeClose(intersection.contactPoints[1], -1, -0.5);
   });
 
   it('Checks a capsule against a rotated box', () => {

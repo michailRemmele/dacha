@@ -81,6 +81,33 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
   });
 
+  it('Does not add angular velocity for symmetric two-point contacts', () => {
+    const solver = new ConstraintSolver();
+    const actor1 = createActor('dynamic-body', 'dynamic');
+    const actor2 = createActor('static-body', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(0, 10);
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0,
+        contactPoints: [
+          { x: -1, y: 0 },
+          { x: 1, y: 0 },
+        ],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
+    expect(rigidBody1.angularVelocity).toBeCloseTo(0);
+  });
+
   it('Applies angular velocity from friction at the contact point', () => {
     const solver = new ConstraintSolver();
     const actor1 = createActor('sliding-body', 'dynamic');

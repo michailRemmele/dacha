@@ -1,5 +1,6 @@
 import type { BoxGeometry, CapsuleGeometry, Intersection } from '../../types';
 import { orientNormal } from '../common/normals';
+import { sortPoints } from '../common/points';
 import { buildBoxCapsuleIntersection } from './utils';
 
 /**
@@ -30,8 +31,11 @@ export const checkBoxAndCapsuleIntersection = (
     return false;
   }
 
+  const normal = orientNormal(intersection.normal, box.center, capsule.center);
+
   return {
     ...intersection,
-    normal: orientNormal(intersection.normal, box.center, capsule.center),
+    normal,
+    contactPoints: sortPoints(intersection.contactPoints, normal),
   };
 };

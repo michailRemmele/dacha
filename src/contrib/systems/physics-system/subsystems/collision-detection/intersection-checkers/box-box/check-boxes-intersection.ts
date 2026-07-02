@@ -1,5 +1,6 @@
 import type { BoxGeometry, Intersection } from '../../types';
 import { orientNormal } from '../common/normals';
+import { sortPoints } from '../common/points';
 
 import { findMinBoxesOverlap, buildContactPoints } from './utils';
 
@@ -41,13 +42,15 @@ export const checkBoxesIntersection = (
     referenceNormal.multiplyNumber(-1);
   }
 
+  const contactPoints = buildContactPoints(
+    referenceGeometry,
+    referenceNormal,
+    incidentGeometry,
+  );
+
   return {
     normal,
     penetration: referenceOverlap.overlap,
-    contactPoints: buildContactPoints(
-      referenceGeometry,
-      referenceNormal,
-      incidentGeometry,
-    ),
+    contactPoints: sortPoints(contactPoints, normal),
   };
 };
