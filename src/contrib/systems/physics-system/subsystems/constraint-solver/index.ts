@@ -17,7 +17,8 @@ import {
   getEffectiveMass,
   applyImpulse,
   applyBiasImpulse,
-} from './utils';
+} from './impulse-utils';
+import { shouldSkipBias, shouldWarmStart } from './contact-utils';
 
 const SOLVER_ITERATIONS = 8;
 const CONTACT_BIAS = 0.8;
@@ -78,63 +79,8 @@ export class ConstraintSolver {
     });
   }
 
-  private shouldSkipBias(state: ContactState): boolean {
-    const { contact } = state;
-    const rigidBody1 = contact.actor1.getComponent(RigidBody);
-    const rigidBody2 = contact.actor2.getComponent(RigidBody);
-    const transform1 = contact.actor1.getComponent(Transform);
-    const transform2 = contact.actor2.getComponent(Transform);
-    const point = contact.contactPoints[0];
-
-    if (!point) {
-      return false;
-    }
-
-    return (
-      getContactRestitution(rigidBody1, rigidBody2) > 0 &&
-      (rigidBody1.inverseMass === 0 || rigidBody2.inverseMass === 0) &&
-      -getVelocityAlongDirection(
-        rigidBody1._prevLinearVelocity,
-        rigidBody1._prevAngularVelocity,
-        transform1,
-        rigidBody2._prevLinearVelocity,
-        rigidBody2._prevAngularVelocity,
-        transform2,
-        point,
-        contact.normal,
-      ) > RESTITUTION_VELOCITY_THRESHOLD
-    );
-  }
-
-  private shouldWarmStart(state: ContactState): boolean {
-    const { contact } = state;
-    const rigidBody1 = contact.actor1.getComponent(RigidBody);
-    const rigidBody2 = contact.actor2.getComponent(RigidBody);
-    const transform1 = contact.actor1.getComponent(Transform);
-    const transform2 = contact.actor2.getComponent(Transform);
-    const point = contact.contactPoints[0];
-
-    if (!point) {
-      return false;
-    }
-
-    return (
-      getContactRestitution(rigidBody1, rigidBody2) === 0 ||
-      -getVelocityAlongDirection(
-        rigidBody1._prevLinearVelocity,
-        rigidBody1._prevAngularVelocity,
-        transform1,
-        rigidBody2._prevLinearVelocity,
-        rigidBody2._prevAngularVelocity,
-        transform2,
-        point,
-        contact.normal,
-      ) <= RESTITUTION_VELOCITY_THRESHOLD
-    );
-  }
-
   private applyWarmStartImpulse(state: ContactState): void {
-    if (!this.shouldWarmStart(state)) {
+    if (!shouldWarmStart(state, RESTITUTION_VELOCITY_THRESHOLD)) {
       this.contactStateManager.clearImpulses(state);
       return;
     }
@@ -490,7 +436,7 @@ export class ConstraintSolver {
       this.contactStateManager.forEach((state) => {
         this.applyNormalImpulse(state);
 
-        if (!this.shouldSkipBias(state)) {
+        if (!shouldSkipBias(state, RESTITUTION_VELOCITY_THRESHOLD)) {
           this.applyBiasImpulse(state, deltaTimeInSeconds);
         }
       });
