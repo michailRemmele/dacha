@@ -78,7 +78,8 @@ export class ConstraintSolver {
     });
   }
 
-  private shouldSkipBias(contact: Contact): boolean {
+  private shouldSkipBias(state: ContactState): boolean {
+    const { contact } = state;
     const rigidBody1 = contact.actor1.getComponent(RigidBody);
     const rigidBody2 = contact.actor2.getComponent(RigidBody);
     const transform1 = contact.actor1.getComponent(Transform);
@@ -487,13 +488,16 @@ export class ConstraintSolver {
 
     for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
       this.contactStateManager.forEach((state) => {
-        const { contact } = state;
+        this.applyNormalImpulse(state);
 
-        if (!this.shouldSkipBias(contact)) {
+        if (!this.shouldSkipBias(state)) {
           this.applyBiasImpulse(state, deltaTimeInSeconds);
         }
+      });
+    }
 
-        this.applyNormalImpulse(state);
+    for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
+      this.contactStateManager.forEach((state) => {
         this.applyFrictionImpulse(state);
       });
     }
