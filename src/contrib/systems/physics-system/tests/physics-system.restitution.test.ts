@@ -1,4 +1,5 @@
 import { RigidBody } from '../../../components';
+import { Collider } from '../../../components/collider';
 import { Transform } from '../../../components/transform';
 
 import {
@@ -113,4 +114,67 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
 
     expect(highestLaterApex).toBeGreaterThanOrEqual(baselineApex - 2);
   });
+
+  it('Keeps a centered bouncy box aligned across repeated flat bounces with friction', () => {
+    const scene = createScene();
+    const { physicsSystem } = createPhysicsSystem(scene, undefined, 600);
+    const floor = createBoxActor('floor', 'static', 0, 8);
+    floor.getComponent(Collider).shape = {
+      type: 'box',
+      size: { x: 320, y: 16 },
+    };
+    floor.getComponent(RigidBody).restitution = 1;
+    floor.getComponent(RigidBody).friction = 0.6;
+
+    const body = createBoxActor('body', 'dynamic', 0, -136);
+    body.getComponent(Collider).shape = {
+      type: 'box',
+      size: { x: 16, y: 16 },
+    };
+    body.setComponent(
+      new RigidBody({
+        type: 'dynamic',
+        mass: 1,
+        gravityScale: 1,
+        linearDamping: 0,
+        angularDamping: 0,
+        restitution: 1,
+        friction: 0.6,
+        disabled: false,
+        oneWay: false,
+      }),
+    );
+
+    const rigidBody = body.getComponent(RigidBody);
+    const transform = body.getComponent(Transform);
+
+    scene.appendChild(floor);
+    scene.appendChild(body);
+
+    let maxAngularVelocity = 0;
+    let maxRotation = 0;
+    let maxLinearVelocityX = 0;
+
+    for (let step = 0; step < 600; step += 1) {
+      physicsSystem.fixedUpdate({ deltaTime: 20 });
+
+      maxAngularVelocity = Math.max(
+        maxAngularVelocity,
+        Math.abs(rigidBody.angularVelocity),
+      );
+      maxRotation = Math.max(maxRotation, Math.abs(transform.world.rotation));
+      maxLinearVelocityX = Math.max(
+        maxLinearVelocityX,
+        Math.abs(rigidBody.linearVelocity.x),
+      );
+    }
+
+    expect(Math.abs(rigidBody.angularVelocity)).toBeLessThan(0.02);
+    expect(Math.abs(transform.world.rotation)).toBeLessThan(0.02);
+    expect(Math.abs(rigidBody.linearVelocity.x)).toBeLessThan(0.02);
+    expect(maxAngularVelocity).toBeLessThan(0.02);
+    expect(maxRotation).toBeLessThan(0.02);
+    expect(maxLinearVelocityX).toBeLessThan(0.02);
+  });
+
 });

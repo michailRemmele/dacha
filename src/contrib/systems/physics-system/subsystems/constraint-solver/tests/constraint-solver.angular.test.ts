@@ -108,6 +108,44 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
   });
 
+  it('Does not convert symmetric bouncy two-point friction into spin', () => {
+    const solver = new ConstraintSolver();
+    const actor1 = createActor('dynamic-body', 'dynamic', {
+      friction: 0.6,
+      restitution: 1,
+    });
+    const actor2 = createActor('bouncy-floor', 'static', {
+      friction: 0.6,
+      restitution: 1,
+    });
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const transform1 = actor1.getComponent(Transform);
+
+    rigidBody1.inertia = (16 * 16 + 16 * 16) / 12;
+    rigidBody1.linearVelocity = new Vector2(0, 529.2);
+    rigidBody1._prevLinearVelocity = rigidBody1.linearVelocity.clone();
+    transform1.world.position.x = -8;
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0,
+        contactPoints: [
+          { x: 0, y: 8 },
+          { x: -16, y: 8 },
+        ],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(-529.2);
+    expect(rigidBody1.angularVelocity).toBeCloseTo(0);
+  });
+
   it('Applies angular velocity from friction at the contact point', () => {
     const solver = new ConstraintSolver();
     const actor1 = createActor('sliding-body', 'dynamic');
