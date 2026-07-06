@@ -44,7 +44,9 @@ export class PhysicsSystem extends SceneSystem {
     });
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
     this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
-    this.constraintSolver = new ConstraintSolver();
+    this.constraintSolver = new ConstraintSolver({
+      getGravity: (): Vector2 => this.gravity,
+    });
 
     this.physicsApi = new PhysicsAPI({
       raycast: (params): CastHit | null =>
@@ -92,6 +94,7 @@ export class PhysicsSystem extends SceneSystem {
     this.constraintSolver.update(contacts, options);
 
     this.physicsSubsystem.integrateDynamicPositions(options);
+    this.physicsSubsystem.updateSleepTimers(options);
 
     this.collisionBroadcastSubsystem.update(contacts);
 
