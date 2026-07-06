@@ -1,9 +1,18 @@
 import type { Actor } from '../../../../../engine/actor';
 import type { UpdateOptions } from '../../../../../engine/system';
-import { MathOps } from '../../../../../engine/math-lib';
+import { MathOps, type Vector2 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { Contact } from '../collision-detection/types';
+import {
+  SOLVER_ITERATIONS,
+  CONTACT_MAX_ALLOWED_PENETRATION,
+  CONTACT_BIAS,
+  MAX_BIAS_VELOCITY,
+  RESTITUTION_VELOCITY_THRESHOLD,
+  CONTACT_PENETRATION_SLEEP_THRESHOLD,
+  CONTACT_SPEED_SLEEP_THRESHOLD,
+} from '../../consts';
 
 import {
   ContactStateManager,
@@ -18,21 +27,26 @@ import {
   applyImpulse,
   applyBiasImpulse,
 } from './impulse-utils';
-import { shouldSkipBias, shouldWarmStart } from './contact-utils';
+import {
+  shouldSkipBias,
+  shouldWakeSleepingContact,
+  shouldWarmStart,
+} from './contact-utils';
+import { SleepSupportTracker } from './sleep-support-tracker';
 
-const SOLVER_ITERATIONS = 8;
-const CONTACT_BIAS = 0.8;
-const CONTACT_MAX_ALLOWED_PENETRATION = 0.1;
-const MAX_BIAS_VELOCITY = 120;
-const RESTITUTION_VELOCITY_THRESHOLD = 1;
+interface ConstraintSolverOptions {
+  getGravity: () => Vector2;
+}
 
 export class ConstraintSolver {
   private oneWayValidator: OneWayValidator;
   private contactStateManager: ContactStateManager;
+  private sleepSupportTracker: SleepSupportTracker;
 
-  constructor() {
+  constructor(options: ConstraintSolverOptions) {
     this.oneWayValidator = new OneWayValidator();
     this.contactStateManager = new ContactStateManager();
+    this.sleepSupportTracker = new SleepSupportTracker(options.getGravity);
   }
 
   private validateCollision(actor1: Actor, actor2: Actor): boolean {
@@ -79,6 +93,44 @@ export class ConstraintSolver {
     });
   }
 
+  private validateSleepContact(contact: Contact): boolean {
+    const rigidBody1 = contact.actor1.getComponent(RigidBody);
+    const rigidBody2 = contact.actor2.getComponent(RigidBody);
+
+    const isDeepContact =
+      contact.penetration > CONTACT_PENETRATION_SLEEP_THRESHOLD;
+    const isFastContact = shouldWakeSleepingContact(
+      contact,
+      CONTACT_SPEED_SLEEP_THRESHOLD,
+    );
+
+    if (!isDeepContact && !isFastContact) {
+      this.sleepSupportTracker.trackContact(contact);
+    }
+
+    if (rigidBody1.sleeping && rigidBody2.sleeping) {
+      return false;
+    }
+
+    if (!rigidBody1.sleeping && !rigidBody2.sleeping) {
+      return true;
+    }
+
+    if (isDeepContact) {
+      rigidBody1.wakeUp();
+      rigidBody2.wakeUp();
+      return true;
+    }
+
+    if (isFastContact) {
+      rigidBody1.wakeUp();
+      rigidBody2.wakeUp();
+      return true;
+    }
+
+    return true;
+  }
+
   private applyWarmStartImpulse(state: ContactState): void {
     if (!shouldWarmStart(state, RESTITUTION_VELOCITY_THRESHOLD)) {
       this.contactStateManager.clearImpulses(state);
@@ -89,6 +141,12 @@ export class ConstraintSolver {
     const { actor1, actor2, normal, contactPoints } = contact;
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
+
+    if (rigidBody1.sleeping || rigidBody2.sleeping) {
+      this.contactStateManager.clearImpulses(state);
+      return;
+    }
+
     const transform1 = actor1.getComponent(Transform);
     const transform2 = actor2.getComponent(Transform);
     const inverseMass1 = rigidBody1.inverseMass;
@@ -415,6 +473,7 @@ export class ConstraintSolver {
   update(contacts: Contact[], options: UpdateOptions): void {
     this.oneWayValidator.updateVersion();
     this.contactStateManager.updateVersion();
+    this.sleepSupportTracker.beginFrame();
 
     const deltaTimeInSeconds = options.deltaTime / 1000;
 
@@ -425,11 +484,15 @@ export class ConstraintSolver {
       if (!this.validateOneWayContact(contact)) {
         return;
       }
+      if (!this.validateSleepContact(contact)) {
+        return;
+      }
 
       const state = this.contactStateManager.prepare(contact);
       this.applyWarmStartImpulse(state);
     });
 
+    this.sleepSupportTracker.wakeUnsupportedBodies();
     this.contactStateManager.pruneStaleStates();
 
     for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
@@ -449,5 +512,6 @@ export class ConstraintSolver {
     }
 
     this.oneWayValidator.clearOneWayContacts();
+    this.sleepSupportTracker.endFrame();
   }
 }

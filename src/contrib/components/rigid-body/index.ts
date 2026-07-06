@@ -10,6 +10,7 @@ export interface RigidBodyConfig {
   linearDamping?: number;
   angularDamping?: number;
   lockRotation?: boolean;
+  autoSleep?: boolean;
   restitution?: number;
   friction?: number;
   disabled: boolean;
@@ -73,6 +74,8 @@ export class RigidBody extends Component {
   _biasLinearVelocity: Vector2;
   /** @internal Temporary solver angular velocity used for contact separation */
   _biasAngularVelocity: number;
+  /** @internal Time this body has stayed below automatic sleep thresholds */
+  _sleepTime: number;
 
   /** Body type that defines how the rigid body participates in simulation */
   readonly type: RigidBodyType;
@@ -92,6 +95,8 @@ export class RigidBody extends Component {
   disabled: boolean;
   /** Whether rigid body is sleeping */
   sleeping: boolean;
+  /** Whether this body may be put to sleep automatically when settled */
+  autoSleep: boolean;
 
   /** @internal Force applied at the rigid body center */
   _centralForce: Vector2;
@@ -130,6 +135,7 @@ export class RigidBody extends Component {
     this._prevAngularVelocity = 0;
     this._biasLinearVelocity = new Vector2(0, 0);
     this._biasAngularVelocity = 0;
+    this._sleepTime = 0;
 
     this.type = config.type;
     this.mass = config.mass ?? 0;
@@ -139,6 +145,7 @@ export class RigidBody extends Component {
     this.restitution = config.restitution ?? 0;
     this.friction = config.friction ?? 0.6;
     this.lockRotation = config.lockRotation ?? false;
+    this.autoSleep = config.autoSleep ?? true;
     this.disabled = config.disabled;
     this.linearVelocity = new Vector2(0, 0);
     this.angularVelocity = 0;
@@ -185,7 +192,7 @@ export class RigidBody extends Component {
    * Bodies with zero or negative mass return `0`.
    */
   get inverseMass(): number {
-    if (this.type === 'static' || this.type === 'kinematic') {
+    if (this.type === 'static' || this.type === 'kinematic' || this.sleeping) {
       return 0;
     }
 
@@ -219,6 +226,7 @@ export class RigidBody extends Component {
     if (
       this.type === 'static' ||
       this.type === 'kinematic' ||
+      this.sleeping ||
       this.lockRotation
     ) {
       return 0;
@@ -329,14 +337,33 @@ export class RigidBody extends Component {
    * Marks the rigid body as awake so it can be simulated.
    */
   wakeUp(): void {
+    if (this.disabled || this.type !== 'dynamic') {
+      return;
+    }
+
     this.sleeping = false;
+    this._sleepTime = 0;
   }
 
   /**
    * Marks the rigid body as sleeping so dynamic integration can skip it.
    */
   sleep(): void {
+    if (this.disabled || this.type !== 'dynamic') {
+      return;
+    }
+
     this.sleeping = true;
+    this._sleepTime = 0;
+
+    this._prevLinearVelocity.multiplyNumber(0);
+    this._prevAngularVelocity = 0;
+    this.linearVelocity.multiplyNumber(0);
+    this.angularVelocity = 0;
+    this._biasLinearVelocity.multiplyNumber(0);
+    this._biasAngularVelocity = 0;
+
+    this.clearForces();
   }
 
   /**

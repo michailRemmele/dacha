@@ -7,7 +7,9 @@ import { createActor } from './helpers';
 
 describe('PhysicsSystem -> ConstraintSolver -> warm start', () => {
   it('Does not apply cached impulses with the wrong sign after actor order reverses', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
 
     const dynamicActor = createActor('dynamic-body', 'dynamic');
     const staticActor = createActor('static-body', 'static');
@@ -67,8 +69,12 @@ describe('PhysicsSystem -> ConstraintSolver -> warm start', () => {
         { x: 1, y: 0 },
       ],
     };
-    const cachedSolver = new ConstraintSolver();
-    const freshSolver = new ConstraintSolver();
+    const cachedSolver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
+    const freshSolver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
 
     rigidBody1.inertia = 1;
     rigidBody1.linearVelocity = new Vector2(0, 5);

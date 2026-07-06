@@ -8,7 +8,9 @@ import { createActorWithInertia } from './helpers';
 
 describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   it('Applies angular velocity for off-center collisions', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
     const actor2 = createActorWithInertia('static-body', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -32,7 +34,9 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   });
 
   it('Does not apply angular velocity for center collisions', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
     const actor2 = createActorWithInertia('static-body', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -56,7 +60,9 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   });
 
   it('Does not add angular velocity for symmetric two-point contacts', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
     const actor2 = createActorWithInertia('static-body', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -83,7 +89,9 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   });
 
   it('Does not convert symmetric bouncy two-point friction into spin', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic', {
       friction: 0.6,
       restitution: 1,
@@ -121,7 +129,9 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   });
 
   it('Applies angular velocity from friction at the contact point', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActorWithInertia('sliding-body', 'dynamic');
     const actor2 = createActorWithInertia('floor', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -145,7 +155,9 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   });
 
   it('Uses contact-point angular velocity for restitution', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActorWithInertia('spinning-body', 'dynamic');
     const actor2 = createActorWithInertia('bouncy-floor', 'static', {
       restitution: 1,
@@ -172,7 +184,9 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   });
 
   it('Does not apply angular velocity to locked rotation bodies', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic', {
       lockRotation: true,
     });

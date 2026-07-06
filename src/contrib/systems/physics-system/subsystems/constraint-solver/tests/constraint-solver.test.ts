@@ -8,7 +8,9 @@ import { createActor } from './helpers';
 
 describe('PhysicsSystem -> ConstraintSolver', () => {
   it('Removes relative normal velocity between equal-mass dynamic bodies', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('body-1', 'dynamic');
     const actor2 = createActor('body-2', 'dynamic');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -34,7 +36,9 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
   });
 
   it('Reduces tangential sliding velocity when contact has closing normal velocity', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('sliding-body', 'dynamic');
     const actor2 = createActor('floor', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -58,7 +62,9 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
   });
 
   it('Uses body friction values for contact friction', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('sliding-body', 'dynamic', {
       mass: 1,
       friction: 0,
@@ -88,7 +94,9 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
   });
 
   it('Does not apply wall friction without a closing normal velocity', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('body', 'dynamic');
     const actor2 = createActor('wall', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -112,7 +120,9 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
   });
 
   it('Cancels dynamic velocity against a kinematic body without moving the kinematic body', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
 
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('kinematic-body', 'kinematic');
@@ -146,7 +156,9 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
   });
 
   it('Lets moving kinematic bodies push dynamic bodies', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
 
     const actor1 = createActor('kinematic-body', 'kinematic');
     const actor2 = createActor('dynamic-body', 'dynamic');

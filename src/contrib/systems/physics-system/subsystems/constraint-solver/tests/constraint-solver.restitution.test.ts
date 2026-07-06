@@ -7,7 +7,9 @@ import { createActor } from './helpers';
 
 describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
   it('Uses static body restitution to bounce dynamic bodies', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('bouncy-floor', 'static', {
       mass: 1,
@@ -34,7 +36,9 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
   });
 
   it('Suppresses restitution for low-speed contacts', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('bouncy-floor', 'static', {
       mass: 1,

@@ -5,6 +5,13 @@ import type { Vector2 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import { Collider } from '../../../../components/collider';
+import {
+  LINEAR_SLEEP_THRESHOLD,
+  ANGULAR_SLEEP_THRESHOLD,
+  BIAS_LINEAR_SLEEP_THRESHOLD,
+  BIAS_ANGULAR_SLEEP_THRESHOLD,
+  SLEEP_TIME_THRESHOLD,
+} from '../../consts';
 
 import { calculateInertia } from './mass-properties';
 
@@ -147,18 +154,7 @@ export class PhysicsSubsystem {
       } = rigidBody;
 
       if (sleeping) {
-        if (
-          _centralForce.x ||
-          _centralForce.y ||
-          _centralImpulse.x ||
-          _centralImpulse.y ||
-          rigidBody._torque ||
-          rigidBody._angularImpulse
-        ) {
-          rigidBody.wakeUp();
-        } else {
-          return;
-        }
+        return;
       }
 
       if (gravityScale) {
@@ -247,6 +243,50 @@ export class PhysicsSubsystem {
         transform.world.rotation +=
           (rigidBody.angularVelocity + rigidBody._biasAngularVelocity) *
           deltaTimeInSeconds;
+      }
+    });
+  }
+
+  updateSleepTimers(options: UpdateOptions): void {
+    const deltaTimeInSeconds = options.deltaTime / 1000;
+
+    this.actorQuery.getActors().forEach((actor) => {
+      const rigidBody = actor.getComponent(RigidBody);
+
+      if (
+        rigidBody.disabled ||
+        rigidBody.type !== 'dynamic' ||
+        rigidBody.mass <= 0 ||
+        !rigidBody.autoSleep
+      ) {
+        rigidBody._sleepTime = 0;
+        return;
+      }
+
+      if (rigidBody.sleeping) {
+        return;
+      }
+
+      const realMotionIsSmall =
+        rigidBody.linearVelocity.squaredMagnitude <=
+          LINEAR_SLEEP_THRESHOLD * LINEAR_SLEEP_THRESHOLD &&
+        Math.abs(rigidBody.angularVelocity) <= ANGULAR_SLEEP_THRESHOLD;
+
+      const biasMotionIsSmall =
+        rigidBody._biasLinearVelocity.squaredMagnitude <=
+          BIAS_LINEAR_SLEEP_THRESHOLD * BIAS_LINEAR_SLEEP_THRESHOLD &&
+        Math.abs(rigidBody._biasAngularVelocity) <=
+          BIAS_ANGULAR_SLEEP_THRESHOLD;
+
+      if (!realMotionIsSmall || !biasMotionIsSmall) {
+        rigidBody._sleepTime = 0;
+        return;
+      }
+
+      rigidBody._sleepTime += deltaTimeInSeconds;
+
+      if (rigidBody._sleepTime >= SLEEP_TIME_THRESHOLD) {
+        rigidBody.sleep();
       }
     });
   }

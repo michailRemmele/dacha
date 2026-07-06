@@ -8,7 +8,9 @@ import { createActor } from './helpers';
 
 describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   it('Cancels approaching normal velocity against a static body and adds separation bias', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('static-body', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -35,7 +37,9 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   });
 
   it('Resets accumulated bias impulses between solver updates', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('static-body', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -63,7 +67,9 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   });
 
   it('Applies symmetric two-point bias without angular correction', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('static-body', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
@@ -90,7 +96,9 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   });
 
   it('Skips separation bias for high-speed bouncy dynamic-static contacts', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('bouncy-floor', 'static', {
       mass: 1,
@@ -122,7 +130,9 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
 
   it('Skips separation bias for high-speed bouncy two-point contacts regardless of point order', () => {
     const solve = (contactPoints: Contact['contactPoints']): RigidBody => {
-      const solver = new ConstraintSolver();
+      const solver = new ConstraintSolver({
+        getGravity: (): Vector2 => new Vector2(0, 0),
+      });
       const actor1 = createActor('dynamic-body', 'dynamic', {
         restitution: 1,
       });
@@ -168,7 +178,9 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   });
 
   it('Skips separation bias for high-speed bouncy dynamic-kinematic contacts', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('bouncy-platform', 'kinematic', {
       mass: 1,
@@ -198,7 +210,9 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   });
 
   it('Applies separation bias for bouncy dynamic-dynamic contacts', () => {
-    const solver = new ConstraintSolver();
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
     const actor1 = createActor('body-1', 'dynamic', {
       mass: 1,
       restitution: 1,
