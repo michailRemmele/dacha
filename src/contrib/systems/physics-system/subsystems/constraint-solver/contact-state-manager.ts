@@ -1,4 +1,5 @@
 import type { Actor } from '../../../../../engine/actor';
+import { RigidBody } from '../../../../components/rigid-body';
 import type { Contact } from '../collision-detection/types';
 
 const CONTACT_NORMAL_MIN_DOT = 0.98;
@@ -6,28 +7,88 @@ const CONTACT_POINT_MAX_DISTANCE = 0.2;
 const CONTACT_POINT_MAX_DISTANCE_SQUARED =
   CONTACT_POINT_MAX_DISTANCE * CONTACT_POINT_MAX_DISTANCE;
 
+export interface ContactPoint {
+  positionX: number;
+  positionY: number;
+
+  normalImpulse: number;
+  tangentImpulse: number;
+  biasImpulse: number;
+
+  anchorAX: number;
+  anchorAY: number;
+  anchorBX: number;
+  anchorBY: number;
+  normalMass: number;
+  tangentMass: number;
+
+  velocityBias: number;
+}
+
 export interface ContactState {
   contact: Contact;
   actor1: Actor;
   actor2: Actor;
 
-  normalImpulse0: number;
-  normalImpulse1: number;
-  tangentImpulse0: number;
-  tangentImpulse1: number;
-  biasImpulse0: number;
-  biasImpulse1: number;
-
-  point0X: number;
-  point0Y: number;
-  point1X: number;
-  point1Y: number;
-  pointCount: number;
-
+  bodyA: RigidBody;
+  bodyB: RigidBody;
+  invMassA: number;
+  invInertiaA: number;
+  invMassB: number;
+  invInertiaB: number;
   normalX: number;
   normalY: number;
+  tangentX: number;
+  tangentY: number;
+  friction: number;
+  restitution: number;
+
+  // Two-point block solver cache: the symmetric 2x2 effective-mass matrix K
+  // that couples both contact points' normal impulses to both points' normal
+  // velocities in one solve, instead of solving each point in isolation.
+  //   K = [ k00  k01 ]
+  //       [ k01  k11 ]
+  // - k00 (= point0.normalMass) is how much point0's own normal impulse
+  //   changes point0's own normal velocity.
+  // - k11 (= point1.normalMass) is the same thing for point1.
+  // - k01 is the cross term: how much a normal impulse applied at point0
+  //   changes the normal velocity at point1 (and vice versa, K is symmetric).
+  //   This coupling exists because both points belong to the same two rigid
+  //   bodies, so a push at one point also rotates/shifts the bodies enough to
+  //   affect separation at the other point. k00/k11 already live on the
+  //   points because the single-point fallback solver also needs them; k01
+  //   has no use outside the block solve, so it lives here instead.
+  k01: number;
+  determinant: number;
+  blockSolvable: boolean;
+
+  active: boolean;
+  warmStartAllowed: boolean;
+  skipBias: boolean;
+
+  point0: ContactPoint;
+  point1: ContactPoint;
+  pointCount: number;
+
   version: number;
 }
+
+const createContactPoint = (): ContactPoint => ({
+  positionX: 0,
+  positionY: 0,
+
+  normalImpulse: 0,
+  tangentImpulse: 0,
+  biasImpulse: 0,
+
+  anchorAX: 0,
+  anchorAY: 0,
+  anchorBX: 0,
+  anchorBY: 0,
+  normalMass: 0,
+  tangentMass: 0,
+  velocityBias: 0,
+});
 
 export class ContactStateManager {
   private stateMap: Map<Actor, Map<Actor, ContactState>>;
@@ -44,7 +105,7 @@ export class ContactStateManager {
     this.version += 1;
   }
 
-  prepare(contact: Contact): ContactState {
+  acquire(contact: Contact): ContactState {
     let state = this.get(contact.actor1, contact.actor2);
 
     if (!state) {
@@ -59,10 +120,10 @@ export class ContactStateManager {
     }
 
     if (!this.canPreserveImpulses(state, contact)) {
-      this.clearImpulses(state);
+      this.clearWarmStartImpulses(state);
     }
 
-    this.clearBiasImpulses(state);
+    this.clearFrameImpulses(state);
     this.updateContactIdentity(state, contact);
     state.version = this.version;
 
@@ -73,7 +134,10 @@ export class ContactStateManager {
     let stateIndex = 0;
 
     for (const state of this.states) {
-      if (state.version === this.version) {
+      if (
+        state.version === this.version ||
+        (state.bodyA.sleeping && state.bodyB.sleeping)
+      ) {
         this.states[stateIndex] = state;
         stateIndex += 1;
         continue;
@@ -90,52 +154,16 @@ export class ContactStateManager {
     this.states.forEach(callback);
   }
 
-  getNormalImpulse(state: ContactState, index: number): number {
-    return index === 0 ? state.normalImpulse0 : state.normalImpulse1;
+  clearWarmStartImpulses(state: ContactState): void {
+    state.point0.normalImpulse = 0;
+    state.point0.tangentImpulse = 0;
+    state.point1.normalImpulse = 0;
+    state.point1.tangentImpulse = 0;
   }
 
-  setNormalImpulse(state: ContactState, index: number, impulse: number): void {
-    if (index === 0) {
-      state.normalImpulse0 = impulse;
-    } else {
-      state.normalImpulse1 = impulse;
-    }
-  }
-
-  getTangentImpulse(state: ContactState, index: number): number {
-    return index === 0 ? state.tangentImpulse0 : state.tangentImpulse1;
-  }
-
-  setTangentImpulse(state: ContactState, index: number, impulse: number): void {
-    if (index === 0) {
-      state.tangentImpulse0 = impulse;
-    } else {
-      state.tangentImpulse1 = impulse;
-    }
-  }
-
-  clearImpulses(state: ContactState): void {
-    state.normalImpulse0 = 0;
-    state.normalImpulse1 = 0;
-    state.tangentImpulse0 = 0;
-    state.tangentImpulse1 = 0;
-  }
-
-  getBiasImpulse(state: ContactState, index: number): number {
-    return index === 0 ? state.biasImpulse0 : state.biasImpulse1;
-  }
-
-  setBiasImpulse(state: ContactState, index: number, impulse: number): void {
-    if (index === 0) {
-      state.biasImpulse0 = impulse;
-    } else {
-      state.biasImpulse1 = impulse;
-    }
-  }
-
-  private clearBiasImpulses(state: ContactState): void {
-    state.biasImpulse0 = 0;
-    state.biasImpulse1 = 0;
+  private clearFrameImpulses(state: ContactState): void {
+    state.point0.biasImpulse = 0;
+    state.point1.biasImpulse = 0;
   }
 
   private get(actor1: Actor, actor2: Actor): ContactState | undefined {
@@ -168,26 +196,39 @@ export class ContactStateManager {
   }
 
   private createState(contact: Contact): ContactState {
+    const rigidBody1 = contact.actor1.getComponent(RigidBody);
+    const rigidBody2 = contact.actor2.getComponent(RigidBody);
+
     return {
       contact,
       actor1: contact.actor1,
       actor2: contact.actor2,
 
-      normalImpulse0: 0,
-      normalImpulse1: 0,
-      tangentImpulse0: 0,
-      tangentImpulse1: 0,
-      biasImpulse0: 0,
-      biasImpulse1: 0,
-
-      point0X: 0,
-      point0Y: 0,
-      point1X: 0,
-      point1Y: 0,
-      pointCount: 0,
-
+      bodyA: rigidBody1,
+      bodyB: rigidBody2,
+      invMassA: 0,
+      invInertiaA: 0,
+      invMassB: 0,
+      invInertiaB: 0,
       normalX: contact.normal.x,
       normalY: contact.normal.y,
+      tangentX: -contact.normal.y,
+      tangentY: contact.normal.x,
+      friction: 0,
+      restitution: 0,
+
+      k01: 0,
+      determinant: 0,
+      blockSolvable: false,
+
+      active: false,
+      warmStartAllowed: false,
+      skipBias: false,
+
+      point0: createContactPoint(),
+      point1: createContactPoint(),
+      pointCount: 0,
+
       version: this.version,
     };
   }
@@ -209,8 +250,8 @@ export class ContactStateManager {
     if (
       contactPoints[0] &&
       !this.isPointClose(
-        state.point0X,
-        state.point0Y,
+        state.point0.positionX,
+        state.point0.positionY,
         contactPoints[0].x,
         contactPoints[0].y,
       )
@@ -221,8 +262,8 @@ export class ContactStateManager {
     if (
       contactPoints[1] &&
       !this.isPointClose(
-        state.point1X,
-        state.point1Y,
+        state.point1.positionX,
+        state.point1.positionY,
         contactPoints[1].x,
         contactPoints[1].y,
       )
@@ -256,13 +297,13 @@ export class ContactStateManager {
     state.pointCount = contactPoints.length;
 
     if (contactPoints[0]) {
-      state.point0X = contactPoints[0].x;
-      state.point0Y = contactPoints[0].y;
+      state.point0.positionX = contactPoints[0].x;
+      state.point0.positionY = contactPoints[0].y;
     }
 
     if (contactPoints[1]) {
-      state.point1X = contactPoints[1].x;
-      state.point1Y = contactPoints[1].y;
+      state.point1.positionX = contactPoints[1].x;
+      state.point1.positionY = contactPoints[1].y;
     }
   }
 }
