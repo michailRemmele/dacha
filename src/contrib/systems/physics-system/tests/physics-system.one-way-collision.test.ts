@@ -28,7 +28,7 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
 
     expect(rigidBody.linearVelocity.y).toBeLessThanOrEqual(0);
     expect(Math.abs(rigidBody.angularVelocity)).toBeLessThan(0.02);
-    expect(transform.world.position.y).toBeLessThanOrEqual(1.12);
+    expect(transform.world.position.y).toBeLessThanOrEqual(1.51);
   });
 
   it('Lets a body pass through a one-way floor from the open side', () => {

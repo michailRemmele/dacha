@@ -141,7 +141,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
         actor1,
         actor2,
         normal: new Vector2(1, 0),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
     ];
@@ -177,7 +177,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
         actor1,
         actor2,
         normal: new Vector2(1, 0),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
     ];

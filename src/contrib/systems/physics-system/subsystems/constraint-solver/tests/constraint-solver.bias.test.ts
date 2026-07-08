@@ -24,7 +24,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
         actor1,
         actor2,
         normal: new Vector2(0, 1),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
     ];
@@ -49,7 +49,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
         actor1,
         actor2,
         normal: new Vector2(0, 1),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
     ];
@@ -81,7 +81,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
         actor1,
         actor2,
         normal: new Vector2(0, 1),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [
           { x: -1, y: 0 },
           { x: 1, y: 0 },
@@ -116,7 +116,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
         actor1,
         actor2,
         normal: new Vector2(0, 1),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
     ];
@@ -152,7 +152,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
             actor1,
             actor2,
             normal: new Vector2(0, 1),
-            penetration: 0.5,
+            penetration: 2.1,
             contactPoints,
           },
         ],
@@ -197,7 +197,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
         actor1,
         actor2,
         normal: new Vector2(0, 1),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
     ];
@@ -234,7 +234,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
         actor1,
         actor2,
         normal: new Vector2(0, 1),
-        penetration: 0.5,
+        penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
     ];

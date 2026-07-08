@@ -63,4 +63,38 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
   });
+
+  it('Applies friction during a bounce using the full normal impulse', () => {
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
+    const actor1 = createActor('sliding-body', 'dynamic', {
+      friction: 1,
+      restitution: 1,
+    });
+    const actor2 = createActor('bouncy-floor', 'static', {
+      mass: 1,
+      friction: 1,
+      restitution: 1,
+    });
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(7, 5);
+    rigidBody1._prevLinearVelocity = rigidBody1.linearVelocity.clone();
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0.2,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
+    expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
+  });
 });

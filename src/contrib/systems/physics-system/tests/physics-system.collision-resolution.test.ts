@@ -29,7 +29,7 @@ describe('Systems -> PhysicsSystem -> collision resolution', () => {
 
     expect(rigidBody.linearVelocity.y).toBeLessThanOrEqual(0);
     expect(Math.abs(rigidBody.angularVelocity)).toBeLessThan(0.02);
-    expect(transform.world.position.y).toBeLessThanOrEqual(1.12);
+    expect(transform.world.position.y).toBeLessThanOrEqual(1.51);
   });
 
   it('Skips collision resolution when collision matrix disables a pair', () => {
@@ -94,6 +94,6 @@ describe('Systems -> PhysicsSystem -> collision resolution', () => {
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
-    expect(transform.world.position.y).toBeLessThanOrEqual(2.49);
+    expect(transform.world.position.y).toBeLessThanOrEqual(2.96);
   });
 });

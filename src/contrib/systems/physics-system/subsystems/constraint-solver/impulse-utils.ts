@@ -1,6 +1,7 @@
-import type { Point, Vector2 } from '../../../../../engine/math-lib';
-import { RigidBody } from '../../../../components/rigid-body';
-import { Transform } from '../../../../components/transform';
+import type { Vector2 } from '../../../../../engine/math-lib';
+import type { RigidBody } from '../../../../components/rigid-body';
+
+import type { ContactPoint, ContactState } from './contact-state-manager';
 
 export const getContactRestitution = (
   rigidBody1: RigidBody,
@@ -16,131 +17,172 @@ export const getContactFriction = (
   return Math.sqrt(rigidBody1.friction * rigidBody2.friction);
 };
 
-export const getVelocityAlongDirection = (
-  linearVelocity1: Vector2,
-  angularVelocity1: number,
-  transform1: Transform,
-  linearVelocity2: Vector2,
-  angularVelocity2: number,
-  transform2: Transform,
-  point: Point,
-  direction: Point,
-): number => {
-  const relativePoint1X = point.x - transform1.world.position.x;
-  const relativePoint1Y = point.y - transform1.world.position.y;
-  const relativePoint2X = point.x - transform2.world.position.x;
-  const relativePoint2Y = point.y - transform2.world.position.y;
-
-  const velocity1X = linearVelocity1.x - angularVelocity1 * relativePoint1Y;
-  const velocity1Y = linearVelocity1.y + angularVelocity1 * relativePoint1X;
-  const velocity2X = linearVelocity2.x - angularVelocity2 * relativePoint2Y;
-  const velocity2Y = linearVelocity2.y + angularVelocity2 * relativePoint2X;
-
-  return (
-    (velocity2X - velocity1X) * direction.x +
-    (velocity2Y - velocity1Y) * direction.y
-  );
-};
-
+/**
+ * Returns the effective mass at a contact point along a unit direction.
+ * It represents how strongly the two bodies resist an impulse applied at
+ * that point in that direction.
+ */
 export const getEffectiveMass = (
-  inverseMass1: number,
-  inverseInertia1: number,
-  transform1: Transform,
-  inverseMass2: number,
-  inverseInertia2: number,
-  transform2: Transform,
-  point: Point,
+  invMassA: number,
+  invInertiaA: number,
+  anchorAX: number,
+  anchorAY: number,
+  invMassB: number,
+  invInertiaB: number,
+  anchorBX: number,
+  anchorBY: number,
   directionX: number,
   directionY: number,
 ): number => {
-  const relativePoint1X = point.x - transform1.world.position.x;
-  const relativePoint1Y = point.y - transform1.world.position.y;
-  const relativePoint2X = point.x - transform2.world.position.x;
-  const relativePoint2Y = point.y - transform2.world.position.y;
-
-  const cross1 = relativePoint1X * directionY - relativePoint1Y * directionX;
-  const cross2 = relativePoint2X * directionY - relativePoint2Y * directionX;
+  const crossA = anchorAX * directionY - anchorAY * directionX;
+  const crossB = anchorBX * directionY - anchorBY * directionX;
 
   return (
-    inverseMass1 +
-    inverseMass2 +
-    cross1 * cross1 * inverseInertia1 +
-    cross2 * cross2 * inverseInertia2
+    invMassA +
+    invMassB +
+    crossA * crossA * invInertiaA +
+    crossB * crossB * invInertiaB
   );
 };
 
+/**
+ * Relative velocity of body B against body A at a contact point, projected onto
+ * a direction, using the supplied velocity fields (live, previous, or bias).
+ */
+const getRelativeVelocityAtPoint = (
+  linearVelocityA: Vector2,
+  angularVelocityA: number,
+  linearVelocityB: Vector2,
+  angularVelocityB: number,
+  point: ContactPoint,
+  directionX: number,
+  directionY: number,
+): number => {
+  const velocityAX = linearVelocityA.x - angularVelocityA * point.anchorAY;
+  const velocityAY = linearVelocityA.y + angularVelocityA * point.anchorAX;
+  const velocityBX = linearVelocityB.x - angularVelocityB * point.anchorBY;
+  const velocityBY = linearVelocityB.y + angularVelocityB * point.anchorBX;
+
+  return (
+    (velocityBX - velocityAX) * directionX +
+    (velocityBY - velocityAY) * directionY
+  );
+};
+
+export const getNormalVelocity = (
+  state: ContactState,
+  point: ContactPoint,
+): number =>
+  getRelativeVelocityAtPoint(
+    state.bodyA.linearVelocity,
+    state.bodyA.angularVelocity,
+    state.bodyB.linearVelocity,
+    state.bodyB.angularVelocity,
+    point,
+    state.normalX,
+    state.normalY,
+  );
+
+export const getTangentVelocity = (
+  state: ContactState,
+  point: ContactPoint,
+): number =>
+  getRelativeVelocityAtPoint(
+    state.bodyA.linearVelocity,
+    state.bodyA.angularVelocity,
+    state.bodyB.linearVelocity,
+    state.bodyB.angularVelocity,
+    point,
+    state.tangentX,
+    state.tangentY,
+  );
+
+export const getPrevNormalVelocity = (
+  state: ContactState,
+  point: ContactPoint,
+): number =>
+  getRelativeVelocityAtPoint(
+    state.bodyA._prevLinearVelocity,
+    state.bodyA._prevAngularVelocity,
+    state.bodyB._prevLinearVelocity,
+    state.bodyB._prevAngularVelocity,
+    point,
+    state.normalX,
+    state.normalY,
+  );
+
+export const getBiasNormalVelocity = (
+  state: ContactState,
+  point: ContactPoint,
+): number =>
+  getRelativeVelocityAtPoint(
+    state.bodyA._biasLinearVelocity,
+    state.bodyA._biasAngularVelocity,
+    state.bodyB._biasLinearVelocity,
+    state.bodyB._biasAngularVelocity,
+    point,
+    state.normalX,
+    state.normalY,
+  );
+
 export const applyImpulse = (
-  rigidBody1: RigidBody,
-  transform1: Transform,
-  rigidBody2: RigidBody,
-  transform2: Transform,
-  inverseMass1: number,
-  inverseInertia1: number,
-  inverseMass2: number,
-  inverseInertia2: number,
-  point: Point,
+  state: ContactState,
+  point: ContactPoint,
   impulseX: number,
   impulseY: number,
 ): void => {
-  if (inverseMass1 > 0) {
-    rigidBody1.linearVelocity.x -= impulseX * inverseMass1;
-    rigidBody1.linearVelocity.y -= impulseY * inverseMass1;
+  const { bodyA, bodyB } = state;
+
+  if (state.invMassA > 0) {
+    bodyA.linearVelocity.x -= impulseX * state.invMassA;
+    bodyA.linearVelocity.y -= impulseY * state.invMassA;
   }
 
-  if (inverseInertia1 > 0) {
-    rigidBody1.angularVelocity -=
-      ((point.x - transform1.world.position.x) * impulseY -
-        (point.y - transform1.world.position.y) * impulseX) *
-      inverseInertia1;
+  if (state.invInertiaA > 0) {
+    bodyA.angularVelocity -=
+      (point.anchorAX * impulseY - point.anchorAY * impulseX) *
+      state.invInertiaA;
   }
 
-  if (inverseMass2 > 0) {
-    rigidBody2.linearVelocity.x += impulseX * inverseMass2;
-    rigidBody2.linearVelocity.y += impulseY * inverseMass2;
+  if (state.invMassB > 0) {
+    bodyB.linearVelocity.x += impulseX * state.invMassB;
+    bodyB.linearVelocity.y += impulseY * state.invMassB;
   }
 
-  if (inverseInertia2 > 0) {
-    rigidBody2.angularVelocity +=
-      ((point.x - transform2.world.position.x) * impulseY -
-        (point.y - transform2.world.position.y) * impulseX) *
-      inverseInertia2;
+  if (state.invInertiaB > 0) {
+    bodyB.angularVelocity +=
+      (point.anchorBX * impulseY - point.anchorBY * impulseX) *
+      state.invInertiaB;
   }
 };
 
 export const applyBiasImpulse = (
-  rigidBody1: RigidBody,
-  transform1: Transform,
-  rigidBody2: RigidBody,
-  transform2: Transform,
-  inverseMass1: number,
-  inverseInertia1: number,
-  inverseMass2: number,
-  inverseInertia2: number,
-  point: Point,
+  state: ContactState,
+  point: ContactPoint,
   impulseX: number,
   impulseY: number,
 ): void => {
-  if (inverseMass1 > 0) {
-    rigidBody1._biasLinearVelocity.x -= impulseX * inverseMass1;
-    rigidBody1._biasLinearVelocity.y -= impulseY * inverseMass1;
+  const { bodyA, bodyB } = state;
+
+  if (state.invMassA > 0) {
+    bodyA._biasLinearVelocity.x -= impulseX * state.invMassA;
+    bodyA._biasLinearVelocity.y -= impulseY * state.invMassA;
   }
 
-  if (inverseInertia1 > 0) {
-    rigidBody1._biasAngularVelocity -=
-      ((point.x - transform1.world.position.x) * impulseY -
-        (point.y - transform1.world.position.y) * impulseX) *
-      inverseInertia1;
+  if (state.invInertiaA > 0) {
+    bodyA._biasAngularVelocity -=
+      (point.anchorAX * impulseY - point.anchorAY * impulseX) *
+      state.invInertiaA;
   }
 
-  if (inverseMass2 > 0) {
-    rigidBody2._biasLinearVelocity.x += impulseX * inverseMass2;
-    rigidBody2._biasLinearVelocity.y += impulseY * inverseMass2;
+  if (state.invMassB > 0) {
+    bodyB._biasLinearVelocity.x += impulseX * state.invMassB;
+    bodyB._biasLinearVelocity.y += impulseY * state.invMassB;
   }
 
-  if (inverseInertia2 > 0) {
-    rigidBody2._biasAngularVelocity +=
-      ((point.x - transform2.world.position.x) * impulseY -
-        (point.y - transform2.world.position.y) * impulseX) *
-      inverseInertia2;
+  if (state.invInertiaB > 0) {
+    bodyB._biasAngularVelocity +=
+      (point.anchorBX * impulseY - point.anchorBY * impulseX) *
+      state.invInertiaB;
   }
 };
