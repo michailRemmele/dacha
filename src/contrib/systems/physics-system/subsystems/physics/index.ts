@@ -6,11 +6,10 @@ import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import { Collider } from '../../../../components/collider';
 import {
-  LINEAR_SLEEP_THRESHOLD,
-  ANGULAR_SLEEP_THRESHOLD,
-  BIAS_LINEAR_SLEEP_THRESHOLD,
-  BIAS_ANGULAR_SLEEP_THRESHOLD,
-  SLEEP_TIME_THRESHOLD,
+  DEFAULT_LINEAR_SLEEP_THRESHOLD,
+  DEFAULT_ANGULAR_SLEEP_THRESHOLD,
+  DEFAULT_SLEEP_TIME_THRESHOLD,
+  BIAS_ANGULAR_SLEEP_MULTIPLIER,
 } from '../../consts';
 
 import { calculateInertia } from './mass-properties';
@@ -18,11 +17,19 @@ import { calculateInertia } from './mass-properties';
 export interface PhysicsSubsystemOptions {
   scene: Scene;
   getGravity: () => Vector2;
+  linearSleepThreshold?: number;
+  angularSleepThreshold?: number;
+  sleepTimeThreshold?: number;
 }
 
 export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
   private getGravity: () => Vector2;
+
+  private linearSleepThreshold: number;
+  private angularSleepThreshold: number;
+  private biasAngularSleepThreshold: number;
+  private sleepTimeThreshold: number;
 
   private kinematicMovedActors: Set<Actor>;
 
@@ -31,6 +38,15 @@ export class PhysicsSubsystem {
 
     this.actorQuery = new ActorQuery({ scene, filter: [RigidBody, Transform] });
     this.getGravity = getGravity;
+
+    this.linearSleepThreshold =
+      options.linearSleepThreshold ?? DEFAULT_LINEAR_SLEEP_THRESHOLD;
+    this.angularSleepThreshold =
+      options.angularSleepThreshold ?? DEFAULT_ANGULAR_SLEEP_THRESHOLD;
+    this.biasAngularSleepThreshold =
+      this.angularSleepThreshold * BIAS_ANGULAR_SLEEP_MULTIPLIER;
+    this.sleepTimeThreshold =
+      options.sleepTimeThreshold ?? DEFAULT_SLEEP_TIME_THRESHOLD;
 
     this.kinematicMovedActors = new Set();
   }
@@ -269,14 +285,14 @@ export class PhysicsSubsystem {
 
       const realMotionIsSmall =
         rigidBody.linearVelocity.squaredMagnitude <=
-          LINEAR_SLEEP_THRESHOLD * LINEAR_SLEEP_THRESHOLD &&
-        Math.abs(rigidBody.angularVelocity) <= ANGULAR_SLEEP_THRESHOLD;
+          this.linearSleepThreshold * this.linearSleepThreshold &&
+        Math.abs(rigidBody.angularVelocity) <= this.angularSleepThreshold;
 
       const biasMotionIsSmall =
         rigidBody._biasLinearVelocity.squaredMagnitude <=
-          BIAS_LINEAR_SLEEP_THRESHOLD * BIAS_LINEAR_SLEEP_THRESHOLD &&
+          this.linearSleepThreshold * this.linearSleepThreshold &&
         Math.abs(rigidBody._biasAngularVelocity) <=
-          BIAS_ANGULAR_SLEEP_THRESHOLD;
+          this.biasAngularSleepThreshold;
 
       if (!realMotionIsSmall || !biasMotionIsSmall) {
         rigidBody._sleepTime = 0;
@@ -285,7 +301,7 @@ export class PhysicsSubsystem {
 
       rigidBody._sleepTime += deltaTimeInSeconds;
 
-      if (rigidBody._sleepTime >= SLEEP_TIME_THRESHOLD) {
+      if (rigidBody._sleepTime >= this.sleepTimeThreshold) {
         rigidBody.sleep();
       }
     });
