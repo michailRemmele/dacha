@@ -10,9 +10,39 @@ export const physicsSystem: WidgetSchema = {
       name: 'gravityY',
       type: 'number',
     },
+    {
+      name: 'solverIterations',
+      type: 'number',
+    },
+    {
+      name: 'linearSleepThreshold',
+      type: 'number',
+    },
+    {
+      name: 'angularSleepThreshold',
+      type: 'number',
+    },
+    {
+      name: 'sleepTimeThreshold',
+      type: 'number',
+    },
+    {
+      name: 'maxAllowedPenetration',
+      type: 'number',
+    },
+    {
+      name: 'maxBiasVelocity',
+      type: 'number',
+    },
   ],
   getInitialState: () => ({
     gravityX: 0,
     gravityY: 100,
+    solverIterations: 8,
+    linearSleepThreshold: 2,
+    angularSleepThreshold: 0.05,
+    sleepTimeThreshold: 0.5,
+    maxAllowedPenetration: 0.5,
+    maxBiasVelocity: 60,
   }),
 };
