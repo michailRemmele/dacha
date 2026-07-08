@@ -88,6 +88,95 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
   });
 
+  it('Pushes only the first point when the second is already separating', () => {
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
+    const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
+    const actor2 = createActorWithInertia('static-body', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(0, 1);
+    rigidBody1.angularVelocity = -5;
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0,
+        contactPoints: [
+          { x: -1, y: 0 },
+          { x: 1, y: 0 },
+        ],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(-2);
+    expect(rigidBody1.angularVelocity).toBeCloseTo(-2);
+  });
+
+  it('Pushes only the second point when the first is already separating', () => {
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
+    const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
+    const actor2 = createActorWithInertia('static-body', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(0, 1);
+    rigidBody1.angularVelocity = 5;
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0,
+        contactPoints: [
+          { x: -1, y: 0 },
+          { x: 1, y: 0 },
+        ],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(-2);
+    expect(rigidBody1.angularVelocity).toBeCloseTo(2);
+  });
+
+  it('Applies no impulse to a two-point contact separating at both points', () => {
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
+    const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
+    const actor2 = createActorWithInertia('static-body', 'static');
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(0, -5);
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0,
+        contactPoints: [
+          { x: -1, y: 0 },
+          { x: 1, y: 0 },
+        ],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
+    expect(rigidBody1.angularVelocity).toBeCloseTo(0);
+  });
+
   it('Does not convert symmetric bouncy two-point friction into spin', () => {
     const solver = new ConstraintSolver({
       getGravity: (): Vector2 => new Vector2(0, 0),

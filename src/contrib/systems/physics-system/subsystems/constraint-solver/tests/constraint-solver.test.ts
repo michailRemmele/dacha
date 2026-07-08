@@ -190,4 +190,69 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     expect(transform1.world.position.x).toBeCloseTo(0);
     expect(transform2.world.position.x).toBeCloseTo(2);
   });
+
+  it('Applies no impulse between two overlapping kinematic bodies', () => {
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
+
+    const actor1 = createActor('kinematic-body-1', 'kinematic');
+    const actor2 = createActor('kinematic-body-2', 'kinematic');
+
+    const rigidBody1 = actor1.getComponent(RigidBody);
+    const rigidBody2 = actor2.getComponent(RigidBody);
+    const transform1 = actor1.getComponent(Transform);
+    const transform2 = actor2.getComponent(Transform);
+
+    rigidBody1.linearVelocity = new Vector2(5, 0);
+    rigidBody2.linearVelocity = new Vector2(-5, 0);
+    transform1.world.position.x = 0;
+    transform2.world.position.x = 2;
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(1, 0),
+        penetration: 2.1,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.x).toBeCloseTo(5);
+    expect(rigidBody2.linearVelocity.x).toBeCloseTo(-5);
+    expect(transform1.world.position.x).toBeCloseTo(0);
+    expect(transform2.world.position.x).toBeCloseTo(2);
+  });
+
+  it('Blocks a dynamic body approaching a one-way surface from the solid side', () => {
+    const solver = new ConstraintSolver({
+      getGravity: (): Vector2 => new Vector2(0, 0),
+    });
+    const actor1 = createActor('dynamic-body', 'dynamic');
+    const actor2 = createActor('one-way-floor', 'static', {
+      oneWay: true,
+      oneWayNormalX: 0,
+      oneWayNormalY: -1,
+    });
+    const rigidBody1 = actor1.getComponent(RigidBody);
+
+    rigidBody1.linearVelocity = new Vector2(0, 15);
+
+    const contacts: Contact[] = [
+      {
+        actor1,
+        actor2,
+        normal: new Vector2(0, 1),
+        penetration: 0,
+        contactPoints: [{ x: 0, y: 0 }],
+      },
+    ];
+
+    solver.update(contacts, { deltaTime: 100 });
+
+    expect(rigidBody1.linearVelocity.y).toBeLessThanOrEqual(0);
+  });
 });

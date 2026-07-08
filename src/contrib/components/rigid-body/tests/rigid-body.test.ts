@@ -161,6 +161,31 @@ describe('Contrib -> components -> RigidBody', () => {
     expect(lockedBody._angularImpulse).toEqual(0);
   });
 
+  it('Wakes a sleeping body when force, impulse, torque, or angular impulse is applied', () => {
+    const rigidBody = new RigidBody({
+      type: 'dynamic',
+      mass: 1,
+      disabled: false,
+      oneWay: false,
+    });
+
+    rigidBody.sleep();
+    rigidBody.applyForce(new Vector2(1, 0));
+    expect(rigidBody.sleeping).toBe(false);
+
+    rigidBody.sleep();
+    rigidBody.applyImpulse(new Vector2(1, 0));
+    expect(rigidBody.sleeping).toBe(false);
+
+    rigidBody.sleep();
+    rigidBody.applyTorque(1);
+    expect(rigidBody.sleeping).toBe(false);
+
+    rigidBody.sleep();
+    rigidBody.applyAngularImpulse(1);
+    expect(rigidBody.sleeping).toBe(false);
+  });
+
   it('Clears force accumulators', () => {
     const rigidBody = new RigidBody({
       type: 'dynamic',

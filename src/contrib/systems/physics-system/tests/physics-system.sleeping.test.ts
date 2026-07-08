@@ -26,31 +26,6 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     expect(rigidBody.angularVelocity).toBe(0);
   });
 
-  it('Wakes a sleeping body when force, impulse, torque, or angular impulse is applied', () => {
-    const rigidBody = new RigidBody({
-      type: 'dynamic',
-      mass: 1,
-      disabled: false,
-      oneWay: false,
-    });
-
-    rigidBody.sleep();
-    rigidBody.applyForce(new Vector2(1, 0));
-    expect(rigidBody.sleeping).toBe(false);
-
-    rigidBody.sleep();
-    rigidBody.applyImpulse(new Vector2(1, 0));
-    expect(rigidBody.sleeping).toBe(false);
-
-    rigidBody.sleep();
-    rigidBody.applyTorque(1);
-    expect(rigidBody.sleeping).toBe(false);
-
-    rigidBody.sleep();
-    rigidBody.applyAngularImpulse(1);
-    expect(rigidBody.sleeping).toBe(false);
-  });
-
   it('Requires explicit wakeUp after direct velocity writes', () => {
     const scene = createScene();
     const { physicsSystem } = createPhysicsSystem(scene);
@@ -110,6 +85,27 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     pusherBody.movePosition(new Vector2(-1.5, 0));
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(rigidBody.sleeping).toBe(false);
+    expect(transform.world.position.x).toBeGreaterThan(0);
+  });
+
+  it('Wakes and moves a sleeping dynamic body pushed by a fast dynamic body', () => {
+    const scene = createScene();
+    const { physicsSystem } = createPhysicsSystem(scene);
+    const pusher = createBoxActor('pusher', 'dynamic', -1.5, 0);
+    const body = createBoxActor('body', 'dynamic', 0, 0);
+    const pusherBody = pusher.getComponent(RigidBody);
+    const rigidBody = body.getComponent(RigidBody);
+    const transform = body.getComponent(Transform);
+
+    pusherBody.linearVelocity = new Vector2(15, 0);
+    rigidBody.sleep();
+
+    scene.appendChild(pusher);
+    scene.appendChild(body);
+
     physicsSystem.fixedUpdate({ deltaTime: 100 });
 
     expect(rigidBody.sleeping).toBe(false);

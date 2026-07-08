@@ -15,6 +15,7 @@ import type {
   SegmentGeometry,
 } from '../../types';
 import type { RaycastCheckerHit } from '../../raycast-checkers/types';
+import { expectHit } from '../../tests/assertions';
 
 export const createBoxGeometry = (
   centerX: number,
@@ -140,27 +141,11 @@ export const expectToBeClose = (
 
 export const expectIntersection = (
   intersection: Intersection | false,
-): Intersection => {
-  expect(intersection).not.toBe(false);
-
-  if (intersection === false) {
-    throw new Error('Expected intersection, received false');
-  }
-
-  return intersection;
-};
+): Intersection => expectHit(intersection, 'intersection');
 
 export const expectCastHit = (
   hit: RaycastCheckerHit | false,
-): RaycastCheckerHit => {
-  expect(hit).not.toBe(false);
-
-  if (hit === false) {
-    throw new Error('Expected cast hit, received false');
-  }
-
-  return hit;
-};
+): RaycastCheckerHit => expectHit(hit, 'cast hit');
 
 export const sortPoints = (
   points: { x: number; y: number }[],
