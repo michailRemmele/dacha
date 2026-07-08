@@ -241,4 +241,52 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
 
     expect(rigidBody.sleeping).toBe(true);
   });
+
+  it('Keeps a sleeping dynamic body asleep on a fast contact when linearSleepThreshold is raised', () => {
+    const scene = createScene();
+    const { physicsSystem } = createPhysicsSystem(scene, undefined, 0, 0, {
+      linearSleepThreshold: 5,
+    });
+    const pusher = createBoxActor('pusher', 'kinematic', -2.2, 0);
+    const body = createBoxActor('body', 'dynamic', 0, 0);
+    const pusherBody = pusher.getComponent(RigidBody);
+    const rigidBody = body.getComponent(RigidBody);
+    const transform = body.getComponent(Transform);
+
+    rigidBody.sleep();
+
+    scene.appendChild(pusher);
+    scene.appendChild(body);
+
+    pusherBody.movePosition(new Vector2(-1.9, 0));
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(rigidBody.sleeping).toBe(true);
+    expect(transform.world.position.x).toBeCloseTo(0);
+  });
+
+  it('Still sleeps a body resting at a raised maxAllowedPenetration without thrashing', () => {
+    const scene = createScene();
+    const { physicsSystem } = createPhysicsSystem(scene, undefined, 10, 0, {
+      maxAllowedPenetration: 1,
+    });
+    const floor = createBoxActor('floor', 'static', 0, 2);
+    const body = createBoxActor('body', 'dynamic', 0, 0);
+    const rigidBody = body.getComponent(RigidBody);
+
+    rigidBody.gravityScale = 1;
+
+    scene.appendChild(floor);
+    scene.appendChild(body);
+
+    for (let i = 0; i < 10; i += 1) {
+      physicsSystem.fixedUpdate({ deltaTime: 100 });
+    }
+
+    expect(rigidBody.sleeping).toBe(true);
+
+    physicsSystem.fixedUpdate({ deltaTime: 100 });
+
+    expect(rigidBody.sleeping).toBe(true);
+  });
 });

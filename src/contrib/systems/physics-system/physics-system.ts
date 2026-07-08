@@ -33,7 +33,16 @@ export class PhysicsSystem extends SceneSystem {
   constructor(options: SceneSystemOptions) {
     super();
 
-    const { gravityX = 0, gravityY = 0 } = options as PhysicsSystemOptions;
+    const {
+      gravityX = 0,
+      gravityY = 0,
+      solverIterations,
+      linearSleepThreshold,
+      angularSleepThreshold,
+      sleepTimeThreshold,
+      maxAllowedPenetration,
+      maxBiasVelocity,
+    } = options as PhysicsSystemOptions;
 
     this.gravity = new Vector2(gravityX, gravityY);
 
@@ -41,11 +50,18 @@ export class PhysicsSystem extends SceneSystem {
     this.physicsSubsystem = new PhysicsSubsystem({
       scene: options.scene,
       getGravity: (): Vector2 => this.gravity,
+      linearSleepThreshold,
+      angularSleepThreshold,
+      sleepTimeThreshold,
     });
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
     this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
     this.constraintSolver = new ConstraintSolver({
       getGravity: (): Vector2 => this.gravity,
+      solverIterations,
+      maxAllowedPenetration,
+      maxBiasVelocity,
+      linearSleepThreshold,
     });
 
     this.physicsApi = new PhysicsAPI({

@@ -5,7 +5,7 @@ import { World } from '../../../../engine/world';
 import { Collider, RigidBody } from '../../../components';
 import { Transform } from '../../../components/transform';
 import { PhysicsSystem } from '../index';
-import type { PhysicsSettings } from '../types';
+import type { PhysicsSettings, PhysicsSystemOptions } from '../types';
 
 export const createScene = (): Scene => {
   const templateCollection = new TemplateCollection();
@@ -25,6 +25,17 @@ export const createPhysicsSystem = (
   settings?: PhysicsSettings,
   gravityY = 0,
   gravityX = 0,
+  solverOptions: Partial<
+    Pick<
+      PhysicsSystemOptions,
+      | 'solverIterations'
+      | 'linearSleepThreshold'
+      | 'angularSleepThreshold'
+      | 'sleepTimeThreshold'
+      | 'maxAllowedPenetration'
+      | 'maxBiasVelocity'
+    >
+  > = {},
 ): { physicsSystem: PhysicsSystem; world: World } => {
   const world = new World({ id: 'world', name: 'world' });
   const templateCollection = new TemplateCollection();
@@ -40,6 +51,7 @@ export const createPhysicsSystem = (
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: settings ? { physics: settings } : {},
     templateCollection,
+    ...solverOptions,
   });
 
   physicsSystem.onSceneEnter?.();

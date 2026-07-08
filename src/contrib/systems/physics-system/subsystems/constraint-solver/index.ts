@@ -9,13 +9,13 @@ import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import type { Contact } from '../collision-detection/types';
 import {
-  SOLVER_ITERATIONS,
-  CONTACT_MAX_ALLOWED_PENETRATION,
+  DEFAULT_SOLVER_ITERATIONS,
+  DEFAULT_CONTACT_MAX_ALLOWED_PENETRATION,
   CONTACT_BIAS,
-  MAX_BIAS_VELOCITY,
+  DEFAULT_MAX_BIAS_VELOCITY,
   RESTITUTION_VELOCITY_THRESHOLD,
-  CONTACT_SPEED_SLEEP_THRESHOLD,
-  CONTACT_PENETRATION_SLEEP_THRESHOLD,
+  DEFAULT_LINEAR_SLEEP_THRESHOLD,
+  PENETRATION_SLEEP_MARGIN,
 } from '../../consts';
 
 import {
@@ -40,6 +40,10 @@ import { SleepSupportTracker } from './sleep-support-tracker';
 
 interface ConstraintSolverOptions {
   getGravity: () => Vector2;
+  solverIterations?: number;
+  maxAllowedPenetration?: number;
+  maxBiasVelocity?: number;
+  linearSleepThreshold?: number;
 }
 
 const BLOCK_SOLVER_MIN_DETERMINANT = 1e-8;
@@ -63,6 +67,12 @@ export class ConstraintSolver {
   private getGravity: () => Vector2;
   private restitutionThreshold: number;
 
+  private solverIterations: number;
+  private maxAllowedPenetration: number;
+  private maxBiasVelocity: number;
+  private linearSleepThreshold: number;
+  private penetrationSleepThreshold: number;
+
   // Reusable scratch avoiding per-contact allocations in the hot path.
   private flippedNormal: Point;
   private blockImpulse0: number;
@@ -75,6 +85,16 @@ export class ConstraintSolver {
 
     this.getGravity = options.getGravity;
     this.restitutionThreshold = RESTITUTION_VELOCITY_THRESHOLD;
+
+    this.solverIterations =
+      options.solverIterations ?? DEFAULT_SOLVER_ITERATIONS;
+    this.maxAllowedPenetration =
+      options.maxAllowedPenetration ?? DEFAULT_CONTACT_MAX_ALLOWED_PENETRATION;
+    this.maxBiasVelocity = options.maxBiasVelocity ?? DEFAULT_MAX_BIAS_VELOCITY;
+    this.linearSleepThreshold =
+      options.linearSleepThreshold ?? DEFAULT_LINEAR_SLEEP_THRESHOLD;
+    this.penetrationSleepThreshold =
+      this.maxAllowedPenetration + PENETRATION_SLEEP_MARGIN;
 
     this.flippedNormal = { x: 0, y: 0 };
     this.blockImpulse0 = 0;
@@ -133,11 +153,10 @@ export class ConstraintSolver {
     const rigidBody1 = contact.actor1.getComponent(RigidBody);
     const rigidBody2 = contact.actor2.getComponent(RigidBody);
 
-    const isDeepContact =
-      contact.penetration > CONTACT_PENETRATION_SLEEP_THRESHOLD;
+    const isDeepContact = contact.penetration > this.penetrationSleepThreshold;
     const isFastContact = shouldWakeSleepingContact(
       contact,
-      CONTACT_SPEED_SLEEP_THRESHOLD,
+      this.linearSleepThreshold,
     );
 
     if (!isDeepContact && !isFastContact) {
@@ -539,13 +558,10 @@ export class ConstraintSolver {
     deltaTimeInSeconds: number,
   ): void {
     const targetBiasVelocity = Math.min(
-      (Math.max(
-        state.contact.penetration - CONTACT_MAX_ALLOWED_PENETRATION,
-        0,
-      ) *
+      (Math.max(state.contact.penetration - this.maxAllowedPenetration, 0) *
         CONTACT_BIAS) /
         deltaTimeInSeconds,
-      MAX_BIAS_VELOCITY,
+      this.maxBiasVelocity,
     );
 
     if (targetBiasVelocity === 0) {
@@ -616,7 +632,7 @@ export class ConstraintSolver {
     this.sleepSupportTracker.wakeUnsupportedBodies();
     this.contactStateManager.pruneStaleStates();
 
-    for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
+    for (let iteration = 0; iteration < this.solverIterations; iteration += 1) {
       this.contactStateManager.forEach((state) => {
         if (!state.active) {
           return;
