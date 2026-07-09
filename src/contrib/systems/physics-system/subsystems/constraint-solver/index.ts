@@ -1,5 +1,5 @@
 import type { Actor } from '../../../../../engine/actor';
-import type { FixedUpdateContext } from '../../../../../engine/system';
+import type { Time } from '../../../../../engine/time';
 import {
   MathOps,
   type Point,
@@ -39,6 +39,7 @@ import { shouldWakeSleepingContact } from './contact-utils';
 import { SleepSupportTracker } from './sleep-support-tracker';
 
 interface ConstraintSolverOptions {
+  time: Time;
   getGravity: () => Vector2;
   solverIterations?: number;
   maxAllowedPenetration?: number;
@@ -64,6 +65,7 @@ export class ConstraintSolver {
   private contactStateManager: ContactStateManager;
   private sleepSupportTracker: SleepSupportTracker;
 
+  private time: Time;
   private getGravity: () => Vector2;
   private restitutionThreshold: number;
 
@@ -82,6 +84,7 @@ export class ConstraintSolver {
     this.contactStateManager = new ContactStateManager();
     this.sleepSupportTracker = new SleepSupportTracker(options.getGravity);
 
+    this.time = options.time;
     this.getGravity = options.getGravity;
     this.restitutionThreshold = RESTITUTION_VELOCITY_THRESHOLD;
 
@@ -595,12 +598,12 @@ export class ConstraintSolver {
     }
   }
 
-  update(contacts: Contact[], context: FixedUpdateContext): void {
+  update(contacts: Contact[]): void {
     this.oneWayValidator.updateVersion();
     this.contactStateManager.updateVersion();
     this.sleepSupportTracker.beginFrame();
 
-    const { deltaTime } = context;
+    const deltaTime = this.time.fixedDeltaTime;
 
     this.restitutionThreshold = Math.max(
       RESTITUTION_VELOCITY_THRESHOLD,

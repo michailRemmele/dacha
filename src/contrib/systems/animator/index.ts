@@ -1,5 +1,6 @@
 import { SceneSystem } from '../../../engine/system';
-import type { UpdateContext, SceneSystemOptions } from '../../../engine/system';
+import type { SceneSystemOptions } from '../../../engine/system';
+import type { Time } from '../../../engine/time';
 import { Actor, ActorQuery } from '../../../engine/actor';
 import { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
@@ -15,18 +16,20 @@ import { conditionControllers } from './condition-controllers';
 import { substatePickers } from './substate-pickers';
 import { setValue } from './utils';
 
-const FRAME_RATE = 100;
+// Seconds per animation frame at speed 1.
+const FRAME_RATE = 0.1;
 
 /**
  * Animator system that manages the animation of actors with {@link Animatable} components
  * using the state machine approach
  *
  * @extends SceneSystem
- * 
+ *
  * @category Systems
  */
 export class Animator extends SceneSystem {
   private actorQuery: ActorQuery;
+  private time: Time;
   private substatePickers: Record<string, Picker>;
 
   private actorConditions: Record<
@@ -37,6 +40,7 @@ export class Animator extends SceneSystem {
   constructor(options: SceneSystemOptions) {
     super();
 
+    this.time = options.time;
     this.actorQuery = new ActorQuery({
       scene: options.scene,
       filter: [Animatable],
@@ -100,8 +104,8 @@ export class Animator extends SceneSystem {
     return substatePicker.getSubstate(actor, state.substates, state.pickProps);
   }
 
-  update(context: UpdateContext): void {
-    const { deltaTimeMs } = context;
+  update(): void {
+    const { deltaTime } = this.time;
 
     this.actorQuery.getActors().forEach((actor) => {
       const animatable = actor.getComponent(Animatable);
@@ -128,7 +132,7 @@ export class Animator extends SceneSystem {
       const actualFrameRate = FRAME_RATE / animatable.currentState.speed;
       const baseDuration = framesCount * actualFrameRate;
 
-      animatable.duration += deltaTimeMs / baseDuration;
+      animatable.duration += deltaTime / baseDuration;
 
       const currentFrame =
         animatable.duration < 1 || timeline.looped

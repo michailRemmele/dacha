@@ -1,6 +1,6 @@
-import type { FixedUpdateContext } from '../../../../../engine/system';
 import { ActorQuery, type Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
+import type { Time } from '../../../../../engine/time';
 import type { Vector2 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
@@ -16,6 +16,7 @@ import { calculateInertia } from './mass-properties';
 
 export interface PhysicsSubsystemOptions {
   scene: Scene;
+  time: Time;
   getGravity: () => Vector2;
   linearSleepThreshold?: number;
   angularSleepThreshold?: number;
@@ -24,6 +25,7 @@ export interface PhysicsSubsystemOptions {
 
 export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
+  private time: Time;
   private getGravity: () => Vector2;
 
   private linearSleepThreshold: number;
@@ -34,9 +36,10 @@ export class PhysicsSubsystem {
   private kinematicMovedActors: Set<Actor>;
 
   constructor(options: PhysicsSubsystemOptions) {
-    const { scene, getGravity } = options;
+    const { scene, time, getGravity } = options;
 
     this.actorQuery = new ActorQuery({ scene, filter: [RigidBody, Transform] });
+    this.time = time;
     this.getGravity = getGravity;
 
     this.linearSleepThreshold =
@@ -75,8 +78,8 @@ export class PhysicsSubsystem {
     rigidBody.angularVelocity *= Math.max(0, 1 - angularDamping * deltaTime);
   }
 
-  integrateVelocities(context: FixedUpdateContext): void {
-    const { deltaTime } = context;
+  integrateVelocities(): void {
+    const deltaTime = this.time.fixedDeltaTime;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
@@ -191,8 +194,8 @@ export class PhysicsSubsystem {
     });
   }
 
-  integrateKinematicPositions(context: FixedUpdateContext): void {
-    const { deltaTime } = context;
+  integrateKinematicPositions(): void {
+    const deltaTime = this.time.fixedDeltaTime;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
@@ -211,8 +214,8 @@ export class PhysicsSubsystem {
     });
   }
 
-  integrateDynamicPositions(context: FixedUpdateContext): void {
-    const { deltaTime } = context;
+  integrateDynamicPositions(): void {
+    const deltaTime = this.time.fixedDeltaTime;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
@@ -241,8 +244,8 @@ export class PhysicsSubsystem {
     });
   }
 
-  updateSleepTimers(context: FixedUpdateContext): void {
-    const { deltaTime } = context;
+  updateSleepTimers(): void {
+    const deltaTime = this.time.fixedDeltaTime;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);

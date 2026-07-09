@@ -12,6 +12,7 @@ import type {
 import type { System } from '../system/system';
 import { SceneSystem, WorldSystem } from '../system';
 import { World } from '../world';
+import type { Time } from '../time';
 import {
   LoadScene,
   EnterScene,
@@ -46,6 +47,7 @@ interface SceneManagerOptions {
   templateCollection: TemplateCollection
   globalOptions: Record<string, unknown>
   resources: Record<string, unknown>
+  time: Time
 }
 
 export class SceneManager {
@@ -55,6 +57,7 @@ export class SceneManager {
   private templateCollection: TemplateCollection;
   private globalOptions: Record<string, unknown>;
   private resources: Record<string, unknown>;
+  private time: Time;
   private actorCreator: ActorCreator;
   private actorSpawner: ActorSpawner;
 
@@ -71,6 +74,7 @@ export class SceneManager {
     templateCollection,
     globalOptions,
     resources,
+    time,
   }: SceneManagerOptions) {
     this.availableSystems = availableSystems.reduce((acc, AvailableSystem) => {
       acc[AvailableSystem.systemName] = AvailableSystem;
@@ -89,6 +93,7 @@ export class SceneManager {
     this.templateCollection = templateCollection;
     this.globalOptions = globalOptions;
     this.resources = resources;
+    this.time = time;
     this.actorCreator = new ActorCreator(components, templateCollection);
     this.actorSpawner = new ActorSpawner(this.actorCreator);
 
@@ -106,6 +111,7 @@ export class SceneManager {
           actorSpawner: this.actorSpawner,
           resources: this.resources[config.name],
           globalOptions: this.globalOptions,
+          time: this.time,
           world: this.world,
         };
         this.worldSystems.set(config.name, new SystemClass(options) as WorldSystem);
@@ -223,6 +229,7 @@ export class SceneManager {
           actorSpawner: this.actorSpawner,
           resources: this.resources[config.name],
           globalOptions: this.globalOptions,
+          time: this.time,
           scene,
           world: this.world,
         };

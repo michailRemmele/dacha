@@ -5,6 +5,7 @@ import { SceneManager } from './scene/scene-manager';
 import { TemplateCollection } from './template';
 import { GameLoop } from './game-loop';
 import type { PerformanceSettings } from './game-loop';
+import { Time } from './time';
 
 export interface EngineOptions {
   config: Config;
@@ -102,6 +103,8 @@ export class Engine {
       {},
     );
 
+    const time = new Time();
+
     this.sceneManager = new SceneManager({
       sceneConfigs: scenes,
       systemConfigs: systems,
@@ -110,6 +113,7 @@ export class Engine {
       templateCollection,
       globalOptions,
       resources,
+      time,
     });
 
     await this.sceneManager.loadWorld();
@@ -117,6 +121,7 @@ export class Engine {
 
     this.gameLoop = new GameLoop(
       this.sceneManager,
+      time,
       globalOptions.performance as PerformanceSettings | undefined,
     );
 

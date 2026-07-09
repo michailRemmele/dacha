@@ -2,6 +2,7 @@ import { Vector2 } from '../../../../../../engine/math-lib';
 import { RigidBody } from '../../../../../components/rigid-body';
 import { Transform } from '../../../../../components/transform';
 import type { Contact } from '../../collision-detection/types';
+import { createTime } from '../../../tests/helpers';
 import { ConstraintSolver } from '../index';
 
 import { createActorWithInertia } from './helpers';
@@ -9,6 +10,7 @@ import { createActorWithInertia } from './helpers';
 describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
   it('Applies angular velocity for off-center collisions', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
@@ -27,7 +29,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(5);
     expect(rigidBody1.angularVelocity).toBeCloseTo(-5);
@@ -35,6 +37,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Does not apply angular velocity for center collisions', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
@@ -53,7 +56,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
@@ -61,6 +64,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Does not add angular velocity for symmetric two-point contacts', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
@@ -82,7 +86,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
@@ -90,6 +94,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Pushes only the first point when the second is already separating', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
@@ -112,7 +117,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-2);
     expect(rigidBody1.angularVelocity).toBeCloseTo(-2);
@@ -120,6 +125,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Pushes only the second point when the first is already separating', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
@@ -142,7 +148,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-2);
     expect(rigidBody1.angularVelocity).toBeCloseTo(2);
@@ -150,6 +156,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Applies no impulse to a two-point contact separating at both points', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic');
@@ -171,7 +178,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
@@ -179,6 +186,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Does not convert symmetric bouncy two-point friction into spin', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic', {
@@ -210,7 +218,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-529.2);
@@ -219,6 +227,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Applies angular velocity from friction at the contact point', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('sliding-body', 'dynamic');
@@ -237,7 +246,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeLessThan(3);
     expect(Math.abs(rigidBody1.angularVelocity)).toBeGreaterThan(0);
@@ -245,6 +254,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Uses contact-point angular velocity for restitution', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('spinning-body', 'dynamic');
@@ -266,7 +276,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeLessThan(0);
     expect(rigidBody1.angularVelocity).toBeLessThan(5);
@@ -274,6 +284,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
 
   it('Does not apply angular velocity to locked rotation bodies', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActorWithInertia('dynamic-body', 'dynamic', {
@@ -296,7 +307,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);

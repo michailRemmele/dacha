@@ -1,8 +1,5 @@
 import { SceneSystem } from '../../../engine/system';
-import type {
-  SceneSystemOptions,
-  FixedUpdateContext,
-} from '../../../engine/system';
+import type { SceneSystemOptions } from '../../../engine/system';
 import type { World } from '../../../engine/world';
 import { Vector2 } from '../../../engine/math-lib';
 
@@ -52,6 +49,7 @@ export class PhysicsSystem extends SceneSystem {
     this.world = options.world;
     this.physicsSubsystem = new PhysicsSubsystem({
       scene: options.scene,
+      time: options.time,
       getGravity: (): Vector2 => this.gravity,
       linearSleepThreshold,
       angularSleepThreshold,
@@ -60,6 +58,7 @@ export class PhysicsSystem extends SceneSystem {
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
     this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
     this.constraintSolver = new ConstraintSolver({
+      time: options.time,
       getGravity: (): Vector2 => this.gravity,
       solverIterations,
       maxAllowedPenetration,
@@ -104,16 +103,16 @@ export class PhysicsSystem extends SceneSystem {
     this.collisionDetectionSubsystem.destroy();
   }
 
-  fixedUpdate(options: FixedUpdateContext): void {
-    this.physicsSubsystem.integrateVelocities(options);
-    this.physicsSubsystem.integrateKinematicPositions(options);
+  fixedUpdate(): void {
+    this.physicsSubsystem.integrateVelocities();
+    this.physicsSubsystem.integrateKinematicPositions();
 
     const contacts = this.collisionDetectionSubsystem.update();
 
-    this.constraintSolver.update(contacts, options);
+    this.constraintSolver.update(contacts);
 
-    this.physicsSubsystem.integrateDynamicPositions(options);
-    this.physicsSubsystem.updateSleepTimers(options);
+    this.physicsSubsystem.integrateDynamicPositions();
+    this.physicsSubsystem.updateSleepTimers();
 
     this.collisionBroadcastSubsystem.update(contacts);
 

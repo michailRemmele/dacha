@@ -5,6 +5,7 @@ import { Vector2 } from '../../../../../../engine/math-lib';
 import { RigidBody } from '../../../../../components/rigid-body';
 import { Collider } from '../../../../../components/collider';
 import { PhysicsSubsystem } from '../index';
+import { createTime } from '../../../tests/helpers';
 
 const createScene = (): Scene => {
   const templateCollection = new TemplateCollection();
@@ -53,6 +54,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> linear damping', () => {
     const scene = createScene();
     const physicsSubsystem = new PhysicsSubsystem({
       scene,
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const body = createBody(1);
@@ -61,11 +63,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> linear damping', () => {
     rigidBody.linearVelocity = new Vector2(10, 0);
     scene.appendChild(body);
 
-    physicsSubsystem.integrateVelocities({
-      deltaTime: 0.1,
-      deltaTimeMs: 100,
-      elapsedTime: 0,
-    });
+    physicsSubsystem.integrateVelocities();
 
     // Velocity-proportional decay: v *= (1 - damping * dt) = 10 * (1 - 0.1).
     expect(rigidBody.linearVelocity.x).toBeCloseTo(9);
@@ -76,6 +74,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> linear damping', () => {
     const scene = createScene();
     const physicsSubsystem = new PhysicsSubsystem({
       scene,
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const body = createBody(0);
@@ -84,11 +83,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> linear damping', () => {
     rigidBody.linearVelocity = new Vector2(10, 0);
     scene.appendChild(body);
 
-    physicsSubsystem.integrateVelocities({
-      deltaTime: 0.1,
-      deltaTimeMs: 100,
-      elapsedTime: 0,
-    });
+    physicsSubsystem.integrateVelocities();
 
     expect(rigidBody.linearVelocity.x).toBeCloseTo(10);
   });
