@@ -327,8 +327,6 @@ export class CollisionDetectionSubsystem {
     proxy1: Required<Proxy>,
     proxy2: Required<Proxy>,
   ): boolean {
-    // Read both directions so a matrix authored asymmetrically (e.g. built
-    // programmatically) does not make collisions depend on proxy ordering.
     return (
       this.collisionMatrix[proxy1.layer]?.[proxy2.layer] ??
       this.collisionMatrix[proxy2.layer]?.[proxy1.layer] ??
