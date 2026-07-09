@@ -18,7 +18,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
     }
 
     expect(rigidBody.sleeping).toBe(true);
@@ -38,13 +38,13 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
 
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(true);
     expect(transform.world.position.x).toBeCloseTo(0);
 
     rigidBody.wakeUp();
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(false);
     expect(transform.world.position.x).toBeCloseTo(0.1);
@@ -63,7 +63,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
     }
 
     expect(rigidBody.sleeping).toBe(false);
@@ -85,7 +85,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     pusherBody.movePosition(new Vector2(-1.5, 0));
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(false);
     expect(transform.world.position.x).toBeGreaterThan(0);
@@ -106,7 +106,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(pusher);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(false);
     expect(transform.world.position.x).toBeGreaterThan(0);
@@ -127,7 +127,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     pusherBody.movePosition(new Vector2(-1.95, 0));
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(true);
     expect(transform.world.position.x).toBeCloseTo(0);
@@ -146,7 +146,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(floor);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(false);
     expect(transform.world.position.y).toBeLessThan(-0.01);
@@ -164,7 +164,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body2);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
     }
 
     expect(rigidBody1.sleeping).toBe(true);
@@ -173,7 +173,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     rigidBody1.wakeUp();
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
     }
 
     expect(rigidBody1.sleeping).toBe(true);
@@ -194,7 +194,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
     }
 
     expect(rigidBody.sleeping).toBe(true);
@@ -202,12 +202,12 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     const supportedPositionY = transform.world.position.y;
 
     scene.removeChild(floor);
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(false);
     expect(transform.world.position.y).toBeCloseTo(supportedPositionY);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(transform.world.position.y).toBeGreaterThan(supportedPositionY);
   });
@@ -227,13 +227,13 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
     }
 
     expect(rigidBody.sleeping).toBe(true);
 
     scene.removeChild(wall);
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(true);
   });
@@ -255,7 +255,7 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     pusherBody.movePosition(new Vector2(-1.9, 0));
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(true);
     expect(transform.world.position.x).toBeCloseTo(0);
@@ -276,12 +276,12 @@ describe('Systems -> PhysicsSystem -> sleeping', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
     }
 
     expect(rigidBody.sleeping).toBe(true);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.sleeping).toBe(true);
   });

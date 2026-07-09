@@ -1,6 +1,7 @@
 import { Vector2 } from '../../../../../../engine/math-lib';
 import { RigidBody } from '../../../../../components/rigid-body';
 import type { Contact } from '../../collision-detection/types';
+import { createTime } from '../../../tests/helpers';
 import { ConstraintSolver } from '../index';
 
 import { createActor } from './helpers';
@@ -8,6 +9,7 @@ import { createActor } from './helpers';
 describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
   it('Uses static body restitution to bounce dynamic bodies', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
@@ -30,13 +32,14 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
   });
 
   it('Suppresses restitution for low-speed contacts', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
@@ -59,13 +62,14 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
   });
 
   it('Raises the restitution threshold under gravity to avoid resting-body jitter', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 10),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
@@ -88,13 +92,14 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
   });
 
   it('Applies friction during a bounce using the full normal impulse', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('sliding-body', 'dynamic', {
@@ -121,7 +126,7 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);

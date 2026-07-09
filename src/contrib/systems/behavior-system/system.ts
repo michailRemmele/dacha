@@ -1,9 +1,6 @@
 import { SceneSystem } from '../../../engine/system';
-import type {
-  SceneSystemOptions,
-  UpdateContext,
-  FixedUpdateContext,
-} from '../../../engine/system';
+import type { SceneSystemOptions } from '../../../engine/system';
+import type { Time } from '../../../engine/time';
 import { Actor, ActorQuery } from '../../../engine/actor';
 import type { ActorSpawner } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
@@ -29,6 +26,7 @@ export class BehaviorSystem extends SceneSystem {
   private behaviors: Record<string, BehaviorConstructor | undefined>;
   private world: World;
   private scene: Scene;
+  private time: Time;
   private activeBehaviors: Record<string, Behavior[]>;
 
   constructor(options: SceneSystemOptions) {
@@ -39,11 +37,13 @@ export class BehaviorSystem extends SceneSystem {
       world,
       scene,
       globalOptions,
+      time,
       resources = [],
     } = options;
 
     this.world = world;
     this.scene = scene;
+    this.time = time;
     this.behaviorQuery = new ActorQuery({
       scene,
       filter: [Behaviors],
@@ -116,24 +116,25 @@ export class BehaviorSystem extends SceneSystem {
           world: this.world,
           scene: this.scene,
           globalOptions: this.globalOptions,
+          time: this.time,
         };
         const BehaviorClass = this.behaviors[config.name]!;
         return new BehaviorClass(options);
       });
   }
 
-  update(context: UpdateContext): void {
+  update(): void {
     this.behaviorQuery.getActors().forEach((actor) => {
       this.activeBehaviors[actor.id].forEach((behavior) =>
-        behavior.update?.(context),
+        behavior.update?.(),
       );
     });
   }
 
-  fixedUpdate(context: FixedUpdateContext): void {
+  fixedUpdate(): void {
     this.behaviorQuery.getActors().forEach((actor) => {
       this.activeBehaviors[actor.id].forEach((behavior) =>
-        behavior.fixedUpdate?.(context),
+        behavior.fixedUpdate?.(),
       );
     });
   }

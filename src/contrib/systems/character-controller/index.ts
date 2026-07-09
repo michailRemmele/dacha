@@ -1,10 +1,8 @@
 import { ActorQuery } from '../../../engine/actor';
 import type { Actor } from '../../../engine/actor';
 import { SceneSystem } from '../../../engine/system';
-import type {
-  SceneSystemOptions,
-  FixedUpdateContext,
-} from '../../../engine/system';
+import type { SceneSystemOptions } from '../../../engine/system';
+import type { Time } from '../../../engine/time';
 import { Vector2, VectorOps, type Point } from '../../../engine/math-lib';
 import {
   Collider,
@@ -39,6 +37,7 @@ type CharacterHitKind = 'ground' | 'wall' | 'ceiling';
 export class CharacterController extends SceneSystem {
   private actorQuery: ActorQuery;
   private world: SceneSystemOptions['world'];
+  private time: Time;
 
   private oneWayValidator: OneWayValidator;
 
@@ -46,6 +45,7 @@ export class CharacterController extends SceneSystem {
     super();
 
     this.world = options.world;
+    this.time = options.time;
     this.actorQuery = new ActorQuery({
       scene: options.scene,
       filter: [CharacterBody, Transform, Collider, RigidBody],
@@ -326,12 +326,12 @@ export class CharacterController extends SceneSystem {
     target.y += snapDirection.y;
   }
 
-  fixedUpdate(context: FixedUpdateContext): void {
+  fixedUpdate(): void {
     if (!this.world.systemApi.has(PhysicsAPI)) {
       return;
     }
 
-    const { deltaTime } = context;
+    const { fixedDeltaTime } = this.time;
 
     this.oneWayValidator.update();
 
@@ -362,7 +362,7 @@ export class CharacterController extends SceneSystem {
 
       const displacement = character.velocity
         .clone()
-        .multiplyNumber(deltaTime)
+        .multiplyNumber(fixedDeltaTime)
         .add(character._displacement);
 
       const movingUp =

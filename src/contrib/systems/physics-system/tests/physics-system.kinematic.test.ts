@@ -17,15 +17,15 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
 
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
 
     expect(transform.world.position.x).toBeCloseTo(3);
     expect(rigidBody.linearVelocity.x).toBeCloseTo(10);
 
     rigidBody.linearVelocity.multiplyNumber(0);
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(transform.world.position.x).toBeCloseTo(3);
     expect(rigidBody.linearVelocity.x).toBeCloseTo(0);
@@ -43,7 +43,7 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
 
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(transform.world.position.x).toBeCloseTo(0);
     expect(transform.world.position.y).toBeCloseTo(0);
@@ -60,13 +60,13 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
     scene.appendChild(body);
 
     rigidBody.movePosition(new Vector2(5, 0));
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(transform.world.position.x).toBeCloseTo(5);
     expect(transform.world.position.y).toBeCloseTo(0);
     expect(rigidBody.linearVelocity.equals(new Vector2(0, 0))).toEqual(true);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(transform.world.position.x).toBeCloseTo(5);
   });
@@ -96,7 +96,7 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
 
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.linearVelocity.x).toBeCloseTo(1);
     expect(rigidBody.linearVelocity.y).toBeCloseTo(2);

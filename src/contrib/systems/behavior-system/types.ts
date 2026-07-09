@@ -4,7 +4,7 @@ import type {
 } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
-import type { UpdateContext, FixedUpdateContext } from '../../../engine/system';
+import type { Time } from '../../../engine/time';
 import type { Constructor } from '../../../types/utils';
 
 /**
@@ -21,6 +21,8 @@ export interface BehaviorOptions {
   actorSpawner: ActorSpawner
   /** Global game options */
   globalOptions: Record<string, unknown>
+  /** Shared timing state */
+  time: Time
 }
 
 /**
@@ -35,9 +37,9 @@ export abstract class Behavior {
   /** Destroy the behavior */
   destroy?(): void;
   /** Update the behavior every frame with a variable timestep */
-  update?(context: UpdateContext): void;
+  update?(): void;
   /** Update the behavior with a fixed timestep, aligned with physics */
-  fixedUpdate?(context: FixedUpdateContext): void;
+  fixedUpdate?(): void;
 }
 
 /**

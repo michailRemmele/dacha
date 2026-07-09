@@ -5,6 +5,7 @@ import { Vector2 } from '../../../../../../engine/math-lib';
 import { RigidBody } from '../../../../../components/rigid-body';
 import { Collider } from '../../../../../components/collider';
 import { PhysicsSubsystem } from '../index';
+import { createTime } from '../../../tests/helpers';
 
 const createScene = (): Scene => {
   const templateCollection = new TemplateCollection();
@@ -51,6 +52,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> sleep options', () => {
   it('Does not sleep a body with residual angular velocity above the default angularSleepThreshold', () => {
     const scene = createScene();
     const physicsSubsystem = new PhysicsSubsystem({
+      time: createTime(),
       scene,
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
@@ -61,7 +63,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> sleep options', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSubsystem.updateSleepTimers({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSubsystem.updateSleepTimers();
     }
 
     expect(rigidBody.sleeping).toBe(false);
@@ -70,6 +72,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> sleep options', () => {
   it('Sleeps a body with residual angular velocity when angularSleepThreshold is raised', () => {
     const scene = createScene();
     const physicsSubsystem = new PhysicsSubsystem({
+      time: createTime(),
       scene,
       getGravity: (): Vector2 => new Vector2(0, 0),
       angularSleepThreshold: 0.1,
@@ -81,7 +84,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> sleep options', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSubsystem.updateSleepTimers({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSubsystem.updateSleepTimers();
     }
 
     expect(rigidBody.sleeping).toBe(true);
@@ -90,6 +93,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> sleep options', () => {
   it('Delays sleep until the configured sleepTimeThreshold elapses', () => {
     const scene = createScene();
     const physicsSubsystem = new PhysicsSubsystem({
+      time: createTime(),
       scene,
       getGravity: (): Vector2 => new Vector2(0, 0),
       sleepTimeThreshold: 100,
@@ -100,7 +104,7 @@ describe('PhysicsSystem -> PhysicsSubsystem -> sleep options', () => {
     scene.appendChild(body);
 
     for (let i = 0; i < 10; i += 1) {
-      physicsSubsystem.updateSleepTimers({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+      physicsSubsystem.updateSleepTimers();
     }
 
     expect(rigidBody.sleeping).toBe(false);
