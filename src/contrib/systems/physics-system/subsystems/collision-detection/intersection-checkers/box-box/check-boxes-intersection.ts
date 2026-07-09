@@ -1,7 +1,12 @@
 import type { BoxGeometry, Intersection } from '../../types';
 import { orientNormal } from '../common/normals';
+import { sortPoints } from '../common/points';
 
-import { findMinBoxesOverlap, buildContactPoints } from './utils';
+import {
+  findMinBoxesOverlap,
+  buildContactPoints,
+  OVERLAP_TIE_EPSILON,
+} from './utils';
 
 /**
  * Checks box colliders for intersection.
@@ -25,7 +30,8 @@ export const checkBoxesIntersection = (
     return false;
   }
 
-  const isArg1Reference = overlap1.overlap <= overlap2.overlap;
+  const isArg1Reference =
+    overlap1.overlap <= overlap2.overlap + OVERLAP_TIE_EPSILON;
   const referenceGeometry = isArg1Reference ? geometry1 : geometry2;
   const incidentGeometry = isArg1Reference ? geometry2 : geometry1;
   const referenceOverlap = isArg1Reference ? overlap1 : overlap2;
@@ -41,13 +47,15 @@ export const checkBoxesIntersection = (
     referenceNormal.multiplyNumber(-1);
   }
 
+  const contactPoints = buildContactPoints(
+    referenceGeometry,
+    referenceNormal,
+    incidentGeometry,
+  );
+
   return {
     normal,
     penetration: referenceOverlap.overlap,
-    contactPoints: buildContactPoints(
-      referenceGeometry,
-      referenceNormal,
-      incidentGeometry,
-    ),
+    contactPoints: sortPoints(contactPoints, normal),
   };
 };

@@ -1,18 +1,35 @@
-import type { UpdateOptions } from '../../../../../engine/system';
+import type { FixedUpdateContext } from '../../../../../engine/system';
 import { ActorQuery, type Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import type { Vector2 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
+import { Collider } from '../../../../components/collider';
+import {
+  DEFAULT_LINEAR_SLEEP_THRESHOLD,
+  DEFAULT_ANGULAR_SLEEP_THRESHOLD,
+  DEFAULT_SLEEP_TIME_THRESHOLD,
+  BIAS_ANGULAR_SLEEP_MULTIPLIER,
+} from '../../consts';
+
+import { calculateInertia } from './mass-properties';
 
 export interface PhysicsSubsystemOptions {
   scene: Scene;
   getGravity: () => Vector2;
+  linearSleepThreshold?: number;
+  angularSleepThreshold?: number;
+  sleepTimeThreshold?: number;
 }
 
 export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
   private getGravity: () => Vector2;
+
+  private linearSleepThreshold: number;
+  private angularSleepThreshold: number;
+  private biasAngularSleepThreshold: number;
+  private sleepTimeThreshold: number;
 
   private kinematicMovedActors: Set<Actor>;
 
@@ -22,6 +39,15 @@ export class PhysicsSubsystem {
     this.actorQuery = new ActorQuery({ scene, filter: [RigidBody, Transform] });
     this.getGravity = getGravity;
 
+    this.linearSleepThreshold =
+      options.linearSleepThreshold ?? DEFAULT_LINEAR_SLEEP_THRESHOLD;
+    this.angularSleepThreshold =
+      options.angularSleepThreshold ?? DEFAULT_ANGULAR_SLEEP_THRESHOLD;
+    this.biasAngularSleepThreshold =
+      this.angularSleepThreshold * BIAS_ANGULAR_SLEEP_MULTIPLIER;
+    this.sleepTimeThreshold =
+      options.sleepTimeThreshold ?? DEFAULT_SLEEP_TIME_THRESHOLD;
+
     this.kinematicMovedActors = new Set();
   }
 
@@ -30,40 +56,38 @@ export class PhysicsSubsystem {
   }
 
   private applyLinearDamping(rigidBody: RigidBody, deltaTime: number): void {
-    const { mass, linearDamping, linearVelocity } = rigidBody;
+    const { linearDamping, linearVelocity } = rigidBody;
 
     if (!linearDamping || (!linearVelocity.x && !linearVelocity.y)) {
       return;
     }
 
-    const velocitySignX = Math.sign(linearVelocity.x);
-    const velocitySignY = Math.sign(linearVelocity.y);
-
-    const gravity = this.getGravity();
-
-    const reactionForceValue = mass * gravity.magnitude;
-    const dragForceValue = -1 * linearDamping * reactionForceValue;
-    const forceToVelocityMultiplier = deltaTime / mass;
-    const slowdownValue = dragForceValue * forceToVelocityMultiplier;
-    const normalizationMultiplier = 1 / linearVelocity.magnitude;
-    const slowdownMultiplier = slowdownValue * normalizationMultiplier;
-
-    linearVelocity.x += linearVelocity.x * slowdownMultiplier;
-    linearVelocity.y += linearVelocity.y * slowdownMultiplier;
-
-    if (
-      Math.sign(linearVelocity.x) !== velocitySignX &&
-      Math.sign(linearVelocity.y) !== velocitySignY
-    ) {
-      linearVelocity.multiplyNumber(0);
-    }
+    linearVelocity.multiplyNumber(Math.max(0, 1 - linearDamping * deltaTime));
   }
 
-  private integrateVelocities(deltaTimeInSeconds: number): void {
+  private applyAngularDamping(rigidBody: RigidBody, deltaTime: number): void {
+    const { angularDamping, angularVelocity } = rigidBody;
+
+    if (!angularDamping || !angularVelocity) {
+      return;
+    }
+
+    rigidBody.angularVelocity *= Math.max(0, 1 - angularDamping * deltaTime);
+  }
+
+  integrateVelocities(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
+
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
+      const collider = actor.getComponent(Collider) as Collider | undefined;
       const transform = actor.getComponent(Transform);
-      const { mass, inverseMass } = rigidBody;
+
+      rigidBody._biasLinearVelocity.multiplyNumber(0);
+      rigidBody._biasAngularVelocity = 0;
+      rigidBody._prevLinearVelocity.x = rigidBody.linearVelocity.x;
+      rigidBody._prevLinearVelocity.y = rigidBody.linearVelocity.y;
+      rigidBody._prevAngularVelocity = rigidBody.angularVelocity;
 
       if (rigidBody.disabled) {
         rigidBody._movementTarget = null;
@@ -83,68 +107,118 @@ export class PhysicsSubsystem {
         }
 
         rigidBody.linearVelocity.x =
-          (_movementTarget.x - transform.world.position.x) / deltaTimeInSeconds;
+          (_movementTarget.x - transform.world.position.x) / deltaTime;
         rigidBody.linearVelocity.y =
-          (_movementTarget.y - transform.world.position.y) / deltaTimeInSeconds;
+          (_movementTarget.y - transform.world.position.y) / deltaTime;
 
         this.kinematicMovedActors.add(actor);
 
         return;
       }
 
-      if (mass <= 0) {
+      if (rigidBody.mass <= 0) {
         rigidBody.clearForces();
         return;
       }
 
-      const { force, impulse } = rigidBody;
-      const velocity = rigidBody.linearVelocity;
+      rigidBody.inertia = calculateInertia(rigidBody.mass, collider, transform);
 
-      if (rigidBody.sleeping) {
-        if (force.x || force.y || impulse.x || impulse.y) {
-          rigidBody.wakeUp();
-        } else {
-          return;
-        }
+      rigidBody._pointForces.forEach(({ force, position }) => {
+        rigidBody._centralForce.add(force);
+        rigidBody._torque +=
+          (position.x - transform.world.position.x) * force.y -
+          (position.y - transform.world.position.y) * force.x;
+      });
+
+      rigidBody._pointImpulses.forEach(({ impulse, position }) => {
+        rigidBody._centralImpulse.add(impulse);
+        rigidBody._angularImpulse +=
+          (position.x - transform.world.position.x) * impulse.y -
+          (position.y - transform.world.position.y) * impulse.x;
+      });
+
+      const {
+        _centralForce,
+        _centralImpulse,
+        linearVelocity,
+        mass,
+        inverseMass,
+        inverseInertia,
+        gravityScale,
+        lockRotation,
+        sleeping,
+      } = rigidBody;
+
+      if (sleeping) {
+        return;
       }
 
-      if (rigidBody.gravityScale) {
+      if (gravityScale) {
         const gravity = this.getGravity();
-        force.x += mass * gravity.x * rigidBody.gravityScale;
-        force.y += mass * gravity.y * rigidBody.gravityScale;
+        _centralForce.x += mass * gravity.x * gravityScale;
+        _centralForce.y += mass * gravity.y * gravityScale;
       }
 
-      if (force.x || force.y) {
-        force.multiplyNumber(deltaTimeInSeconds * inverseMass);
-        velocity.add(force);
+      if (_centralForce.x || _centralForce.y) {
+        _centralForce.multiplyNumber(deltaTime * inverseMass);
+        linearVelocity.add(_centralForce);
       }
 
-      if (impulse.x || impulse.y) {
-        impulse.multiplyNumber(inverseMass);
-        velocity.add(impulse);
+      if (_centralImpulse.x || _centralImpulse.y) {
+        _centralImpulse.multiplyNumber(inverseMass);
+        linearVelocity.add(_centralImpulse);
       }
 
-      this.applyLinearDamping(rigidBody, deltaTimeInSeconds);
+      if (lockRotation) {
+        rigidBody.angularVelocity = 0;
+      } else {
+        if (rigidBody._torque && inverseInertia > 0) {
+          rigidBody.angularVelocity +=
+            rigidBody._torque * inverseInertia * deltaTime;
+        }
+
+        if (rigidBody._angularImpulse && inverseInertia > 0) {
+          rigidBody.angularVelocity +=
+            rigidBody._angularImpulse * inverseInertia;
+        }
+
+        this.applyAngularDamping(rigidBody, deltaTime);
+      }
+
+      this.applyLinearDamping(rigidBody, deltaTime);
 
       rigidBody.clearForces();
     });
   }
 
-  private integratePositions(deltaTimeInSeconds: number): void {
+  integrateKinematicPositions(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
+
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
       const transform = actor.getComponent(Transform);
 
-      if (rigidBody.disabled || rigidBody.type === 'static') {
+      if (
+        rigidBody.disabled ||
+        rigidBody.type !== 'kinematic' ||
+        (!rigidBody.linearVelocity.x && !rigidBody.linearVelocity.y)
+      ) {
         return;
       }
 
-      if (rigidBody.type === 'kinematic') {
-        transform.world.position.x +=
-          rigidBody.linearVelocity.x * deltaTimeInSeconds;
-        transform.world.position.y +=
-          rigidBody.linearVelocity.y * deltaTimeInSeconds;
+      transform.world.position.x += rigidBody.linearVelocity.x * deltaTime;
+      transform.world.position.y += rigidBody.linearVelocity.y * deltaTime;
+    });
+  }
 
+  integrateDynamicPositions(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
+
+    this.actorQuery.getActors().forEach((actor) => {
+      const rigidBody = actor.getComponent(RigidBody);
+      const transform = actor.getComponent(Transform);
+
+      if (rigidBody.disabled || rigidBody.type !== 'dynamic') {
         return;
       }
 
@@ -153,17 +227,62 @@ export class PhysicsSubsystem {
       }
 
       transform.world.position.x +=
-        rigidBody.linearVelocity.x * deltaTimeInSeconds;
+        (rigidBody.linearVelocity.x + rigidBody._biasLinearVelocity.x) *
+        deltaTime;
       transform.world.position.y +=
-        rigidBody.linearVelocity.y * deltaTimeInSeconds;
+        (rigidBody.linearVelocity.y + rigidBody._biasLinearVelocity.y) *
+        deltaTime;
+
+      if (!rigidBody.lockRotation) {
+        transform.world.rotation +=
+          (rigidBody.angularVelocity + rigidBody._biasAngularVelocity) *
+          deltaTime;
+      }
     });
   }
 
-  update(options: UpdateOptions): void {
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+  updateSleepTimers(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
 
-    this.integrateVelocities(deltaTimeInSeconds);
-    this.integratePositions(deltaTimeInSeconds);
+    this.actorQuery.getActors().forEach((actor) => {
+      const rigidBody = actor.getComponent(RigidBody);
+
+      if (
+        rigidBody.disabled ||
+        rigidBody.type !== 'dynamic' ||
+        rigidBody.mass <= 0 ||
+        !rigidBody.autoSleep
+      ) {
+        rigidBody._sleepTime = 0;
+        return;
+      }
+
+      if (rigidBody.sleeping) {
+        return;
+      }
+
+      const realMotionIsSmall =
+        rigidBody.linearVelocity.squaredMagnitude <=
+          this.linearSleepThreshold * this.linearSleepThreshold &&
+        Math.abs(rigidBody.angularVelocity) <= this.angularSleepThreshold;
+
+      const biasMotionIsSmall =
+        rigidBody._biasLinearVelocity.squaredMagnitude <=
+          this.linearSleepThreshold * this.linearSleepThreshold &&
+        Math.abs(rigidBody._biasAngularVelocity) <=
+          this.biasAngularSleepThreshold;
+
+      if (!realMotionIsSmall || !biasMotionIsSmall) {
+        rigidBody._sleepTime = 0;
+        return;
+      }
+
+      rigidBody._sleepTime += deltaTime;
+
+      if (rigidBody._sleepTime >= this.sleepTimeThreshold) {
+        rigidBody.sleep();
+      }
+    });
   }
 
   lateUpdate(): void {

@@ -30,6 +30,32 @@ describe('PhysicsSystem -> collision-detection -> checkBoxesIntersection()', () 
     expectToBeClose(point2, 1, 1);
   });
 
+  it('Returns two-point manifolds in deterministic tangent order', () => {
+    const box1 = createBoxGeometry(0, 0, 2, 2);
+    const box2 = createBoxGeometry(1.5, 0, 2, 2);
+
+    const intersection = expectIntersection(checkBoxesIntersection(box1, box2));
+    const [point1, point2] = intersection.contactPoints;
+
+    expect(intersection.normal.x).toBeGreaterThan(0);
+    expect(intersection.contactPoints.length).toEqual(2);
+    expectToBeClose(point1, 1, -1);
+    expectToBeClose(point2, 1, 1);
+  });
+
+  it('Keeps the deterministic axis choice for near-tied overlaps', () => {
+    const box1 = createBoxGeometry(0, 0, 2, 2);
+    const box2 = createBoxGeometry(0.5, 0.50005, 2, 2);
+
+    const intersection = expectIntersection(checkBoxesIntersection(box1, box2));
+    const [point1, point2] = intersection.contactPoints;
+
+    expect(intersection.normal.x).toBeGreaterThan(0);
+    expect(intersection.normal.y).toBeCloseTo(0);
+    expect(intersection.contactPoints.length).toEqual(2);
+    expect(point1.y).toBeLessThan(point2.y);
+  });
+
   it('Returns zero-penetration manifold when boxes are just touching', () => {
     const box1 = createBoxGeometry(0, 0, 2, 2);
     const box2 = createBoxGeometry(2, 0, 2, 2);

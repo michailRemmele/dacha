@@ -1,5 +1,5 @@
 import { SceneSystem } from '../../../engine/system';
-import type { UpdateOptions, SceneSystemOptions } from '../../../engine/system';
+import type { UpdateContext, SceneSystemOptions } from '../../../engine/system';
 import { Actor, ActorQuery } from '../../../engine/actor';
 import { Animatable } from '../../components/animatable';
 import type { Frame } from '../../components/animatable/timeline';
@@ -100,8 +100,8 @@ export class Animator extends SceneSystem {
     return substatePicker.getSubstate(actor, state.substates, state.pickProps);
   }
 
-  update(options: UpdateOptions): void {
-    const { deltaTime } = options;
+  update(context: UpdateContext): void {
+    const { deltaTimeMs } = context;
 
     this.actorQuery.getActors().forEach((actor) => {
       const animatable = actor.getComponent(Animatable);
@@ -128,7 +128,7 @@ export class Animator extends SceneSystem {
       const actualFrameRate = FRAME_RATE / animatable.currentState.speed;
       const baseDuration = framesCount * actualFrameRate;
 
-      animatable.duration += deltaTime / baseDuration;
+      animatable.duration += deltaTimeMs / baseDuration;
 
       const currentFrame =
         animatable.duration < 1 || timeline.looped

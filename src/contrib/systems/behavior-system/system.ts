@@ -1,5 +1,9 @@
 import { SceneSystem } from '../../../engine/system';
-import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
+import type {
+  SceneSystemOptions,
+  UpdateContext,
+  FixedUpdateContext,
+} from '../../../engine/system';
 import { Actor, ActorQuery } from '../../../engine/actor';
 import type { ActorSpawner } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
@@ -118,10 +122,18 @@ export class BehaviorSystem extends SceneSystem {
       });
   }
 
-  update(options: UpdateOptions): void {
+  update(context: UpdateContext): void {
     this.behaviorQuery.getActors().forEach((actor) => {
       this.activeBehaviors[actor.id].forEach((behavior) =>
-        behavior.update?.(options),
+        behavior.update?.(context),
+      );
+    });
+  }
+
+  fixedUpdate(context: FixedUpdateContext): void {
+    this.behaviorQuery.getActors().forEach((actor) => {
+      this.activeBehaviors[actor.id].forEach((behavior) =>
+        behavior.fixedUpdate?.(context),
       );
     });
   }

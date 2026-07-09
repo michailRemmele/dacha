@@ -41,11 +41,35 @@ export interface WorldSystemOptions extends SystemOptions {
 }
 
 /**
- * Options passed to update methods with timing information.
+ * Timing context passed to the fixed-timestep update method.
+ *
+ * The timestep is constant across calls, so `deltaTime`/`deltaTimeMs` never
+ * vary. `elapsedTime` is the accumulated fixed-simulation clock.
  */
-export interface UpdateOptions {
-  /** Time elapsed since last update in milliseconds */
+export interface FixedUpdateContext {
+  /** Fixed timestep in seconds. */
   deltaTime: number;
+  /** Fixed timestep in milliseconds. */
+  deltaTimeMs: number;
+  /** Accumulated fixed-simulation time in seconds since the game loop started. */
+  elapsedTime: number;
+}
+
+/**
+ * Timing context passed to the variable-timestep (render) update method.
+ */
+export interface UpdateContext {
+  /** Time since the last update in seconds. */
+  deltaTime: number;
+  /** Time since the last update in milliseconds. */
+  deltaTimeMs: number;
+  /** Real elapsed time in seconds since the game loop started. */
+  elapsedTime: number;
+  /**
+   * Interpolation factor in `[0, 1)` between the last two fixed steps, for
+   * smoothing rendered state.
+   */
+  alpha: number;
 }
 
 /**
@@ -67,7 +91,7 @@ export interface UpdateOptions {
  *     });
  *   }
  *
- *   update({ deltaTime }: UpdateOptions): void {
+ *   update({ deltaTime }: UpdateContext): void {
  *     const actors = this.actorQuery.getActors();
  *
  *     for (const actor of actors) {
@@ -80,7 +104,7 @@ export interface UpdateOptions {
  *   }
  * }
  * ```
- * 
+ *
  * @category Core
  */
 export abstract class System {
@@ -96,9 +120,9 @@ export abstract class System {
   /** Called when a scene is destroyed */
   onSceneDestroy?(scene: Scene): void;
   /** Called every frame with variable timestep */
-  update?(options: UpdateOptions): void;
+  update?(context: UpdateContext): void;
   /** Called with fixed timestep for physics calculations */
-  fixedUpdate?(options: UpdateOptions): void;
+  fixedUpdate?(context: FixedUpdateContext): void;
 }
 
 /**
@@ -106,11 +130,11 @@ export abstract class System {
  *
  * World systems operate at the global level and persist across scene changes.
  * They're typically used for core engine functionality like rendering, input, and audio.
- * 
+ *
  * @category Core
  */
 export abstract class WorldSystem extends System {
-  /** 
+  /**
    * Called when the world is first loaded.
    * Used to load global resources such as bundle with game user interface
    */
@@ -126,7 +150,7 @@ export abstract class WorldSystem extends System {
  *
  * Scene systems operate within a specific scene and are created/destroyed
  * with the scene. They're typically used for game logic, AI, and scene-specific features.
- * 
+ *
  * @category Core
  */
 export abstract class SceneSystem extends System {}

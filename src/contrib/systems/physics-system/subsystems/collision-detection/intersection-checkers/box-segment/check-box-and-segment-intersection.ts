@@ -4,6 +4,7 @@ import {
   findMinBoxSegmentOverlap,
 } from './utils';
 import { orientNormal } from '../common/normals';
+import { sortPoints } from '../common/points';
 
 /**
  * Checks a box against a segment.
@@ -29,9 +30,11 @@ export const checkBoxAndSegmentIntersection = (
     return false;
   }
 
+  const normal = orientNormal(overlap.axis.clone(), box.center, segment.center);
+
   return {
-    normal: orientNormal(overlap.axis.clone(), box.center, segment.center),
+    normal,
     penetration: overlap.overlap,
-    contactPoints,
+    contactPoints: sortPoints(contactPoints, normal),
   };
 };

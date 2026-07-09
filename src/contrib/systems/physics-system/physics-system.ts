@@ -1,5 +1,8 @@
 import { SceneSystem } from '../../../engine/system';
-import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
+import type {
+  SceneSystemOptions,
+  FixedUpdateContext,
+} from '../../../engine/system';
 import type { World } from '../../../engine/world';
 import { Vector2 } from '../../../engine/math-lib';
 
@@ -33,7 +36,16 @@ export class PhysicsSystem extends SceneSystem {
   constructor(options: SceneSystemOptions) {
     super();
 
-    const { gravityX = 0, gravityY = 0 } = options as PhysicsSystemOptions;
+    const {
+      gravityX = 0,
+      gravityY = 0,
+      solverIterations,
+      linearSleepThreshold,
+      angularSleepThreshold,
+      sleepTimeThreshold,
+      maxAllowedPenetration,
+      maxBiasVelocity,
+    } = options as PhysicsSystemOptions;
 
     this.gravity = new Vector2(gravityX, gravityY);
 
@@ -41,10 +53,19 @@ export class PhysicsSystem extends SceneSystem {
     this.physicsSubsystem = new PhysicsSubsystem({
       scene: options.scene,
       getGravity: (): Vector2 => this.gravity,
+      linearSleepThreshold,
+      angularSleepThreshold,
+      sleepTimeThreshold,
     });
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
     this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
-    this.constraintSolver = new ConstraintSolver();
+    this.constraintSolver = new ConstraintSolver({
+      getGravity: (): Vector2 => this.gravity,
+      solverIterations,
+      maxAllowedPenetration,
+      maxBiasVelocity,
+      linearSleepThreshold,
+    });
 
     this.physicsApi = new PhysicsAPI({
       raycast: (params): CastHit | null =>
@@ -83,12 +104,17 @@ export class PhysicsSystem extends SceneSystem {
     this.collisionDetectionSubsystem.destroy();
   }
 
-  fixedUpdate(options: UpdateOptions): void {
-    this.physicsSubsystem.update(options);
+  fixedUpdate(options: FixedUpdateContext): void {
+    this.physicsSubsystem.integrateVelocities(options);
+    this.physicsSubsystem.integrateKinematicPositions(options);
 
     const contacts = this.collisionDetectionSubsystem.update();
 
-    this.constraintSolver.update(contacts);
+    this.constraintSolver.update(contacts, options);
+
+    this.physicsSubsystem.integrateDynamicPositions(options);
+    this.physicsSubsystem.updateSleepTimers(options);
+
     this.collisionBroadcastSubsystem.update(contacts);
 
     this.physicsSubsystem.lateUpdate();

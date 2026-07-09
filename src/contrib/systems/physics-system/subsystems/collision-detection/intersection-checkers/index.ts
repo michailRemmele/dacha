@@ -1,5 +1,6 @@
 import type { Geometry, Intersection } from '../types';
 
+import { sortPoints } from './common/points';
 import { checkBoxAndCapsuleIntersection } from './box-capsule/check-box-and-capsule-intersection';
 import { checkBoxAndCircleIntersection } from './box-circle/check-box-and-circle-intersection';
 import { checkBoxAndSegmentIntersection } from './box-segment/check-box-and-segment-intersection';
@@ -30,6 +31,7 @@ const swapArgs = <T, U>(
     }
 
     intersection.normal.multiplyNumber(-1);
+    sortPoints(intersection.contactPoints, intersection.normal);
 
     return intersection;
   };
