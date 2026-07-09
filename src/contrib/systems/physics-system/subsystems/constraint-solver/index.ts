@@ -73,7 +73,6 @@ export class ConstraintSolver {
   private linearSleepThreshold: number;
   private penetrationSleepThreshold: number;
 
-  // Reusable scratch avoiding per-contact allocations in the hot path.
   private flippedNormal: Point;
   private blockImpulse0: number;
   private blockImpulse1: number;
