@@ -29,7 +29,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
@@ -54,14 +54,14 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
 
     rigidBody1._biasLinearVelocity = new Vector2(0, 0);
     rigidBody1._biasAngularVelocity = 0;
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
   });
@@ -89,7 +89,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
     expect(rigidBody1._biasAngularVelocity).toBeCloseTo(0);
@@ -121,7 +121,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(0);
@@ -156,7 +156,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
             contactPoints,
           },
         ],
-        { deltaTime: 100 },
+        { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 },
       );
 
       return rigidBody1;
@@ -202,7 +202,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(0);
@@ -239,7 +239,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-1.6);
     expect(rigidBody2._biasLinearVelocity.y).toBeCloseTo(1.6);

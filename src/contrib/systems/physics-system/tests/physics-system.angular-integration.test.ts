@@ -46,7 +46,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     rigidBody.angularVelocity = 2;
     scene.appendChild(actor);
 
-    physicsSystem.fixedUpdate({ deltaTime: 500 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.5, deltaTimeMs: 500, elapsedTime: 0 });
 
     expect(transform.world.rotation).toBeCloseTo(1);
   });
@@ -61,7 +61,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     rigidBody.applyTorque(4);
     scene.appendChild(actor);
 
-    physicsSystem.fixedUpdate({ deltaTime: 1000 });
+    physicsSystem.fixedUpdate({ deltaTime: 1, deltaTimeMs: 1000, elapsedTime: 0 });
 
     expect(rigidBody.angularVelocity).toBeCloseTo(2);
     expect(transform.world.rotation).toBeCloseTo(2);
@@ -78,7 +78,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     rigidBody.applyAngularImpulse(6);
     scene.appendChild(actor);
 
-    physicsSystem.fixedUpdate({ deltaTime: 1000 });
+    physicsSystem.fixedUpdate({ deltaTime: 1, deltaTimeMs: 1000, elapsedTime: 0 });
 
     expect(rigidBody.angularVelocity).toBeCloseTo(3);
     expect(transform.world.rotation).toBeCloseTo(3);
@@ -94,7 +94,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     rigidBody.applyForce(new Vector2(0, 4), { x: 1, y: 0 });
     scene.appendChild(actor);
 
-    physicsSystem.fixedUpdate({ deltaTime: 1000 });
+    physicsSystem.fixedUpdate({ deltaTime: 1, deltaTimeMs: 1000, elapsedTime: 0 });
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(4);
     expect(rigidBody.angularVelocity).toBeCloseTo(2);
@@ -110,7 +110,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     rigidBody.applyImpulse(new Vector2(0, 4), { x: 1, y: 0 });
     scene.appendChild(actor);
 
-    physicsSystem.fixedUpdate({ deltaTime: 1000 });
+    physicsSystem.fixedUpdate({ deltaTime: 1, deltaTimeMs: 1000, elapsedTime: 0 });
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(4);
     expect(rigidBody.angularVelocity).toBeCloseTo(2);
@@ -127,7 +127,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     rigidBody.angularVelocity = 10;
     scene.appendChild(actor);
 
-    physicsSystem.fixedUpdate({ deltaTime: 500 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.5, deltaTimeMs: 500, elapsedTime: 0 });
 
     expect(rigidBody.angularVelocity).toBeCloseTo(5);
     expect(transform.world.rotation).toBeCloseTo(2.5);
@@ -144,7 +144,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     rigidBody.applyTorque(10);
     scene.appendChild(actor);
 
-    physicsSystem.fixedUpdate({ deltaTime: 1000 });
+    physicsSystem.fixedUpdate({ deltaTime: 1, deltaTimeMs: 1000, elapsedTime: 0 });
 
     expect(rigidBody.angularVelocity).toBeCloseTo(0);
     expect(transform.world.rotation).toBeCloseTo(0);

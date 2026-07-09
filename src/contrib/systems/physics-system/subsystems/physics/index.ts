@@ -1,4 +1,4 @@
-import type { UpdateOptions } from '../../../../../engine/system';
+import type { FixedUpdateContext } from '../../../../../engine/system';
 import { ActorQuery, type Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import type { Vector2 } from '../../../../../engine/math-lib';
@@ -56,33 +56,13 @@ export class PhysicsSubsystem {
   }
 
   private applyLinearDamping(rigidBody: RigidBody, deltaTime: number): void {
-    const { mass, linearDamping, linearVelocity } = rigidBody;
+    const { linearDamping, linearVelocity } = rigidBody;
 
     if (!linearDamping || (!linearVelocity.x && !linearVelocity.y)) {
       return;
     }
 
-    const velocitySignX = Math.sign(linearVelocity.x);
-    const velocitySignY = Math.sign(linearVelocity.y);
-
-    const gravity = this.getGravity();
-
-    const reactionForceValue = mass * gravity.magnitude;
-    const dragForceValue = -1 * linearDamping * reactionForceValue;
-    const forceToVelocityMultiplier = deltaTime / mass;
-    const slowdownValue = dragForceValue * forceToVelocityMultiplier;
-    const normalizationMultiplier = 1 / linearVelocity.magnitude;
-    const slowdownMultiplier = slowdownValue * normalizationMultiplier;
-
-    linearVelocity.x += linearVelocity.x * slowdownMultiplier;
-    linearVelocity.y += linearVelocity.y * slowdownMultiplier;
-
-    if (
-      Math.sign(linearVelocity.x) !== velocitySignX &&
-      Math.sign(linearVelocity.y) !== velocitySignY
-    ) {
-      linearVelocity.multiplyNumber(0);
-    }
+    linearVelocity.multiplyNumber(Math.max(0, 1 - linearDamping * deltaTime));
   }
 
   private applyAngularDamping(rigidBody: RigidBody, deltaTime: number): void {
@@ -95,8 +75,8 @@ export class PhysicsSubsystem {
     rigidBody.angularVelocity *= Math.max(0, 1 - angularDamping * deltaTime);
   }
 
-  integrateVelocities(options: UpdateOptions): void {
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+  integrateVelocities(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
@@ -127,9 +107,9 @@ export class PhysicsSubsystem {
         }
 
         rigidBody.linearVelocity.x =
-          (_movementTarget.x - transform.world.position.x) / deltaTimeInSeconds;
+          (_movementTarget.x - transform.world.position.x) / deltaTime;
         rigidBody.linearVelocity.y =
-          (_movementTarget.y - transform.world.position.y) / deltaTimeInSeconds;
+          (_movementTarget.y - transform.world.position.y) / deltaTime;
 
         this.kinematicMovedActors.add(actor);
 
@@ -180,7 +160,7 @@ export class PhysicsSubsystem {
       }
 
       if (_centralForce.x || _centralForce.y) {
-        _centralForce.multiplyNumber(deltaTimeInSeconds * inverseMass);
+        _centralForce.multiplyNumber(deltaTime * inverseMass);
         linearVelocity.add(_centralForce);
       }
 
@@ -194,7 +174,7 @@ export class PhysicsSubsystem {
       } else {
         if (rigidBody._torque && inverseInertia > 0) {
           rigidBody.angularVelocity +=
-            rigidBody._torque * inverseInertia * deltaTimeInSeconds;
+            rigidBody._torque * inverseInertia * deltaTime;
         }
 
         if (rigidBody._angularImpulse && inverseInertia > 0) {
@@ -202,17 +182,17 @@ export class PhysicsSubsystem {
             rigidBody._angularImpulse * inverseInertia;
         }
 
-        this.applyAngularDamping(rigidBody, deltaTimeInSeconds);
+        this.applyAngularDamping(rigidBody, deltaTime);
       }
 
-      this.applyLinearDamping(rigidBody, deltaTimeInSeconds);
+      this.applyLinearDamping(rigidBody, deltaTime);
 
       rigidBody.clearForces();
     });
   }
 
-  integrateKinematicPositions(options: UpdateOptions): void {
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+  integrateKinematicPositions(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
@@ -226,15 +206,13 @@ export class PhysicsSubsystem {
         return;
       }
 
-      transform.world.position.x +=
-        rigidBody.linearVelocity.x * deltaTimeInSeconds;
-      transform.world.position.y +=
-        rigidBody.linearVelocity.y * deltaTimeInSeconds;
+      transform.world.position.x += rigidBody.linearVelocity.x * deltaTime;
+      transform.world.position.y += rigidBody.linearVelocity.y * deltaTime;
     });
   }
 
-  integrateDynamicPositions(options: UpdateOptions): void {
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+  integrateDynamicPositions(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
@@ -250,21 +228,21 @@ export class PhysicsSubsystem {
 
       transform.world.position.x +=
         (rigidBody.linearVelocity.x + rigidBody._biasLinearVelocity.x) *
-        deltaTimeInSeconds;
+        deltaTime;
       transform.world.position.y +=
         (rigidBody.linearVelocity.y + rigidBody._biasLinearVelocity.y) *
-        deltaTimeInSeconds;
+        deltaTime;
 
       if (!rigidBody.lockRotation) {
         transform.world.rotation +=
           (rigidBody.angularVelocity + rigidBody._biasAngularVelocity) *
-          deltaTimeInSeconds;
+          deltaTime;
       }
     });
   }
 
-  updateSleepTimers(options: UpdateOptions): void {
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+  updateSleepTimers(context: FixedUpdateContext): void {
+    const { deltaTime } = context;
 
     this.actorQuery.getActors().forEach((actor) => {
       const rigidBody = actor.getComponent(RigidBody);
@@ -299,7 +277,7 @@ export class PhysicsSubsystem {
         return;
       }
 
-      rigidBody._sleepTime += deltaTimeInSeconds;
+      rigidBody._sleepTime += deltaTime;
 
       if (rigidBody._sleepTime >= this.sleepTimeThreshold) {
         rigidBody.sleep();

@@ -42,7 +42,7 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
     let minY = transform.world.position.y;
 
     for (let step = 0; step < 500; step += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 20 });
+      physicsSystem.fixedUpdate({ deltaTime: 0.02, deltaTimeMs: 20, elapsedTime: 0 });
 
       if (rigidBody.linearVelocity.y < 0) {
         minY = Math.min(minY, transform.world.position.y);
@@ -93,7 +93,7 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
     let minY = transform.world.position.y;
 
     for (let step = 0; step < 600; step += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 20 });
+      physicsSystem.fixedUpdate({ deltaTime: 0.02, deltaTimeMs: 20, elapsedTime: 0 });
 
       if (rigidBody.linearVelocity.y < 0) {
         minY = Math.min(minY, transform.world.position.y);
@@ -156,7 +156,7 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
     let maxLinearVelocityX = 0;
 
     for (let step = 0; step < 600; step += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 20 });
+      physicsSystem.fixedUpdate({ deltaTime: 0.02, deltaTimeMs: 20, elapsedTime: 0 });
 
       maxAngularVelocity = Math.max(
         maxAngularVelocity,

@@ -27,7 +27,7 @@ describe('PhysicsSystem -> ConstraintSolver -> warm start', () => {
           contactPoints: [{ x: 0, y: 0 }],
         },
       ],
-      { deltaTime: 100 },
+      { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 },
     );
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
@@ -44,7 +44,7 @@ describe('PhysicsSystem -> ConstraintSolver -> warm start', () => {
           contactPoints: [{ x: 0, y: 0 }],
         },
       ],
-      { deltaTime: 100 },
+      { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 },
     );
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
@@ -78,7 +78,7 @@ describe('PhysicsSystem -> ConstraintSolver -> warm start', () => {
 
     rigidBody1.inertia = 1;
     rigidBody1.linearVelocity = new Vector2(0, 5);
-    cachedSolver.update([contact], { deltaTime: 100 });
+    cachedSolver.update([contact], { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     const freshActor1 = createActor('fresh-dynamic-body', 'dynamic', {
       restitution: 1,
@@ -110,8 +110,8 @@ describe('PhysicsSystem -> ConstraintSolver -> warm start', () => {
     freshRigidBody1._prevLinearVelocity = new Vector2(0, 0);
     freshRigidBody1._prevAngularVelocity = 5;
 
-    cachedSolver.update([contact], { deltaTime: 100 });
-    freshSolver.update([freshContact], { deltaTime: 100 });
+    cachedSolver.update([contact], { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    freshSolver.update([freshContact], { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(
       freshRigidBody1.linearVelocity.y,

@@ -1,5 +1,5 @@
 import type { Actor } from '../../../../../engine/actor';
-import type { UpdateOptions } from '../../../../../engine/system';
+import type { FixedUpdateContext } from '../../../../../engine/system';
 import {
   MathOps,
   type Point,
@@ -553,14 +553,11 @@ export class ConstraintSolver {
     }
   }
 
-  private applyBiasImpulse(
-    state: ContactState,
-    deltaTimeInSeconds: number,
-  ): void {
+  private applyBiasImpulse(state: ContactState, deltaTime: number): void {
     const targetBiasVelocity = Math.min(
       (Math.max(state.contact.penetration - this.maxAllowedPenetration, 0) *
         CONTACT_BIAS) /
-        deltaTimeInSeconds,
+        deltaTime,
       this.maxBiasVelocity,
     );
 
@@ -599,18 +596,18 @@ export class ConstraintSolver {
     }
   }
 
-  update(contacts: Contact[], options: UpdateOptions): void {
+  update(contacts: Contact[], context: FixedUpdateContext): void {
     this.oneWayValidator.updateVersion();
     this.contactStateManager.updateVersion();
     this.sleepSupportTracker.beginFrame();
 
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+    const { deltaTime } = context;
 
     this.restitutionThreshold = Math.max(
       RESTITUTION_VELOCITY_THRESHOLD,
       RESTITUTION_GRAVITY_THRESHOLD_FACTOR *
         this.getGravity().magnitude *
-        deltaTimeInSeconds,
+        deltaTime,
     );
 
     contacts.forEach((contact) => {
@@ -642,7 +639,7 @@ export class ConstraintSolver {
         this.applyFrictionImpulse(state);
 
         if (!state.skipBias) {
-          this.applyBiasImpulse(state, deltaTimeInSeconds);
+          this.applyBiasImpulse(state, deltaTime);
         }
       });
     }

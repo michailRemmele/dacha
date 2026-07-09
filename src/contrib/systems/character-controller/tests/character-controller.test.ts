@@ -76,8 +76,8 @@ describe('Systems -> CharacterController', () => {
     controller.velocity.x = 10;
     scene.appendChild(character);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.x).toBeCloseTo(1);
     expect(transform.world.position.y).toBeCloseTo(0);
@@ -99,13 +99,13 @@ describe('Systems -> CharacterController', () => {
     controller.move(new Vector2(2, 0));
     scene.appendChild(character);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.x).toBeCloseTo(2);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.x).toBeCloseTo(2);
   });
@@ -128,8 +128,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(wall);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.x).toBeCloseTo(1.48);
     expect(transform.world.position.y).toBeGreaterThan(0);
@@ -157,8 +157,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(wall);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
     eventQueue.update();
 
     expect(listener.mock.calls.length).toBe(1);
@@ -193,8 +193,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(wall);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
     eventQueue.update();
 
     expect(listener.mock.calls.length).toBe(1);
@@ -225,8 +225,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(floor);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(controller.onGround).toBe(true);
     expect(controller.groundActor).toBe(floor);
@@ -251,8 +251,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(floor);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.y).toBeCloseTo(-0.55);
     expect(controller.onGround).toBe(false);
@@ -276,8 +276,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(floor);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.y).toBeLessThan(-0.45);
     expect(transform.world.position.y).toBeCloseTo(-0.52);
@@ -303,8 +303,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(floor);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.y).toBeCloseTo(-0.45);
   });
@@ -327,19 +327,19 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(floor);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.y).toBeCloseTo(-0.52);
 
     transform.world.position.y = -0.45;
 
-    characterController.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody._movementTarget).toBeNull();
 
     controller.recover();
-    characterController.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody._movementTarget?.y).toBeCloseTo(-0.52);
   });
@@ -361,8 +361,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(body);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.y).toBeCloseTo(-0.45);
     expect(controller.groundActor).toBe(body);
@@ -383,7 +383,7 @@ describe('Systems -> CharacterController', () => {
     addController(character);
     scene.appendChild(character);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody._movementTarget).toBeNull();
   });
@@ -406,8 +406,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(body);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(transform.world.position.x).toBeCloseTo(-1);
     expect(controller.onWall).toBe(false);
@@ -430,8 +430,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(ceiling);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(controller.onCeiling).toBe(true);
     expect(controller.velocity.y).toBeCloseTo(-50);
@@ -454,8 +454,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(slope);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(controller.onGround).toBe(true);
     expect(controller.groundActor).toBe(slope);
@@ -480,8 +480,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(floor);
     scene.appendChild(sideBlock);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(controller.onGround).toBe(true);
     expect(controller.groundActor).toBe(floor);
@@ -506,8 +506,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(floor);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(controller.onGround).toBe(false);
     expect(controller.groundActor).toBeNull();
@@ -531,8 +531,8 @@ describe('Systems -> CharacterController', () => {
     scene.appendChild(character);
     scene.appendChild(wall);
 
-    characterController.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    characterController.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(controller.onGround).toBe(true);
     expect(controller.groundActor).toBe(wall);

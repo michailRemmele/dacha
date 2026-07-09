@@ -1,4 +1,5 @@
 import type { SceneManager } from './scene';
+import type { UpdateContext, FixedUpdateContext } from './system';
 import { eventQueue } from './event-target';
 import {
   DEFAULT_FIXED_UPDATE_RATE,
@@ -25,7 +26,12 @@ export class GameLoop {
   private gameLoopId: number;
   private previous: number;
   private lag: number;
+  private elapsedMs: number;
+  private fixedElapsedMs: number;
   private bindedTick: () => void;
+
+  private fixedUpdateContext: FixedUpdateContext;
+  private updateContext: UpdateContext;
 
   constructor(sceneManager: SceneManager, performance?: PerformanceSettings) {
     this.sceneManager = sceneManager;
@@ -41,6 +47,20 @@ export class GameLoop {
     this.gameLoopId = 0;
     this.previous = 0;
     this.lag = 0;
+    this.elapsedMs = 0;
+    this.fixedElapsedMs = 0;
+
+    this.fixedUpdateContext = {
+      deltaTime: this.msPerFixedUpdate / 1000,
+      deltaTimeMs: this.msPerFixedUpdate,
+      elapsedTime: 0,
+    };
+    this.updateContext = {
+      deltaTime: 0,
+      deltaTimeMs: 0,
+      elapsedTime: 0,
+      alpha: 0,
+    };
 
     this.bindedTick = this.tick.bind(this);
   }
@@ -61,15 +81,17 @@ export class GameLoop {
 
     const systems = this.sceneManager.getSystems();
 
-    const fixedUpdateOptions = { deltaTime: this.msPerFixedUpdate };
     let fixedUpdates = 0;
 
     while (
       this.lag >= this.msPerFixedUpdate &&
       fixedUpdates < this.maxFixedUpdatesPerFrame
     ) {
+      this.fixedElapsedMs += this.msPerFixedUpdate;
+      this.fixedUpdateContext.elapsedTime = this.fixedElapsedMs / 1000;
+
       systems.forEach((system) => {
-        system.fixedUpdate?.(fixedUpdateOptions);
+        system.fixedUpdate?.(this.fixedUpdateContext);
       });
 
       this.lag -= this.msPerFixedUpdate;
@@ -80,9 +102,14 @@ export class GameLoop {
       this.lag = 0;
     }
 
-    const options = { deltaTime: elapsed };
+    this.elapsedMs += elapsed;
+    this.updateContext.deltaTime = elapsed / 1000;
+    this.updateContext.deltaTimeMs = elapsed;
+    this.updateContext.elapsedTime = this.elapsedMs / 1000;
+    this.updateContext.alpha = this.lag / this.msPerFixedUpdate;
+
     systems.forEach((system) => {
-      system.update?.(options);
+      system.update?.(this.updateContext);
     });
 
     if (this.msPerUpdate > 0) {
@@ -99,6 +126,8 @@ export class GameLoop {
 
     this.previous = performance.now();
     this.lag = 0;
+    this.elapsedMs = 0;
+    this.fixedElapsedMs = 0;
 
     this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }

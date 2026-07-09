@@ -27,7 +27,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(5);
     expect(rigidBody1.angularVelocity).toBeCloseTo(-5);
@@ -53,7 +53,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
@@ -82,7 +82,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
@@ -112,7 +112,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-2);
     expect(rigidBody1.angularVelocity).toBeCloseTo(-2);
@@ -142,7 +142,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-2);
     expect(rigidBody1.angularVelocity).toBeCloseTo(2);
@@ -171,7 +171,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);
@@ -210,7 +210,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-529.2);
@@ -237,7 +237,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeLessThan(3);
     expect(Math.abs(rigidBody1.angularVelocity)).toBeGreaterThan(0);
@@ -266,7 +266,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeLessThan(0);
     expect(rigidBody1.angularVelocity).toBeLessThan(5);
@@ -296,7 +296,7 @@ describe('PhysicsSystem -> ConstraintSolver -> angular impulses', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
     expect(rigidBody1.angularVelocity).toBeCloseTo(0);

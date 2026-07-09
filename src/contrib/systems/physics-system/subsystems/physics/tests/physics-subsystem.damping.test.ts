@@ -19,7 +19,7 @@ const createScene = (): Scene => {
   });
 };
 
-const createFreeBody = (): Actor => {
+const createBody = (linearDamping: number): Actor => {
   const actor = new Actor({ id: 'body', name: 'body' });
 
   actor.setComponent(
@@ -38,7 +38,8 @@ const createFreeBody = (): Actor => {
       type: 'dynamic',
       mass: 1,
       gravityScale: 0,
-      linearDamping: 0,
+      linearDamping,
+      autoSleep: false,
       disabled: false,
       oneWay: false,
     }),
@@ -47,62 +48,48 @@ const createFreeBody = (): Actor => {
   return actor;
 };
 
-describe('PhysicsSystem -> PhysicsSubsystem -> sleep options', () => {
-  it('Does not sleep a body with residual angular velocity above the default angularSleepThreshold', () => {
+describe('PhysicsSystem -> PhysicsSubsystem -> linear damping', () => {
+  it('Slows a moving body under zero gravity', () => {
     const scene = createScene();
     const physicsSubsystem = new PhysicsSubsystem({
       scene,
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
-    const body = createFreeBody();
+    const body = createBody(1);
     const rigidBody = body.getComponent(RigidBody);
 
-    rigidBody.angularVelocity = 0.08;
+    rigidBody.linearVelocity = new Vector2(10, 0);
     scene.appendChild(body);
 
-    for (let i = 0; i < 10; i += 1) {
-      physicsSubsystem.updateSleepTimers({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    }
+    physicsSubsystem.integrateVelocities({
+      deltaTime: 0.1,
+      deltaTimeMs: 100,
+      elapsedTime: 0,
+    });
 
-    expect(rigidBody.sleeping).toBe(false);
+    // Velocity-proportional decay: v *= (1 - damping * dt) = 10 * (1 - 0.1).
+    expect(rigidBody.linearVelocity.x).toBeCloseTo(9);
+    expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
   });
 
-  it('Sleeps a body with residual angular velocity when angularSleepThreshold is raised', () => {
+  it('Leaves velocity unchanged when damping is zero', () => {
     const scene = createScene();
     const physicsSubsystem = new PhysicsSubsystem({
       scene,
       getGravity: (): Vector2 => new Vector2(0, 0),
-      angularSleepThreshold: 0.1,
     });
-    const body = createFreeBody();
+    const body = createBody(0);
     const rigidBody = body.getComponent(RigidBody);
 
-    rigidBody.angularVelocity = 0.08;
+    rigidBody.linearVelocity = new Vector2(10, 0);
     scene.appendChild(body);
 
-    for (let i = 0; i < 10; i += 1) {
-      physicsSubsystem.updateSleepTimers({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    }
-
-    expect(rigidBody.sleeping).toBe(true);
-  });
-
-  it('Delays sleep until the configured sleepTimeThreshold elapses', () => {
-    const scene = createScene();
-    const physicsSubsystem = new PhysicsSubsystem({
-      scene,
-      getGravity: (): Vector2 => new Vector2(0, 0),
-      sleepTimeThreshold: 100,
+    physicsSubsystem.integrateVelocities({
+      deltaTime: 0.1,
+      deltaTimeMs: 100,
+      elapsedTime: 0,
     });
-    const body = createFreeBody();
-    const rigidBody = body.getComponent(RigidBody);
 
-    scene.appendChild(body);
-
-    for (let i = 0; i < 10; i += 1) {
-      physicsSubsystem.updateSleepTimers({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    }
-
-    expect(rigidBody.sleeping).toBe(false);
+    expect(rigidBody.linearVelocity.x).toBeCloseTo(10);
   });
 });

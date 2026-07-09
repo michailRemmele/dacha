@@ -1,7 +1,10 @@
 import { ActorQuery } from '../../../engine/actor';
 import type { Actor } from '../../../engine/actor';
 import { SceneSystem } from '../../../engine/system';
-import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
+import type {
+  SceneSystemOptions,
+  FixedUpdateContext,
+} from '../../../engine/system';
 import { Vector2, VectorOps, type Point } from '../../../engine/math-lib';
 import {
   Collider,
@@ -323,12 +326,12 @@ export class CharacterController extends SceneSystem {
     target.y += snapDirection.y;
   }
 
-  fixedUpdate(options: UpdateOptions): void {
+  fixedUpdate(context: FixedUpdateContext): void {
     if (!this.world.systemApi.has(PhysicsAPI)) {
       return;
     }
 
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+    const { deltaTime } = context;
 
     this.oneWayValidator.update();
 
@@ -359,7 +362,7 @@ export class CharacterController extends SceneSystem {
 
       const displacement = character.velocity
         .clone()
-        .multiplyNumber(deltaTimeInSeconds)
+        .multiplyNumber(deltaTime)
         .add(character._displacement);
 
       const movingUp =

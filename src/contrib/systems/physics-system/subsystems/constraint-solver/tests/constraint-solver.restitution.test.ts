@@ -30,7 +30,7 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
   });
@@ -59,7 +59,7 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
   });
@@ -88,7 +88,7 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
   });
@@ -121,7 +121,7 @@ describe('PhysicsSystem -> ConstraintSolver -> restitution', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(-5);
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
