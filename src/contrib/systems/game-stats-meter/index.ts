@@ -1,5 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
-import type { WorldSystemOptions, UpdateOptions } from '../../../engine/system';
+import type { WorldSystemOptions, UpdateContext } from '../../../engine/system';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
 import { GameStatsUpdate } from '../../events';
@@ -48,11 +48,11 @@ export class GameStatsMeter extends WorldSystem {
     this.actorQuery = undefined;
   }
 
-  update(options: UpdateOptions): void {
-    const { deltaTime } = options;
+  update(context: UpdateContext): void {
+    const { deltaTimeMs } = context;
 
     this.fps += 1;
-    this.time += deltaTime;
+    this.time += deltaTimeMs;
 
     if (this.time >= this.frequency) {
       this.world.dispatchEvent(GameStatsUpdate, {

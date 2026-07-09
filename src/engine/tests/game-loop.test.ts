@@ -66,8 +66,12 @@ describe('Engine -> GameLoop', () => {
     runNextFrame(10_000);
 
     expect(fixedUpdate).toHaveBeenCalledTimes(5);
-    expect(fixedUpdate).toHaveBeenCalledWith({ deltaTime: 20 });
-    expect(update).toHaveBeenCalledWith({ deltaTime: 250 });
+    expect(fixedUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ deltaTime: 0.02, deltaTimeMs: 20 }),
+    );
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({ deltaTime: 0.25, deltaTimeMs: 250, alpha: 0 }),
+    );
   });
 
   it('drops leftover fixed-step lag after reaching the per-frame cap', () => {

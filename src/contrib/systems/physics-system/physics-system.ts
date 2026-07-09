@@ -1,5 +1,8 @@
 import { SceneSystem } from '../../../engine/system';
-import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
+import type {
+  SceneSystemOptions,
+  FixedUpdateContext,
+} from '../../../engine/system';
 import type { World } from '../../../engine/world';
 import { Vector2 } from '../../../engine/math-lib';
 
@@ -101,7 +104,7 @@ export class PhysicsSystem extends SceneSystem {
     this.collisionDetectionSubsystem.destroy();
   }
 
-  fixedUpdate(options: UpdateOptions): void {
+  fixedUpdate(options: FixedUpdateContext): void {
     this.physicsSubsystem.integrateVelocities(options);
     this.physicsSubsystem.integrateKinematicPositions(options);
 

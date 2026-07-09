@@ -9,7 +9,7 @@ import {
 import {
   WorldSystem,
   type WorldSystemOptions,
-  type UpdateOptions,
+  type UpdateContext,
 } from '../../../engine/system';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
@@ -216,8 +216,8 @@ export class Renderer extends WorldSystem {
     this.worldContainer.pivot.set(x, y);
   }
 
-  update(options: UpdateOptions): void {
-    this.time.elapsed += options.deltaTime / 1000;
+  update(context: UpdateContext): void {
+    this.time.elapsed += context.deltaTime;
 
     this.updateCamera();
 

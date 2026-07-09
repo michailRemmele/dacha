@@ -138,8 +138,9 @@ export class RigidBody extends Component {
     this._sleepTime = 0;
 
     this.type = config.type;
-    this.mass = config.mass ?? 0;
-    this.gravityScale = config.gravityScale ?? 0;
+    this.mass = config.mass ?? (this.type === 'dynamic' ? 1 : 0);
+    this.gravityScale =
+      config.gravityScale ?? (this.type === 'dynamic' ? 1 : 0);
     this.linearDamping = config.linearDamping ?? 0;
     this.angularDamping = config.angularDamping ?? 0;
     this.restitution = config.restitution ?? 0;

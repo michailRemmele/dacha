@@ -29,7 +29,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(0);
@@ -55,7 +55,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeLessThan(3);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0, 2);
@@ -87,7 +87,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(3);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
@@ -113,7 +113,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(2);
@@ -146,7 +146,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(0);
@@ -182,7 +182,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(5);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(5);
@@ -219,7 +219,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(5);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(-5);
@@ -251,7 +251,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 100 });
+    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody1.linearVelocity.y).toBeLessThanOrEqual(0);
   });

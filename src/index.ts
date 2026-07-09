@@ -9,7 +9,8 @@ export type {
   System,
   WorldSystemOptions,
   SceneSystemOptions,
-  UpdateOptions,
+  UpdateContext,
+  FixedUpdateContext,
 } from './engine/system';
 export type {
   ActorCollectionFilter,
