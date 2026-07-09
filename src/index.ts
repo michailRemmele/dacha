@@ -9,9 +9,8 @@ export type {
   System,
   WorldSystemOptions,
   SceneSystemOptions,
-  UpdateContext,
-  FixedUpdateContext,
 } from './engine/system';
+export type { Time } from './engine/time';
 export type {
   ActorCollectionFilter,
   ActorSpawner,

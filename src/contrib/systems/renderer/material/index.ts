@@ -6,7 +6,8 @@ import {
   Texture,
 } from 'pixi.js';
 
-import type { ViewComponent, Time } from '../types';
+import type { Time } from '../../../../engine/time';
+import type { ViewComponent } from '../types';
 
 import type { Shader, ShaderConstructor, MaterialConfig } from './shader';
 import { DEFAULT_FRAGMENT_SHADER, DEFAULT_VERTEX_SHADER } from './consts';
@@ -124,7 +125,7 @@ export class MaterialSystem {
       view.shader.resources.uSampler = view.texture.source;
     }
 
-    view.shader.resources.uniformsGroup.uniforms.uTime = this.time.elapsed;
+    view.shader.resources.uniformsGroup.uniforms.uTime = this.time.elapsedTime;
     view.shader.resources.uniformsGroup.uniforms.uAlpha =
       view.getGlobalAlpha(true);
 

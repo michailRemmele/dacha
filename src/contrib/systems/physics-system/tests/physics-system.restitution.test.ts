@@ -42,7 +42,7 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
     let minY = transform.world.position.y;
 
     for (let step = 0; step < 500; step += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.02, deltaTimeMs: 20, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
 
       if (rigidBody.linearVelocity.y < 0) {
         minY = Math.min(minY, transform.world.position.y);
@@ -62,7 +62,8 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
 
   it('Does not gain bounce height on a frictionless angled bouncy contact', () => {
     const scene = createScene();
-    const { physicsSystem } = createPhysicsSystem(scene, undefined, 600);
+    const { physicsSystem, time } = createPhysicsSystem(scene, undefined, 600);
+    time.fixedDeltaTime = 0.02;
     const slope = createBoxActor('slope', 'static', 0, 48);
     slope.getComponent(RigidBody).restitution = 1;
     slope.getComponent(RigidBody).friction = 0;
@@ -93,7 +94,7 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
     let minY = transform.world.position.y;
 
     for (let step = 0; step < 600; step += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.02, deltaTimeMs: 20, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
 
       if (rigidBody.linearVelocity.y < 0) {
         minY = Math.min(minY, transform.world.position.y);
@@ -156,7 +157,7 @@ describe('Systems -> PhysicsSystem -> restitution', () => {
     let maxLinearVelocityX = 0;
 
     for (let step = 0; step < 600; step += 1) {
-      physicsSystem.fixedUpdate({ deltaTime: 0.02, deltaTimeMs: 20, elapsedTime: 0 });
+      physicsSystem.fixedUpdate();
 
       maxAngularVelocity = Math.max(
         maxAngularVelocity,

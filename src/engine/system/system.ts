@@ -6,6 +6,7 @@ import type { ActorSpawner } from '../actor';
 import type { TemplateCollection } from '../template';
 import type { Scene } from '../scene';
 import type { World } from '../world';
+import type { Time } from '../time';
 import type { Constructor } from '../../types/utils';
 
 /**
@@ -20,6 +21,8 @@ interface SystemOptions extends Record<string, unknown> {
   globalOptions: Record<string, unknown>;
   /** Template collection for actor creation */
   templateCollection: TemplateCollection;
+  /** Shared timing state */
+  time: Time;
 }
 
 /**
@@ -41,38 +44,6 @@ export interface WorldSystemOptions extends SystemOptions {
 }
 
 /**
- * Timing context passed to the fixed-timestep update method.
- *
- * The timestep is constant across calls, so `deltaTime`/`deltaTimeMs` never
- * vary. `elapsedTime` is the accumulated fixed-simulation clock.
- */
-export interface FixedUpdateContext {
-  /** Fixed timestep in seconds. */
-  deltaTime: number;
-  /** Fixed timestep in milliseconds. */
-  deltaTimeMs: number;
-  /** Accumulated fixed-simulation time in seconds since the game loop started. */
-  elapsedTime: number;
-}
-
-/**
- * Timing context passed to the variable-timestep (render) update method.
- */
-export interface UpdateContext {
-  /** Time since the last update in seconds. */
-  deltaTime: number;
-  /** Time since the last update in milliseconds. */
-  deltaTimeMs: number;
-  /** Real elapsed time in seconds since the game loop started. */
-  elapsedTime: number;
-  /**
-   * Interpolation factor in `[0, 1)` between the last two fixed steps, for
-   * smoothing rendered state.
-   */
-  alpha: number;
-}
-
-/**
  * Abstract base class for all game systems.
  *
  * Systems are the core logic units that operate on scenes and actors.
@@ -81,17 +52,20 @@ export interface UpdateContext {
  * ```typescript
  * class MovementSystem extends SceneSystem {
  *   private actorQuery: ActorQuery;
+ *   private time: Time;
  *
  *   constructor(options: SceneSystemOptions) {
- *     super(options);
+ *     super();
  *
+ *     this.time = options.time;
  *     this.actorQuery = new ActorQuery({
  *       scene: options.scene,
  *       filter: [Transform, Velocity]
  *     });
  *   }
  *
- *   update({ deltaTime }: UpdateContext): void {
+ *   update(): void {
+ *     const { deltaTime } = this.time;
  *     const actors = this.actorQuery.getActors();
  *
  *     for (const actor of actors) {
@@ -120,9 +94,9 @@ export abstract class System {
   /** Called when a scene is destroyed */
   onSceneDestroy?(scene: Scene): void;
   /** Called every frame with variable timestep */
-  update?(context: UpdateContext): void;
+  update?(): void;
   /** Called with fixed timestep for physics calculations */
-  fixedUpdate?(context: FixedUpdateContext): void;
+  fixedUpdate?(): void;
 }
 
 /**
