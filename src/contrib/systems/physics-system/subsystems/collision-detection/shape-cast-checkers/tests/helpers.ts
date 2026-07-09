@@ -8,6 +8,7 @@ import type {
   CircleCastGeometry,
 } from '../../types';
 import type { ShapeCastCheckerHit } from '../types';
+import { expectHit } from '../../tests/assertions';
 
 export const createCircleCastGeometry = (
   centerX: number,
@@ -68,12 +69,4 @@ export const createBoxCastGeometry = (
 
 export const expectShapeCastHit = (
   hit: ShapeCastCheckerHit | false,
-): ShapeCastCheckerHit => {
-  expect(hit).not.toBe(false);
-
-  if (hit === false) {
-    throw new Error('Expected shape-cast hit, received false');
-  }
-
-  return hit;
-};
+): ShapeCastCheckerHit => expectHit(hit, 'shape-cast hit');

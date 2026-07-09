@@ -4,5 +4,6 @@ export type {
   SystemConstructor,
   SceneSystemOptions,
   WorldSystemOptions,
-  UpdateOptions,
+  UpdateContext,
+  FixedUpdateContext,
 } from './system';

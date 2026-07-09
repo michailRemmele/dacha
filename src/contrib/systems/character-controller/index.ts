@@ -1,7 +1,10 @@
 import { ActorQuery } from '../../../engine/actor';
 import type { Actor } from '../../../engine/actor';
 import { SceneSystem } from '../../../engine/system';
-import type { SceneSystemOptions, UpdateOptions } from '../../../engine/system';
+import type {
+  SceneSystemOptions,
+  FixedUpdateContext,
+} from '../../../engine/system';
 import { Vector2, VectorOps, type Point } from '../../../engine/math-lib';
 import {
   Collider,
@@ -11,9 +14,11 @@ import {
 } from '../../components';
 import { PhysicsAPI } from '../physics-system';
 import type { CastHit, OverlapHit } from '../physics-system/types';
-import { OneWayValidator } from '../../utils/one-way-validator';
 import { CharacterHit } from '../../events';
+import { RemoveActor } from '../../../engine/events';
+import type { RemoveActorEvent } from '../../../engine/events';
 
+import { OneWayValidator } from './one-way-validator';
 import { clipAgainstNormal } from './utils';
 
 const DISTANCE_EPSILON = 0.000001;
@@ -45,13 +50,19 @@ export class CharacterController extends SceneSystem {
       scene: options.scene,
       filter: [CharacterBody, Transform, Collider, RigidBody],
     });
+    this.actorQuery.addEventListener(RemoveActor, this.handleRemoveActor);
 
     this.oneWayValidator = new OneWayValidator();
   }
 
   onSceneDestroy(): void {
+    this.actorQuery.removeEventListener(RemoveActor, this.handleRemoveActor);
     this.actorQuery.destroy();
   }
+
+  private handleRemoveActor = (event: RemoveActorEvent): void => {
+    this.oneWayValidator.delete(event.actor);
+  };
 
   private isBlockingHit(actor: Actor, hit: CastHit): boolean {
     const rigidBody = hit.actor.getComponent(RigidBody) as
@@ -66,7 +77,7 @@ export class CharacterController extends SceneSystem {
       return true;
     }
 
-    return this.oneWayValidator.validate(hit.actor, actor, hit.normal);
+    return this.oneWayValidator.shouldBlock(hit.actor, actor, hit.normal);
   }
 
   private isWalkable(actor: Actor, normal: Point): boolean {
@@ -77,20 +88,16 @@ export class CharacterController extends SceneSystem {
     );
   }
 
-  private isRecoverableOverlap(actor: Actor, hit: OverlapHit): boolean {
+  private isRecoverableOverlap(hit: OverlapHit): boolean {
     const rigidBody = hit.actor.getComponent(RigidBody) as
       | RigidBody
       | undefined;
 
-    if (!rigidBody || rigidBody.disabled || rigidBody.type === 'dynamic') {
-      return false;
-    }
-
-    if (!rigidBody.oneWay || !rigidBody.oneWayNormal) {
-      return true;
-    }
-
-    return this.oneWayValidator.validate(hit.actor, actor, hit.normal);
+    return (
+      rigidBody !== undefined &&
+      !rigidBody.disabled &&
+      rigidBody.type !== 'dynamic'
+    );
   }
 
   private resetGroundState(character: CharacterBody): void {
@@ -122,6 +129,8 @@ export class CharacterController extends SceneSystem {
     const transform = actor.getComponent(Transform);
     const distance = displacement.magnitude;
 
+    this.oneWayValidator.touch(actor);
+
     return physicsApi.castActor({
       actor,
       offset: {
@@ -130,7 +139,7 @@ export class CharacterController extends SceneSystem {
       },
       direction: displacement,
       maxDistance: distance + character.skinWidth,
-      hitFilter,
+      hitFilter: (hit) => this.isBlockingHit(actor, hit) && hitFilter(hit),
     });
   }
 
@@ -147,7 +156,7 @@ export class CharacterController extends SceneSystem {
         return false;
       }
 
-      return this.isBlockingHit(actor, hit);
+      return true;
     });
   }
 
@@ -156,12 +165,8 @@ export class CharacterController extends SceneSystem {
     position: Point,
     displacement: Vector2,
   ): CastHit | null {
-    return this.cast(
-      actor,
-      position,
-      displacement,
-      (hit) =>
-        this.isBlockingHit(actor, hit) && this.isWalkable(actor, hit.normal),
+    return this.cast(actor, position, displacement, (hit) =>
+      this.isWalkable(actor, hit.normal),
     );
   }
 
@@ -185,7 +190,7 @@ export class CharacterController extends SceneSystem {
       let recovered = false;
 
       for (const hit of hits) {
-        if (!this.isRecoverableOverlap(actor, hit)) {
+        if (!this.isRecoverableOverlap(hit)) {
           continue;
         }
 
@@ -321,12 +326,12 @@ export class CharacterController extends SceneSystem {
     target.y += snapDirection.y;
   }
 
-  fixedUpdate(options: UpdateOptions): void {
+  fixedUpdate(context: FixedUpdateContext): void {
     if (!this.world.systemApi.has(PhysicsAPI)) {
       return;
     }
 
-    const deltaTimeInSeconds = options.deltaTime / 1000;
+    const { deltaTime } = context;
 
     this.oneWayValidator.update();
 
@@ -357,7 +362,7 @@ export class CharacterController extends SceneSystem {
 
       const displacement = character.velocity
         .clone()
-        .multiplyNumber(deltaTimeInSeconds)
+        .multiplyNumber(deltaTime)
         .add(character._displacement);
 
       const movingUp =

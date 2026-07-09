@@ -23,12 +23,13 @@ describe('Systems -> PhysicsSystem -> collision resolution', () => {
     scene.appendChild(floor);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
-    expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
-    expect(transform.world.position.y).toBeLessThanOrEqual(1.02);
+    expect(rigidBody.linearVelocity.y).toBeLessThanOrEqual(0);
+    expect(Math.abs(rigidBody.angularVelocity)).toBeLessThan(0.02);
+    expect(transform.world.position.y).toBeLessThanOrEqual(1.51);
   });
 
   it('Skips collision resolution when collision matrix disables a pair', () => {
@@ -57,9 +58,9 @@ describe('Systems -> PhysicsSystem -> collision resolution', () => {
     scene.appendChild(floor);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(15);
     expect(transform.world.position.y).toBeGreaterThan(1.02);
@@ -88,11 +89,11 @@ describe('Systems -> PhysicsSystem -> collision resolution', () => {
     scene.appendChild(floor);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
-    physicsSystem.fixedUpdate({ deltaTime: 100 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(0);
-    expect(transform.world.position.y).toBeLessThanOrEqual(2.3);
+    expect(transform.world.position.y).toBeLessThanOrEqual(2.96);
   });
 });

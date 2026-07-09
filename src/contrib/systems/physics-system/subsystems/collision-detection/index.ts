@@ -327,7 +327,11 @@ export class CollisionDetectionSubsystem {
     proxy1: Required<Proxy>,
     proxy2: Required<Proxy>,
   ): boolean {
-    return this.collisionMatrix[proxy1.layer]?.[proxy2.layer] ?? true;
+    return (
+      this.collisionMatrix[proxy1.layer]?.[proxy2.layer] ??
+      this.collisionMatrix[proxy2.layer]?.[proxy1.layer] ??
+      true
+    );
   }
 
   private testState(proxy1: Proxy, proxy2: Proxy): boolean {

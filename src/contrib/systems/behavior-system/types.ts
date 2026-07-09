@@ -4,6 +4,7 @@ import type {
 } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
+import type { UpdateContext, FixedUpdateContext } from '../../../engine/system';
 import type { Constructor } from '../../../types/utils';
 
 /**
@@ -23,14 +24,6 @@ export interface BehaviorOptions {
 }
 
 /**
- * Options for the update method
- */
-interface UpdateOptions {
-  /** Time elapsed since the last update in milliseconds */
-  deltaTime: number
-}
-
-/**
  * Base class for all behaviors
  *
  * Behaviors are the core logic units that operate on actors
@@ -41,8 +34,10 @@ export abstract class Behavior {
   static behaviorName: string;
   /** Destroy the behavior */
   destroy?(): void;
-  /** Update the behavior */
-  update?(options: UpdateOptions): void;
+  /** Update the behavior every frame with a variable timestep */
+  update?(context: UpdateContext): void;
+  /** Update the behavior with a fixed timestep, aligned with physics */
+  fixedUpdate?(context: FixedUpdateContext): void;
 }
 
 /**
