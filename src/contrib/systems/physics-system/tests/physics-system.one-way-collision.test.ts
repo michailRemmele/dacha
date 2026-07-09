@@ -22,9 +22,9 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
     scene.appendChild(floor);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.linearVelocity.y).toBeLessThanOrEqual(0);
     expect(Math.abs(rigidBody.angularVelocity)).toBeLessThan(0.02);
@@ -49,10 +49,10 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
     scene.appendChild(floor);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(-15);
     expect(transform.world.position.y).toBeCloseTo(-2);
@@ -76,9 +76,9 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
     scene.appendChild(floor);
     scene.appendChild(body);
 
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
-    physicsSystem.fixedUpdate({ deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
+    physicsSystem.fixedUpdate();
 
     expect(rigidBody.linearVelocity.y).toBeCloseTo(-15);
     expect(transform.world.position.y).toBeCloseTo(-1.5);

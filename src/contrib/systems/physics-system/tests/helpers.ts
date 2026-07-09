@@ -2,10 +2,17 @@ import { ActorCreator, ActorSpawner, Actor } from '../../../../engine/actor';
 import { Scene } from '../../../../engine/scene';
 import { TemplateCollection } from '../../../../engine/template';
 import { World } from '../../../../engine/world';
+import { Time } from '../../../../engine/time';
 import { Collider, RigidBody } from '../../../components';
 import { Transform } from '../../../components/transform';
 import { PhysicsSystem } from '../index';
 import type { PhysicsSettings, PhysicsSystemOptions } from '../types';
+
+export const createTime = (fixedDeltaTime = 0.1): Time => {
+  const time = new Time();
+  time.fixedDeltaTime = fixedDeltaTime;
+  return time;
+};
 
 export const createScene = (): Scene => {
   const templateCollection = new TemplateCollection();
@@ -36,10 +43,11 @@ export const createPhysicsSystem = (
       | 'maxBiasVelocity'
     >
   > = {},
-): { physicsSystem: PhysicsSystem; world: World } => {
+): { physicsSystem: PhysicsSystem; world: World; time: Time } => {
   const world = new World({ id: 'world', name: 'world' });
   const templateCollection = new TemplateCollection();
   const actorCreator = new ActorCreator([], templateCollection);
+  const time = createTime();
 
   world.appendChild(scene);
 
@@ -51,12 +59,13 @@ export const createPhysicsSystem = (
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: settings ? { physics: settings } : {},
     templateCollection,
+    time,
     ...solverOptions,
   });
 
   physicsSystem.onSceneEnter?.();
 
-  return { physicsSystem, world };
+  return { physicsSystem, world, time };
 };
 
 export const createBoxActor = (

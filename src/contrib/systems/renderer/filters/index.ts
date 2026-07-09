@@ -1,6 +1,6 @@
 import { Filter, type Application } from 'pixi.js';
 
-import type { Time } from '../types';
+import type { Time } from '../../../../engine/time';
 
 import type {
   FilterEffect,
@@ -109,7 +109,7 @@ export class FilterSystem {
       this.effects[config.name]?.update?.(
         filter,
         config.options,
-        this.time.elapsed,
+        this.time.elapsedTime,
       );
     });
   }

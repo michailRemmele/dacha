@@ -1,4 +1,5 @@
 import { GameLoop } from '../game-loop';
+import { Time } from '../time';
 import type { SceneManager } from '../scene';
 import type { System } from '../system';
 
@@ -12,12 +13,17 @@ describe('Engine -> GameLoop', () => {
   const createGameLoop = (
     system: Partial<System>,
     performanceSettings = {},
-  ): GameLoop => {
+  ): { gameLoop: GameLoop; time: Time } => {
     const sceneManager = {
       getSystems: () => [system],
     } as unknown as SceneManager;
 
-    return new GameLoop(sceneManager, performanceSettings);
+    const time = new Time();
+
+    return {
+      gameLoop: new GameLoop(sceneManager, time, performanceSettings),
+      time,
+    };
   };
 
   const runNextFrame = (time: number): void => {
@@ -60,23 +66,22 @@ describe('Engine -> GameLoop', () => {
   it('caps a long frame after the game was suspended', () => {
     const fixedUpdate = jest.fn();
     const update = jest.fn();
-    const gameLoop = createGameLoop({ fixedUpdate, update });
+    const { gameLoop, time } = createGameLoop({ fixedUpdate, update });
 
     gameLoop.run();
     runNextFrame(10_000);
 
     expect(fixedUpdate).toHaveBeenCalledTimes(5);
-    expect(fixedUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({ deltaTime: 0.02, deltaTimeMs: 20 }),
-    );
-    expect(update).toHaveBeenCalledWith(
-      expect.objectContaining({ deltaTime: 0.25, deltaTimeMs: 250, alpha: 0 }),
-    );
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(time.fixedDeltaTime).toBeCloseTo(0.02);
+    expect(time.deltaTime).toBeCloseTo(0.25);
+    expect(time.elapsedTime).toBeCloseTo(0.25);
+    expect(time.alpha).toBe(0);
   });
 
   it('drops leftover fixed-step lag after reaching the per-frame cap', () => {
     const fixedUpdate = jest.fn();
-    const gameLoop = createGameLoop(
+    const { gameLoop } = createGameLoop(
       { fixedUpdate },
       { maxFixedUpdatesPerFrame: 2 },
     );

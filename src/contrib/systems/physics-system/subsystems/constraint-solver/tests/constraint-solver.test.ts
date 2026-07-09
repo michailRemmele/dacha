@@ -2,6 +2,7 @@ import { Vector2 } from '../../../../../../engine/math-lib';
 import { RigidBody } from '../../../../../components/rigid-body';
 import { Transform } from '../../../../../components/transform';
 import type { Contact } from '../../collision-detection/types';
+import { createTime } from '../../../tests/helpers';
 import { ConstraintSolver } from '../index';
 
 import { createActor } from './helpers';
@@ -9,6 +10,7 @@ import { createActor } from './helpers';
 describe('PhysicsSystem -> ConstraintSolver', () => {
   it('Removes relative normal velocity between equal-mass dynamic bodies', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('body-1', 'dynamic');
@@ -29,7 +31,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(0);
@@ -37,6 +39,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
   it('Reduces tangential sliding velocity when contact has closing normal velocity', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('sliding-body', 'dynamic');
@@ -55,7 +58,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeLessThan(3);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0, 2);
@@ -63,6 +66,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
   it('Uses body friction values for contact friction', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('sliding-body', 'dynamic', {
@@ -87,7 +91,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(3);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(0);
@@ -95,6 +99,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
   it('Does not apply wall friction without a closing normal velocity', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('body', 'dynamic');
@@ -113,7 +118,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody1.linearVelocity.y).toBeCloseTo(2);
@@ -121,6 +126,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
   it('Cancels dynamic velocity against a kinematic body without moving the kinematic body', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
 
@@ -146,7 +152,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(0);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(0);
@@ -157,6 +163,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
   it('Lets moving kinematic bodies push dynamic bodies', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
 
@@ -182,7 +189,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(5);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(5);
@@ -193,6 +200,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
   it('Applies no impulse between two overlapping kinematic bodies', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
 
@@ -219,7 +227,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.x).toBeCloseTo(5);
     expect(rigidBody2.linearVelocity.x).toBeCloseTo(-5);
@@ -229,6 +237,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
 
   it('Blocks a dynamic body approaching a one-way surface from the solid side', () => {
     const solver = new ConstraintSolver({
+      time: createTime(),
       getGravity: (): Vector2 => new Vector2(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
@@ -251,7 +260,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
       },
     ];
 
-    solver.update(contacts, { deltaTime: 0.1, deltaTimeMs: 100, elapsedTime: 0 });
+    solver.update(contacts);
 
     expect(rigidBody1.linearVelocity.y).toBeLessThanOrEqual(0);
   });

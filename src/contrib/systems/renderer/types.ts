@@ -55,7 +55,3 @@ export interface RendererResources {
   filterEffects?: FilterEffectConstructor[];
   shaders?: ShaderConstructor[];
 }
-
-export interface Time {
-  elapsed: number;
-}

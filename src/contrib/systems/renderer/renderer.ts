@@ -9,8 +9,8 @@ import {
 import {
   WorldSystem,
   type WorldSystemOptions,
-  type UpdateContext,
 } from '../../../engine/system';
+import type { Time } from '../../../engine/time';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
 import { Camera } from '../../components/camera';
@@ -26,7 +26,7 @@ import {
   sortByXAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
-import type { Sorting, RendererResources, Time } from './types';
+import type { Sorting, RendererResources } from './types';
 import { Assets } from './assets';
 import { ActorRenderTree } from './actor-render-tree';
 import { FilterSystem } from './filters';
@@ -74,7 +74,10 @@ export class Renderer extends WorldSystem {
       world,
       resources,
       filterEffects,
+      time,
     } = options as RendererOptions;
+
+    this.time = time;
 
     this.backgroundColor = new Color(backgroundColor);
 
@@ -108,8 +111,6 @@ export class Renderer extends WorldSystem {
     this.worldContainer = new Container();
 
     this.assets = new Assets({ templateCollection });
-
-    this.time = { elapsed: 0 };
 
     this.materialSystem = new MaterialSystem({
       shaders: this.resources?.shaders,
@@ -216,9 +217,7 @@ export class Renderer extends WorldSystem {
     this.worldContainer.pivot.set(x, y);
   }
 
-  update(context: UpdateContext): void {
-    this.time.elapsed += context.deltaTime;
-
+  update(): void {
     this.updateCamera();
 
     this.actorRenderTree?.update();
