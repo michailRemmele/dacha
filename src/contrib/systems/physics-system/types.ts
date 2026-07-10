@@ -3,8 +3,8 @@ import type { Actor } from '../../../engine/actor';
 import type { Vector2, Point } from '../../../engine/math-lib';
 
 export interface PhysicsSystemOptions extends SceneSystemOptions {
-  gravityX: number;
-  gravityY: number;
+  gravityX?: number;
+  gravityY?: number;
   solverIterations?: number;
   linearSleepThreshold?: number;
   angularSleepThreshold?: number;
