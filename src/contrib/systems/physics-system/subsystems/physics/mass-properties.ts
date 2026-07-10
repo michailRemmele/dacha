@@ -68,7 +68,7 @@ export const calculateInertia = (
         return 0;
       }
 
-      inertia = (mass * (length * length + 1)) / 12;
+      inertia = (mass * length * length) / 12;
       break;
     }
   }

@@ -180,6 +180,7 @@ export class RigidBody extends Component {
   /**
    * Sets the mass used by dynamic bodies.
    *
+   * Mass is an authored, kilogram-like scalar.
    * Non-positive values make the body immovable by forces and impulses.
    */
   set mass(value: number) {

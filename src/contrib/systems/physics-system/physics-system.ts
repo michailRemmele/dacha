@@ -10,6 +10,7 @@ import {
   ConstraintSolver,
 } from './subsystems';
 import { PhysicsAPI } from './api';
+import { DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y } from './consts';
 import type { PhysicsSystemOptions, CastHit, OverlapHit } from './types';
 
 /**
@@ -34,8 +35,8 @@ export class PhysicsSystem extends SceneSystem {
     super();
 
     const {
-      gravityX = 0,
-      gravityY = 0,
+      gravityX = DEFAULT_GRAVITY_X,
+      gravityY = DEFAULT_GRAVITY_Y,
       solverIterations,
       linearSleepThreshold,
       angularSleepThreshold,
