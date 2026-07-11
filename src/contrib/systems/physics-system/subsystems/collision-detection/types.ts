@@ -3,8 +3,6 @@ import type { Actor } from '../../../../../engine/actor';
 import type { CastHit, OverlapHit } from '../../types';
 import type { DynamicAABBTreeEntryId } from './dynamic-aabb-tree';
 
-import type { DispersionCalculator } from './dispersion-calculator';
-
 export type { Point };
 
 export interface AABB {
@@ -109,7 +107,6 @@ export interface ActorProxy {
   aabb: AABB;
   geometry: Geometry;
   orientationData: OrientationData;
-  edges: Record<Axis, [SortedItem, SortedItem]>;
   treeEntryId: DynamicAABBTreeEntryId;
   layer: string;
 }
@@ -124,23 +121,6 @@ export interface QueryProxy {
 }
 
 export type Proxy = ActorProxy | QueryProxy;
-
-export interface SortedItem {
-  proxy: ActorProxy;
-  value: number;
-}
-
-export interface AxisEntry {
-  sortedList: SortedItem[];
-  dispersionCalculator: DispersionCalculator;
-}
-
-export type Axis = 'x' | 'y';
-
-export interface Axes {
-  x: AxisEntry;
-  y: AxisEntry;
-}
 
 export type ProxyPair = [ActorProxy, ActorProxy];
 

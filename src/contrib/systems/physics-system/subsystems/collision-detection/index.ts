@@ -1,19 +1,30 @@
 import { ActorQuery } from '../../../../../engine/actor';
 import type { SceneSystemOptions } from '../../../../../engine/system';
 import type { Actor } from '../../../../../engine/actor';
-import { Transform, Collider, RigidBody } from '../../../../components';
+import { Transform, Collider } from '../../../../components';
 import { AddActor, RemoveActor } from '../../../../../engine/events';
 import type {
   AddActorEvent,
   RemoveActorEvent,
 } from '../../../../../engine/events';
-import { Pool, insertionSort } from '../../../../../engine/data-lib';
+import { Pool } from '../../../../../engine/data-lib';
+import type {
+  PhysicsSettings,
+  RaycastParams,
+  CastHit,
+  OverlapHit,
+  OverlapParams,
+  OverlapActorParams,
+  ShapeCastParams,
+  CastActorParams,
+  CastHitCallback,
+  OverlapHitCallback,
+} from '../../types';
 
 import { DynamicAABBTree } from './dynamic-aabb-tree';
 import { geometryBuilders } from './geometry-builders';
 import { aabbBuilders } from './aabb-builders';
 import { intersectionCheckers } from './intersection-checkers';
-import { DispersionCalculator } from './dispersion-calculator';
 import {
   checkTransform,
   checkCollider,
@@ -37,32 +48,17 @@ import {
   makeOverlapHit,
 } from './query-utils';
 import type {
-  PhysicsSettings,
-  RaycastParams,
-  CastHit,
-  OverlapHit,
-  OverlapParams,
-  OverlapActorParams,
-  ShapeCastParams,
-  CastActorParams,
-  CastHitCallback,
-  OverlapHitCallback,
-} from '../../types';
-import type {
-  SortedItem,
   Proxy,
   ActorProxy,
   QueryProxy,
-  Axis,
-  Axes,
   ProxyPair,
   Contact,
   Intersection,
 } from './types';
+import { isStatic, isDisabled } from './utils';
 
 export class CollisionDetectionSubsystem {
   private actorQuery: ActorQuery;
-  private axis: Axes;
   private queryTree: DynamicAABBTree<ActorProxy>;
   private proxiesByActorId: Map<string, ActorProxy>;
   private proxyPairs: ProxyPair[];
@@ -83,16 +79,6 @@ export class CollisionDetectionSubsystem {
       filter: [Collider, Transform],
     });
 
-    this.axis = {
-      x: {
-        sortedList: [],
-        dispersionCalculator: new DispersionCalculator('x'),
-      },
-      y: {
-        sortedList: [],
-        dispersionCalculator: new DispersionCalculator('y'),
-      },
-    };
     this.queryTree = new DynamicAABBTree();
     this.proxiesByActorId = new Map();
     this.proxyPairs = [];
@@ -336,12 +322,6 @@ export class CollisionDetectionSubsystem {
 
     proxy.treeEntryId = this.queryTree.insert(aabb, proxy);
 
-    this.axis.x.dispersionCalculator.addToSample(aabb);
-    this.addToSortedList(proxy, 'x');
-
-    this.axis.y.dispersionCalculator.addToSample(aabb);
-    this.addToSortedList(proxy, 'y');
-
     this.proxiesByActorId.set(actor.id, proxy);
   }
 
@@ -353,7 +333,6 @@ export class CollisionDetectionSubsystem {
     const aabb = aabbBuilders[collider.shape.type](geometry);
 
     const proxy = this.proxiesByActorId.get(actor.id)!;
-    const prevAABB = proxy.aabb;
 
     proxy.aabb = aabb;
     proxy.geometry = geometry;
@@ -361,66 +340,6 @@ export class CollisionDetectionSubsystem {
     proxy.layer = collider.layer;
 
     this.queryTree.update(proxy.treeEntryId, aabb);
-
-    this.axis.x.dispersionCalculator.removeFromSample(prevAABB);
-    this.axis.x.dispersionCalculator.addToSample(aabb);
-    this.updateSortedList(proxy, 'x');
-
-    this.axis.y.dispersionCalculator.removeFromSample(prevAABB);
-    this.axis.y.dispersionCalculator.addToSample(aabb);
-    this.updateSortedList(proxy, 'y');
-  }
-
-  private addToSortedList(proxy: ActorProxy, axis: Axis): void {
-    const min = { value: proxy.aabb.min[axis], proxy };
-    const max = { value: proxy.aabb.max[axis], proxy };
-
-    this.axis[axis].sortedList.push(min, max);
-
-    proxy.edges ??= {} as Record<Axis, [SortedItem, SortedItem]>;
-    proxy.edges[axis] = [min, max];
-  }
-
-  private updateSortedList(proxy: ActorProxy, axis: Axis): void {
-    const [min, max] = proxy.edges[axis];
-
-    min.value = proxy.aabb.min[axis];
-    min.proxy = proxy;
-
-    max.value = proxy.aabb.max[axis];
-    max.proxy = proxy;
-  }
-
-  private clearSortedList(axis: Axis): void {
-    this.axis[axis].sortedList = this.axis[axis].sortedList.filter(
-      (item) => !this.actorIdsToDelete.has(item.proxy.actor.id),
-    );
-  }
-
-  private getAxes(): Axis[] {
-    const xDispersion = this.axis.x.dispersionCalculator.getDispersion();
-    const yDispersion = this.axis.y.dispersionCalculator.getDispersion();
-
-    return xDispersion >= yDispersion ? ['x', 'y'] : ['y', 'x'];
-  }
-
-  private areStaticBodies(proxy1: ActorProxy, proxy2: ActorProxy): boolean {
-    const { actor: actor1 } = proxy1;
-    const { actor: actor2 } = proxy2;
-
-    const rigidBody1 = actor1.getComponent(RigidBody) as RigidBody | undefined;
-    const rigidBody2 = actor2.getComponent(RigidBody) as RigidBody | undefined;
-
-    return rigidBody1?.type === 'static' && rigidBody2?.type === 'static';
-  }
-
-  private testAABB(proxy1: Proxy, proxy2: Proxy, axis: Axis): boolean {
-    const aabb1 = proxy1.aabb;
-    const aabb2 = proxy2.aabb;
-
-    return (
-      aabb1.max[axis] >= aabb2.min[axis] && aabb1.min[axis] <= aabb2.max[axis]
-    );
   }
 
   private testCollisionLayers(
@@ -432,16 +351,6 @@ export class CollisionDetectionSubsystem {
       this.collisionMatrix[proxy2.layer]?.[proxy1.layer] ??
       true
     );
-  }
-
-  private testState(proxy1: Proxy, proxy2: Proxy): boolean {
-    const actor1 = 'actor' in proxy1 ? proxy1.actor : undefined;
-    const actor2 = 'actor' in proxy2 ? proxy2.actor : undefined;
-
-    const collider1 = actor1?.getComponent(Collider);
-    const collider2 = actor2?.getComponent(Collider);
-
-    return !collider1?.disabled && !collider2?.disabled;
   }
 
   private withCandidates<R>(
@@ -468,7 +377,7 @@ export class CollisionDetectionSubsystem {
       if (queryProxy.excludedActors?.has(proxy.actor)) {
         return;
       }
-      if (!this.testState(proxy, queryProxy)) {
+      if (isDisabled(proxy)) {
         return;
       }
       if (
@@ -488,45 +397,40 @@ export class CollisionDetectionSubsystem {
     out.length = candidateIndex;
   }
 
-  private sweepAndPrune(): void {
-    const [mainAxis, secondAxis] = this.getAxes();
+  private collectPairs(): void {
+    let pairIndex = 0;
 
-    const { sortedList } = this.axis[mainAxis];
-
-    insertionSort(sortedList, (arg1, arg2) => arg1.value - arg2.value);
-
-    const activeProxies = new Set<ActorProxy>();
-
-    let proxyPairIndex = 0;
-    for (const item of sortedList) {
-      const { proxy } = item;
-
-      if (!activeProxies.has(proxy)) {
-        activeProxies.forEach((activeProxy) => {
-          if (!this.testState(proxy, activeProxy)) {
-            return;
-          }
-          if (!this.testAABB(proxy, activeProxy, secondAxis)) {
-            return;
-          }
-          if (this.areStaticBodies(proxy, activeProxy)) {
-            return;
-          }
-          if (!this.testCollisionLayers(proxy, activeProxy)) {
-            return;
-          }
-
-          this.proxyPairs[proxyPairIndex] = [proxy, activeProxy];
-          proxyPairIndex += 1;
-        });
-        activeProxies.add(proxy);
-      } else {
-        activeProxies.delete(proxy);
+    this.proxiesByActorId.forEach((proxy) => {
+      if (isStatic(proxy)) {
+        return;
       }
-    }
+      if (isDisabled(proxy)) {
+        return;
+      }
 
-    if (this.proxyPairs.length > proxyPairIndex) {
-      this.proxyPairs.length = proxyPairIndex;
+      this.queryTree.query(proxy.aabb, (other) => {
+        if (other === proxy) {
+          return;
+        }
+
+        // Deduplicate dynamic-dynamic pairs
+        if (!isStatic(other) && proxy.treeEntryId >= other.treeEntryId) {
+          return;
+        }
+        if (isDisabled(other)) {
+          return;
+        }
+        if (!this.testCollisionLayers(proxy, other)) {
+          return;
+        }
+
+        this.proxyPairs[pairIndex] = [proxy, other];
+        pairIndex += 1;
+      });
+    });
+
+    if (this.proxyPairs.length > pairIndex) {
+      this.proxyPairs.length = pairIndex;
     }
   }
 
@@ -570,16 +474,10 @@ export class CollisionDetectionSubsystem {
       return;
     }
 
-    this.clearSortedList('x');
-    this.clearSortedList('y');
-
     this.actorIdsToDelete.forEach((id) => {
       const proxy = this.proxiesByActorId.get(id)!;
 
       this.queryTree.remove(proxy.treeEntryId);
-
-      this.axis.x.dispersionCalculator.removeFromSample(proxy.aabb);
-      this.axis.y.dispersionCalculator.removeFromSample(proxy.aabb);
 
       this.proxiesByActorId.delete(id);
     });
@@ -598,7 +496,7 @@ export class CollisionDetectionSubsystem {
       this.updateProxy(actor);
     });
 
-    this.sweepAndPrune();
+    this.collectPairs();
 
     let contactIndex = 0;
     this.proxyPairs.forEach((proxyPair) => {
