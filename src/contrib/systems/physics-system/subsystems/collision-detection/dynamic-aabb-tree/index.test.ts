@@ -168,4 +168,25 @@ describe('PhysicsSystem -> collision-detection -> DynamicAABBTree', () => {
         .sort(),
     );
   });
+
+  it('Supports nested queries issued from within a visitor', () => {
+    const tree = new DynamicAABBTree<string>();
+
+    tree.insert(createAABB(0, 0, 2, 2), 'a');
+    tree.insert(createAABB(3, 3, 5, 5), 'b');
+    tree.insert(createAABB(10, 10, 12, 12), 'c');
+
+    const outer: string[] = [];
+    const nested: string[][] = [];
+
+    tree.query(createAABB(0, 0, 12, 12), (value) => {
+      outer.push(value);
+      nested.push(tree.queryAll(createAABB(3, 3, 5, 5)).sort());
+    });
+
+    expect(outer.sort()).toStrictEqual(['a', 'b', 'c']);
+    nested.forEach((result) => {
+      expect(result).toStrictEqual(['b']);
+    });
+  });
 });

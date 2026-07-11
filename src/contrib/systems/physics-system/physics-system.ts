@@ -10,6 +10,7 @@ import {
   ConstraintSolver,
 } from './subsystems';
 import { PhysicsAPI } from './api';
+import { DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y } from './consts';
 import type { PhysicsSystemOptions, CastHit, OverlapHit } from './types';
 
 /**
@@ -34,8 +35,8 @@ export class PhysicsSystem extends SceneSystem {
     super();
 
     const {
-      gravityX = 0,
-      gravityY = 0,
+      gravityX = DEFAULT_GRAVITY_X,
+      gravityY = DEFAULT_GRAVITY_Y,
       solverIterations,
       linearSleepThreshold,
       angularSleepThreshold,
@@ -83,6 +84,16 @@ export class PhysicsSystem extends SceneSystem {
         this.collisionDetectionSubsystem.castActor(params),
       castActorAll: (params): CastHit[] =>
         this.collisionDetectionSubsystem.castActorAll(params),
+      raycastEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.raycastEach(params, callback),
+      shapeCastEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.shapeCastEach(params, callback),
+      overlapEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.overlapEach(params, callback),
+      castActorEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.castActorEach(params, callback),
+      overlapActorEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.overlapActorEach(params, callback),
       getGravity: (): Vector2 => this.gravity,
       setGravity: (gravity): void => {
         this.gravity = gravity;

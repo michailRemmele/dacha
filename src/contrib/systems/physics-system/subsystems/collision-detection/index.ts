@@ -7,7 +7,7 @@ import type {
   AddActorEvent,
   RemoveActorEvent,
 } from '../../../../../engine/events';
-import { insertionSort } from '../../../../../engine/data-lib';
+import { Pool, insertionSort } from '../../../../../engine/data-lib';
 
 import { DynamicAABBTree } from './dynamic-aabb-tree';
 import { geometryBuilders } from './geometry-builders';
@@ -24,12 +24,17 @@ import {
   buildActorQueryProxy,
   raycast,
   raycastAll,
+  raycastEach,
   overlap,
+  overlapEach,
   getOverlapQueryType,
   shapeCast,
   shapeCastAll,
+  shapeCastEach,
   getShapeCastQueryType,
   getActorCastQueryType,
+  makeCastHit,
+  makeOverlapHit,
 } from './query-utils';
 import type {
   PhysicsSettings,
@@ -40,6 +45,8 @@ import type {
   OverlapActorParams,
   ShapeCastParams,
   CastActorParams,
+  CastHitCallback,
+  OverlapHitCallback,
 } from '../../types';
 import type {
   SortedItem,
@@ -62,7 +69,9 @@ export class CollisionDetectionSubsystem {
   private contacts: Contact[];
   private actorIdsToDelete: Set<string>;
   private collisionMatrix: PhysicsSettings['collisionMatrix'];
-  private queryCandidates: ActorProxy[];
+  private candidateBufferPool: Pool<ActorProxy[]>;
+  private castHitPool: Pool<CastHit>;
+  private overlapHitPool: Pool<OverlapHit>;
 
   constructor(options: SceneSystemOptions) {
     const settings = options.globalOptions.physics as
@@ -90,7 +99,14 @@ export class CollisionDetectionSubsystem {
     this.contacts = [];
     this.actorIdsToDelete = new Set();
     this.collisionMatrix = settings?.collisionMatrix ?? {};
-    this.queryCandidates = [];
+    this.candidateBufferPool = new Pool<ActorProxy[]>(
+      () => [],
+      (buffer) => {
+        buffer.length = 0;
+      },
+    );
+    this.castHitPool = new Pool<CastHit>(makeCastHit);
+    this.overlapHitPool = new Pool<OverlapHit>(makeOverlapHit);
 
     this.actorQuery.getActors().forEach((actor) => this.addProxy(actor));
 
@@ -108,25 +124,25 @@ export class CollisionDetectionSubsystem {
   raycast(params: RaycastParams): CastHit | null {
     const queryProxy = buildQueryProxy('ray', params);
 
-    this.collectQueryCandidates(queryProxy);
-
-    return raycast(queryProxy, this.queryCandidates);
+    return this.withCandidates(queryProxy, (candidates) =>
+      raycast(queryProxy, candidates),
+    );
   }
 
   raycastAll(params: RaycastParams): CastHit[] {
     const queryProxy = buildQueryProxy('ray', params);
 
-    this.collectQueryCandidates(queryProxy);
-
-    return raycastAll(queryProxy, this.queryCandidates);
+    return this.withCandidates(queryProxy, (candidates) =>
+      raycastAll(queryProxy, candidates),
+    );
   }
 
   overlapShape(params: OverlapParams): OverlapHit[] {
     const queryProxy = buildQueryProxy(params.shape.type, params);
 
-    this.collectQueryCandidates(queryProxy);
-
-    return overlap(params.shape.type, queryProxy, this.queryCandidates);
+    return this.withCandidates(queryProxy, (candidates) =>
+      overlap(params.shape.type, queryProxy, candidates),
+    );
   }
 
   overlapActor(params: OverlapActorParams): OverlapHit[] {
@@ -138,29 +154,27 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildActorQueryProxy(queryType, params);
 
-    this.collectQueryCandidates(queryProxy);
-
-    return overlap(queryType, queryProxy, this.queryCandidates);
+    return this.withCandidates(queryProxy, (candidates) =>
+      overlap(queryType, queryProxy, candidates),
+    );
   }
 
   shapeCast(params: ShapeCastParams): CastHit | null {
     const queryType = getShapeCastQueryType(params);
-
     const queryProxy = buildQueryProxy(queryType, params);
 
-    this.collectQueryCandidates(queryProxy);
-
-    return shapeCast(queryType, queryProxy, this.queryCandidates);
+    return this.withCandidates(queryProxy, (candidates) =>
+      shapeCast(queryType, queryProxy, candidates),
+    );
   }
 
   shapeCastAll(params: ShapeCastParams): CastHit[] {
     const queryType = getShapeCastQueryType(params);
-
     const queryProxy = buildQueryProxy(queryType, params);
 
-    this.collectQueryCandidates(queryProxy);
-
-    return shapeCastAll(queryType, queryProxy, this.queryCandidates);
+    return this.withCandidates(queryProxy, (candidates) =>
+      shapeCastAll(queryType, queryProxy, candidates),
+    );
   }
 
   castActor(params: CastActorParams): CastHit | null {
@@ -172,9 +186,9 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildActorQueryProxy(queryType, params);
 
-    this.collectQueryCandidates(queryProxy);
-
-    return shapeCast(queryType, queryProxy, this.queryCandidates);
+    return this.withCandidates(queryProxy, (candidates) =>
+      shapeCast(queryType, queryProxy, candidates),
+    );
   }
 
   castActorAll(params: CastActorParams): CastHit[] {
@@ -186,9 +200,95 @@ export class CollisionDetectionSubsystem {
 
     const queryProxy = buildActorQueryProxy(queryType, params);
 
-    this.collectQueryCandidates(queryProxy);
+    return this.withCandidates(queryProxy, (candidates) =>
+      shapeCastAll(queryType, queryProxy, candidates),
+    );
+  }
 
-    return shapeCastAll(queryType, queryProxy, this.queryCandidates);
+  raycastEach(params: RaycastParams, callback: CastHitCallback): void {
+    const queryProxy = buildQueryProxy('ray', params);
+
+    this.withCandidates(queryProxy, (candidates) => {
+      const hit = this.castHitPool.acquire();
+
+      try {
+        raycastEach(queryProxy, candidates, hit, callback);
+      } finally {
+        this.castHitPool.release(hit);
+      }
+    });
+  }
+
+  shapeCastEach(params: ShapeCastParams, callback: CastHitCallback): void {
+    const queryType = getShapeCastQueryType(params);
+    const queryProxy = buildQueryProxy(queryType, params);
+
+    this.withCandidates(queryProxy, (candidates) => {
+      const hit = this.castHitPool.acquire();
+
+      try {
+        shapeCastEach(queryType, queryProxy, candidates, hit, callback);
+      } finally {
+        this.castHitPool.release(hit);
+      }
+    });
+  }
+
+  overlapEach(params: OverlapParams, callback: OverlapHitCallback): void {
+    const queryProxy = buildQueryProxy(params.shape.type, params);
+
+    this.withCandidates(queryProxy, (candidates) => {
+      const hit = this.overlapHitPool.acquire();
+
+      try {
+        overlapEach(params.shape.type, queryProxy, candidates, hit, callback);
+      } finally {
+        this.overlapHitPool.release(hit);
+      }
+    });
+  }
+
+  castActorEach(params: CastActorParams, callback: CastHitCallback): void {
+    const queryType = getActorCastQueryType(params);
+
+    if (!queryType) {
+      return;
+    }
+
+    const queryProxy = buildActorQueryProxy(queryType, params);
+
+    this.withCandidates(queryProxy, (candidates) => {
+      const hit = this.castHitPool.acquire();
+
+      try {
+        shapeCastEach(queryType, queryProxy, candidates, hit, callback);
+      } finally {
+        this.castHitPool.release(hit);
+      }
+    });
+  }
+
+  overlapActorEach(
+    params: OverlapActorParams,
+    callback: OverlapHitCallback,
+  ): void {
+    const queryType = getOverlapQueryType(params);
+
+    if (!queryType) {
+      return;
+    }
+
+    const queryProxy = buildActorQueryProxy(queryType, params);
+
+    this.withCandidates(queryProxy, (candidates) => {
+      const hit = this.overlapHitPool.acquire();
+
+      try {
+        overlapEach(queryType, queryProxy, candidates, hit, callback);
+      } finally {
+        this.overlapHitPool.release(hit);
+      }
+    });
   }
 
   private handleActorAdd = (event: AddActorEvent): void => {
@@ -344,7 +444,24 @@ export class CollisionDetectionSubsystem {
     return !collider1?.disabled && !collider2?.disabled;
   }
 
-  private collectQueryCandidates(queryProxy: QueryProxy): void {
+  private withCandidates<R>(
+    queryProxy: QueryProxy,
+    run: (candidates: ActorProxy[]) => R,
+  ): R {
+    const candidates = this.candidateBufferPool.acquire();
+
+    try {
+      this.collectQueryCandidates(queryProxy, candidates);
+      return run(candidates);
+    } finally {
+      this.candidateBufferPool.release(candidates);
+    }
+  }
+
+  private collectQueryCandidates(
+    queryProxy: QueryProxy,
+    out: ActorProxy[],
+  ): void {
     let candidateIndex = 0;
 
     this.queryTree.query(queryProxy.aabb, (proxy) => {
@@ -364,11 +481,11 @@ export class CollisionDetectionSubsystem {
         return;
       }
 
-      this.queryCandidates[candidateIndex] = proxy;
+      out[candidateIndex] = proxy;
       candidateIndex += 1;
     });
 
-    this.queryCandidates.length = candidateIndex;
+    out.length = candidateIndex;
   }
 
   private sweepAndPrune(): void {

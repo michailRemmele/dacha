@@ -7,6 +7,8 @@ import type {
   OverlapActorParams,
   ShapeCastParams,
   CastActorParams,
+  CastHitCallback,
+  OverlapHitCallback,
 } from './types';
 
 export interface PhysicsAPIHandlers {
@@ -18,6 +20,14 @@ export interface PhysicsAPIHandlers {
   shapeCastAll(params: ShapeCastParams): CastHit[];
   castActor(params: CastActorParams): CastHit | null;
   castActorAll(params: CastActorParams): CastHit[];
+  raycastEach(params: RaycastParams, callback: CastHitCallback): void;
+  shapeCastEach(params: ShapeCastParams, callback: CastHitCallback): void;
+  overlapEach(params: OverlapParams, callback: OverlapHitCallback): void;
+  castActorEach(params: CastActorParams, callback: CastHitCallback): void;
+  overlapActorEach(
+    params: OverlapActorParams,
+    callback: OverlapHitCallback,
+  ): void;
   getGravity(): Vector2;
   setGravity(gravity: Vector2): void;
 }
@@ -82,6 +92,16 @@ export class PhysicsAPI {
   }
 
   /**
+   * Casts a ray and invokes `callback` for every hit.
+   *
+   * @param params - Raycast parameters
+   * @param callback - Invoked once per hit with a reused hit object
+   */
+  raycastEach(params: RaycastParams, callback: CastHitCallback): void {
+    this.handlers.raycastEach(params, callback);
+  }
+
+  /**
    * Returns all collider intersections for the given query shape.
    *
    * @param params - Overlap parameters
@@ -92,6 +112,16 @@ export class PhysicsAPI {
   }
 
   /**
+   * Invokes `callback` for every collider intersecting the query shape.
+   *
+   * @param params - Overlap parameters
+   * @param callback - Invoked once per overlap with a reused hit object
+   */
+  overlapEach(params: OverlapParams, callback: OverlapHitCallback): void {
+    this.handlers.overlapEach(params, callback);
+  }
+
+  /**
    * Returns all collider intersections for an actor's collider.
    *
    * @param params - Actor overlap parameters
@@ -99,6 +129,19 @@ export class PhysicsAPI {
    */
   overlapActor(params: OverlapActorParams): OverlapHit[] {
     return this.handlers.overlapActor(params);
+  }
+
+  /**
+   * Invokes `callback` for every collider intersecting an actor's collider.
+   *
+   * @param params - Actor overlap parameters
+   * @param callback - Invoked once per overlap with a reused hit object
+   */
+  overlapActorEach(
+    params: OverlapActorParams,
+    callback: OverlapHitCallback,
+  ): void {
+    this.handlers.overlapActorEach(params, callback);
   }
 
   /**
@@ -122,6 +165,16 @@ export class PhysicsAPI {
   }
 
   /**
+   * Casts a shape and invokes `callback` for every hit.
+   *
+   * @param params - Shape cast parameters
+   * @param callback - Invoked once per hit with a reused hit object
+   */
+  shapeCastEach(params: ShapeCastParams, callback: CastHitCallback): void {
+    this.handlers.shapeCastEach(params, callback);
+  }
+
+  /**
    * Casts an actor's collider and returns the nearest hit, if any.
    *
    * @param params - Actor cast parameters
@@ -139,5 +192,19 @@ export class PhysicsAPI {
    */
   castActorAll(params: CastActorParams): CastHit[] {
     return this.handlers.castActorAll(params);
+  }
+
+  /**
+   * Casts an actor's collider and invokes `callback` for every hit.
+   *
+   * The `hit` passed to `callback` is a single object reused across
+   * invocations and is only valid for the duration of the call. Copy any
+   * fields you need to keep. Hits are delivered in arbitrary order.
+   *
+   * @param params - Actor cast parameters
+   * @param callback - Invoked once per hit with a reused hit object
+   */
+  castActorEach(params: CastActorParams, callback: CastHitCallback): void {
+    this.handlers.castActorEach(params, callback);
   }
 }
