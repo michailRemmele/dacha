@@ -29,6 +29,14 @@ export interface PhysicsQueryFilter<T> {
   layer?: string;
   excludeActors?: Actor[];
   actorFilter?: (actor: Actor) => boolean;
+  /**
+   * Called once per candidate hit to decide whether to keep it.
+   *
+   * The `hit` object passed to this callback may be reused and is only valid
+   * for the duration of the call.
+   * Inspect it and return a boolean; do not retain the reference or store it
+   * in an external collection.
+   */
   hitFilter?: (hit: T) => boolean;
 }
 
@@ -54,6 +62,10 @@ export interface OverlapHit {
   penetration: number;
   contactPoints: Point[];
 }
+
+export type CastHitCallback = (hit: CastHit) => void;
+
+export type OverlapHitCallback = (hit: OverlapHit) => void;
 
 export interface PointQueryShape {
   type: 'point';

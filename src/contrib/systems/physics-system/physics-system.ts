@@ -84,6 +84,16 @@ export class PhysicsSystem extends SceneSystem {
         this.collisionDetectionSubsystem.castActor(params),
       castActorAll: (params): CastHit[] =>
         this.collisionDetectionSubsystem.castActorAll(params),
+      raycastEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.raycastEach(params, callback),
+      shapeCastEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.shapeCastEach(params, callback),
+      overlapEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.overlapEach(params, callback),
+      castActorEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.castActorEach(params, callback),
+      overlapActorEach: (params, callback): void =>
+        this.collisionDetectionSubsystem.overlapActorEach(params, callback),
       getGravity: (): Vector2 => this.gravity,
       setGravity: (gravity): void => {
         this.gravity = gravity;
