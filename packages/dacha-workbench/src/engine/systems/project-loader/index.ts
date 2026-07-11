@@ -1,5 +1,5 @@
 import { WorldSystem, RendererAPI } from 'dacha';
-import type { World, Config, WorldSystemOptions, UpdateOptions } from 'dacha';
+import type { World, Config, WorldSystemOptions, Time } from 'dacha';
 import * as Events from 'dacha/events';
 
 import { schemaRegistry } from '../../../decorators/schema-registry';
@@ -9,7 +9,7 @@ import { EventType } from '../../../events';
 import { CommanderStore } from '../../../store';
 import type { EditorConfig, Extension } from '../../../types/global';
 
-const DEFAULT_AUTO_SAVE_INTERVAL = 10_000;
+const DEFAULT_AUTO_SAVE_INTERVAL = 10;
 
 interface ProjectLoaderResources {
   store: CommanderStore;
@@ -17,6 +17,7 @@ interface ProjectLoaderResources {
 
 export class ProjectLoader extends WorldSystem {
   private world: World;
+  private time: Time;
   private editorConfig: EditorConfig;
 
   private extensionScript?: HTMLScriptElement;
@@ -27,6 +28,7 @@ export class ProjectLoader extends WorldSystem {
     super();
 
     this.world = options.world;
+    this.time = options.time;
     this.editorConfig = window.electron.getEditorConfig();
 
     this.world.data.configStore = (
@@ -113,14 +115,12 @@ export class ProjectLoader extends WorldSystem {
     this.world.dispatchEvent(EventType.SaveProject);
   }
 
-  update(options: UpdateOptions): void {
+  update(): void {
     if (!this.editorConfig.autoSave) {
       return;
     }
 
-    const { deltaTime } = options;
-
-    this.autoSaveInterval -= deltaTime;
+    this.autoSaveInterval -= this.time.deltaTime;
     if (this.autoSaveInterval <= 0) {
       this.saveProjectConfig();
       this.autoSaveInterval =
