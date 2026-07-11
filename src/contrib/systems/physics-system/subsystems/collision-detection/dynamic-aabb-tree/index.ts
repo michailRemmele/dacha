@@ -1,3 +1,5 @@
+import { Pool } from '../../../../../../engine/data-lib';
+
 import type { AABB } from '../types';
 
 export type DynamicAABBTreeEntryId = number;
@@ -50,7 +52,12 @@ export class DynamicAABBTree<T> {
   private root: DynamicAABBTreeNode<T> | null = null;
   private nodesById = new Map<DynamicAABBTreeEntryId, DynamicAABBTreeNode<T>>();
   private freeInternalNodes: DynamicAABBTreeNode<T>[] = [];
-  private queryStack: DynamicAABBTreeNode<T>[] = [];
+  private stackPool = new Pool<DynamicAABBTreeNode<T>[]>(
+    () => [],
+    (stack) => {
+      stack.length = 0;
+    },
+  );
   private nextId = 1;
 
   get size(): number {
@@ -86,28 +93,30 @@ export class DynamicAABBTree<T> {
       return;
     }
 
-    const stack = this.queryStack;
+    const stack = this.stackPool.acquire();
 
-    stack.length = 0;
     stack.push(this.root);
 
-    while (stack.length > 0) {
-      const node = stack.pop()!;
+    try {
+      while (stack.length > 0) {
+        const node = stack.pop()!;
 
-      if (!overlaps(node.aabb, aabb)) {
-        continue;
-      }
-
-      if (isLeaf(node)) {
-        if (visitor(node.value as T) === false) {
-          stack.length = 0;
-          return;
+        if (!overlaps(node.aabb, aabb)) {
+          continue;
         }
 
-        continue;
-      }
+        if (isLeaf(node)) {
+          if (visitor(node.value as T) === false) {
+            return;
+          }
 
-      stack.push(node.child1!, node.child2!);
+          continue;
+        }
+
+        stack.push(node.child1!, node.child2!);
+      }
+    } finally {
+      this.stackPool.release(stack);
     }
   }
 
@@ -123,7 +132,7 @@ export class DynamicAABBTree<T> {
     this.root = null;
     this.nodesById.clear();
     this.freeInternalNodes.length = 0;
-    this.queryStack.length = 0;
+    this.stackPool.clear();
   }
 
   private createNode(aabb: AABB, value: T): DynamicAABBTreeNode<T> {
