@@ -30,6 +30,7 @@ export interface EditorConfig {
     shader?: (name: string) => string;
   };
   autoSave?: boolean;
+  /** How often the project auto-saves, in seconds. */
   autoSaveInterval?: number;
   formatWidgetNames?: boolean;
 }

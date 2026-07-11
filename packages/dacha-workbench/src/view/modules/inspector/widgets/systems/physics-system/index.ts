@@ -37,9 +37,9 @@ export const physicsSystem: WidgetSchema = {
   ],
   getInitialState: () => ({
     gravityX: 0,
-    gravityY: 100,
+    gravityY: 980,
     solverIterations: 8,
-    linearSleepThreshold: 2,
+    linearSleepThreshold: 1,
     angularSleepThreshold: 0.05,
     sleepTimeThreshold: 0.5,
     maxAllowedPenetration: 0.5,
