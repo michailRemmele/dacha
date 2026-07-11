@@ -36,6 +36,13 @@ interface PointImpulse {
  * impulses, gravity, collisions, and rotation. Static and kinematic bodies can
  * participate in collisions but are not moved by solver impulses.
  *
+ * Physics is simulated in world space.
+ *
+ * Rigid bodies may be parented only to actors with static transforms. A moving
+ * parent (for example, a dynamic or kinematic rigid body) and the physics
+ * simulation would both control the child's transform, so the result is
+ * undefined.
+ *
  * @example
  * ```typescript
  * // Create a dynamic rigid body
@@ -180,6 +187,7 @@ export class RigidBody extends Component {
   /**
    * Sets the mass used by dynamic bodies.
    *
+   * Mass is an authored, kilogram-like scalar.
    * Non-positive values make the body immovable by forces and impulses.
    */
   set mass(value: number) {

@@ -1,5 +1,5 @@
 export const DEFAULT_SOLVER_ITERATIONS = 8;
-export const DEFAULT_LINEAR_SLEEP_THRESHOLD = 2;
+export const DEFAULT_LINEAR_SLEEP_THRESHOLD = 1;
 export const DEFAULT_ANGULAR_SLEEP_THRESHOLD = 0.05;
 export const DEFAULT_SLEEP_TIME_THRESHOLD = 0.5;
 
@@ -14,3 +14,7 @@ export const RESTITUTION_VELOCITY_THRESHOLD = 1;
 export const PENETRATION_SLEEP_MARGIN = 0.25;
 // 0.5 treats surfaces up to ~60° from horizontal as holding a body up.
 export const SUPPORT_MIN_GRAVITY_DOT = 0.5;
+
+// Default gravity in world units (px/s²).
+export const DEFAULT_GRAVITY_X = 0;
+export const DEFAULT_GRAVITY_Y = 980;

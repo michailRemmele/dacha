@@ -1,3 +1,4 @@
+import { Vector2 } from '../../../../../engine/math-lib';
 import { Collider, Transform } from '../../../../components';
 import type {
   RaycastParams,
@@ -71,7 +72,7 @@ export function buildQueryProxy(
     aabb: aabbBuilders[type](geometry),
     geometry,
     layer: params.layer,
-    excludedActors: params.excludeActors
+    excludedActors: params.excludeActors?.length
       ? new Set(params.excludeActors)
       : undefined,
     actorFilter: params.actorFilter,
@@ -155,13 +156,199 @@ export const getActorCastQueryType = (
   }
 };
 
+export const makeCastHit = (): CastHit => ({
+  actor: undefined as unknown as CastHit['actor'],
+  point: { x: 0, y: 0 },
+  normal: new Vector2(0, 0),
+  distance: 0,
+});
+
+const cloneCastHit = (hit: CastHit): CastHit => ({
+  actor: hit.actor,
+  point: hit.point,
+  normal: hit.normal,
+  distance: hit.distance,
+});
+
+export const makeOverlapHit = (): OverlapHit => ({
+  actor: undefined as unknown as OverlapHit['actor'],
+  normal: new Vector2(0, 0),
+  penetration: 0,
+  contactPoints: [],
+});
+
+const cloneOverlapHit = (hit: OverlapHit): OverlapHit => ({
+  actor: hit.actor,
+  normal: hit.normal,
+  penetration: hit.penetration,
+  contactPoints: hit.contactPoints,
+});
+
 export const overlap = (
   type: OverlapQueryType,
   queryProxy: QueryProxy,
   proxies: Iterable<ActorProxy>,
 ): OverlapHit[] => {
+  const scratch = makeOverlapHit();
   const hits: OverlapHit[] = [];
 
+  overlapEach(type, queryProxy, proxies, scratch, (hit) => {
+    hits.push(cloneOverlapHit(hit));
+  });
+
+  return hits;
+};
+
+export const raycast = (
+  queryProxy: QueryProxy,
+  proxies: Iterable<ActorProxy>,
+): CastHit | null => {
+  const scratch = makeCastHit();
+  let nearestDistance = Infinity;
+  let nearestHit: CastHit | null = null;
+
+  raycastEach(queryProxy, proxies, scratch, (hit) => {
+    if (hit.distance < nearestDistance) {
+      nearestDistance = hit.distance;
+      nearestHit = nearestHit ?? makeCastHit();
+      nearestHit.actor = hit.actor;
+      nearestHit.point = hit.point;
+      nearestHit.normal = hit.normal;
+      nearestHit.distance = hit.distance;
+    }
+  });
+
+  return nearestHit;
+};
+
+export const raycastAll = (
+  queryProxy: QueryProxy,
+  proxies: Iterable<ActorProxy>,
+): CastHit[] => {
+  const scratch = makeCastHit();
+  const hits: CastHit[] = [];
+
+  raycastEach(queryProxy, proxies, scratch, (hit) => {
+    hits.push(cloneCastHit(hit));
+  });
+
+  hits.sort((arg1, arg2) => arg1.distance - arg2.distance);
+
+  return hits;
+};
+
+export const shapeCast = (
+  type: ShapeCastQueryType,
+  queryProxy: QueryProxy,
+  proxies: Iterable<ActorProxy>,
+): CastHit | null => {
+  const scratch = makeCastHit();
+  let nearestDistance = Infinity;
+  let nearestHit: CastHit | null = null;
+
+  shapeCastEach(type, queryProxy, proxies, scratch, (hit) => {
+    if (hit.distance < nearestDistance) {
+      nearestDistance = hit.distance;
+      nearestHit = nearestHit ?? makeCastHit();
+      nearestHit.actor = hit.actor;
+      nearestHit.point = hit.point;
+      nearestHit.normal = hit.normal;
+      nearestHit.distance = hit.distance;
+    }
+  });
+
+  return nearestHit;
+};
+
+export const shapeCastAll = (
+  type: ShapeCastQueryType,
+  queryProxy: QueryProxy,
+  proxies: Iterable<ActorProxy>,
+): CastHit[] => {
+  const scratch = makeCastHit();
+  const hits: CastHit[] = [];
+
+  shapeCastEach(type, queryProxy, proxies, scratch, (hit) => {
+    hits.push(cloneCastHit(hit));
+  });
+
+  hits.sort((arg1, arg2) => arg1.distance - arg2.distance);
+
+  return hits;
+};
+
+export const raycastEach = (
+  queryProxy: QueryProxy,
+  proxies: Iterable<ActorProxy>,
+  hit: CastHit,
+  callback: (hit: CastHit) => void,
+): void => {
+  for (const proxy of proxies) {
+    const collider = proxy.actor.getComponent(Collider);
+
+    const result = raycastCheckers.ray[collider.shape.type](
+      queryProxy.geometry as RayGeometry,
+      proxy.geometry,
+    );
+
+    if (!result) {
+      continue;
+    }
+
+    hit.actor = proxy.actor;
+    hit.point = result.point;
+    hit.normal = result.normal;
+    hit.distance = result.distance;
+
+    if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
+      continue;
+    }
+
+    callback(hit);
+  }
+};
+
+export const shapeCastEach = (
+  type: ShapeCastQueryType,
+  queryProxy: QueryProxy,
+  proxies: Iterable<ActorProxy>,
+  hit: CastHit,
+  callback: (hit: CastHit) => void,
+): void => {
+  for (const proxy of proxies) {
+    const collider = proxy.actor.getComponent(Collider);
+    const checker = shapeCastCheckers[type]?.[collider.shape.type];
+
+    if (!checker) {
+      continue;
+    }
+
+    const result = checker(queryProxy.geometry, proxy.geometry);
+
+    if (!result) {
+      continue;
+    }
+
+    hit.actor = proxy.actor;
+    hit.point = result.point;
+    hit.normal = result.normal;
+    hit.distance = result.distance;
+
+    if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
+      continue;
+    }
+
+    callback(hit);
+  }
+};
+
+export const overlapEach = (
+  type: OverlapQueryType,
+  queryProxy: QueryProxy,
+  proxies: Iterable<ActorProxy>,
+  hit: OverlapHit,
+  callback: (hit: OverlapHit) => void,
+): void => {
   for (const proxy of proxies) {
     const collider = proxy.actor.getComponent(Collider);
     const checker = intersectionCheckers[type]?.[collider.shape.type];
@@ -176,178 +363,17 @@ export const overlap = (
       continue;
     }
 
-    const hit = {
-      actor: proxy.actor,
-      normal: intersection.normal.clone().multiplyNumber(-1),
-      penetration: intersection.penetration,
-      contactPoints: intersection.contactPoints,
-    };
+    intersection.normal.multiplyNumber(-1);
+
+    hit.actor = proxy.actor;
+    hit.normal = intersection.normal;
+    hit.penetration = intersection.penetration;
+    hit.contactPoints = intersection.contactPoints;
 
     if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
       continue;
     }
 
-    hits.push(hit);
+    callback(hit);
   }
-
-  return hits;
-};
-
-export const raycast = (
-  queryProxy: QueryProxy,
-  proxies: Iterable<ActorProxy>,
-): CastHit | null => {
-  let nearestDistance = Infinity;
-  let nearestHit: CastHit | null = null;
-
-  for (const proxy of proxies) {
-    const collider = proxy.actor.getComponent(Collider);
-
-    const hit = raycastCheckers.ray[collider.shape.type](
-      queryProxy.geometry as RayGeometry,
-      proxy.geometry,
-    );
-
-    if (!hit) {
-      continue;
-    }
-
-    const castHit = {
-      actor: proxy.actor,
-      point: hit.point,
-      normal: hit.normal,
-      distance: hit.distance,
-    };
-
-    if (queryProxy.hitFilter && !queryProxy.hitFilter(castHit)) {
-      continue;
-    }
-
-    if (hit.distance < nearestDistance) {
-      nearestHit = castHit;
-      nearestDistance = hit.distance;
-    }
-  }
-
-  return nearestHit;
-};
-
-export const raycastAll = (
-  queryProxy: QueryProxy,
-  proxies: Iterable<ActorProxy>,
-): CastHit[] => {
-  const hits: CastHit[] = [];
-
-  for (const proxy of proxies) {
-    const collider = proxy.actor.getComponent(Collider);
-
-    const hit = raycastCheckers.ray[collider.shape.type](
-      queryProxy.geometry as RayGeometry,
-      proxy.geometry,
-    );
-
-    if (!hit) {
-      continue;
-    }
-
-    const castHit = {
-      actor: proxy.actor,
-      point: hit.point,
-      normal: hit.normal,
-      distance: hit.distance,
-    };
-
-    if (queryProxy.hitFilter && !queryProxy.hitFilter(castHit)) {
-      continue;
-    }
-
-    hits.push(castHit);
-  }
-
-  hits.sort((arg1, arg2) => arg1.distance - arg2.distance);
-
-  return hits;
-};
-
-export const shapeCast = (
-  type: ShapeCastQueryType,
-  queryProxy: QueryProxy,
-  proxies: Iterable<ActorProxy>,
-): CastHit | null => {
-  let nearestDistance = Infinity;
-  let nearestHit: CastHit | null = null;
-
-  for (const proxy of proxies) {
-    const collider = proxy.actor.getComponent(Collider);
-
-    const checker = shapeCastCheckers[type]?.[collider.shape.type];
-
-    if (!checker) {
-      continue;
-    }
-
-    const castHit = checker(queryProxy.geometry, proxy.geometry);
-
-    if (!castHit) {
-      continue;
-    }
-
-    const hit = {
-      actor: proxy.actor,
-      point: castHit.point,
-      normal: castHit.normal,
-      distance: castHit.distance,
-    };
-
-    if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
-      continue;
-    }
-
-    if (castHit.distance < nearestDistance) {
-      nearestHit = hit;
-      nearestDistance = castHit.distance;
-    }
-  }
-
-  return nearestHit;
-};
-
-export const shapeCastAll = (
-  type: ShapeCastQueryType,
-  queryProxy: QueryProxy,
-  proxies: Iterable<ActorProxy>,
-): CastHit[] => {
-  const hits: CastHit[] = [];
-
-  for (const proxy of proxies) {
-    const collider = proxy.actor.getComponent(Collider);
-    const checker = shapeCastCheckers[type]?.[collider.shape.type];
-
-    if (!checker) {
-      continue;
-    }
-
-    const castHit = checker(queryProxy.geometry, proxy.geometry);
-
-    if (!castHit) {
-      continue;
-    }
-
-    const hit = {
-      actor: proxy.actor,
-      point: castHit.point,
-      normal: castHit.normal,
-      distance: castHit.distance,
-    };
-
-    if (queryProxy.hitFilter && !queryProxy.hitFilter(hit)) {
-      continue;
-    }
-
-    hits.push(hit);
-  }
-
-  hits.sort((arg1, arg2) => arg1.distance - arg2.distance);
-
-  return hits;
 };

@@ -52,7 +52,7 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
     expect(calculateInertia(3, collider, transform)).toBeCloseTo(10);
   });
 
-  it('Calculates segment inertia with unit thickness', () => {
+  it('Calculates segment inertia as an idealized thin rod', () => {
     const transform = getTransform();
     const collider = new Collider({
       type: 'segment',
@@ -66,7 +66,7 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
       disabled: false,
     });
 
-    expect(calculateInertia(3, collider, transform)).toBeCloseTo(4.25);
+    expect(calculateInertia(3, collider, transform)).toBeCloseTo(4);
   });
 
   it('Adds collider offset inertia after transform scale', () => {
