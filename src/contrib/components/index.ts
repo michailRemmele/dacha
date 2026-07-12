@@ -15,6 +15,11 @@ export {
 } from './collider';
 export { RigidBody, type RigidBodyConfig } from './rigid-body';
 export { CharacterBody, type CharacterBodyConfig } from './character-body';
+export {
+  Interpolation,
+  type InterpolationConfig,
+  type InterpolationMode,
+} from './interpolation';
 export { Animatable, type AnimatableConfig } from './animatable';
 export { Sprite, type SpriteConfig } from './sprite';
 export { Transform, type TransformConfig } from './transform';

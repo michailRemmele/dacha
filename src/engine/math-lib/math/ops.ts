@@ -166,4 +166,31 @@ export class MathOps {
     }
     return value;
   }
+
+  /**
+   * Signed shortest angular difference between two angles in radians
+   *
+   * The result is in (-PI, PI], so `from + delta` is angle-equivalent
+   * to `to` while rotating the short way around.
+   *
+   * @param from - Start angle in radians
+   * @param to - End angle in radians
+   * @returns Signed delta in radians
+   *
+   * @example
+   * ```typescript
+   * const delta = MathOps.getAngleDelta(3, -3); // ~0.283, crosses PI
+   * ```
+   */
+  static getAngleDelta(from: number, to: number): number {
+    let delta = (to - from) % (2 * Math.PI);
+
+    if (delta > Math.PI) {
+      delta -= 2 * Math.PI;
+    } else if (delta <= -Math.PI) {
+      delta += 2 * Math.PI;
+    }
+
+    return delta;
+  }
 }

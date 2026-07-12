@@ -79,6 +79,27 @@ describe('Engine -> GameLoop', () => {
     expect(time.alpha).toBe(0);
   });
 
+  it('times frames by the vsync timestamp', () => {
+    const fixedUpdate = jest.fn();
+    const { gameLoop, time } = createGameLoop({ fixedUpdate });
+
+    gameLoop.run();
+
+    const scheduling = [4, -3, 7, -5, 2];
+    let frame = 0;
+    (performance.now as jest.Mock).mockImplementation(
+      () => now + scheduling[frame++ % scheduling.length],
+    );
+
+    runNextFrame(10);
+    runNextFrame(20);
+    runNextFrame(30);
+
+    expect(time.elapsedTime).toBeCloseTo(0.03);
+    expect(time.alpha).toBeCloseTo(0.5);
+    expect(fixedUpdate).toHaveBeenCalledTimes(1);
+  });
+
   it('drops leftover fixed-step lag after reaching the per-frame cap', () => {
     const fixedUpdate = jest.fn();
     const { gameLoop } = createGameLoop(
