@@ -4,6 +4,8 @@ export { GameStatsMeter } from './game-stats-meter';
 export { KeyboardInputSystem } from './keyboard-input-system';
 export { KeyboardControlSystem } from './keyboard-control-system';
 export { CharacterController } from './character-controller';
+export { Interpolator, InterpolatorAPI } from './interpolator';
+export type { RenderTransform } from './interpolator';
 export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
 export { PhysicsSystem, PhysicsAPI } from './physics-system';
