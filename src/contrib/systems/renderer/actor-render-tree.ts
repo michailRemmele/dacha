@@ -3,6 +3,7 @@ import { Container, type ViewContainer, type RenderLayer } from 'pixi.js';
 import { Actor } from '../../../engine/actor';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
+import { Interpolation } from '../../components/interpolation';
 import { Sprite } from '../../components/sprite';
 import { Shape } from '../../components/shape';
 import { PixiView } from '../../components/pixi-view';
@@ -253,9 +254,20 @@ export class ActorRenderTree {
   }
 
   private updatePosition(container: Container, actor: Actor): void {
-    const {
-      local: { position, rotation, scale },
-    } = actor.getComponent(Transform);
+    const { local } = actor.getComponent(Transform);
+    const interpolation = actor.getComponent(Interpolation) as
+      | Interpolation
+      | undefined;
+
+    const useRender =
+      interpolation !== undefined &&
+      !interpolation.disabled &&
+      interpolation.initialized;
+
+    const positionX = useRender ? interpolation.renderX : local.position.x;
+    const positionY = useRender ? interpolation.renderY : local.position.y;
+    const rotation = useRender ? interpolation.renderRotation : local.rotation;
+    const { scale } = local;
 
     const meta = container.__dacha.meta;
 
@@ -265,12 +277,12 @@ export class ActorRenderTree {
     }
 
     if (
-      !floatEquals(position.x, meta.positionX as number) ||
-      !floatEquals(position.y, meta.positionY as number)
+      !floatEquals(positionX, meta.positionX as number) ||
+      !floatEquals(positionY, meta.positionY as number)
     ) {
-      container.position.set(position.x, position.y);
-      meta.positionX = position.x;
-      meta.positionY = position.y;
+      container.position.set(positionX, positionY);
+      meta.positionX = positionX;
+      meta.positionY = positionY;
     }
 
     if (scale.x !== meta.scaleX || scale.y !== meta.scaleY) {
