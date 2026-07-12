@@ -27,7 +27,7 @@ export class GameLoop {
   private gameLoopId: number;
   private previous: number;
   private lag: number;
-  private bindedTick: () => void;
+  private bindedTick: FrameRequestCallback;
 
   constructor(
     sceneManager: SceneManager,
@@ -54,11 +54,14 @@ export class GameLoop {
     this.bindedTick = this.tick.bind(this);
   }
 
-  private tick(): void {
+  private tick(timestamp: number): void {
     this.gameLoopId = requestAnimationFrame(this.bindedTick);
 
-    const current = performance.now();
-    const elapsed = Math.min(current - this.previous, this.maxFrameDelta);
+    const current = timestamp;
+    const elapsed = Math.min(
+      Math.max(current - this.previous, 0),
+      this.maxFrameDelta,
+    );
 
     if (elapsed < this.msPerUpdate) {
       return;
