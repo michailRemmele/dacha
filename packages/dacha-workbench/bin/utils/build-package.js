@@ -9,6 +9,7 @@ const EXCLUDE_DEPS = ['electron', 'electron-packager']
 // to avoid necessity to manually copy them and support this list
 const INCLUDE_DEV_DEPS = [
   'ts-loader',
+  'typescript',
   'clean-webpack-plugin',
   'copy-webpack-plugin',
   'css-loader',

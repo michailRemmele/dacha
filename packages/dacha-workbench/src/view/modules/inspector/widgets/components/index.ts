@@ -13,6 +13,7 @@ import {
   AudioSource,
   Mesh,
   CharacterBody,
+  Interpolation,
 } from 'dacha';
 
 import { EditorMarker } from '../../../../../engine/components';
@@ -33,6 +34,7 @@ import { audioSource } from './audio-source';
 import { mesh } from './mesh';
 import { characterBody } from './character-body';
 import { editorMarker } from './editor-marker';
+import { interpolation } from './interpolation';
 
 export const componentsSchema: Record<string, WidgetSchema> = {
   [Animatable.componentName]: animatable,
@@ -50,4 +52,5 @@ export const componentsSchema: Record<string, WidgetSchema> = {
   [Mesh.componentName]: mesh,
   [CharacterBody.componentName]: characterBody,
   [EditorMarker.componentName]: editorMarker,
+  [Interpolation.componentName]: interpolation,
 };
