@@ -15,20 +15,22 @@ type FitType = 'stretch' | 'repeat';
 export { type BlendingMode } from '../../types/view';
 
 export interface SpriteConfig {
-  src: string;
-  width: number;
-  height: number;
-  slice: number;
-  flipX: boolean;
-  flipY: boolean;
-  sortingLayer: string;
-  sortOffsetX: number;
-  sortOffsetY: number;
-  fit: FitType;
-  color: string;
-  blending: BlendingMode;
-  opacity: number;
-  disabled: boolean;
+  src?: string;
+  width?: number;
+  height?: number;
+  slice?: number;
+  flipX?: boolean;
+  flipY?: boolean;
+  sortingLayer?: string;
+  sortOffsetX?: number;
+  sortOffsetY?: number;
+  textureOffsetX?: number;
+  textureOffsetY?: number;
+  fit?: FitType;
+  color?: string;
+  blending?: BlendingMode;
+  opacity?: number;
+  disabled?: boolean;
 }
 
 /**
@@ -86,6 +88,12 @@ export class Sprite extends Component {
   sortingLayer: string;
   /** Center point for sorting calculations */
   sortOffset: Point;
+  /**
+   * Texture sampling offset in pixels. Only applies to `fit: 'repeat'`
+   * With flipX/flipY the tile is mirrored, so a positive offset scrolls in
+   * the mirrored direction.
+   */
+  textureOffset: Point;
   /** Current frame to render */
   currentFrame?: number;
   /** How the texture should fit within the sprite bounds */
@@ -107,17 +115,24 @@ export class Sprite extends Component {
   constructor(config: SpriteConfig) {
     super();
 
-    this.src = config.src;
-    this.width = config.width;
-    this.height = config.height;
-    this.slice = config.slice;
+    this.src = config.src ?? '';
+    this.width = config.width ?? 10;
+    this.height = config.height ?? 10;
+    this.slice = config.slice ?? 1;
     this.currentFrame = 0;
-    this.flipX = config.flipX;
-    this.flipY = config.flipY;
-    this.disabled = config.disabled;
-    this.sortingLayer = config.sortingLayer;
-    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
-    this.fit = config.fit;
+    this.flipX = config.flipX ?? false;
+    this.flipY = config.flipY ?? false;
+    this.disabled = config.disabled ?? false;
+    this.sortingLayer = config.sortingLayer ?? 'default';
+    this.sortOffset = {
+      x: config.sortOffsetX ?? 0,
+      y: config.sortOffsetY ?? 0,
+    };
+    this.textureOffset = {
+      x: config.textureOffsetX ?? 0,
+      y: config.textureOffsetY ?? 0,
+    };
+    this.fit = config.fit ?? 'stretch';
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';
     this.opacity = config.opacity ?? 1;

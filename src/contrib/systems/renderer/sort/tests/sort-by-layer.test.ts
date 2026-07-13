@@ -12,6 +12,8 @@ describe('Contrib -> RenderSystem -> Sort -> sortByLayer()', () => {
     height: 0,
     sortOffsetX: 0,
     sortOffsetY: 0,
+    textureOffsetX: 0,
+    textureOffsetY: 0,
     slice: 1,
     flipX: false,
     flipY: false,

@@ -77,7 +77,9 @@ export class MaterialSystem {
           uTime: { value: 0.0, type: 'f32' },
           uTint: { value: [1.0, 1.0, 1.0], type: 'vec3<f32>' },
           uAlpha: { value: 1.0, type: 'f32' },
-          uTextureSize: { value: [0.0, 0.0], type: 'vec2<f32>' },
+          uFrameSize: { value: [0.0, 0.0], type: 'vec2<f32>' },
+          uUVOffset: { value: [0.0, 0.0], type: 'vec2<f32>' },
+          uUVScale: { value: [1.0, 1.0], type: 'vec2<f32>' },
           ...(config && builder?.uniforms?.(config.options)),
         },
       },
@@ -137,10 +139,16 @@ export class MaterialSystem {
         .toRgbArray([]);
     }
 
-    view.shader.resources.uniformsGroup.uniforms.uTextureSize[0] =
-      view.texture.source.width;
-    view.shader.resources.uniformsGroup.uniforms.uTextureSize[1] =
-      view.texture.source.height;
+    if (meta.materialTexture !== view.texture) {
+      meta.materialTexture = view.texture;
+
+      const { uvs, frame } = view.texture;
+
+      const uniforms = view.shader.resources.uniformsGroup.uniforms;
+      uniforms.uUVOffset = [uvs.x0, uvs.y0];
+      uniforms.uUVScale = [uvs.x1 - uvs.x0, uvs.y2 - uvs.y0];
+      uniforms.uFrameSize = [frame.width, frame.height];
+    }
 
     if (!material || !builder) {
       return;
