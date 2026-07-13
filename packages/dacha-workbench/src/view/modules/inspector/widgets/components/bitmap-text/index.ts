@@ -61,7 +61,7 @@ export const bitmapText: WidgetSchema = {
     font: '',
     fontSize: 10,
     align: 'center',
-    color: 'rgb(255,255,255)',
+    color: '#000000',
     opacity: 1,
     blending: 'normal',
     sortingLayer: 'default',
