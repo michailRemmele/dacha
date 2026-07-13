@@ -110,31 +110,6 @@ export class MeshBuilder implements Builder<Mesh> {
     this.materialSystem.updateShader(mesh);
   }
 
-  private updateGeometry(mesh: Mesh): void {
-    const view = mesh.renderData!.view;
-    const texture = view.texture;
-    const geometry = view.geometry;
-
-    const uvs = texture?.uvs;
-    if (!uvs) {
-      return;
-    }
-
-    const uvAttr = geometry.getAttribute('aUV');
-    const uvBuffer = uvAttr.buffer.data as Float32Array;
-
-    uvBuffer[0] = uvs.x0;
-    uvBuffer[1] = uvs.y0;
-    uvBuffer[2] = uvs.x1;
-    uvBuffer[3] = uvs.y1;
-    uvBuffer[4] = uvs.x2;
-    uvBuffer[5] = uvs.y2;
-    uvBuffer[6] = uvs.x3;
-    uvBuffer[7] = uvs.y3;
-
-    uvAttr.buffer.update();
-  }
-
   private updateTexture(mesh: Mesh): void {
     const view = mesh.renderData!.view;
     const meta = view.__dacha.meta;
@@ -153,7 +128,5 @@ export class MeshBuilder implements Builder<Mesh> {
     const texture = textureArray?.[mesh.currentFrame];
     view.texture = texture ?? Texture.WHITE;
     meta.currentFrame = mesh.currentFrame;
-
-    this.updateGeometry(mesh);
   }
 }
