@@ -32,6 +32,22 @@ export const sprite: WidgetSchema = {
       type: 'number',
     },
     {
+      name: 'textureOffsetX',
+      type: 'number',
+      dependency: {
+        name: 'fit',
+        value: 'repeat',
+      },
+    },
+    {
+      name: 'textureOffsetY',
+      type: 'number',
+      dependency: {
+        name: 'fit',
+        value: 'repeat',
+      },
+    },
+    {
       name: 'flipX',
       type: 'boolean',
     },
@@ -71,11 +87,13 @@ export const sprite: WidgetSchema = {
   ],
   getInitialState: () => ({
     src: '',
-    width: 0,
-    height: 0,
+    width: 10,
+    height: 10,
     slice: 1,
     sortOffsetX: 0,
     sortOffsetY: 0,
+    textureOffsetX: 0,
+    textureOffsetY: 0,
     flipX: false,
     flipY: false,
     sortingLayer: 'default',

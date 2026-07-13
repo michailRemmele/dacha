@@ -418,6 +418,7 @@ export const getEditorConfig = ({
             strokeWidth: 1,
             strokeColor: '#fff',
             strokeAlignment: 0,
+            fill: 'rgba(255, 255, 255, 0)',
             opacity: 1,
             blending: 'normal',
             disabled: false,
