@@ -18,56 +18,30 @@ export type ShapeType =
 
 export interface BaseShapeConfig {
   strokeColor?: string;
-  strokeWidth: number;
-  strokeAlignment: number;
-  pixelLine: boolean;
+  strokeWidth?: number;
+  strokeAlignment?: number;
+  pixelLine?: boolean;
   fill?: string;
-  opacity: number;
-  blending: BlendingMode;
-  disabled: boolean;
-  sortingLayer: string;
-  sortOffsetX: number;
-  sortOffsetY: number;
+  opacity?: number;
+  blending?: BlendingMode;
+  disabled?: boolean;
+  sortingLayer?: string;
+  sortOffsetX?: number;
+  sortOffsetY?: number;
 }
 
-export interface RectangleShapeConfig extends BaseShapeConfig {
-  type: 'rectangle';
-  sizeX: number;
-  sizeY: number;
+export interface ShapeConfig extends BaseShapeConfig {
+  type?: ShapeType;
+  sizeX?: number;
+  sizeY?: number;
+  radius?: number;
+  radiusX?: number;
+  radiusY?: number;
+  point1X?: number;
+  point1Y?: number;
+  point2X?: number;
+  point2Y?: number;
 }
-
-export interface RoundRectangleShapeConfig extends BaseShapeConfig {
-  type: 'roundRectangle';
-  sizeX: number;
-  sizeY: number;
-  radius: number;
-}
-
-export interface CircleShapeConfig extends BaseShapeConfig {
-  type: 'circle';
-  radius: number;
-}
-
-export interface EllipseShapeConfig extends BaseShapeConfig {
-  type: 'ellipse';
-  radiusX: number;
-  radiusY: number;
-}
-
-export interface LineShapeConfig extends BaseShapeConfig {
-  type: 'line';
-  point1X: number;
-  point1Y: number;
-  point2X: number;
-  point2Y: number;
-}
-
-export type ShapeConfig =
-  | RectangleShapeConfig
-  | RoundRectangleShapeConfig
-  | CircleShapeConfig
-  | EllipseShapeConfig
-  | LineShapeConfig;
 
 export interface RectangleShapeGeometry {
   type: 'rectangle';
@@ -177,48 +151,53 @@ export class Shape extends Component {
   constructor(config: ShapeConfig) {
     super();
 
-    this.strokeColor = config.strokeColor;
-    this.strokeWidth = config.strokeWidth;
-    this.strokeAlignment = config.strokeAlignment;
-    this.pixelLine = config.pixelLine;
-    this.fill = config.fill;
-    this.opacity = config.opacity;
-    this.blending = config.blending;
-    this.disabled = config.disabled;
-    this.sortingLayer = config.sortingLayer;
-    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
+    this.strokeColor = config.strokeColor ?? '#ffffff';
+    this.strokeWidth = config.strokeWidth ?? 0;
+    this.strokeAlignment = config.strokeAlignment ?? 0.5;
+    this.pixelLine = config.pixelLine ?? false;
+    this.fill = config.fill ?? '#ffffff';
+    this.opacity = config.opacity ?? 1;
+    this.blending = config.blending ?? 'normal';
+    this.disabled = config.disabled ?? false;
+    this.sortingLayer = config.sortingLayer ?? 'default';
+    this.sortOffset = {
+      x: config.sortOffsetX ?? 0,
+      y: config.sortOffsetY ?? 0,
+    };
 
-    switch (config.type) {
+    const type = config.type ?? 'rectangle';
+
+    switch (type) {
       case 'rectangle':
         this.geometry = {
-          type: config.type,
-          size: { x: config.sizeX, y: config.sizeY },
+          type,
+          size: { x: config.sizeX ?? 10, y: config.sizeY ?? 10 },
         };
         break;
       case 'roundRectangle':
         this.geometry = {
-          type: config.type,
-          size: { x: config.sizeX, y: config.sizeY },
-          radius: config.radius,
+          type,
+          size: { x: config.sizeX ?? 10, y: config.sizeY ?? 10 },
+          radius: config.radius ?? 2,
         };
         break;
       case 'circle':
         this.geometry = {
-          type: config.type,
-          radius: config.radius,
+          type,
+          radius: config.radius ?? 5,
         };
         break;
       case 'ellipse':
         this.geometry = {
-          type: config.type,
-          radius: { x: config.radiusX, y: config.radiusY },
+          type,
+          radius: { x: config.radiusX ?? 5, y: config.radiusY ?? 5 },
         };
         break;
       case 'line':
         this.geometry = {
-          type: config.type,
-          point1: { x: config.point1X, y: config.point1Y },
-          point2: { x: config.point2X, y: config.point2Y },
+          type,
+          point1: { x: config.point1X ?? -5, y: config.point1Y ?? 0 },
+          point2: { x: config.point2X ?? 5, y: config.point2Y ?? 0 },
         };
     }
   }

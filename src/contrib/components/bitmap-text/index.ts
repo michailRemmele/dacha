@@ -12,17 +12,17 @@ interface RenderData {
 type TextAlign = 'left' | 'center' | 'right';
 
 export interface BitmapTextConfig {
-  text: string;
-  font: string;
-  fontSize: number;
-  align: TextAlign;
-  color: string;
-  opacity: number;
-  blending: BlendingMode;
-  disabled: boolean;
-  sortingLayer: string;
-  sortOffsetX: number;
-  sortOffsetY: number;
+  text?: string;
+  font?: string;
+  fontSize?: number;
+  align?: TextAlign;
+  color?: string;
+  opacity?: number;
+  blending?: BlendingMode;
+  disabled?: boolean;
+  sortingLayer?: string;
+  sortOffsetX?: number;
+  sortOffsetY?: number;
 }
 
 /**
@@ -88,16 +88,19 @@ export class BitmapText extends Component {
   constructor(config: BitmapTextConfig) {
     super();
 
-    this.text = config.text;
-    this.font = config.font;
-    this.fontSize = config.fontSize;
-    this.align = config.align;
-    this.color = config.color;
-    this.opacity = config.opacity;
-    this.blending = config.blending;
-    this.disabled = config.disabled;
-    this.sortingLayer = config.sortingLayer;
-    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
+    this.text = config.text ?? 'Text';
+    this.font = config.font ?? '';
+    this.fontSize = config.fontSize ?? 10;
+    this.align = config.align ?? 'center';
+    this.color = config.color ?? '#000000';
+    this.opacity = config.opacity ?? 1;
+    this.blending = config.blending ?? 'normal';
+    this.disabled = config.disabled ?? false;
+    this.sortingLayer = config.sortingLayer ?? 'default';
+    this.sortOffset = {
+      x: config.sortOffsetX ?? 0,
+      y: config.sortOffsetY ?? 0,
+    };
   }
 }
 

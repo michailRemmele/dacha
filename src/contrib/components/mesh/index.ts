@@ -18,20 +18,20 @@ export interface MaterialConfig {
 }
 
 export interface MeshConfig {
-  src: string;
-  width: number;
-  height: number;
-  slice: number;
-  flipX: boolean;
-  flipY: boolean;
-  sortingLayer: string;
-  sortOffsetX: number;
-  sortOffsetY: number;
-  color: string;
-  blending: BlendingMode;
-  opacity: number;
+  src?: string;
+  width?: number;
+  height?: number;
+  slice?: number;
+  flipX?: boolean;
+  flipY?: boolean;
+  sortingLayer?: string;
+  sortOffsetX?: number;
+  sortOffsetY?: number;
+  color?: string;
+  blending?: BlendingMode;
+  opacity?: number;
   material?: MaterialConfig;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 /**
@@ -115,16 +115,19 @@ export class Mesh extends Component {
   constructor(config: MeshConfig) {
     super();
 
-    this.src = config.src;
-    this.width = config.width;
-    this.height = config.height;
-    this.slice = config.slice;
+    this.src = config.src ?? '';
+    this.width = config.width ?? 10;
+    this.height = config.height ?? 10;
+    this.slice = config.slice ?? 1;
     this.currentFrame = 0;
-    this.flipX = config.flipX;
-    this.flipY = config.flipY;
-    this.disabled = config.disabled;
-    this.sortingLayer = config.sortingLayer;
-    this.sortOffset = { x: config.sortOffsetX, y: config.sortOffsetY };
+    this.flipX = config.flipX ?? false;
+    this.flipY = config.flipY ?? false;
+    this.disabled = config.disabled ?? false;
+    this.sortingLayer = config.sortingLayer ?? 'default';
+    this.sortOffset = {
+      x: config.sortOffsetX ?? 0,
+      y: config.sortOffsetY ?? 0,
+    };
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';
     this.opacity = config.opacity ?? 1;

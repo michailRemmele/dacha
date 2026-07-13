@@ -1,4 +1,4 @@
-import { type ViewContainer } from 'pixi.js';
+import { Graphics, type ViewContainer } from 'pixi.js';
 
 import type { Builder } from '../builder';
 import { PixiView } from '../../../../components/pixi-view';
@@ -11,7 +11,7 @@ export class PixiViewBuilder implements Builder<PixiView> {
   }
 
   buildView(pixiView: PixiView, actor: Actor): ViewContainer {
-    const view = pixiView.createView();
+    const view = pixiView.createView ? pixiView.createView() : new Graphics();
 
     pixiView.renderData = { view };
     view.__dacha = {

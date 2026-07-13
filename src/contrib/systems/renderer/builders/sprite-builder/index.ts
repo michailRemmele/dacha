@@ -113,5 +113,19 @@ export class SpriteBuilder implements Builder<Sprite> {
       meta.width = sprite.width;
       meta.height = sprite.height;
     }
+
+    if (sprite.fit === 'repeat') {
+      if (
+        sprite.textureOffset.x !== meta.textureOffsetX ||
+        sprite.textureOffset.y !== meta.textureOffsetY
+      ) {
+        (view as TilingSprite).tilePosition.set(
+          sprite.textureOffset.x,
+          sprite.textureOffset.y,
+        );
+        meta.textureOffsetX = sprite.textureOffset.x;
+        meta.textureOffsetY = sprite.textureOffset.y;
+      }
+    }
   }
 }
