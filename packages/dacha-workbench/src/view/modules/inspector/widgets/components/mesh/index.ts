@@ -69,8 +69,8 @@ export const mesh: WidgetSchema = {
   ],
   getInitialState: () => ({
     src: '',
-    width: 0,
-    height: 0,
+    width: 10,
+    height: 10,
     slice: 1,
     sortOffsetX: 0,
     sortOffsetY: 0,

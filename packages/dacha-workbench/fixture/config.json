@@ -745,7 +745,9 @@
             "fit": "repeat",
             "blending": "normal",
             "color": "#fff",
-            "opacity": 1
+            "opacity": 1,
+            "textureOffsetX": 0,
+            "textureOffsetY": 0
           }
         }
       ],
