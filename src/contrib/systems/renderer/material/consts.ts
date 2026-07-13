@@ -25,11 +25,13 @@ export const DEFAULT_FRAGMENT_SHADER = `
   varying vec2 vUV;
 
   uniform sampler2D uSampler;
+  uniform vec2 uUVOffset;
+  uniform vec2 uUVScale;
   uniform vec3 uTint;
   uniform float uAlpha;
 
   void main() {
-    vec4 color = texture2D(uSampler, vUV);
+    vec4 color = texture2D(uSampler, uUVOffset + vUV * uUVScale);
     color.rgb *= uTint;
     color *= uAlpha;
     gl_FragColor = color;

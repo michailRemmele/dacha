@@ -9,6 +9,8 @@ describe('Contrib -> components -> Sprite', () => {
       slice: 10,
       sortOffsetX: 1,
       sortOffsetY: 2,
+      textureOffsetX: 3,
+      textureOffsetY: 4,
       flipX: false,
       flipY: true,
       disabled: false,
@@ -24,6 +26,7 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.height).toEqual(200);
     expect(sprite.slice).toEqual(10);
     expect(sprite.sortOffset).toEqual({ x: 1, y: 2 });
+    expect(sprite.textureOffset).toEqual({ x: 3, y: 4 });
     expect(sprite.flipX).toEqual(false);
     expect(sprite.flipY).toEqual(true);
     expect(sprite.disabled).toEqual(false);
@@ -42,6 +45,8 @@ describe('Contrib -> components -> Sprite', () => {
       slice: 10,
       sortOffsetX: 0,
       sortOffsetY: 0,
+      textureOffsetX: 0,
+      textureOffsetY: 0,
       flipX: false,
       flipY: true,
       disabled: false,
@@ -57,6 +62,7 @@ describe('Contrib -> components -> Sprite', () => {
     sprite.height = 400;
     sprite.slice = 55;
     sprite.sortOffset = { x: 5, y: 10 };
+    sprite.textureOffset = { x: 7, y: 8 };
     sprite.flipX = true;
     sprite.flipY = false;
     sprite.disabled = true;
@@ -70,6 +76,7 @@ describe('Contrib -> components -> Sprite', () => {
     expect(sprite.height).toEqual(400);
     expect(sprite.slice).toEqual(55);
     expect(sprite.sortOffset).toEqual({ x: 5, y: 10 });
+    expect(sprite.textureOffset).toEqual({ x: 7, y: 8 });
     expect(sprite.flipX).toEqual(true);
     expect(sprite.flipY).toEqual(false);
     expect(sprite.disabled).toEqual(true);
