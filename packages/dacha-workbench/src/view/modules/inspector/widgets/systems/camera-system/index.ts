@@ -1,13 +1,11 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const cameraSystem: WidgetSchema = {
   fields: [
     {
       name: 'windowNodeId',
       type: 'string',
+      initialValue: 'root',
     },
   ],
-  getInitialState: () => ({
-    windowNodeId: '',
-  }),
-}
+};

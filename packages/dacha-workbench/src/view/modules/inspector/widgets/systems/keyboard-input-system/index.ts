@@ -1,10 +1,11 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const keyboardInputSystem: WidgetSchema = {
   fields: [
     {
       name: 'windowNodeId',
       type: 'string',
+      initialValue: 'root',
       dependency: {
         name: 'useWindow',
         value: false,
@@ -13,9 +14,7 @@ export const keyboardInputSystem: WidgetSchema = {
     {
       name: 'useWindow',
       type: 'boolean',
+      initialValue: true,
     },
   ],
-  getInitialState: () => ({
-    useWindow: true,
-  }),
-}
+};

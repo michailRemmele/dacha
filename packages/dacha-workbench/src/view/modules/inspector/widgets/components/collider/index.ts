@@ -9,83 +9,63 @@ export const collider: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
+      initialValue: 'box',
       options: ['box', 'capsule', 'circle', 'segment'],
     },
     {
       name: 'sizeX',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'box',
-      },
+      initialValue: 10,
+      dependency: { name: 'type', value: 'box' },
     },
     {
       name: 'sizeY',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'box',
-      },
+      initialValue: 10,
+      dependency: { name: 'type', value: 'box' },
     },
     {
       name: 'radius',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'capsule|circle',
-      },
+      initialValue: 5,
+      dependency: { name: 'type', value: 'capsule|circle' },
     },
     {
       name: 'height',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'capsule',
-      },
+      initialValue: 5,
+      dependency: { name: 'type', value: 'capsule' },
     },
     {
       name: 'point1X',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'segment',
-      },
+      initialValue: -5,
+      dependency: { name: 'type', value: 'segment' },
     },
     {
       name: 'point1Y',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'segment',
-      },
+      initialValue: 0,
+      dependency: { name: 'type', value: 'segment' },
     },
     {
       name: 'point2X',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'segment',
-      },
+      initialValue: 5,
+      dependency: { name: 'type', value: 'segment' },
     },
     {
       name: 'point2Y',
       type: 'number',
-      dependency: {
-        name: 'type',
-        value: 'segment',
-      },
+      initialValue: 0,
+      dependency: { name: 'type', value: 'segment' },
     },
-    {
-      name: 'offsetX',
-      type: 'number',
-    },
-    {
-      name: 'offsetY',
-      type: 'number',
-    },
+    { name: 'offsetX', type: 'number', initialValue: 0 },
+    { name: 'offsetY', type: 'number', initialValue: 0 },
     {
       name: 'layer',
       type: 'select',
+      initialValue: DEFAULT_LAYER,
       options: (getState) => [
         { title: DEFAULT_LAYER, value: DEFAULT_LAYER },
         ...((getState(PATH) as CollisionLayer[]) ?? []).map((group) => ({
@@ -94,23 +74,7 @@ export const collider: WidgetSchema = {
         })),
       ],
     },
-    {
-      name: 'debugColor',
-      type: 'color',
-    },
-    {
-      name: 'disabled',
-      type: 'boolean',
-    },
+    { name: 'debugColor', type: 'color', initialValue: '#4DFFB8' },
+    { name: 'disabled', type: 'boolean', initialValue: false },
   ],
-  getInitialState: () => ({
-    type: 'box',
-    sizeX: 1,
-    sizeY: 1,
-    offsetX: 0,
-    offsetY: 0,
-    layer: DEFAULT_LAYER,
-    debugColor: '#4DFFB8',
-    disabled: false,
-  }),
 };

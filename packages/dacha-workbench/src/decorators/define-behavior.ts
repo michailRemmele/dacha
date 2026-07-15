@@ -8,7 +8,6 @@ import { classRegistry } from './class-registry';
 import {
   defineMetaProperty,
   mergeFields,
-  buildInitialState,
   isEditor,
 } from './utils';
 
@@ -33,8 +32,6 @@ export function DefineBehavior({
       widget.fields,
       Reflect.getMetadata('schema:fields', constructor) as Field[] | undefined,
     );
-    const getInitialState = (): Record<string, unknown> =>
-      buildInitialState(fields, widget.getInitialState);
 
     const groupName = type ? `behavior.${type}` : 'behavior';
 
@@ -42,7 +39,6 @@ export function DefineBehavior({
       ...widget,
       view: widgetRegistry.getWidget(name),
       fields,
-      getInitialState,
     });
 
     classRegistry.addClass(groupName, name, constructor);

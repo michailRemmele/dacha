@@ -9,6 +9,7 @@ import { BehaviorWidget } from '../../../components/behavior-widget';
 import { EntitySelect } from '../../../components/entity-picker';
 import { useConfig, useCommander, useBehaviors } from '../../../../../hooks';
 import { setValue, deleteValue } from '../../../../../commands';
+import { buildInitialState } from '../../../../../../schema';
 
 import { ShaderFormStyled, PanelCSS } from './mesh.style';
 
@@ -54,7 +55,7 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
       dispatch(
         setValue(materialPath, {
           name,
-          options: shaders?.[name].getInitialState?.() ?? {},
+          options: buildInitialState(shaders?.[name].fields ?? []),
         }),
       );
       setEntityValue(name);

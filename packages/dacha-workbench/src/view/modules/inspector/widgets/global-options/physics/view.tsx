@@ -1,10 +1,10 @@
-import { useEffect, useCallback, FC } from 'react';
+import { useCallback, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useConfig, useCommander } from '../../../../../hooks';
-import { addValue, setValue } from '../../../../../commands';
+import { setValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import { CollapsePanel } from '../../../components/collapse-panel';
 import type {
@@ -20,11 +20,7 @@ import {
   ButtonCSS,
   EmptyPlaceholderStyled,
 } from './physics.style';
-import {
-  PHYSICS_SETTINGS_PATH,
-  DEFAULT_LAYER,
-  DEFAULT_LAYER_ID,
-} from './consts';
+import { PHYSICS_SETTINGS_PATH, DEFAULT_LAYER } from './consts';
 
 export const PhysicsWidget: FC = () => {
   const { t } = useTranslation();
@@ -33,22 +29,6 @@ export const PhysicsWidget: FC = () => {
   const settings = useConfig(PHYSICS_SETTINGS_PATH) as
     | PhysicsSettings
     | undefined;
-
-  useEffect(() => {
-    if (settings) {
-      return;
-    }
-
-    dispatch(
-      addValue(['globalOptions'], {
-        name: 'physics',
-        options: {
-          collisionLayers: [],
-          collisionMatrix: { [DEFAULT_LAYER_ID]: { [DEFAULT_LAYER_ID]: true } },
-        },
-      }),
-    );
-  }, [settings]);
 
   const updatePhysics = useCallback(
     (newLayers: CollisionLayer[]) => {

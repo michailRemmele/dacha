@@ -12,6 +12,7 @@ import {
   LabelledTextInput,
   LabelledCheckbox,
   LabelledNumberInput,
+  fieldValueValidators,
 } from '../../../../../../../components'
 import { AnimationEditorContext } from '../../../providers'
 import { getStatePath } from '../../../utils/paths'
@@ -45,6 +46,7 @@ export const SubstateInspector: FC = () => {
         path={xPath}
         component={LabelledNumberInput}
         label={t('components.animatable.editor.substate.x.title')}
+        isValueValid={fieldValueValidators.number}
       />
       <DependencyField
         path={yPath}
@@ -52,6 +54,8 @@ export const SubstateInspector: FC = () => {
         label={t('components.animatable.editor.substate.y.title')}
         dependencyPath={pickModePath}
         dependencyValue="2D"
+        initialValue={0}
+        isValueValid={fieldValueValidators.number}
       />
     </FormStyled>
   )

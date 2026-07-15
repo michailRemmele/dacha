@@ -22,6 +22,7 @@ import { Widget } from '../../../components/widget';
 import { EntityMultiselect } from '../../../components/entity-picker';
 import { useConfig, useCommander, useBehaviors } from '../../../../../hooks';
 import { addValue, setValue } from '../../../../../commands';
+import { buildInitialState } from '../../../../../../schema';
 
 import { DraggableEffectPanel } from './draggable-effect-panel';
 import { DragOverlayEntry } from './drag-overlay-entry';
@@ -53,10 +54,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
 
   const [activeEntry, setActiveEntry] = useState<FilterEffectEntry | null>();
 
-  const filterEffectsPath = useMemo(
-    () => path.concat('filterEffects'),
-    [path],
-  );
+  const filterEffectsPath = useMemo(() => path.concat('filterEffects'), [path]);
 
   const selectedEffects =
     (useConfig(filterEffectsPath) as FilterEffectEntry[] | undefined) ?? [];
@@ -79,7 +77,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
         addValue(filterEffectsPath, {
           id: uuidv4(),
           name,
-          options: effects?.[name].getInitialState?.() ?? {},
+          options: buildInitialState(effects?.[name].fields ?? []),
         }),
       );
     },

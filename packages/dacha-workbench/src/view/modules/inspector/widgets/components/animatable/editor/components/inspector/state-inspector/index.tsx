@@ -15,6 +15,7 @@ import {
   LabelledCheckbox,
   LabelledNumberInput,
   LabelledSelect,
+  fieldValueValidators,
 } from '../../../../../../../components'
 import { useConfig, useCommander } from '../../../../../../../../../hooks'
 import { setValue } from '../../../../../../../../../commands'
@@ -103,6 +104,7 @@ export const StateInspector: FC = () => {
         path={speedPath}
         component={LabelledNumberInput}
         label={t('components.animatable.editor.state.speed.title')}
+        isValueValid={fieldValueValidators.number}
       />
       <LabelledSelect
         label={t('components.animatable.editor.state.type.title')}

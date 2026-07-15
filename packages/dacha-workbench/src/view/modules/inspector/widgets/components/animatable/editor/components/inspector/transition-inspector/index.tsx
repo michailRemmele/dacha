@@ -14,6 +14,7 @@ import {
   Field,
   LabelledNumberInput,
   LabelledSelect,
+  fieldValueValidators,
 } from '../../../../../../../components'
 import { useConfig, useCommander } from '../../../../../../../../../hooks'
 import { addValue } from '../../../../../../../../../commands'
@@ -65,6 +66,7 @@ export const TransitionInspector: FC = () => {
         path={timePath}
         component={LabelledNumberInput}
         label={t('components.animatable.editor.transition.time.title')}
+        isValueValid={fieldValueValidators.number}
       />
 
       <ConditionsStyled>

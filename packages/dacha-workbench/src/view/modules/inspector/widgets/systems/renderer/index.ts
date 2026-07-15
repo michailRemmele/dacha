@@ -8,15 +8,17 @@ export const renderer: WidgetSchema = {
     {
       name: 'windowNodeId',
       type: 'string',
+      initialValue: 'root',
     },
     {
       name: 'backgroundColor',
       type: 'color',
+      initialValue: '#000',
+    },
+    {
+      name: 'filterEffects',
+      type: 'data',
+      initialValue: [],
     },
   ],
-  getInitialState: () => ({
-    windowNodeId: '',
-    backgroundColor: '#000',
-    filterEffects: [],
-  }),
 };

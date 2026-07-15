@@ -1,4 +1,4 @@
-import type { DependencyValue } from '../../../../../types/widget-schema'
+import type { DependencyValue } from '../types/widget-schema'
 
 export const checkDependency = (value: unknown, checker: DependencyValue): boolean => {
   if (typeof value === 'string' && typeof checker === 'string') {

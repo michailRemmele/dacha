@@ -10,6 +10,7 @@ import { addValue } from '../../../../commands'
 import type { SchemasDataEntry } from '../../../../providers'
 import type { WidgetSchema } from '../../../../../types/widget-schema'
 import { formatWidgetName } from '../../../../../utils/format-widget-name'
+import { buildInitialState } from '../../../../../schema'
 import { EntityMultiselect } from '../entity-picker'
 
 import { EntityPickerCSS } from './entity-list.style'
@@ -54,7 +55,7 @@ export const EntityPicker: FC<EntityPickerProps> = ({
   const handleAdd = useCallback((value: string) => {
     dispatch(addValue(rootPath, {
       name: value,
-      [CONFIG_KEY_MAP[type]]: schemasMap[value].getInitialState?.() ?? {},
+      [CONFIG_KEY_MAP[type]]: buildInitialState(schemasMap[value].fields ?? []),
     }))
   }, [schemasMap, rootPath, type])
 
