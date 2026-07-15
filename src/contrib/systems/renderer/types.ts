@@ -38,6 +38,7 @@ export interface Bounds {
 }
 
 export interface ViewComponent extends Component {
+  disabled?: boolean;
   renderData?: {
     view: ViewContainer;
   };
