@@ -10,6 +10,7 @@ import type {
 import type { GetOptionsFn } from '../../../../../../../types/widget-schema';
 import type { LabelledProps } from '../../../labelled';
 import { WidgetFieldContext } from '../../widget-field-context';
+import { NAMESPACE_EDITOR } from '../../../../../../providers/schemas-provider/consts';
 
 type MultiSelectFieldProps = {
   options: SelectOption[] | string[] | GetOptionsFn;
@@ -45,7 +46,7 @@ export const MultiSelectField: FC<MultiSelectFieldProps> = ({
       const option = formattedOptions.find((opt) => opt.value === entry);
       return option
         ? entry
-        : `${t('inspector.components.select.option.none.title')} ${index + 1}`;
+        : `${t('inspector.components.select.option.none.title', { ns: NAMESPACE_EDITOR })} ${index + 1}`;
     });
   }, [value, formattedOptions]);
 

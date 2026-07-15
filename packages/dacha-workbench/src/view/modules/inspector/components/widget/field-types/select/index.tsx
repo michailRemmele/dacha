@@ -10,6 +10,7 @@ import type {
 import type { GetOptionsFn } from '../../../../../../../types/widget-schema';
 import type { LabelledProps } from '../../../labelled';
 import { WidgetFieldContext } from '../../widget-field-context';
+import { NAMESPACE_EDITOR } from '../../../../../../providers/schemas-provider/consts';
 
 type SelectFieldProps = {
   options: SelectOption[] | string[] | GetOptionsFn;
@@ -42,7 +43,11 @@ export const SelectField: FC<SelectFieldProps> = ({
 
   const formattedValue = useMemo(() => {
     const option = formattedOptions.find((opt) => opt.value === value);
-    return option ? value : t('inspector.components.select.option.none.title');
+    return option
+      ? value
+      : t('inspector.components.select.option.none.title', {
+          ns: NAMESPACE_EDITOR,
+        });
   }, [value, formattedOptions]);
 
   return (
