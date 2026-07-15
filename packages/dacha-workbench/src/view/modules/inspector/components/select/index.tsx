@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Labelled, LabelledProps } from '../labelled'
 import type { SelectProps } from '../../../../../types/inputs'
+import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 
 import { SelectCSS } from './select.style'
 
@@ -16,7 +17,7 @@ export const Select: FC<SelectProps> = ({
   onSelect,
   ...props
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation(NAMESPACE_EDITOR)
   const handleChange = useCallback((value: string) => {
     onChange(value)
     onAccept()
