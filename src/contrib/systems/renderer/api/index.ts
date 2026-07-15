@@ -145,7 +145,10 @@ export class RendererAPI {
     VIEW_COMPONENTS.forEach((ViewComponent) => {
       const viewComponent = actor.getComponent(ViewComponent) as ViewComponent;
 
-      if (!viewComponent?.renderData?.view?.__dacha.isReady) {
+      if (
+        viewComponent?.disabled ||
+        !viewComponent?.renderData?.view?.__dacha.isReady
+      ) {
         return;
       }
 
