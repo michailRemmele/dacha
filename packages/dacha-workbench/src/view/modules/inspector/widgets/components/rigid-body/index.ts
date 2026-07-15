@@ -5,11 +5,13 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
+      initialValue: 'static',
       options: ['dynamic', 'static', 'kinematic'],
     },
     {
       name: 'mass',
       type: 'number',
+      initialValue: 1,
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -18,6 +20,7 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'gravityScale',
       type: 'number',
+      initialValue: 1,
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -26,6 +29,7 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'linearDamping',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -34,6 +38,7 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'angularDamping',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -42,6 +47,7 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'lockRotation',
       type: 'boolean',
+      initialValue: false,
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -50,18 +56,22 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'restitution',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'friction',
       type: 'number',
+      initialValue: 0.6,
     },
     {
       name: 'oneWay',
       type: 'boolean',
+      initialValue: false,
     },
     {
       name: 'oneWayNormalX',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'oneWay',
         value: true,
@@ -70,6 +80,7 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'oneWayNormalY',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'oneWay',
         value: true,
@@ -78,13 +89,7 @@ export const rigidBody: WidgetSchema = {
     {
       name: 'disabled',
       type: 'boolean',
+      initialValue: false,
     },
   ],
-  getInitialState: () => ({
-    type: 'static',
-    oneWay: false,
-    disabled: false,
-    restitution: 0,
-    friction: 0.6,
-  }),
 };

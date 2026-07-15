@@ -7,13 +7,14 @@ import {
 import { Field } from '../field'
 import type { FieldProps } from '../field'
 import { useConfig, useCommander } from '../../../../hooks'
-import { deleteValue } from '../../../../commands'
+import { setValue, deleteValue } from '../../../../commands'
 
-import { checkDependency } from './check-dependency'
+import { checkDependency } from '../../../../../schema'
 
 interface DependencyFieldProps extends FieldProps {
   dependencyPath: string[]
   dependencyValue: string | number | boolean
+  initialValue?: unknown
   deleteOnHide?: boolean
 }
 
@@ -21,6 +22,7 @@ export const DependencyField: FC<DependencyFieldProps> = ({
   path,
   dependencyPath,
   dependencyValue,
+  initialValue,
   deleteOnHide = true,
   ...props
 }) => {
@@ -38,6 +40,9 @@ export const DependencyField: FC<DependencyFieldProps> = ({
     if (visibleRef.current !== visible) {
       if (!visible && deleteOnHide && value !== undefined) {
         dispatch(deleteValue(path, true))
+      }
+      if (visible && value === undefined && initialValue !== undefined) {
+        dispatch(setValue(path, initialValue, true))
       }
       visibleRef.current = visible
     }

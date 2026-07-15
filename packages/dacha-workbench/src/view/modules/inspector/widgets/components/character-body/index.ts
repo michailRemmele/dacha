@@ -5,11 +5,13 @@ export const characterBody: WidgetSchema = {
     {
       name: 'motionMode',
       type: 'select',
+      initialValue: 'surface',
       options: ['surface', 'free'],
     },
     {
       name: 'upDirectionX',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'motionMode',
         value: 'surface',
@@ -18,6 +20,7 @@ export const characterBody: WidgetSchema = {
     {
       name: 'upDirectionY',
       type: 'number',
+      initialValue: -1,
       dependency: {
         name: 'motionMode',
         value: 'surface',
@@ -26,10 +29,12 @@ export const characterBody: WidgetSchema = {
     {
       name: 'skinWidth',
       type: 'number',
+      initialValue: 0.1,
     },
     {
       name: 'maxSlopeAngle',
       type: 'number',
+      initialValue: 45,
       dependency: {
         name: 'motionMode',
         value: 'surface',
@@ -38,14 +43,17 @@ export const characterBody: WidgetSchema = {
     {
       name: 'maxSlides',
       type: 'number',
+      initialValue: 4,
     },
     {
       name: 'maxRecoveries',
       type: 'number',
+      initialValue: 3,
     },
     {
       name: 'groundSnapDistance',
       type: 'number',
+      initialValue: 1,
       dependency: {
         name: 'motionMode',
         value: 'surface',
@@ -54,17 +62,7 @@ export const characterBody: WidgetSchema = {
     {
       name: 'disabled',
       type: 'boolean',
+      initialValue: false,
     },
   ],
-  getInitialState: () => ({
-    motionMode: 'surface',
-    upDirectionX: 0,
-    upDirectionY: -1,
-    skinWidth: 0.1,
-    maxSlopeAngle: 45,
-    maxSlides: 4,
-    maxRecoveries: 3,
-    groundSnapDistance: 1,
-    disabled: false,
-  }),
 };

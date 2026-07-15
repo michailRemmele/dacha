@@ -7,7 +7,14 @@ import { classRegistry } from '../../../decorators/class-registry';
 import { widgetRegistry } from '../../../hocs/widget-registry';
 import { EventType } from '../../../events';
 import { CommanderStore } from '../../../store';
+import type { DataValue } from '../../../store/types';
 import type { EditorConfig, Extension } from '../../../types/global';
+import {
+  componentsSchema,
+  systemsSchema,
+  globalOptionsSchema,
+} from '../../../view/modules/inspector/widgets';
+import { reconcileConfig } from '../../../schema';
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10;
 
@@ -19,6 +26,7 @@ export class ProjectLoader extends WorldSystem {
   private world: World;
   private time: Time;
   private editorConfig: EditorConfig;
+  private commanderStore: CommanderStore;
 
   private extensionScript?: HTMLScriptElement;
 
@@ -30,10 +38,9 @@ export class ProjectLoader extends WorldSystem {
     this.world = options.world;
     this.time = options.time;
     this.editorConfig = window.electron.getEditorConfig();
+    this.commanderStore = (options.resources as ProjectLoaderResources).store;
 
-    this.world.data.configStore = (
-      options.resources as ProjectLoaderResources
-    ).store;
+    this.world.data.configStore = this.commanderStore;
     this.world.data.editorConfig = this.editorConfig;
 
     this.autoSaveInterval =
@@ -63,6 +70,15 @@ export class ProjectLoader extends WorldSystem {
       locales: window.extension?.default.locales,
     });
 
+    /*
+     * comment: Reconciliation writes bypass undo history, which would leave existing history
+     * entries able to revert the healing (delete commands capture the parent array by
+     * reference). The schemas just changed anyway, so drop history when anything was healed.
+     */
+    if (this.reconcileProjectConfig() > 0) {
+      this.commanderStore.clean();
+    }
+
     this.world.dispatchEvent(EventType.ExtensionUpdated);
   };
 
@@ -75,6 +91,8 @@ export class ProjectLoader extends WorldSystem {
       events: window.extension?.default.events,
       locales: window.extension?.default.locales,
     });
+
+    this.reconcileProjectConfig();
   }
 
   private async loadScript(src: string): Promise<void> {
@@ -104,6 +122,27 @@ export class ProjectLoader extends WorldSystem {
 
     const rendererApi = this.world.systemApi.get(RendererAPI);
     rendererApi.reloadShaders(classRegistry.getGroup('behavior.shader') ?? []);
+  }
+
+  private reconcileProjectConfig(): number {
+    const store = this.world.data.configStore as CommanderStore;
+
+    const fixes = reconcileConfig(store.get([]), {
+      components: {
+        ...componentsSchema,
+        ...schemaRegistry.getGroup('component'),
+      },
+      systems: { ...systemsSchema, ...schemaRegistry.getGroup('system') },
+      globalOptions: globalOptionsSchema,
+      behaviors: schemaRegistry.getGroup('behavior') ?? {},
+    });
+
+    /* comment: Order matters: coarse parent-path fixes must be applied before nested ones */
+    fixes.forEach(({ path, value }) => {
+      store.setWithoutHistory(path, value as DataValue);
+    });
+
+    return fixes.length;
   }
 
   private saveProjectConfig(): void {

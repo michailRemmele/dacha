@@ -36,22 +36,6 @@ export const SortingWidget: FC = () => {
     prevLayers.current = layers;
   }, [layers]);
 
-  useEffect(() => {
-    if (layers) {
-      return;
-    }
-
-    dispatch(
-      addValue(['globalOptions'], {
-        name: 'sortingLayers',
-        options: {
-          order: ORDER_OPTIONS[0].value,
-          layers: [],
-        },
-      }),
-    );
-  }, [layers]);
-
   const handleAddNewLayer = useCallback(() => {
     if (!layers) {
       return;

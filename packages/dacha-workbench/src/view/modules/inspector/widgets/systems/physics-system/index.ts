@@ -5,29 +5,27 @@ export const physicsSystem: WidgetSchema = {
     {
       name: 'gravityX',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'gravityY',
       type: 'number',
+      initialValue: 980,
     },
     {
       name: 'solverIterations',
       type: 'number',
+      initialValue: 8,
     },
     {
       name: 'maxAllowedPenetration',
       type: 'number',
+      initialValue: 0.5,
     },
     {
       name: 'maxBiasVelocity',
       type: 'number',
+      initialValue: 60,
     },
   ],
-  getInitialState: () => ({
-    gravityX: 0,
-    gravityY: 980,
-    solverIterations: 8,
-    maxAllowedPenetration: 0.5,
-    maxBiasVelocity: 60,
-  }),
 };

@@ -7,7 +7,6 @@ import { schemaRegistry } from './schema-registry'
 import {
   defineMetaProperty,
   mergeFields,
-  buildInitialState,
   isEditor,
 } from './utils'
 
@@ -30,16 +29,11 @@ export function DefineSystem({
       widget.fields,
       Reflect.getMetadata('schema:fields', constructor) as Field[] | undefined,
     )
-    const getInitialState = (): Record<string, unknown> => buildInitialState(
-      fields,
-      widget.getInitialState,
-    )
 
     schemaRegistry.addWidget('system', name, {
       ...widget,
       view: widgetRegistry.getWidget(name),
       fields,
-      getInitialState,
     })
   }
 }

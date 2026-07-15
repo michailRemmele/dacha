@@ -5,20 +5,18 @@ export const interpolation: WidgetSchema = {
     {
       name: 'mode',
       type: 'select',
+      initialValue: 'interpolate',
       options: ['interpolate', 'extrapolate'],
     },
     {
       name: 'snapThreshold',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'disabled',
       type: 'boolean',
+      initialValue: false,
     },
   ],
-  getInitialState: () => ({
-    mode: 'interpolate',
-    snapThreshold: 0,
-    disabled: false,
-  }),
 };

@@ -16,6 +16,7 @@ export interface FieldProps extends Omit<HTMLProps<HTMLElement>, 'onBlur' | 'onC
   onBlur?: (value: unknown) => void
   onChange?: (value: unknown) => void
   onAccept?: (value: unknown) => void
+  isValueValid?: (value: unknown) => boolean
   // comment: Allow to pass any component to Field
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: FC<any>
@@ -28,6 +29,7 @@ export const Field: FC<FieldProps> = ({
   onBlur = (): void => void 0,
   onChange = (): void => void 0,
   onAccept = (): void => void 0,
+  isValueValid,
   ...props
 }) => {
   const initialValue = useConfig(path) as string
@@ -54,11 +56,17 @@ export const Field: FC<FieldProps> = ({
   }, [onChange])
 
   const handleAccept = useCallback(() => {
+    if (isValueValid && !isValueValid(valueRef.current)) {
+      valueRef.current = initialValue
+      setValue(initialValue)
+      return
+    }
+
     if (!isEqual(valueRef.current, initialValue)) {
       dispatch(setValueCmd(path, valueRef.current))
       onAccept(valueRef.current)
     }
-  }, [onAccept, path, dispatch, initialValue])
+  }, [onAccept, path, dispatch, initialValue, isValueValid])
 
   return (
     <InputComponent

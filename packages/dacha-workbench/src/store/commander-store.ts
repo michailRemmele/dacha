@@ -1,7 +1,7 @@
 import { Store } from './store'
 import { commands } from './commands'
 import type { Command } from './commands/command'
-import type { Data, ListenerFn } from './types'
+import type { Data, DataValue, ListenerFn } from './types'
 
 const HISTORY_SIZE = 100
 
@@ -47,6 +47,10 @@ export class CommanderStore {
 
   get(path: string[]): unknown {
     return this.store.get(path)
+  }
+
+  setWithoutHistory(path: string[], value: DataValue): void {
+    this.store.set(path, value)
   }
 
   subscribe(listener: ListenerFn): () => void {
@@ -120,7 +124,13 @@ export class CommanderStore {
     }
   }
 
-  clean(event: CommandControlEvent): void {
+  clean(event?: CommandControlEvent): void {
+    if (!event) {
+      this.undoHistory = {}
+      this.redoHistory = {}
+      return
+    }
+
     const { scope } = event
 
     delete this.undoHistory[scope]

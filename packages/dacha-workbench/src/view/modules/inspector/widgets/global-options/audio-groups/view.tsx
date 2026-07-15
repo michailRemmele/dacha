@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useCallback,
   FC,
 } from 'react'
@@ -25,19 +24,6 @@ export const AudioGroupsWidget: FC = () => {
   const { dispatch } = useCommander()
 
   const groups = useConfig(PATH) as AudioGroup[] | undefined
-
-  useEffect(() => {
-    if (groups) {
-      return
-    }
-
-    dispatch(addValue(['globalOptions'], {
-      name: 'audioGroups',
-      options: {
-        groups: [],
-      },
-    }))
-  }, [groups])
 
   const handleAddNewGroup = useCallback(() => {
     if (!groups) {

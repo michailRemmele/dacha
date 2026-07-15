@@ -11,6 +11,7 @@ import { LabelledNumberInput } from '../../../components/number-input'
 import { MultiField } from '../../../components/multi-field'
 import { Field } from '../../../components/field'
 import { DependencyField } from '../../../components/dependency-field'
+import { fieldValueValidators } from '../../../components/widget/field-value-validators'
 import { Panel } from '../../../components/panel'
 import { useCommander, useExtension } from '../../../../../hooks'
 import { deleteValue } from '../../../../../commands'
@@ -75,6 +76,8 @@ export const InputBind: FC<InputBindProps> = ({
         label={t('components.mouseControl.bind.button.title')}
         dependencyPath={eventPath}
         dependencyValue="mousedown|mouseup"
+        initialValue={0}
+        isValueValid={fieldValueValidators.number}
       />
       <Field
         path={eventTypePath}
