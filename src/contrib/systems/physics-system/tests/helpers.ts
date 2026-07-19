@@ -36,9 +36,6 @@ export const createPhysicsSystem = (
     Pick<
       PhysicsSystemOptions,
       | 'solverIterations'
-      | 'linearSleepThreshold'
-      | 'angularSleepThreshold'
-      | 'sleepTimeThreshold'
       | 'maxAllowedPenetration'
       | 'maxBiasVelocity'
     >

@@ -14,8 +14,6 @@ import {
   CONTACT_BIAS,
   DEFAULT_MAX_BIAS_VELOCITY,
   RESTITUTION_VELOCITY_THRESHOLD,
-  DEFAULT_LINEAR_SLEEP_THRESHOLD,
-  PENETRATION_SLEEP_MARGIN,
 } from '../../consts';
 
 import {
@@ -35,8 +33,6 @@ import {
   applyImpulse,
   applyBiasImpulse,
 } from './impulse-utils';
-import { shouldWakeSleepingContact } from './contact-utils';
-import { SleepSupportTracker } from './sleep-support-tracker';
 
 interface ConstraintSolverOptions {
   time: Time;
@@ -44,7 +40,6 @@ interface ConstraintSolverOptions {
   solverIterations?: number;
   maxAllowedPenetration?: number;
   maxBiasVelocity?: number;
-  linearSleepThreshold?: number;
 }
 
 const BLOCK_SOLVER_MIN_DETERMINANT = 1e-8;
@@ -63,7 +58,6 @@ const RESTITUTION_GRAVITY_THRESHOLD_FACTOR = 2;
 export class ConstraintSolver {
   private oneWayValidator: OneWayValidator;
   private contactStateManager: ContactStateManager;
-  private sleepSupportTracker: SleepSupportTracker;
 
   private time: Time;
   private getGravity: () => Vector2;
@@ -72,8 +66,6 @@ export class ConstraintSolver {
   private solverIterations: number;
   private maxAllowedPenetration: number;
   private maxBiasVelocity: number;
-  private linearSleepThreshold: number;
-  private penetrationSleepThreshold: number;
 
   private flippedNormal: Point;
   private blockImpulse0: number;
@@ -82,7 +74,6 @@ export class ConstraintSolver {
   constructor(options: ConstraintSolverOptions) {
     this.oneWayValidator = new OneWayValidator();
     this.contactStateManager = new ContactStateManager();
-    this.sleepSupportTracker = new SleepSupportTracker(options.getGravity);
 
     this.time = options.time;
     this.getGravity = options.getGravity;
@@ -93,10 +84,6 @@ export class ConstraintSolver {
     this.maxAllowedPenetration =
       options.maxAllowedPenetration ?? DEFAULT_CONTACT_MAX_ALLOWED_PENETRATION;
     this.maxBiasVelocity = options.maxBiasVelocity ?? DEFAULT_MAX_BIAS_VELOCITY;
-    this.linearSleepThreshold =
-      options.linearSleepThreshold ?? DEFAULT_LINEAR_SLEEP_THRESHOLD;
-    this.penetrationSleepThreshold =
-      this.maxAllowedPenetration + PENETRATION_SLEEP_MARGIN;
 
     this.flippedNormal = { x: 0, y: 0 };
     this.blockImpulse0 = 0;
@@ -149,35 +136,6 @@ export class ConstraintSolver {
       contact.actor1,
       this.flippedNormal,
     );
-  }
-
-  private validateSleepContact(contact: Contact): boolean {
-    const rigidBody1 = contact.actor1.getComponent(RigidBody);
-    const rigidBody2 = contact.actor2.getComponent(RigidBody);
-
-    const isDeepContact = contact.penetration > this.penetrationSleepThreshold;
-    const isFastContact = shouldWakeSleepingContact(
-      contact,
-      this.linearSleepThreshold,
-    );
-
-    if (!isDeepContact && !isFastContact) {
-      this.sleepSupportTracker.trackContact(contact);
-    }
-
-    if (rigidBody1.sleeping && rigidBody2.sleeping) {
-      return false;
-    }
-
-    if (
-      (rigidBody1.sleeping || rigidBody2.sleeping) &&
-      (isDeepContact || isFastContact)
-    ) {
-      rigidBody1.wakeUp();
-      rigidBody2.wakeUp();
-    }
-
-    return true;
   }
 
   private getPoint(state: ContactState, index: number): ContactPoint {
@@ -310,10 +268,8 @@ export class ConstraintSolver {
     const hasRestitution = state.restitution > 0;
     const isBouncing =
       hasRestitution && -minPrevNormalVelocity > this.restitutionThreshold;
-    const eitherSleeping = state.bodyA.sleeping || state.bodyB.sleeping;
 
-    state.warmStartAllowed =
-      (!hasRestitution || !isBouncing) && !eitherSleeping;
+    state.warmStartAllowed = !hasRestitution || !isBouncing;
     state.skipBias =
       isBouncing && (state.invMassA === 0 || state.invMassB === 0);
   }
@@ -601,7 +557,6 @@ export class ConstraintSolver {
   update(contacts: Contact[]): void {
     this.oneWayValidator.updateVersion();
     this.contactStateManager.updateVersion();
-    this.sleepSupportTracker.beginFrame();
 
     const deltaTime = this.time.fixedDeltaTime;
 
@@ -619,16 +574,11 @@ export class ConstraintSolver {
       if (!this.validateOneWayContact(contact)) {
         return;
       }
-      if (!this.validateSleepContact(contact)) {
-        return;
-      }
-
       const state = this.contactStateManager.acquire(contact);
       this.prepareContact(state);
       this.applyWarmStartImpulse(state);
     });
 
-    this.sleepSupportTracker.wakeUnsupportedBodies();
     this.contactStateManager.pruneStaleStates();
 
     for (let iteration = 0; iteration < this.solverIterations; iteration += 1) {
@@ -647,6 +597,5 @@ export class ConstraintSolver {
     }
 
     this.oneWayValidator.clearOneWayContacts();
-    this.sleepSupportTracker.endFrame();
   }
 }
