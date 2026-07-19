@@ -56,14 +56,6 @@ export const rigidBody: WidgetSchema = {
       type: 'number',
     },
     {
-      name: 'autoSleep',
-      type: 'boolean',
-      dependency: {
-        name: 'type',
-        value: 'dynamic',
-      },
-    },
-    {
       name: 'oneWay',
       type: 'boolean',
     },
