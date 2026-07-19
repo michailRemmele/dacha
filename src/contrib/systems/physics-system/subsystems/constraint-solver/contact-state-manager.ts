@@ -134,10 +134,7 @@ export class ContactStateManager {
     let stateIndex = 0;
 
     for (const state of this.states) {
-      if (
-        state.version === this.version ||
-        (state.bodyA.sleeping && state.bodyB.sleeping)
-      ) {
+      if (state.version === this.version) {
         this.states[stateIndex] = state;
         stateIndex += 1;
         continue;

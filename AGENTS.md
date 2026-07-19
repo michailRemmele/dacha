@@ -1,4 +1,4 @@
-# CLAUDE.md — dacha
+# AGENTS.md — dacha
 
 ## What this is
 

@@ -38,9 +38,6 @@ export class PhysicsSystem extends SceneSystem {
       gravityX = DEFAULT_GRAVITY_X,
       gravityY = DEFAULT_GRAVITY_Y,
       solverIterations,
-      linearSleepThreshold,
-      angularSleepThreshold,
-      sleepTimeThreshold,
       maxAllowedPenetration,
       maxBiasVelocity,
     } = options as PhysicsSystemOptions;
@@ -52,9 +49,6 @@ export class PhysicsSystem extends SceneSystem {
       scene: options.scene,
       time: options.time,
       getGravity: (): Vector2 => this.gravity,
-      linearSleepThreshold,
-      angularSleepThreshold,
-      sleepTimeThreshold,
     });
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
     this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
@@ -64,7 +58,6 @@ export class PhysicsSystem extends SceneSystem {
       solverIterations,
       maxAllowedPenetration,
       maxBiasVelocity,
-      linearSleepThreshold,
     });
 
     this.physicsApi = new PhysicsAPI({
@@ -123,7 +116,6 @@ export class PhysicsSystem extends SceneSystem {
     this.constraintSolver.update(contacts);
 
     this.physicsSubsystem.integrateDynamicPositions();
-    this.physicsSubsystem.updateSleepTimers();
 
     this.collisionBroadcastSubsystem.update(contacts);
 

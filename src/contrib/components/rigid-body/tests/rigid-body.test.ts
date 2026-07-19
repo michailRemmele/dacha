@@ -35,59 +35,6 @@ describe('Contrib -> components -> RigidBody', () => {
     ).toThrow('One-way rigid body normal must be non-zero');
   });
 
-  it('Clears forces and velocities when sleeping', () => {
-    const rigidBody = new RigidBody({
-      type: 'dynamic',
-      mass: 1,
-      disabled: false,
-      oneWay: false,
-    });
-
-    rigidBody.linearVelocity = new Vector2(1, 2);
-    rigidBody.angularVelocity = 3;
-    rigidBody._biasLinearVelocity = new Vector2(4, 5);
-    rigidBody._biasAngularVelocity = 6;
-
-    rigidBody.sleep();
-
-    expect(rigidBody.linearVelocity).toStrictEqual(new Vector2(0, 0));
-    expect(rigidBody.angularVelocity).toBe(0);
-    expect(rigidBody._biasLinearVelocity).toStrictEqual(new Vector2(0, 0));
-    expect(rigidBody._biasAngularVelocity).toBe(0);
-    expect(rigidBody._centralForce).toStrictEqual(new Vector2(0, 0));
-    expect(rigidBody._centralImpulse).toStrictEqual(new Vector2(0, 0));
-    expect(rigidBody._pointForces).toHaveLength(0);
-    expect(rigidBody._pointImpulses).toHaveLength(0);
-    expect(rigidBody._torque).toEqual(0);
-    expect(rigidBody._angularImpulse).toEqual(0);
-  });
-
-  it('Sleeps only active dynamic bodies', () => {
-    const staticBody = new RigidBody({
-      type: 'static',
-      disabled: false,
-      oneWay: false,
-    });
-    const kinematicBody = new RigidBody({
-      type: 'kinematic',
-      disabled: false,
-      oneWay: false,
-    });
-    const disabledBody = new RigidBody({
-      type: 'dynamic',
-      disabled: true,
-      oneWay: false,
-    });
-
-    staticBody.sleep();
-    kinematicBody.sleep();
-    disabledBody.sleep();
-
-    expect(staticBody.sleeping).toBe(false);
-    expect(kinematicBody.sleeping).toBe(false);
-    expect(disabledBody.sleeping).toBe(false);
-  });
-
   it('Returns zero inverse mass for zero or negative mass', () => {
     const rigidBody = new RigidBody({
       type: 'dynamic',
@@ -148,42 +95,15 @@ describe('Contrib -> components -> RigidBody', () => {
       lockRotation: true,
     });
 
-    dynamicBody.sleep();
     dynamicBody.applyTorque(4);
     dynamicBody.applyAngularImpulse(2);
     staticBody.applyTorque(4);
     lockedBody.applyAngularImpulse(2);
 
-    expect(dynamicBody.sleeping).toEqual(false);
     expect(dynamicBody._torque).toEqual(4);
     expect(dynamicBody._angularImpulse).toEqual(2);
     expect(staticBody._torque).toEqual(0);
     expect(lockedBody._angularImpulse).toEqual(0);
-  });
-
-  it('Wakes a sleeping body when force, impulse, torque, or angular impulse is applied', () => {
-    const rigidBody = new RigidBody({
-      type: 'dynamic',
-      mass: 1,
-      disabled: false,
-      oneWay: false,
-    });
-
-    rigidBody.sleep();
-    rigidBody.applyForce(new Vector2(1, 0));
-    expect(rigidBody.sleeping).toBe(false);
-
-    rigidBody.sleep();
-    rigidBody.applyImpulse(new Vector2(1, 0));
-    expect(rigidBody.sleeping).toBe(false);
-
-    rigidBody.sleep();
-    rigidBody.applyTorque(1);
-    expect(rigidBody.sleeping).toBe(false);
-
-    rigidBody.sleep();
-    rigidBody.applyAngularImpulse(1);
-    expect(rigidBody.sleeping).toBe(false);
   });
 
   it('Clears force accumulators', () => {

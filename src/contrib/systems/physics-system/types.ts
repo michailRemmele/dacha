@@ -6,9 +6,6 @@ export interface PhysicsSystemOptions extends SceneSystemOptions {
   gravityX?: number;
   gravityY?: number;
   solverIterations?: number;
-  linearSleepThreshold?: number;
-  angularSleepThreshold?: number;
-  sleepTimeThreshold?: number;
   maxAllowedPenetration?: number;
   maxBiasVelocity?: number;
 }

@@ -5,12 +5,6 @@ import type { Vector2 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import { Collider } from '../../../../components/collider';
-import {
-  DEFAULT_LINEAR_SLEEP_THRESHOLD,
-  DEFAULT_ANGULAR_SLEEP_THRESHOLD,
-  DEFAULT_SLEEP_TIME_THRESHOLD,
-  BIAS_ANGULAR_SLEEP_MULTIPLIER,
-} from '../../consts';
 
 import { calculateInertia } from './mass-properties';
 
@@ -18,20 +12,12 @@ export interface PhysicsSubsystemOptions {
   scene: Scene;
   time: Time;
   getGravity: () => Vector2;
-  linearSleepThreshold?: number;
-  angularSleepThreshold?: number;
-  sleepTimeThreshold?: number;
 }
 
 export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
   private time: Time;
   private getGravity: () => Vector2;
-
-  private linearSleepThreshold: number;
-  private angularSleepThreshold: number;
-  private biasAngularSleepThreshold: number;
-  private sleepTimeThreshold: number;
 
   private kinematicMovedActors: Set<Actor>;
 
@@ -41,15 +27,6 @@ export class PhysicsSubsystem {
     this.actorQuery = new ActorQuery({ scene, filter: [RigidBody, Transform] });
     this.time = time;
     this.getGravity = getGravity;
-
-    this.linearSleepThreshold =
-      options.linearSleepThreshold ?? DEFAULT_LINEAR_SLEEP_THRESHOLD;
-    this.angularSleepThreshold =
-      options.angularSleepThreshold ?? DEFAULT_ANGULAR_SLEEP_THRESHOLD;
-    this.biasAngularSleepThreshold =
-      this.angularSleepThreshold * BIAS_ANGULAR_SLEEP_MULTIPLIER;
-    this.sleepTimeThreshold =
-      options.sleepTimeThreshold ?? DEFAULT_SLEEP_TIME_THRESHOLD;
 
     this.kinematicMovedActors = new Set();
   }
@@ -149,12 +126,7 @@ export class PhysicsSubsystem {
         inverseInertia,
         gravityScale,
         lockRotation,
-        sleeping,
       } = rigidBody;
-
-      if (sleeping) {
-        return;
-      }
 
       if (gravityScale) {
         const gravity = this.getGravity();
@@ -225,7 +197,7 @@ export class PhysicsSubsystem {
         return;
       }
 
-      if (rigidBody.mass <= 0 || rigidBody.sleeping) {
+      if (rigidBody.mass <= 0) {
         return;
       }
 
@@ -240,50 +212,6 @@ export class PhysicsSubsystem {
         transform.world.rotation +=
           (rigidBody.angularVelocity + rigidBody._biasAngularVelocity) *
           deltaTime;
-      }
-    });
-  }
-
-  updateSleepTimers(): void {
-    const deltaTime = this.time.fixedDeltaTime;
-
-    this.actorQuery.getActors().forEach((actor) => {
-      const rigidBody = actor.getComponent(RigidBody);
-
-      if (
-        rigidBody.disabled ||
-        rigidBody.type !== 'dynamic' ||
-        rigidBody.mass <= 0 ||
-        !rigidBody.autoSleep
-      ) {
-        rigidBody._sleepTime = 0;
-        return;
-      }
-
-      if (rigidBody.sleeping) {
-        return;
-      }
-
-      const realMotionIsSmall =
-        rigidBody.linearVelocity.squaredMagnitude <=
-          this.linearSleepThreshold * this.linearSleepThreshold &&
-        Math.abs(rigidBody.angularVelocity) <= this.angularSleepThreshold;
-
-      const biasMotionIsSmall =
-        rigidBody._biasLinearVelocity.squaredMagnitude <=
-          this.linearSleepThreshold * this.linearSleepThreshold &&
-        Math.abs(rigidBody._biasAngularVelocity) <=
-          this.biasAngularSleepThreshold;
-
-      if (!realMotionIsSmall || !biasMotionIsSmall) {
-        rigidBody._sleepTime = 0;
-        return;
-      }
-
-      rigidBody._sleepTime += deltaTime;
-
-      if (rigidBody._sleepTime >= this.sleepTimeThreshold) {
-        rigidBody.sleep();
       }
     });
   }
