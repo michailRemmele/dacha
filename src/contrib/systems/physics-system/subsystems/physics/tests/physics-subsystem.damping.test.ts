@@ -40,7 +40,6 @@ const createBody = (linearDamping: number): Actor => {
       mass: 1,
       gravityScale: 0,
       linearDamping,
-      autoSleep: false,
       disabled: false,
       oneWay: false,
     }),
