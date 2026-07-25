@@ -229,7 +229,7 @@ export class AudioSystem extends WorldSystem {
       return;
     }
 
-    const { src, group, volume, looped, playing } = audioSource;
+    const { src, group, volume, looped, _playing: playing } = audioSource;
     const audioGroupNode = this.audioGroups[group];
 
     if (!audioGroupNode || !this.audioStore.has(src)) {
@@ -265,7 +265,8 @@ export class AudioSystem extends WorldSystem {
       gainNode,
       properties: { volume, group, endedListener },
     });
-    audioSource.playing = true;
+    audioSource._playing = true;
+    audioSource._restarting = false;
   }
 
   private stopAudio(actor: Actor): void {
@@ -274,7 +275,8 @@ export class AudioSystem extends WorldSystem {
       | undefined;
 
     if (audioSource) {
-      audioSource.playing = false;
+      audioSource._playing = false;
+      audioSource._restarting = false;
     }
 
     const audioState = this.audioState.get(actor.id);
@@ -283,6 +285,10 @@ export class AudioSystem extends WorldSystem {
       return;
     }
 
+    audioState.sourceNode.removeEventListener(
+      'ended',
+      audioState.properties.endedListener,
+    );
     audioState.sourceNode.stop();
     audioState.gainNode.disconnect();
     this.audioState.delete(actor.id);
@@ -306,13 +312,18 @@ export class AudioSystem extends WorldSystem {
       const audioSource = actor.getComponent(AudioSource);
       const audioState = this.audioState.get(actor.id);
 
-      if (audioSource.playing && audioState) {
+      if (audioSource._playing && audioState && audioSource._restarting) {
+        this.playAudio(actor);
+        return;
+      }
+
+      if (audioSource._playing && audioState) {
         this.updateAudio(actor);
       }
-      if (audioSource.playing && !audioState) {
+      if (audioSource._playing && !audioState) {
         this.playAudio(actor);
       }
-      if (!audioSource.playing && audioState) {
+      if (!audioSource._playing && audioState) {
         this.stopAudio(actor);
       }
     });
