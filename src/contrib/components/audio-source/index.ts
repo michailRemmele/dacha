@@ -31,8 +31,15 @@ export interface AudioSourceConfig {
  * // Modify properties
  * audioSource.volume = 0.5; // Set volume to 50%
  *
- * // Play the audio
- * audioSource.playing = true;
+ * // Play the audio (restarts it from the beginning if it's already playing)
+ * audioSource.play();
+ *
+ * // Play it, but leave an already-playing instance alone instead of
+ * // restarting it
+ * audioSource.play(false);
+ *
+ * // Stop the audio
+ * audioSource.stop();
  * ```
  *
  * @category Components
@@ -48,8 +55,11 @@ export class AudioSource extends Component {
   volume: number;
   /** Whether the audio is autoplayed on scene enter or after actor is added to scene */
   autoplay: boolean;
-  /** Whether the audio is playing now */
-  playing: boolean;
+
+  /** @internal Whether the audio is currently playing */
+  _playing: boolean;
+  /** @internal Whether a still-playing sound should restart from the beginning */
+  _restarting: boolean;
 
   constructor(config: AudioSourceConfig) {
     super();
@@ -59,7 +69,35 @@ export class AudioSource extends Component {
     this.looped = config.looped;
     this.volume = config.volume;
     this.autoplay = config.autoplay;
-    this.playing = false;
+
+    this._playing = false;
+    this._restarting = false;
+  }
+
+  /**
+   * Starts playback.
+   *
+   * If the sound is already playing, it restarts from the beginning by
+   * default; pass `restart: false` to leave an already-playing instance
+   * untouched instead.
+   *
+   * @param restart - Whether to restart the sound if it's already playing.
+   * Defaults to `true`.
+   */
+  play(restart = true): void {
+    if (this._playing && restart) {
+      this._restarting = true;
+    }
+
+    this._playing = true;
+  }
+
+  /**
+   * Stops playback.
+   */
+  stop(): void {
+    this._playing = false;
+    this._restarting = false;
   }
 }
 
