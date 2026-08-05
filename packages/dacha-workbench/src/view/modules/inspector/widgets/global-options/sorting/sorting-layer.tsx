@@ -1,9 +1,7 @@
 import { useMemo, useCallback, FC } from 'react';
-import { useTranslation } from 'react-i18next';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
-import { LabelledTextInput } from '../../../components/text-input';
 import { Field } from '../../../components/field';
 import { useCommander } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
@@ -21,14 +19,12 @@ export interface SortingLayerProps {
 }
 
 export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
-  const { t } = useTranslation();
   const { dispatch } = useCommander();
 
   const layerPath = useMemo(
     () => LAYERS_PATH.concat(`id:${id}`),
     [LAYERS_PATH],
   );
-  const namePath = useMemo(() => layerPath.concat('name'), [layerPath]);
 
   const handleDeleteBind = useCallback(() => {
     dispatch(deleteValue(layerPath));
@@ -39,11 +35,7 @@ export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
       {expandExtra}
 
       <FieldWrapperStyled>
-        <Field
-          path={namePath}
-          component={LabelledTextInput}
-          label={t('globalOptions.sorting.layers.name.title')}
-        />
+        <Field name="name" type="string" path={layerPath} />
       </FieldWrapperStyled>
 
       <Button

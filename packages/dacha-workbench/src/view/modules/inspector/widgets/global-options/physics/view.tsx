@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 
+import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { setValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
-import { CollapsePanel } from '../../../components/collapse-panel';
 import type {
   PhysicsSettings,
   CollisionLayer,
@@ -22,7 +22,7 @@ import {
 } from './physics.style';
 import { PHYSICS_SETTINGS_PATH, DEFAULT_LAYER } from './consts';
 
-export const PhysicsWidget: FC = () => {
+export const PhysicsWidget: FC<WidgetProps> = () => {
   const { t } = useTranslation();
   const { dispatch } = useCommander();
 
@@ -98,7 +98,7 @@ export const PhysicsWidget: FC = () => {
   );
 
   return (
-    <CollapsePanel title={t('globalOptions.physics.title')} deletable={false}>
+    <>
       <SectionHeaderStyled>
         {t('globalOptions.physics.collisionLayers.title')}
       </SectionHeaderStyled>
@@ -129,6 +129,6 @@ export const PhysicsWidget: FC = () => {
       </SectionHeaderStyled>
 
       <CollisionMatrixField layers={settings?.collisionLayers} />
-    </CollapsePanel>
+    </>
   );
 };

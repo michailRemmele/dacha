@@ -5,19 +5,19 @@ import { v4 as uuidv4 } from 'uuid';
 import { arrayMove } from '@dnd-kit/sortable';
 import { type SortingLayer } from 'dacha/renderer';
 
+import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { LabelledSelect } from '../../../components';
 import { Field } from '../../../components/field';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { addValue, setValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
-import { CollapsePanel } from '../../../components/collapse-panel';
 import { NeedsReloadContext } from '../../../../../providers';
 
 import { SectionHeaderStyled, LayersStyled, ButtonCSS } from './sorting.style';
 import { DraggableSortingLayers } from './draggable-sorting-layers';
-import { ORDER_PATH, LAYERS_PATH, ORDER_OPTIONS } from './consts';
+import { SORTING_SETTINGS_PATH, LAYERS_PATH, ORDER_OPTIONS } from './consts';
 
-export const SortingWidget: FC = () => {
+export const SortingWidget: FC<WidgetProps> = () => {
   const { t } = useTranslation();
   const { dispatch } = useCommander();
 
@@ -61,12 +61,12 @@ export const SortingWidget: FC = () => {
   );
 
   return (
-    <CollapsePanel title={t('globalOptions.sorting.title')} deletable={false}>
+    <>
       <Field
-        path={ORDER_PATH}
+        name="order"
         component={LabelledSelect}
-        label={t('globalOptions.sorting.order.title')}
         options={ORDER_OPTIONS}
+        path={SORTING_SETTINGS_PATH}
       />
       <SectionHeaderStyled>
         {t('globalOptions.sorting.layers.title')}
@@ -82,6 +82,6 @@ export const SortingWidget: FC = () => {
       <Button css={ButtonCSS} size="small" onClick={handleAddNewLayer}>
         {t('globalOptions.sorting.layers.addNew.title')}
       </Button>
-    </CollapsePanel>
+    </>
   );
 };
