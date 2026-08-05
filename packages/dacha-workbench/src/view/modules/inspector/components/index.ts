@@ -1,3 +1,4 @@
+export { InputField } from './input-field';
 export { Field } from './field';
 export { DependencyField } from './dependency-field';
 export { fieldValueValidators } from './widget/field-value-validators';

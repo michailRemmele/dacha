@@ -106,8 +106,8 @@ import type { ReconcileFix, ReconcileSchemas } from '..';
 import {
   componentsSchema,
   systemsSchema,
+  globalOptionsSchema,
 } from '../../view/modules/inspector/widgets';
-import { globalOptionsSchema } from '../../view/modules/inspector/widgets/global-options/schema';
 
 // Mirrors the store's `findIndexByKey` resolution of `name:<x>` / `id:<x>` path segments,
 // applying fixes sequentially exactly as `ProjectLoader.reconcileProjectConfig` does. Same

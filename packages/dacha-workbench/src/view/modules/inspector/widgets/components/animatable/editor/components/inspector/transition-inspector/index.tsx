@@ -12,9 +12,7 @@ import type { Animation } from 'dacha'
 import { FormStyled, FooterStyled, ButtonCSS } from '../inspector.style'
 import {
   Field,
-  LabelledNumberInput,
   LabelledSelect,
-  fieldValueValidators,
 } from '../../../../../../../components'
 import { useConfig, useCommander } from '../../../../../../../../../hooks'
 import { addValue } from '../../../../../../../../../commands'
@@ -32,8 +30,6 @@ export const TransitionInspector: FC = () => {
   const statesPath = useMemo(() => path.concat('states'), [path])
   const transitionPath = inspectedEntity?.path as string[]
 
-  const stateTransitionPath = useMemo(() => transitionPath.concat('state'), [transitionPath])
-  const timePath = useMemo(() => transitionPath.concat('time'), [transitionPath])
   const conditionsPath = useMemo(() => transitionPath.concat('conditions'), [transitionPath])
 
   const states = useConfig(statesPath) as Animation.StateConfig[]
@@ -57,16 +53,15 @@ export const TransitionInspector: FC = () => {
   return (
     <FormStyled>
       <Field
-        path={stateTransitionPath}
+        name="state"
         component={LabelledSelect}
-        label={t('components.animatable.editor.transition.state.title')}
         options={statesOptions}
+        path={transitionPath}
       />
       <Field
-        path={timePath}
-        component={LabelledNumberInput}
-        label={t('components.animatable.editor.transition.time.title')}
-        isValueValid={fieldValueValidators.number}
+        name="time"
+        type="number"
+        path={transitionPath}
       />
 
       <ConditionsStyled>

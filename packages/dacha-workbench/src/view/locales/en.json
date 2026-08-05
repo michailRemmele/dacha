@@ -74,9 +74,6 @@
     "entityPicker.createNew.modal.button.cancel.label": "Cancel",
 
     "multifield.field.title": "Field {{index}}",
-    "multifield.field.name.title": "Name",
-    "multifield.field.type.title": "Type",
-    "multifield.field.value.title": "Value",
     "multifield.addNew.value.title": "Add New Field",
     "multifield.noFields.title": "No Fields"
   },
@@ -101,8 +98,6 @@
   "components.animatable.editor.inspector.frame.title": "Frame",
   "components.animatable.editor.inspector.substate.title": "Substate",
 
-  "components.animatable.editor.state.name.title": "Name",
-  "components.animatable.editor.state.speed.title": "Speed",
   "components.animatable.editor.state.type.title": "Type",
   "components.animatable.editor.state.types.individual.title": "individual",
   "components.animatable.editor.state.types.group.title": "group",
@@ -119,13 +114,10 @@
 
   "components.animatable.editor.frame.add.button.title": "Add New Frame",
 
-  "components.animatable.editor.substate.x.title": "X",
   "components.animatable.editor.substate.y.title": "Y",
   "components.animatable.editor.substate.add.button.title": "Add New Substate",
   "components.animatable.editor.substate.new.title": "Substate",
 
-  "components.animatable.editor.transition.state.title": "State",
-  "components.animatable.editor.transition.time.title": "Time",
   "components.animatable.editor.transition.add.button.title": "Add New Transition",
   "components.animatable.editor.transition.unknown.state.title": "DELETED",
 
@@ -142,16 +134,10 @@
 
   "components.keyboardControl.bind.title": "Event Bind {{index}}",
   "components.keyboardControl.bind.key.title": "Key",
-  "components.keyboardControl.bind.pressed.title": "Pressed",
-  "components.keyboardControl.bind.keepEmit.title": "Keep Emit",
-  "components.keyboardControl.bind.eventType.title": "Event Type",
   "components.keyboardControl.bind.attributes.title": "Attributes",
   "components.keyboardControl.bind.addNew.title": "Add New Bind",
 
   "components.mouseControl.bind.title": "Event Bind {{index}}",
-  "components.mouseControl.bind.event.title": "Event",
-  "components.mouseControl.bind.button.title": "Button",
-  "components.mouseControl.bind.eventType.title": "Event Type",
   "components.mouseControl.bind.attributes.title": "Attributes",
   "components.mouseControl.bind.addNew.title": "Add New Bind",
 
@@ -166,25 +152,12 @@
   "systems.renderer.filterEffect.noSchema.title": "Schema not found",
   "systems.renderer.filterEffect.title": "Filter Effects",
 
-  "globalOptions.sorting.title": "Sorting",
-  "globalOptions.sorting.order.title": "Order",
   "globalOptions.sorting.layers.title": "Layers",
   "globalOptions.sorting.layers.addNew.title": "Add Layer",
-  "globalOptions.sorting.layers.name.title": "Layer",
 
-  "globalOptions.audioGroups.title": "Audio Groups",
   "globalOptions.audioGroups.addNew.title": "Add Group",
   "globalOptions.audioGroups.panel.name.title": "Group",
-  "globalOptions.audioGroups.name.title": "Name",
-  "globalOptions.audioGroups.volume.title": "Volume",
 
-  "globalOptions.performance.title": "Performance",
-  "globalOptions.performance.maxFPS.title": "Max FPS",
-  "globalOptions.performance.fixedUpdateRate.title": "Fixed Update Rate",
-  "globalOptions.performance.maxFrameDelta.title": "Max Frame Delta",
-  "globalOptions.performance.maxFixedUpdatesPerFrame.title": "Max Fixed Updates Per Frame",
-
-  "globalOptions.physics.title": "Physics",
   "globalOptions.physics.collisionLayers.title": "Collision Layers",
   "globalOptions.physics.collisionLayers.empty.placeholder": "No collision layers defined",
   "globalOptions.physics.collisionMatrix.title": "Collision Matrix",

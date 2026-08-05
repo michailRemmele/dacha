@@ -13,9 +13,7 @@ import {
   DependencyField,
   LabelledTextInput,
   LabelledCheckbox,
-  LabelledNumberInput,
   LabelledSelect,
-  fieldValueValidators,
 } from '../../../../../../../components'
 import { useConfig, useCommander } from '../../../../../../../../../hooks'
 import { setValue } from '../../../../../../../../../commands'
@@ -33,8 +31,6 @@ export const StateInspector: FC = () => {
   const statePath = inspectedEntity?.path as string[]
   const state = useConfig(statePath) as Animation.StateConfig
 
-  const namePath = useMemo(() => statePath.concat('name'), [statePath])
-  const speedPath = useMemo(() => statePath.concat('speed'), [statePath])
   const typePath = useMemo(() => statePath.concat('type'), [statePath])
   const loopedPath = useMemo(() => statePath.concat('timeline', 'looped'), [statePath])
   const pickModePath = useMemo(() => statePath.concat('pickMode'), [statePath])
@@ -96,15 +92,14 @@ export const StateInspector: FC = () => {
   return (
     <FormStyled>
       <Field
-        path={namePath}
-        component={LabelledTextInput}
-        label={t('components.animatable.editor.state.name.title')}
+        name="name"
+        type="string"
+        path={statePath}
       />
       <Field
-        path={speedPath}
-        component={LabelledNumberInput}
-        label={t('components.animatable.editor.state.speed.title')}
-        isValueValid={fieldValueValidators.number}
+        name="speed"
+        type="number"
+        path={statePath}
       />
       <LabelledSelect
         label={t('components.animatable.editor.state.type.title')}

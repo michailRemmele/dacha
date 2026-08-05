@@ -1,80 +1,95 @@
-import {
-  useEffect,
-  useCallback,
-  useState,
-  useRef,
-  FC,
-  HTMLProps,
-} from 'react'
-import isEqual from 'lodash.isequal'
+import { useMemo, FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useConfig, useCommander } from '../../../../hooks'
-import { setValue as setValueCmd } from '../../../../commands'
+import type {
+  Field as FieldSchema,
+  FieldType,
+  Dependency,
+} from '../../../../../types/widget-schema';
+import { formatWidgetName } from '../../../../../utils/format-widget-name';
+import { resolveFieldInitialValue } from '../../../../../schema';
+import { InputField } from '../input-field';
+import { DependencyField } from '../dependency-field';
+import { fieldTypes } from '../widget/field-types';
+import { fieldValueValidators } from '../widget/field-value-validators';
+import { WidgetFieldProvider } from '../widget/widget-field-context';
 
-export interface FieldProps extends Omit<HTMLProps<HTMLElement>, 'onBlur' | 'onChange'> {
-  path: string[]
-  onBlur?: (value: unknown) => void
-  onChange?: (value: unknown) => void
-  onAccept?: (value: unknown) => void
-  isValueValid?: (value: unknown) => boolean
-  // comment: Allow to pass any component to Field
+export interface FieldProps {
+  name: string;
+  path: string[];
+  type?: FieldType | 'data';
+  title?: string;
+  dependency?: Dependency;
+  initialValue?: unknown;
+  context?: Record<string, unknown>;
+  // comment: Allow any input component, mirroring InputField's contract
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: FC<any>
-  [key: string]: unknown
+  component?: FC<any>;
+  validate?: (value: unknown) => boolean;
+  label?: string;
+  [key: string]: unknown;
 }
 
 export const Field: FC<FieldProps> = ({
-  component,
+  name,
   path,
-  onBlur = (): void => void 0,
-  onChange = (): void => void 0,
-  onAccept = (): void => void 0,
-  isValueValid,
-  ...props
+  type,
+  title,
+  dependency,
+  initialValue,
+  context,
+  component,
+  validate,
+  label,
+  ...properties
 }) => {
-  const initialValue = useConfig(path) as string
-  const { dispatch } = useCommander()
+  const { t } = useTranslation();
 
-  const valueRef = useRef(initialValue)
-  const [value, setValue] = useState(initialValue)
-
-  const InputComponent = component
-
-  useEffect(() => {
-    valueRef.current = initialValue
-    setValue(initialValue)
-  }, [initialValue])
-
-  const handleBlur = useCallback(() => {
-    onBlur(valueRef.current)
-  }, [onBlur])
-
-  const handleChange = useCallback((newValue: string) => {
-    valueRef.current = newValue
-    setValue(newValue)
-    onChange(newValue)
-  }, [onChange])
-
-  const handleAccept = useCallback(() => {
-    if (isValueValid && !isValueValid(valueRef.current)) {
-      valueRef.current = initialValue
-      setValue(initialValue)
-      return
+  const dependencyPath = useMemo(() => {
+    if (type === 'data' || dependency === undefined) {
+      return void 0;
     }
+    return path.concat(dependency.name.split('.'));
+  }, [path, dependency, type]);
+  const fieldPath = useMemo(() => path.concat(name.split('.')), [path, name]);
 
-    if (!isEqual(valueRef.current, initialValue)) {
-      dispatch(setValueCmd(path, valueRef.current))
-      onAccept(valueRef.current)
-    }
-  }, [onAccept, path, dispatch, initialValue, isValueValid])
+  if (type === 'data') {
+    return null;
+  }
+
+  const InputComponent =
+    component ?? fieldTypes[type as FieldType] ?? fieldTypes.string;
+  const validator = validate ?? (type ? fieldValueValidators[type] : void 0);
+  const resolvedLabel = label ?? (title ? t(title) : formatWidgetName(name));
+
+  const inner =
+    dependency && dependencyPath ? (
+      <DependencyField
+        path={fieldPath}
+        label={resolvedLabel}
+        component={InputComponent}
+        dependencyPath={dependencyPath}
+        dependencyValue={dependency.value}
+        initialValue={resolveFieldInitialValue({
+          type,
+          initialValue,
+        } as unknown as FieldSchema)}
+        validate={validator}
+        {...properties}
+      />
+    ) : (
+      <InputField
+        path={fieldPath}
+        label={resolvedLabel}
+        component={InputComponent}
+        validate={validator}
+        {...properties}
+      />
+    );
 
   return (
-    <InputComponent
-      value={value}
-      onBlur={handleBlur}
-      onChange={handleChange}
-      onAccept={handleAccept}
-      {...props}
-    />
-  )
-}
+    <WidgetFieldProvider path={path} data={context}>
+      {inner}
+    </WidgetFieldProvider>
+  );
+};

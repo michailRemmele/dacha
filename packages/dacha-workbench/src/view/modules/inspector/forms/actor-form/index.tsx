@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { ActorConfig } from 'dacha'
 
 import {
-  Field,
+  InputField,
   LabelledTextInput,
   Form,
   ComponentList,
@@ -22,7 +22,7 @@ export const ActorForm: FC<FormComponentProps> = ({ path }) => {
 
   return (
     <Form>
-      <Field
+      <InputField
         path={namePath}
         component={LabelledTextInput}
         label={t('inspector.actorForm.field.name.label')}
