@@ -1,3 +1,13 @@
+import type {
+  Config,
+  ComponentConfig,
+  GlobalOption,
+  BehaviorsConfig,
+  TemplateConfig,
+  ActorConfig,
+  SystemConfig,
+} from 'dacha';
+
 import type { WidgetSchema } from '../types/widget-schema';
 
 import { fillMissingFields, buildInitialState } from './initial-state';
@@ -16,38 +26,78 @@ export interface ReconcileSchemas {
   behaviors: Record<string, WidgetSchema>;
 }
 
-interface ComponentEntry {
-  name: string;
-  config?: Record<string, unknown>;
-}
-interface SystemEntry {
-  name: string;
-  options?: Record<string, unknown>;
-}
-interface GlobalOptionEntry {
-  name: string;
-  options?: Record<string, unknown>;
-}
-interface BehaviorEntry {
-  id: string;
-  name: string;
-  options?: Record<string, unknown>;
-}
-interface ActorLikeEntry {
-  id: string;
-  components?: ComponentEntry[];
-  children?: ActorLikeEntry[];
-}
-interface ProjectConfig {
-  scenes?: { id: string; actors?: ActorLikeEntry[] }[];
-  templates?: ActorLikeEntry[];
-  systems?: SystemEntry[];
-  globalOptions?: GlobalOptionEntry[];
-}
+type BehaviorEntry = BehaviorsConfig['list'][number] & { id: string };
+
+const reconcileGlobalOptions = (
+  globalOptions: GlobalOption[],
+  schemas: ReconcileSchemas,
+  fixes: ReconcileFix[],
+): void => {
+  const schemaNames = Object.keys(schemas.globalOptions);
+
+  const missingGroups: GlobalOption[] = [];
+  schemaNames.forEach((name) => {
+    const schema = schemas.globalOptions[name];
+    if (!schema.fields) {
+      return;
+    }
+    if (globalOptions.some((entry) => entry.name === name)) {
+      return;
+    }
+    missingGroups.push({ name, options: buildInitialState(schema.fields) });
+  });
+
+  if (missingGroups.length > 0) {
+    fixes.push({
+      path: ['globalOptions'],
+      value: [...globalOptions, ...missingGroups],
+    });
+  }
+
+  schemaNames.forEach((name) => {
+    const schema = schemas.globalOptions[name];
+    if (!schema.fields) {
+      return;
+    }
+    const group = globalOptions.find((entry) => entry.name === name);
+    if (group === undefined) {
+      return;
+    }
+    const options = group.options ?? {};
+    const filledOptions = fillMissingFields(options, schema.fields);
+    if (filledOptions !== options) {
+      fixes.push({
+        path: ['globalOptions', `name:${name}`, 'options'],
+        value: filledOptions,
+      });
+    }
+  });
+};
+
+const reconcileSystems = (
+  systems: SystemConfig[],
+  schemas: ReconcileSchemas,
+  fixes: ReconcileFix[],
+): void => {
+  systems.forEach((system) => {
+    const schema = schemas.systems[system.name];
+    if (!schema?.fields) {
+      return;
+    }
+    const options = system.options ?? {};
+    const filledOptions = fillMissingFields(options, schema.fields);
+    if (filledOptions !== options) {
+      fixes.push({
+        path: ['systems', `name:${system.name}`, 'options'],
+        value: filledOptions,
+      });
+    }
+  });
+};
 
 const reconcileComponents = (
   basePath: string[],
-  components: ComponentEntry[],
+  components: ComponentConfig[],
   schemas: ReconcileSchemas,
   fixes: ReconcileFix[],
 ): void => {
@@ -86,7 +136,7 @@ const reconcileComponents = (
 
 const reconcileActors = (
   basePath: string[],
-  actors: ActorLikeEntry[],
+  actors: ActorConfig[] | TemplateConfig[],
   schemas: ReconcileSchemas,
   fixes: ReconcileFix[],
 ): void => {
@@ -111,8 +161,8 @@ export const reconcileConfig = (
   config: unknown,
   schemas: ReconcileSchemas,
 ): ReconcileFix[] => {
+  const projectConfig = (config ?? {}) as Config;
   const fixes: ReconcileFix[] = [];
-  const projectConfig = (config ?? {}) as ProjectConfig;
 
   projectConfig.scenes?.forEach((scene) => {
     reconcileActors(
@@ -123,68 +173,11 @@ export const reconcileConfig = (
     );
   });
 
-  reconcileActors(['templates'], projectConfig.templates ?? [], schemas, fixes);
+  reconcileActors(['templates'], projectConfig.templates, schemas, fixes);
 
-  projectConfig.systems?.forEach((system) => {
-    const schema = schemas.systems[system.name];
-    if (!schema?.fields) {
-      return;
-    }
-    const options = system.options ?? {};
-    const filledOptions = fillMissingFields(options, schema.fields);
-    if (filledOptions !== options) {
-      fixes.push({
-        path: ['systems', `name:${system.name}`, 'options'],
-        value: filledOptions,
-      });
-    }
-  });
+  reconcileSystems(projectConfig.systems, schemas, fixes);
 
-  const globalOptions = projectConfig.globalOptions ?? [];
-  const schemaNames = Object.keys(schemas.globalOptions);
-
-  /* comment: Coarser parent-path fixes must be pushed BEFORE narrower nested-path ones,
-   * so applying the fixes in order stays consistent. The whole-array `['globalOptions']`
-   * write below is built from the pre-fix array, so emitting it after a nested
-   * `['globalOptions', 'name:x', 'options']` fill would clobber that fill. */
-  const missingGroups: GlobalOptionEntry[] = [];
-  schemaNames.forEach((name) => {
-    const schema = schemas.globalOptions[name];
-    if (!schema.fields) {
-      return;
-    }
-    if (globalOptions.some((entry) => entry.name === name)) {
-      return;
-    }
-    missingGroups.push({ name, options: buildInitialState(schema.fields) });
-  });
-
-  if (missingGroups.length > 0) {
-    fixes.push({
-      path: ['globalOptions'],
-      value: [...globalOptions, ...missingGroups],
-    });
-  }
-
-  schemaNames.forEach((name) => {
-    const schema = schemas.globalOptions[name];
-    if (!schema.fields) {
-      return;
-    }
-    const group = globalOptions.find((entry) => entry.name === name);
-    if (group === undefined) {
-      /* comment: Appended above via buildInitialState, so it is already complete */
-      return;
-    }
-    const options = group.options ?? {};
-    const filledOptions = fillMissingFields(options, schema.fields);
-    if (filledOptions !== options) {
-      fixes.push({
-        path: ['globalOptions', `name:${name}`, 'options'],
-        value: filledOptions,
-      });
-    }
-  });
+  reconcileGlobalOptions(projectConfig.globalOptions, schemas, fixes);
 
   return fixes;
 };
