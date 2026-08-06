@@ -1,19 +1,6 @@
-// This suite proves reconciliation heals a REAL, DEGRADED project config against the
-// REAL built-in widget schemas end-to-end — not fixture schemas standing in for them.
-//
-// Importing `componentsSchema` pulls in the full widgets barrel, which (through a single
-// widget, Animatable, reaching for a shared `view/components` -> `view/providers` barrel)
-// transitively reaches the Electron preload bridge (`window.electron`), the engine/system
-// registry, and the extension schema registry. None of that machinery is exercised by this
-// test — we never render a component, we only read the plain-data `fields` arrays that are
-// assembled at module-evaluation time — so, mirroring the barrel-import fix already used in
-// `dependency-field.test.tsx`, we replace only the modules that pull in that machinery with
-// slim stand-ins (`jest.requireActual` for the real, untouched provider submodules; inert
-// stubs for the ones whose only role is wrapping JSX we never render) and mock the ESM-only
-// `dacha` package (ts-jest cannot transform its `export` syntax). The schema DATA itself
-// (field names, types, dependencies, initialValues) is 100% real and untouched.
-
 import * as React from 'react';
+
+import { applyFixes } from './utils';
 
 jest.mock('dacha/events', () => ({}));
 
@@ -23,10 +10,6 @@ jest.mock('../../view/providers', () => ({
   ...jest.requireActual('../../view/providers/notification-provider'),
   ...jest.requireActual('../../view/providers/needs-reload-provider'),
   ...jest.requireActual('../../view/providers/hotkeys-provider'),
-  // These three wrap engine/extension machinery (EngineProvider reaches the full editor
-  // system registry; SchemasProvider/EntityExplorerProvider close a require cycle back to
-  // the widgets barrel this test is loading). Nothing under test renders them, so unlike
-  // the entries above they are inert stand-ins rather than `jest.requireActual`.
   EngineContext: React.createContext(null),
   EngineProvider: ({
     children,
@@ -49,9 +32,6 @@ jest.mock('../../view/providers', () => ({
 }));
 
 jest.mock('../../persistent-storage', () => ({
-  // A singleton with real side effects (`window.electron.loadPersistentStorage()` at
-  // module-eval time). Unrelated to schema reconciliation; stubbed so importing the real
-  // provider modules above doesn't require a live Electron preload bridge.
   persistentStorage: {
     get: jest.fn(),
     set: jest.fn(),
@@ -60,12 +40,6 @@ jest.mock('../../persistent-storage', () => ({
 }));
 
 jest.mock('dacha', () => ({
-  // Real values, copied from `node_modules/dacha/build/**` (`Component`, every
-  // `*.componentName`/`*.systemName` static, and the three DEFAULT_* engine consts) so the
-  // widget-schema barrels can evaluate without pulling in dacha's ESM build (which ts-jest
-  // cannot transform). None of these are read by the assertions below; they only exist to
-  // satisfy `class X extends Component` and `{ [SomeClass.componentName]: schema }` at
-  // module-evaluation time in the real schema barrel files.
   Component: class Component {},
   Animatable: { componentName: 'Animatable' },
   Camera: { componentName: 'Camera' },
@@ -102,49 +76,12 @@ jest.mock('dacha', () => ({
 }));
 
 import { reconcileConfig } from '..';
-import type { ReconcileFix, ReconcileSchemas } from '..';
+import type { ReconcileSchemas } from '..';
 import {
   componentsSchema,
   systemsSchema,
   globalOptionsSchema,
 } from '../../view/modules/inspector/widgets';
-
-// Mirrors the store's `findIndexByKey` resolution of `name:<x>` / `id:<x>` path segments,
-// applying fixes sequentially exactly as `ProjectLoader.reconcileProjectConfig` does. Same
-// approach as `applyFixes` in `reconcile-config.test.ts`.
-const stepInto = (node: unknown, segment: string): unknown => {
-  if (Array.isArray(node)) {
-    const [key, value] = segment.split(':');
-    return node.find(
-      (item) => (item as Record<string, unknown>)[key] === value,
-    );
-  }
-  return (node as Record<string, unknown>)[segment];
-};
-
-const setAt = (node: unknown, segment: string, value: unknown): void => {
-  if (Array.isArray(node)) {
-    const [key, keyValue] = segment.split(':');
-    const index = node.findIndex(
-      (item) => (item as Record<string, unknown>)[key] === keyValue,
-    );
-    node[index] = value;
-  } else {
-    (node as Record<string, unknown>)[segment] = value;
-  }
-};
-
-const applyFixes = <T>(config: T, fixes: ReconcileFix[]): T => {
-  const result = structuredClone(config);
-  fixes.forEach((fix) => {
-    let node: unknown = result;
-    for (let i = 0; i < fix.path.length - 1; i += 1) {
-      node = stepInto(node, fix.path[i]);
-    }
-    setAt(node, fix.path[fix.path.length - 1], structuredClone(fix.value));
-  });
-  return result;
-};
 
 const schemas: ReconcileSchemas = {
   components: componentsSchema,
@@ -153,9 +90,6 @@ const schemas: ReconcileSchemas = {
   behaviors: {},
 };
 
-// A project config saved before a schema update: a Collider missing every field except its
-// discriminator, a Camera saved with an empty config, no globalOptions groups at all, and a
-// component the current schemas have never heard of.
 const buildDegradedConfig = (): Record<string, unknown> => ({
   scenes: [
     {
@@ -195,11 +129,6 @@ describe('reconcileConfig against real built-in widget schemas', () => {
     const camera = actor.components.find((c) => c.name === 'Camera')!;
     const unknown = actor.components.find((c) => c.name === 'TotallyUnknown')!;
 
-    // The single most valuable assertion in this suite: dependency-aware healing against
-    // the REAL collider schema. `type: 'circle'` must fill circle-only fields (radius) and
-    // the type-agnostic ones (offsetX/offsetY/layer/debugColor/disabled), but must NOT fill
-    // box-only fields (sizeX/sizeY) or the other-discriminator fields (height, point1X/Y,
-    // point2X/Y) that don't apply when type is 'circle'.
     expect(collider.config).toEqual({
       type: 'circle',
       radius: 5,
@@ -214,13 +143,10 @@ describe('reconcileConfig against real built-in widget schemas', () => {
     expect(collider.config).not.toHaveProperty('height');
     expect(collider.config).not.toHaveProperty('point1X');
 
-    // Camera's empty config gets the component's full default set.
     expect(camera.config).toEqual({ zoom: 1, current: false });
 
-    // Reconciliation must never touch data it doesn't recognize.
     expect(unknown.config).toEqual({ keep: 'me' });
 
-    // All four global-options groups now exist, each with its schema's full default shape.
     const groups = healed.globalOptions as {
       name: string;
       options: Record<string, unknown>;
@@ -249,8 +175,6 @@ describe('reconcileConfig against real built-in widget schemas', () => {
       layers: [],
     });
 
-    // Idempotence: reconciling the already-healed config must produce zero fixes. If this
-    // were not true, ProjectLoader would keep rewriting the file on every single load.
     expect(reconcileConfig(healed, schemas)).toEqual([]);
   });
 });

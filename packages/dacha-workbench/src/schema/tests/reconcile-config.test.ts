@@ -1,45 +1,9 @@
 import type { WidgetSchema } from '../../types/widget-schema';
 
 import { reconcileConfig } from '..';
-import type { ReconcileFix, ReconcileSchemas } from '..';
+import type { ReconcileSchemas } from '..';
 
-// Mimics how Task 7 will apply fixes: sequentially, resolving `name:<x>` / `id:<x>`
-// segments against arrays the way the store's `findIndexByKey` does. Sequential
-// application is the contract, so ordering bugs between coarse and narrow fixes
-// (a parent-path write clobbering an earlier nested write) surface here and only here.
-const stepInto = (node: unknown, segment: string): unknown => {
-  if (Array.isArray(node)) {
-    const [key, value] = segment.split(':');
-    return node.find(
-      (item) => (item as Record<string, unknown>)[key] === value,
-    );
-  }
-  return (node as Record<string, unknown>)[segment];
-};
-
-const setAt = (node: unknown, segment: string, value: unknown): void => {
-  if (Array.isArray(node)) {
-    const [key, keyValue] = segment.split(':');
-    const index = node.findIndex(
-      (item) => (item as Record<string, unknown>)[key] === keyValue,
-    );
-    node[index] = value;
-  } else {
-    (node as Record<string, unknown>)[segment] = value;
-  }
-};
-
-const applyFixes = <T>(config: T, fixes: ReconcileFix[]): T => {
-  const result = structuredClone(config);
-  fixes.forEach((fix) => {
-    let node: unknown = result;
-    for (let i = 0; i < fix.path.length - 1; i += 1) {
-      node = stepInto(node, fix.path[i]);
-    }
-    setAt(node, fix.path[fix.path.length - 1], structuredClone(fix.value));
-  });
-  return result;
-};
+import { applyFixes } from './utils';
 
 const cameraSchema: WidgetSchema = {
   fields: [
@@ -97,9 +61,6 @@ const schemas: ReconcileSchemas = {
         },
       ],
     },
-    // A SECOND globalOptions schema is essential: with only one, no test can produce
-    // "existing group needs a fill" and "a different group is entirely missing" at the
-    // same time — the exact combination that exposes coarse/narrow fix ordering bugs.
     sorting: {
       fields: [
         { name: 'layers', type: 'data', initialValue: [] },
@@ -133,10 +94,6 @@ const emptyConfig = {
   startSceneId: null,
 };
 
-// `schemas.globalOptions` declares `physics` and `sorting`, so any config whose
-// `globalOptions` is `[]` (as in `emptyConfig`) would otherwise pick up incidental
-// "create missing group" fixes. Tests that aren't about global options use this
-// already-complete value to keep their expectations focused on their own scenario.
 const filledGlobalOptions = [
   { name: 'physics', options: completePhysicsOptions },
   { name: 'sorting', options: completeSortingOptions },
@@ -360,10 +317,6 @@ describe('reconcileConfig', () => {
   });
 
   it('survives sequential application when a group needs filling and another is missing', () => {
-    // The real-world regression: a release adds a field to an EXISTING globalOptions
-    // schema (physics.collisionMatrix) AND introduces a brand-new group (sorting).
-    // The coarse whole-array `['globalOptions']` write must be applied BEFORE the narrow
-    // `['globalOptions','name:physics','options']` write, or it clobbers the heal.
     const config = {
       ...emptyConfig,
       globalOptions: [
@@ -374,8 +327,6 @@ describe('reconcileConfig', () => {
     const fixes = reconcileConfig(config, schemas);
     const applied = applyFixes(config, fixes);
 
-    // Assert on the END STATE after sequential application, not on the shape of `fixes` —
-    // a fixes-only assertion is what let the ordering bug through in the first place.
     expect(applied.globalOptions).toEqual([
       {
         name: 'physics',

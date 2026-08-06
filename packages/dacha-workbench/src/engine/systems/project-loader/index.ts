@@ -70,13 +70,8 @@ export class ProjectLoader extends WorldSystem {
       locales: window.extension?.default.locales,
     });
 
-    /*
-     * comment: Reconciliation writes bypass undo history, which would leave existing history
-     * entries able to revert the healing (delete commands capture the parent array by
-     * reference). The schemas just changed anyway, so drop history when anything was healed.
-     */
     if (this.reconcileProjectConfig() > 0) {
-      this.commanderStore.clean();
+      this.commanderStore.clear();
     }
 
     this.world.dispatchEvent(EventType.ExtensionUpdated);
@@ -125,9 +120,7 @@ export class ProjectLoader extends WorldSystem {
   }
 
   private reconcileProjectConfig(): number {
-    const store = this.world.data.configStore as CommanderStore;
-
-    const fixes = reconcileConfig(store.get([]), {
+    const fixes = reconcileConfig(this.commanderStore.get([]), {
       components: {
         ...componentsSchema,
         ...schemaRegistry.getGroup('component'),
@@ -137,18 +130,15 @@ export class ProjectLoader extends WorldSystem {
       behaviors: schemaRegistry.getGroup('behavior') ?? {},
     });
 
-    /* comment: Order matters: coarse parent-path fixes must be applied before nested ones */
     fixes.forEach(({ path, value }) => {
-      store.setWithoutHistory(path, value as DataValue);
+      this.commanderStore.assign(path, value as DataValue);
     });
 
     return fixes.length;
   }
 
   private saveProjectConfig(): void {
-    const projectConfig = (this.world.data.configStore as CommanderStore).get(
-      [],
-    ) as Config;
+    const projectConfig = this.commanderStore.get([]) as Config;
     window.electron.saveProjectConfig(projectConfig);
 
     this.world.dispatchEvent(EventType.SaveProject);
