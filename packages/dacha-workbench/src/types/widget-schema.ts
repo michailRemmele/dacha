@@ -58,7 +58,7 @@ export interface BooleanField extends AnyField {
 
 export interface SelectField extends AnyField {
   type: 'select';
-  initialValue?: string;
+  initialValue?: string | number;
   options: Option[] | string[] | number[] | GetOptionsFn;
 }
 
@@ -97,6 +97,12 @@ export interface TextAreaField extends AnyField {
   type: 'textarea';
 }
 
+export interface DataField {
+  name: string;
+  type: 'data';
+  initialValue: unknown;
+}
+
 export type Field =
   | StringField
   | NumberField
@@ -107,7 +113,8 @@ export type Field =
   | FileField
   | RangeField
   | ColorField
-  | TextAreaField;
+  | TextAreaField
+  | DataField;
 
 export interface WidgetProps {
   path: string[];
@@ -119,5 +126,4 @@ export interface WidgetSchema {
   title?: string;
   fields?: Field[];
   view?: FC<WidgetProps>;
-  getInitialState?: () => Record<string, unknown>;
 }

@@ -7,7 +7,14 @@ import { classRegistry } from '../../../decorators/class-registry';
 import { widgetRegistry } from '../../../hocs/widget-registry';
 import { EventType } from '../../../events';
 import { CommanderStore } from '../../../store';
+import type { DataValue } from '../../../store/types';
 import type { EditorConfig, Extension } from '../../../types/global';
+import {
+  componentsSchema,
+  systemsSchema,
+  globalOptionsSchema,
+} from '../../../view/modules/inspector/widgets';
+import { reconcileConfig } from '../../../schema';
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10;
 
@@ -19,6 +26,7 @@ export class ProjectLoader extends WorldSystem {
   private world: World;
   private time: Time;
   private editorConfig: EditorConfig;
+  private commanderStore: CommanderStore;
 
   private extensionScript?: HTMLScriptElement;
 
@@ -30,10 +38,9 @@ export class ProjectLoader extends WorldSystem {
     this.world = options.world;
     this.time = options.time;
     this.editorConfig = window.electron.getEditorConfig();
+    this.commanderStore = (options.resources as ProjectLoaderResources).store;
 
-    this.world.data.configStore = (
-      options.resources as ProjectLoaderResources
-    ).store;
+    this.world.data.configStore = this.commanderStore;
     this.world.data.editorConfig = this.editorConfig;
 
     this.autoSaveInterval =
@@ -63,6 +70,10 @@ export class ProjectLoader extends WorldSystem {
       locales: window.extension?.default.locales,
     });
 
+    if (this.reconcileProjectConfig() > 0) {
+      this.commanderStore.clear();
+    }
+
     this.world.dispatchEvent(EventType.ExtensionUpdated);
   };
 
@@ -75,6 +86,8 @@ export class ProjectLoader extends WorldSystem {
       events: window.extension?.default.events,
       locales: window.extension?.default.locales,
     });
+
+    this.reconcileProjectConfig();
   }
 
   private async loadScript(src: string): Promise<void> {
@@ -106,10 +119,26 @@ export class ProjectLoader extends WorldSystem {
     rendererApi.reloadShaders(classRegistry.getGroup('behavior.shader') ?? []);
   }
 
+  private reconcileProjectConfig(): number {
+    const fixes = reconcileConfig(this.commanderStore.get([]), {
+      components: {
+        ...componentsSchema,
+        ...schemaRegistry.getGroup('component'),
+      },
+      systems: { ...systemsSchema, ...schemaRegistry.getGroup('system') },
+      globalOptions: globalOptionsSchema,
+      behaviors: schemaRegistry.getGroup('behavior') ?? {},
+    });
+
+    fixes.forEach(({ path, value }) => {
+      this.commanderStore.assign(path, value as DataValue);
+    });
+
+    return fixes.length;
+  }
+
   private saveProjectConfig(): void {
-    const projectConfig = (this.world.data.configStore as CommanderStore).get(
-      [],
-    ) as Config;
+    const projectConfig = this.commanderStore.get([]) as Config;
     window.electron.saveProjectConfig(projectConfig);
 
     this.world.dispatchEvent(EventType.SaveProject);

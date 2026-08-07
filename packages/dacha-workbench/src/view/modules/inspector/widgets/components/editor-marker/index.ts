@@ -6,15 +6,13 @@ export const editorMarker: WidgetSchema = {
     {
       name: 'name',
       type: 'select',
+      initialValue: 'point',
       options: MARKERS,
     },
     {
       name: 'color',
       type: 'color',
+      initialValue: '#fff',
     },
   ],
-  getInitialState: () => ({
-    name: 'point',
-    color: '#fff',
-  }),
 };

@@ -9,6 +9,7 @@ export {
   useBehaviors,
 } from './view/hooks';
 export { defineWidget } from './hocs';
+export { InputField } from './view/modules/inspector/components/input-field';
 export { Field } from './view/modules/inspector/components/field';
 export { DependencyField } from './view/modules/inspector/components/dependency-field';
 export { Widget } from './view/modules/inspector/components/widget';

@@ -8,6 +8,7 @@ import {
 } from './view/hooks';
 import { defineWidget } from './hocs';
 import { addValue, setValue, deleteValue } from './view/commands';
+import { InputField } from './view/modules/inspector/components/input-field';
 import { Field } from './view/modules/inspector/components/field';
 import { DependencyField } from './view/modules/inspector/components/dependency-field';
 import { Widget } from './view/modules/inspector/components/widget';
@@ -69,6 +70,7 @@ window.DachaWorkbench = {
   EngineContext,
   SchemasContext,
 
+  InputField,
   Field,
   DependencyField,
   Widget,

@@ -2,7 +2,7 @@ import { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Field,
+  InputField,
   LabelledTextInput,
   Form,
   ComponentList,
@@ -16,7 +16,7 @@ export const TemplateForm: FC<FormComponentProps> = ({ path }) => {
 
   return (
     <Form>
-      <Field
+      <InputField
         path={namePath}
         component={LabelledTextInput}
         label={t('inspector.templateForm.field.name.label')}
