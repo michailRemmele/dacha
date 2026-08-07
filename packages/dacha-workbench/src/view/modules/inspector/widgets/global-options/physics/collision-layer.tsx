@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { DeleteOutlined, CopyOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
-import { LabelledTextInput } from '../../../components/text-input';
 import { Field } from '../../../components/field';
 
 import {
@@ -30,7 +29,6 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
     () => COLLISION_LAYERS_PATH.concat(`id:${id}`),
     [COLLISION_LAYERS_PATH],
   );
-  const namePath = useMemo(() => layerPath.concat('name'), [layerPath]);
 
   const handleCopyId = useCallback(() => {
     void navigator.clipboard.writeText(id);
@@ -40,11 +38,12 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
     <LayerStyled>
       <FieldWrapperStyled>
         <Field
-          path={namePath}
-          component={LabelledTextInput}
+          name="name"
+          type="string"
           label={t('globalOptions.physics.collisionLayers.name.title', {
             index,
           })}
+          path={layerPath}
         />
       </FieldWrapperStyled>
 

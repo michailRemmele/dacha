@@ -4,7 +4,7 @@ import { KeyboardControlWidget } from './view'
 
 export const keyboardControl: WidgetSchema = {
   view: KeyboardControlWidget,
-  getInitialState: () => ({
-    inputEventBindings: [],
-  }),
+  fields: [
+    { name: 'inputEventBindings', type: 'data', initialValue: [] },
+  ],
 }

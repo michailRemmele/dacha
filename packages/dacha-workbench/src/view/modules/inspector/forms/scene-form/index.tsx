@@ -2,7 +2,7 @@ import { useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Field,
+  InputField,
   LabelledTextInput,
   Form,
 } from '../../components'
@@ -15,7 +15,7 @@ export const SceneForm: FC<FormComponentProps> = ({ path }) => {
 
   return (
     <Form>
-      <Field
+      <InputField
         path={namePath}
         component={LabelledTextInput}
         label={t('inspector.sceneForm.field.name.label')}

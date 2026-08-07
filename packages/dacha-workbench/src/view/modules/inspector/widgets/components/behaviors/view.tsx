@@ -14,6 +14,7 @@ import {
   useBehaviors,
 } from '../../../../../hooks'
 import { addValue } from '../../../../../commands'
+import { buildInitialState } from '../../../../../../schema'
 
 import { BehaviorsStyled, EntityPickerCSS } from './behavior.style'
 import { BehaviorPanel } from './behavior-panel'
@@ -43,7 +44,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
     dispatch(addValue(behaviorsPath, {
       id: uuidv4(),
       name,
-      options: behaviors?.[name].getInitialState?.() ?? {},
+      options: buildInitialState(behaviors?.[name].fields ?? []),
     }))
   }, [dispatch, behaviorsPath, behaviors])
 

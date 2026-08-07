@@ -9,11 +9,13 @@ export const shape: WidgetSchema = {
     {
       name: 'type',
       type: 'select',
+      initialValue: 'rectangle',
       options: ['rectangle', 'roundRectangle', 'circle', 'ellipse', 'line'],
     },
     {
       name: 'sizeX',
       type: 'number',
+      initialValue: 10,
       dependency: {
         name: 'type',
         value: 'rectangle|roundRectangle',
@@ -22,6 +24,7 @@ export const shape: WidgetSchema = {
     {
       name: 'sizeY',
       type: 'number',
+      initialValue: 10,
       dependency: {
         name: 'type',
         value: 'rectangle|roundRectangle',
@@ -39,6 +42,7 @@ export const shape: WidgetSchema = {
     {
       name: 'radiusX',
       type: 'number',
+      initialValue: 5,
       dependency: {
         name: 'type',
         value: 'ellipse',
@@ -47,6 +51,7 @@ export const shape: WidgetSchema = {
     {
       name: 'radiusY',
       type: 'number',
+      initialValue: 5,
       dependency: {
         name: 'type',
         value: 'ellipse',
@@ -55,6 +60,7 @@ export const shape: WidgetSchema = {
     {
       name: 'point1X',
       type: 'number',
+      initialValue: -5,
       dependency: {
         name: 'type',
         value: 'line',
@@ -63,6 +69,7 @@ export const shape: WidgetSchema = {
     {
       name: 'point1Y',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'type',
         value: 'line',
@@ -71,6 +78,7 @@ export const shape: WidgetSchema = {
     {
       name: 'point2X',
       type: 'number',
+      initialValue: 5,
       dependency: {
         name: 'type',
         value: 'line',
@@ -79,6 +87,7 @@ export const shape: WidgetSchema = {
     {
       name: 'point2Y',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'type',
         value: 'line',
@@ -87,10 +96,12 @@ export const shape: WidgetSchema = {
     {
       name: 'strokeColor',
       type: 'color',
+      initialValue: '#fff',
     },
     {
       name: 'strokeWidth',
       type: 'number',
+      initialValue: 0,
       dependency: {
         name: 'pixelLine',
         value: false,
@@ -99,6 +110,7 @@ export const shape: WidgetSchema = {
     {
       name: 'strokeAlignment',
       type: 'select',
+      initialValue: 0.5,
       options: [
         {
           title: 'centered',
@@ -117,53 +129,45 @@ export const shape: WidgetSchema = {
     {
       name: 'pixelLine',
       type: 'boolean',
+      initialValue: false,
     },
     {
       name: 'fill',
       type: 'color',
+      initialValue: '#fff',
     },
     {
       name: 'sortOffsetX',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'sortOffsetY',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'sortingLayer',
       type: 'select',
+      initialValue: 'default',
       options: (getState) =>
         ((getState(PATH) as SortingLayer[]) ?? []).map((layer) => layer.name),
     },
     {
       name: 'blending',
       type: 'select',
+      initialValue: 'normal',
       options: ['normal', 'addition', 'substract', 'multiply'],
     },
     {
       name: 'opacity',
       type: 'number',
+      initialValue: 1,
     },
     {
       name: 'disabled',
       type: 'boolean',
+      initialValue: false,
     },
   ],
-  getInitialState: () => ({
-    type: 'rectangle',
-    sizeX: 10,
-    sizeY: 10,
-    strokeWidth: 0,
-    strokeColor: '#fff',
-    strokeAlignment: 0.5,
-    fill: '#fff',
-    pixelLine: false,
-    sortOffsetX: 0,
-    sortOffsetY: 0,
-    sortingLayer: 'default',
-    blending: 'normal',
-    opacity: 1,
-    disabled: false,
-  }),
 };

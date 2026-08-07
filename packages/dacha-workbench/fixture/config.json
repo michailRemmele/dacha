@@ -191,7 +191,10 @@
                 "fit": "repeat",
                 "blending": "normal",
                 "color": "#fff",
-                "opacity": 1
+                "opacity": 1,
+                "disabled": false,
+                "textureOffsetX": 0,
+                "textureOffsetY": 0
               }
             }
           ]
@@ -226,7 +229,10 @@
                 "fit": "repeat",
                 "blending": "normal",
                 "color": "#fff",
-                "opacity": 1
+                "opacity": 1,
+                "disabled": false,
+                "textureOffsetX": 0,
+                "textureOffsetY": 0
               }
             }
           ]
@@ -250,10 +256,12 @@
               "name": "Collider",
               "config": {
                 "type": "circle",
-                "radius": 0,
                 "offsetX": 0,
                 "offsetY": 0,
-                "layer": "default"
+                "layer": "default",
+                "debugColor": "#4DFFB8",
+                "disabled": false,
+                "radius": 5
               }
             },
             {
@@ -307,7 +315,8 @@
       "name": "Renderer",
       "options": {
         "windowNodeId": "root",
-        "backgroundColor": "#000"
+        "backgroundColor": "#000",
+        "filterEffects": []
       }
     },
     {
@@ -365,7 +374,12 @@
             "mass": 2,
             "gravityScale": 0,
             "linearDamping": 0,
-            "disabled": false
+            "disabled": false,
+            "restitution": 0,
+            "friction": 0.6,
+            "oneWay": false,
+            "angularDamping": 0,
+            "lockRotation": false
           }
         },
         {
@@ -376,7 +390,9 @@
             "offsetX": 0,
             "offsetY": 0,
             "sizeX": 10,
-            "sizeY": 10
+            "sizeY": 10,
+            "debugColor": "#4DFFB8",
+            "disabled": false
           }
         },
         {
@@ -394,7 +410,8 @@
             "fit": "stretch",
             "blending": "normal",
             "color": "rgba(255,255,255,0.55)",
-            "opacity": 1
+            "opacity": 1,
+            "disabled": false
           }
         },
         {
@@ -710,7 +727,10 @@
             "fit": "repeat",
             "blending": "normal",
             "color": "#fff",
-            "opacity": 1
+            "opacity": 1,
+            "disabled": false,
+            "textureOffsetX": 0,
+            "textureOffsetY": 0
           }
         }
       ],
@@ -747,7 +767,8 @@
             "color": "#fff",
             "opacity": 1,
             "textureOffsetX": 0,
-            "textureOffsetY": 0
+            "textureOffsetY": 0,
+            "disabled": false
           }
         }
       ],

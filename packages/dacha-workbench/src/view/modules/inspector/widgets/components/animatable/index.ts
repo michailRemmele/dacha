@@ -4,8 +4,8 @@ import { AnimatableWidget } from './view'
 
 export const animatable: WidgetSchema = {
   view: AnimatableWidget,
-  getInitialState: () => ({
-    initialState: '',
-    states: [],
-  }),
+  fields: [
+    { name: 'initialState', type: 'data', initialValue: '' },
+    { name: 'states', type: 'data', initialValue: [] },
+  ],
 }

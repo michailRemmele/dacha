@@ -1,33 +1,31 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const transform: WidgetSchema = {
   fields: [
     {
       name: 'offsetX',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'offsetY',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'rotation',
       type: 'number',
+      initialValue: 0,
     },
     {
       name: 'scaleX',
       type: 'number',
+      initialValue: 1,
     },
     {
       name: 'scaleY',
       type: 'number',
+      initialValue: 1,
     },
   ],
-  getInitialState: () => ({
-    offsetX: 0,
-    offsetY: 0,
-    rotation: 0,
-    scaleX: 1,
-    scaleY: 1,
-  }),
-}
+};
