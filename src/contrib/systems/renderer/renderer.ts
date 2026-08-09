@@ -6,10 +6,7 @@ import {
   RenderLayer,
 } from 'pixi.js';
 
-import {
-  WorldSystem,
-  type WorldSystemOptions,
-} from '../../../engine/system';
+import { WorldSystem, type WorldSystemOptions } from '../../../engine/system';
 import type { Time } from '../../../engine/time';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
@@ -62,6 +59,7 @@ export class Renderer extends WorldSystem {
   private resources?: RendererResources;
   private time: Time;
   private rendererApi: RendererAPI;
+  private resizeObserver?: ResizeObserver;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -141,7 +139,6 @@ export class Renderer extends WorldSystem {
   async onWorldLoad(): Promise<void> {
     await this.application.init({
       autoStart: false,
-      resizeTo: this.window,
       width: this.window.clientWidth,
       height: this.window.clientHeight,
       backgroundColor: this.backgroundColor.toHex(),
@@ -151,6 +148,17 @@ export class Renderer extends WorldSystem {
     });
 
     this.window.appendChild(this.application.canvas);
+
+    this.resizeObserver = new ResizeObserver(() => {
+      this.application.renderer.resize(
+        this.window.clientWidth,
+        this.window.clientHeight,
+      );
+      this.updateCamera();
+      this.application.renderer.render({ container: this.application.stage });
+    });
+    this.resizeObserver.observe(this.window);
+
     this.application.stage.addChild(this.worldContainer);
 
     this.sortingLayers.forEach((layer) =>
@@ -166,6 +174,9 @@ export class Renderer extends WorldSystem {
 
   onWorldDestroy(): void {
     this.filterSystem.clear();
+
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
 
     this.window.removeChild(this.application.canvas);
     this.application.destroy();
