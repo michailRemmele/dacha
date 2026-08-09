@@ -1,25 +1,11 @@
 import { useContext } from 'react';
 import { App as DSApp } from 'antd';
 
-import { CANVAS_ROOT } from '../consts/root-nodes';
-
-import {
-  Explorer,
-  Inspector,
-  Toolbar,
-  BottomBar,
-  SettingsModal,
-} from './modules';
+import { BottomBar, SettingsModal } from './modules';
 import { useUnsavedChanges } from './hooks';
 import { EngineContext } from './providers';
-import {
-  EditorCSS,
-  EditorMainStyled,
-  ExplorerStyled,
-  CanvasStyled,
-  ToolbarStyled,
-  InspectorStyled,
-} from './app.style';
+import { EditorLayout } from './editor-layout';
+import { EditorCSS } from './app.style';
 
 export const App = (): JSX.Element => {
   const context = useContext(EngineContext);
@@ -28,16 +14,8 @@ export const App = (): JSX.Element => {
 
   return (
     <DSApp css={EditorCSS}>
-      <EditorMainStyled>
-        <ExplorerStyled>{context && <Explorer />}</ExplorerStyled>
-        <CanvasStyled>
-          <ToolbarStyled>{context && <Toolbar />}</ToolbarStyled>
-          <div id={CANVAS_ROOT} />
-        </CanvasStyled>
-        <InspectorStyled>{context && <Inspector />}</InspectorStyled>
-      </EditorMainStyled>
+      <EditorLayout />
       {context && <BottomBar />}
-
       {context && <SettingsModal />}
     </DSApp>
   );
