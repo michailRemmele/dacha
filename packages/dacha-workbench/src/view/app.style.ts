@@ -18,9 +18,7 @@ export const EditorCSS = (): SerializedStyles => {
   `;
 };
 
-export const EditorMainStyled = styled.div`
-  display: flex;
-
+export const EditorLayoutStyled = styled.div`
   width: 100%;
   height: calc(100% - 25px);
 `;
@@ -57,7 +55,7 @@ export const CanvasRootCSS = (): SerializedStyles => {
 };
 
 export const CanvasStyled = styled.div`
-  width: 50%;
+  height: 100%;
 
   display: flex;
   flex-direction: column;
