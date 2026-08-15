@@ -1,0 +1,152 @@
+import {
+  Collider,
+  Shape,
+  Transform,
+  type CapsuleColliderShape,
+  type Actor,
+} from 'dacha';
+import { Color } from 'pixi.js';
+
+import { Technical } from '../../../components';
+import { getCurrentZoom } from '../../../../utils/get-current-zoom';
+import type { DebugViewModule } from '../types';
+
+const DEFAULT_COLLIDER_COLOR = '#4DFFB8';
+const FILL_COLOR_ALPHA = 0.15;
+const STROKE_WIDTH = 1.5;
+
+const DEFAULT_PROPS = {
+  strokeWidth: 1,
+  strokeAlignment: 1,
+  pixelLine: false,
+  opacity: 1,
+  blending: 'normal' as Shape['blending'],
+  disabled: false,
+  sortingLayer: 'editor-layer-0',
+  sortOffsetX: 0,
+  sortOffsetY: 0,
+};
+
+const getCapsuleShape = (
+  collider: Collider,
+  transform: Transform,
+  color: string,
+  fillColor: string,
+): Shape => {
+  const { offset } = collider;
+  const { height, radius } = collider.shape as CapsuleColliderShape;
+
+  transform.local.rotation = Math.PI / 2;
+  transform.local.position.x = offset.x;
+  transform.local.position.y = offset.y;
+
+  return new Shape({
+    type: 'roundRectangle',
+    sizeX: height + radius * 2,
+    sizeY: radius * 2,
+    radius,
+    strokeColor: color,
+    fill: fillColor,
+    ...DEFAULT_PROPS,
+  });
+};
+
+export const colliderViewer: DebugViewModule = {
+  id: 'collider-viewer',
+  title: 'Colliders',
+  validate: (actor): boolean => Boolean(actor.getComponent(Collider)),
+  build: (actor, options) => {
+    const { actorSpawner } = options;
+
+    const collider = actor.getComponent(Collider);
+
+    const color = collider.debugColor ?? DEFAULT_COLLIDER_COLOR;
+    const fillColor = new Color(color).setAlpha(FILL_COLOR_ALPHA).toHexa();
+
+    const debugActorWrapper = actorSpawner.spawn('debugActor');
+    const debugActor = actorSpawner.spawn('debugActor');
+
+    debugActorWrapper.appendChild(debugActor);
+
+    const transform = debugActor.getComponent(Transform);
+
+    transform.local.position.x = collider.offset.x;
+    transform.local.position.y = collider.offset.y;
+
+    let shape: Shape;
+
+    switch (collider.shape.type) {
+      case 'box':
+        shape = new Shape({
+          type: 'rectangle',
+          sizeX: collider.shape.size.x,
+          sizeY: collider.shape.size.y,
+          strokeColor: color,
+          fill: fillColor,
+          ...DEFAULT_PROPS,
+        });
+        break;
+      case 'capsule':
+        shape = getCapsuleShape(collider, transform, color, fillColor);
+        break;
+      case 'circle':
+        shape = new Shape({
+          type: 'circle',
+          radius: collider.shape.radius,
+          strokeColor: color,
+          fill: fillColor,
+          ...DEFAULT_PROPS,
+        });
+        break;
+      case 'segment':
+        shape = new Shape({
+          type: 'line',
+          point1X: collider.shape.point1.x,
+          point1Y: collider.shape.point1.y,
+          point2X: collider.shape.point2.x,
+          point2Y: collider.shape.point2.y,
+          strokeColor: color,
+          ...DEFAULT_PROPS,
+        });
+        break;
+    }
+
+    debugActor.setComponent(shape);
+
+    const technical = debugActor.getComponent(Technical);
+    technical.source = actor;
+
+    return debugActorWrapper;
+  },
+  update: (actor, debugActorWrapper, options) => {
+    const debugActor = debugActorWrapper.children.find((child) =>
+      child.getComponent(Shape),
+    ) as Actor;
+
+    const transform = actor.getComponent(Transform);
+
+    const debugTransform = debugActorWrapper.getComponent(Transform);
+    const debugShape = debugActor.getComponent(Shape);
+
+    debugTransform.world.position.x = transform.world.position.x;
+    debugTransform.world.position.y = transform.world.position.y;
+    debugTransform.world.rotation = transform.world.rotation;
+
+    if (debugShape.geometry.type === 'circle') {
+      const maxScale = Math.max(
+        transform.world.scale.x,
+        transform.world.scale.y,
+      );
+
+      debugTransform.world.scale.x = maxScale;
+      debugTransform.world.scale.y = maxScale;
+    } else {
+      debugTransform.world.scale.x = transform.world.scale.x;
+      debugTransform.world.scale.y = transform.world.scale.y;
+    }
+
+    const zoom = getCurrentZoom(options.world);
+
+    debugShape.strokeWidth = STROKE_WIDTH / zoom;
+  },
+};
