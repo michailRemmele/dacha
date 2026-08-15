@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude plugin *)",
+      "Bash(grep -n \"getComponent\" /Users/mihailremmele/Documents/Projects/engine/dacha/src/engine/actor/actor.ts | head -5; sed -n '/getComponent/,/^  }/p' /Users/mihailremmele/Documents/Projects/engine/dacha/src/engine/actor/actor.ts | head -20)",
+      "Bash(npx jest *)",
+      "Bash(npx tsc *)",
+      "Bash(sed -i '' 's#if \\(frame % 100 === 0\\)#if \\(frame % 50 === 0\\)#' src/contrib/systems/physics-system/tests/debug-bridge-drift.test.ts)",
+      "Bash(sed -i '' 's#L.angV=\\\\${lrb.angularVelocity.toFixed\\(4\\)} leftRot=\\\\${rot\\(left\\).toFixed\\(4\\)}`,#L.angV=${lrb.angularVelocity.toFixed\\(4\\)} sleeping=${lrb.sleeping}`,#' src/contrib/systems/physics-system/tests/debug-bridge-drift.test.ts)",
+      "Bash(HALF=13.5 OFF=0.5 npx jest src/contrib/systems/physics-system/tests/debug-bridge-drift.test.ts)",
+      "Bash(HALF=14 OFF=0.5 npx jest src/contrib/systems/physics-system/tests/debug-bridge-drift.test.ts)",
+      "Bash(sed -i '' 's#if \\(frame <= 40 || frame % 1000 === 0\\)#if \\(frame % 100 === 0\\)#; s#frame <= 8000#frame <= 2500#' src/contrib/systems/physics-system/tests/debug-bridge-drift.test.ts)",
+      "Bash(HALF=14 OFF=0 npx jest src/contrib/systems/physics-system/tests/debug-bridge-drift.test.ts)",
+      "Bash(mkdir -p /Users/mihailremmele/Documents/Projects/engine/dacha/.superpowers/sdd && ls /Users/mihailremmele/Documents/Projects/engine/dacha/.superpowers/sdd/progress.md 2>/dev/null && cat /Users/mihailremmele/Documents/Projects/engine/dacha/.superpowers/sdd/progress.md 2>/dev/null || echo \"no ledger yet\")",
+      "Bash(ls /Users/mihailremmele/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/)",
+      "Read(//Users/mihailremmele/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/**)",
+      "Bash(/Users/mihailremmele/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/subagent-driven-development/scripts/task-brief /Users/mihailremmele/Documents/Projects/engine/physics-feature-5-configurable-solver-options.md 1)",
+      "Bash(node -e ' *)",
+      "Bash(awk -F'createPhysicsSystem\\\\\\\\\\(' '{print $2}')",
+      "Bash(awk -F, '{print NF}')",
+      "Bash(mkdir -p /Users/mihailremmele/Documents/Projects/engine/dacha-workbench/.superpowers/sdd)",
+      "Bash(echo '*')",
+      "Bash(awk -F: '{print $1}')"
+    ],
+    "additionalDirectories": [
+      "/Users/mihailremmele/Documents/Projects/engine/dacha/src/engine/actor",
+      "/Users/mihailremmele/Documents/Projects/engine/dacha/.superpowers"
+    ]
+  }
+}
