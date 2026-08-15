@@ -2,6 +2,7 @@
   "explorer": {
     "tab.scenes": "Scenes",
     "tab.templates": "Templates",
+    "tab.assets": "Assets",
 
     "actionBar.cut.button.title": "Cut",
     "actionBar.copy.button.title": "Copy",
@@ -15,7 +16,9 @@
     "scenes.actionBar.scene.new.title": "Scene",
 
     "templates.actionBar.addTemplate.button.title": "Add New Template",
-    "templates.actionBar.template.new.title": "Template"
+    "templates.actionBar.template.new.title": "Template",
+
+    "assets.actionBar.addAsset.button.title": "Add New Asset"
   },
   "toolbar": {
     "pointer.title": "Pointer Tool",
@@ -37,6 +40,7 @@
     "entityInspector.scene.title": "Scene",
     "entityInspector.actor.title": "Actor",
     "entityInspector.template.title": "Template",
+    "entityInspector.asset.title": "Asset",
 
     "entityInspector.copyIdButton.title": "Copy id to clipboard",
 
@@ -46,6 +50,8 @@
 
     "actorForm.field.name.label": "Name",
     "actorForm.field.templateName.label": "Template",
+
+    "assetForm.field.name.label": "Name",
 
     "projectSettings.field.startScene.label": "Start Scene",
     "projectSettings.globalOptions.title": "Global Options",

@@ -9,7 +9,8 @@ import type { KeyboardEventHandler } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Space, Input, Button } from 'antd'
 import type { InputRef } from 'antd'
-import { CloseOutlined, EditOutlined } from '@ant-design/icons'
+import { Xmark, Pencil } from '@gravity-ui/icons'
+import { Icon } from '../../../../../components'
 
 import { Labelled } from '../../../components/labelled'
 
@@ -87,7 +88,7 @@ export const KeyPicker: FC<KeyPickerProps> = ({
         />
         <Button
           css={KeyPickerButtonCSS}
-          icon={!editMode ? <EditOutlined /> : <CloseOutlined />}
+          icon={!editMode ? <Icon icon={<Pencil />} /> : <Icon icon={<Xmark />} />}
           onClick={handleClick}
         />
       </Space.Compact>

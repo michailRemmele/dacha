@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
-import { HolderOutlined } from '@ant-design/icons'
+import { Grip } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 
 import {
   DragOverlayStyled,
@@ -11,7 +12,7 @@ import type { EntityPanelProps } from './entity-panel'
 export const DragOverlayEntity = forwardRef<HTMLDivElement, EntityPanelProps>((props, ref) => (
   <DragOverlayStyled ref={ref}>
     <EntityPanel
-      expandExtra={<HolderOutlined css={HolderOutlinedCSS} />}
+      expandExtra={<Icon css={HolderOutlinedCSS} icon={<Grip />} />}
       {...props}
     />
   </DragOverlayStyled>

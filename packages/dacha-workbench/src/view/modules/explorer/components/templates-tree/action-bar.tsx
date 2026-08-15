@@ -6,14 +6,14 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
 import {
-  FileAddOutlined,
-} from '@ant-design/icons'
+  FilePlus,
+} from '@gravity-ui/icons'
 
 import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
 import { useCommander } from '../../../../hooks'
 import { addTemplate } from '../../../../commands/templates'
 import { InspectedEntityContext } from '../../../../providers'
-import { HotkeysBar } from '../../../../components'
+import { HotkeysBar, Icon } from '../../../../components'
 
 export const ActionBar: FC = () => {
   const { t } = useTranslation()
@@ -33,7 +33,7 @@ export const ActionBar: FC = () => {
     <ActionBarStyled>
       <Button
         css={ButtonCSS}
-        icon={<FileAddOutlined />}
+        icon={<Icon icon={<FilePlus />} />}
         size="small"
         onClick={handleAdd}
         title={t('explorer.templates.actionBar.addTemplate.button.title')}

@@ -11,11 +11,12 @@ import isEqual from 'lodash.isequal'
 import type { RadioChangeEvent } from 'antd'
 import { Radio } from 'antd'
 import {
-  DragOutlined,
-  SearchOutlined,
-  AimOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
+  Hand,
+  Magnifier,
+  HandPointUp,
+  Person,
+} from '@gravity-ui/icons'
+import { Icon } from '../../components'
 import type { Actor } from 'dacha'
 
 import { EngineContext } from '../../providers'
@@ -97,16 +98,16 @@ export const Toolbar: FC = () => {
         disabled={disabled}
       >
         <Radio.Button value="hand">
-          <DragOutlined title={t('toolbar.hand.title')} />
+          <Icon title={t('toolbar.hand.title')} icon={<Hand />} />
         </Radio.Button>
         <Radio.Button value="pointer">
-          <AimOutlined title={t('toolbar.pointer.title')} />
+          <Icon title={t('toolbar.pointer.title')} icon={<HandPointUp />} />
         </Radio.Button>
         <Radio.Button value="zoom">
-          <SearchOutlined title={t('toolbar.zoom.title')} />
+          <Icon title={t('toolbar.zoom.title')} icon={<Magnifier />} />
         </Radio.Button>
         <Radio.Button value="template">
-          <UserOutlined title={t('toolbar.template.title')} />
+          <Icon title={t('toolbar.template.title')} icon={<Person />} />
         </Radio.Button>
       </Radio.Group>
 

@@ -1,7 +1,8 @@
 import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Typography } from 'antd'
-import { CopyOutlined } from '@ant-design/icons'
+import { Copy } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 
 import { InspectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
@@ -35,7 +36,7 @@ export const EntityInspector = (): JSX.Element | null => {
           {t(`inspector.entityInspector.${type as string}.title`)}
         </Typography.Text>
         <Button
-          icon={<CopyOutlined />}
+          icon={<Icon icon={<Copy />} />}
           size="small"
           onClick={handleCopyId}
           title={t('inspector.entityInspector.copyIdButton.title')}

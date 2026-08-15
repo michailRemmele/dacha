@@ -5,3 +5,4 @@ export { DirectoryPicker } from './directory-picker';
 export { Tree } from './tree';
 export { HotkeysBar } from './hotkeys-bar';
 export { Window } from './window';
+export { Icon } from './icon';

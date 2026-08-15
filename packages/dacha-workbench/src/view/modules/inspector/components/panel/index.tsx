@@ -1,6 +1,7 @@
 import type { FC, ReactNode } from 'react';
 import { Button } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { TrashBin } from '@gravity-ui/icons';
+import { Icon } from '../../../../components';
 
 import {
   PanelStyled,
@@ -35,13 +36,13 @@ export const Panel: FC<PanelProps> = ({
       {onDelete ? (
         <>
           {size === 'middle' ? (
-            <Button icon={<DeleteOutlined />} size="small" onClick={onDelete} />
+            <Button icon={<Icon icon={<TrashBin />} />} size="small" onClick={onDelete} />
           ) : null}
           {size === 'small' ? (
             <Button
               css={ButtonSmallCSS}
               type="text"
-              icon={<DeleteOutlined />}
+              icon={<Icon icon={<TrashBin />} />}
               size="small"
               onClick={onDelete}
             />

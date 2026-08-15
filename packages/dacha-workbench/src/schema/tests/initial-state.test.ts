@@ -124,3 +124,24 @@ describe('fillMissingFields', () => {
     expect(fillMissingFields(off, depFields)).toBe(off);
   });
 });
+
+describe('initial-state asset field', () => {
+  it('defaults an asset field to an empty id string', () => {
+    const field: Field = { name: 'texture', type: 'asset', kind: 'texture' };
+    expect(resolveFieldInitialValue(field)).toBe('');
+  });
+
+  it('respects an explicit initialValue', () => {
+    const field: Field = {
+      name: 'texture', type: 'asset', kind: 'texture', initialValue: 'a1',
+    };
+    expect(resolveFieldInitialValue(field)).toBe('a1');
+  });
+
+  it('includes asset fields in built initial state', () => {
+    const fields: Field[] = [
+      { name: 'texture', type: 'asset', kind: 'texture' },
+    ];
+    expect(buildInitialState(fields)).toEqual({ texture: '' });
+  });
+});

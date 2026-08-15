@@ -15,6 +15,7 @@ import {
   CommandScopeProvider,
   HotkeysProvider,
   HotkeysScopeProvider,
+  SchemasProvider,
 } from './view/providers';
 import { APP_ROOT } from './consts/root-nodes';
 import { ROOT_SCOPE } from './consts/scopes';
@@ -43,7 +44,9 @@ root.render(
               <EntityExplorerProvider>
                 <NotificationProvider>
                   <NeedsReloadProvider>
-                    <App />
+                    <SchemasProvider>
+                      <App />
+                    </SchemasProvider>
                   </NeedsReloadProvider>
                 </NotificationProvider>
               </EntityExplorerProvider>

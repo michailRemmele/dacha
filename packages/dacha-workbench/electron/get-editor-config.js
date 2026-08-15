@@ -17,6 +17,7 @@ const getEditorConfig = () => {
     contextRoot: config.contextRoot ?? './src',
     systems: config.systems ?? [/\.system\.ts$/],
     components: config.components ?? [/\.component\.ts$/],
+    assets: config.assets ?? [/\.asset\.ts$/],
     behaviors: config.behaviors ?? [
       /\.behavior\.ts$/,
       /\.filter-effect\.ts$/,

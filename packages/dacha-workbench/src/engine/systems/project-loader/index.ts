@@ -13,6 +13,7 @@ import {
   componentsSchema,
   systemsSchema,
   globalOptionsSchema,
+  assetsSchema,
 } from '../../../view/modules/inspector/widgets';
 import { reconcileConfig } from '../../../schema';
 
@@ -128,6 +129,7 @@ export class ProjectLoader extends WorldSystem {
       systems: { ...systemsSchema, ...schemaRegistry.getGroup('system') },
       globalOptions: globalOptionsSchema,
       behaviors: schemaRegistry.getGroup('behavior') ?? {},
+      assets: { ...assetsSchema, ...schemaRegistry.getGroup('asset') },
     });
 
     fixes.forEach(({ path, value }) => {

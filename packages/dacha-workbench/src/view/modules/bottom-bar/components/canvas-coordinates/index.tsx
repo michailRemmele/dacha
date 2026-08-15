@@ -5,7 +5,8 @@ import {
   FC,
 } from 'react'
 import type { MouseControlEvent } from 'dacha/events'
-import { PlusOutlined, BorderInnerOutlined } from '@ant-design/icons'
+import { Plus, Frame } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 
 import { throttle } from '../../../../../utils/throttle'
 import { getSavedSelectedSceneId } from '../../../../../utils/get-saved-selected-scene-id'
@@ -75,11 +76,11 @@ export const CanvasCoordinates: FC = () => {
   return (
     <CanvasCoordinatesStyled>
       <SectionStyled>
-        <PlusOutlined css={IconsCSS} />
+        <Icon css={IconsCSS} icon={<Plus />} />
         {`${cursorX} ${cursorY}`}
       </SectionStyled>
       <SectionStyled>
-        <BorderInnerOutlined css={IconsCSS} />
+        <Icon css={IconsCSS} icon={<Frame />} />
         {`${gridX} ${gridY}`}
       </SectionStyled>
     </CanvasCoordinatesStyled>

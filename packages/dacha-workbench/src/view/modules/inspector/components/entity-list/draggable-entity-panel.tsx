@@ -1,5 +1,6 @@
 import { FC } from 'react'
-import { HolderOutlined } from '@ant-design/icons'
+import { Grip } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
@@ -37,7 +38,7 @@ const withDraggable: WithDraggableFn = (Component) => {
       >
         <Component
           expandExtra={(
-            <HolderOutlined css={HolderOutlinedCSS} {...attributes} {...listeners} />
+            <Icon css={HolderOutlinedCSS} icon={<Grip />} {...attributes} {...listeners} />
           )}
           {...props}
         />

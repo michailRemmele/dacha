@@ -6,7 +6,8 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Input, Button, Space } from 'antd'
-import { ArrowRightOutlined } from '@ant-design/icons'
+import { ArrowRight } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 import type { ActorConfig, TemplateConfig } from 'dacha'
 
 import { findPathById } from '../../../../../utils/find-path-by-id'
@@ -57,7 +58,7 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
         <Input value={name} disabled />
         <Button
           css={ButtonCSS}
-          icon={<ArrowRightOutlined />}
+          icon={<Icon icon={<ArrowRight />} />}
           onClick={handleTemplateInspect}
         />
       </Space.Compact>

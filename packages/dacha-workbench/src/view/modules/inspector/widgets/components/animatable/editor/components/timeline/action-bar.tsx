@@ -5,13 +5,13 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Plus } from '@gravity-ui/icons'
 import type { Animation } from 'dacha'
 
 import { getStatePath, getSubstatePath } from '../../utils/paths'
 import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
-import { HotkeysBar } from '../../../../../../../../components'
+import { HotkeysBar, Icon } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
 import { addFrame } from '../../commands/frames'
 
@@ -37,7 +37,7 @@ export const ActionBar: FC = () => {
     <ActionBarStyled>
       <Button
         css={ActionButtonCSS}
-        icon={<PlusOutlined />}
+        icon={<Icon icon={<Plus />} />}
         size="small"
         onClick={handleAdd}
         title={t('components.animatable.editor.frame.add.button.title')}

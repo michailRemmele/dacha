@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
-import { HolderOutlined } from '@ant-design/icons';
+import { Grip } from '@gravity-ui/icons';
+import { Icon } from '../../../../../components';
 
 import { HolderOutlinedCSS } from './sorting.style';
 import { SortingLayer } from './sorting-layer';
@@ -12,7 +13,7 @@ export const DragOverlayView = forwardRef<
   <div ref={ref}>
     <SortingLayer
       {...props}
-      expandExtra={<HolderOutlined css={HolderOutlinedCSS} />}
+      expandExtra={<Icon css={HolderOutlinedCSS} icon={<Grip />} />}
     />
   </div>
 ));
