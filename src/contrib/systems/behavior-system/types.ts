@@ -1,10 +1,8 @@
-import type {
-  Actor,
-  ActorSpawner,
-} from '../../../engine/actor';
+import type { Actor, ActorSpawner } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
 import type { Time } from '../../../engine/time';
+import type { Assets } from '../../../engine/asset';
 import type { Constructor } from '../../../types/utils';
 
 /**
@@ -12,17 +10,19 @@ import type { Constructor } from '../../../types/utils';
  */
 export interface BehaviorOptions {
   /** World instance */
-  world: World
+  world: World;
   /** Current scene instance */
-  scene: Scene
+  scene: Scene;
   /** Actor that the behavior is applied to */
-  actor: Actor
+  actor: Actor;
   /** Utility class for creating new actors */
-  actorSpawner: ActorSpawner
+  actorSpawner: ActorSpawner;
+  /** Registry of project assets */
+  assets: Assets;
   /** Global game options */
-  globalOptions: Record<string, unknown>
+  globalOptions: Record<string, unknown>;
   /** Shared timing state */
-  time: Time
+  time: Time;
 }
 
 /**
@@ -45,4 +45,6 @@ export abstract class Behavior {
 /**
  * Constructor for all behaviors
  */
-export type BehaviorConstructor = Constructor<Behavior> & { behaviorName: string };
+export type BehaviorConstructor = Constructor<Behavior> & {
+  behaviorName: string;
+};

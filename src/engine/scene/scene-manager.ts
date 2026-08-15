@@ -4,6 +4,7 @@ import type { SceneConfig, SystemConfig } from '../types';
 import type { ComponentConstructor } from '../component';
 import { ActorCreator, ActorSpawner } from '../actor';
 import type { TemplateCollection } from '../template';
+import type { Assets } from '../asset';
 import type {
   SystemConstructor,
   SceneSystemOptions,
@@ -34,20 +35,21 @@ import { isSubclassOf } from '../utils/is-subclass-of';
 import { Scene } from './scene';
 
 interface LoadEntry {
-  scene: Scene
-  systems: Map<string, SceneSystem>
-  isLoading: boolean
-};
+  scene: Scene;
+  systems: Map<string, SceneSystem>;
+  isLoading: boolean;
+}
 
 interface SceneManagerOptions {
-  sceneConfigs: SceneConfig[]
-  systemConfigs: SystemConfig[]
-  availableSystems: SystemConstructor[]
-  components: ComponentConstructor[]
-  templateCollection: TemplateCollection
-  globalOptions: Record<string, unknown>
-  resources: Record<string, unknown>
-  time: Time
+  sceneConfigs: SceneConfig[];
+  systemConfigs: SystemConfig[];
+  availableSystems: SystemConstructor[];
+  components: ComponentConstructor[];
+  templateCollection: TemplateCollection;
+  assets: Assets;
+  globalOptions: Record<string, unknown>;
+  resources: Record<string, unknown>;
+  time: Time;
 }
 
 export class SceneManager {
@@ -55,6 +57,7 @@ export class SceneManager {
   private systemConfigs: SystemConfig[];
   private availableSystems: Record<string, SystemConstructor>;
   private templateCollection: TemplateCollection;
+  private assets: Assets;
   private globalOptions: Record<string, unknown>;
   private resources: Record<string, unknown>;
   private time: Time;
@@ -72,18 +75,25 @@ export class SceneManager {
     availableSystems,
     components,
     templateCollection,
+    assets,
     globalOptions,
     resources,
     time,
   }: SceneManagerOptions) {
-    this.availableSystems = availableSystems.reduce((acc, AvailableSystem) => {
-      acc[AvailableSystem.systemName] = AvailableSystem;
-      return acc;
-    }, {} as Record<string, SystemConstructor>);
-    this.sceneConfigs = sceneConfigs.reduce((acc: Record<string, SceneConfig>, scene) => {
-      acc[scene.id] = scene;
-      return acc;
-    }, {});
+    this.availableSystems = availableSystems.reduce(
+      (acc, AvailableSystem) => {
+        acc[AvailableSystem.systemName] = AvailableSystem;
+        return acc;
+      },
+      {} as Record<string, SystemConstructor>,
+    );
+    this.sceneConfigs = sceneConfigs.reduce(
+      (acc: Record<string, SceneConfig>, scene) => {
+        acc[scene.id] = scene;
+        return acc;
+      },
+      {},
+    );
     this.systemConfigs = systemConfigs.filter((config) => {
       if (!this.availableSystems[config.name]) {
         console.warn(`System not found: ${config.name}`);
@@ -91,6 +101,7 @@ export class SceneManager {
       return this.availableSystems[config.name];
     });
     this.templateCollection = templateCollection;
+    this.assets = assets;
     this.globalOptions = globalOptions;
     this.resources = resources;
     this.time = time;
@@ -108,13 +119,17 @@ export class SceneManager {
         const options: WorldSystemOptions = {
           ...config.options,
           templateCollection: this.templateCollection,
+          assets: this.assets,
           actorSpawner: this.actorSpawner,
           resources: this.resources[config.name],
           globalOptions: this.globalOptions,
           time: this.time,
           world: this.world,
         };
-        this.worldSystems.set(config.name, new SystemClass(options) as WorldSystem);
+        this.worldSystems.set(
+          config.name,
+          new SystemClass(options) as WorldSystem,
+        );
       }
     });
 
@@ -125,13 +140,19 @@ export class SceneManager {
   }
 
   async loadWorld(): Promise<void> {
-    const worldSystems = this.getSystems().filter((system) => system instanceof WorldSystem);
-
-    await Promise.all(
-      worldSystems.map((system) => (system as WorldSystem).onWorldLoad?.(this.world)),
+    const worldSystems = this.getSystems().filter(
+      (system) => system instanceof WorldSystem,
     );
 
-    worldSystems.forEach((system) => (system as WorldSystem).onWorldReady?.(this.world));
+    await Promise.all(
+      worldSystems.map((system) =>
+        (system as WorldSystem).onWorldLoad?.(this.world),
+      ),
+    );
+
+    worldSystems.forEach((system) =>
+      (system as WorldSystem).onWorldReady?.(this.world),
+    );
   }
 
   destroyWorld(): void {
@@ -185,10 +206,13 @@ export class SceneManager {
   getSystems(scene?: Scene): System[] {
     scene ??= this.getActiveScene();
 
-    const sceneSystems = scene ? this.loadedScenes.get(scene.id)?.systems : undefined;
+    const sceneSystems = scene
+      ? this.loadedScenes.get(scene.id)?.systems
+      : undefined;
 
     return this.systemConfigs.reduce((acc: System[], config) => {
-      const system = this.worldSystems.get(config.name) ?? sceneSystems?.get(config.name);
+      const system =
+        this.worldSystems.get(config.name) ?? sceneSystems?.get(config.name);
       if (system) {
         acc.push(system);
       }
@@ -202,7 +226,9 @@ export class SceneManager {
     autoDestroy?: boolean,
   ): Promise<void> {
     if (!this.sceneConfigs[id]) {
-      throw new Error(`Error while loading scene. Not found scene with id: ${id}`);
+      throw new Error(
+        `Error while loading scene. Not found scene with id: ${id}`,
+      );
     }
     if (this.loadedScenes.get(id)?.isLoading) {
       return;
@@ -220,28 +246,38 @@ export class SceneManager {
       templateCollection: this.templateCollection,
     });
 
-    const sceneSystems = this.systemConfigs.reduce((acc: Map<string, SceneSystem>, config) => {
-      const SystemClass = this.availableSystems[config.name];
-      if (isSubclassOf(SystemClass, SceneSystem)) {
-        const options: SceneSystemOptions = {
-          ...config.options,
-          templateCollection: this.templateCollection,
-          actorSpawner: this.actorSpawner,
-          resources: this.resources[config.name],
-          globalOptions: this.globalOptions,
-          time: this.time,
-          scene,
-          world: this.world,
-        };
-        acc.set(config.name, new SystemClass(options) as SceneSystem);
-      }
-      return acc;
-    }, new Map());
+    const sceneSystems = this.systemConfigs.reduce(
+      (acc: Map<string, SceneSystem>, config) => {
+        const SystemClass = this.availableSystems[config.name];
+        if (isSubclassOf(SystemClass, SceneSystem)) {
+          const options: SceneSystemOptions = {
+            ...config.options,
+            templateCollection: this.templateCollection,
+            assets: this.assets,
+            actorSpawner: this.actorSpawner,
+            resources: this.resources[config.name],
+            globalOptions: this.globalOptions,
+            time: this.time,
+            scene,
+            world: this.world,
+          };
+          acc.set(config.name, new SystemClass(options) as SceneSystem);
+        }
+        return acc;
+      },
+      new Map(),
+    );
 
-    const loadEntry: LoadEntry = { scene, systems: sceneSystems, isLoading: true };
+    const loadEntry: LoadEntry = {
+      scene,
+      systems: sceneSystems,
+      isLoading: true,
+    };
     this.loadedScenes.set(scene.id, loadEntry);
 
-    await Promise.all(this.getSystems(scene).map((system) => system.onSceneLoad?.(scene)));
+    await Promise.all(
+      this.getSystems(scene).map((system) => system.onSceneLoad?.(scene)),
+    );
 
     loadEntry.isLoading = false;
 
@@ -255,10 +291,14 @@ export class SceneManager {
   enterScene(id: string, autoDestroy?: boolean): void {
     const entry = this.loadedScenes.get(id);
     if (!entry) {
-      throw new Error(`Error while entering scene. Not found scene with same id: ${id}`);
+      throw new Error(
+        `Error while entering scene. Not found scene with same id: ${id}`,
+      );
     }
     if (entry.isLoading) {
-      throw new Error(`Error while entering scene. Scene with id: ${id} is still loading`);
+      throw new Error(
+        `Error while entering scene. Scene with id: ${id} is still loading`,
+      );
     }
     if (id === this.activeSceneId) {
       return;
@@ -305,7 +345,9 @@ export class SceneManager {
     const { scene } = entry;
 
     if (scene.id === this.activeSceneId) {
-      throw new Error('Error while destroying scene. Cannot destroy active scene. You should exit first.');
+      throw new Error(
+        'Error while destroying scene. Cannot destroy active scene. You should exit first.',
+      );
     }
 
     this.getSystems(scene).forEach((system) => system.onSceneDestroy?.(scene));

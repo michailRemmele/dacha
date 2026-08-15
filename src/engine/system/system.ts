@@ -4,6 +4,7 @@
  */
 import type { ActorSpawner } from '../actor';
 import type { TemplateCollection } from '../template';
+import type { Assets } from '../asset';
 import type { Scene } from '../scene';
 import type { World } from '../world';
 import type { Time } from '../time';
@@ -21,6 +22,8 @@ interface SystemOptions extends Record<string, unknown> {
   globalOptions: Record<string, unknown>;
   /** Template collection for actor creation */
   templateCollection: TemplateCollection;
+  /** Registry of project assets */
+  assets: Assets;
   /** Shared timing state */
   time: Time;
 }

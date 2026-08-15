@@ -1,6 +1,7 @@
 import { SceneManager } from '../scene-manager';
 import { WorldSystem, SceneSystem } from '../../system';
 import { TemplateCollection } from '../../template';
+import { Assets } from '../../asset';
 import { Time } from '../../time';
 
 import { getSceneConfigMock } from './mocks/scene-config.mock';
@@ -106,6 +107,7 @@ describe('Engine -> SceneManager', () => {
         },
       },
       templateCollection: new TemplateCollection(),
+      assets: new Assets([]),
       time: new Time(),
     });
   });
