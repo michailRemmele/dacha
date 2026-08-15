@@ -1,7 +1,8 @@
 import type { FC } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { HolderOutlined } from '@ant-design/icons';
+import { Grip } from '@gravity-ui/icons';
+import { Icon } from '../../../../../components';
 
 import { SortingLayer } from './sorting-layer';
 import { HolderOutlinedCSS } from './sorting.style';
@@ -27,8 +28,9 @@ export const DraggableSortingLayer: FC<SortingLayerProps> = ({ id }) => {
       <SortingLayer
         id={id}
         expandExtra={
-          <HolderOutlined
+          <Icon
             css={HolderOutlinedCSS}
+            icon={<Grip />}
             {...attributes}
             {...listeners}
           />

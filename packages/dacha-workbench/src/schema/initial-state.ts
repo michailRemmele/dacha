@@ -22,6 +22,8 @@ const getFieldTypeDefault = (type: FieldType): unknown => {
       return '';
     case 'range':
       return 0;
+    case 'asset':
+      return '';
     default:
       return '';
   }

@@ -5,12 +5,12 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Typography } from 'antd'
-import { FileOutlined } from '@ant-design/icons'
+import { File } from '@gravity-ui/icons'
 
 import { LabelledTextInput } from '../text-input'
 import { LabelledDirectoryInput } from '../directory-input'
 import { LabelledCheckbox } from '../checkbox'
-import { Modal } from '../../../../components'
+import { Icon, Modal } from '../../../../components'
 import { toKebabCase } from '../../../../../utils/to-kebab-case'
 import { persistentStorage } from '../../../../../persistent-storage'
 
@@ -90,7 +90,7 @@ export const CreateNewModal: FC<CreateNewModalProps> = ({
       width={640}
     >
       <Typography.Text css={HeaderCSS}>
-        <FileOutlined css={HeaderIconCSS} />
+        <Icon css={HeaderIconCSS} icon={<File />} />
         {`${t('inspector.entityPicker.createNew.modal.field.path.label')} "${getFilePath(baseDirectory, subdirectory, filename)}"`}
       </Typography.Text>
 

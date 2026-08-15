@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Button } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
+import { TrashBin } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 
 export interface PanelExtraProps {
   onDelete: (event: React.MouseEvent<HTMLElement>) => void
@@ -9,5 +10,5 @@ export interface PanelExtraProps {
 export const PanelExtra: FC<PanelExtraProps> = ({
   onDelete,
 }) => (
-  <Button icon={<DeleteOutlined />} size="small" onClick={onDelete} />
+  <Button icon={<Icon icon={<TrashBin />} />} size="small" onClick={onDelete} />
 )

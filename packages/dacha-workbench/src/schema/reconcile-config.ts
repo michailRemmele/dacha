@@ -6,6 +6,7 @@ import type {
   TemplateConfig,
   ActorConfig,
   SystemConfig,
+  AssetConfig,
 } from 'dacha';
 
 import type { WidgetSchema } from '../types/widget-schema';
@@ -24,6 +25,7 @@ export interface ReconcileSchemas {
   systems: Record<string, WidgetSchema>;
   globalOptions: Record<string, WidgetSchema>;
   behaviors: Record<string, WidgetSchema>;
+  assets: Record<string, WidgetSchema>;
 }
 
 type BehaviorEntry = BehaviorsConfig['list'][number] & { id: string };
@@ -157,6 +159,35 @@ const reconcileActors = (
   });
 };
 
+const reconcileAssets = (
+  assets: AssetConfig[] | undefined,
+  schemas: ReconcileSchemas,
+  fixes: ReconcileFix[],
+): void => {
+  if (assets === undefined) {
+    fixes.push({ path: ['assets'], value: [] });
+    return;
+  }
+
+  assets.forEach((asset) => {
+    const schema = schemas.assets[asset.kind];
+    if (!schema) {
+      return;
+    }
+
+    if (schema.fields) {
+      const data = asset.data ?? {};
+      const filledData = fillMissingFields(data, schema.fields);
+      if (filledData !== data) {
+        fixes.push({
+          path: ['assets', `id:${asset.id}`, 'data'],
+          value: filledData,
+        });
+      }
+    }
+  });
+};
+
 export const reconcileConfig = (
   config: unknown,
   schemas: ReconcileSchemas,
@@ -178,6 +209,8 @@ export const reconcileConfig = (
   reconcileSystems(projectConfig.systems, schemas, fixes);
 
   reconcileGlobalOptions(projectConfig.globalOptions, schemas, fixes);
+
+  reconcileAssets(projectConfig.assets, schemas, fixes);
 
   return fixes;
 };

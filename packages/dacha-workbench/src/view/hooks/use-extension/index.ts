@@ -1,10 +1,10 @@
-import { useContext } from 'react'
+import { useContext } from 'react';
 
-import { EngineContext } from '../../providers'
-import type { Extension } from '../../../types/global'
+import { EngineContext } from '../../providers';
+import type { Extension } from '../../../types/global';
 
 export const useExtension = (): Required<Extension> => {
-  const { world } = useContext(EngineContext)
+  const world = useContext(EngineContext)?.world;
 
-  return world.data.extension as Required<Extension>
-}
+  return world?.data.extension as Required<Extension>;
+};

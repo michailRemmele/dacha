@@ -2,11 +2,12 @@ import { useCallback, useContext } from 'react'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { AimOutlined } from '@ant-design/icons'
+import { TargetDart } from '@gravity-ui/icons'
 import { Transform, Actor } from 'dacha'
 
 import { getActorIdByPath } from '../../../../../../../utils/get-actor-id-by-path'
 import { EngineContext } from '../../../../../../providers'
+import { Icon } from '../../../../../../components'
 import { ButtonCSS } from '../../../../explorer.style'
 
 interface FocusActionButtonProps {
@@ -40,7 +41,7 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
   return (
     <Button
       css={ButtonCSS}
-      icon={<AimOutlined />}
+      icon={<Icon icon={<TargetDart />} />}
       size="small"
       onClick={handleClick}
       title={t('explorer.scenes.actionBar.focusActor.button.title')}

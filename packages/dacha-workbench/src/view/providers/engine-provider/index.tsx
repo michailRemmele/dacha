@@ -15,6 +15,9 @@ import {
   BitmapText,
   PixiView,
   Mesh,
+  Texture,
+  Audio,
+  BitmapFont,
 } from 'dacha';
 import {
   type Sorting,
@@ -102,6 +105,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           Frame,
           Technical,
         ],
+        assets: [Texture, Audio, BitmapFont],
         resources: {
           [ProjectLoader.systemName]: {
             store,

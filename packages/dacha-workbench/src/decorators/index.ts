@@ -1,4 +1,5 @@
 export { DefineComponent } from './define-component';
+export { DefineAsset } from './define-asset';
 export { DefineSystem } from './define-system';
 export { DefineField } from './define-field';
 export { DefineBehavior } from './define-behavior';

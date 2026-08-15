@@ -1,8 +1,9 @@
 import type { SceneConfig, TemplateConfig, ActorConfig } from 'dacha'
-import { FileOutlined } from '@ant-design/icons'
+import { Cube } from '@gravity-ui/icons'
 
 import { ExplorerDataNode } from '../../../../../types/tree-node'
 import { getIdByPath } from '../../../../../utils/get-id-by-path'
+import { Icon } from '../../../../components'
 
 const parseTemplate = (
   template: TemplateConfig,
@@ -17,7 +18,7 @@ const parseTemplate = (
     title: template.name,
     path: templatePath,
     parent,
-    icon: <FileOutlined />,
+    icon: <Icon icon={<Cube />} />,
     isLeaf,
   }
 

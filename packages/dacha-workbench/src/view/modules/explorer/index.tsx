@@ -11,7 +11,7 @@ import { InspectedEntityContext } from '../../providers'
 import { persistentStorage } from '../../../persistent-storage'
 import { TabsCSS } from '../../common-styles/tabs.style'
 
-import { ScenesExplorer, TemplatesExplorer } from './components'
+import { ScenesExplorer, TemplatesExplorer, AssetsExplorer } from './components'
 import { ExplorerStyled } from './explorer.style'
 
 export const Explorer = (): JSX.Element => {
@@ -39,6 +39,9 @@ export const Explorer = (): JSX.Element => {
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('explorer.tab.templates')} key="template">
           <TemplatesExplorer />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={t('explorer.tab.assets')} key="asset">
+          <AssetsExplorer />
         </Tabs.TabPane>
       </Tabs>
     </ExplorerStyled>
