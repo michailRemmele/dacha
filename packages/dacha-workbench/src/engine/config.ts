@@ -525,5 +525,6 @@ export const getEditorConfig = ({
       },
     },
   ],
+  assets: [],
   startSceneId: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
 });

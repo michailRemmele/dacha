@@ -54,6 +54,7 @@ import { Panel } from './view/modules/inspector/components/panel';
 import {
   DefineSystem,
   DefineComponent,
+  DefineAsset,
   DefineField,
   DefineBehavior,
   DefineFilterEffect,
@@ -109,6 +110,7 @@ window.DachaWorkbench = {
   decorators: {
     DefineSystem,
     DefineComponent,
+    DefineAsset,
     DefineField,
     DefineBehavior,
     DefineFilterEffect,

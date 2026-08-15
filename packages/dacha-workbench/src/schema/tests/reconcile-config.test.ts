@@ -75,6 +75,7 @@ const schemas: ReconcileSchemas = {
   behaviors: {
     Patrol: { fields: [{ name: 'speed', type: 'number', initialValue: 100 }] },
   },
+  assets: {},
 };
 
 const completeSortingOptions = {
@@ -91,6 +92,7 @@ const emptyConfig = {
   templates: [],
   systems: [],
   globalOptions: [],
+  assets: [],
   startSceneId: null,
 };
 
@@ -337,5 +339,35 @@ describe('reconcileConfig', () => {
       },
       { name: 'sorting', options: completeSortingOptions },
     ]);
+  });
+
+  it('adds an empty assets section when missing', () => {
+    const config = { scenes: [], templates: [], systems: [], globalOptions: [] };
+    const fixes = reconcileConfig(config, {
+      components: {}, systems: {}, globalOptions: {}, behaviors: {}, assets: {},
+    });
+    expect(fixes).toContainEqual({ path: ['assets'], value: [] });
+  });
+
+  it('fills missing data fields (incl. the file field) for a media asset', () => {
+    const config = {
+      scenes: [], templates: [], systems: [], globalOptions: [],
+      assets: [{ id: 'a1', name: 'Hero', kind: 'texture', data: {} }],
+    };
+    const fixes = reconcileConfig(config, {
+      components: {}, systems: {}, globalOptions: {}, behaviors: {},
+      assets: {
+        texture: {
+          fields: [
+            { name: 'src', type: 'file', extensions: ['png'] },
+            { name: 'filterMode', type: 'string', initialValue: 'nearest' },
+          ],
+        },
+      },
+    });
+    expect(fixes).toContainEqual({
+      path: ['assets', 'id:a1', 'data'],
+      value: { src: '', filterMode: 'nearest' },
+    });
   });
 });

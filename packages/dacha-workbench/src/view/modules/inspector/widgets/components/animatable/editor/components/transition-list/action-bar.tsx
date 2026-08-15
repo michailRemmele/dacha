@@ -6,12 +6,12 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Plus } from '@gravity-ui/icons'
 
 import { getStatePath } from '../../utils/paths'
 import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
 import { useCommander } from '../../../../../../../../hooks'
-import { HotkeysBar } from '../../../../../../../../components'
+import { HotkeysBar, Icon } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
 import { addTransition } from '../../commands/transitions'
 
@@ -32,7 +32,7 @@ export const ActionBar: FC = () => {
     <ActionBarStyled>
       <Button
         css={ActionButtonCSS}
-        icon={<PlusOutlined />}
+        icon={<Icon icon={<Plus />} />}
         size="small"
         onClick={handleAdd}
         title={t('components.animatable.editor.transition.add.button.title')}
