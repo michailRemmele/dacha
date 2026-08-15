@@ -8,7 +8,9 @@ export * from './engine/scene';
 export * from './engine/system';
 export * from './engine/component';
 export * from './engine/world';
+export * from './engine/asset';
 
 export * from './contrib/components';
 export * from './contrib/systems';
 export * from './contrib/events';
+export * from './contrib/assets';

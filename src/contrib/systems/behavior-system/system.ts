@@ -5,6 +5,7 @@ import { Actor, ActorQuery } from '../../../engine/actor';
 import type { ActorSpawner } from '../../../engine/actor';
 import type { World } from '../../../engine/world';
 import type { Scene } from '../../../engine/scene';
+import type { Assets } from '../../../engine/asset';
 import { Behaviors } from '../../components';
 import { AddActor, RemoveActor } from '../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
@@ -22,6 +23,7 @@ import type { Behavior, BehaviorOptions, BehaviorConstructor } from './types';
 export class BehaviorSystem extends SceneSystem {
   private behaviorQuery: ActorQuery;
   private actorSpawner: ActorSpawner;
+  private assets: Assets;
   private globalOptions: Record<string, unknown>;
   private behaviors: Record<string, BehaviorConstructor | undefined>;
   private world: World;
@@ -34,6 +36,7 @@ export class BehaviorSystem extends SceneSystem {
 
     const {
       actorSpawner,
+      assets,
       world,
       scene,
       globalOptions,
@@ -49,6 +52,7 @@ export class BehaviorSystem extends SceneSystem {
       filter: [Behaviors],
     });
     this.actorSpawner = actorSpawner;
+    this.assets = assets;
     this.globalOptions = globalOptions;
     this.behaviors = (resources as BehaviorConstructor[]).reduce(
       (acc, behavior) => {
@@ -113,6 +117,7 @@ export class BehaviorSystem extends SceneSystem {
           ...config.options,
           actor,
           actorSpawner: this.actorSpawner,
+          assets: this.assets,
           world: this.world,
           scene: this.scene,
           globalOptions: this.globalOptions,

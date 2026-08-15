@@ -3,6 +3,8 @@ import type { ComponentConstructor } from './component';
 import type { Config } from './types';
 import { SceneManager } from './scene/scene-manager';
 import { TemplateCollection } from './template';
+import { Assets } from './asset';
+import type { AssetConstructor } from './asset';
 import { GameLoop } from './game-loop';
 import type { PerformanceSettings } from './game-loop';
 import { Time } from './time';
@@ -11,6 +13,7 @@ export interface EngineOptions {
   config: Config;
   systems: SystemConstructor[];
   components: ComponentConstructor[];
+  assets: AssetConstructor[];
   resources?: Record<string, unknown>;
 }
 
@@ -28,10 +31,11 @@ export class Engine {
   /**
    * Creates a new engine instance.
    *
-   * @param options - Configuration, available systems and components, and optional shared resources.
+   * @param options - Configuration, available systems, components, and asset kinds, and optional shared resources.
    * @param options.config - Configuration for the engine. It contains game world description such as scenes, actors, and their components.
    * @param options.systems - Available systems for the engine.
    * @param options.components - Available components for the engine.
+   * @param options.assets - Available asset kinds for the engine.
    * @param options.resources - Optional shared resources used by the engine's systems.
    */
   constructor(options: EngineOptions) {
@@ -47,6 +51,7 @@ export class Engine {
    * @throws Error If `startSceneId` is not provided in the config.
    * @throws Error If any component is missing `componentName`.
    * @throws Error If any system is missing `systemName`.
+   * @throws Error If any asset class is missing `assetName`.
    */
   async play(): Promise<void> {
     if (this.sceneManager !== undefined && this.gameLoop !== undefined) {
@@ -59,11 +64,13 @@ export class Engine {
         templates,
         scenes,
         systems,
+        assets: assetConfigs,
         startSceneId,
         globalOptions: rawGlobalOptions,
       },
       systems: availableSystems,
       components,
+      assets: availableAssets,
       resources = {},
     } = this.options;
 
@@ -89,10 +96,24 @@ export class Engine {
       }
     }
 
+    for (const availableAsset of availableAssets) {
+      if (availableAsset.assetName === undefined) {
+        throw new Error(
+          `Missing assetName field for ${availableAsset.name} asset.`,
+        );
+      }
+    }
+
     const templateCollection = new TemplateCollection();
 
     for (const template of templates) {
       templateCollection.register(template);
+    }
+
+    const assets = new Assets(availableAssets);
+
+    for (const config of assetConfigs) {
+      assets.register(config);
     }
 
     const globalOptions = rawGlobalOptions.reduce(
@@ -111,6 +132,7 @@ export class Engine {
       availableSystems,
       components,
       templateCollection,
+      assets,
       globalOptions,
       resources,
       time,
