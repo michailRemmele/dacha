@@ -1,6 +1,7 @@
 import { Component } from '../../../engine/component';
 
-interface BehaviorConfig {
+export interface BehaviorConfig {
+  id: string;
   name: string;
   options: Record<string, unknown>;
 }
@@ -36,7 +37,8 @@ export class Behaviors extends Component {
 
     const { list } = config;
 
-    this.list = list.map(({ name, options }) => ({
+    this.list = list.map(({ id, name, options }) => ({
+      id,
       name,
       options: { ...options },
     }));
