@@ -34,10 +34,18 @@ export interface SceneConfig {
   actors: ActorConfig[];
 }
 
+export interface AssetConfig {
+  id: string;
+  name: string;
+  kind: string;
+  data: Record<string, unknown>;
+}
+
 export interface Config {
   scenes: SceneConfig[];
   templates: TemplateConfig[];
   systems: SystemConfig[];
+  assets: AssetConfig[];
   startSceneId: string | null;
   globalOptions: GlobalOption[];
 }

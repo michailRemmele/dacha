@@ -35,7 +35,10 @@ export {
   ActorQuery,
 } from './engine/actor';
 export { TemplateCollection } from './engine/template';
+export { Assets, Asset } from './engine/asset';
+export type { AssetOptions, AssetConstructor } from './engine/asset';
 
 export * from './types/events';
 export * from './contrib/systems';
 export * from './contrib/components';
+export * from './contrib/assets';

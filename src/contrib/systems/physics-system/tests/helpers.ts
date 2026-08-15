@@ -2,6 +2,7 @@ import { ActorCreator, ActorSpawner, Actor } from '../../../../engine/actor';
 import { Scene } from '../../../../engine/scene';
 import { TemplateCollection } from '../../../../engine/template';
 import { World } from '../../../../engine/world';
+import { Assets } from '../../../../engine/asset';
 import { Time } from '../../../../engine/time';
 import { Collider, RigidBody } from '../../../components';
 import { Transform } from '../../../components/transform';
@@ -35,9 +36,7 @@ export const createPhysicsSystem = (
   solverOptions: Partial<
     Pick<
       PhysicsSystemOptions,
-      | 'solverIterations'
-      | 'maxAllowedPenetration'
-      | 'maxBiasVelocity'
+      'solverIterations' | 'maxAllowedPenetration' | 'maxBiasVelocity'
     >
   > = {},
 ): { physicsSystem: PhysicsSystem; world: World; time: Time } => {
@@ -56,6 +55,7 @@ export const createPhysicsSystem = (
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: settings ? { physics: settings } : {},
     templateCollection,
+    assets: new Assets([]),
     time,
     ...solverOptions,
   });
