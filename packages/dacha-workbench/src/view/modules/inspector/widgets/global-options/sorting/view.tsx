@@ -1,0 +1,87 @@
+import { useEffect, useCallback, useRef, useContext, FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
+import { arrayMove } from '@dnd-kit/sortable';
+import { type SortingLayer } from 'dacha/renderer';
+
+import type { WidgetProps } from '../../../../../../types/widget-schema';
+import { LabelledSelect } from '../../../components';
+import { Field } from '../../../components/field';
+import { useConfig, useCommander } from '../../../../../hooks';
+import { addValue, setValue } from '../../../../../commands';
+import { getUniqueName } from '../../../../../../utils/get-unique-name';
+import { NeedsReloadContext } from '../../../../../providers';
+
+import { SectionHeaderStyled, LayersStyled, ButtonCSS } from './sorting.style';
+import { DraggableSortingLayers } from './draggable-sorting-layers';
+import { SORTING_SETTINGS_PATH, LAYERS_PATH, ORDER_OPTIONS } from './consts';
+
+export const SortingWidget: FC<WidgetProps> = () => {
+  const { t } = useTranslation();
+  const { dispatch } = useCommander();
+
+  const { setNeedsReload } = useContext(NeedsReloadContext);
+
+  const layers = useConfig(LAYERS_PATH) as SortingLayer[] | undefined;
+
+  const prevLayers = useRef(layers);
+
+  useEffect(() => {
+    if (layers === prevLayers.current) {
+      return;
+    }
+
+    setNeedsReload(true);
+    prevLayers.current = layers;
+  }, [layers]);
+
+  const handleAddNewLayer = useCallback(() => {
+    if (!layers) {
+      return;
+    }
+
+    dispatch(
+      addValue<SortingLayer>(LAYERS_PATH, {
+        id: uuidv4(),
+        name: getUniqueName('layer', layers),
+      }),
+    );
+  }, [dispatch, layers]);
+
+  const handleDragEntity = useCallback(
+    (from: number, to: number) => {
+      if (!layers) {
+        return;
+      }
+
+      dispatch(setValue(LAYERS_PATH, arrayMove(layers, from, to)));
+    },
+    [layers, dispatch],
+  );
+
+  return (
+    <>
+      <Field
+        name="order"
+        component={LabelledSelect}
+        options={ORDER_OPTIONS}
+        path={SORTING_SETTINGS_PATH}
+      />
+      <SectionHeaderStyled>
+        {t('globalOptions.sorting.layers.title')}
+      </SectionHeaderStyled>
+      <LayersStyled>
+        {layers ? (
+          <DraggableSortingLayers
+            sortingLayers={layers}
+            onDragEntity={handleDragEntity}
+          />
+        ) : null}
+      </LayersStyled>
+      <Button css={ButtonCSS} size="small" onClick={handleAddNewLayer}>
+        {t('globalOptions.sorting.layers.addNew.title')}
+      </Button>
+    </>
+  );
+};

@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+      "baseUrl": ".",
+      "outDir": "./build/",
+
+      "module": "esnext",
+      "moduleResolution": "bundler",
+
+      "strict": true,
+
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+
+      "target": "es6",
+      "esModuleInterop": true,
+
+      "resolveJsonModule": true,
+
+      "jsx": "react-jsx",
+      "jsxImportSource": "@emotion/react",
+
+      "typeRoots": [
+        "src/types",
+        "node_modules/@types"
+      ]
+  },
+  "include": [
+      "src"
+  ]
+}
