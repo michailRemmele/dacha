@@ -1,6 +1,7 @@
 import { FC } from 'react'
-import { RightOutlined } from '@ant-design/icons'
+import { ChevronRight } from '@gravity-ui/icons'
 
+import { Icon } from '../../../../components'
 import { RightOutlinedCSS } from './collapse-panel.style'
 
 interface PanelExpandProps {
@@ -14,7 +15,8 @@ export const PanelExpand: FC<PanelExpandProps> = ({
 }) => (
   <>
     {children}
-    <RightOutlined
+    <Icon
+      icon={<ChevronRight />}
       css={RightOutlinedCSS(isActive)}
     />
   </>

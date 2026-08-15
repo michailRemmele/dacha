@@ -8,7 +8,8 @@ import {
 import { useTranslation } from 'react-i18next'
 import type { RadioChangeEvent } from 'antd'
 import { Radio } from 'antd'
-import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
+import { MagnifierPlus, MagnifierMinus } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 
 import { ToolFeaturesStyled, RadioGroupCSS } from '../../toolbar.style'
 import { EngineContext } from '../../../../providers'
@@ -53,10 +54,10 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
         onChange={handleSelect}
       >
         <Radio.Button value="in">
-          <ZoomInOutlined title={t('toolbar.zoom.features.direction.in.title')} />
+          <Icon title={t('toolbar.zoom.features.direction.in.title')} icon={<MagnifierPlus />} />
         </Radio.Button>
         <Radio.Button value="out">
-          <ZoomOutOutlined title={t('toolbar.zoom.features.direction.out.title')} />
+          <Icon title={t('toolbar.zoom.features.direction.out.title')} icon={<MagnifierMinus />} />
         </Radio.Button>
       </Radio.Group>
     </ToolFeaturesStyled>

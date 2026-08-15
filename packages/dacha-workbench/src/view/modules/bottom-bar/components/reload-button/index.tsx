@@ -5,7 +5,8 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tooltip } from 'antd'
-import { WarningOutlined } from '@ant-design/icons'
+import { TriangleExclamation } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 
 import { useSaveProject } from '../../../../hooks/use-save-project'
 import { NeedsReloadContext } from '../../../../providers'
@@ -29,7 +30,7 @@ export const ReloadButton: FC = () => {
   return (
     <Tooltip title={t('bottomBar.reloadWarning.button.tooltip')}>
       <ReloadButtonStyled onClick={handleClick}>
-        <WarningOutlined css={IconCSS} />
+        <Icon css={IconCSS} icon={<TriangleExclamation />} />
         {t('bottomBar.reloadWarning.button.title')}
       </ReloadButtonStyled>
     </Tooltip>

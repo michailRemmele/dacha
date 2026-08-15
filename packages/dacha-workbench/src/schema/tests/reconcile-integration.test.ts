@@ -70,6 +70,9 @@ jest.mock('dacha', () => ({
   AudioSystem: { systemName: 'AudioSystem' },
   CharacterController: { systemName: 'CharacterController' },
   Interpolator: { systemName: 'Interpolator' },
+  Texture: { assetName: 'texture' },
+  Audio: { assetName: 'audio' },
+  BitmapFont: { assetName: 'bitmapFont' },
   DEFAULT_FIXED_UPDATE_RATE: 50,
   DEFAULT_MAX_FRAME_DELTA: 250,
   DEFAULT_MAX_FIXED_UPDATES_PER_FRAME: 5,
@@ -88,6 +91,7 @@ const schemas: ReconcileSchemas = {
   systems: systemsSchema,
   globalOptions: globalOptionsSchema,
   behaviors: {},
+  assets: {},
 };
 
 const buildDegradedConfig = (): Record<string, unknown> => ({

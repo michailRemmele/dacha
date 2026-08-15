@@ -3,7 +3,8 @@ import type {
   FC, ChangeEvent, HTMLProps, KeyboardEventHandler,
 } from 'react'
 import { Input, Button, Space } from 'antd'
-import { FolderOpenOutlined } from '@ant-design/icons'
+import { FolderOpen } from '@gravity-ui/icons'
+import { Icon } from '../icon'
 
 import { SpaceCompactCSS, ButtonCSS } from './file-picker.style'
 
@@ -35,7 +36,7 @@ export const FilePicker: FC<FilePickerProps> = ({
       />
       <Button
         css={ButtonCSS}
-        icon={<FolderOpenOutlined />}
+        icon={<Icon icon={<FolderOpen />} />}
         onClick={onOpen}
       />
     </Space.Compact>

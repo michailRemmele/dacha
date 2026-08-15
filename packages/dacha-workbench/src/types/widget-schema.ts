@@ -32,7 +32,8 @@ export type FieldType =
   | 'color'
   | 'file'
   | 'range'
-  | 'textarea';
+  | 'textarea'
+  | 'asset';
 
 export interface AnyField {
   name: string;
@@ -93,6 +94,12 @@ export interface ColorField extends AnyField {
   disabledAlpha?: boolean;
 }
 
+export interface AssetField extends AnyField {
+  type: 'asset';
+  kind: string;
+  initialValue?: string;
+}
+
 export interface TextAreaField extends AnyField {
   type: 'textarea';
 }
@@ -114,6 +121,7 @@ export type Field =
   | RangeField
   | ColorField
   | TextAreaField
+  | AssetField
   | DataField;
 
 export interface WidgetProps {

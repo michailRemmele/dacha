@@ -5,7 +5,8 @@ import {
 import type { ReactElement, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Select } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Plus } from '@gravity-ui/icons'
+import { Icon } from '../../../../components'
 
 import { CreateNewModal } from './create-new-modal'
 import {
@@ -87,7 +88,7 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
         <Button
           css={ButtonCSS}
           size={size}
-          icon={<PlusOutlined />}
+          icon={<Icon icon={<Plus />} />}
           onClick={handleAdd}
         />
       </EntityPickerStyled>

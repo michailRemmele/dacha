@@ -1,6 +1,7 @@
 import { useCallback, useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeleteOutlined, CopyOutlined } from '@ant-design/icons';
+import { TrashBin, Copy } from '@gravity-ui/icons';
+import { Icon } from '../../../../../components';
 import { Button } from 'antd';
 
 import { Field } from '../../../components/field';
@@ -49,7 +50,7 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
 
       <Button
         css={FieldButtonCSS}
-        icon={<CopyOutlined />}
+        icon={<Icon icon={<Copy />} />}
         size="small"
         onClick={handleCopyId}
         title={t('globalOptions.physics.collisionLayers.copy.title')}
@@ -57,7 +58,7 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
 
       <Button
         css={FieldButtonCSS}
-        icon={<DeleteOutlined />}
+        icon={<Icon icon={<TrashBin />} />}
         size="small"
         onClick={() => onDelete(id)}
         title={t('globalOptions.physics.collisionLayers.delete.title')}

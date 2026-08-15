@@ -1,18 +1,23 @@
-export type EntityType = 'actor' | 'template' | 'scene'
+export type EntityType = 'actor' | 'template' | 'scene' | 'asset';
 
-export const getEntityType = (path: string[] | undefined): EntityType | undefined => {
+export const getEntityType = (
+  path: string[] | undefined,
+): EntityType | undefined => {
   if (path === undefined) {
-    return undefined
+    return undefined;
   }
   if (path.length > 2 && path[0] === 'scenes') {
-    return 'actor'
+    return 'actor';
   }
   if (path[0] === 'templates') {
-    return 'template'
+    return 'template';
   }
   if (path[0] === 'scenes') {
-    return 'scene'
+    return 'scene';
+  }
+  if (path[0] === 'assets') {
+    return 'asset';
   }
 
-  return undefined
-}
+  return undefined;
+};

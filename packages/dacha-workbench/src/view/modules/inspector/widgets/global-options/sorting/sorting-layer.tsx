@@ -1,5 +1,6 @@
 import { useMemo, useCallback, FC } from 'react';
-import { DeleteOutlined } from '@ant-design/icons';
+import { TrashBin } from '@gravity-ui/icons';
+import { Icon } from '../../../../../components';
 import { Button } from 'antd';
 
 import { Field } from '../../../components/field';
@@ -40,7 +41,7 @@ export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
 
       <Button
         css={RemoveButtonCSS}
-        icon={<DeleteOutlined />}
+        icon={<Icon icon={<TrashBin />} />}
         size="small"
         onClick={handleDeleteBind}
       />
