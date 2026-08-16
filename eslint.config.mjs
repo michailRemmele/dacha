@@ -62,6 +62,7 @@ export default tseslint.config(
       'packages/dacha-workbench/bin',
       'packages/dacha-workbench/electron',
       'packages/dacha-workbench/jest.config.js',
+      'packages/dacha-workbench/webpack.base.js',
       'packages/dacha-workbench/webpack.config.js',
       'packages/dacha-workbench/webpack.extension.config.js',
       'packages/dacha-workbench/index.js',
