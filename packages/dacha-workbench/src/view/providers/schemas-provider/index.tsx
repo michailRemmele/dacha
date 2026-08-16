@@ -20,6 +20,7 @@ interface SchemasData {
   components: SchemasDataEntry[];
   systems: SchemasDataEntry[];
   assets: SchemasDataEntry[];
+  isReady: boolean;
 }
 
 interface SchemasProviderProps {
@@ -30,6 +31,7 @@ export const SchemasContext = React.createContext<SchemasData>({
   components: [],
   systems: [],
   assets: [],
+  isReady: false,
 });
 
 export const SchemasProvider: FC<SchemasProviderProps> = ({
@@ -47,6 +49,8 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
   const [extAssetsSchema, setExtAssetsSchema] = useState(() =>
     schemaRegistry.getGroup('asset'),
   );
+
+  const [isReady, setIsReady] = useState(false);
 
   const components = useMemo(
     () => buildSchema(componentsSchema, extComponentsSchema),
@@ -91,6 +95,9 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
       setExtAssetsSchema(schemaRegistry.getGroup('asset'));
     };
 
+    handleExtensionUpdated();
+    setIsReady(true);
+
     world.addEventListener(EventType.ExtensionUpdated, handleExtensionUpdated);
 
     return (): void => {
@@ -106,8 +113,9 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
       components,
       systems,
       assets,
+      isReady,
     }),
-    [components, systems, assets],
+    [components, systems, assets, isReady],
   );
 
   return (
