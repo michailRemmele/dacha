@@ -1,0 +1,37 @@
+{
+  "name": "dacha-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "dacha game engine and its GUI editor",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b && npm run build:app -w dacha-workbench",
+    "clean": "tsc -b --clean && rm -rf packages/dacha-workbench/build packages/dacha-workbench/build-app",
+    "pretest": "tsc -b",
+    "test": "npm test --workspaces",
+    "lint": "eslint .",
+    "dev": "concurrently -k -n tsc,editor -c blue,green \"tsc -b --watch --preserveWatchOutput\" \"npm start -w dacha-workbench\"",
+    "prepare": "husky install",
+    "pack:local": "node scripts/pack-local.js",
+    "release": "node scripts/release.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.32.0",
+    "@types/jest": "29.5.14",
+    "@typescript-eslint/parser": "8.39.0",
+    "concurrently": "^9.1.2",
+    "eslint": "9.31.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-import": "2.32.0",
+    "globals": "^16.3.0",
+    "husky": "7.0.4",
+    "jest": "29.7.0",
+    "prettier": "3.6.2",
+    "ts-jest": "29.3.4",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.39.0"
+  }
+}

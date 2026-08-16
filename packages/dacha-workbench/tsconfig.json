@@ -1,30 +1,32 @@
 {
   "compilerOptions": {
-      "baseUrl": ".",
-      "outDir": "./build/",
+    "baseUrl": ".",
+    "outDir": "./build/",
 
-      "module": "esnext",
-      "moduleResolution": "bundler",
+    "module": "esnext",
+    "moduleResolution": "bundler",
 
-      "strict": true,
+    "strict": true,
 
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
 
-      "target": "es6",
-      "esModuleInterop": true,
+    "target": "es6",
+    "esModuleInterop": true,
 
-      "resolveJsonModule": true,
+    "resolveJsonModule": true,
 
-      "jsx": "react-jsx",
-      "jsxImportSource": "@emotion/react",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
 
-      "typeRoots": [
-        "src/types",
-        "node_modules/@types"
-      ]
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["jest", "node"],
+
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ]
   },
-  "include": [
-      "src"
-  ]
+  "include": ["src"]
 }

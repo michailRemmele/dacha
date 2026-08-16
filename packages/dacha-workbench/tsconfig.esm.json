@@ -1,15 +1,16 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "outDir": "./esm/",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./esm/",
 
-        "skipLibCheck": true,
+    "skipLibCheck": true,
 
-        "declaration": true,
-    },
-    "exclude": [
-        "node_modules",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-    ]
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": "./src"
+  },
+  "references": [{ "path": "../dacha/tsconfig.esm.json" }],
+  "include": ["src", "src/**/*.json"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
 }

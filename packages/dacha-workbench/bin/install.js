@@ -14,6 +14,15 @@ if (fs.existsSync('src')) {
   process.exit(0)
 }
 
+// Allow skipping the (slow) electron packaging when only the library part is
+// being tested in a consumer project
+if (process.env.DACHA_SKIP_APP_BUILD) {
+  console.warn(
+    'DACHA_SKIP_APP_BUILD is set: skipping electron packaging, the editor app will not be available',
+  )
+  process.exit(0)
+}
+
 const packageOptions = {
   dir: 'app',
   out: 'tmp',

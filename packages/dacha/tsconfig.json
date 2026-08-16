@@ -1,26 +1,27 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "outDir": "./build/",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./build/",
 
-        "declaration": true,
+    "declaration": true,
 
-        "module": "ESNext",
-        "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
 
-        "strict": true,
+    "strict": true,
 
-        "target": "ESNext",
-        "esModuleInterop": true,
+    "target": "ESNext",
+    "esModuleInterop": true,
 
-        "resolveJsonModule": true,
-         
-        "typeRoots": [
-            "src/types",
-            "node_modules/@types"
-        ]
-    },
-    "include": [
-        "src/**/*"
+    "resolveJsonModule": true,
+
+    "types": ["jest", "node"],
+
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types",
+      "../../node_modules/@types"
     ]
+  },
+  "include": ["src/**/*"]
 }

@@ -1,0 +1,8 @@
+docs
+packs
+packages/dacha/build
+packages/dacha/docs
+packages/dacha-workbench/build
+packages/dacha-workbench/build-app
+packages/dacha-workbench/esm
+packages/dacha-workbench/public

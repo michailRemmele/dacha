@@ -1,0 +1,27 @@
+node_modules/
+/.idea
+
+# Local agent/tooling state
+/.claude
+/.superpowers
+packages/*/.superpowers
+packages/dacha-workbench/.dacha
+
+# Local planning material and locally built archives
+/docs
+/packs
+
+# Build output
+packages/dacha/build
+packages/dacha/docs
+packages/dacha-workbench/build
+packages/dacha-workbench/build-app
+packages/dacha-workbench/esm
+
+.DS_Store
+npm-debug.log*
+
+.npmrc
+
+*.tgz
+*.tsbuildinfo

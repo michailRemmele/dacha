@@ -1,5 +1,4 @@
 {
   "editor.tabSize": 2,
-  "typescript.tsdk": "dacha/node_modules/typescript/lib",
-  "js/ts.tsdk.path": "dacha/node_modules/typescript/lib"
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
 }
