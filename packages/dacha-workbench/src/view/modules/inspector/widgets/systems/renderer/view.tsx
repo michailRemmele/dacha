@@ -1,6 +1,6 @@
 import { useMemo, useCallback, useState, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../../../../../../utils/uuid';
 import {
   DndContext,
   DragOverlay,
@@ -75,7 +75,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
     (name: string) => {
       dispatch(
         addValue(filterEffectsPath, {
-          id: uuidv4(),
+          id: uuid(),
           name,
           options: buildInitialState(effects?.[name].fields ?? []),
         }),

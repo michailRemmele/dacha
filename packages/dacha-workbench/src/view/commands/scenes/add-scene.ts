@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../utils/uuid'
 import { t } from 'i18next'
 import type { SceneConfig } from 'dacha'
 
@@ -13,7 +13,7 @@ export const addScene = () => (
   const scenes = getState(['scenes']) as SceneConfig[]
 
   dispatch(addValue<SceneConfig>(['scenes'], {
-    id: uuidv4(),
+    id: uuid(),
     name: getUniqueName(t('explorer.scenes.actionBar.scene.new.title'), scenes),
     actors: [],
   }))

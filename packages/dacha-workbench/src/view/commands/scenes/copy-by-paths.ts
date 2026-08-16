@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../utils/uuid'
 import type { SceneConfig, ActorConfig } from 'dacha'
 
 import type { ExplorerEntity } from '../../../types/explorer-entity'
@@ -8,7 +8,7 @@ import { addValues } from '..'
 import { SCENE_PATH_LENGTH } from '../../../consts/paths'
 
 const updateIds = (actor: ActorConfig): void => {
-  actor.id = uuidv4()
+  actor.id = uuid()
   actor.children?.forEach(updateIds)
 }
 
@@ -23,7 +23,7 @@ const getActorDuplicate = (actor: unknown, parent: unknown): ActorConfig => {
 const getSceneDuplicate = (scene: unknown, parent: unknown): SceneConfig => {
   const duplicate = structuredClone(scene as SceneConfig)
   duplicate.name = getUniqueName(duplicate.name, parent as ExplorerEntity[])
-  duplicate.id = uuidv4()
+  duplicate.id = uuid()
   duplicate.actors.forEach(updateIds)
 
   return duplicate

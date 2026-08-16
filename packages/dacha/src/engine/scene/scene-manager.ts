@@ -1,4 +1,4 @@
-import uuid from 'uuid-random';
+import { uuid } from '../utils/uuid';
 
 import type { SceneConfig, SystemConfig } from '../types';
 import type { ComponentConstructor } from '../component';

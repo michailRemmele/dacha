@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../utils/uuid'
 
 import { addValue } from '../../../../../../../../commands'
 import type { DispatchFn } from '../../../../../../../../hooks/use-commander'
@@ -9,7 +9,7 @@ export const addFrame = (
   dispatch: DispatchFn,
 ): void => {
   dispatch(addValue(destinationPath, {
-    id: uuidv4(),
+    id: uuid(),
     fields: [],
   }))
 }

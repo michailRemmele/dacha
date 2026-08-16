@@ -20,8 +20,8 @@ if (!version || !/^\d+\.\d+\.\d+(-[\w.]+)?$/.test(version)) {
 if (read('git status --porcelain')) {
   throw new Error('Working tree is dirty');
 }
-if (read('git rev-parse --abbrev-ref HEAD') !== 'main') {
-  throw new Error('Release must be run from main');
+if (read('git rev-parse --abbrev-ref HEAD') !== 'master') {
+  throw new Error('Release must be run from master');
 }
 
 run('npm whoami');

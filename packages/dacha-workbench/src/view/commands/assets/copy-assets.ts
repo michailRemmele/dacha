@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../../../utils/uuid';
 import type { AssetConfig } from 'dacha';
 
 import { getUniqueName } from '../../../utils/get-unique-name';
@@ -10,7 +10,7 @@ const getDuplicate = (
   siblings: AssetConfig[],
 ): AssetConfig => {
   const duplicate = structuredClone(asset);
-  duplicate.id = uuidv4();
+  duplicate.id = uuid();
   duplicate.name = getUniqueName(duplicate.name, siblings);
   return duplicate;
 };

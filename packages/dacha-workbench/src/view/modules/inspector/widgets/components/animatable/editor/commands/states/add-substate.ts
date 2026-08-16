@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../utils/uuid'
 import { t } from 'i18next'
 import type { Animation } from 'dacha'
 
@@ -17,7 +17,7 @@ export const addSubstate = (
   const state = getState(destinationPath.slice(0, -1)) as Animation.GroupStateConfig
 
   dispatch(addValue(destinationPath, {
-    id: uuidv4(),
+    id: uuid(),
     name: getUniqueName(t('components.animatable.editor.substate.new.title'), destination),
     timeline: {
       frames: [],

@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../../../utils/uuid';
 import { t } from 'i18next';
 import { type ActorConfig } from 'dacha';
 
@@ -14,7 +14,7 @@ export const addActor =
 
     dispatch(
       addValue<ActorConfig>(destinationPath, {
-        id: uuidv4(),
+        id: uuid(),
         name: getUniqueName(
           t('explorer.scenes.actionBar.actor.new.title'),
           destination,

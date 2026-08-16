@@ -1,6 +1,6 @@
 import { Transform, RendererAPI } from 'dacha';
 import type { ActorConfig, TemplateConfig, World, Actor } from 'dacha';
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../../../utils/uuid';
 
 import { getGridValue, getGridStep } from '../../../utils/grid';
 import { getTool } from '../../../utils/get-tool';
@@ -13,7 +13,7 @@ const buildActor = (
   template: TemplateConfig,
   actors?: ActorConfig[],
 ): ActorConfig => ({
-  id: uuidv4(),
+  id: uuid(),
   templateId: template.id,
   name: actors ? getUniqueName(template.name, actors) : template.name,
   components: [],

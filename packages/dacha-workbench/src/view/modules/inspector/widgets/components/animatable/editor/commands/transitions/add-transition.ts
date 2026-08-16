@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../utils/uuid'
 
 import { getIdByPath } from '../../../../../../../../../utils/get-id-by-path'
 import { getStatePath } from '../../utils/paths'
@@ -14,7 +14,7 @@ export const addTransition = (
   const stateId = getIdByPath(statePath)
 
   dispatch(addValue(destinationPath, {
-    id: uuidv4(),
+    id: uuid(),
     state: stateId,
     time: 0,
     conditions: [],
