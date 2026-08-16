@@ -13,11 +13,12 @@ export interface Extension {
 
 export interface EditorConfig {
   projectConfig: string;
-  assets: string;
+  assetsRoot: string;
   contextRoot: string;
   systems: string[];
   components: string[];
   behaviors: string[];
+  assets: string[];
   widgets: string[];
   events: string;
   locales: string;

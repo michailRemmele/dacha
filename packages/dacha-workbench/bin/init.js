@@ -53,7 +53,7 @@ const init = () => {
     `module.exports = ${JSON.stringify(
       {
         projectConfig: `${DATA_FOLDER_NAME}/data.json`,
-        assets: `${DATA_FOLDER_NAME}/${ASSETS_FOLDER_NAME}`,
+        assetsRoot: `${DATA_FOLDER_NAME}/${ASSETS_FOLDER_NAME}`,
         autoSave: true,
       },
       null,
