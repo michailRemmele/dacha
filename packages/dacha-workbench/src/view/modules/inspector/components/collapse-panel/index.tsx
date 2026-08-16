@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useState,
-  useRef,
-  FC,
-} from 'react'
+import { useCallback, useState, useRef, FC, ReactElement } from 'react'
 import { Collapse } from 'antd'
 
 import { PanelExtra } from './panel-extra'
@@ -12,15 +7,13 @@ import { PanelExpand } from './panel-expand'
 
 import { CollapseCSS } from './collapse-panel.style'
 
-type ExpandIcon = FC<{
-  isActive?: boolean
-}>
+type ExpandIcon = (props: { isActive?: boolean }) => ReactElement
 
 export interface CollapsePanelProps {
-  children: JSX.Element | (JSX.Element | null)[] | string | null
+  children: ReactElement | (ReactElement | null)[] | string | null
   title: string
   onDelete?: (event: React.MouseEvent<HTMLElement>) => void
-  expandExtra?: JSX.Element | JSX.Element[]
+  expandExtra?: ReactElement | ReactElement[]
   deletable?: boolean
   className?: string
 }

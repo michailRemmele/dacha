@@ -12,6 +12,10 @@ const isDev = process.env.NODE_ENV === 'development';
 module.exports = {
   ...baseConfig,
 
+  // The app bundles these and republishes them as globals from src/vendor.ts.
+  // Only extension bundles consume them as externals.
+  externals: {},
+
   entry: {
     app: path.resolve(__dirname, 'src/app.tsx'),
   },

@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  useCallback,
-  createContext,
-} from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback, createContext, ReactElement } from 'react';
 
 import { ROOT_SCOPE } from '../../../consts/scopes';
 
@@ -14,7 +7,7 @@ type HotkeyType = 'cut' | 'copy' | 'paste' | 'delete';
 type HotkeyListeners = Record<string, Record<HotkeyType, (() => void)[]>>;
 
 interface HotkeysProviderProps {
-  children: JSX.Element | JSX.Element[];
+  children: ReactElement | ReactElement[];
 }
 
 interface HotkeysContextProps {
@@ -41,7 +34,7 @@ export const HotkeysContext = createContext<HotkeysContextProps>({
 
 export const HotkeysProvider = ({
   children,
-}: HotkeysProviderProps): JSX.Element => {
+}: HotkeysProviderProps): ReactElement => {
   const listenersRef = useRef<HotkeyListeners>({});
 
   const [activeScope, setActiveScope] = useState(ROOT_SCOPE);

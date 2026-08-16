@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useContext, FC } from 'react';
+import React, { useState, useMemo, useEffect, useContext, FC, ReactElement } from 'react';
 import type { UIOptions, LoadUIFn } from 'dacha';
 import {
   Engine,
@@ -46,14 +46,14 @@ import {
 } from '../../../engine';
 
 interface EngineProviderProps {
-  children: JSX.Element | JSX.Element[];
+  children: ReactElement | ReactElement[];
 }
 
 export const EngineContext = React.createContext<UIOptions>({} as UIOptions);
 
 export const EngineProvider: FC<EngineProviderProps> = ({
   children,
-}): JSX.Element => {
+}): ReactElement => {
   const { store } = useContext(CommandContext);
 
   const [context, setContext] = useState<UIOptions>();

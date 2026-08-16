@@ -1,11 +1,4 @@
-import {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  createContext,
-  FC,
-} from 'react'
+import { useState, useMemo, useCallback, useEffect, createContext, FC, ReactElement } from 'react'
 
 import { useStore } from '../../../../../../../../hooks'
 import { includesArray } from '../../../../../../../../../utils/includes-array'
@@ -29,7 +22,7 @@ interface AnimationEditorData {
 
 interface AnimationEditorProviderProps {
   path: string[]
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 export const AnimationEditorContext = createContext<AnimationEditorData>({
@@ -42,7 +35,7 @@ export const AnimationEditorContext = createContext<AnimationEditorData>({
 export const AnimationEditorProvider: FC<AnimationEditorProviderProps> = ({
   path: rootPath,
   children,
-}): JSX.Element => {
+}): ReactElement => {
   const store = useStore()
 
   const [inspectedEntity, setInspectedEntity] = useState<InspectedEntity | undefined>()

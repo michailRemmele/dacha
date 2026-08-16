@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { type ReactElement } from 'react'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 
-const Hello = ({ name } : { name?: string }): JSX.Element => {
+const Hello = ({ name } : { name?: string }): ReactElement => {
   if (name) {
     return (
       <h1>

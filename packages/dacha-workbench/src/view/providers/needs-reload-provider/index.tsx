@@ -1,8 +1,4 @@
-import {
-  createContext,
-  useState,
-  useMemo,
-} from 'react'
+import { createContext, useState, useMemo, ReactElement } from 'react'
 import type { FC } from 'react'
 
 interface NotificationInstance {
@@ -11,7 +7,7 @@ interface NotificationInstance {
 }
 
 interface NeedsReloadProviderProps {
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 export const NeedsReloadContext = createContext({} as NotificationInstance)

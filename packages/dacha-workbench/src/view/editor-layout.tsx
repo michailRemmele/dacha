@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Splitter } from 'antd';
 
 import { persistentStorage } from '../persistent-storage';
@@ -35,7 +36,7 @@ export const savePanelSizes = (sizes: number[]): void => {
   persistentStorage.set(INSPECTOR_KEY, sizes[2]);
 };
 
-export const EditorLayout = (): JSX.Element => {
+export const EditorLayout = (): ReactElement => {
   const isEditorReady = useEditorReady();
 
   const sizes = loadPanelSizes();

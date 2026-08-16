@@ -1,8 +1,4 @@
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, { useEffect, useMemo, useState, ReactElement } from 'react'
 
 import { CommanderStore } from '../../../store'
 import type { Data } from '../../../store'
@@ -11,7 +7,7 @@ import { ROOT_SCOPE } from '../../../consts/scopes'
 type OperationType = 'undo' | 'redo'
 
 interface UndoRedoProviderProviderProps {
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 interface CommandContextProps {
@@ -24,7 +20,7 @@ export const CommandContext = React.createContext<CommandContextProps>({} as Com
 
 export const CommandProvider = ({
   children,
-}: UndoRedoProviderProviderProps): JSX.Element => {
+}: UndoRedoProviderProviderProps): ReactElement => {
   const store = useMemo(() => {
     const projectConfig = window.electron.getProjectConfig()
     return new CommanderStore(projectConfig as unknown as Data)

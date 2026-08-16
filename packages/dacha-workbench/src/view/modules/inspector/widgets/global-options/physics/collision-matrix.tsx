@@ -1,5 +1,6 @@
 import { useMemo, useCallback, FC } from 'react';
 import { Checkbox } from 'antd';
+import type { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 import { useConfig, useCommander } from '../../../../../hooks';
 import { setValue } from '../../../../../commands';
@@ -83,7 +84,7 @@ export const CollisionMatrixField: FC<CollisionMatrixProps> = ({ layers }) => {
                 <Checkbox
                   title={`${rowLayer.name} ✕ ${columnLayer.name}`}
                   checked={matrix?.[rowLayer.id]?.[columnLayer.id] ?? true}
-                  onChange={(event) =>
+                  onChange={(event: CheckboxChangeEvent) =>
                     handleChange(
                       rowLayer.id,
                       columnLayer.id,

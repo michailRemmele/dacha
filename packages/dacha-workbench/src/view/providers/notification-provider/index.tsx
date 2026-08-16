@@ -1,11 +1,11 @@
-import { createContext } from 'react'
+import { createContext, ReactElement } from 'react'
 import { notification } from 'antd'
 import type { FC } from 'react'
 
 type NotificationInstance = ReturnType<typeof notification.useNotification>[0]
 
 interface NotificationProviderProps {
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 export const NotificationContext = createContext({} as NotificationInstance)

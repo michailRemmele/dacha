@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-  useContext,
-  createContext,
-} from 'react'
+import { useEffect, useMemo, useState, useCallback, useContext, createContext, ReactElement } from 'react'
 
 import { filterNestedPaths } from '../../../utils/filter-nested-paths'
 import { arraysEqual } from '../../../utils/arrays-equal'
@@ -20,7 +13,7 @@ interface HotkeysSectionProviderProps {
   onMoveTo: (sourcePaths: string[][], destinationPath: string[]) => void
   onCopyTo: (sourcePaths: string[][], destinationPath: string[]) => void
   onRemove: (paths: string[][]) => void
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 interface HotkeysSectionContextProps {
@@ -49,7 +42,7 @@ export const HotkeysSectionProvider = ({
   onCopyTo,
   onRemove,
   children,
-}: HotkeysSectionProviderProps): JSX.Element => {
+}: HotkeysSectionProviderProps): ReactElement => {
   const scope = useContext(HotkeysScopeContext)
   const { addHotkeyListener, removeHotkeyListener } = useContext(HotkeysContext)
 

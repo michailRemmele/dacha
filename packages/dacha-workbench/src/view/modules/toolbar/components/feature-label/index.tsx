@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { FC, ReactElement } from 'react'
 import { Typography } from 'antd'
 
 import {
@@ -8,7 +8,7 @@ import {
 
 interface LabelProps {
   title: string
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
   className?: string
 }
 

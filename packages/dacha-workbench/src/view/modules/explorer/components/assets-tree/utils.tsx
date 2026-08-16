@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import type { AssetConfig } from 'dacha';
 import { FileCode, VolumeLow, Picture, Font } from '@gravity-ui/icons';
 
@@ -8,7 +9,7 @@ import { Icon } from '../../../../components';
 
 import { renderFolderIcon } from '../tree/render-folder-icon';
 
-export const getAssetIcon = (kind: string): JSX.Element => {
+export const getAssetIcon = (kind: string): ReactElement => {
   switch (kind) {
     case 'texture':
       return <Icon icon={<Picture />} />;

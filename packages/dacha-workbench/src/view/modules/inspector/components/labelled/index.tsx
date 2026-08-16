@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 
 import {
   LabelledStyled,
@@ -8,7 +8,7 @@ import {
 
 export interface LabelledProps {
   label: string
-  children: JSX.Element
+  children: ReactElement
 }
 
 export const Labelled: FC<LabelledProps> = ({ label, children }) => (

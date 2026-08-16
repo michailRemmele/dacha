@@ -25,7 +25,7 @@ export const List: FC = () => {
   } = useContext(AnimationEditorContext)
   const { clipboard, isCut } = useContext(HotkeysSectionContext)
 
-  const lastSelectedKey = useRef<string>()
+  const lastSelectedKey = useRef<string | undefined>(undefined)
   const lastSelectedKeys = useRef<string[]>([])
 
   const selectedPaths = getSelectedPaths(entitySelection.paths)

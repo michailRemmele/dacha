@@ -1,4 +1,4 @@
-import { useMemo, useCallback, FC } from 'react';
+import { useMemo, useCallback, FC, ReactElement } from 'react';
 import { TrashBin } from '@gravity-ui/icons';
 import { Icon } from '../../../../../components';
 import { Button } from 'antd';
@@ -16,7 +16,7 @@ import { LAYERS_PATH } from './consts';
 
 export interface SortingLayerProps {
   id: string;
-  expandExtra: JSX.Element;
+  expandExtra: ReactElement;
 }
 
 export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {

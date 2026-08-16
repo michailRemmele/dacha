@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import { ChevronRight } from '@gravity-ui/icons'
 
 import { Icon } from '../../../../components'
@@ -6,7 +6,7 @@ import { RightOutlinedCSS } from './collapse-panel.style'
 
 interface PanelExpandProps {
   isActive?: boolean
-  children?: JSX.Element | JSX.Element[]
+  children?: ReactElement | ReactElement[]
 }
 
 export const PanelExpand: FC<PanelExpandProps> = ({

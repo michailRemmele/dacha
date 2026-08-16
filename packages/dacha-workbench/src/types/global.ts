@@ -69,6 +69,14 @@ export interface ElectronAPI {
 declare global {
   interface Window {
     electron: ElectronAPI;
+    React: typeof import('react');
+    ReactDOM: typeof import('react-dom');
+    antd: typeof import('antd');
+    ReactI18next: typeof import('react-i18next');
+    emotionReact: typeof import('@emotion/react');
+    emotionStyled: typeof import('@emotion/styled');
+    dayjs: typeof import('dayjs');
+    i18next: typeof import('i18next').default;
     extension?: {
       default: {
         events: string[];

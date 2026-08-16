@@ -1,12 +1,9 @@
-import {
-  useCallback,
-  forwardRef,
-} from 'react'
+import { useCallback, forwardRef, ReactElement } from 'react'
 
 import { ListWrapperStyled } from './list-wrapper.style'
 
 interface ListWrapperProps {
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
   onClickOutside?: () => void
 }
 

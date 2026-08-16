@@ -1,4 +1,4 @@
-import { useCallback, FC } from 'react'
+import { useCallback, useMemo, FC } from 'react'
 import { Select as AntdSelect } from 'antd'
 import { useTranslation } from 'react-i18next'
 
@@ -23,30 +23,27 @@ export const Select: FC<SelectProps> = ({
     onAccept()
   }, [onChange, onAccept])
 
+  const selectOptions = useMemo(() => {
+    const items = options.map((option) => (typeof option === 'object'
+      ? { value: option.value, label: option.title, disabled: option.disabled }
+      : { value: option, label: option }))
+
+    return allowEmpty
+      ? [
+        { value: null, label: t('inspector.components.select.option.none.title') },
+        ...items,
+      ]
+      : items
+  }, [options, allowEmpty, t])
+
   return (
     <AntdSelect
       css={SelectCSS}
       size="small"
       onChange={handleChange}
+      options={selectOptions}
       {...props}
-    >
-      {allowEmpty && (
-        <AntdSelect.Option key={0} value={null}>
-          {t('inspector.components.select.option.none.title')}
-        </AntdSelect.Option>
-      )}
-      {options.map((option) => (typeof option === 'object'
-        ? (
-          <AntdSelect.Option key={option.value} value={option.value} disabled={option.disabled}>
-            {option.title}
-          </AntdSelect.Option>
-        )
-        : (
-          <AntdSelect.Option key={option} value={option}>
-            {option}
-          </AntdSelect.Option>
-        )))}
-    </AntdSelect>
+    />
   )
 }
 

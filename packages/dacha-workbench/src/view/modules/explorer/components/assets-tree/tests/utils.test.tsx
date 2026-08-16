@@ -1,4 +1,4 @@
-import { isValidElement } from 'react';
+import { isValidElement, ReactElement } from 'react';
 import type { AssetConfig } from 'dacha';
 
 jest.mock('../../../../../../utils/format-widget-name', () => ({
@@ -6,18 +6,18 @@ jest.mock('../../../../../../utils/format-widget-name', () => ({
 }));
 
 jest.mock('../../../../../components', () => ({
-  Icon: (props: { icon: string }): JSX.Element => <span>{props.icon}</span>,
+  Icon: (props: { icon: string }): ReactElement => <span>{props.icon}</span>,
 }));
 
 jest.mock('@gravity-ui/icons', () => ({
-  FileCode: (): JSX.Element => <span>file-icon</span>,
-  VolumeLow: (): JSX.Element => <span>audio-icon</span>,
-  Picture: (): JSX.Element => <span>texture-icon</span>,
-  Font: (): JSX.Element => <span>bitmap-font-icon</span>,
+  FileCode: (): ReactElement => <span>file-icon</span>,
+  VolumeLow: (): ReactElement => <span>audio-icon</span>,
+  Picture: (): ReactElement => <span>texture-icon</span>,
+  Font: (): ReactElement => <span>bitmap-font-icon</span>,
 }));
 
 jest.mock('../../tree/render-folder-icon', () => ({
-  renderFolderIcon: (): JSX.Element => <span>folder-icon</span>,
+  renderFolderIcon: (): ReactElement => <span>folder-icon</span>,
 }));
 
 import type { ExplorerDataNode } from '../../../../../../types/tree-node';

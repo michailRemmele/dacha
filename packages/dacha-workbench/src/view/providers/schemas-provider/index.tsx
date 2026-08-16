@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo, useEffect, FC } from 'react';
+import React, { useState, useContext, useMemo, useEffect, FC, ReactElement } from 'react';
 import i18next from 'i18next';
 
 import { schemaRegistry } from '../../../decorators/schema-registry';
@@ -24,7 +24,7 @@ interface SchemasData {
 }
 
 interface SchemasProviderProps {
-  children: JSX.Element | JSX.Element[];
+  children: ReactElement | ReactElement[];
 }
 
 export const SchemasContext = React.createContext<SchemasData>({
@@ -36,7 +36,7 @@ export const SchemasContext = React.createContext<SchemasData>({
 
 export const SchemasProvider: FC<SchemasProviderProps> = ({
   children,
-}): JSX.Element => {
+}): ReactElement => {
   const world = useContext(EngineContext)?.world;
   const extension = useExtension();
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactElement } from 'react';
 import type { FC } from 'react';
 
 import { persistentStorage } from '../../../persistent-storage';
@@ -17,7 +17,7 @@ const getThemeMode = (preference: ThemePreference): ThemeMode =>
   preference === 'system' ? getSystemThemeMode() : preference;
 
 interface ThemeProviderProps {
-  children: JSX.Element | JSX.Element[];
+  children: ReactElement | ReactElement[];
 }
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {

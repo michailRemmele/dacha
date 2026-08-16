@@ -1,4 +1,4 @@
-import { createContext, useMemo } from 'react'
+import { createContext, useMemo, ReactElement } from 'react'
 import type { FC } from 'react'
 
 export interface WidgetFieldContextType {
@@ -11,7 +11,7 @@ export const WidgetFieldContext = createContext<WidgetFieldContextType>({ path: 
 interface WidgetFieldProviderProps {
   path: string[]
   data?: Record<string, unknown>
-  children: JSX.Element
+  children: ReactElement
 }
 
 export const WidgetFieldProvider: FC<WidgetFieldProviderProps> = ({ path, data, children }) => {

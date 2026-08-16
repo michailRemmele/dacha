@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useContext, useState, useRef } from 'react';
+import { useCallback, useEffect, useContext, useState, useRef, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 
@@ -9,7 +9,7 @@ import { TabsCSS } from '../../common-styles/tabs.style';
 import { EntityInspector, ProjectSettings, Systems } from './tabs';
 import { InspectorStyled, TabContentStyled } from './inspector.style';
 
-export const Inspector = (): JSX.Element => {
+export const Inspector = (): ReactElement => {
   const { t } = useTranslation();
   const { path } = useContext(InspectedEntityContext);
 

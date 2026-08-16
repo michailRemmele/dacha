@@ -142,7 +142,7 @@ export const Tree: FC<TreeProps> = ({
         expandAction="doubleClick"
         draggable={draggable ? { icon: false } : undefined}
         multiple
-        titleRender={(nodeData): ReactNode => (
+        titleRender={(nodeData: ExplorerDataNode): ReactNode => (
           <TreeNodeTitle
             {...nodeData}
             selected={selectedKeys?.includes(String(nodeData.key)) ?? false}
