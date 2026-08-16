@@ -160,7 +160,12 @@ dispatched through a shared `eventQueue`
 - Tests are colocated in `tests/` folders beside the code they cover.
 - A component or system is unusable without its static `componentName`/`systemName` — the
   engine throws at `play()`.
-- `npm run docs` regenerates the typedoc output into `packages/dacha/docs/` (gitignored).
+- `npm run docs -w dacha` regenerates the typedoc output into `packages/dacha/docs/`
+  (gitignored). It stays a package script rather than a root one because only the engine
+  publishes API docs. Its `typedoc.json` deliberately points at `tsconfig.esm.json`: the
+  base config carries `types: ["jest", "node"]` for the tests, and `@types/node` clashes
+  with `lib.dom` (TS2430), so documenting the build config both fixes that and documents
+  exactly the published surface.
 
 ---
 
