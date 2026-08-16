@@ -36,6 +36,11 @@ npm run pack:local   # build and produce installable .tgz archives in packs/
 npm run release <v>  # preflight, lockstep version bump, publish, tag, push
 ```
 
+`pack:local` stamps every archive with a unique local version
+(`x.y.z-local.<timestamp>`) by rewriting `package.json` **inside the tarball**,
+never in the working tree — otherwise npm treats a reinstall of the same version as a
+no-op and the test project keeps the old code. Pass `--to <project>` to install into a project directly.
+
 Run a single test file with `npx jest path/to/file.test.ts` from inside the relevant
 package. `npm run dev` is how you see an engine change end-to-end: the TypeScript watcher
 recompiles the engine and the editor's webpack picks it up without a manual build.
