@@ -2,7 +2,7 @@
 
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import globals from 'globals';
 
@@ -30,12 +30,13 @@ export default tseslint.config(
       '@typescript-eslint/no-extraneous-class': 0,
       '@typescript-eslint/no-dynamic-delete': 0,
       '@typescript-eslint/no-non-null-assertion': 0,
+      'import-x/default': 0,
+      'import-x/no-named-as-default-member': 0,
     },
   },
   {
     files: ['packages/dacha-workbench/**/*.{ts,tsx}'],
     rules: {
-      'import/no-unresolved': 0,
       '@typescript-eslint/no-empty-function': 0,
       '@typescript-eslint/no-unused-vars': [
         'error',

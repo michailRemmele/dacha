@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "outDir": "./build/",
 
     "declaration": true,
@@ -9,6 +8,8 @@
     "moduleResolution": "Bundler",
 
     "strict": true,
+
+    "skipLibCheck": true,
 
     "target": "ESNext",
     "esModuleInterop": true,
