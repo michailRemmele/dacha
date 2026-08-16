@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../../../utils/uuid';
 import type { AssetConfig } from 'dacha';
 
 import type { WidgetSchema } from '../../../types/widget-schema';
@@ -13,7 +13,7 @@ export const addAsset =
     const assets = (getState(['assets']) as AssetConfig[] | undefined) ?? [];
 
     const asset: AssetConfig = {
-      id: uuidv4(),
+      id: uuid(),
       name: getUniqueName(kind, assets),
       kind,
       data: buildInitialState(schema.fields ?? []),

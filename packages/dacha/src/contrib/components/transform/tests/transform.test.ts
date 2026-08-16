@@ -1,4 +1,4 @@
-import uuid from 'uuid-random';
+import { uuid } from '../../../../engine/utils/uuid';
 
 import { MathOps } from '../../../../engine/math-lib';
 import { Actor } from '../../../../engine/actor';

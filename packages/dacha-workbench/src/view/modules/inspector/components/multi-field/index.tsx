@@ -4,7 +4,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../utils/uuid'
 
 import { useConfig, useCommander } from '../../../../hooks'
 import { addValue } from '../../../../commands'
@@ -33,7 +33,7 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
 
   const handleAddField = useCallback(() => {
     dispatch(addValue(path, {
-      id: uuidv4(),
+      id: uuid(),
       name: '',
       type: 'string',
       value: '',

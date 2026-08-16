@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../utils/uuid'
 import type { Animation } from 'dacha'
 
 import type { DispatchFn, GetStateFn } from '../../../../../../../../hooks/use-commander'
@@ -8,7 +8,7 @@ export const getTransitionDuplicate = (
   transition: Animation.TransitionConfig,
 ): Animation.TransitionConfig => {
   const duplicate = structuredClone(transition)
-  duplicate.id = uuidv4()
+  duplicate.id = uuid()
 
   return duplicate
 }

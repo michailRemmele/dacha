@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../utils/uuid'
 import { t } from 'i18next'
 import type { Animation } from 'dacha'
 
@@ -16,7 +16,7 @@ export const addState = (
   const destination = getState(destinationPath) as Animation.StateConfig[]
 
   dispatch(addValue(destinationPath, {
-    id: uuidv4(),
+    id: uuid(),
     name: getUniqueName(t('components.animatable.editor.state.new.title'), destination),
     type: STATE_TYPE.INDIVIDUAL,
     speed: 1,

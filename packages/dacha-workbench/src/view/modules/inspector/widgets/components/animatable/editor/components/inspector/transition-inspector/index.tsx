@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../../utils/uuid'
 import type { Animation } from 'dacha'
 
 import { FormStyled, FooterStyled, ButtonCSS } from '../inspector.style'
@@ -42,7 +42,7 @@ export const TransitionInspector: FC = () => {
 
   const handleAddCondition = useCallback(() => {
     dispatch(addValue(conditionsPath, {
-      id: uuidv4(),
+      id: uuid(),
       type: CONDITION_TYPE.EVENT,
       props: {
         eventType: '',

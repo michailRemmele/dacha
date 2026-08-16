@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const DATA_FOLDER_NAME = 'data';
 const ASSETS_FOLDER_NAME = 'assets';
@@ -16,7 +16,7 @@ const INITIAL_DATA = {
         order: 'bottomRight',
         layers: [
           {
-            id: uuidv4(),
+            id: randomUUID(),
             name: 'default',
           },
         ],

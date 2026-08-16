@@ -5,7 +5,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../utils/uuid'
 
 import type { WidgetProps } from '../../../../../../types/widget-schema'
 import { useConfig, useCommander } from '../../../../../hooks'
@@ -32,7 +32,7 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
 
   const handleAddNewBind = useCallback(() => {
     dispatch(addValue(bindingsPath, {
-      id: uuidv4(),
+      id: uuid(),
       key: '',
       pressed: true,
       keepEmit: false,

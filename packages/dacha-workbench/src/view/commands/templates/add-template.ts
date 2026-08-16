@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../../../utils/uuid';
 import { t } from 'i18next';
 import { type TemplateConfig, type SceneConfig } from 'dacha';
 
@@ -15,7 +15,7 @@ export const addTemplate =
     const destination = getState(destinationPath) as TemplateConfig[];
 
     const template: TemplateConfig = {
-      id: uuidv4(),
+      id: uuid(),
       name: getUniqueName(
         t('explorer.templates.actionBar.template.new.title'),
         destination,

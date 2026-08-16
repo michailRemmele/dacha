@@ -5,7 +5,7 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'antd'
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../utils/uuid'
 
 import type { WidgetProps } from '../../../../../../types/widget-schema'
 import { useConfig, useCommander } from '../../../../../hooks'
@@ -62,7 +62,7 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
     )?.value as string
 
     const inputBind: InputEventBind = {
-      id: uuidv4(),
+      id: uuid(),
       event: inputEvent,
       eventType: '',
       attrs: [],

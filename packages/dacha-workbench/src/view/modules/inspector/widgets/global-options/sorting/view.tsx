@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useRef, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
+import { uuid } from '../../../../../../utils/uuid';
 import { arrayMove } from '@dnd-kit/sortable';
 import { type SortingLayer } from 'dacha/renderer';
 
@@ -43,7 +43,7 @@ export const SortingWidget: FC<WidgetProps> = () => {
 
     dispatch(
       addValue<SortingLayer>(LAYERS_PATH, {
-        id: uuidv4(),
+        id: uuid(),
         name: getUniqueName('layer', layers),
       }),
     );

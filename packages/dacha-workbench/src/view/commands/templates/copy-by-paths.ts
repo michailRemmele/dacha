@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../utils/uuid'
 import type { TemplateConfig, SceneConfig } from 'dacha'
 
 import type { ExplorerEntity } from '../../../types/explorer-entity'
@@ -10,7 +10,7 @@ import { addValues, setValue } from '..'
 import { getUpdatedScenes } from './utils'
 
 const updateIds = (template: TemplateConfig): void => {
-  template.id = uuidv4()
+  template.id = uuid()
   template.children?.forEach(updateIds)
 }
 

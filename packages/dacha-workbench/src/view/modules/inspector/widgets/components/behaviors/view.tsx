@@ -4,7 +4,7 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../utils/uuid'
 
 import type { WidgetProps } from '../../../../../../types/widget-schema'
 import { EntityMultiselect } from '../../../components/entity-picker'
@@ -42,7 +42,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
 
   const handleAddBehavior = useCallback((name: string) => {
     dispatch(addValue(behaviorsPath, {
-      id: uuidv4(),
+      id: uuid(),
       name,
       options: buildInitialState(behaviors?.[name].fields ?? []),
     }))

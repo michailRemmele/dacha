@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../utils/uuid'
 import type { Animation } from 'dacha'
 
 import type { ExplorerEntity } from '../../../../../../../../../types/explorer-entity'
@@ -11,12 +11,12 @@ const getStateDuplicate = (
   parent: ExplorerEntity[],
 ): Animation.StateConfig => {
   const duplicate = structuredClone(state)
-  duplicate.id = uuidv4()
+  duplicate.id = uuid()
   duplicate.name = getUniqueName(duplicate.name, parent)
 
   if (duplicate.type === 'group') {
     (duplicate as Animation.GroupStateConfig).substates.forEach((substate) => {
-      substate.id = uuidv4()
+      substate.id = uuid()
     })
   }
 
@@ -28,7 +28,7 @@ const getSubstateDuplicate = (
   parent: ExplorerEntity[],
 ): Animation.SubstateConfig => {
   const duplicate = structuredClone(substate)
-  duplicate.id = uuidv4()
+  duplicate.id = uuid()
   duplicate.name = getUniqueName(duplicate.name, parent)
 
   return duplicate

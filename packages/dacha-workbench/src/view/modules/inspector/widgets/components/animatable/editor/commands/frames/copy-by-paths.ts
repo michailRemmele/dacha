@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from '../../../../../../../../../utils/uuid'
 import type { Animation } from 'dacha'
 
 import type { DispatchFn, GetStateFn } from '../../../../../../../../hooks/use-commander'
@@ -6,7 +6,7 @@ import { addValues } from '../../../../../../../../commands'
 
 export const getFrameDuplicate = (frame: Animation.FrameConfig): Animation.FrameConfig => {
   const duplicate = structuredClone(frame)
-  duplicate.id = uuidv4()
+  duplicate.id = uuid()
 
   return duplicate
 }
