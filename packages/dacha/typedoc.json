@@ -1,6 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/index.docs.ts"],
+  "tsconfig": "tsconfig.esm.json",
   "out": "docs",
   "disableSources": true,
   "excludeExternals": true,
