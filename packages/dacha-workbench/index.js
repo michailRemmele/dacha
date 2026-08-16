@@ -33,7 +33,7 @@ if (isDev) {
 if (!isDev) {
   expressApp.use(express.static(path.join(__dirname, 'build')));
 }
-expressApp.use(express.static(path.resolve(editorConfig.assets)));
+expressApp.use(express.static(path.resolve(editorConfig.assetsRoot)));
 
 const server = expressApp.listen(0);
 
@@ -59,7 +59,7 @@ const createWindow = () => {
   Menu.setApplicationMenu(getMenu(win, menuState));
 
   ipcMain.handle(MESSAGES.ASSETS_DIALOG, (_, ...args) =>
-    getAssetsDialog(editorConfig.assets, ...args),
+    getAssetsDialog(editorConfig.assetsRoot, ...args),
   );
   ipcMain.handle(MESSAGES.PATH_DIALOG, (_, ...args) =>
     getPathSelectionDialog(normalizePath(editorConfig.contextRoot), ...args),

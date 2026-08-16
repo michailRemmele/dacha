@@ -13,7 +13,7 @@ const getEditorConfig = () => {
   return {
     ...config,
     projectConfig: normalizePath(config.projectConfig),
-    assets: normalizePath(config.assets),
+    assetsRoot: normalizePath(config.assetsRoot),
     contextRoot: config.contextRoot ?? './src',
     systems: config.systems ?? [/\.system\.ts$/],
     components: config.components ?? [/\.component\.ts$/],

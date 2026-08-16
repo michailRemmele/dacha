@@ -1,6 +1,6 @@
 module.exports = {
   projectConfig: 'fixture/config.json',
-  assets: 'fixture',
+  assetsRoot: 'fixture',
   autoSave: true,
   autoSaveInterval: 5,
-}
+};
