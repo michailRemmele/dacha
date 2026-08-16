@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/dacha/tsconfig.esm.json" },
+    { "path": "packages/dacha-workbench/tsconfig.esm.json" }
+  ]
+}
