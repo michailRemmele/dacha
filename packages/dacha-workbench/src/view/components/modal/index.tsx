@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { FC, ReactElement } from 'react'
 
 import { CommandScopeProvider, HotkeysScopeProvider } from '../../providers'
 import { MODAL_SCOPE } from '../../../consts/scopes'
@@ -10,7 +10,7 @@ interface ModalProps {
   open: boolean
   onCancel: () => void
   width?: string | number
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 export const Modal: FC<ModalProps> = ({

@@ -37,7 +37,7 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
   type,
   size = 'middle',
   className,
-}): JSX.Element => {
+}): ReactElement => {
   const { t } = useTranslation()
 
   const [value, setValue] = useState<string>()
@@ -72,7 +72,7 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
           placeholder={placeholder}
           open={open ? false : undefined}
           showSearch
-          dropdownRender={(menu): ReactElement => (
+          dropdownRender={(menu: ReactElement): ReactElement => (
             <>
               <div>
                 {menu}

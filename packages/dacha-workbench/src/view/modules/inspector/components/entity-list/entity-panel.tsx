@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, ReactElement } from 'react';
 
 import { CollapsePanel } from '../collapse-panel';
 import { useCommander } from '../../../../hooks';
@@ -13,7 +13,7 @@ export interface EntityPanelProps {
   path: string[];
   entity: Entity;
   type: EntityType;
-  expandExtra?: JSX.Element | JSX.Element[];
+  expandExtra?: ReactElement | ReactElement[];
 }
 
 export const EntityPanel = ({
@@ -21,7 +21,7 @@ export const EntityPanel = ({
   entity,
   type,
   expandExtra,
-}: EntityPanelProps): JSX.Element => {
+}: EntityPanelProps): ReactElement => {
   const { dispatch } = useCommander();
 
   const entityPath = useMemo(

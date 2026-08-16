@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useContext,
-  useState,
-  useRef,
-  FC,
-} from 'react'
+import React, { useEffect, useContext, useState, useRef, FC, ReactElement } from 'react'
 import type { SceneConfig, UIOptions } from 'dacha'
 
 import { EngineContext } from '../engine-provider'
@@ -26,7 +20,7 @@ export interface InspectedEntity {
 }
 
 interface EntityExplorerProviderProps {
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 export const InspectedEntityContext = React.createContext<InspectedEntity>({})
@@ -41,7 +35,7 @@ export const EntitySelectionContext = React.createContext<EntitySelection>({ pat
 // when entity was deleted but state has not updated yet
 export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
   children,
-}): JSX.Element => {
+}): ReactElement => {
   const { world } = useContext(EngineContext) as UIOptions | undefined ?? {}
   const store = useStore()
 

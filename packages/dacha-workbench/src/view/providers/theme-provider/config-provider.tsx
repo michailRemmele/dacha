@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, ReactElement } from 'react'
 import type { FC } from 'react'
 import { ConfigProvider as ConfigProviderAntd } from 'antd'
 import type { ThemeConfig } from 'antd'
@@ -15,7 +15,7 @@ const CONFIG_MAP: Record<ThemeMode, ThemeConfig> = {
 }
 
 interface ConfigProviderProps {
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 export const ConfigProvider: FC<ConfigProviderProps> = ({ children }) => {

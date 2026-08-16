@@ -1,4 +1,4 @@
-import { useMemo, useContext } from 'react'
+import { useMemo, useContext, ReactElement } from 'react'
 import type { FC } from 'react'
 import { ThemeProvider as ThemeProviderEmotion } from '@emotion/react'
 import { theme } from 'antd'
@@ -16,7 +16,7 @@ const TOKEN_MAP: Record<ThemeMode, CustomToken> = {
 }
 
 interface ThemeTokenProviderProps {
-  children: JSX.Element | JSX.Element[]
+  children: ReactElement | ReactElement[]
 }
 
 export const ThemeTokenProvider: FC<ThemeTokenProviderProps> = ({ children }) => {

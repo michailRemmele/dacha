@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { SchemasDataEntry } from '../../../../providers'
@@ -33,7 +33,7 @@ export const EntityList = ({
   onDragEntity,
   draggable,
   onCreate,
-}: EntityListProps): JSX.Element => {
+}: EntityListProps): ReactElement => {
   const { t } = useTranslation()
 
   const pathKey = useMemo(() => path.join('.'), [path])

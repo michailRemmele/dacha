@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useMemo,
-  FC,
-} from 'react'
+import { useCallback, useMemo, FC, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useCommander } from '../../../../hooks'
@@ -33,7 +29,7 @@ export const EntityPicker: FC<EntityPickerProps> = ({
   placeholder,
   type,
   onCreate,
-}): JSX.Element => {
+}): ReactElement => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 

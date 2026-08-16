@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, FC } from 'react';
+import React, { useEffect, useContext, FC, ReactElement } from 'react';
 
 import { ROOT_SCOPE } from '../../../consts/scopes';
 
@@ -6,7 +6,7 @@ import { CommandContext } from './command-provider';
 
 interface CommandScopeProps {
   name?: string;
-  children: JSX.Element | JSX.Element[];
+  children: ReactElement | ReactElement[];
 }
 
 export const CommandScopeContext = React.createContext<string>(ROOT_SCOPE);
@@ -14,7 +14,7 @@ export const CommandScopeContext = React.createContext<string>(ROOT_SCOPE);
 export const CommandScopeProvider: FC<CommandScopeProps> = ({
   name = ROOT_SCOPE,
   children,
-}): JSX.Element => {
+}): ReactElement => {
   const { store, setActiveScope } = useContext(CommandContext);
 
   useEffect(() => {

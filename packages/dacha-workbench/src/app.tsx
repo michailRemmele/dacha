@@ -1,3 +1,5 @@
+import './vendor';
+
 import { createRoot } from 'react-dom/client';
 import { use } from 'i18next';
 import { initReactI18next } from 'react-i18next';

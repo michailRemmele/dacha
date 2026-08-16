@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from 'react';
+import type { FC, ReactNode, ReactElement } from 'react';
 import { Button } from 'antd';
 import { TrashBin } from '@gravity-ui/icons';
 import { Icon } from '../../../../components';
@@ -11,7 +11,7 @@ import {
 } from './panel.style';
 
 export interface PanelProps {
-  children: JSX.Element | (JSX.Element | null | undefined)[] | null | undefined;
+  children: ReactElement | (ReactElement | null | undefined)[] | null | undefined;
   title: string;
   onDelete?: () => void;
   extra?: ReactNode;

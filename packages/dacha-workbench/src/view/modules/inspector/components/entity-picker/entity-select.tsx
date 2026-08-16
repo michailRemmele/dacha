@@ -29,7 +29,7 @@ export const EntitySelect: FC<EntitySelectProps> = ({
   onCreate,
   type,
   className,
-}): JSX.Element => {
+}): ReactElement => {
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(false);
@@ -58,7 +58,7 @@ export const EntitySelect: FC<EntitySelectProps> = ({
           value={value}
           open={open ? false : undefined}
           showSearch
-          dropdownRender={(menu): ReactElement => (
+          dropdownRender={(menu: ReactElement): ReactElement => (
             <>
               <div>{menu}</div>
               <FooterStyled>

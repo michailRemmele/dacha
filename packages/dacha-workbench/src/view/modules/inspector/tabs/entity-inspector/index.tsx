@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Typography } from 'antd'
 import { Copy } from '@gravity-ui/icons'
@@ -10,7 +10,7 @@ import { forms } from '../../forms'
 
 import { HeaderStyled } from './entity-inspector.style'
 
-export const EntityInspector = (): JSX.Element | null => {
+export const EntityInspector = (): ReactElement | null => {
   const { t } = useTranslation()
   const { type, path } = useContext(InspectedEntityContext)
 

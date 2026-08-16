@@ -1,4 +1,4 @@
-import { useCallback, FC } from 'react'
+import { useCallback, useMemo, FC } from 'react'
 import { Select as AntdSelect } from 'antd'
 
 import { Labelled, LabelledProps } from '../labelled'
@@ -22,6 +22,10 @@ export const MultiSelect: FC<MultiSelectProps> = ({
     onBlur(event)
   }, [onBlur, onAccept])
 
+  const selectOptions = useMemo(() => options.map((option) => (typeof option === 'object'
+    ? { value: option.value, label: option.title, disabled: option.disabled }
+    : { value: option, label: option })), [options])
+
   return (
     <AntdSelect
       css={SelectCSS}
@@ -29,20 +33,9 @@ export const MultiSelect: FC<MultiSelectProps> = ({
       mode="multiple"
       onChange={handleChange}
       onBlur={handleBlur}
+      options={selectOptions}
       {...props}
-    >
-      {options.map((option) => (typeof option === 'object'
-        ? (
-          <AntdSelect.Option key={option.value} value={option.value} disabled={option.disabled}>
-            {option.title}
-          </AntdSelect.Option>
-        )
-        : (
-          <AntdSelect.Option key={option} value={option}>
-            {option}
-          </AntdSelect.Option>
-        )))}
-    </AntdSelect>
+    />
   )
 }
 
