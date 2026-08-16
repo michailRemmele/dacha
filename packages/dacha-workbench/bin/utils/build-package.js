@@ -1,25 +1,31 @@
-const path = require('path')
-const fs = require('fs')
+const path = require('path');
+const fs = require('fs');
 
-const mainPackage = require('../../package.json')
+const mainPackage = require('../../package.json');
 
-const EXCLUDE_DEPS = ['electron', 'electron-packager']
-// Some of the dev deps have to be included because application builds extension using webpack
-// TODO: Try to move all of these dev dependencies to dependencies section
-// to avoid necessity to manually copy them and support this list
-const INCLUDE_DEV_DEPS = [
-  'ts-loader',
-  'typescript',
-  'clean-webpack-plugin',
-  'copy-webpack-plugin',
-  'css-loader',
-  'style-loader',
-  'html-webpack-plugin',
+const APP_DEPS = [
+  'express',
   'webpack',
-  'webpack-cli',
   'webpack-dev-middleware',
   'webpack-virtual-modules',
-]
+  'ts-loader',
+  'typescript',
+  'css-loader',
+  'style-loader',
+];
+
+const findVersion = (name) => {
+  const version =
+    mainPackage.dependencies[name] ?? mainPackage.devDependencies[name];
+
+  if (version === undefined) {
+    throw new Error(
+      `Cannot build the editor app package: "${name}" is required by the app but is not declared in the dependencies of dacha-workbench`,
+    );
+  }
+
+  return version;
+};
 
 const buildPackage = () => {
   const appPackage = {
@@ -27,24 +33,16 @@ const buildPackage = () => {
     version: mainPackage.version,
     productName: 'Workbench',
     main: 'index.js',
-    dependencies: Object.keys(mainPackage.dependencies).reduce((acc, name) => {
-      if (!EXCLUDE_DEPS.includes(name)) {
-        acc[name] = mainPackage.dependencies[name]
-      }
-      return acc
+    dependencies: APP_DEPS.reduce((acc, name) => {
+      acc[name] = findVersion(name);
+      return acc;
     }, {}),
-    devDependencies: Object.keys(mainPackage.devDependencies).reduce((acc, name) => {
-      if (INCLUDE_DEV_DEPS.includes(name)) {
-        acc[name] = mainPackage.devDependencies[name]
-      }
-      return acc
-    }, {}),
-  }
+  };
 
   fs.writeFileSync(
     path.resolve('app', 'package.json'),
     JSON.stringify(appPackage, null, 2),
-  )
-}
+  );
+};
 
-module.exports = buildPackage
+module.exports = buildPackage;
