@@ -19,6 +19,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: '[name].js',
+    chunkFilename: 'app.[id].js',
   },
 
   devServer: {

@@ -1,4 +1,3 @@
-const path = require('path');
 const webpack = require('webpack');
 const VirtualModulesPlugin = require('webpack-virtual-modules');
 
@@ -9,20 +8,14 @@ const baseConfig = require('./webpack.base');
 module.exports = () => ({
   ...baseConfig,
 
-  context: normalizePath('./'),
-
   entry: {
     extension: normalizePath('./extension-entry.ts'),
   },
 
   output: {
-    path: path.resolve(__dirname, 'build-extension'),
     libraryTarget: 'umd',
     library: '[name]',
-
     chunkFilename: 'extension.[id].js',
-
-    uniqueName: 'dacha-workbench-extension',
   },
 
   optimization: {
