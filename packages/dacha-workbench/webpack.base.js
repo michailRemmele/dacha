@@ -24,7 +24,7 @@ module.exports = {
     rules: [
       {
         test: /\.(j|t)s(x?)$/,
-        exclude: /(node_modules)/,
+        exclude: [/node_modules/, /[\\/]packages[\\/][^\\/]+[\\/]build[\\/]/],
         use: [
           {
             loader: require.resolve('ts-loader'),

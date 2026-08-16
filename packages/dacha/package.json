@@ -22,7 +22,7 @@
     }
   },
   "dependencies": {
-    "pixi.js": "8.15.0"
+    "pixi.js": "8.19.0"
   },
   "devDependencies": {
     "typedoc": "^0.28.13"

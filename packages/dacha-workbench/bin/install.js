@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const { execSync } = require('child_process');
-const packager = require('@electron/packager');
 
 // const getAppIconPath = require('./utils/get-app-icon-path')
 const buildPackage = require('./utils/build-package');
@@ -56,7 +55,9 @@ buildPackage();
 execSync('npm install', { cwd: path.resolve('app') });
 
 // Package application
-packager(packageOptions).then((packagePaths) => {
+const packageApp = async () => {
+  const { packager } = await import('@electron/packager');
+  const packagePaths = await packager(packageOptions);
   const packagePath = packagePaths[0];
 
   // Remove temporary directories
@@ -70,4 +71,9 @@ packager(packageOptions).then((packagePaths) => {
     force: true,
     recursive: true,
   });
+};
+
+packageApp().catch((error) => {
+  console.error(error);
+  process.exit(1);
 });
