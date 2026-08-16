@@ -1,11 +1,10 @@
-import { useContext } from 'react';
 import { Splitter } from 'antd';
 
 import { persistentStorage } from '../persistent-storage';
 import { CANVAS_ROOT } from '../consts/root-nodes';
 
+import { useEditorReady } from './hooks';
 import { Window } from './components';
-import { EngineContext } from './providers';
 import { Explorer } from './modules/explorer';
 import { Inspector } from './modules/inspector';
 import { Toolbar } from './modules/toolbar';
@@ -37,25 +36,26 @@ export const savePanelSizes = (sizes: number[]): void => {
 };
 
 export const EditorLayout = (): JSX.Element => {
-  const context = useContext(EngineContext);
+  const isEditorReady = useEditorReady();
+
   const sizes = loadPanelSizes();
 
   return (
     <EditorLayoutStyled>
       <Splitter onResizeEnd={savePanelSizes}>
         <Splitter.Panel defaultSize={sizes.explorer} min={MIN_EXPLORER_WIDTH}>
-          <Window>{context && <Explorer />}</Window>
+          <Window>{isEditorReady && <Explorer />}</Window>
         </Splitter.Panel>
         <Splitter.Panel min={MIN_CANVAS_WIDTH}>
           <Window>
             <CanvasStyled>
-              <ToolbarStyled>{context && <Toolbar />}</ToolbarStyled>
+              <ToolbarStyled>{isEditorReady && <Toolbar />}</ToolbarStyled>
               <div id={CANVAS_ROOT} />
             </CanvasStyled>
           </Window>
         </Splitter.Panel>
         <Splitter.Panel defaultSize={sizes.inspector} min={MIN_INSPECTOR_WIDTH}>
-          <Window>{context && <Inspector />}</Window>
+          <Window>{isEditorReady && <Inspector />}</Window>
         </Splitter.Panel>
       </Splitter>
     </EditorLayoutStyled>
