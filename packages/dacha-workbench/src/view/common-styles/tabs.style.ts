@@ -1,8 +1,8 @@
-import { css, useTheme } from '@emotion/react'
-import type { SerializedStyles } from '@emotion/react'
+import { css, useTheme } from '@emotion/react';
+import type { SerializedStyles } from '@emotion/react';
 
 export const TabsCSS = (): SerializedStyles => {
-  const theme = useTheme()
+  const theme = useTheme();
 
   return css`
     &,
@@ -26,5 +26,5 @@ export const TabsCSS = (): SerializedStyles => {
     & .ant-tabs-nav::before {
       border-color: ${theme.colorBorder};
     }
-  `
-}
+  `;
+};

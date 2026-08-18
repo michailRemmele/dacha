@@ -22,7 +22,6 @@ export const TextInput: FC<InputProps> = ({
 
   return (
     <Input
-      size="small"
       onChange={handleChange}
       onBlur={handleBlur}
       onPressEnter={onAccept}

@@ -1,16 +1,15 @@
-import type { FC, ReactElement } from 'react'
+import type { FC, ReactElement } from 'react';
+import { Modal as AntdModal } from 'antd';
 
-import { CommandScopeProvider, HotkeysScopeProvider } from '../../providers'
-import { MODAL_SCOPE } from '../../../consts/scopes'
-
-import { ModalStyled } from './modal.style'
+import { CommandScopeProvider, HotkeysScopeProvider } from '../../providers';
+import { MODAL_SCOPE } from '../../../consts/scopes';
 
 interface ModalProps {
-  title: string
-  open: boolean
-  onCancel: () => void
-  width?: string | number
-  children: ReactElement | ReactElement[]
+  title: string;
+  open: boolean;
+  onCancel: () => void;
+  width?: string | number;
+  children: ReactElement | ReactElement[];
 }
 
 export const Modal: FC<ModalProps> = ({
@@ -20,7 +19,7 @@ export const Modal: FC<ModalProps> = ({
   width,
   children,
 }) => (
-  <ModalStyled
+  <AntdModal
     wrapClassName="modal"
     width={width}
     title={title}
@@ -31,9 +30,7 @@ export const Modal: FC<ModalProps> = ({
     destroyOnHidden
   >
     <CommandScopeProvider name={MODAL_SCOPE}>
-      <HotkeysScopeProvider name={MODAL_SCOPE}>
-        {children}
-      </HotkeysScopeProvider>
+      <HotkeysScopeProvider name={MODAL_SCOPE}>{children}</HotkeysScopeProvider>
     </CommandScopeProvider>
-  </ModalStyled>
-)
+  </AntdModal>
+);

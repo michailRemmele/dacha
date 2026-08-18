@@ -61,9 +61,4 @@ export const ButtonSmallCSS = css`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  &.ant-btn.ant-btn-icon-only {
-    width: 18px;
-    height: 18px;
-  }
 `

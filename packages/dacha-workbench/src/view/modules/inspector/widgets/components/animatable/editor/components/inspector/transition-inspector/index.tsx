@@ -79,7 +79,6 @@ export const TransitionInspector: FC = () => {
       <FooterStyled>
         <Button
           css={ButtonCSS}
-          size="small"
           onClick={handleAddCondition}
         >
           {t('components.animatable.editor.condition.add.button.title')}

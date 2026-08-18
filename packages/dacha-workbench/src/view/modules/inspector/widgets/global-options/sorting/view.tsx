@@ -79,7 +79,7 @@ export const SortingWidget: FC<WidgetProps> = () => {
           />
         ) : null}
       </LayersStyled>
-      <Button css={ButtonCSS} size="small" onClick={handleAddNewLayer}>
+      <Button css={ButtonCSS} onClick={handleAddNewLayer}>
         {t('globalOptions.sorting.layers.addNew.title')}
       </Button>
     </>

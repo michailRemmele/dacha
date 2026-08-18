@@ -42,7 +42,6 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
     <Button
       css={ButtonCSS}
       icon={<Icon icon={<TargetDart />} />}
-      size="small"
       onClick={handleClick}
       title={t('explorer.scenes.actionBar.focusActor.button.title')}
       disabled={path === undefined}

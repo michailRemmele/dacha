@@ -1,5 +1,5 @@
-import { css } from '@emotion/react'
-import type { SerializedStyles } from '@emotion/react'
+import { css } from '@emotion/react';
+import type { SerializedStyles } from '@emotion/react';
 
 export const CollapseCSS = css`
   &.ant-collapse {
@@ -15,23 +15,26 @@ export const CollapseCSS = css`
     padding: 5px;
   }
 
-  & .ant-collapse-header-text {
+  & .ant-collapse-title {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 
     padding-right: 5px;
   }
-`
+`;
 
 export const RightOutlinedCSS = (isActive?: boolean): SerializedStyles => css`
   & svg {
     transition: transform 0.24s;
   }
 
-  ${isActive && css`
-    svg {
-      transform: rotate(90deg);
-    }
-  `}
-`
+  ${
+    isActive &&
+    css`
+      svg {
+        transform: rotate(90deg);
+      }
+    `
+  }
+`;

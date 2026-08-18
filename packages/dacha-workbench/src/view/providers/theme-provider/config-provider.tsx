@@ -22,7 +22,7 @@ export const ConfigProvider: FC<ConfigProviderProps> = ({ children }) => {
   const mode = useContext(ThemeContext)
 
   return (
-    <ConfigProviderAntd theme={CONFIG_MAP[mode]}>
+    <ConfigProviderAntd theme={CONFIG_MAP[mode]} componentSize="small">
       {children}
     </ConfigProviderAntd>
   )

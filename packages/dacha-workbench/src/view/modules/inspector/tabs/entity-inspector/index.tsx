@@ -37,7 +37,6 @@ export const EntityInspector = (): ReactElement | null => {
         </Typography.Text>
         <Button
           icon={<Icon icon={<Copy />} />}
-          size="small"
           onClick={handleCopyId}
           title={t('inspector.entityInspector.copyIdButton.title')}
         />

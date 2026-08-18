@@ -34,7 +34,6 @@ export const ActionBar: FC = () => {
       <Button
         css={ButtonCSS}
         icon={<Icon icon={<FilePlus />} />}
-        size="small"
         onClick={handleAdd}
         title={t('explorer.templates.actionBar.addTemplate.button.title')}
       />

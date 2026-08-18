@@ -42,7 +42,6 @@ export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
       <Button
         css={RemoveButtonCSS}
         icon={<Icon icon={<TrashBin />} />}
-        size="small"
         onClick={handleDeleteBind}
       />
     </LayerStyled>

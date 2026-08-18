@@ -51,7 +51,6 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
       <Button
         css={FieldButtonCSS}
         icon={<Icon icon={<Copy />} />}
-        size="small"
         onClick={handleCopyId}
         title={t('globalOptions.physics.collisionLayers.copy.title')}
       />
@@ -59,7 +58,6 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
       <Button
         css={FieldButtonCSS}
         icon={<Icon icon={<TrashBin />} />}
-        size="small"
         onClick={() => onDelete(id)}
         title={t('globalOptions.physics.collisionLayers.delete.title')}
       />

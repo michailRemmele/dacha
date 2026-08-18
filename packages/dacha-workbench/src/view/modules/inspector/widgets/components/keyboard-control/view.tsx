@@ -57,7 +57,6 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
       </EventListStyled>
       <Button
         css={ButtonCSS}
-        size="small"
         onClick={handleAddNewBind}
       >
         {t('components.keyboardControl.bind.addNew.title')}

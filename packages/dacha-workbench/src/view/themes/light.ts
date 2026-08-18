@@ -6,4 +6,7 @@ export const customToken: CustomToken = {
   canvasBackground: '#ffffff',
 };
 
-export const customTheme = { algorithm: [theme.compactAlgorithm] };
+export const customTheme = {
+  algorithm: [theme.defaultAlgorithm],
+  token: { fontSize: 13 },
+};

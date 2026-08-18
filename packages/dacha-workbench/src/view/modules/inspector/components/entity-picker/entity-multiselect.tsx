@@ -72,13 +72,13 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
           placeholder={placeholder}
           open={open ? false : undefined}
           showSearch
-          dropdownRender={(menu: ReactElement): ReactElement => (
+          popupRender={(menu: ReactElement): ReactElement => (
             <>
               <div>
                 {menu}
               </div>
               <FooterStyled>
-                <Button block size="small" onClick={handleOpen}>
+                <Button block onClick={handleOpen}>
                   {t('inspector.entityPicker.createNew.button.title')}
                 </Button>
               </FooterStyled>

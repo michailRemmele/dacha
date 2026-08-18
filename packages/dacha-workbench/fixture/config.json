@@ -17,7 +17,7 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 0,
+                "offsetX": 1,
                 "offsetY": 0,
                 "rotation": 0,
                 "scaleX": 1,
@@ -409,7 +409,7 @@
             "sortingLayer": "units",
             "fit": "stretch",
             "blending": "normal",
-            "color": "rgba(255,255,255,0.55)",
+            "color": "rgb(255,255,255)",
             "opacity": 1,
             "disabled": false
           }

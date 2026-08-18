@@ -36,7 +36,6 @@ export const MultiTextInput: FC<MultiTextInputProps> = ({
     <AntdSelect
       css={SelectCSS}
       tokenSeparators={[' ', ',']}
-      size="small"
       mode="tags"
       onChange={handleChange}
       onDeselect={handleDeselect}

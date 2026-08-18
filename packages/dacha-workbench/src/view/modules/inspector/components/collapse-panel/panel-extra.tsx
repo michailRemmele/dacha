@@ -10,5 +10,5 @@ export interface PanelExtraProps {
 export const PanelExtra: FC<PanelExtraProps> = ({
   onDelete,
 }) => (
-  <Button icon={<Icon icon={<TrashBin />} />} size="small" onClick={onDelete} />
+  <Button icon={<Icon icon={<TrashBin />} />} onClick={onDelete} />
 )

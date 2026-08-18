@@ -27,6 +27,6 @@ export const UpdateIndicator: FC = () => {
   }
 
   return (
-    <Spin css={SpinCSS} indicator={<LoadingOutlined spin />} size="small" />
+    <Spin css={SpinCSS} indicator={<LoadingOutlined spin />} />
   );
 };

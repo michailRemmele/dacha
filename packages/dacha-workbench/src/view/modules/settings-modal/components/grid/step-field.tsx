@@ -1,47 +1,38 @@
-import {
-  useCallback,
-  useState,
-  useEffect,
-  FC,
-} from 'react'
-import { useTranslation } from 'react-i18next'
-import { InputNumber, Typography } from 'antd'
+import { useCallback, useState, useEffect, FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { InputNumber, Typography } from 'antd';
 
-import {
-  SettingsFieldStyled,
-  SettingsLabelCSS,
-  SettingsInputCSS,
-} from './grid.style'
+import { SettingsFieldStyled, SettingsLabelCSS } from './grid.style';
 
-const MIN_STEP = 1
+const MIN_STEP = 1;
 
 interface StepFieldProps {
-  value: number
-  onChange: (value: number) => void
+  value: number;
+  onChange: (value: number) => void;
 }
 
-export const StepField: FC<StepFieldProps> = ({
-  value,
-  onChange,
-}) => {
-  const { t } = useTranslation()
+export const StepField: FC<StepFieldProps> = ({ value, onChange }) => {
+  const { t } = useTranslation();
 
-  const [inputValue, setInputValue] = useState<number | null>(value)
+  const [inputValue, setInputValue] = useState<number | null>(value);
 
   useEffect(() => {
     if (inputValue !== null && value !== inputValue) {
-      setInputValue(value)
+      setInputValue(value);
     }
-  }, [value])
+  }, [value]);
 
-  const handleChange = useCallback((newValue: number | null): void => {
-    setInputValue(newValue)
-    onChange(newValue ?? MIN_STEP)
-  }, [onChange])
+  const handleChange = useCallback(
+    (newValue: number | null): void => {
+      setInputValue(newValue);
+      onChange(newValue ?? MIN_STEP);
+    },
+    [onChange],
+  );
 
   const handleBlur = useCallback(() => {
-    setInputValue(value)
-  }, [value])
+    setInputValue(value);
+  }, [value]);
 
   return (
     <SettingsFieldStyled>
@@ -49,9 +40,8 @@ export const StepField: FC<StepFieldProps> = ({
         {t('settings.grid.modal.field.step.label')}
       </Typography.Text>
       <InputNumber
-        css={SettingsInputCSS}
+        style={{ width: '60%' }}
         type="number"
-        size="small"
         min={MIN_STEP}
         value={inputValue}
         onChange={handleChange}
@@ -60,5 +50,5 @@ export const StepField: FC<StepFieldProps> = ({
         precision={0}
       />
     </SettingsFieldStyled>
-  )
-}
+  );
+};

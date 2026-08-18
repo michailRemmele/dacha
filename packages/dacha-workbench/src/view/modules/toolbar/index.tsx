@@ -92,7 +92,6 @@ export const Toolbar: FC = () => {
       <Radio.Group
         css={ToolGroupCSS}
         buttonStyle="solid"
-        size="small"
         value={selectedTool}
         onChange={handleSelect}
         disabled={disabled}

@@ -4,11 +4,7 @@ import { Typography } from 'antd';
 
 import { ColorPicker } from '../../../../components';
 
-import {
-  SettingsFieldStyled,
-  SettingsLabelCSS,
-  SettingsInputCSS,
-} from './grid.style';
+import { SettingsFieldStyled, SettingsLabelCSS } from './grid.style';
 
 interface ColorFieldProps {
   value: string;
@@ -23,12 +19,7 @@ export const ColorField: FC<ColorFieldProps> = ({ value, onChange }) => {
       <Typography.Text css={SettingsLabelCSS}>
         {t('settings.grid.modal.field.color.label')}
       </Typography.Text>
-      <ColorPicker
-        css={SettingsInputCSS}
-        value={value}
-        onChange={onChange}
-        disabledAlpha
-      />
+      <ColorPicker value={value} onChange={onChange} disabledAlpha />
     </SettingsFieldStyled>
   );
 };

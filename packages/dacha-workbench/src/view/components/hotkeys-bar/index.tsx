@@ -28,28 +28,24 @@ export const HotkeysBar: FC = () => {
       <Button
         css={ButtonCSS}
         icon={<Icon icon={<Scissors />} />}
-        size="small"
         onClick={cut}
         title={t('explorer.actionBar.cut.button.title')}
       />
       <Button
         css={ButtonCSS}
         icon={<Icon icon={<Copy />} />}
-        size="small"
         onClick={copy}
         title={t('explorer.actionBar.copy.button.title')}
       />
       <Button
         css={ButtonCSS}
         icon={<Icon icon={<Files />} />}
-        size="small"
         onClick={paste}
         title={t('explorer.actionBar.paste.button.title')}
       />
       <Button
         css={ButtonCSS}
         icon={<Icon icon={<TrashBin />} />}
-        size="small"
         onClick={remove}
         title={t('explorer.actionBar.delete.button.title')}
       />

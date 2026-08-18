@@ -1,46 +1,38 @@
-import styled from '@emotion/styled'
-import { css, useTheme } from '@emotion/react'
-import type { SerializedStyles } from '@emotion/react'
+import styled from '@emotion/styled';
+import { css, useTheme } from '@emotion/react';
+import type { SerializedStyles } from '@emotion/react';
 
-export const ToolbarStyled = styled.div(({ theme }) => css`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+export const ToolbarStyled = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-  height: 35px;
-  padding: 0 5px;
+    height: 35px;
+    padding: 0 5px;
 
-  border-bottom: 1px solid ${theme.colorBorder};
-  
-  overflow: scroll;
+    border-bottom: 1px solid ${theme.colorBorder};
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`)
+    overflow: scroll;
 
-export const RadioGroupCSS = css`
-  & .ant-radio-button-wrapper {
-    padding: 0 7px;
-  }
-`
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  `,
+);
 
 export const ToolGroupCSS = (): SerializedStyles => {
-  const theme = useTheme()
+  const theme = useTheme();
 
   return css`
-    &.ant-radio-group {
-      flex-shrink: 0;
+    flex-shrink: 0;
 
-      padding-right: 8px;
-      margin-right: 8px;
+    padding-right: 8px;
+    margin-right: 8px;
 
-      border-right: 1px solid ${theme.colorBorder};
-    }
-
-    ${RadioGroupCSS}
-  `
-}
+    border-right: 1px solid ${theme.colorBorder};
+  `;
+};
 
 export const ToolFeaturesStyled = styled.div`
   display: flex;
@@ -48,10 +40,10 @@ export const ToolFeaturesStyled = styled.div`
   align-items: baseline;
 
   flex-shrink: 0;
-`
+`;
 
 export const CheckboxCSS = css`
-  & .ant-checkbox + span {
+  & span {
     padding-right: 0;
   }
-`
+`;

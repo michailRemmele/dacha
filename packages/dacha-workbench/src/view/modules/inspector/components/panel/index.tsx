@@ -11,7 +11,8 @@ import {
 } from './panel.style';
 
 export interface PanelProps {
-  children: ReactElement | (ReactElement | null | undefined)[] | null | undefined;
+  children:
+    ReactElement | (ReactElement | null | undefined)[] | null | undefined;
   title: string;
   onDelete?: () => void;
   extra?: ReactNode;
@@ -36,14 +37,14 @@ export const Panel: FC<PanelProps> = ({
       {onDelete ? (
         <>
           {size === 'middle' ? (
-            <Button icon={<Icon icon={<TrashBin />} />} size="small" onClick={onDelete} />
+            <Button icon={<Icon icon={<TrashBin />} />} onClick={onDelete} />
           ) : null}
           {size === 'small' ? (
             <Button
               css={ButtonSmallCSS}
+              style={{ width: '18px', height: '18px' }}
               type="text"
               icon={<Icon icon={<TrashBin />} />}
-              size="small"
               onClick={onDelete}
             />
           ) : null}
