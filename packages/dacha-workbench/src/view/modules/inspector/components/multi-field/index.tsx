@@ -63,7 +63,6 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
       )}
       <Button
         css={ButtonCSS}
-        size="small"
         onClick={handleAddField}
       >
         {t('inspector.multifield.addNew.value.title')}

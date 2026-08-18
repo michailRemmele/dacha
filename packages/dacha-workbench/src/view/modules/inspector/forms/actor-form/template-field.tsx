@@ -17,7 +17,7 @@ import { EngineContext } from '../../../../providers'
 import { EventType } from '../../../../../events'
 
 import { parseTemplatePath } from './utils'
-import { SpaceCompactCSS, ButtonCSS } from './actor-form.style'
+import { SpaceCompactCSS } from './actor-form.style'
 
 interface TemplateFieldProps {
   path: string[]
@@ -53,11 +53,9 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
     >
       <Space.Compact
         css={SpaceCompactCSS}
-        size="small"
       >
         <Input value={name} disabled />
         <Button
-          css={ButtonCSS}
           icon={<Icon icon={<ArrowRight />} />}
           onClick={handleTemplateInspect}
         />

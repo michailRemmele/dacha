@@ -1,44 +1,69 @@
-import { useCallback, useEffect, useContext, useState, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Tabs } from 'antd'
+import {
+  useCallback,
+  useEffect,
+  useContext,
+  useState,
+  ReactElement,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+import { Tabs } from 'antd';
 
-import { InspectedEntityContext } from '../../providers'
-import { persistentStorage } from '../../../persistent-storage'
-import { TabsCSS } from '../../common-styles/tabs.style'
+import { InspectedEntityContext } from '../../providers';
+import { persistentStorage } from '../../../persistent-storage';
+import { TabsCSS } from '../../common-styles/tabs.style';
 
-import { ScenesExplorer, TemplatesExplorer, AssetsExplorer } from './components'
-import { ExplorerStyled } from './explorer.style'
+import {
+  ScenesExplorer,
+  TemplatesExplorer,
+  AssetsExplorer,
+} from './components';
+import { ExplorerStyled } from './explorer.style';
 
 export const Explorer = (): ReactElement => {
-  const { t } = useTranslation()
-  const { type, path } = useContext(InspectedEntityContext)
+  const { t } = useTranslation();
+  const { type, path } = useContext(InspectedEntityContext);
 
-  const [activeTab, setActiveTab] = useState(() => persistentStorage.get('explorer.activeTab', 'scene'))
+  const [activeTab, setActiveTab] = useState(() =>
+    persistentStorage.get('explorer.activeTab', 'scene'),
+  );
 
   const handleChange = useCallback((activeKey: string) => {
-    setActiveTab(activeKey)
-    persistentStorage.set('explorer.activeTab', activeKey)
-  }, [])
+    setActiveTab(activeKey);
+    persistentStorage.set('explorer.activeTab', activeKey);
+  }, []);
 
   useEffect(() => {
     if (type) {
-      handleChange(type === 'actor' ? 'scene' : type)
+      handleChange(type === 'actor' ? 'scene' : type);
     }
-  }, [path])
+  }, [path]);
 
   return (
     <ExplorerStyled>
-      <Tabs css={TabsCSS} type="card" activeKey={activeTab} onChange={handleChange} destroyInactiveTabPane>
-        <Tabs.TabPane tab={t('explorer.tab.scenes')} key="scene">
-          <ScenesExplorer />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={t('explorer.tab.templates')} key="template">
-          <TemplatesExplorer />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={t('explorer.tab.assets')} key="asset">
-          <AssetsExplorer />
-        </Tabs.TabPane>
-      </Tabs>
+      <Tabs
+        css={TabsCSS}
+        type="card"
+        activeKey={activeTab}
+        onChange={handleChange}
+        destroyOnHidden
+        items={[
+          {
+            key: 'scene',
+            label: t('explorer.tab.scenes'),
+            children: <ScenesExplorer />,
+          },
+          {
+            key: 'template',
+            label: t('explorer.tab.templates'),
+            children: <TemplatesExplorer />,
+          },
+          {
+            key: 'asset',
+            label: t('explorer.tab.assets'),
+            children: <AssetsExplorer />,
+          },
+        ]}
+      />
     </ExplorerStyled>
-  )
-}
+  );
+};

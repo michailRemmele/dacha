@@ -57,7 +57,6 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
       >
         <Select
           css={SelectCSS}
-          size="small"
           options={options}
           onChange={handleChange}
           value={value}

@@ -90,7 +90,6 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
       </EventListStyled>
       <Button
         css={ButtonCSS}
-        size="small"
         onClick={handleAddNewBind}
         disabled={selectedOptions.length === options.length}
       >

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useContext, useState, useRef, ReactElement } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useContext,
+  useState,
+  useRef,
+  ReactElement,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 
@@ -7,7 +14,7 @@ import { InspectedEntityContext } from '../../providers';
 import { TabsCSS } from '../../common-styles/tabs.style';
 
 import { EntityInspector, ProjectSettings, Systems } from './tabs';
-import { InspectorStyled, TabContentStyled } from './inspector.style';
+import { InspectorStyled } from './inspector.style';
 
 export const Inspector = (): ReactElement => {
   const { t } = useTranslation();
@@ -42,29 +49,24 @@ export const Inspector = (): ReactElement => {
         type="card"
         activeKey={activeTab}
         onChange={handleChange}
-      >
-        <Tabs.TabPane
-          tab={t('inspector.tab.entityInspector')}
-          key="entityInspector"
-        >
-          <TabContentStyled>
-            <EntityInspector />
-          </TabContentStyled>
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={t('inspector.tab.systems')} key="systems">
-          <TabContentStyled>
-            <Systems />
-          </TabContentStyled>
-        </Tabs.TabPane>
-        <Tabs.TabPane
-          tab={t('inspector.tab.projectSettings')}
-          key="projectSettings"
-        >
-          <TabContentStyled>
-            <ProjectSettings />
-          </TabContentStyled>
-        </Tabs.TabPane>
-      </Tabs>
+        items={[
+          {
+            key: 'entityInspector',
+            label: t('inspector.tab.entityInspector'),
+            children: <EntityInspector />,
+          },
+          {
+            key: 'systems',
+            label: t('inspector.tab.systems'),
+            children: <Systems />,
+          },
+          {
+            key: 'projectSettings',
+            label: t('inspector.tab.projectSettings'),
+            children: <ProjectSettings />,
+          },
+        ]}
+      />
     </InspectorStyled>
   );
 };

@@ -25,7 +25,6 @@ export const TextArea: FC<TextAreaProps> = ({
 
   return (
     <Input.TextArea
-      size="small"
       onChange={handleChange}
       onBlur={handleBlur}
       onPressEnter={onAccept}

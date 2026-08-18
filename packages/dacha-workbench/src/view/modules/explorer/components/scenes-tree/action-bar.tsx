@@ -43,7 +43,6 @@ export const ActionBar: FC = () => {
       <Button
         css={ButtonCSS}
         icon={<Icon icon={<FilePlus />} />}
-        size="small"
         onClick={handleAddActor}
         title={t('explorer.scenes.actionBar.addActor.button.title')}
         disabled={type !== 'actor' && type !== 'scene'}
@@ -51,7 +50,6 @@ export const ActionBar: FC = () => {
       <Button
         css={ButtonCSS}
         icon={<Icon icon={<FolderPlus />} />}
-        size="small"
         onClick={handleAddScene}
         title={t('explorer.scenes.actionBar.addScene.button.title')}
       />

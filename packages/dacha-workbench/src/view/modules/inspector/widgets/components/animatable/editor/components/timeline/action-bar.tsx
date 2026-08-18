@@ -38,7 +38,6 @@ export const ActionBar: FC = () => {
       <Button
         css={ActionButtonCSS}
         icon={<Icon icon={<Plus />} />}
-        size="small"
         onClick={handleAdd}
         title={t('components.animatable.editor.frame.add.button.title')}
         disabled={framesPath === undefined}

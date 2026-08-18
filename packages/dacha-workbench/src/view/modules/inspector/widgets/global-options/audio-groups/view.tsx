@@ -40,7 +40,7 @@ export const AudioGroupsWidget: FC<WidgetProps> = () => {
           <AudioGroupPanel key={id} id={id} />
         ))}
       </GroupsStyled>
-      <Button css={ButtonCSS} size="small" onClick={handleAddNewGroup}>
+      <Button css={ButtonCSS} onClick={handleAddNewGroup}>
         {t('globalOptions.audioGroups.addNew.title')}
       </Button>
     </>

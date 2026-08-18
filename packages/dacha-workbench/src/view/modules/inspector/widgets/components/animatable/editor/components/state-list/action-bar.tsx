@@ -55,14 +55,12 @@ export const ActionBar: FC = () => {
       <Button
         css={ActionButtonCSS}
         icon={<Icon icon={<Plus />} />}
-        size="small"
         onClick={handleAddState}
         title={t('components.animatable.editor.state.add.button.title')}
       />
       <Button
         css={ActionButtonCSS}
         icon={<Icon icon={<CirclePlus />} />}
-        size="small"
         onClick={handleAddSubstate}
         title={t('components.animatable.editor.substate.add.button.title')}
         disabled={(inspectedEntity?.type !== 'state' || selectedStateConfig?.type !== 'group') && inspectedEntity?.type !== 'substate'}
@@ -70,7 +68,6 @@ export const ActionBar: FC = () => {
       <Button
         css={ActionButtonCSS}
         icon={<Icon icon={<CircleChevronRight />} />}
-        size="small"
         onClick={handleInitialSet}
         title={t('components.animatable.editor.state.setInitial.button.title')}
         disabled={inspectedEntity?.type !== 'state'}

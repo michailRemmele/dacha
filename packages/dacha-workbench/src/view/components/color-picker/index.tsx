@@ -1,17 +1,17 @@
 import { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import type { FC } from 'react';
-import { ColorPicker as ColorPickerAntd, Button } from 'antd';
+import { ColorPicker as ColorPickerAntd } from 'antd';
 import type { ColorPickerProps as ColorPickerAntdProps } from 'antd';
 
 import { debounce } from '../../../utils/debounce';
 
-import { ColorStyled, ColorButtonCSS } from './color-picker.style';
-
 const DELAY = 100;
 const CLOSE_CODES = ['Escape', 'Enter'];
 
-interface ColorPickerProps
-  extends Omit<ColorPickerAntdProps, 'onChange' | 'value'> {
+interface ColorPickerProps extends Omit<
+  ColorPickerAntdProps,
+  'onChange' | 'value'
+> {
   onChange?: (value: string) => void;
   value: string;
 }
@@ -76,24 +76,14 @@ export const ColorPicker: FC<ColorPickerProps> = ({
     [onOpenChange],
   );
 
-  const setRef = useCallback((ref: HTMLElement | null) => {
-    triggerRef.current = ref;
-  }, []);
-
   return (
-    <>
-      <ColorPickerAntd
-        onChange={handleChange}
-        onOpenChange={handleOpenChange}
-        arrow={false}
-        open={open}
-        value={inputValue}
-        {...props}
-      >
-        <Button css={ColorButtonCSS(open)} size="small" ref={setRef}>
-          <ColorStyled color={value} />
-        </Button>
-      </ColorPickerAntd>
-    </>
+    <ColorPickerAntd
+      onChange={handleChange}
+      onOpenChange={handleOpenChange}
+      arrow={false}
+      open={open}
+      value={inputValue}
+      {...props}
+    />
   );
 };

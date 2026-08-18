@@ -39,7 +39,6 @@ export const Select: FC<SelectProps> = ({
   return (
     <AntdSelect
       css={SelectCSS}
-      size="small"
       onChange={handleChange}
       options={selectOptions}
       {...props}

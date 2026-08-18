@@ -26,7 +26,6 @@ export const NumberInput: FC<NumberInputProps> = ({
     <InputNumber
       css={InputNumberCSS}
       type="number"
-      size="small"
       onChange={handleChange}
       onBlur={handleBlur}
       onPressEnter={onAccept}

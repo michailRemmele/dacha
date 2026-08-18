@@ -38,7 +38,6 @@ export const ActionBar: FC = () => {
         <Button
           css={ButtonCSS}
           icon={<Icon icon={<FilePlus />} />}
-          size="small"
           title={t('explorer.assets.actionBar.addAsset.button.title')}
         />
       </Dropdown>

@@ -29,7 +29,6 @@ export const MultiSelect: FC<MultiSelectProps> = ({
   return (
     <AntdSelect
       css={SelectCSS}
-      size="small"
       mode="multiple"
       onChange={handleChange}
       onBlur={handleBlur}

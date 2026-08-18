@@ -52,17 +52,16 @@ export const EntitySelect: FC<EntitySelectProps> = ({
       <EntityPickerStyled className={className}>
         <Select
           css={SelectCSS}
-          size="small"
           options={availableOptions}
           onChange={onAdd}
           value={value}
           open={open ? false : undefined}
           showSearch
-          dropdownRender={(menu: ReactElement): ReactElement => (
+          popupRender={(menu: ReactElement): ReactElement => (
             <>
               <div>{menu}</div>
               <FooterStyled>
-                <Button block size="small" onClick={handleOpen}>
+                <Button block onClick={handleOpen}>
                   {t('inspector.entityPicker.createNew.button.title')}
                 </Button>
               </FooterStyled>

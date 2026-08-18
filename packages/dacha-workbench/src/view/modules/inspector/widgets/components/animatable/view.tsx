@@ -23,7 +23,6 @@ export const AnimatableWidget: FC<WidgetProps> = ({ path }) => {
   return (
     <div>
       <Button
-        size="small"
         onClick={handleEditorOpen}
         block
       >

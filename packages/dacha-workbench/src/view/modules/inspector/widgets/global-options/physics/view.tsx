@@ -120,7 +120,7 @@ export const PhysicsWidget: FC<WidgetProps> = () => {
         </EmptyPlaceholderStyled>
       )}
 
-      <Button css={ButtonCSS} size="small" onClick={handleAddNewLayer}>
+      <Button css={ButtonCSS} onClick={handleAddNewLayer}>
         {t('globalOptions.physics.collisionLayers.addNew.title')}
       </Button>
 
