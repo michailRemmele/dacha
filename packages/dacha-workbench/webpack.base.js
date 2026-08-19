@@ -10,8 +10,6 @@ module.exports = {
     'react-i18next': 'ReactI18next',
     dayjs: 'dayjs',
     antd: 'antd',
-    '@emotion/react': 'emotionReact',
-    '@emotion/styled': 'emotionStyled',
   },
 
   devtool: isDev ? 'eval' : false,
@@ -42,6 +40,12 @@ module.exports = {
           },
           {
             loader: require.resolve('css-loader'),
+            options: {
+              modules: {
+                auto: /\.module\.css$/,
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+            },
           },
         ],
       },

@@ -14,12 +14,7 @@ import type {
 
 import { CollisionLayerField } from './collision-layer';
 import { CollisionMatrixField } from './collision-matrix';
-import {
-  SectionHeaderStyled,
-  LayersStyled,
-  ButtonCSS,
-  EmptyPlaceholderStyled,
-} from './physics.style';
+import styles from './physics.module.css';
 import { PHYSICS_SETTINGS_PATH, DEFAULT_LAYER } from './consts';
 
 export const PhysicsWidget: FC<WidgetProps> = () => {
@@ -99,12 +94,12 @@ export const PhysicsWidget: FC<WidgetProps> = () => {
 
   return (
     <>
-      <SectionHeaderStyled>
+      <span className={styles.sectionHeader}>
         {t('globalOptions.physics.collisionLayers.title')}
-      </SectionHeaderStyled>
+      </span>
 
       {settings?.collisionLayers.length ? (
-        <LayersStyled>
+        <div className={styles.layers}>
           {settings?.collisionLayers.map((layer, index) => (
             <CollisionLayerField
               key={layer.id}
@@ -113,20 +108,20 @@ export const PhysicsWidget: FC<WidgetProps> = () => {
               onDelete={handleDeleteLayer}
             />
           ))}
-        </LayersStyled>
+        </div>
       ) : (
-        <EmptyPlaceholderStyled>
+        <div className={styles.emptyPlaceholder}>
           {t('globalOptions.physics.collisionLayers.empty.placeholder')}
-        </EmptyPlaceholderStyled>
+        </div>
       )}
 
-      <Button css={ButtonCSS} onClick={handleAddNewLayer}>
+      <Button className={styles.button} onClick={handleAddNewLayer}>
         {t('globalOptions.physics.collisionLayers.addNew.title')}
       </Button>
 
-      <SectionHeaderStyled>
+      <span className={styles.sectionHeader}>
         {t('globalOptions.physics.collisionMatrix.title')}
-      </SectionHeaderStyled>
+      </span>
 
       <CollisionMatrixField layers={settings?.collisionLayers} />
     </>

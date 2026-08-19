@@ -11,7 +11,7 @@ import { EventType } from '../../../../../events'
 import { StepField } from './step-field'
 import { ColorField } from './color-field'
 import { ShowGridField } from './show-grid-field'
-import { GridSettingsStyled } from './grid.style'
+import styles from './grid.module.css'
 
 export const Grid: FC<ModalComponentProps> = ({ settings }) => {
   const { world } = useContext(EngineContext)
@@ -38,10 +38,10 @@ export const Grid: FC<ModalComponentProps> = ({ settings }) => {
   }, [world])
 
   return (
-    <GridSettingsStyled>
+    <div className={styles.gridSettings}>
       <StepField onChange={handleStepChange} value={settings.gridStep as number} />
       <ColorField onChange={handleColorChange} value={settings.gridColor as string} />
       <ShowGridField onChange={handleGridShowChange} value={settings.showGrid as boolean} />
-    </GridSettingsStyled>
+    </div>
   )
 }

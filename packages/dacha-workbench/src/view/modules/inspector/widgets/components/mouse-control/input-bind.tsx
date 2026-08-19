@@ -9,7 +9,7 @@ import { Panel } from '../../../components/panel';
 import { useCommander, useExtension } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
-import { PanelCSS, SectionHeaderStyled } from './mouse-control.style';
+import styles from './mouse-control.module.css';
 
 export interface InputBindProps {
   path: string[];
@@ -51,7 +51,7 @@ export const InputBind: FC<InputBindProps> = ({
 
   return (
     <Panel
-      css={PanelCSS}
+      className={styles.panel}
       size="small"
       title={t('components.mouseControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
@@ -75,9 +75,9 @@ export const InputBind: FC<InputBindProps> = ({
         options={events}
         path={bindPath}
       />
-      <SectionHeaderStyled>
+      <span className={styles.sectionHeader}>
         {t('components.mouseControl.bind.attributes.title')}
-      </SectionHeaderStyled>
+      </span>
       <MultiField path={attrsPath} />
     </Panel>
   );

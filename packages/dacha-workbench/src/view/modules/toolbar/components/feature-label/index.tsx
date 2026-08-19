@@ -1,20 +1,23 @@
-import type { FC, ReactElement } from 'react'
-import { Typography } from 'antd'
+import type { FC, ReactElement } from 'react';
+import { Typography } from 'antd';
 
-import {
-  FeatureLabelStyled,
-  TitleCSS,
-} from './feature-label.style'
+import { cx } from '../../../../../utils/cx';
+
+import styles from './feature-label.module.css';
 
 interface LabelProps {
-  title: string
-  children: ReactElement | ReactElement[]
-  className?: string
+  title: string;
+  children: ReactElement | ReactElement[];
+  className?: string;
 }
 
-export const FeatureLabel: FC<LabelProps> = ({ title, children, className }) => (
-  <FeatureLabelStyled className={className}>
-    <Typography.Text css={TitleCSS}>{title}</Typography.Text>
+export const FeatureLabel: FC<LabelProps> = ({
+  title,
+  children,
+  className,
+}) => (
+  <label className={cx(styles.featureLabel, className)}>
+    <Typography.Text className={styles.title}>{title}</Typography.Text>
     {children}
-  </FeatureLabelStyled>
-)
+  </label>
+);

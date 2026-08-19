@@ -3,12 +3,9 @@ import { Button } from 'antd';
 import { TrashBin } from '@gravity-ui/icons';
 import { Icon } from '../../../../components';
 
-import {
-  PanelStyled,
-  HeadingStyled,
-  PanelContentStyled,
-  ButtonSmallCSS,
-} from './panel.style';
+import { cx } from '../../../../../utils/cx';
+
+import styles from './panel.module.css';
 
 export interface PanelProps {
   children:
@@ -28,8 +25,22 @@ export const Panel: FC<PanelProps> = ({
   size = 'middle',
   className,
 }) => (
-  <PanelStyled size={size} className={className}>
-    <HeadingStyled size={size} contentless={!children}>
+  <div
+    className={cx(
+      styles.panel,
+      size === 'middle' && styles.panelMiddle,
+      size === 'small' && styles.panelSmall,
+      className,
+    )}
+  >
+    <div
+      className={cx(
+        styles.heading,
+        size === 'middle' && styles.headingMiddle,
+        size === 'small' && styles.headingSmall,
+        children && styles.headingBordered,
+      )}
+    >
       {extra}
 
       <span>{title}</span>
@@ -41,7 +52,7 @@ export const Panel: FC<PanelProps> = ({
           ) : null}
           {size === 'small' ? (
             <Button
-              css={ButtonSmallCSS}
+              className={styles.buttonSmall}
               style={{ width: '18px', height: '18px' }}
               type="text"
               icon={<Icon icon={<TrashBin />} />}
@@ -50,9 +61,17 @@ export const Panel: FC<PanelProps> = ({
           ) : null}
         </>
       ) : null}
-    </HeadingStyled>
+    </div>
     {children ? (
-      <PanelContentStyled size={size}>{children}</PanelContentStyled>
+      <div
+        className={cx(
+          styles.content,
+          size === 'middle' && styles.contentMiddle,
+          size === 'small' && styles.contentSmall,
+        )}
+      >
+        {children}
+      </div>
     ) : null}
-  </PanelStyled>
+  </div>
 );

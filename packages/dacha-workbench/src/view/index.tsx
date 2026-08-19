@@ -4,7 +4,7 @@ import { App as DSApp } from 'antd';
 import { BottomBar, SettingsModal } from './modules';
 import { useUnsavedChanges, useEditorReady } from './hooks';
 import { EditorLayout } from './editor-layout';
-import { EditorCSS } from './app.style';
+import styles from './app.module.css';
 
 export const App = (): ReactElement => {
   const isEditorReady = useEditorReady();
@@ -12,7 +12,7 @@ export const App = (): ReactElement => {
   useUnsavedChanges();
 
   return (
-    <DSApp css={EditorCSS}>
+    <DSApp className={styles.editor}>
       <EditorLayout />
       {isEditorReady && <BottomBar />}
       {isEditorReady && <SettingsModal />}

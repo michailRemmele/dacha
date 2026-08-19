@@ -9,7 +9,7 @@ import type { Animation } from 'dacha'
 
 import { getStatePath } from '../../utils/paths'
 import { getIdByPath } from '../../../../../../../../../utils/get-id-by-path'
-import { TreeCSS } from '../../editor.style'
+import editorStyles from '../../editor.module.css'
 import { useConfig } from '../../../../../../../../hooks'
 import { Tree } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
@@ -68,7 +68,7 @@ export const List: FC = () => {
 
   return (
     <Tree
-      css={TreeCSS}
+      className={editorStyles.tree}
       treeData={treeData}
       selectedPaths={getSelectedPaths(entitySelection.paths)}
       inspectedKey={transitionPath ? getIdByPath(transitionPath) : undefined}

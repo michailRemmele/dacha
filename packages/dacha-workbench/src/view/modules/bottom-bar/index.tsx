@@ -1,20 +1,16 @@
 import type { FC } from 'react'
 
 import { ReloadButton, CanvasCoordinates, UpdateIndicator } from './components'
-import {
-  BottomBarStyled,
-  LeftSectionStyled,
-  RightSectionStyled,
-} from './bottom-bar.style'
+import styles from './bottom-bar.module.css'
 
 export const BottomBar: FC = () => (
-  <BottomBarStyled>
-    <LeftSectionStyled>
+  <div className={styles.bottomBar}>
+    <div className={styles.leftSection}>
       <CanvasCoordinates />
-    </LeftSectionStyled>
-    <RightSectionStyled>
+    </div>
+    <div className={styles.rightSection}>
       <ReloadButton />
       <UpdateIndicator />
-    </RightSectionStyled>
-  </BottomBarStyled>
+    </div>
+  </div>
 )

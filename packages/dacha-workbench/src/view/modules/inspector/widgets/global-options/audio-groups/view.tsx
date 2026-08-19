@@ -9,7 +9,7 @@ import { addValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import type { AudioGroup } from '../../types/audio-system';
 
-import { GroupsStyled, ButtonCSS } from './audio-groups.style';
+import styles from './audio-groups.module.css';
 import { AudioGroup as AudioGroupPanel } from './audio-group';
 import { PATH } from './consts';
 
@@ -35,12 +35,12 @@ export const AudioGroupsWidget: FC<WidgetProps> = () => {
 
   return (
     <>
-      <GroupsStyled>
+      <div className={styles.groups}>
         {groups?.map(({ id }) => (
           <AudioGroupPanel key={id} id={id} />
         ))}
-      </GroupsStyled>
-      <Button css={ButtonCSS} onClick={handleAddNewGroup}>
+      </div>
+      <Button className={styles.button} onClick={handleAddNewGroup}>
         {t('globalOptions.audioGroups.addNew.title')}
       </Button>
     </>

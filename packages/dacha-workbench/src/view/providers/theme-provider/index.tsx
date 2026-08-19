@@ -4,7 +4,6 @@ import type { FC } from 'react';
 import { persistentStorage } from '../../../persistent-storage';
 
 import { ConfigProvider } from './config-provider';
-import { ThemeTokenProvider } from './theme-token-provider';
 import { ThemeContext } from './contexts';
 import type { ThemeMode, ThemePreference } from './types';
 
@@ -67,9 +66,7 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={mode}>
-      <ConfigProvider>
-        <ThemeTokenProvider>{children}</ThemeTokenProvider>
-      </ConfigProvider>
+      <ConfigProvider>{children}</ConfigProvider>
     </ThemeContext.Provider>
   );
 };

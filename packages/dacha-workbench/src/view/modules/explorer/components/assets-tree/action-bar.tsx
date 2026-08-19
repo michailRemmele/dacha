@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Dropdown } from 'antd';
 import { FilePlus } from '@gravity-ui/icons';
 
-import {
-  ActionBarStyled,
-  ButtonCSS,
-  AdditionalSectionStyled,
-} from '../../explorer.style';
+import styles from '../../explorer.module.css';
 import { useCommander } from '../../../../hooks';
 import { SchemasContext } from '../../../../providers';
 import { addAsset } from '../../../../commands/assets';
@@ -33,18 +29,18 @@ export const ActionBar: FC = () => {
   );
 
   return (
-    <ActionBarStyled>
+    <header className={styles.actionBar}>
       <Dropdown menu={{ items }} trigger={['click']}>
         <Button
-          css={ButtonCSS}
+          className={styles.button}
           icon={<Icon icon={<FilePlus />} />}
           title={t('explorer.assets.actionBar.addAsset.button.title')}
         />
       </Dropdown>
 
-      <AdditionalSectionStyled>
+      <div className={styles.additionalSection}>
         <HotkeysBar />
-      </AdditionalSectionStyled>
-    </ActionBarStyled>
+      </div>
+    </header>
   );
 };

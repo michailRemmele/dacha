@@ -8,7 +8,7 @@ import { Icon } from '../../../../../components';
 
 import { Labelled } from '../../../components/labelled';
 
-import { KeyPickerSpaceCompactCSS } from './keyboard-control.style';
+import styles from './keyboard-control.module.css';
 
 const ENTER_KEY_CODE = 'Enter';
 const SPACE_KEY_CODE = 'Space';
@@ -66,7 +66,7 @@ export const KeyPicker: FC<KeyPickerProps> = ({ value, onChange }) => {
 
   return (
     <Labelled label={t('components.keyboardControl.bind.key.title')}>
-      <Space.Compact css={KeyPickerSpaceCompactCSS}>
+      <Space.Compact className={styles.keyPicker}>
         <Input
           ref={inputRef}
           onKeyDown={handleKeyChange}

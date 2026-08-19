@@ -9,7 +9,7 @@ import { Button } from 'antd'
 import { uuid } from '../../../../../../../../../../utils/uuid'
 import type { Animation } from 'dacha'
 
-import { FormStyled, FooterStyled, ButtonCSS } from '../inspector.style'
+import inspectorStyles from '../inspector.module.css'
 import {
   Field,
   LabelledSelect,
@@ -20,7 +20,7 @@ import { AnimationEditorContext } from '../../../providers'
 import { CONDITION_TYPE } from '../../../const'
 
 import { Condition } from './condition'
-import { ConditionsStyled, ConditionStyled } from './transition-inspector.style'
+import styles from './transition-inspector.module.css'
 
 export const TransitionInspector: FC = () => {
   const { t } = useTranslation()
@@ -51,7 +51,7 @@ export const TransitionInspector: FC = () => {
   }, [dispatch, conditionsPath])
 
   return (
-    <FormStyled>
+    <form className={inspectorStyles.form}>
       <Field
         name="state"
         component={LabelledSelect}
@@ -64,26 +64,26 @@ export const TransitionInspector: FC = () => {
         path={transitionPath}
       />
 
-      <ConditionsStyled>
+      <ul className={styles.conditions}>
         {conditions.map((condition, index) => (
-          <ConditionStyled key={condition.id}>
+          <li className={styles.condition} key={condition.id}>
             <Condition
               path={conditionsPath}
               id={condition.id}
               order={index}
             />
-          </ConditionStyled>
+          </li>
         ))}
-      </ConditionsStyled>
+      </ul>
 
-      <FooterStyled>
+      <footer className={inspectorStyles.footer}>
         <Button
-          css={ButtonCSS}
+          className={inspectorStyles.button}
           onClick={handleAddCondition}
         >
           {t('components.animatable.editor.condition.add.button.title')}
         </Button>
-      </FooterStyled>
-    </FormStyled>
+      </footer>
+    </form>
   )
 }

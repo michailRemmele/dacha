@@ -10,7 +10,7 @@ import {
   FolderPlus,
 } from '@gravity-ui/icons'
 
-import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
+import styles from '../../explorer.module.css'
 import { useCommander } from '../../../../hooks'
 import { addActor, addScene } from '../../../../commands/scenes'
 import { InspectedEntityContext } from '../../../../providers'
@@ -39,30 +39,30 @@ export const ActionBar: FC = () => {
   }, [dispatch])
 
   return (
-    <ActionBarStyled>
+    <header className={styles.actionBar}>
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         icon={<Icon icon={<FilePlus />} />}
         onClick={handleAddActor}
         title={t('explorer.scenes.actionBar.addActor.button.title')}
         disabled={type !== 'actor' && type !== 'scene'}
       />
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         icon={<Icon icon={<FolderPlus />} />}
         onClick={handleAddScene}
         title={t('explorer.scenes.actionBar.addScene.button.title')}
       />
 
-      <AdditionalSectionStyled>
+      <div className={styles.additionalSection}>
         <HotkeysBar />
-      </AdditionalSectionStyled>
+      </div>
 
-      <AdditionalSectionStyled>
+      <div className={styles.additionalSection}>
         <FocusActionButton
           path={type === 'actor' ? inspectedEntityPath : undefined}
         />
-      </AdditionalSectionStyled>
-    </ActionBarStyled>
+      </div>
+    </header>
   )
 }

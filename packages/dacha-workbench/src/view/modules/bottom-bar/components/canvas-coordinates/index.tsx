@@ -17,7 +17,7 @@ import { useStore } from '../../../../hooks/use-store'
 import type { SelectSceneEvent } from '../../../../../events'
 
 import { getGridSection } from './utils'
-import { CanvasCoordinatesStyled, SectionStyled, IconsCSS } from './canvas-coordinates.style'
+import styles from './canvas-coordinates.module.css'
 
 const DELAY = 50
 
@@ -74,15 +74,15 @@ export const CanvasCoordinates: FC = () => {
   }
 
   return (
-    <CanvasCoordinatesStyled>
-      <SectionStyled>
-        <Icon css={IconsCSS} icon={<Plus />} />
+    <div className={styles.canvasCoordinates}>
+      <div className={styles.section}>
+        <Icon className={styles.icon} icon={<Plus />} />
         {`${cursorX} ${cursorY}`}
-      </SectionStyled>
-      <SectionStyled>
-        <Icon css={IconsCSS} icon={<Frame />} />
+      </div>
+      <div className={styles.section}>
+        <Icon className={styles.icon} icon={<Frame />} />
         {`${gridX} ${gridY}`}
-      </SectionStyled>
-    </CanvasCoordinatesStyled>
+      </div>
+    </div>
   )
 }

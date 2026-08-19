@@ -1,10 +1,6 @@
 import { FC, ReactElement } from 'react'
 
-import {
-  LabelledStyled,
-  LabelStyled,
-  InputStyled,
-} from './labelled.style'
+import styles from './labelled.module.css'
 
 export interface LabelledProps {
   label: string
@@ -12,12 +8,12 @@ export interface LabelledProps {
 }
 
 export const Labelled: FC<LabelledProps> = ({ label, children }) => (
-  <LabelledStyled>
-    <LabelStyled>
+  <label className={styles.labelled}>
+    <span className={styles.label}>
       {label}
-    </LabelStyled>
-    <InputStyled>
+    </span>
+    <span className={styles.input}>
       {children}
-    </InputStyled>
-  </LabelledStyled>
+    </span>
+  </label>
 )

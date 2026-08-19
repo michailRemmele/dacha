@@ -4,7 +4,7 @@ import {
   FC,
 } from 'react'
 
-import { FormStyled } from '../inspector.style'
+import styles from '../inspector.module.css'
 import { MultiField } from '../../../../../../../components/multi-field'
 import { AnimationEditorContext } from '../../../providers'
 
@@ -15,8 +15,8 @@ export const FrameInspector: FC = () => {
   const fieldsPath = useMemo(() => framePath.concat('fields'), [framePath])
 
   return (
-    <FormStyled>
+    <form className={styles.form}>
       <MultiField path={fieldsPath} />
-    </FormStyled>
+    </form>
   )
 }

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Checkbox } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
-import { CheckboxCSS } from '../../../../toolbar.style'
+import styles from '../../../../toolbar.module.css'
 import { ToolFeature } from '../../../tool-feature'
 import { EngineContext } from '../../../../../../providers'
 import { NEST_TO_SELECTED_FEATURE_NAME } from '../../consts'
@@ -31,7 +31,7 @@ export const NestToSelectedFeature: FC<NestToSelectedFeatureProps> = ({ value })
   return (
     <ToolFeature>
       <Checkbox
-        css={CheckboxCSS}
+        className={styles.checkbox}
         checked={value}
         onChange={handleChange}
       >

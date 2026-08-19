@@ -13,10 +13,7 @@ import { addValue } from '../../../../../commands'
 
 import { InputBind } from './input-bind'
 
-import {
-  EventListStyled,
-  ButtonCSS,
-} from './mouse-control.style'
+import styles from './mouse-control.module.css'
 
 export interface EventOption {
   title: string
@@ -75,7 +72,7 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
 
   return (
     <div>
-      <EventListStyled>
+      <ul className={styles.eventList}>
         {inputEventBindings.map((inputEventBind, index) => (
           <li key={inputEventBind.id}>
             <InputBind
@@ -87,9 +84,9 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
             />
           </li>
         ))}
-      </EventListStyled>
+      </ul>
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         onClick={handleAddNewBind}
         disabled={selectedOptions.length === options.length}
       >

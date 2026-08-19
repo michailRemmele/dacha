@@ -14,7 +14,10 @@ import { AnimationEditorContext } from '../../providers'
 import { Tree } from '../../../../../../../../components'
 import { CHILDREN_FIELD_MAP } from '../../const'
 
-import { TreeCSS } from './state-list.style'
+import { cx } from '../../../../../../../../../utils/cx'
+
+import editorStyles from '../../editor.module.css'
+import styles from './state-list.module.css'
 import { parseStates, getSelectedPaths } from './utils'
 
 export interface StateListProps {
@@ -68,7 +71,7 @@ export const List: FC<StateListProps> = ({ onDrop }) => {
 
   return (
     <Tree
-      css={TreeCSS(isInactive)}
+      className={cx(editorStyles.tree, styles.tree, isInactive && styles.treeInactive)}
       treeData={treeData}
       selectedPaths={getSelectedPaths(entitySelection.paths, inspectedEntity)}
       inspectedKey={selectedKey}

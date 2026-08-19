@@ -15,8 +15,9 @@ import {
 import { deleteValue } from '../../../../../commands'
 import { formatWidgetName } from '../../../../../../utils/format-widget-name'
 import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/consts'
+import { cx } from '../../../../../../utils/cx'
 
-import { PanelCSS, BehaviorFormStyled } from './behavior.style'
+import styles from './behavior.module.css'
 
 interface BehaviorPanelProps {
   id: string
@@ -45,15 +46,15 @@ export const BehaviorPanel: FC<BehaviorPanelProps> = ({
 
   return (
     <Panel
-      css={PanelCSS(!schema)}
+      className={cx(styles.panel, !schema && styles.panelNoSchema)}
       size="small"
       title={schema?.title ? t(schema.title, { ns: NAMESPACE_EXTENSION }) : formatWidgetName(name)}
       onDelete={handleDelete}
     >
       {!schema ? (
-        <BehaviorFormStyled>
+        <div className={styles.behaviorForm}>
           {t('components.behaviors.behavior.noSchema.title')}
-        </BehaviorFormStyled>
+        </div>
       ) : (schema.fields?.length || schema.view) ? (
         <BehaviorWidget
           name={name}

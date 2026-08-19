@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import type { Animation } from 'dacha'
 
-import { FormStyled } from '../inspector.style'
+import styles from '../inspector.module.css'
 import {
   Field,
   DependencyField,
@@ -90,7 +90,7 @@ export const StateInspector: FC = () => {
   }, [dispatch, state, substatesPath])
 
   return (
-    <FormStyled>
+    <form className={styles.form}>
       <Field
         name="name"
         type="string"
@@ -142,6 +142,6 @@ export const StateInspector: FC = () => {
         dependencyPath={pickModePath}
         dependencyValue={PICK_MODE.TWO_DIMENSIONAL}
       />
-    </FormStyled>
+    </form>
   )
 }

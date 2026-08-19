@@ -19,9 +19,10 @@
   },
   "scripts": {
     "start": "env NODE_ENV=development node './bin/index.js' --config 'fixture/dacha-workbench.config.js'",
-    "build": "npm run build:clean && npm run build:app && tsc -p tsconfig.esm.json",
+    "build": "npm run build:clean && npm run build:app && npm run build:esm",
     "build:clean": "rm -rf build && rm -rf esm && rm -rf tsconfig.esm.tsbuildinfo",
     "build:app": "env NODE_ENV=production webpack --config webpack.config.js",
+    "build:esm": "tsc -p tsconfig.esm.json && node ./scripts/copy-styles.js",
     "test": "jest",
     "postinstall": "node ./bin/install.js",
     "prepublishOnly": "npm run build"
@@ -55,8 +56,6 @@
     "@dnd-kit/core": "6.0.8",
     "@dnd-kit/sortable": "7.0.2",
     "@dnd-kit/utilities": "3.2.1",
-    "@emotion/react": "11.14.0",
-    "@emotion/styled": "11.14.0",
     "@gravity-ui/icons": "^2.21.0",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",

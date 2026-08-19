@@ -10,14 +10,14 @@ import { Tabs } from 'antd';
 
 import { InspectedEntityContext } from '../../providers';
 import { persistentStorage } from '../../../persistent-storage';
-import { TabsCSS } from '../../common-styles/tabs.style';
+import { tabsClassNames } from '../../common-styles/tabs';
 
 import {
   ScenesExplorer,
   TemplatesExplorer,
   AssetsExplorer,
 } from './components';
-import { ExplorerStyled } from './explorer.style';
+import styles from './explorer.module.css';
 
 export const Explorer = (): ReactElement => {
   const { t } = useTranslation();
@@ -39,9 +39,9 @@ export const Explorer = (): ReactElement => {
   }, [path]);
 
   return (
-    <ExplorerStyled>
+    <div className={styles.explorer}>
       <Tabs
-        css={TabsCSS}
+        classNames={tabsClassNames}
         type="card"
         activeKey={activeTab}
         onChange={handleChange}
@@ -64,6 +64,6 @@ export const Explorer = (): ReactElement => {
           },
         ]}
       />
-    </ExplorerStyled>
+    </div>
   );
 };

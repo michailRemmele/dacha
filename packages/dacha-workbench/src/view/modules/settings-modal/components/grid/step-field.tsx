@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputNumber, Typography } from 'antd';
 
-import { SettingsFieldStyled, SettingsLabelCSS } from './grid.style';
+import styles from './grid.module.css';
 
 const MIN_STEP = 1;
 
@@ -35,8 +35,8 @@ export const StepField: FC<StepFieldProps> = ({ value, onChange }) => {
   }, [value]);
 
   return (
-    <SettingsFieldStyled>
-      <Typography.Text css={SettingsLabelCSS}>
+    <label className={styles.settingsField}>
+      <Typography.Text className={styles.settingsLabel}>
         {t('settings.grid.modal.field.step.label')}
       </Typography.Text>
       <InputNumber
@@ -49,6 +49,6 @@ export const StepField: FC<StepFieldProps> = ({ value, onChange }) => {
         controls={false}
         precision={0}
       />
-    </SettingsFieldStyled>
+    </label>
   );
 };

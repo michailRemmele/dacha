@@ -2,7 +2,9 @@ import { FC, ReactElement } from 'react'
 import { ChevronRight } from '@gravity-ui/icons'
 
 import { Icon } from '../../../../components'
-import { RightOutlinedCSS } from './collapse-panel.style'
+import { cx } from '../../../../../utils/cx'
+
+import styles from './collapse-panel.module.css'
 
 interface PanelExpandProps {
   isActive?: boolean
@@ -17,7 +19,7 @@ export const PanelExpand: FC<PanelExpandProps> = ({
     {children}
     <Icon
       icon={<ChevronRight />}
-      css={RightOutlinedCSS(isActive)}
+      className={cx(styles.expandIcon, isActive && styles.expandIconActive)}
     />
   </>
 )

@@ -6,7 +6,7 @@ import { Panel } from '../../../components/panel';
 import { useCommander } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
-import { PanelCSS } from './audio-groups.style';
+import styles from './audio-groups.module.css';
 import { PATH } from './consts';
 
 export interface AudioGroupProps {
@@ -25,7 +25,7 @@ export const AudioGroup: FC<AudioGroupProps> = ({ id }) => {
 
   return (
     <Panel
-      css={PanelCSS}
+      className={styles.panel}
       size="small"
       title={t('globalOptions.audioGroups.panel.name.title')}
       onDelete={handleDeleteBind}

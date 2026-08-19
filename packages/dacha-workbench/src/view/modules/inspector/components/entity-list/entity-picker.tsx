@@ -9,7 +9,7 @@ import { formatWidgetName } from '../../../../../utils/format-widget-name'
 import { buildInitialState } from '../../../../../schema'
 import { EntityMultiselect } from '../entity-picker'
 
-import { EntityPickerCSS } from './entity-list.style'
+import styles from './entity-list.module.css'
 import { CONFIG_KEY_MAP, PATH_FIELD_MAP } from './consts'
 import type { EntityType } from './types'
 
@@ -57,7 +57,7 @@ export const EntityPicker: FC<EntityPickerProps> = ({
 
   return (
     <EntityMultiselect
-      css={EntityPickerCSS}
+      className={styles.entityPicker}
       options={options}
       onAdd={handleAdd}
       onCreate={onCreate}

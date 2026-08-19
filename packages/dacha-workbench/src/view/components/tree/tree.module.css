@@ -1,0 +1,23 @@
+.tree:global(.ant-tree.ant-tree-directory) {
+  :global(.tree-node_cut .ant-tree-node-content-wrapper) {
+    opacity: 0.5;
+  }
+
+  :global(
+    .ant-tree-treenode-draggable
+      .ant-tree-node-content-wrapper:has(.ant-tree-drop-indicator)
+  ) {
+    position: static;
+  }
+
+  :global(
+    .ant-tree-treenode-draggable.drop-target .ant-tree-node-content-wrapper
+  )::before {
+    background-color: var(--ant-color-info-bg-hover);
+    border-radius: var(--ant-border-radius);
+  }
+
+  :global(.ant-tree-drop-indicator) {
+    display: none;
+  }
+}

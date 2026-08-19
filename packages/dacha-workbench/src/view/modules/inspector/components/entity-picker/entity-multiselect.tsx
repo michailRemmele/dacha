@@ -9,12 +9,9 @@ import { Plus } from '@gravity-ui/icons'
 import { Icon } from '../../../../components'
 
 import { CreateNewModal } from './create-new-modal'
-import {
-  EntityPickerStyled,
-  FooterStyled,
-  SelectCSS,
-  ButtonCSS,
-} from './entity-picker.style'
+import { cx } from '../../../../../utils/cx'
+
+import styles from './entity-picker.module.css'
 
 interface EntityMultiselectProps {
   placeholder: string
@@ -62,9 +59,9 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
 
   return (
     <>
-      <EntityPickerStyled className={className}>
+      <div className={cx(styles.entityPicker, className)}>
         <Select
-          css={SelectCSS}
+          className={styles.select}
           size={size}
           options={options}
           onChange={handleChange}
@@ -77,21 +74,21 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
               <div>
                 {menu}
               </div>
-              <FooterStyled>
+              <div className={styles.footer}>
                 <Button block onClick={handleOpen}>
                   {t('inspector.entityPicker.createNew.button.title')}
                 </Button>
-              </FooterStyled>
+              </div>
             </>
           )}
         />
         <Button
-          css={ButtonCSS}
+          className={styles.button}
           size={size}
           icon={<Icon icon={<Plus />} />}
           onClick={handleAdd}
         />
-      </EntityPickerStyled>
+      </div>
 
       {open && (
         <CreateNewModal

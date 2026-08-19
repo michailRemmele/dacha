@@ -4,7 +4,7 @@ import { Icon } from '../../../../../components';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import { HolderOutlinedCSS } from './renderer.style';
+import styles from './renderer.module.css';
 import { EffectPanel, type EffectPanelProps } from './effect-panel';
 
 const ACTIVE_ENTRY_OPACITY = 0.5;
@@ -31,7 +31,7 @@ const withDraggable: WithDraggableFn = (Component) => {
         <Component
           extra={
             <Icon
-              css={HolderOutlinedCSS}
+              className={styles.holder}
               icon={<Grip />}
               {...attributes}
               {...listeners}

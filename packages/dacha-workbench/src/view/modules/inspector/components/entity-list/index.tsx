@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { SchemasDataEntry } from '../../../../providers'
 import { formatWidgetName } from '../../../../../utils/format-widget-name'
 
-import { EntityListStyled } from './entity-list.style'
+import styles from './entity-list.module.css'
 import { EntityPicker } from './entity-picker'
 import { Panels } from './panels'
 import { DraggablePanels } from './draggable-panels'
@@ -84,7 +84,7 @@ export const EntityList = ({
   }, [pathKey, entities, addedEntities, sort])
 
   return (
-    <EntityListStyled>
+    <div className={styles.entityList}>
       {draggable && panels ? (
         <DraggablePanels
           path={path}
@@ -105,6 +105,6 @@ export const EntityList = ({
         type={type}
         onCreate={onCreate}
       />
-    </EntityListStyled>
+    </div>
   )
 }

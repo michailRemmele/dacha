@@ -8,7 +8,7 @@ import { InspectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { forms } from '../../forms'
 
-import { HeaderStyled } from './entity-inspector.style'
+import styles from './entity-inspector.module.css'
 
 export const EntityInspector = (): ReactElement | null => {
   const { t } = useTranslation()
@@ -31,7 +31,7 @@ export const EntityInspector = (): ReactElement | null => {
 
   return (
     <>
-      <HeaderStyled>
+      <header className={styles.header}>
         <Typography.Text strong>
           {t(`inspector.entityInspector.${type as string}.title`)}
         </Typography.Text>
@@ -40,7 +40,7 @@ export const EntityInspector = (): ReactElement | null => {
           onClick={handleCopyId}
           title={t('inspector.entityInspector.copyIdButton.title')}
         />
-      </HeaderStyled>
+      </header>
       <FormComponent path={path} />
     </>
   )

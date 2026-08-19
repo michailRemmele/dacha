@@ -11,7 +11,7 @@ import { Icon } from '../../../../components'
 import { useSaveProject } from '../../../../hooks/use-save-project'
 import { NeedsReloadContext } from '../../../../providers'
 
-import { ReloadButtonStyled, IconCSS } from './reload-button.style'
+import styles from './reload-button.module.css'
 
 export const ReloadButton: FC = () => {
   const { t } = useTranslation()
@@ -29,10 +29,10 @@ export const ReloadButton: FC = () => {
 
   return (
     <Tooltip title={t('bottomBar.reloadWarning.button.tooltip')}>
-      <ReloadButtonStyled onClick={handleClick}>
-        <Icon css={IconCSS} icon={<TriangleExclamation />} />
+      <button type="button" className={styles.reloadButton} onClick={handleClick}>
+        <Icon className={styles.icon} icon={<TriangleExclamation />} />
         {t('bottomBar.reloadWarning.button.title')}
-      </ReloadButtonStyled>
+      </button>
     </Tooltip>
   )
 }

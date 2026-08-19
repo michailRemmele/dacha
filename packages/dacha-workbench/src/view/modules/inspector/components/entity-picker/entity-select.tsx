@@ -4,11 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Button, Select } from 'antd';
 
 import { CreateNewModal } from './create-new-modal';
-import {
-  EntityPickerStyled,
-  FooterStyled,
-  SelectCSS,
-} from './entity-picker.style';
+import { cx } from '../../../../../utils/cx';
+
+import styles from './entity-picker.module.css';
 
 interface EntitySelectProps {
   options: {
@@ -49,9 +47,9 @@ export const EntitySelect: FC<EntitySelectProps> = ({
 
   return (
     <>
-      <EntityPickerStyled className={className}>
+      <div className={cx(styles.entityPicker, className)}>
         <Select
-          css={SelectCSS}
+          className={styles.select}
           options={availableOptions}
           onChange={onAdd}
           value={value}
@@ -60,15 +58,15 @@ export const EntitySelect: FC<EntitySelectProps> = ({
           popupRender={(menu: ReactElement): ReactElement => (
             <>
               <div>{menu}</div>
-              <FooterStyled>
+              <div className={styles.footer}>
                 <Button block onClick={handleOpen}>
                   {t('inspector.entityPicker.createNew.button.title')}
                 </Button>
-              </FooterStyled>
+              </div>
             </>
           )}
         />
-      </EntityPickerStyled>
+      </div>
 
       {open && (
         <CreateNewModal

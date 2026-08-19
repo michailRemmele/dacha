@@ -4,7 +4,9 @@ import { Select as AntdSelect } from 'antd';
 import { Labelled, LabelledProps } from '../labelled';
 import type { MultiTextInputProps } from '../../../../../types/inputs';
 
-import { SelectCSS } from './multi-text-input.style';
+import { cx } from '../../../../../utils/cx';
+
+import styles from './multi-text-input.module.css';
 
 export const MultiTextInput: FC<MultiTextInputProps> = ({
   onChange = (): void => void 0,
@@ -13,6 +15,7 @@ export const MultiTextInput: FC<MultiTextInputProps> = ({
   defaultValue,
   onSelect,
   value,
+  className,
   ...props
 }) => {
   const handleChange = useCallback(
@@ -34,7 +37,8 @@ export const MultiTextInput: FC<MultiTextInputProps> = ({
 
   return (
     <AntdSelect
-      css={SelectCSS}
+      className={cx(styles.select, className)}
+      classNames={{ item: styles.item }}
       tokenSeparators={[' ', ',']}
       mode="tags"
       onChange={handleChange}

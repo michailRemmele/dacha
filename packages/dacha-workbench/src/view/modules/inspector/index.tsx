@@ -11,10 +11,10 @@ import { Tabs } from 'antd';
 
 import { persistentStorage } from '../../../persistent-storage';
 import { InspectedEntityContext } from '../../providers';
-import { TabsCSS } from '../../common-styles/tabs.style';
+import { tabsClassNames } from '../../common-styles/tabs';
 
 import { EntityInspector, ProjectSettings, Systems } from './tabs';
-import { InspectorStyled } from './inspector.style';
+import styles from './inspector.module.css';
 
 export const Inspector = (): ReactElement => {
   const { t } = useTranslation();
@@ -43,9 +43,12 @@ export const Inspector = (): ReactElement => {
   }, [path]);
 
   return (
-    <InspectorStyled>
+    <div className={styles.inspector}>
       <Tabs
-        css={TabsCSS}
+        classNames={{
+          ...tabsClassNames,
+          content: styles.tabContent,
+        }}
         type="card"
         activeKey={activeTab}
         onChange={handleChange}
@@ -67,6 +70,6 @@ export const Inspector = (): ReactElement => {
           },
         ]}
       />
-    </InspectorStyled>
+    </div>
   );
 };

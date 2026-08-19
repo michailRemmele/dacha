@@ -1,0 +1,20 @@
+.slider {
+  width: calc(100% - 12px);
+
+  margin: 4px 6px;
+}
+
+.rail {
+  width: calc(100% + 12px);
+  margin-left: -6px;
+}
+
+.track {
+  padding-left: 6px;
+  margin-left: -6px;
+  box-sizing: initial;
+}
+
+.tooltip {
+  text-align: center;
+}

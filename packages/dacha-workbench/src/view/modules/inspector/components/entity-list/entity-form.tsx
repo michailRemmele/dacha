@@ -5,7 +5,7 @@ import { Widget } from '../widget'
 import { CustomWidget } from '../custom-widget'
 
 import type { Entity } from './types'
-import { EntityFormStyled } from './entity-list.style'
+import styles from './entity-list.module.css'
 
 interface EntityFormProps extends Entity {
   path: string[]
@@ -18,9 +18,9 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path }) => {
 
   if (!schema || !namespace) {
     return (
-      <EntityFormStyled>
+      <div className={styles.entityForm}>
         {t('inspector.entityList.content.noSchema.title')}
-      </EntityFormStyled>
+      </div>
     )
   }
 
@@ -37,9 +37,9 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path }) => {
 
   if (!schema.fields || schema.fields.length === 0) {
     return (
-      <EntityFormStyled>
+      <div className={styles.entityForm}>
         {t('inspector.entityList.content.empty.title')}
-      </EntityFormStyled>
+      </div>
     )
   }
 

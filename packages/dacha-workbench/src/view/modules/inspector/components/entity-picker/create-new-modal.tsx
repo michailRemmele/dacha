@@ -19,13 +19,7 @@ import {
   getFilePath,
   getDefaultDirectory,
 } from './utils'
-import {
-  ModalContentStyled,
-  HeaderCSS,
-  HeaderIconCSS,
-  ModalFooterStyled,
-  ButtonCSS,
-} from './entity-picker.style'
+import styles from './entity-picker.module.css'
 
 interface CreateNewModalProps {
   open: boolean
@@ -89,12 +83,12 @@ export const CreateNewModal: FC<CreateNewModalProps> = ({
       onCancel={onClose}
       width={640}
     >
-      <Typography.Text css={HeaderCSS}>
-        <Icon css={HeaderIconCSS} icon={<File />} />
+      <Typography.Text className={styles.header}>
+        <Icon className={styles.headerIcon} icon={<File />} />
         {`${t('inspector.entityPicker.createNew.modal.field.path.label')} "${getFilePath(baseDirectory, subdirectory, filename)}"`}
       </Typography.Text>
 
-      <ModalContentStyled>
+      <div className={styles.modalContent}>
         <LabelledDirectoryInput
           label={t('inspector.entityPicker.createNew.modal.field.baseDirectory.label')}
           value={baseDirectory}
@@ -122,16 +116,16 @@ export const CreateNewModal: FC<CreateNewModalProps> = ({
           onChange={handleChangeFilename}
           disabled={!customizePath}
         />
-      </ModalContentStyled>
+      </div>
 
-      <ModalFooterStyled>
-        <Button css={ButtonCSS} onClick={onClose}>
+      <div className={styles.modalFooter}>
+        <Button className={styles.button} onClick={onClose}>
           {t('inspector.entityPicker.createNew.modal.button.cancel.label')}
         </Button>
-        <Button css={ButtonCSS} type="primary" onClick={handleCreate}>
+        <Button className={styles.button} type="primary" onClick={handleCreate}>
           {t('inspector.entityPicker.createNew.modal.button.create.label')}
         </Button>
-      </ModalFooterStyled>
+      </div>
     </Modal>
   )
 }

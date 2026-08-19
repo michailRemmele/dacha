@@ -1,0 +1,47 @@
+.sectionHeader {
+  display: block;
+  margin: 5px 0;
+}
+
+.layers {
+  margin-bottom: 5px;
+}
+
+.button {
+  width: 100%;
+  margin: 5px 0;
+}
+
+.removeButton {
+  flex-shrink: 0;
+}
+
+.layer {
+  display: flex;
+  align-items: center;
+
+  margin: 5px 0;
+}
+
+.fieldWrapper {
+  width: 100%;
+  margin: 0 5px;
+
+  & label {
+    margin: 0;
+  }
+}
+
+.holder {
+  padding: 2px 1px;
+  border-radius: 1px;
+
+  margin-right: 3px;
+
+  &:hover {
+    background-color: var(--ant-color-border-secondary);
+    box-shadow: 0 0 0 2px var(--ant-color-border-secondary);
+
+    cursor: grab;
+  }
+}

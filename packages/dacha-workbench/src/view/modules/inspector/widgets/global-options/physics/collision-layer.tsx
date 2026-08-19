@@ -6,11 +6,7 @@ import { Button } from 'antd';
 
 import { Field } from '../../../components/field';
 
-import {
-  LayerStyled,
-  FieldWrapperStyled,
-  FieldButtonCSS,
-} from './physics.style';
+import styles from './physics.module.css';
 import { COLLISION_LAYERS_PATH } from './consts';
 
 export interface CollisionLayerFieldProps {
@@ -36,8 +32,8 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
   }, [id]);
 
   return (
-    <LayerStyled>
-      <FieldWrapperStyled>
+    <div className={styles.layer}>
+      <div className={styles.fieldWrapper}>
         <Field
           name="name"
           type="string"
@@ -46,21 +42,21 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
           })}
           path={layerPath}
         />
-      </FieldWrapperStyled>
+      </div>
 
       <Button
-        css={FieldButtonCSS}
+        className={styles.fieldButton}
         icon={<Icon icon={<Copy />} />}
         onClick={handleCopyId}
         title={t('globalOptions.physics.collisionLayers.copy.title')}
       />
 
       <Button
-        css={FieldButtonCSS}
+        className={styles.fieldButton}
         icon={<Icon icon={<TrashBin />} />}
         onClick={() => onDelete(id)}
         title={t('globalOptions.physics.collisionLayers.delete.title')}
       />
-    </LayerStyled>
+    </div>
   );
 };

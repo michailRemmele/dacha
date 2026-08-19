@@ -16,7 +16,7 @@ import { copyByPaths, moveByPaths } from '../../commands/frames'
 import { getSelectedPaths, getFramesPath } from './utils'
 import { ActionBar } from './action-bar'
 import { List } from './list'
-import { TimelineWrapperStyled } from './timeline.style'
+import styles from './timeline.module.css'
 
 interface TimelineProps {
   className?: string
@@ -54,9 +54,9 @@ export const Timeline: FC<TimelineProps> = ({
     >
       <div className={className}>
         <ActionBar />
-        <TimelineWrapperStyled>
+        <div className={styles.timelineWrapper}>
           {!!state && <List />}
-        </TimelineWrapperStyled>
+        </div>
       </div>
     </HotkeysSectionProvider>
   )

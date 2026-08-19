@@ -1,6 +1,8 @@
 import type { FC, MouseEvent } from 'react'
 
-import { FrameButtonStyled } from './timeline.style'
+import { cx } from '../../../../../../../../../utils/cx'
+
+import styles from './timeline.module.css'
 
 interface FrameProps {
   isSelected?: boolean
@@ -20,13 +22,16 @@ export const Frame: FC<FrameProps> = ({
   const handleSelect = (event: MouseEvent<HTMLButtonElement>): void => onSelect(id, event)
 
   return (
-    <FrameButtonStyled
+    <button
       type="button"
+      className={cx(
+        styles.frameButton,
+        isSelected && styles.frameButtonSelected,
+        isCut && styles.frameButtonCut,
+      )}
       onClick={handleSelect}
-      isSelected={isSelected}
-      isCut={isCut}
     >
       {`Frame ${title}`}
-    </FrameButtonStyled>
+    </button>
   )
 }

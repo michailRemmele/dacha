@@ -11,7 +11,9 @@ import { useConfig, useCommander, useBehaviors } from '../../../../../hooks';
 import { setValue, deleteValue } from '../../../../../commands';
 import { buildInitialState } from '../../../../../../schema';
 
-import { ShaderFormStyled, PanelCSS } from './mesh.style';
+import { cx } from '../../../../../../utils/cx';
+
+import styles from './mesh.module.css';
 
 const BEHAVIOR_TYPE = 'shader';
 
@@ -72,7 +74,10 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
       {fields?.length ? <Widget fields={fields} path={path} /> : null}
 
       <Panel
-        css={PanelCSS(material?.name !== undefined && !shaderSchema)}
+        className={cx(
+          styles.panel,
+          material?.name !== undefined && !shaderSchema && styles.panelNoSchema,
+        )}
         size="small"
         title={t('components.mesh.material.panel.title')}
       >
@@ -89,9 +94,9 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
         {material ? (
           <>
             {!shaderSchema ? (
-              <ShaderFormStyled>
+              <div className={styles.shaderForm}>
                 {t('components.mesh.material.noSchema.title')}
-              </ShaderFormStyled>
+              </div>
             ) : shaderSchema.fields?.length || shaderSchema.view ? (
               <BehaviorWidget
                 name={material.name}

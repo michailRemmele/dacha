@@ -1,7 +1,7 @@
 import { useMemo, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormStyled } from '../inspector.style';
+import styles from '../inspector.module.css';
 import {
   Field,
   DependencyField,
@@ -26,7 +26,7 @@ export const SubstateInspector: FC = () => {
   const pickModePath = useMemo(() => statePath.concat('pickMode'), [statePath]);
 
   return (
-    <FormStyled>
+    <form className={styles.form}>
       <Field name="name" type="string" path={substatePath} />
       <Field name="looped" type="boolean" path={timelinePath} />
       <Field name="x" type="number" path={substatePath} />
@@ -39,6 +39,6 @@ export const SubstateInspector: FC = () => {
         initialValue={0}
         validate={fieldValueValidators.number}
       />
-    </FormStyled>
+    </form>
   );
 };
