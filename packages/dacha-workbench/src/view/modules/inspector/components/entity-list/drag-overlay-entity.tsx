@@ -2,18 +2,15 @@ import { forwardRef } from 'react'
 import { Grip } from '@gravity-ui/icons'
 import { Icon } from '../../../../components'
 
-import {
-  DragOverlayStyled,
-  HolderOutlinedCSS,
-} from './entity-list.style'
+import styles from './entity-list.module.css'
 import { EntityPanel } from './entity-panel'
 import type { EntityPanelProps } from './entity-panel'
 
 export const DragOverlayEntity = forwardRef<HTMLDivElement, EntityPanelProps>((props, ref) => (
-  <DragOverlayStyled ref={ref}>
+  <div ref={ref} className={styles.dragOverlay}>
     <EntityPanel
-      expandExtra={<Icon css={HolderOutlinedCSS} icon={<Grip />} />}
+      expandExtra={<Icon className={styles.holder} icon={<Grip />} />}
       {...props}
     />
-  </DragOverlayStyled>
+  </div>
 ))

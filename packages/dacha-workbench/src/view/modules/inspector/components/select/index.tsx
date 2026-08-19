@@ -6,7 +6,9 @@ import { Labelled, LabelledProps } from '../labelled'
 import type { SelectProps } from '../../../../../types/inputs'
 import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 
-import { SelectCSS } from './select.style'
+import { cx } from '../../../../../utils/cx'
+
+import styles from './select.module.css'
 
 export const Select: FC<SelectProps> = ({
   options = [],
@@ -15,6 +17,7 @@ export const Select: FC<SelectProps> = ({
   onAccept = (): void => void 0,
   defaultValue,
   onSelect,
+  className,
   ...props
 }) => {
   const { t } = useTranslation(NAMESPACE_EDITOR)
@@ -38,7 +41,7 @@ export const Select: FC<SelectProps> = ({
 
   return (
     <AntdSelect
-      css={SelectCSS}
+      className={cx(styles.select, className)}
       onChange={handleChange}
       options={selectOptions}
       {...props}

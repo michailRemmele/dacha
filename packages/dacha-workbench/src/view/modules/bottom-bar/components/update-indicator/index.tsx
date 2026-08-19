@@ -2,7 +2,7 @@ import { useState, useEffect, FC } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 
-import { SpinCSS } from './update-indicator.style';
+import styles from './update-indicator.module.css';
 
 export const UpdateIndicator: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +27,6 @@ export const UpdateIndicator: FC = () => {
   }
 
   return (
-    <Spin css={SpinCSS} indicator={<LoadingOutlined spin />} />
+    <Spin className={styles.spin} indicator={<LoadingOutlined spin />} />
   );
 };

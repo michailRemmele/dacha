@@ -13,7 +13,7 @@ import { CHILDREN_FIELD_MAP } from '../../consts'
 import { getSelectedPaths } from './utils'
 import { ActionBar } from './action-bar'
 import { ScenesTree } from './tree'
-import { TreeCSS } from './scene-tree.style'
+import styles from './scene-tree.module.css'
 
 const ROOT_PATH = ['scenes']
 
@@ -42,7 +42,7 @@ export const ScenesExplorer: FC = () => {
       onRemove={handleRemove}
     >
       <ActionBar />
-      <ScenesTree css={TreeCSS} onDrop={handleMoveTo} />
+      <ScenesTree className={styles.tree} onDrop={handleMoveTo} />
     </HotkeysSectionProvider>
   )
 }

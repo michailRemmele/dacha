@@ -13,7 +13,7 @@ import { addValue, setValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import { NeedsReloadContext } from '../../../../../providers';
 
-import { SectionHeaderStyled, LayersStyled, ButtonCSS } from './sorting.style';
+import styles from './sorting.module.css';
 import { DraggableSortingLayers } from './draggable-sorting-layers';
 import { SORTING_SETTINGS_PATH, LAYERS_PATH, ORDER_OPTIONS } from './consts';
 
@@ -68,18 +68,18 @@ export const SortingWidget: FC<WidgetProps> = () => {
         options={ORDER_OPTIONS}
         path={SORTING_SETTINGS_PATH}
       />
-      <SectionHeaderStyled>
+      <span className={styles.sectionHeader}>
         {t('globalOptions.sorting.layers.title')}
-      </SectionHeaderStyled>
-      <LayersStyled>
+      </span>
+      <div className={styles.layers}>
         {layers ? (
           <DraggableSortingLayers
             sortingLayers={layers}
             onDragEntity={handleDragEntity}
           />
         ) : null}
-      </LayersStyled>
-      <Button css={ButtonCSS} onClick={handleAddNewLayer}>
+      </div>
+      <Button className={styles.button} onClick={handleAddNewLayer}>
         {t('globalOptions.sorting.layers.addNew.title')}
       </Button>
     </>

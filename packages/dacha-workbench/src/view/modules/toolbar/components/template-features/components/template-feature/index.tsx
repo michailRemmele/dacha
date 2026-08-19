@@ -15,7 +15,7 @@ import { useConfig } from '../../../../../../hooks'
 import { TEMPLATE_FEATURE_NAME } from '../../consts'
 import { EventType } from '../../../../../../../events'
 
-import { SelectCSS } from './template-feature.style'
+import styles from './template-feature.module.css'
 
 interface SelectOption {
   label: string
@@ -56,7 +56,7 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
         title={t('toolbar.template.features.template.title')}
       >
         <Select
-          css={SelectCSS}
+          className={styles.select}
           options={options}
           onChange={handleChange}
           value={value}

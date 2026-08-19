@@ -5,11 +5,11 @@ import { Slider } from 'antd'
 import { Labelled, LabelledProps } from '../labelled'
 import type { RangeInputProps } from '../../../../../types/inputs'
 
-import { InputRangeCSS, TooltipStyled } from './range-input.style'
+import styles from './range-input.module.css'
 
 const tooltip = {
   formatter: (value: number | undefined): ReactNode => (
-    <TooltipStyled>{value}</TooltipStyled>
+    <div className={styles.tooltip}>{value}</div>
   ),
 }
 
@@ -25,7 +25,11 @@ export const RangeInput: FC<RangeInputProps> = ({
 
   return (
     <Slider
-      css={InputRangeCSS}
+      classNames={{
+        root: styles.slider,
+        rail: styles.rail,
+        track: styles.track,
+      }}
       range={false}
       onChange={handleChange}
       onAfterChange={onAccept}

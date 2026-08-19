@@ -1,0 +1,65 @@
+.editor {
+  display: flex;
+
+  width: 100%;
+  height: calc(90vh - 45px);
+}
+
+.editorSection {
+  display: flex;
+  flex-direction: column;
+
+  width: 67%;
+}
+
+.stateTree {
+  display: flex;
+  flex: 1;
+
+  /* timeline padding + frame padding + frame border + line height + action bar */
+  height: calc(100% - (15px * 2 + 31px * 2 + 20px + 34px));
+}
+
+.footer {
+  width: 100%;
+
+  border-top: 1px solid var(--ant-color-border);
+}
+
+.aside {
+  width: 33%;
+
+  border-left: 1px solid var(--ant-color-border);
+}
+
+.column {
+  width: 50%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.stateListColumn {
+  border-right: 1px solid var(--ant-color-border);
+}
+
+.actionBar {
+  border-bottom: 1px solid var(--ant-color-border);
+  padding: 5px;
+
+  height: 34px;
+
+  flex-shrink: 0;
+}
+
+.actionButton:not(:last-child) {
+  margin-right: 5px;
+}
+
+.tree {
+  border-radius: 0;
+
+  flex: 1;
+  overflow-y: scroll;
+}

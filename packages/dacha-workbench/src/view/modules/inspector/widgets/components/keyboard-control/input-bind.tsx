@@ -10,7 +10,7 @@ import { useCommander, useExtension } from '../../../../../hooks';
 import { deleteValue, setValue } from '../../../../../commands';
 
 import { KeyPicker } from './key-picker';
-import { SectionHeaderStyled, PanelCSS } from './keyboard-control.style';
+import styles from './keyboard-control.module.css';
 
 const KEEP_EMIT_DEPENDENCY_VALUE = true;
 
@@ -51,7 +51,7 @@ export const InputBind: FC<InputBindProps> = ({
 
   return (
     <Panel
-      css={PanelCSS}
+      className={styles.panel}
       size="small"
       title={t('components.keyboardControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
@@ -70,9 +70,9 @@ export const InputBind: FC<InputBindProps> = ({
         options={events}
         path={bindPath}
       />
-      <SectionHeaderStyled>
+      <span className={styles.sectionHeader}>
         {t('components.keyboardControl.bind.attributes.title')}
-      </SectionHeaderStyled>
+      </span>
       <MultiField path={attrsPath} />
     </Panel>
   );

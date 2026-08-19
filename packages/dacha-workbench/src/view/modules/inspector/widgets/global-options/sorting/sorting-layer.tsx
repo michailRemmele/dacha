@@ -7,11 +7,7 @@ import { Field } from '../../../components/field';
 import { useCommander } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
-import {
-  LayerStyled,
-  FieldWrapperStyled,
-  RemoveButtonCSS,
-} from './sorting.style';
+import styles from './sorting.module.css';
 import { LAYERS_PATH } from './consts';
 
 export interface SortingLayerProps {
@@ -32,18 +28,18 @@ export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
   }, [dispatch, layerPath]);
 
   return (
-    <LayerStyled>
+    <div className={styles.layer}>
       {expandExtra}
 
-      <FieldWrapperStyled>
+      <div className={styles.fieldWrapper}>
         <Field name="name" type="string" path={layerPath} />
-      </FieldWrapperStyled>
+      </div>
 
       <Button
-        css={RemoveButtonCSS}
+        className={styles.removeButton}
         icon={<Icon icon={<TrashBin />} />}
         onClick={handleDeleteBind}
       />
-    </LayerStyled>
+    </div>
   );
 };

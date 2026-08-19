@@ -7,29 +7,23 @@ import {
   Inspector,
 } from './components'
 
-import {
-  EditorStyled,
-  EditorSectionStyled,
-  StateTreeStyled,
-  StateListCSS,
-  TransitionListCSS,
-  FooterStyled,
-  AsideStyled,
-} from './editor.style'
+import { cx } from '../../../../../../../utils/cx'
+
+import styles from './editor.module.css'
 
 export const Editor: FC = () => (
-  <EditorStyled>
-    <EditorSectionStyled>
-      <StateTreeStyled>
-        <StateList css={StateListCSS} />
-        <TransitionList css={TransitionListCSS} />
-      </StateTreeStyled>
-      <FooterStyled>
+  <div className={styles.editor}>
+    <section className={styles.editorSection}>
+      <section className={styles.stateTree}>
+        <StateList className={cx(styles.column, styles.stateListColumn)} />
+        <TransitionList className={styles.column} />
+      </section>
+      <footer className={styles.footer}>
         <Timeline />
-      </FooterStyled>
-    </EditorSectionStyled>
-    <AsideStyled>
+      </footer>
+    </section>
+    <aside className={styles.aside}>
       <Inspector />
-    </AsideStyled>
-  </EditorStyled>
+    </aside>
+  </div>
 )

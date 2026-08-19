@@ -9,7 +9,7 @@ import { Button } from 'antd'
 import { Plus } from '@gravity-ui/icons'
 
 import { getStatePath } from '../../utils/paths'
-import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
+import editorStyles from '../../editor.module.css'
 import { useCommander } from '../../../../../../../../hooks'
 import { HotkeysBar, Icon } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
@@ -29,9 +29,9 @@ export const ActionBar: FC = () => {
   }, [dispatch, transitionsPath])
 
   return (
-    <ActionBarStyled>
+    <header className={editorStyles.actionBar}>
       <Button
-        css={ActionButtonCSS}
+        className={editorStyles.actionButton}
         icon={<Icon icon={<Plus />} />}
         onClick={handleAdd}
         title={t('components.animatable.editor.transition.add.button.title')}
@@ -39,6 +39,6 @@ export const ActionBar: FC = () => {
       />
 
       <HotkeysBar />
-    </ActionBarStyled>
+    </header>
   )
 }

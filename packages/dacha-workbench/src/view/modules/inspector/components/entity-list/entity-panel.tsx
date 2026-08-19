@@ -6,7 +6,7 @@ import { deleteValue } from '../../../../commands';
 
 import { CONFIG_KEY_MAP, PATH_FIELD_MAP, NON_DELETABLE_MAP } from './consts';
 import { EntityForm } from './entity-form';
-import { CollapsePanelCSS } from './entity-list.style';
+import styles from './entity-list.module.css';
 import type { Entity, EntityType } from './types';
 
 export interface EntityPanelProps {
@@ -39,7 +39,7 @@ export const EntityPanel = ({
 
   return (
     <CollapsePanel
-      css={CollapsePanelCSS(!entity.data.schema)}
+      className={!entity.data.schema ? styles.noSchema : undefined}
       title={entity.label}
       onDelete={handleDelete}
       expandExtra={expandExtra}

@@ -1,3 +1,7 @@
+:root {
+  --editor-canvas-background: #ffffff;
+}
+
 body {
   margin: 0;
 
@@ -6,6 +10,8 @@ body {
 
 .editor-theme_dark {
   color-scheme: dark;
+
+  --editor-canvas-background: #474c54;
 }
 
 #root {

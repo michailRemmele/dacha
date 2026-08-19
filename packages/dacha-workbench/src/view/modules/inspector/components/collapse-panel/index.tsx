@@ -5,7 +5,7 @@ import { PanelExtra } from './panel-extra';
 import { PanelHeader } from './panel-header';
 import { PanelExpand } from './panel-expand';
 
-import { CollapseCSS } from './collapse-panel.style';
+import styles from './collapse-panel.module.css';
 
 type ExpandIcon = (props: { isActive?: boolean }) => ReactElement;
 
@@ -54,8 +54,13 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
 
   return (
     <Collapse
-      css={CollapseCSS}
       className={className}
+      classNames={{
+        root: styles.collapse,
+        header: styles.header,
+        body: styles.body,
+        title: styles.title,
+      }}
       activeKey={activeKey}
       onChange={handleChange}
       expandIcon={expandIcon}

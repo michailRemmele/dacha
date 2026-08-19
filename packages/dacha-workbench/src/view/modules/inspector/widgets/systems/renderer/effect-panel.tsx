@@ -10,7 +10,9 @@ import { formatWidgetName } from '../../../../../../utils/format-widget-name';
 import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/consts';
 
 import { BEHAVIOR_TYPE } from './consts';
-import { PanelCSS, EffectFormStyled } from './renderer.style';
+import { cx } from '../../../../../../utils/cx';
+
+import styles from './renderer.module.css';
 
 export interface EffectPanelProps {
   id: string;
@@ -41,7 +43,7 @@ export const EffectPanel: FC<EffectPanelProps> = ({
 
   return (
     <Panel
-      css={PanelCSS(!schema)}
+      className={cx(styles.panel, !schema && styles.panelNoSchema)}
       size="small"
       title={
         schema?.title
@@ -52,9 +54,9 @@ export const EffectPanel: FC<EffectPanelProps> = ({
       extra={extra}
     >
       {!schema ? (
-        <EffectFormStyled>
+        <div className={styles.effectForm}>
           {t('systems.renderer.filterEffect.noSchema.title')}
-        </EffectFormStyled>
+        </div>
       ) : schema.fields?.length || schema.view ? (
         <BehaviorWidget
           name={name}

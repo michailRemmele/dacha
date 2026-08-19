@@ -9,7 +9,7 @@ import {
   FilePlus,
 } from '@gravity-ui/icons'
 
-import { ActionBarStyled, ButtonCSS, AdditionalSectionStyled } from '../../explorer.style'
+import styles from '../../explorer.module.css'
 import { useCommander } from '../../../../hooks'
 import { addTemplate } from '../../../../commands/templates'
 import { InspectedEntityContext } from '../../../../providers'
@@ -30,17 +30,17 @@ export const ActionBar: FC = () => {
   }, [dispatch, inspectedEntityPath, type])
 
   return (
-    <ActionBarStyled>
+    <header className={styles.actionBar}>
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         icon={<Icon icon={<FilePlus />} />}
         onClick={handleAdd}
         title={t('explorer.templates.actionBar.addTemplate.button.title')}
       />
 
-      <AdditionalSectionStyled>
+      <div className={styles.additionalSection}>
         <HotkeysBar />
-      </AdditionalSectionStyled>
-    </ActionBarStyled>
+      </div>
+    </header>
   )
 }

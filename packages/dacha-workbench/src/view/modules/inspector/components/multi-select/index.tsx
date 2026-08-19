@@ -4,7 +4,9 @@ import { Select as AntdSelect } from 'antd'
 import { Labelled, LabelledProps } from '../labelled'
 import type { MultiSelectProps } from '../../../../../types/inputs'
 
-import { SelectCSS } from './multi-select.style'
+import { cx } from '../../../../../utils/cx'
+
+import styles from './multi-select.module.css'
 
 export const MultiSelect: FC<MultiSelectProps> = ({
   options = [],
@@ -13,6 +15,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
   onAccept = (): void => void 0,
   defaultValue,
   onSelect,
+  className,
   ...props
 }) => {
   const handleChange = useCallback((values: string[]) => onChange(values), [onChange])
@@ -28,7 +31,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
 
   return (
     <AntdSelect
-      css={SelectCSS}
+      className={cx(styles.select, className)}
       mode="multiple"
       onChange={handleChange}
       onBlur={handleBlur}

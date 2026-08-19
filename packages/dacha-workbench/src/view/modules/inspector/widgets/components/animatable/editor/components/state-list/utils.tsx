@@ -5,10 +5,7 @@ import type { DataNode } from 'antd/lib/tree'
 import type { InspectedEntity } from '../../types'
 import { getStatePath, getSubstatePath } from '../../utils/paths'
 
-import {
-  ListItemInitialStyled,
-  ListItemSuffixStyled,
-} from './state-list.style'
+import styles from './state-list.module.css'
 
 export interface StateDataNode extends DataNode {
   parent?: StateDataNode
@@ -46,8 +43,8 @@ export const parseStates = (
       if (state.id === initialState) {
         return (
           <>
-            <ListItemInitialStyled>{state.name}</ListItemInitialStyled>
-            <ListItemSuffixStyled>{initialSuffix}</ListItemSuffixStyled>
+            <span className={styles.listItemInitial}>{state.name}</span>
+            <span className={styles.listItemSuffix}>{initialSuffix}</span>
           </>
         )
       }

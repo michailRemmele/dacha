@@ -4,12 +4,15 @@ import { InputNumber } from 'antd'
 import { Labelled, LabelledProps } from '../labelled'
 import type { NumberInputProps } from '../../../../../types/inputs'
 
-import { InputNumberCSS } from './number-input.style'
+import { cx } from '../../../../../utils/cx'
+
+import styles from './number-input.module.css'
 
 export const NumberInput: FC<NumberInputProps> = ({
   onChange = (): void => void 0,
   onAccept = (): void => void 0,
   onBlur = (): void => void 0,
+  className,
   ...props
 }) => {
   const handleChange = useCallback(
@@ -24,7 +27,7 @@ export const NumberInput: FC<NumberInputProps> = ({
 
   return (
     <InputNumber
-      css={InputNumberCSS}
+      className={cx(styles.inputNumber, className)}
       type="number"
       onChange={handleChange}
       onBlur={handleBlur}

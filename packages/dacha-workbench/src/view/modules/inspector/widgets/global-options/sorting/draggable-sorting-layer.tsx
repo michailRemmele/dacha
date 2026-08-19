@@ -5,7 +5,7 @@ import { Grip } from '@gravity-ui/icons';
 import { Icon } from '../../../../../components';
 
 import { SortingLayer } from './sorting-layer';
-import { HolderOutlinedCSS } from './sorting.style';
+import styles from './sorting.module.css';
 
 const ACTIVE_ENTITY_OPACITY = 0.5;
 
@@ -29,7 +29,7 @@ export const DraggableSortingLayer: FC<SortingLayerProps> = ({ id }) => {
         id={id}
         expandExtra={
           <Icon
-            css={HolderOutlinedCSS}
+            className={styles.holder}
             icon={<Grip />}
             {...attributes}
             {...listeners}

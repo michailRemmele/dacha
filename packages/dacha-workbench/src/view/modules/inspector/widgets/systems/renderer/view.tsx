@@ -27,11 +27,7 @@ import { buildInitialState } from '../../../../../../schema';
 import { DraggableEffectPanel } from './draggable-effect-panel';
 import { DragOverlayEntry } from './drag-overlay-entry';
 import { BEHAVIOR_TYPE } from './consts';
-import {
-  RendererStyled,
-  EntityPickerCSS,
-  SectionHeaderStyled,
-} from './renderer.style';
+import styles from './renderer.module.css';
 
 interface FilterEffectEntry {
   id: string;
@@ -125,12 +121,12 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
   );
 
   return (
-    <RendererStyled>
+    <div className={styles.renderer}>
       {fields?.length ? <Widget fields={fields} path={path} /> : null}
 
-      <SectionHeaderStyled>
+      <span className={styles.sectionHeader}>
         {t('systems.renderer.filterEffect.title')}
-      </SectionHeaderStyled>
+      </span>
 
       <div>
         <DndContext
@@ -164,7 +160,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
       </div>
 
       <EntityMultiselect
-        css={EntityPickerCSS}
+        className={styles.entityPicker}
         size="small"
         placeholder={t('systems.renderer.filterEffect.addNew.title')}
         options={availableEffects}
@@ -172,6 +168,6 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
         onAdd={handleAddEffect}
         onCreate={handleCreate}
       />
-    </RendererStyled>
+    </div>
   );
 };

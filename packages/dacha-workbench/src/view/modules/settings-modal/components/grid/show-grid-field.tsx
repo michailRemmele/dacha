@@ -6,10 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Checkbox, Typography } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
-import {
-  SettingsFieldStyled,
-  SettingsLabelCSS,
-} from './grid.style'
+import styles from './grid.module.css'
 
 interface ShowGridFieldProps {
   value: boolean
@@ -27,14 +24,14 @@ export const ShowGridField: FC<ShowGridFieldProps> = ({
   }, [onChange])
 
   return (
-    <SettingsFieldStyled>
-      <Typography.Text css={SettingsLabelCSS}>
+    <label className={styles.settingsField}>
+      <Typography.Text className={styles.settingsLabel}>
         {t('settings.grid.modal.field.showGrid.label')}
       </Typography.Text>
       <Checkbox
         checked={value}
         onChange={handleChange}
       />
-    </SettingsFieldStyled>
+    </label>
   )
 }

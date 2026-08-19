@@ -1,0 +1,32 @@
+.explorer {
+  padding-top: 5px;
+
+  height: 100%;
+
+  border-right: 1px solid var(--ant-color-border);
+
+  & :global(.ant-tree-node-content-wrapper) {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.actionBar {
+  border-bottom: 1px solid var(--ant-color-border);
+  padding: 5px;
+
+  height: 34px;
+}
+
+.button:not(:last-child) {
+  margin-right: 5px;
+}
+
+.additionalSection {
+  display: inline-block;
+
+  margin-left: 3px;
+  padding: 0 8px;
+  border-left: 1px solid var(--ant-color-border);
+}

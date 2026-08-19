@@ -4,7 +4,7 @@ import { Input, Button, Space } from 'antd';
 import { FolderOpen } from '@gravity-ui/icons';
 import { Icon } from '../icon';
 
-import { SpaceCompactCSS } from './file-picker.style';
+import styles from './file-picker.module.css';
 
 export interface FilePickerProps extends Omit<
   HTMLProps<HTMLInputElement>,
@@ -27,7 +27,7 @@ export const FilePicker: FC<FilePickerProps> = ({
   );
 
   return (
-    <Space.Compact css={SpaceCompactCSS}>
+    <Space.Compact className={styles.spaceCompact}>
       <Input onChange={handleChange} {...props} />
       <Button icon={<Icon icon={<FolderOpen />} />} onClick={onOpen} />
     </Space.Compact>

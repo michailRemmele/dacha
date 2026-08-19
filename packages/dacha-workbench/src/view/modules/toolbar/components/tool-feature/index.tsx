@@ -1,13 +1,13 @@
 import type { FC, ReactElement } from 'react'
 
-import { ToolFeatureStyled } from './tool-feature.style'
+import styles from './tool-feature.module.css'
 
 interface ToolFeatureProps {
   children: ReactElement | ReactElement[]
 }
 
 export const ToolFeature: FC<ToolFeatureProps> = ({ children }) => (
-  <ToolFeatureStyled>
+  <div className={styles.toolFeature}>
     {children}
-  </ToolFeatureStyled>
+  </div>
 )

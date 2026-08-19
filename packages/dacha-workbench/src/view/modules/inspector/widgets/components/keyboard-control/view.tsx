@@ -11,10 +11,7 @@ import type { WidgetProps } from '../../../../../../types/widget-schema'
 import { useConfig, useCommander } from '../../../../../hooks'
 import { addValue } from '../../../../../commands'
 
-import {
-  EventListStyled,
-  ButtonCSS,
-} from './keyboard-control.style'
+import styles from './keyboard-control.module.css'
 import { InputBind } from './input-bind'
 import type { InputEventBind } from './types'
 
@@ -43,7 +40,7 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
 
   return (
     <div>
-      <EventListStyled>
+      <ul className={styles.eventList}>
         {addedKeys.map(({ id, key }, index) => (
           <li key={id}>
             <InputBind
@@ -54,9 +51,9 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
             />
           </li>
         ))}
-      </EventListStyled>
+      </ul>
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         onClick={handleAddNewBind}
       >
         {t('components.keyboardControl.bind.addNew.title')}

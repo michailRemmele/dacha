@@ -28,7 +28,7 @@ import type { SelectSceneEvent } from '../../../events'
 import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id'
 
 import { features } from './components'
-import { ToolbarStyled, ToolGroupCSS } from './toolbar.style'
+import styles from './toolbar.module.css'
 
 export const Toolbar: FC = () => {
   const { t } = useTranslation()
@@ -88,9 +88,9 @@ export const Toolbar: FC = () => {
   }, [world])
 
   return (
-    <ToolbarStyled>
+    <div className={styles.toolbar}>
       <Radio.Group
-        css={ToolGroupCSS}
+        className={styles.toolGroup}
         buttonStyle="solid"
         value={selectedTool}
         onChange={handleSelect}
@@ -111,6 +111,6 @@ export const Toolbar: FC = () => {
       </Radio.Group>
 
       {features[selectedTool] && !disabled ? (<ToolFeatures features={toolFeatures} />) : null}
-    </ToolbarStyled>
+    </div>
   )
 }

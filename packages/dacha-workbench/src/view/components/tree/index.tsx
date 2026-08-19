@@ -16,7 +16,9 @@ import { arraysEqual } from '../../../utils/arrays-equal';
 
 import { useTreeData } from './hooks/use-tree-data';
 import { ListWrapper } from './list-wrapper';
-import { TreeCSS } from './tree.style';
+import { cx } from '../../../utils/cx';
+
+import styles from './tree.module.css';
 
 interface TreeNodeTitleProps {
   title?: ReactNode | ((data: ExplorerDataNode) => ReactNode);
@@ -148,8 +150,7 @@ export const Tree: FC<TreeProps> = ({
   return (
     <ListWrapper ref={containerRef} onClickOutside={onClickOutside}>
       <AntdTree.DirectoryTree
-        css={TreeCSS}
-        className={className}
+        className={cx(styles.tree, className)}
         expandedKeys={expandedKeys}
         selectedKeys={selectedKeys}
         onSelect={handleSelect}

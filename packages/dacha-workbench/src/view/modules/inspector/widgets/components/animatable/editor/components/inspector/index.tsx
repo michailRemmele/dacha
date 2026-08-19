@@ -13,11 +13,7 @@ import { SubstateInspector } from './substate-inspector'
 import { TransitionInspector } from './transition-inspector'
 import { FrameInspector } from './frame-inspector'
 
-import {
-  InspectorStyled,
-  HeaderStyled,
-  InspectorContentStyled,
-} from './inspector.style'
+import styles from './inspector.module.css'
 
 export const Inspector: FC = () => {
   const { t } = useTranslation()
@@ -26,22 +22,22 @@ export const Inspector: FC = () => {
   const entity = useConfig(inspectedEntity?.path)
 
   return (
-    <InspectorStyled>
-      <HeaderStyled>
+    <div className={styles.inspector}>
+      <header className={styles.header}>
         {!!entity && (
           <Typography.Text strong>
             {t(`components.animatable.editor.inspector.${inspectedEntity?.type as string}.title`)}
           </Typography.Text>
         )}
-      </HeaderStyled>
+      </header>
       {!!entity && (
-        <InspectorContentStyled>
+        <div className={styles.inspectorContent}>
           {inspectedEntity?.type === 'state' && <StateInspector />}
           {inspectedEntity?.type === 'transition' && <TransitionInspector />}
           {inspectedEntity?.type === 'frame' && <FrameInspector />}
           {inspectedEntity?.type === 'substate' && <SubstateInspector />}
-        </InspectorContentStyled>
+        </div>
       )}
-    </InspectorStyled>
+    </div>
   )
 }

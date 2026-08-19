@@ -1,8 +1,6 @@
 import type { Config } from 'dacha';
 import type { Resource } from 'i18next';
-import type { GlobalToken } from 'antd';
 
-import type { CustomToken } from '../view/themes/types';
 import type { ThemePreference } from '../view/providers/theme-provider/types';
 import '../events';
 
@@ -73,8 +71,6 @@ declare global {
     ReactDOM: typeof import('react-dom');
     antd: typeof import('antd');
     ReactI18next: typeof import('react-i18next');
-    emotionReact: typeof import('@emotion/react');
-    emotionStyled: typeof import('@emotion/styled');
     dayjs: typeof import('dayjs');
     i18next: typeof import('i18next').default;
     extension?: {
@@ -85,8 +81,4 @@ declare global {
     };
     DachaWorkbench: Record<string, unknown>;
   }
-}
-
-declare module '@emotion/react' {
-  export interface Theme extends GlobalToken, CustomToken {}
 }

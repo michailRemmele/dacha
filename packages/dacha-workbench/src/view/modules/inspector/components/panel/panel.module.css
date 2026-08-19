@@ -1,0 +1,48 @@
+.panel {
+  border: 1px solid var(--ant-color-border);
+}
+
+.panelMiddle {
+  border-radius: var(--ant-border-radius-lg);
+}
+
+.panelSmall {
+  border-radius: var(--ant-border-radius);
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headingMiddle {
+  padding: 2px 5px;
+}
+
+.headingSmall {
+  padding: 0 5px;
+}
+
+.headingBordered {
+  border-bottom: 1px solid var(--ant-color-border);
+}
+
+.content {
+  background-color: var(--ant-color-bg-container);
+  border-radius: 0 0 var(--ant-border-radius-lg) var(--ant-border-radius-lg);
+}
+
+.contentMiddle {
+  padding: 5px;
+}
+
+.contentSmall {
+  padding: 3px 5px;
+}
+
+.buttonSmall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

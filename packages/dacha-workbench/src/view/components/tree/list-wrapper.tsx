@@ -1,6 +1,6 @@
 import { useCallback, forwardRef, ReactElement } from 'react'
 
-import { ListWrapperStyled } from './list-wrapper.style'
+import styles from './list-wrapper.module.css'
 
 interface ListWrapperProps {
   children: ReactElement | ReactElement[]
@@ -18,12 +18,13 @@ export const ListWrapper = forwardRef<HTMLDivElement, ListWrapperProps>(({
   }, [onClickOutside])
 
   return (
-    <ListWrapperStyled
+    <div
       ref={ref}
+      className={styles.listWrapper}
       role="presentation"
       onClick={handleClick}
     >
       {children}
-    </ListWrapperStyled>
+    </div>
   )
 })

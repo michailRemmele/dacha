@@ -9,7 +9,7 @@ import { Window } from './components';
 import { Explorer } from './modules/explorer';
 import { Inspector } from './modules/inspector';
 import { Toolbar } from './modules/toolbar';
-import { EditorLayoutStyled, CanvasStyled, ToolbarStyled } from './app.style';
+import styles from './app.module.css';
 
 const MIN_EXPLORER_WIDTH = 250;
 const MIN_INSPECTOR_WIDTH = 300;
@@ -42,23 +42,25 @@ export const EditorLayout = (): ReactElement => {
   const sizes = loadPanelSizes();
 
   return (
-    <EditorLayoutStyled>
+    <div className={styles.editorLayout}>
       <Splitter onResizeEnd={savePanelSizes}>
         <Splitter.Panel defaultSize={sizes.explorer} min={MIN_EXPLORER_WIDTH}>
           <Window>{isEditorReady && <Explorer />}</Window>
         </Splitter.Panel>
         <Splitter.Panel min={MIN_CANVAS_WIDTH}>
           <Window>
-            <CanvasStyled>
-              <ToolbarStyled>{isEditorReady && <Toolbar />}</ToolbarStyled>
-              <div id={CANVAS_ROOT} />
-            </CanvasStyled>
+            <div className={styles.canvas}>
+              <div className={styles.toolbar}>
+                {isEditorReady && <Toolbar />}
+              </div>
+              <div id={CANVAS_ROOT} className={styles.canvasRoot} />
+            </div>
           </Window>
         </Splitter.Panel>
         <Splitter.Panel defaultSize={sizes.inspector} min={MIN_INSPECTOR_WIDTH}>
           <Window>{isEditorReady && <Inspector />}</Window>
         </Splitter.Panel>
       </Splitter>
-    </EditorLayoutStyled>
+    </div>
   );
 };

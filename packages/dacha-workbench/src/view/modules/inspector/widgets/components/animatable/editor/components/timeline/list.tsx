@@ -14,7 +14,7 @@ import { useConfig } from '../../../../../../../../hooks'
 
 import { getSelectedPaths, getFramesPath, getParentId } from './utils'
 import { Frame } from './frame'
-import { ListStyled, ListItemStyled } from './timeline.style'
+import styles from './timeline.module.css'
 
 export const List: FC = () => {
   const {
@@ -104,9 +104,9 @@ export const List: FC = () => {
   }
 
   return (
-    <ListStyled onClick={handleClick}>
+    <ul className={styles.list} onClick={handleClick}>
       {frames?.map(({ id }, index) => (
-        <ListItemStyled key={id}>
+        <li className={styles.listItem} key={id}>
           <Frame
             id={id}
             title={String(index)}
@@ -114,8 +114,8 @@ export const List: FC = () => {
             isSelected={selectedIds.includes(id)}
             isCut={cutIds?.includes(id)}
           />
-        </ListItemStyled>
+        </li>
       ))}
-    </ListStyled>
+    </ul>
   )
 }

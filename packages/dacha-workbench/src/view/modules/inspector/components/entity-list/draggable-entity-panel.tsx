@@ -4,7 +4,7 @@ import { Icon } from '../../../../components'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-import { HolderOutlinedCSS } from './entity-list.style'
+import styles from './entity-list.module.css'
 import { EntityPanel } from './entity-panel'
 import type { EntityPanelProps } from './entity-panel'
 
@@ -38,7 +38,7 @@ const withDraggable: WithDraggableFn = (Component) => {
       >
         <Component
           expandExtra={(
-            <Icon css={HolderOutlinedCSS} icon={<Grip />} {...attributes} {...listeners} />
+            <Icon className={styles.holder} icon={<Grip />} {...attributes} {...listeners} />
           )}
           {...props}
         />

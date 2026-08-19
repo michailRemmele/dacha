@@ -1,0 +1,54 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  background-color: var(--ant-color-bg-container);
+  border-top: 1px solid var(--ant-color-border);
+}
+
+.editorLayout {
+  width: 100%;
+  height: calc(100% - 25px);
+}
+
+.canvas {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  user-select: none;
+
+  position: relative;
+}
+
+.canvasRoot {
+  overflow: hidden;
+
+  flex: 1;
+
+  background-color: var(--editor-canvas-background);
+
+  &:global(.canvas-root_tool_hand) {
+    cursor: grab;
+  }
+
+  &:global(.canvas-root_tool_pointer) {
+    cursor: default;
+  }
+
+  &:global(.canvas-root_tool_zoom.canvas-root_feature-direction_in) {
+    cursor: zoom-in;
+  }
+
+  &:global(.canvas-root_tool_zoom.canvas-root_feature-direction_out) {
+    cursor: zoom-out;
+  }
+}
+
+.toolbar {
+  height: 35px;
+}

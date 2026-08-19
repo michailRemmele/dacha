@@ -14,7 +14,7 @@ import {
 import type { Animation } from 'dacha'
 
 import { getStatePath } from '../../utils/paths'
-import { ActionBarStyled, ActionButtonCSS } from '../../editor.style'
+import editorStyles from '../../editor.module.css'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { HotkeysBar, Icon } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
@@ -51,22 +51,22 @@ export const ActionBar: FC = () => {
   }, [dispatch, statePath])
 
   return (
-    <ActionBarStyled>
+    <header className={editorStyles.actionBar}>
       <Button
-        css={ActionButtonCSS}
+        className={editorStyles.actionButton}
         icon={<Icon icon={<Plus />} />}
         onClick={handleAddState}
         title={t('components.animatable.editor.state.add.button.title')}
       />
       <Button
-        css={ActionButtonCSS}
+        className={editorStyles.actionButton}
         icon={<Icon icon={<CirclePlus />} />}
         onClick={handleAddSubstate}
         title={t('components.animatable.editor.substate.add.button.title')}
         disabled={(inspectedEntity?.type !== 'state' || selectedStateConfig?.type !== 'group') && inspectedEntity?.type !== 'substate'}
       />
       <Button
-        css={ActionButtonCSS}
+        className={editorStyles.actionButton}
         icon={<Icon icon={<CircleChevronRight />} />}
         onClick={handleInitialSet}
         title={t('components.animatable.editor.state.setInitial.button.title')}
@@ -74,6 +74,6 @@ export const ActionBar: FC = () => {
       />
 
       <HotkeysBar />
-    </ActionBarStyled>
+    </header>
   )
 }

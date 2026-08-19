@@ -13,13 +13,7 @@ import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 import { Entry } from './entry'
 import type { MultiFieldEntry } from './types'
 
-import {
-  MultiFieldStyled,
-  FieldsStyled,
-  NoFieldsStyled,
-  FieldStyled,
-  ButtonCSS,
-} from './multi-field.style'
+import styles from './multi-field.module.css'
 
 interface MultiFieldProps {
   path: string[]
@@ -41,32 +35,32 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
   }, [dispatch, path])
 
   return (
-    <MultiFieldStyled>
+    <div className={styles.multiField}>
       {!values.length && (
-        <NoFieldsStyled>
+        <div className={styles.noFields}>
           {t('inspector.multifield.noFields.title')}
-        </NoFieldsStyled>
+        </div>
       )}
       {Boolean(values.length) && (
-        <FieldsStyled>
+        <ul className={styles.fields}>
           {values.map((entry, index) => (
-            <FieldStyled key={entry.id}>
+            <li className={styles.field} key={entry.id}>
               <Entry
                 path={path}
                 id={entry.id}
                 type={entry.type}
                 order={index}
               />
-            </FieldStyled>
+            </li>
           ))}
-        </FieldsStyled>
+        </ul>
       )}
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         onClick={handleAddField}
       >
         {t('inspector.multifield.addNew.value.title')}
       </Button>
-    </MultiFieldStyled>
+    </div>
   )
 }

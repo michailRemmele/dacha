@@ -1,4 +1,5 @@
 import { useMemo, useCallback, FC } from 'react';
+import type { CSSProperties } from 'react';
 import { Checkbox } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
@@ -9,15 +10,9 @@ import type {
   CollisionMatrix,
 } from '../../types/physics-system';
 
-import {
-  MatrixStyled,
-  MatrixRowStyled,
-  MatrixHeaderRowStyled,
-  MatrixLabelStyled,
-  MatrixCellStyled,
-  MatrixHeaderLabelStyled,
-  MatrixSpacerCellStyled,
-} from './physics.style';
+import { cx } from '../../../../../../utils/cx';
+
+import styles from './physics.module.css';
 import { COLLISION_MATRIX_PATH, DEFAULT_LAYER } from './consts';
 
 export interface CollisionMatrixProps {
@@ -64,23 +59,29 @@ export const CollisionMatrixField: FC<CollisionMatrixProps> = ({ layers }) => {
   }
 
   return (
-    <MatrixStyled size={formattedLayers.length}>
-      <MatrixHeaderRowStyled>
-        <MatrixLabelStyled />
+    <div
+      className={styles.matrix}
+      style={{ '--matrix-size': formattedLayers.length } as CSSProperties}
+    >
+      <div className={styles.matrixRow}>
+        <div className={styles.matrixLabel} />
         {columnLayers.map((layer) => (
-          <MatrixHeaderLabelStyled key={layer.id}>
+          <div
+            className={cx(styles.matrixLabel, styles.matrixHeaderLabel)}
+            key={layer.id}
+          >
             {layer.name}
-          </MatrixHeaderLabelStyled>
+          </div>
         ))}
-      </MatrixHeaderRowStyled>
+      </div>
 
       {formattedLayers.map((rowLayer, rowIndex) => (
-        <MatrixRowStyled key={rowLayer.id}>
-          <MatrixLabelStyled>{rowLayer.name}</MatrixLabelStyled>
+        <div className={styles.matrixRow} key={rowLayer.id}>
+          <div className={styles.matrixLabel}>{rowLayer.name}</div>
           {columnLayers
             .slice(0, formattedLayers.length - rowIndex)
             .map((columnLayer) => (
-              <MatrixCellStyled key={columnLayer.id}>
+              <div className={styles.matrixCell} key={columnLayer.id}>
                 <Checkbox
                   title={`${rowLayer.name} ✕ ${columnLayer.name}`}
                   checked={matrix?.[rowLayer.id]?.[columnLayer.id] ?? true}
@@ -92,15 +93,15 @@ export const CollisionMatrixField: FC<CollisionMatrixProps> = ({ layers }) => {
                     )
                   }
                 />
-              </MatrixCellStyled>
+              </div>
             ))}
           {columnLayers
             .slice(formattedLayers.length - rowIndex)
             .map((columnLayer) => (
-              <MatrixSpacerCellStyled key={columnLayer.id} />
+              <div className={styles.matrixSpacerCell} key={columnLayer.id} />
             ))}
-        </MatrixRowStyled>
+        </div>
       ))}
-    </MatrixStyled>
+    </div>
   );
 };

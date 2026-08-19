@@ -1,0 +1,35 @@
+.inspector {
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+
+  height: 34px;
+
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--ant-color-border);
+}
+
+.inspectorContent {
+  overflow-y: scroll;
+
+  height: calc(100% - 34px);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+
+  padding: 5px 10px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  margin-top: 5px;
+}

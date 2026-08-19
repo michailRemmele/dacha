@@ -14,7 +14,7 @@ import { Icon } from '../icon'
 
 import { HotkeysSectionContext } from '../../providers'
 
-import { ButtonCSS } from './hotkeys-bar.style'
+import styles from './hotkeys-bar.module.css'
 
 export const HotkeysBar: FC = () => {
   const { t } = useTranslation()
@@ -26,25 +26,25 @@ export const HotkeysBar: FC = () => {
   return (
     <>
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         icon={<Icon icon={<Scissors />} />}
         onClick={cut}
         title={t('explorer.actionBar.cut.button.title')}
       />
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         icon={<Icon icon={<Copy />} />}
         onClick={copy}
         title={t('explorer.actionBar.copy.button.title')}
       />
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         icon={<Icon icon={<Files />} />}
         onClick={paste}
         title={t('explorer.actionBar.paste.button.title')}
       />
       <Button
-        css={ButtonCSS}
+        className={styles.button}
         icon={<Icon icon={<TrashBin />} />}
         onClick={remove}
         title={t('explorer.actionBar.delete.button.title')}

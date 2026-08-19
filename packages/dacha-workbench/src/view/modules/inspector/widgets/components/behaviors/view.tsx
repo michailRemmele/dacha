@@ -16,7 +16,7 @@ import {
 import { addValue } from '../../../../../commands'
 import { buildInitialState } from '../../../../../../schema'
 
-import { BehaviorsStyled, EntityPickerCSS } from './behavior.style'
+import styles from './behavior.module.css'
 import { BehaviorPanel } from './behavior-panel'
 import type { BehaviorEntry } from './types'
 
@@ -53,7 +53,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
   }, [])
 
   return (
-    <BehaviorsStyled>
+    <div className={styles.behaviors}>
       <div>
         {selectedBehaviors.map(({ id, name }) => (
           <BehaviorPanel
@@ -66,7 +66,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
       </div>
 
       <EntityMultiselect
-        css={EntityPickerCSS}
+        className={styles.entityPicker}
         size="small"
         placeholder={t('components.behaviors.behavior.addNew.title')}
         options={availableBehaviors}
@@ -74,6 +74,6 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
         onAdd={handleAddBehavior}
         onCreate={handleCreate}
       />
-    </BehaviorsStyled>
+    </div>
   )
 }

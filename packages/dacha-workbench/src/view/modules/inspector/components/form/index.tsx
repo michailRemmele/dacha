@@ -1,13 +1,13 @@
 import { FC, ReactElement } from 'react'
 
-import { FormStyled } from './form.style'
+import styles from './form.module.css'
 
 export interface FormProps {
   children: ReactElement | (ReactElement | null)[] | null
 }
 
 export const Form: FC<FormProps> = ({ children }) => (
-  <FormStyled>
+  <div className={styles.form}>
     {children}
-  </FormStyled>
+  </div>
 )
