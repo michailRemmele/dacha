@@ -25,6 +25,8 @@ jobs:
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
 
+      - run: npx tsc -b
+
       - run: npm run lint
 
       - run: npm test
