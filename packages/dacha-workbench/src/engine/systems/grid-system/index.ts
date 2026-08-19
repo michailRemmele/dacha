@@ -16,6 +16,8 @@ interface PrevState {
   gridStep?: number;
   gridColor?: string;
   zoom?: number;
+  windowSizeX?: number;
+  windowSizeY?: number;
 }
 
 export class GridSystem extends SceneSystem {
@@ -72,7 +74,7 @@ export class GridSystem extends SceneSystem {
           ];
 
           this.gridView = gridView;
-          this.handleWindowResize();
+          this.updateGridSettings();
 
           return gridView;
         },
@@ -83,27 +85,7 @@ export class GridSystem extends SceneSystem {
     );
 
     this.prevState = {};
-
-    window.addEventListener('resize', this.handleWindowResize);
   }
-
-  onWorldDestroy(): void {
-    window.removeEventListener('resize', this.handleWindowResize);
-  }
-
-  private handleWindowResize = (): void => {
-    const { windowSizeX, windowSizeY, zoom } =
-      this.mainActor.getComponent(Camera);
-
-    if (!this.gridView) {
-      return;
-    }
-
-    const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
-
-    uniforms.u_graphic_resolution = [windowSizeX, windowSizeY];
-    this.gridView.setSize(windowSizeX / zoom, windowSizeY / zoom);
-  };
 
   private isGridChanged(): boolean {
     const settings = this.mainActor.getComponent(Settings);
@@ -111,19 +93,24 @@ export class GridSystem extends SceneSystem {
     const gridStep = settings.data.gridStep as number;
     const gridColor = settings.data.gridColor as string;
 
-    const { zoom } = this.mainActor.getComponent(Camera);
+    const { zoom, windowSizeX, windowSizeY } =
+      this.mainActor.getComponent(Camera);
 
     let isChanged = false;
 
     if (
       zoom !== this.prevState.zoom ||
       gridStep !== this.prevState.gridStep ||
-      gridColor !== this.prevState.gridColor
+      gridColor !== this.prevState.gridColor ||
+      windowSizeX !== this.prevState.windowSizeX ||
+      windowSizeY !== this.prevState.windowSizeY
     ) {
       isChanged = true;
       this.prevState.zoom = zoom;
       this.prevState.gridStep = gridStep;
       this.prevState.gridColor = gridColor;
+      this.prevState.windowSizeX = windowSizeX;
+      this.prevState.windowSizeY = windowSizeY;
     }
 
     return isChanged;
@@ -139,10 +126,12 @@ export class GridSystem extends SceneSystem {
     const gridStep = settings.data.gridStep as number;
     const gridColor = settings.data.gridColor as string;
 
-    const { zoom } = this.mainActor.getComponent(Camera);
+    const { zoom, windowSizeX, windowSizeY } =
+      this.mainActor.getComponent(Camera);
 
     const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
 
+    uniforms.u_graphic_resolution = [windowSizeX, windowSizeY];
     uniforms.u_camera_zoom = zoom * devicePixelRatio;
     uniforms.u_spacing = gridStep;
     uniforms.u_line_color = new Color(gridColor).toArray();

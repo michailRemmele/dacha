@@ -21,17 +21,16 @@ interface CameraSystemOptions extends WorldSystemOptions {
  */
 export class CameraSystem extends WorldSystem {
   private actorQuery?: ActorQuery;
-  private window: Window & HTMLElement;
+  private window: HTMLElement;
   private cameraApi: CameraAPI;
+  private resizeObserver: ResizeObserver;
 
   constructor(options: WorldSystemOptions) {
     super();
 
     const { windowNodeId, world } = options as CameraSystemOptions;
 
-    const windowNode = getWindowNode(windowNodeId);
-
-    this.window = windowNode as Window & HTMLElement;
+    this.window = getWindowNode(windowNodeId);
 
     this.cameraApi = new CameraAPI({
       onCameraUpdate: this.handleCameraUpdate,
@@ -39,7 +38,8 @@ export class CameraSystem extends WorldSystem {
     });
     world.systemApi.register(this.cameraApi);
 
-    window.addEventListener('resize', this.handleWindowResize);
+    this.resizeObserver = new ResizeObserver(this.handleWindowResize);
+    this.resizeObserver.observe(this.window);
   }
 
   onSceneEnter(scene: Scene): void {
@@ -57,12 +57,12 @@ export class CameraSystem extends WorldSystem {
   }
 
   onWorldDestroy(): void {
-    window.removeEventListener('resize', this.handleWindowResize);
+    this.resizeObserver.disconnect();
   }
 
   private handleWindowResize = (): void => {
-    const width = this.window.innerWidth || this.window.clientWidth;
-    const height = this.window.innerHeight || this.window.clientHeight;
+    const width = this.window.clientWidth;
+    const height = this.window.clientHeight;
 
     const camera = this.findCurrentCamera();
     if (!camera) {
