@@ -1,5 +1,5 @@
 :root {
-  --editor-canvas-background: #ffffff;
+  --editor-canvas-background: #e9e7e1;
 }
 
 body {
@@ -11,7 +11,7 @@ body {
 .editor-theme_dark {
   color-scheme: dark;
 
-  --editor-canvas-background: #474c54;
+  --editor-canvas-background: #2c2d27;
 }
 
 #root {
