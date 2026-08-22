@@ -1,12 +1,9 @@
-const { app, Menu, clipboard } = require('electron');
+const { app, Menu } = require('electron');
 
-const MESSAGES = require('./messages');
+const menuActions = require('./menu-actions');
 
-module.exports = (window, menuState) => {
-  const debugLayers = menuState.debugLayers ?? [];
-  const themePreference = menuState.themePreference ?? 'system';
-
-  return Menu.buildFromTemplate([
+module.exports = (window) =>
+  Menu.buildFromTemplate([
     {
       label: app.name,
       submenu: [{ role: 'quit' }],
@@ -17,7 +14,7 @@ module.exports = (window, menuState) => {
         {
           label: 'Save',
           accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S',
-          click: () => window.webContents.send(MESSAGES.SAVE),
+          click: () => menuActions.save(window),
         },
       ],
     },
@@ -27,63 +24,36 @@ module.exports = (window, menuState) => {
         {
           label: 'Undo',
           accelerator: 'CmdOrCtrl+Z',
-          click: () => window.webContents.send(MESSAGES.UNDO),
+          click: () => menuActions.undo(window),
         },
         {
           label: 'Redo',
           accelerator: 'CmdOrCtrl+Shift+Z',
-          click: () => window.webContents.send(MESSAGES.REDO),
+          click: () => menuActions.redo(window),
         },
 
         { type: 'separator' },
 
         {
           label: 'Cut',
-          accelerator: 'CmdOrCtrl+X',
-          click: () => {
-            if (window.webContents.isDevToolsFocused()) {
-              window.webContents.devToolsWebContents?.cut?.();
-              return;
-            }
-
-            window.webContents.send(MESSAGES.CUT);
-          },
+          accelerator: process.platform === 'darwin' ? 'Cmd+X' : undefined,
+          click: () => menuActions.cut(window),
         },
         {
           label: 'Copy',
-          accelerator: 'CmdOrCtrl+C',
-          click: () => {
-            if (window.webContents.isDevToolsFocused()) {
-              window.webContents.devToolsWebContents?.copy?.();
-              return;
-            }
-
-            window.webContents.send(MESSAGES.COPY);
-          },
+          accelerator: process.platform === 'darwin' ? 'Cmd+C' : undefined,
+          click: () => menuActions.copy(window),
         },
         {
           label: 'Paste',
-          accelerator: 'CmdOrCtrl+V',
-          click: () => {
-            if (window.webContents.isDevToolsFocused()) {
-              window.webContents.devToolsWebContents?.paste?.();
-              return;
-            }
-
-            window.webContents.send(MESSAGES.PASTE, clipboard.readText());
-          },
+          accelerator: process.platform === 'darwin' ? 'Cmd+V' : undefined,
+          click: () => menuActions.paste(window),
         },
         {
           label: 'Delete',
           accelerator:
             process.platform === 'darwin' ? 'Cmd+Backspace' : 'Delete',
-          click: () => {
-            if (window.webContents.isDevToolsFocused()) {
-              return;
-            }
-
-            window.webContents.send(MESSAGES.DELETE);
-          },
+          click: () => menuActions.deleteSelection(window),
         },
         { role: 'selectAll' },
       ],
@@ -98,23 +68,8 @@ module.exports = (window, menuState) => {
         { type: 'separator' },
 
         {
-          label: 'Grid Settings',
-          click: () => window.webContents.send(MESSAGES.SETTINGS, 'grid'),
-        },
-
-        {
-          label: 'Debug Layers',
-          submenu: debugLayers.map((layer) => ({
-            label: layer.title,
-            type: 'checkbox',
-            checked: layer.enabled,
-            click: (menuItem) =>
-              window.webContents.send(
-                MESSAGES.TOGGLE_DEBUG_LAYER,
-                layer.id,
-                menuItem.checked,
-              ),
-          })),
+          label: 'Settings',
+          click: () => menuActions.openSettings(window, 'grid'),
         },
 
         { type: 'separator' },
@@ -126,20 +81,6 @@ module.exports = (window, menuState) => {
         { type: 'separator' },
 
         { role: 'togglefullscreen' },
-
-        { type: 'separator' },
-
-        {
-          label: 'Theme',
-          submenu: ['system', 'light', 'dark'].map((preference) => ({
-            label: preference.charAt(0).toUpperCase() + preference.slice(1),
-            type: 'radio',
-            checked: themePreference === preference,
-            click: () =>
-              window.webContents.send(MESSAGES.SWITCH_THEME, preference),
-          })),
-        },
-      ].filter(Boolean),
+      ],
     },
   ]);
-};

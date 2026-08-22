@@ -47,18 +47,6 @@ export class DebugVisualizer extends SceneSystem {
       }
     });
 
-    window.electron.updateMenuState(
-      'debugLayers',
-      modules.map((module) => ({
-        id: module.id,
-        title: module.title,
-        enabled: persistentStorage.get(
-          `canvas.debugVisualizer.layers.${module.id}`,
-          false,
-        ),
-      })),
-    );
-
     window.electron.onToggleDebugLayer((id, enabled) => {
       persistentStorage.set(`canvas.debugVisualizer.layers.${id}`, enabled);
 

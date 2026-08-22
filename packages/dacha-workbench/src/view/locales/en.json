@@ -84,14 +84,44 @@
     "multifield.noFields.title": "No Fields"
   },
   "settings": {
+    "modal.title": "Settings",
+
     "grid.modal.title": "Grid Settings",
     "grid.modal.field.step.label": "Step",
     "grid.modal.field.showGrid.label": "Show Grid",
-    "grid.modal.field.color.label": "Color"
+    "grid.modal.field.color.label": "Color",
+
+    "debugLayers.modal.title": "Debug Layers",
+
+    "theme.modal.title": "Theme",
+    "theme.modal.field.system.label": "System",
+    "theme.modal.field.light.label": "Light",
+    "theme.modal.field.dark.label": "Dark"
   },
   "bottomBar": {
     "reloadWarning.button.tooltip": "To apply changes, the editor should be reloaded.",
     "reloadWarning.button.title": "Reload Required"
+  },
+  "titleBar": {
+    "menu.file.title": "File",
+    "menu.file.save.title": "Save",
+    "menu.file.exit.title": "Exit",
+
+    "menu.edit.title": "Edit",
+    "menu.edit.undo.title": "Undo",
+    "menu.edit.redo.title": "Redo",
+    "menu.edit.cut.title": "Cut",
+    "menu.edit.copy.title": "Copy",
+    "menu.edit.paste.title": "Paste",
+    "menu.edit.delete.title": "Delete",
+
+    "menu.view.title": "View",
+    "menu.view.settings.title": "Settings",
+
+    "windowControls.minimize.title": "Minimize",
+    "windowControls.maximize.title": "Maximize",
+    "windowControls.restore.title": "Restore",
+    "windowControls.close.title": "Close"
   },
 
   "components.animatable.openEditorButton.title": "Open Animation Editor",

@@ -5,7 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const { execSync } = require('child_process');
 
-// const getAppIconPath = require('./utils/get-app-icon-path')
+const getAppIconPath = require('./utils/get-app-icon-path');
 const buildPackage = require('./utils/build-package');
 
 // Exit because we don't need to install editor during editor development process
@@ -29,8 +29,7 @@ const packageOptions = {
   arch: os.arch(),
   overwrite: true,
   prune: false,
-  // TODO: Add and configure editor icon set
-  // icon: getAppIconPath(),
+  icon: getAppIconPath(os.platform()),
 };
 
 const appFiles = [
@@ -40,6 +39,7 @@ const appFiles = [
   'index.js',
   'webpack.base.js',
   'webpack.extension.config.js',
+  'app-icons',
 ];
 
 // Copy resources
