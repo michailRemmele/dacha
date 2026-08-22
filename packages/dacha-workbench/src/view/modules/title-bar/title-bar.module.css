@@ -1,0 +1,31 @@
+.titleBar {
+  display: grid;
+  grid-template-columns: minmax(78px, 1fr) auto minmax(78px, 1fr);
+  align-items: stretch;
+  flex-shrink: 0;
+
+  height: 32px;
+
+  background: var(--ant-color-bg-container);
+  border-bottom: 1px solid var(--ant-color-border);
+
+  -webkit-app-region: drag;
+}
+
+.left,
+.right {
+  display: flex;
+  align-items: stretch;
+}
+
+.right {
+  justify-content: flex-end;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+}

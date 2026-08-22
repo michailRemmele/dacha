@@ -1,0 +1,54 @@
+.timelineWrapper {
+  /* timeline padding + frame padding + frame border + line height */
+  height: calc(15px * 2 + 31px * 2 + 20px);
+}
+
+.list {
+  display: flex;
+  height: 100%;
+
+  list-style: none;
+
+  overflow-x: scroll;
+
+  padding: 15px;
+  margin: 0;
+}
+
+.listItem {
+  flex-shrink: 0;
+}
+
+.listItem + .listItem {
+  margin-left: 15px;
+}
+
+.frameButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 0 30px;
+
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--ant-border-radius-lg);
+  background: transparent;
+
+  cursor: pointer;
+
+  user-select: none;
+}
+
+.frameButtonSelected {
+  border-color: var(--ant-color-primary);
+  background-color: var(--ant-color-primary);
+
+  color: var(--ant-color-white);
+}
+
+.frameButtonCut {
+  opacity: 0.5;
+}

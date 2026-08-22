@@ -1,0 +1,25 @@
+.appMenu {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+
+  -webkit-app-region: no-drag;
+}
+
+.menuButton {
+  height: 100%;
+  padding: 0 10px;
+  border: none;
+  background: transparent;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+  color: var(--ant-color-text-secondary);
+
+  &:hover {
+    background: var(--ant-color-fill-secondary);
+    color: var(--ant-color-text);
+  }
+}

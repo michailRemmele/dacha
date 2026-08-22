@@ -1,0 +1,25 @@
+.multiField {
+  margin: 5px 0;
+}
+
+.fields {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.field {
+  margin-bottom: 5px;
+}
+
+.noFields {
+  margin: 8px 0;
+
+  text-align: center;
+}
+
+.button {
+  width: 100%;
+
+  margin-top: 5px;
+}

@@ -1,0 +1,28 @@
+.collapse {
+  margin: 5px 0;
+}
+
+.header {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.body {
+  padding: 5px;
+}
+
+.title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  padding-right: 5px;
+}
+
+.expandIcon svg {
+  transition: transform 0.24s;
+}
+
+.expandIconActive svg {
+  transform: rotate(90deg);
+}

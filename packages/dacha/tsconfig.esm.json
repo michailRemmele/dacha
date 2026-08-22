@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": "./src",
+
+    "types": ["jest"]
+  },
+  "exclude": ["node_modules", "src/__mocks__", "**/*.test.ts"]
+}

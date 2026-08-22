@@ -1,0 +1,42 @@
+.entityPicker {
+  display: flex;
+}
+
+.footer {
+  border-top: 1px solid var(--ant-color-border);
+  padding: 8px 6px 6px 6px;
+  margin-top: 8px;
+}
+
+.select {
+  width: 100%;
+}
+
+.button {
+  flex-shrink: 0;
+
+  margin-left: 5px;
+}
+
+.modalContent {
+  padding: 5px 10px;
+}
+
+.header {
+  display: block;
+  padding: 10px 10px 0;
+
+  color: var(--ant-color-text-secondary);
+}
+
+.headerIcon {
+  margin-right: 5px;
+}
+
+.modalFooter {
+  border-top: 1px solid var(--ant-color-border);
+  padding: 8px 6px 6px 6px;
+
+  display: flex;
+  justify-content: flex-end;
+}

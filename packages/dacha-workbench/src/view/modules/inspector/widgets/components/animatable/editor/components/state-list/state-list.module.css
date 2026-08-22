@@ -1,0 +1,27 @@
+.listItemInitial {
+  margin-right: 5px;
+}
+
+.listItemSuffix {
+  color: var(--ant-color-text-secondary);
+}
+
+.tree {
+  & :global(.ant-tree-treenode-selected .ant-tree-title span) {
+    color: inherit;
+  }
+}
+
+.treeInactive {
+  &:global(.ant-tree.ant-tree-directory) {
+    :global(.ant-tree-treenode-selected .ant-tree-node-content-wrapper:hover)::before,
+    :global(.ant-tree-treenode-selected .ant-tree-node-content-wrapper)::before {
+      background: var(--ant-color-border-secondary);
+    }
+
+    :global(.ant-tree-treenode .ant-tree-node-content-wrapper.ant-tree-node-selected),
+    :global(.ant-tree-treenode-selected .ant-tree-switcher) {
+      color: inherit;
+    }
+  }
+}

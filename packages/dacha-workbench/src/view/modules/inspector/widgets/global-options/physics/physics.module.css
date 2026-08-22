@@ -1,0 +1,76 @@
+.sectionHeader {
+  display: block;
+  margin: 5px 0;
+}
+
+.layers {
+  margin-bottom: 5px;
+}
+
+.emptyPlaceholder {
+  padding: 10px 0;
+  text-align: center;
+}
+
+.button {
+  width: 100%;
+  margin: 5px 0;
+}
+
+.fieldButton {
+  flex-shrink: 0;
+  margin-left: 5px;
+}
+
+.layer {
+  display: flex;
+  align-items: center;
+
+  margin: 5px 0;
+}
+
+.fieldWrapper {
+  width: 100%;
+  margin-left: 5px;
+
+  & label {
+    margin: 0;
+  }
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: max-content repeat(var(--matrix-size), 20px);
+  margin: 10px 5px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.matrixRow {
+  display: contents;
+}
+
+.matrixLabel {
+  padding-right: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.matrixHeaderLabel {
+  padding-right: 0;
+  padding-bottom: 8px;
+
+  writing-mode: vertical-rl;
+}
+
+.matrixCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.matrixSpacerCell {
+  visibility: hidden;
+}

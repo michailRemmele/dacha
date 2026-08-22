@@ -1,0 +1,35 @@
+.noSchema {
+  box-shadow: 0 0 0 2px var(--ant-color-error);
+  background-color: var(--ant-color-error-bg);
+}
+
+.entityList {
+  margin: 10px 0;
+}
+
+.entityForm {
+  text-align: center;
+}
+
+.dragOverlay {
+  background-color: var(--ant-color-bg-container);
+  border-radius: var(--ant-border-radius-lg);
+}
+
+.holder {
+  padding: 2px 1px;
+  border-radius: 1px;
+
+  margin-right: 3px;
+
+  &:hover {
+    background-color: var(--ant-color-border-secondary);
+    box-shadow: 0 0 0 2px var(--ant-color-border-secondary);
+
+    cursor: grab;
+  }
+}
+
+.entityPicker {
+  margin-top: 10px;
+}

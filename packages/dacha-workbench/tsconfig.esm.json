@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./esm/",
+
+    "skipLibCheck": true,
+
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": "./src"
+  },
+  "references": [{ "path": "../dacha/tsconfig.esm.json" }],
+  "include": ["src", "src/**/*.json"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
+}

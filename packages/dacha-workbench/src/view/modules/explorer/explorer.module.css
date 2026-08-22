@@ -1,0 +1,40 @@
+.explorer {
+  padding-top: 5px;
+
+  height: 100%;
+
+  border-right: 1px solid var(--ant-color-border);
+
+  & :global(.ant-tree-node-content-wrapper) {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.actionBar {
+  display: flex;
+  overflow: scroll;
+  scrollbar-width: none;
+
+  border-bottom: 1px solid var(--ant-color-border);
+  padding: 5px;
+
+  height: 35px;
+
+  & > * {
+    flex-shrink: 0;
+  }
+}
+
+.button:not(:last-child) {
+  margin-right: 5px;
+}
+
+.additionalSection {
+  display: inline-flex;
+
+  margin-left: 3px;
+  padding: 0 8px;
+  border-left: 1px solid var(--ant-color-border);
+}

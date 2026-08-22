@@ -1,0 +1,26 @@
+.bottomBar {
+  display: flex;
+  align-items: center;
+
+  background-color: var(--ant-color-fill-quaternary);
+
+  height: 25px;
+  padding: 0 10px;
+
+  border-top: 1px solid var(--ant-color-border);
+}
+
+.leftSection {
+  display: flex;
+  justify-content: flex-start;
+
+  flex: 1;
+}
+
+.rightSection {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  flex: 1;
+}

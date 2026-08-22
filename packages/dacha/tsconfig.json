@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/",
+
+    "declaration": true,
+
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    "strict": true,
+
+    "skipLibCheck": true,
+
+    "target": "ESNext",
+    "esModuleInterop": true,
+
+    "resolveJsonModule": true,
+
+    "types": ["jest", "node"],
+
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ]
+  },
+  "include": ["src/**/*"]
+}
