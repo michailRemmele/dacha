@@ -13,10 +13,18 @@
 }
 
 .actionBar {
+  display: flex;
+  overflow: scroll;
+  scrollbar-width: none;
+
   border-bottom: 1px solid var(--ant-color-border);
   padding: 5px;
 
-  height: 34px;
+  height: 35px;
+
+  & > * {
+    flex-shrink: 0;
+  }
 }
 
 .button:not(:last-child) {
@@ -24,7 +32,7 @@
 }
 
 .additionalSection {
-  display: inline-block;
+  display: inline-flex;
 
   margin-left: 3px;
   padding: 0 8px;
