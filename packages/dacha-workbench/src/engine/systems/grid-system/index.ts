@@ -131,7 +131,10 @@ export class GridSystem extends SceneSystem {
 
     const uniforms = this.gridView.filters[0].resources.myUniforms.uniforms;
 
-    uniforms.u_graphic_resolution = [windowSizeX, windowSizeY];
+    uniforms.u_graphic_resolution = [
+      (windowSizeX * devicePixelRatio) / 2,
+      (windowSizeY * devicePixelRatio) / 2,
+    ];
     uniforms.u_camera_zoom = zoom * devicePixelRatio;
     uniforms.u_spacing = gridStep;
     uniforms.u_line_color = new Color(gridColor).toArray();

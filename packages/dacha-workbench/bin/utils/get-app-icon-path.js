@@ -1,5 +1,18 @@
-const path = require('path')
+const path = require('path');
 
-const getAppIconPath = () => path.resolve('app-icons', 'icon.icns')
+const ICON_EXTENSION_BY_PLATFORM = {
+  darwin: 'icns',
+  win32: 'ico',
+};
 
-module.exports = getAppIconPath
+const getAppIconPath = (platform) => {
+  const extension = ICON_EXTENSION_BY_PLATFORM[platform];
+
+  if (!extension) {
+    return undefined;
+  }
+
+  return path.resolve(__dirname, '..', '..', 'app-icons', `icon.${extension}`);
+};
+
+module.exports = getAppIconPath;

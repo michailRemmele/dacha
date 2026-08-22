@@ -10,6 +10,7 @@ export interface Extension {
 }
 
 export interface EditorConfig {
+  projectName: string;
   projectConfig: string;
   assetsRoot: string;
   contextRoot: string;
@@ -37,11 +38,26 @@ export interface EditorConfig {
 export interface ElectronAPI {
   getProjectConfig: () => Config;
   getEditorConfig: () => EditorConfig;
+  getPlatform: () => NodeJS.Platform;
   openAssetsDialog: (extensions?: string[]) => Promise<string | undefined>;
   openPathSelectionDialog: () => Promise<string | undefined>;
   saveProjectConfig: (config: Config) => void;
   setUnsavedChanges: (unsavedChanges: boolean) => void;
-  updateMenuState: (field: string, value: unknown) => void;
+  triggerSave: () => void;
+  triggerUndo: () => void;
+  triggerRedo: () => void;
+  triggerCut: () => void;
+  triggerCopy: () => void;
+  triggerPaste: () => void;
+  triggerDelete: () => void;
+  openSettings: (type: string) => void;
+  toggleDebugLayer: (id: string, enabled: boolean) => void;
+  switchTheme: (preference: ThemePreference) => void;
+  quitApp: () => void;
+  minimizeWindow: () => void;
+  toggleMaximizeWindow: () => void;
+  closeWindow: () => void;
+  onWindowStateChanged: (callback: (isMaximized: boolean) => void) => () => void;
   onSave: (callback: () => void) => void;
   onSettings: (callback: (type: string) => void) => void;
   onSwitchTheme: (callback: (theme: ThemePreference) => void) => () => void;

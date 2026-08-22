@@ -12,6 +12,7 @@ const getEditorConfig = () => {
 
   return {
     ...config,
+    projectName: path.basename(process.cwd()),
     projectConfig: normalizePath(config.projectConfig),
     assetsRoot: normalizePath(config.assetsRoot),
     contextRoot: config.contextRoot ?? './src',

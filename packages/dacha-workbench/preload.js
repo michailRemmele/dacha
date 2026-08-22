@@ -18,6 +18,7 @@ const editorConfig = getEditorConfig();
 
 contextBridge.exposeInMainWorld('electron', {
   getEditorConfig: () => editorConfig,
+  getPlatform: () => process.platform,
   getProjectConfig,
   saveProjectConfig,
   loadPersistentStorage,
@@ -31,8 +32,27 @@ contextBridge.exposeInMainWorld('electron', {
   setUnsavedChanges: (unsavedChanges) => {
     ipcRenderer.send(MESSAGES.SET_UNSAVED_CHANGES, unsavedChanges);
   },
-  updateMenuState: (field, value) => {
-    ipcRenderer.send(MESSAGES.UPDATE_MENU_STATE, field, value);
+  triggerSave: () => ipcRenderer.send(MESSAGES.SAVE),
+  triggerUndo: () => ipcRenderer.send(MESSAGES.UNDO),
+  triggerRedo: () => ipcRenderer.send(MESSAGES.REDO),
+  triggerCut: () => ipcRenderer.send(MESSAGES.CUT),
+  triggerCopy: () => ipcRenderer.send(MESSAGES.COPY),
+  triggerPaste: () => ipcRenderer.send(MESSAGES.PASTE),
+  triggerDelete: () => ipcRenderer.send(MESSAGES.DELETE),
+  openSettings: (type) => ipcRenderer.send(MESSAGES.SETTINGS, type),
+  toggleDebugLayer: (id, enabled) =>
+    ipcRenderer.send(MESSAGES.TOGGLE_DEBUG_LAYER, id, enabled),
+  switchTheme: (preference) =>
+    ipcRenderer.send(MESSAGES.SWITCH_THEME, preference),
+  quitApp: () => ipcRenderer.send(MESSAGES.QUIT_APP),
+  minimizeWindow: () => ipcRenderer.send(MESSAGES.WINDOW_MINIMIZE),
+  toggleMaximizeWindow: () =>
+    ipcRenderer.send(MESSAGES.WINDOW_MAXIMIZE_TOGGLE),
+  closeWindow: () => ipcRenderer.send(MESSAGES.WINDOW_CLOSE),
+  onWindowStateChanged: (callback) => {
+    const handler = (_, isMaximized) => callback(isMaximized);
+    ipcRenderer.on(MESSAGES.WINDOW_STATE_CHANGED, handler);
+    return () => ipcRenderer.removeListener(MESSAGES.WINDOW_STATE_CHANGED, handler);
   },
   onSave: (callback) => ipcRenderer.on(MESSAGES.SAVE, callback),
   onSettings: (callback) =>

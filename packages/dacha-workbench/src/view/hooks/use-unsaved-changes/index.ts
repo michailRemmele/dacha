@@ -1,72 +1,78 @@
-import { useEffect, useContext, useRef } from 'react'
+import { useEffect, useContext, useRef, useState } from 'react';
 
-import { EventType } from '../../../events'
-import { useConfig } from '../use-config'
-import { useSaveProject } from '../use-save-project'
-import { EngineContext } from '../../providers'
-import { persistentStorage } from '../../../persistent-storage'
+import { EventType } from '../../../events';
+import { useConfig } from '../use-config';
+import { useSaveProject } from '../use-save-project';
+import { EngineContext } from '../../providers';
+import { persistentStorage } from '../../../persistent-storage';
 
 // Listens for project changes and notifies main process if there are any unsaved changes or not
-export const useUnsavedChanges = (): void => {
-  const context = useContext(EngineContext)
+export const useUnsavedChanges = (): boolean => {
+  const context = useContext(EngineContext);
 
-  const projectConfig = useConfig([])
-  const { save } = useSaveProject()
+  const projectConfig = useConfig([]);
+  const { save } = useSaveProject();
 
-  const didMountRef = useRef(false)
-  const unsavedChangesRef = useRef(false)
+  const didMountRef = useRef(false);
+  const unsavedChangesRef = useRef(false);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
 
   useEffect(() => {
     if (projectConfig === undefined) {
-      return
+      return;
     }
     if (!didMountRef.current) {
-      didMountRef.current = true
-      return
+      didMountRef.current = true;
+      return;
     }
 
     if (!unsavedChangesRef.current) {
-      window.electron.setUnsavedChanges(true)
-      unsavedChangesRef.current = true
+      window.electron.setUnsavedChanges(true);
+      unsavedChangesRef.current = true;
+      setUnsavedChanges(true);
     }
-  }, [projectConfig])
+  }, [projectConfig]);
 
   useEffect(() => {
     const handleUnload = (): void => {
-      persistentStorage.saveImmediately()
-      window.electron.setUnsavedChanges(false)
-    }
+      persistentStorage.saveImmediately();
+      window.electron.setUnsavedChanges(false);
+    };
 
-    window.addEventListener('beforeunload', handleUnload)
-    return (): void => window.removeEventListener('beforeunload', handleUnload)
-  }, [])
+    window.addEventListener('beforeunload', handleUnload);
+    return (): void => window.removeEventListener('beforeunload', handleUnload);
+  }, []);
 
   useEffect(() => {
     const handleBlur = (): void => {
-      persistentStorage.saveImmediately()
-      save()
-    }
+      persistentStorage.saveImmediately();
+      save();
+    };
 
-    window.addEventListener('blur', handleBlur)
-    return (): void => window.removeEventListener('blur', handleBlur)
-  }, [])
+    window.addEventListener('blur', handleBlur);
+    return (): void => window.removeEventListener('blur', handleBlur);
+  }, []);
 
   useEffect(() => {
     if (!context) {
-      return (): void => {}
+      return (): void => {};
     }
 
-    const { world } = context
+    const { world } = context;
 
     const handleGameStateUpdate = (): void => {
       if (unsavedChangesRef.current) {
-        window.electron.setUnsavedChanges(false)
-        unsavedChangesRef.current = false
+        window.electron.setUnsavedChanges(false);
+        unsavedChangesRef.current = false;
+        setUnsavedChanges(false);
       }
-    }
+    };
 
-    world.addEventListener(EventType.SaveProject, handleGameStateUpdate)
+    world.addEventListener(EventType.SaveProject, handleGameStateUpdate);
 
-    return (): void => world.removeEventListener(EventType.SaveProject, handleGameStateUpdate)
-  }, [context])
-}
+    return (): void =>
+      world.removeEventListener(EventType.SaveProject, handleGameStateUpdate);
+  }, [context]);
+
+  return unsavedChanges;
+};

@@ -26,10 +26,6 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   const [mode, setMode] = useState<ThemeMode>(() => getThemeMode(preference));
 
   useEffect(() => {
-    window.electron.updateMenuState('themePreference', preference);
-  }, []);
-
-  useEffect(() => {
     document.body.classList.toggle('editor-theme_dark', mode === 'dark');
   }, [mode]);
 
