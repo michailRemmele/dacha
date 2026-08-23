@@ -1,6 +1,6 @@
 .listWrapper {
-  height: calc(100% - 34px);
+  height: calc(100% - 31px);
   overflow-y: scroll;
 
-  padding: 5px 0 15px 0;
+  padding-bottom: 15px;
 }

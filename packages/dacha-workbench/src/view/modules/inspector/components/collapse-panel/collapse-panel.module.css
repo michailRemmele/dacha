@@ -1,17 +1,19 @@
 .collapse {
-  margin: 5px 0;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  border-radius: 0;
+  margin: 0 -5px 0 -10px;
 }
 
-.header {
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
+.headerLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 
-.body {
-  padding: 5px;
+  overflow: hidden;
 }
 
 .title {
+  font-weight: var(--ant-font-weight-strong);
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

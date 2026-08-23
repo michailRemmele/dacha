@@ -1,6 +1,6 @@
 import { useContext, useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Dropdown } from 'antd';
+import { Dropdown } from 'antd';
 import { FilePlus } from '@gravity-ui/icons';
 
 import styles from '../../explorer.module.css';
@@ -8,7 +8,7 @@ import { useCommander } from '../../../../hooks';
 import { SchemasContext } from '../../../../providers';
 import { addAsset } from '../../../../commands/assets';
 import { formatWidgetName } from '../../../../../utils/format-widget-name';
-import { HotkeysBar, Icon } from '../../../../components';
+import { HotkeysBar, Icon, IconButton } from '../../../../components';
 
 import { getAssetIcon } from './utils';
 
@@ -31,16 +31,16 @@ export const ActionBar: FC = () => {
   return (
     <header className={styles.actionBar}>
       <Dropdown menu={{ items }} trigger={['click']}>
-        <Button
+        <IconButton
           className={styles.button}
           icon={<Icon icon={<FilePlus />} />}
           title={t('explorer.assets.actionBar.addAsset.button.title')}
         />
       </Dropdown>
 
-      <div className={styles.additionalSection}>
-        <HotkeysBar />
-      </div>
+      <div className={styles.actionDivider} />
+
+      <HotkeysBar />
     </header>
   );
 };

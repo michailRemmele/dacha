@@ -4,14 +4,13 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from 'antd'
 import { Plus } from '@gravity-ui/icons'
 import type { Animation } from 'dacha'
 
 import { getStatePath, getSubstatePath } from '../../utils/paths'
 import editorStyles from '../../editor.module.css'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
-import { HotkeysBar, Icon } from '../../../../../../../../components'
+import { HotkeysBar, Icon, IconButton } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
 import { addFrame } from '../../commands/frames'
 
@@ -35,7 +34,7 @@ export const ActionBar: FC = () => {
 
   return (
     <header className={editorStyles.actionBar}>
-      <Button
+      <IconButton
         className={editorStyles.actionButton}
         icon={<Icon icon={<Plus />} />}
         onClick={handleAdd}

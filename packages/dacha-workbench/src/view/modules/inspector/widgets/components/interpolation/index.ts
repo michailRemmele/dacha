@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const interpolation: WidgetSchema = {
+  icon: 'RectanglePulse',
   fields: [
     {
       name: 'mode',

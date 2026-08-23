@@ -11,6 +11,7 @@ type ExpandIcon = (props: { isActive?: boolean }) => ReactElement;
 
 export interface CollapsePanelProps {
   children: ReactElement | (ReactElement | null)[] | string | null;
+  icon?: string;
   title: string;
   onDelete?: (event: React.MouseEvent<HTMLElement>) => void;
   expandExtra?: ReactElement | ReactElement[];
@@ -21,6 +22,7 @@ export interface CollapsePanelProps {
 export const CollapsePanel: FC<CollapsePanelProps> = ({
   children,
   title,
+  icon,
   onDelete,
   expandExtra,
   deletable = true,
@@ -54,12 +56,15 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
 
   return (
     <Collapse
+      ghost
       className={className}
       classNames={{
         root: styles.collapse,
-        header: styles.header,
-        body: styles.body,
-        title: styles.title,
+      }}
+      styles={{
+        header: { alignItems: 'center' },
+        icon: { marginInlineEnd: '8px' },
+        body: { paddingTop: 0 },
       }}
       activeKey={activeKey}
       onChange={handleChange}
@@ -67,7 +72,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
       items={[
         {
           key: title,
-          label: <PanelHeader title={title} />,
+          label: <PanelHeader title={title} icon={icon} />,
           children,
           extra: deletable ? <PanelExtra onDelete={handleDelete} /> : undefined,
         },

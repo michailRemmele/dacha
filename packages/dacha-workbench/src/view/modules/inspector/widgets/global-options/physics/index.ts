@@ -5,6 +5,7 @@ import { DEFAULT_LAYER_ID } from './consts';
 
 export const physics: WidgetSchema = {
   title: 'globalOptions.physics.title',
+  icon: 'Magnet',
   view: PhysicsWidget,
   fields: [
     { name: 'collisionLayers', type: 'data', initialValue: [] },

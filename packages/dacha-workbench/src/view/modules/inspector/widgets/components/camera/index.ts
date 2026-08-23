@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const camera: WidgetSchema = {
+  icon: 'Camera',
   fields: [
     {
       name: 'zoom',

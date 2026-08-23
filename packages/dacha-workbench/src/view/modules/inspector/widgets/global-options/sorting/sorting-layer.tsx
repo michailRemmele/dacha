@@ -1,7 +1,6 @@
 import { useMemo, useCallback, FC, ReactElement } from 'react';
 import { TrashBin } from '@gravity-ui/icons';
-import { Icon } from '../../../../../components';
-import { Button } from 'antd';
+import { Icon, IconButton } from '../../../../../components';
 
 import { Field } from '../../../components/field';
 import { useCommander } from '../../../../../hooks';
@@ -35,7 +34,7 @@ export const SortingLayer: FC<SortingLayerProps> = ({ id, expandExtra }) => {
         <Field name="name" type="string" path={layerPath} />
       </div>
 
-      <Button
+      <IconButton
         className={styles.removeButton}
         icon={<Icon icon={<TrashBin />} />}
         onClick={handleDeleteBind}

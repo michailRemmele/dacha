@@ -7,11 +7,10 @@ import {
   ReactElement,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tabs } from 'antd';
 
 import { persistentStorage } from '../../../persistent-storage';
 import { InspectedEntityContext } from '../../providers';
-import { tabsClassNames } from '../../common-styles/tabs';
+import { PanelTabs } from '../../components';
 
 import { EntityInspector, ProjectSettings, Systems } from './tabs';
 import styles from './inspector.module.css';
@@ -44,12 +43,8 @@ export const Inspector = (): ReactElement => {
 
   return (
     <div className={styles.inspector}>
-      <Tabs
-        classNames={{
-          ...tabsClassNames,
-          content: styles.tabContent,
-        }}
-        type="card"
+      <PanelTabs
+        classNames={{ content: styles.tabContent }}
         activeKey={activeTab}
         onChange={handleChange}
         items={[

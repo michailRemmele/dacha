@@ -1,13 +1,12 @@
 import { useCallback, useContext } from 'react'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from 'antd'
 import { TargetDart } from '@gravity-ui/icons'
 import { Transform, Actor } from 'dacha'
 
 import { getActorIdByPath } from '../../../../../../../utils/get-actor-id-by-path'
 import { EngineContext } from '../../../../../../providers'
-import { Icon } from '../../../../../../components'
+import { Icon, IconButton } from '../../../../../../components'
 import styles from '../../../../explorer.module.css'
 
 interface FocusActionButtonProps {
@@ -39,7 +38,7 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
   }, [world, path])
 
   return (
-    <Button
+    <IconButton
       className={styles.button}
       icon={<Icon icon={<TargetDart />} />}
       onClick={handleClick}

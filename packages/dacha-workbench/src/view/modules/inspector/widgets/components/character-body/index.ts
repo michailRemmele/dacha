@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const characterBody: WidgetSchema = {
+  icon: 'PersonFill',
   fields: [
     {
       name: 'motionMode',

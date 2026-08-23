@@ -1,8 +1,27 @@
 import type { FC, ReactElement } from 'react';
-import { Modal as AntdModal } from 'antd';
+import { Modal as AntdModal, ModalProps as AntdModalProps } from 'antd';
 
 import { CommandScopeProvider, HotkeysScopeProvider } from '../../providers';
 import { MODAL_SCOPE } from '../../../consts/scopes';
+
+const defaultStyles: AntdModalProps['styles'] = {
+  container: {
+    padding: 0,
+    border: '1px solid var(--ant-color-border)',
+  },
+  close: {
+    right: '5px',
+    top: '5px',
+    height: '20px',
+    width: '20px',
+  },
+  header: {
+    padding: '4px 8px',
+    margin: 0,
+    backgroundColor: 'var(--ant-color-bg-container)',
+    borderBottom: '1px solid var(--ant-color-border)',
+  },
+};
 
 interface ModalProps {
   title: string;
@@ -20,6 +39,7 @@ export const Modal: FC<ModalProps> = ({
   children,
 }) => (
   <AntdModal
+    styles={defaultStyles}
     wrapClassName="modal"
     width={width}
     title={title}

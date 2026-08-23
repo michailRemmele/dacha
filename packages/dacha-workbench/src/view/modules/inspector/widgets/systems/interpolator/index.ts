@@ -1,3 +1,3 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
-export const interpolator: WidgetSchema = {};
+export const interpolator: WidgetSchema = { icon: 'RectanglePulse' };

@@ -7,15 +7,15 @@ import {
   FC,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tabs } from 'antd';
 import type { Actor } from 'dacha';
 
-import { Modal } from '../../components';
+import { Modal, PillTabs } from '../../components';
 import { EngineContext } from '../../providers';
 import { Settings } from '../../../engine/components';
 import { EventType } from '../../../events';
 
 import { modals } from './components';
+import styles from './settings-modal.module.css';
 
 export const SettingsModal: FC = () => {
   const { t } = useTranslation();
@@ -89,7 +89,12 @@ export const SettingsModal: FC = () => {
       onCancel={handleEditorClose}
       width="380px"
     >
-      <Tabs activeKey={activeKey} onChange={setActiveKey} items={tabItems} />
+      <PillTabs
+        className={styles.content}
+        activeKey={activeKey}
+        onChange={setActiveKey}
+        items={tabItems}
+      />
     </Modal>
   );
 };

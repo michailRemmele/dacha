@@ -5,6 +5,7 @@ import type { WidgetSchema } from '../../../../../../types/widget-schema';
 const PATH = ['globalOptions', 'name:sorting', 'options', 'layers'];
 
 export const sprite: WidgetSchema = {
+  icon: 'Picture',
   fields: [
     {
       name: 'src',
