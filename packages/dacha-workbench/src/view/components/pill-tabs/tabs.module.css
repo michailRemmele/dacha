@@ -1,0 +1,38 @@
+.tabs,
+.content,
+.body {
+  height: 100%;
+}
+
+.header {
+  & :global(.ant-tabs-nav-operations) :global(.ant-tabs-nav-more) {
+    padding: 0 12px;
+    margin-left: 4px;
+  }
+
+  & :global(.ant-tabs-nav-wrap):global(.ant-tabs-nav-wrap-ping-left) {
+    overflow: visible;
+  }
+
+  &:global(.ant-tabs-nav)::before {
+    border-bottom: none;
+  }
+
+  & :global(.ant-tabs-nav-list) {
+    gap: 4px;
+  }
+}
+
+.item {
+  &:global(.ant-tabs-tab):not(:global(.ant-tabs-tab-active)) {
+    background-color: transparent;
+
+    &:hover {
+      background-color: var(--ant-color-fill-quaternary);
+    }
+  }
+
+  &:global(.ant-tabs-tab):global(.ant-tabs-tab-active) {
+    background-color: var(--ant-color-fill-tertiary);
+  }
+}

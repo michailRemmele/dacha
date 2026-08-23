@@ -1,7 +1,6 @@
 import type { FC, ReactNode, ReactElement } from 'react';
-import { Button } from 'antd';
 import { TrashBin } from '@gravity-ui/icons';
-import { Icon } from '../../../../components';
+import { Icon, IconButton } from '../../../../components';
 
 import { cx } from '../../../../../utils/cx';
 
@@ -48,13 +47,12 @@ export const Panel: FC<PanelProps> = ({
       {onDelete ? (
         <>
           {size === 'middle' ? (
-            <Button icon={<Icon icon={<TrashBin />} />} onClick={onDelete} />
+            <IconButton icon={<Icon icon={<TrashBin />} />} onClick={onDelete} />
           ) : null}
           {size === 'small' ? (
-            <Button
+            <IconButton
               className={styles.buttonSmall}
               style={{ width: '18px', height: '18px' }}
-              type="text"
               icon={<Icon icon={<TrashBin />} />}
               onClick={onDelete}
             />

@@ -5,7 +5,6 @@ import {
   FC,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from 'antd'
 import {
   Plus,
   CirclePlus,
@@ -16,7 +15,7 @@ import type { Animation } from 'dacha'
 import { getStatePath } from '../../utils/paths'
 import editorStyles from '../../editor.module.css'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
-import { HotkeysBar, Icon } from '../../../../../../../../components'
+import { HotkeysBar, Icon, IconButton } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'
 import { addState, addSubstate, setInitialState } from '../../commands/states'
 
@@ -52,20 +51,20 @@ export const ActionBar: FC = () => {
 
   return (
     <header className={editorStyles.actionBar}>
-      <Button
+      <IconButton
         className={editorStyles.actionButton}
         icon={<Icon icon={<Plus />} />}
         onClick={handleAddState}
         title={t('components.animatable.editor.state.add.button.title')}
       />
-      <Button
+      <IconButton
         className={editorStyles.actionButton}
         icon={<Icon icon={<CirclePlus />} />}
         onClick={handleAddSubstate}
         title={t('components.animatable.editor.substate.add.button.title')}
         disabled={(inspectedEntity?.type !== 'state' || selectedStateConfig?.type !== 'group') && inspectedEntity?.type !== 'substate'}
       />
-      <Button
+      <IconButton
         className={editorStyles.actionButton}
         icon={<Icon icon={<CircleChevronRight />} />}
         onClick={handleInitialSet}

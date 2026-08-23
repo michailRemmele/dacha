@@ -14,10 +14,13 @@
     .ant-tree-treenode-draggable.drop-target .ant-tree-node-content-wrapper
   )::before {
     background-color: var(--ant-color-info-bg-hover);
-    border-radius: var(--ant-border-radius);
   }
 
   :global(.ant-tree-drop-indicator) {
     display: none;
+  }
+
+  :global(.ant-tree-treenode)::before {
+    height: 0;
   }
 }

@@ -1,9 +1,5 @@
 .inspector {
-  padding-top: 5px;
-
   height: 100%;
-
-  border-left: 1px solid var(--ant-color-border);
 }
 
 .actionBar {

@@ -6,7 +6,7 @@ import type { ReactElement, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Select } from 'antd'
 import { Plus } from '@gravity-ui/icons'
-import { Icon } from '../../../../components'
+import { Icon, IconButton } from '../../../../components'
 
 import { CreateNewModal } from './create-new-modal'
 import { cx } from '../../../../../utils/cx'
@@ -82,7 +82,7 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
             </>
           )}
         />
-        <Button
+        <IconButton
           className={styles.button}
           size={size}
           icon={<Icon icon={<Plus />} />}

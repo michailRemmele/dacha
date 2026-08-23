@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useEffect, useRef, FC } from 'react';
 import type { ReactNode } from 'react';
-import { Tree as AntdTree } from 'antd';
+import { Tree as AntdTree, TreeProps as AntdTreeProps } from 'antd';
 
 import { useTreeKeys } from '../../hooks';
 import type {
@@ -40,6 +40,12 @@ interface TreeProps {
   onClickOutside?: () => void;
   showIcon?: boolean;
 }
+
+const defaultStyles: AntdTreeProps['styles'] = {
+  item: {
+    margin: 0,
+  },
+};
 
 export const TreeNodeTitle: FC<TreeNodeTitleProps> = ({
   title,
@@ -151,6 +157,7 @@ export const Tree: FC<TreeProps> = ({
     <ListWrapper ref={containerRef} onClickOutside={onClickOutside}>
       <AntdTree.DirectoryTree
         className={cx(styles.tree, className)}
+        styles={defaultStyles}
         expandedKeys={expandedKeys}
         selectedKeys={selectedKeys}
         onSelect={handleSelect}

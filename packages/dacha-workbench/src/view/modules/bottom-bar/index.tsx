@@ -1,7 +1,7 @@
-import type { FC } from 'react'
+import type { FC } from 'react';
 
-import { ReloadButton, CanvasCoordinates, UpdateIndicator } from './components'
-import styles from './bottom-bar.module.css'
+import { ReloadButton, CanvasCoordinates, UpdateIndicator } from './components';
+import styles from './bottom-bar.module.css';
 
 export const BottomBar: FC = () => (
   <div className={styles.bottomBar}>
@@ -13,4 +13,4 @@ export const BottomBar: FC = () => (
       <UpdateIndicator />
     </div>
   </div>
-)
+);

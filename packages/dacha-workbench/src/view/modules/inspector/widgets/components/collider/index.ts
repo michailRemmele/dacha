@@ -5,6 +5,7 @@ const PATH = ['globalOptions', 'name:physics', 'options', 'collisionLayers'];
 const DEFAULT_LAYER = 'default';
 
 export const collider: WidgetSchema = {
+  icon: 'SquareDashed',
   fields: [
     {
       name: 'type',

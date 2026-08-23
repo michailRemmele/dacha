@@ -13,13 +13,13 @@ export const customTheme = {
     colorPrimaryBgHover: '#DEE7D6',
     colorTextLightSolid: '#FFFFFF',
 
-    colorBgBase: '#F3F2EE',
+    colorBgBase: '#E2E1DD',
     colorBgContainer: '#FBFAF7',
     colorBgElevated: '#FEFDFB',
-    colorBgLayout: '#F3F2EE',
+    colorBgLayout: '#E2E1DD',
 
-    colorBorder: '#DEDBD3',
-    colorBorderSecondary: '#E8E6E1',
+    colorBorder: '#CCCAC2',
+    colorBorderSecondary: '#DAD7CF',
 
     colorText: '#2B2A26',
     colorTextSecondary: '#67655D',
@@ -37,6 +37,7 @@ export const customTheme = {
     Tree: {
       nodeSelectedBg: '#E8EFE3',
       nodeHoverBg: '#EBE9E4',
+      borderRadius: 0,
     },
     Menu: {
       itemSelectedBg: '#E8EFE3',
@@ -49,16 +50,43 @@ export const customTheme = {
       inkBarColor: '#4E7A43',
     },
     Input: {
-      hoverBorderColor: '#C7C4BA',
+      colorBgContainer: '#FFFFFF',
+      colorBorder: '#C7C4BA',
+      hoverBorderColor: '#B6B2A6',
       activeBorderColor: '#4E7A43',
     },
     InputNumber: {
-      hoverBorderColor: '#C7C4BA',
+      colorBgContainer: '#FFFFFF',
+      colorBorder: '#C7C4BA',
+      hoverBorderColor: '#B6B2A6',
       activeBorderColor: '#4E7A43',
     },
     Select: {
+      colorBgContainer: '#FFFFFF',
+      colorBorder: '#C7C4BA',
       optionSelectedBg: '#E8EFE3',
       optionActiveBg: '#EBE9E4',
+    },
+    Checkbox: {
+      colorBgContainer: '#FFFFFF',
+      colorBorder: '#C7C4BA',
+    },
+    Slider: {
+      railBg: '#DAD7CF',
+      railHoverBg: '#CCCAC2',
+      trackBg: '#4E7A43',
+      trackHoverBg: '#5F8F52',
+      handleColor: '#4E7A43',
+      handleActiveColor: '#5F8F52',
+      dotActiveBorderColor: '#4E7A43',
+    },
+    Radio: {
+      colorBgContainer: '#FFFFFF',
+      colorBorder: '#C7C4BA',
+    },
+    ColorPicker: {
+      colorBgContainer: '#FFFFFF',
+      colorBorder: '#C7C4BA',
     },
     Tooltip: {
       colorBgSpotlight: '#2B2A26',

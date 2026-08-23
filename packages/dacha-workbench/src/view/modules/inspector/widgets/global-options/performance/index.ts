@@ -8,6 +8,7 @@ import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const performance: WidgetSchema = {
   title: 'globalOptions.performance.title',
+  icon: 'Tachometer',
   fields: [
     {
       name: 'maxFPS',

@@ -1,13 +1,13 @@
 .panel {
-  border: 1px solid var(--ant-color-border);
 }
 
 .panelMiddle {
+  border: 1px solid var(--ant-color-border);
   border-radius: var(--ant-border-radius-lg);
 }
 
 .panelSmall {
-  border-radius: var(--ant-border-radius);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
 .heading {
@@ -21,7 +21,7 @@
 }
 
 .headingSmall {
-  padding: 0 5px;
+  padding: 6px 0;
 }
 
 .headingBordered {
@@ -29,16 +29,16 @@
 }
 
 .content {
-  background-color: var(--ant-color-bg-container);
-  border-radius: 0 0 var(--ant-border-radius-lg) var(--ant-border-radius-lg);
 }
 
 .contentMiddle {
+  background-color: var(--ant-color-bg-container);
+  border-radius: 0 0 var(--ant-border-radius-lg) var(--ant-border-radius-lg);
   padding: 5px;
 }
 
 .contentSmall {
-  padding: 3px 5px;
+  padding: 2px 0 8px;
 }
 
 .buttonSmall {

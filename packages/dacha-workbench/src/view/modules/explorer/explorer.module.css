@@ -1,9 +1,5 @@
 .explorer {
-  padding-top: 5px;
-
   height: 100%;
-
-  border-right: 1px solid var(--ant-color-border);
 
   & :global(.ant-tree-node-content-wrapper) {
     text-overflow: ellipsis;
@@ -18,23 +14,18 @@
   scrollbar-width: none;
 
   border-bottom: 1px solid var(--ant-color-border);
-  padding: 5px;
+  padding: 3px;
 
-  height: 35px;
+  height: 31px;
 
   & > * {
     flex-shrink: 0;
   }
 }
 
-.button:not(:last-child) {
-  margin-right: 5px;
-}
+.actionDivider {
+  width: 2px;
+  background-color: var(--ant-color-border-secondary);
 
-.additionalSection {
-  display: inline-flex;
-
-  margin-left: 3px;
-  padding: 0 8px;
-  border-left: 1px solid var(--ant-color-border);
+  margin: 4px;
 }

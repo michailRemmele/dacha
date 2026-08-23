@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const transform: WidgetSchema = {
+  icon: 'VectorSquare',
   fields: [
     {
       name: 'offsetX',

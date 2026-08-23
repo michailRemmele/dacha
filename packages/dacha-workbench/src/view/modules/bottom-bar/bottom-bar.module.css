@@ -2,12 +2,8 @@
   display: flex;
   align-items: center;
 
-  background-color: var(--ant-color-fill-quaternary);
-
-  height: 25px;
-  padding: 0 10px;
-
-  border-top: 1px solid var(--ant-color-border);
+  height: 24px;
+  padding: 0 10px 3px;
 }
 
 .leftSection {

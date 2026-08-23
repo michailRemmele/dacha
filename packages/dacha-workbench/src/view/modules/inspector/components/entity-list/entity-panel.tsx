@@ -41,6 +41,7 @@ export const EntityPanel = ({
     <CollapsePanel
       className={!entity.data.schema ? styles.noSchema : undefined}
       title={entity.label}
+      icon={entity.data.schema?.icon}
       onDelete={handleDelete}
       expandExtra={expandExtra}
       deletable={!NON_DELETABLE_MAP[type].includes(entity.data.name)}

@@ -6,3 +6,6 @@ export { Tree } from './tree';
 export { HotkeysBar } from './hotkeys-bar';
 export { Window } from './window';
 export { Icon } from './icon';
+export { PanelTabs } from './panel-tabs';
+export { PillTabs } from './pill-tabs';
+export { IconButton } from './icon-button';

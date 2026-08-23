@@ -1,4 +1,7 @@
 import type { FC } from 'react';
+import type * as GravityIcons from '@gravity-ui/icons';
+
+export type IconName = keyof typeof GravityIcons;
 
 export type DependencyValue = string | number | boolean;
 
@@ -134,4 +137,5 @@ export interface WidgetSchema {
   title?: string;
   fields?: Field[];
   view?: FC<WidgetProps>;
+  icon?: IconName;
 }

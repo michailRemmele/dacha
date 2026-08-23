@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const mouseInputSystem: WidgetSchema = {
+  icon: 'HandPointUp',
   fields: [
     {
       name: 'windowNodeId',

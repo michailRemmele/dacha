@@ -52,6 +52,7 @@ export const ProjectSettings: FC = () => {
             <CollapsePanel
               key={key}
               title={formatWidgetName(key)}
+              icon={schema.icon}
               deletable={false}
             >
               {schema.view ? (

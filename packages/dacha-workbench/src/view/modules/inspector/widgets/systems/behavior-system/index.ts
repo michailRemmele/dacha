@@ -1,3 +1,3 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema'
 
-export const behaviorSystem: WidgetSchema = {}
+export const behaviorSystem: WidgetSchema = { icon: 'Thunderbolt' }

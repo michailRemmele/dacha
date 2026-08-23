@@ -1,6 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const rigidBody: WidgetSchema = {
+  icon: 'WeightHanging',
   fields: [
     {
       name: 'type',

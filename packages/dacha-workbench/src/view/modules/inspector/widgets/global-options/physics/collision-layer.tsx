@@ -1,8 +1,7 @@
 import { useCallback, useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TrashBin, Copy } from '@gravity-ui/icons';
-import { Icon } from '../../../../../components';
-import { Button } from 'antd';
+import { Icon, IconButton } from '../../../../../components';
 
 import { Field } from '../../../components/field';
 
@@ -44,14 +43,14 @@ export const CollisionLayerField: FC<CollisionLayerFieldProps> = ({
         />
       </div>
 
-      <Button
+      <IconButton
         className={styles.fieldButton}
         icon={<Icon icon={<Copy />} />}
         onClick={handleCopyId}
         title={t('globalOptions.physics.collisionLayers.copy.title')}
       />
 
-      <Button
+      <IconButton
         className={styles.fieldButton}
         icon={<Icon icon={<TrashBin />} />}
         onClick={() => onDelete(id)}

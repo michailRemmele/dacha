@@ -129,7 +129,11 @@ export const EditorLayout = (): ReactElement => {
 
   return (
     <div ref={containerRef} className={styles.editorLayout}>
-      <Splitter onResize={onResize} onResizeEnd={onResizeEnd}>
+      <Splitter
+        classNames={{ dragger: styles.editorDragger }}
+        onResize={onResize}
+        onResizeEnd={onResizeEnd}
+      >
         <Splitter.Panel size={sizes.explorer} min={MIN_EXPLORER_WIDTH}>
           <Window>{isEditorReady && <Explorer />}</Window>
         </Splitter.Panel>

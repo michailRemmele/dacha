@@ -6,11 +6,10 @@ import {
   ReactElement,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tabs } from 'antd';
 
 import { InspectedEntityContext } from '../../providers';
 import { persistentStorage } from '../../../persistent-storage';
-import { tabsClassNames } from '../../common-styles/tabs';
+import { PanelTabs } from '../../components';
 
 import {
   ScenesExplorer,
@@ -40,9 +39,7 @@ export const Explorer = (): ReactElement => {
 
   return (
     <div className={styles.explorer}>
-      <Tabs
-        classNames={tabsClassNames}
-        type="card"
+      <PanelTabs
         activeKey={activeTab}
         onChange={handleChange}
         destroyOnHidden
