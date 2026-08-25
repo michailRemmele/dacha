@@ -51,7 +51,7 @@ export {
   LabelledTextArea,
 } from './view/modules/inspector/components/text-area';
 export { MultiField } from './view/modules/inspector/components/multi-field';
-export { Panel } from './view/modules/inspector/components/panel';
+export { Section } from './view/modules/inspector/components/section';
 
 export const commands = {
   setValue,

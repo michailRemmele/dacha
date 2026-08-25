@@ -5,7 +5,7 @@ const PATH = ['globalOptions', 'name:audioGroups', 'options', 'groups'];
 const MASTER_GROUP = 'master';
 
 export const audioSource: WidgetSchema = {
-  icon: 'MusicNote',
+  icon: 'Volume',
   fields: [
     {
       name: 'src',

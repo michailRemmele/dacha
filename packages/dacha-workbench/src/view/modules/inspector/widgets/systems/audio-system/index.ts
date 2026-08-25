@@ -1,3 +1,3 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
-export const audioSystem: WidgetSchema = { icon: 'MusicNote' }
+export const audioSystem: WidgetSchema = { icon: 'Volume' };

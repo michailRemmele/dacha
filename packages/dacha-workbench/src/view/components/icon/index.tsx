@@ -16,7 +16,7 @@ interface IconProps extends ComponentPropsWithoutRef<'span'> {
 
 export const Icon: FC<IconProps> = ({
   icon,
-  size = 14,
+  size = 16,
   className,
   style,
   ...rest

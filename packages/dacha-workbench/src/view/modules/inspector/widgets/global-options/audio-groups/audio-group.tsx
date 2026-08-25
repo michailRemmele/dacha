@@ -2,11 +2,10 @@ import { useMemo, useCallback, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Field } from '../../../components/field';
-import { Panel } from '../../../components/panel';
+import { Section } from '../../../components/section';
 import { useCommander } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
-import styles from './audio-groups.module.css';
 import { PATH } from './consts';
 
 export interface AudioGroupProps {
@@ -24,9 +23,7 @@ export const AudioGroup: FC<AudioGroupProps> = ({ id }) => {
   }, [dispatch, groupPath]);
 
   return (
-    <Panel
-      className={styles.panel}
-      size="small"
+    <Section
       title={t('globalOptions.audioGroups.panel.name.title')}
       onDelete={handleDeleteBind}
     >
@@ -39,6 +36,6 @@ export const AudioGroup: FC<AudioGroupProps> = ({ id }) => {
         step={0.01}
         path={groupPath}
       />
-    </Panel>
+    </Section>
   );
 };

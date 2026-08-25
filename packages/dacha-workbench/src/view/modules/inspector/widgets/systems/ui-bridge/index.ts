@@ -1,3 +1,3 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
-export const uiBridge: WidgetSchema = { icon: 'LayoutHeader' }
+export const uiBridge: WidgetSchema = { icon: 'LayoutHeaderSideContent' };

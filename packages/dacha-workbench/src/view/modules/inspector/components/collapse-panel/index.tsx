@@ -1,7 +1,9 @@
 import { useCallback, useState, useRef, FC, ReactElement } from 'react';
 import { Collapse } from 'antd';
+import { TrashBin } from '@gravity-ui/icons';
 
-import { PanelExtra } from './panel-extra';
+import { Icon, IconButton } from '../../../../components';
+
 import { PanelHeader } from './panel-header';
 import { PanelExpand } from './panel-expand';
 
@@ -60,6 +62,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
       className={className}
       classNames={{
         root: styles.collapse,
+        header: styles.header,
       }}
       styles={{
         header: { alignItems: 'center' },
@@ -74,7 +77,13 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
           key: title,
           label: <PanelHeader title={title} icon={icon} />,
           children,
-          extra: deletable ? <PanelExtra onDelete={handleDelete} /> : undefined,
+          extra: deletable ? (
+            <IconButton
+              className={styles.deleteButton}
+              icon={<Icon icon={<TrashBin />} />}
+              onClick={handleDelete}
+            />
+          ) : undefined,
         },
       ]}
     />

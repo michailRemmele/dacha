@@ -5,7 +5,7 @@ import { LabelledSelect } from '../../../components/select';
 import { LabelledTextInput } from '../../../components/text-input';
 import { MultiField } from '../../../components/multi-field';
 import { Field } from '../../../components/field';
-import { Panel } from '../../../components/panel';
+import { Section } from '../../../components/section';
 import { useCommander, useExtension } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
@@ -50,9 +50,8 @@ export const InputBind: FC<InputBindProps> = ({
   }, [dispatch, bindPath]);
 
   return (
-    <Panel
+    <Section
       className={styles.panel}
-      size="small"
       title={t('components.mouseControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
@@ -79,6 +78,6 @@ export const InputBind: FC<InputBindProps> = ({
         {t('components.mouseControl.bind.attributes.title')}
       </span>
       <MultiField path={attrsPath} />
-    </Panel>
+    </Section>
   );
 };

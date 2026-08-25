@@ -50,7 +50,7 @@ import {
   LabelledTextArea,
 } from './view/modules/inspector/components/text-area';
 import { MultiField } from './view/modules/inspector/components/multi-field';
-import { Panel } from './view/modules/inspector/components/panel';
+import { Section } from './view/modules/inspector/components/section';
 import {
   DefineSystem,
   DefineComponent,
@@ -95,7 +95,7 @@ window.DachaWorkbench = {
   TextArea,
   LabelledTextArea,
   MultiField,
-  Panel,
+  Section,
 
   useExtension,
   useConfig,

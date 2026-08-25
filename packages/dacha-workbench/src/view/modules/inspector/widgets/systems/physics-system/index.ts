@@ -1,7 +1,7 @@
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const physicsSystem: WidgetSchema = {
-  icon: 'WeightHanging',
+  icon: 'Magnet',
   fields: [
     {
       name: 'gravityX',

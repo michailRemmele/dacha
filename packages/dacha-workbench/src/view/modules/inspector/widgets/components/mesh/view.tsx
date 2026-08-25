@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { Widget } from '../../../components/widget';
-import { Panel } from '../../../components/panel';
+import { Section } from '../../../components/section';
 import { Labelled } from '../../../components/labelled';
 import { BehaviorWidget } from '../../../components/behavior-widget';
 import { EntitySelect } from '../../../components/entity-picker';
@@ -73,12 +73,11 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
     <div>
       {fields?.length ? <Widget fields={fields} path={path} /> : null}
 
-      <Panel
+      <Section
         className={cx(
           styles.panel,
           material?.name !== undefined && !shaderSchema && styles.panelNoSchema,
         )}
-        size="small"
         title={t('components.mesh.material.panel.title')}
       >
         <Labelled label={t('components.mesh.material.title')}>
@@ -106,7 +105,7 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
             ) : null}
           </>
         ) : null}
-      </Panel>
+      </Section>
     </div>
   );
 };
