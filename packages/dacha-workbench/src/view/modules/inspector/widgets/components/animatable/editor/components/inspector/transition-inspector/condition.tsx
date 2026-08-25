@@ -10,7 +10,7 @@ import {
   DependencyField,
   LabelledTextInput,
   LabelledSelect,
-  Panel,
+  Section,
 } from '../../../../../../../components'
 import { useConfig, useCommander, useExtension } from '../../../../../../../../../hooks'
 import { deleteValue, setValue } from '../../../../../../../../../commands'
@@ -95,7 +95,7 @@ export const Condition: FC<ConditionProps> = ({
   }, [dispatch, conditionPath])
 
   return (
-    <Panel
+    <Section
       title={t('components.animatable.editor.condition.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >
@@ -163,6 +163,6 @@ export const Condition: FC<ConditionProps> = ({
         dependencyValue={CONDITION_TYPE.COMPARATOR}
         deleteOnHide={false}
       />
-    </Panel>
+    </Section>
   )
 }

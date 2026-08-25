@@ -44,7 +44,7 @@ export const MultiField: FC<MultiFieldProps> = ({ path }) => {
       {Boolean(values.length) && (
         <ul className={styles.fields}>
           {values.map((entry, index) => (
-            <li className={styles.field} key={entry.id}>
+            <li key={entry.id}>
               <Entry
                 path={path}
                 id={entry.id}

@@ -1,3 +1,3 @@
-import type { WidgetSchema } from '../../../../../../types/widget-schema'
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
-export const animator: WidgetSchema = { icon: 'GearPlay' }
+export const animator: WidgetSchema = { icon: 'CirclePlay' };

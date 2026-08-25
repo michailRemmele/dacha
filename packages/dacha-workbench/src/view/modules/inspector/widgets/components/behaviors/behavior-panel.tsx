@@ -6,7 +6,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import type { WidgetSchema } from '../../../../../../types/widget-schema'
-import { Panel } from '../../../components/panel'
+import { Section } from '../../../components/section'
 import { BehaviorWidget } from '../../../components/behavior-widget'
 import {
   useConfig,
@@ -45,9 +45,8 @@ export const BehaviorPanel: FC<BehaviorPanelProps> = ({
   }, [dispatch, behaviorPath])
 
   return (
-    <Panel
+    <Section
       className={cx(styles.panel, !schema && styles.panelNoSchema)}
-      size="small"
       title={schema?.title ? t(schema.title, { ns: NAMESPACE_EXTENSION }) : formatWidgetName(name)}
       onDelete={handleDelete}
     >
@@ -61,6 +60,6 @@ export const BehaviorPanel: FC<BehaviorPanelProps> = ({
           path={optionsPath}
         />
       ) : null}
-    </Panel>
+    </Section>
   )
 }

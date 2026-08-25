@@ -21,4 +21,4 @@ export { TextArea, LabelledTextArea } from './text-area';
 
 export { Form } from './form';
 export { CollapsePanel } from './collapse-panel';
-export { Panel } from './panel';
+export { Section } from './section';

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Field } from '../field';
 import { LabelledSelect } from '../select';
-import { Panel } from '../panel';
+import { Section } from '../section';
 import { useCommander } from '../../../../hooks';
 import { deleteValue, setValue } from '../../../../commands';
 import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts';
@@ -75,8 +75,7 @@ export const Entry: FC<MultiFieldEntryProps> = ({ path, id, order, type }) => {
   );
 
   return (
-    <Panel
-      size="small"
+    <Section
       title={t('inspector.multifield.field.title', { index: order + 1 })}
       onDelete={handleDeleteField}
     >
@@ -95,6 +94,6 @@ export const Entry: FC<MultiFieldEntryProps> = ({ path, id, order, type }) => {
         type={FIELD_TYPE_MAP[type]}
         path={entryPath}
       />
-    </Panel>
+    </Section>
   );
 };

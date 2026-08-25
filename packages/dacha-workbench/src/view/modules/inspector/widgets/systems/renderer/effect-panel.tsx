@@ -2,7 +2,7 @@ import { useMemo, useCallback, type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { WidgetSchema } from '../../../../../../types/widget-schema';
-import { Panel } from '../../../components/panel';
+import { Section } from '../../../components/section';
 import { BehaviorWidget } from '../../../components/behavior-widget';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
@@ -42,9 +42,8 @@ export const EffectPanel: FC<EffectPanelProps> = ({
   }, [dispatch, effectPath]);
 
   return (
-    <Panel
+    <Section
       className={cx(styles.panel, !schema && styles.panelNoSchema)}
-      size="small"
       title={
         schema?.title
           ? t(schema.title, { ns: NAMESPACE_EXTENSION })
@@ -64,6 +63,6 @@ export const EffectPanel: FC<EffectPanelProps> = ({
           systemName={BEHAVIOR_TYPE}
         />
       ) : null}
-    </Panel>
+    </Section>
   );
 };

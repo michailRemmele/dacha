@@ -7,7 +7,7 @@ import { MeshWidget } from './view';
 const PATH = ['globalOptions', 'name:sorting', 'options', 'layers'];
 
 export const mesh: WidgetSchema = {
-  icon: 'Shapes3',
+  icon: 'VectorSquare',
   view: MeshWidget,
   fields: [
     {
