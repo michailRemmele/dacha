@@ -37,6 +37,8 @@ export const customTheme = {
     Tree: {
       nodeSelectedBg: '#E8EFE3',
       nodeHoverBg: '#EBE9E4',
+      directoryNodeSelectedBg: '#DEE7D6',
+      directoryNodeSelectedColor: '#2B2A26',
       borderRadius: 0,
     },
     Menu: {

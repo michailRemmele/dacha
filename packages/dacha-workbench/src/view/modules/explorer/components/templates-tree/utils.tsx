@@ -1,71 +1,74 @@
-import type { SceneConfig, TemplateConfig, ActorConfig } from 'dacha'
-import { Cube } from '@gravity-ui/icons'
+import type { SceneConfig, TemplateConfig, ActorConfig } from 'dacha';
+import { Box } from '@gravity-ui/icons';
 
-import { ExplorerDataNode } from '../../../../../types/tree-node'
-import { getIdByPath } from '../../../../../utils/get-id-by-path'
-import { Icon } from '../../../../components'
+import { ExplorerDataNode } from '../../../../../types/tree-node';
+import { getIdByPath } from '../../../../../utils/get-id-by-path';
+import { Icon } from '../../../../components';
 
 const parseTemplate = (
   template: TemplateConfig,
   path: string[],
   parent?: ExplorerDataNode,
 ): ExplorerDataNode => {
-  const isLeaf = !template?.children?.length
-  const templatePath = path.concat(`id:${template.id}`)
+  const isLeaf = !template?.children?.length;
+  const templatePath = path.concat(`id:${template.id}`);
 
   const node: ExplorerDataNode = {
     key: template.id,
     title: template.name,
     path: templatePath,
     parent,
-    icon: <Icon icon={<Cube />} />,
+    icon: <Icon icon={<Box />} />,
     isLeaf,
-  }
+  };
 
   if (!isLeaf) {
-    const childPath = templatePath.concat('children')
-    node.children = template.children?.map(
-      (child) => parseTemplate(child, childPath, node),
-    )
+    const childPath = templatePath.concat('children');
+    node.children = template.children?.map((child) =>
+      parseTemplate(child, childPath, node),
+    );
   }
 
-  return node
-}
+  return node;
+};
 
 export const parseTemplates = (
   templates: TemplateConfig[],
-): ExplorerDataNode[] => templates.map((template) => parseTemplate(template, ['templates']))
+): ExplorerDataNode[] =>
+  templates.map((template) => parseTemplate(template, ['templates']));
 
 export const getInspectedKey = (path?: string[]): string | undefined => {
   if (!path || path[0] !== 'templates') {
-    return void ''
+    return void '';
   }
 
-  return getIdByPath(path)
-}
+  return getIdByPath(path);
+};
 
-export const getSelectedPaths = (paths: string[][]): string[][] => paths
-  .filter((path) => path[0] === 'templates')
+export const getSelectedPaths = (paths: string[][]): string[][] =>
+  paths.filter((path) => path[0] === 'templates');
 
 export const filterActors = (
   actors: ActorConfig[],
   templateId: string,
-): ActorConfig[] => actors.reduce((acc, actor) => {
-  if (actor.templateId !== templateId) {
-    acc.push(actor)
-  }
+): ActorConfig[] =>
+  actors.reduce((acc, actor) => {
+    if (actor.templateId !== templateId) {
+      acc.push(actor);
+    }
 
-  if (actor.children !== undefined) {
-    actor.children = filterActors(actor.children, templateId)
-  }
+    if (actor.children !== undefined) {
+      actor.children = filterActors(actor.children, templateId);
+    }
 
-  return acc
-}, [] as ActorConfig[])
+    return acc;
+  }, [] as ActorConfig[]);
 
 export const filterScenes = (
   scenes: SceneConfig[],
   templateId: string,
-): SceneConfig[] => scenes.map((scene) => ({
-  ...scene,
-  actors: filterActors(scene.actors, templateId),
-}))
+): SceneConfig[] =>
+  scenes.map((scene) => ({
+    ...scene,
+    actors: filterActors(scene.actors, templateId),
+  }));

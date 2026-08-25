@@ -5,6 +5,8 @@
   --editor-badge-saturation: 42%;
   --editor-badge-bg-lightness: 88%;
   --editor-badge-fg-lightness: 34%;
+
+  --editor-tree-muted-highlight: #ebe9e4;
 }
 
 body {
@@ -22,6 +24,8 @@ body {
   --editor-badge-saturation: 32%;
   --editor-badge-bg-lightness: 18%;
   --editor-badge-fg-lightness: 68%;
+
+  --editor-tree-muted-highlight: #33352e;
 }
 
 #root {
