@@ -1,5 +1,5 @@
 import type { SceneConfig, ActorConfig } from 'dacha';
-import { Cube, Layers3Diagonal } from '@gravity-ui/icons';
+import { Box, Boxes3 } from '@gravity-ui/icons';
 
 import type { ExplorerDataNode } from '../../../../../types/tree-node';
 import { getIdByPath } from '../../../../../utils/get-id-by-path';
@@ -18,7 +18,7 @@ const parseActor = (
     title: actor.name,
     path: actorPath,
     parent,
-    icon: <Icon icon={<Cube />} />,
+    icon: <Icon icon={<Box />} />,
     isLeaf,
   };
 
@@ -45,7 +45,7 @@ export const parseScenes = (
         inactiveSelectedSceneId === scene.id
           ? 'scenes-tree__scene_inactive'
           : undefined,
-      icon: <Icon icon={<Layers3Diagonal />} />,
+      icon: <Icon icon={<Boxes3 />} />,
     };
 
     node.children = scene.actors.map((actor) =>

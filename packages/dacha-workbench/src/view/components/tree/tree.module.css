@@ -1,4 +1,8 @@
 .tree:global(.ant-tree.ant-tree-directory) {
+  :global(.ant-tree-icon__customize) {
+    color: var(--ant-color-primary);
+  }
+
   :global(.tree-node_cut .ant-tree-node-content-wrapper) {
     opacity: 0.5;
   }
