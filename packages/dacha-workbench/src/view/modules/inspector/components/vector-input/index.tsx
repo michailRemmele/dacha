@@ -17,7 +17,12 @@ export const VectorInput: FC<VectorInputProps> = ({
 }) => (
   <div className={cx(styles.vector, className)}>
     <Space.Compact>
-      <Space.Addon className={styles.axisX}>X</Space.Addon>
+      <Space.Addon
+        className={styles.axisX}
+        onClick={(e): void => e.preventDefault()}
+      >
+        X
+      </Space.Addon>
       <NumberInput
         value={value?.x}
         onChange={(x): void => onChange({ ...value, x })}
@@ -26,7 +31,12 @@ export const VectorInput: FC<VectorInputProps> = ({
       />
     </Space.Compact>
     <Space.Compact>
-      <Space.Addon className={styles.axisY}>Y</Space.Addon>
+      <Space.Addon
+        className={styles.axisY}
+        onClick={(e): void => e.preventDefault()}
+      >
+        Y
+      </Space.Addon>
       <NumberInput
         value={value?.y}
         onChange={(y): void => onChange({ ...value, y })}
