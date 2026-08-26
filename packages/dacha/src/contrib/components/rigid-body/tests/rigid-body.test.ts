@@ -1,5 +1,5 @@
 import { RigidBody } from '../index';
-import { Vector2 } from '../../../../engine/math-lib';
+import { Vector } from '../../../../engine/math-lib';
 
 describe('Contrib -> components -> RigidBody', () => {
   it('Normalizes one-way normals', () => {
@@ -111,16 +111,16 @@ describe('Contrib -> components -> RigidBody', () => {
       oneWay: false,
     });
 
-    rigidBody.applyForce(new Vector2(1, 2));
-    rigidBody.applyForce(new Vector2(1, 2), { x: 3, y: 4 });
-    rigidBody.applyImpulse(new Vector2(3, 4));
-    rigidBody.applyImpulse(new Vector2(3, 4), { x: 5, y: 6 });
+    rigidBody.applyForce(new Vector(1, 2));
+    rigidBody.applyForce(new Vector(1, 2), { x: 3, y: 4 });
+    rigidBody.applyImpulse(new Vector(3, 4));
+    rigidBody.applyImpulse(new Vector(3, 4), { x: 5, y: 6 });
     rigidBody.applyTorque(5);
     rigidBody.applyAngularImpulse(6);
     rigidBody.clearForces();
 
-    expect(rigidBody._centralForce).toStrictEqual(new Vector2(0, 0));
-    expect(rigidBody._centralImpulse).toStrictEqual(new Vector2(0, 0));
+    expect(rigidBody._centralForce).toStrictEqual(new Vector(0, 0));
+    expect(rigidBody._centralImpulse).toStrictEqual(new Vector(0, 0));
     expect(rigidBody._pointForces).toHaveLength(0);
     expect(rigidBody._pointImpulses).toHaveLength(0);
     expect(rigidBody._torque).toEqual(0);

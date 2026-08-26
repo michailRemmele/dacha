@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../../engine/math-lib';
 import type { CircleGeometry, RayGeometry } from '../../types';
 import {
   isGreaterThan,
@@ -46,7 +46,7 @@ export const checkRayAndCircleIntersection = (
     y: ray.origin.y + ray.direction.y * hitDistance,
   };
 
-  const normal = new Vector2(
+  const normal = new Vector(
     hitPoint.x - circle.center.x,
     hitPoint.y - circle.center.y,
   ).normalize();

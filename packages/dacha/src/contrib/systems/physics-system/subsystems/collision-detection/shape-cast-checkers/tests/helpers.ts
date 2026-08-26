@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../../engine/math-lib';
 import { buildBoxCastGeometry } from '../../geometry-builders/build-box-cast-geometry';
 import { buildCapsuleCastGeometry } from '../../geometry-builders/build-capsule-cast-geometry';
 import { buildCircleCastGeometry } from '../../geometry-builders/build-circle-cast-geometry';
@@ -24,7 +24,7 @@ export const createCircleCastGeometry = (
       center: { x: centerX, y: centerY },
       radius,
     },
-    direction: new Vector2(directionX, directionY),
+    direction: new Vector(directionX, directionY),
     maxDistance,
   });
 
@@ -44,7 +44,7 @@ export const createCapsuleCastGeometry = (
       height,
       radius,
     },
-    direction: new Vector2(directionX, directionY),
+    direction: new Vector(directionX, directionY),
     maxDistance,
   });
 
@@ -63,7 +63,7 @@ export const createBoxCastGeometry = (
       center: { x: centerX, y: centerY },
       size: { x: sizeX, y: sizeY },
     },
-    direction: new Vector2(directionX, directionY),
+    direction: new Vector(directionX, directionY),
     maxDistance,
   });
 

@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../engine/math-lib';
+import { Vector } from '../../../../engine/math-lib';
 import { PhysicsAPI } from '../index';
 
 import { createBoxActor, createPhysicsSystem, createScene } from './helpers';
@@ -20,7 +20,7 @@ describe('Systems -> PhysicsSystem -> query reentrancy', () => {
 
     const hits = physicsApi.raycastAll({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 20,
       hitFilter: (hit): boolean => {
         physicsApi.overlapShape({
@@ -38,7 +38,7 @@ describe('Systems -> PhysicsSystem -> query reentrancy', () => {
 
     const hits = physicsApi.raycastAll({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 20,
       actorFilter: (): boolean => {
         physicsApi.overlapShape({
@@ -57,7 +57,7 @@ describe('Systems -> PhysicsSystem -> query reentrancy', () => {
     expect(() =>
       physicsApi.raycastAll({
         origin: { x: 0, y: 0 },
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
         actorFilter: (): boolean => {
           throw new Error('actorFilter boom');
@@ -67,7 +67,7 @@ describe('Systems -> PhysicsSystem -> query reentrancy', () => {
 
     const hits = physicsApi.raycastAll({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 20,
     });
 

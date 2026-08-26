@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../engine/math-lib';
+import { Vector } from '../../../../engine/math-lib';
 import { PhysicsAPI } from '../index';
 
 import {
@@ -21,7 +21,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const hit = physicsApi.raycast({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 
@@ -62,12 +62,12 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const allHits = physicsApi.raycastAll({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
     });
     const filteredHits = physicsApi.raycastAll({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       layer: 'sensor',
     });
@@ -93,7 +93,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const raycastHit = physicsApi.raycast({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       excludeActors: [nearBox],
     });
@@ -103,7 +103,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
         center: { x: 0, y: 0 },
         radius: 1,
       },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       excludeActors: [nearBox],
     });
@@ -243,12 +243,12 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const firstHit = physicsApi.raycast({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
     });
     const allHits = physicsApi.raycastAll({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
     });
 
@@ -287,7 +287,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const hit = physicsApi.raycast({
       origin: { x: 0, y: 0 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
     });
 
@@ -346,7 +346,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
         center: { x: 0, y: 0 },
         radius: 1,
       },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 
@@ -391,7 +391,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
         center: { x: 0, y: 0 },
         radius: 1,
       },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
     });
     const filteredHits = physicsApi.shapeCastAll({
@@ -400,7 +400,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
         center: { x: 0, y: 0 },
         radius: 1,
       },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       layer: 'sensor',
     });
@@ -427,7 +427,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const hit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 
@@ -451,13 +451,13 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const withoutOffsetHit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
     const offsetHit = physicsApi.castActor({
       actor: caster,
       offset: { x: 0, y: 5 },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 
@@ -480,7 +480,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const hit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 
@@ -499,7 +499,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const hit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 
@@ -537,30 +537,30 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const allHits = physicsApi.castActorAll({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
     });
     const filteredHits = physicsApi.castActorAll({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       layer: 'sensor',
     });
     const excludedHit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       excludeActors: [nearBox],
     });
     const actorFilteredHits = physicsApi.castActorAll({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       actorFilter: (actor) => actor.id !== 'near-box',
     });
     const hitFilteredHit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
       hitFilter: (hit) => hit.actor.id !== 'near-box',
     });
@@ -613,7 +613,7 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const hits = physicsApi.castActorAll({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 12,
     });
 
@@ -632,23 +632,23 @@ describe('Systems -> PhysicsSystem -> queries', () => {
 
     const defaultHit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
     const selfHit = physicsApi.castActor({
       actor: caster,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
       excludeSelf: false,
     });
     const segmentHit = physicsApi.castActor({
       actor: segment,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
     const segmentHits = physicsApi.castActorAll({
       actor: segment,
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 

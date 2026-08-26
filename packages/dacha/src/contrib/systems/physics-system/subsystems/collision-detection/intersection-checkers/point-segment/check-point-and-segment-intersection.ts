@@ -1,6 +1,6 @@
 import {
   MathOps,
-  Vector2,
+  Vector,
   VectorOps,
 } from '../../../../../../../engine/math-lib';
 import type { PointGeometry, SegmentGeometry, Intersection } from '../../types';
@@ -33,7 +33,7 @@ export const checkPointAndSegmentIntersection = (
   return {
     normal: orientNormal(
       segment.normal.magnitude === 0
-        ? new Vector2(1, 0)
+        ? new Vector(1, 0)
         : segment.normal.clone(),
       point.center,
       segment.center,

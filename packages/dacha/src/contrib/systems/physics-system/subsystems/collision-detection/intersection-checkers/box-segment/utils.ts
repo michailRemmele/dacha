@@ -1,7 +1,7 @@
 import {
   MathOps,
   VectorOps,
-  type Vector2,
+  type Vector,
 } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, Point, SegmentGeometry } from '../../types';
 import { arePointsEqual, lerpPoint } from '../common/points';
@@ -15,7 +15,7 @@ import {
 const getBoxSegmentAxisOverlap = (
   box: BoxGeometry,
   segment: SegmentGeometry,
-  axis: Vector2,
+  axis: Vector,
 ): number | false => {
   const boxProjection = projectPolygon(box.points, axis);
   const segmentProjection = projectSegment(
@@ -35,7 +35,7 @@ const getBoxSegmentAxisOverlap = (
 export const findMinBoxSegmentOverlap = (
   box: BoxGeometry,
   segment: SegmentGeometry,
-): { axis: Vector2; overlap: number } | false => {
+): { axis: Vector; overlap: number } | false => {
   let minOverlap = Infinity;
   let bestAxis = box.edges[0].normal;
 

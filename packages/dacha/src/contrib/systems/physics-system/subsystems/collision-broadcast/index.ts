@@ -1,5 +1,5 @@
 import type { Actor } from '../../../../../engine/actor';
-import type { Vector2 } from '../../../../../engine/math-lib';
+import type { Vector } from '../../../../../engine/math-lib';
 import {
   CollisionEnter,
   CollisionStay,
@@ -33,7 +33,7 @@ export class CollisionBroadcastSubsystem {
   private trackCollision(
     actor1: Actor,
     actor2: Actor,
-    normal: Vector2,
+    normal: Vector,
     penetration: number,
     contactPoints: Point[],
   ): void {

@@ -3,7 +3,7 @@ import type { Actor } from '../../../engine/actor';
 import { SceneSystem } from '../../../engine/system';
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { Time } from '../../../engine/time';
-import { Vector2, VectorOps, type Point } from '../../../engine/math-lib';
+import { Vector, VectorOps, type Point } from '../../../engine/math-lib';
 import {
   Collider,
   CharacterBody,
@@ -66,8 +66,7 @@ export class CharacterController extends SceneSystem {
 
   private isBlockingHit(actor: Actor, hit: CastHit): boolean {
     const rigidBody = hit.actor.getComponent(RigidBody) as
-      | RigidBody
-      | undefined;
+      RigidBody | undefined;
 
     if (!rigidBody || rigidBody.disabled) {
       return false;
@@ -90,8 +89,7 @@ export class CharacterController extends SceneSystem {
 
   private isRecoverableOverlap(hit: OverlapHit): boolean {
     const rigidBody = hit.actor.getComponent(RigidBody) as
-      | RigidBody
-      | undefined;
+      RigidBody | undefined;
 
     return (
       rigidBody !== undefined &&
@@ -117,7 +115,7 @@ export class CharacterController extends SceneSystem {
   private cast(
     actor: Actor,
     position: Point,
-    displacement: Vector2,
+    displacement: Vector,
     hitFilter: (hit: CastHit) => boolean,
   ): CastHit | null {
     if (displacement.squaredMagnitude <= DISTANCE_EPSILON) {
@@ -146,7 +144,7 @@ export class CharacterController extends SceneSystem {
   private castMotion(
     actor: Actor,
     position: Point,
-    displacement: Vector2,
+    displacement: Vector,
   ): CastHit | null {
     return this.cast(actor, position, displacement, (hit) => {
       if (
@@ -163,14 +161,14 @@ export class CharacterController extends SceneSystem {
   private castGround(
     actor: Actor,
     position: Point,
-    displacement: Vector2,
+    displacement: Vector,
   ): CastHit | null {
     return this.cast(actor, position, displacement, (hit) =>
       this.isWalkable(actor, hit.normal),
     );
   }
 
-  private recoverOverlaps(actor: Actor, position: Vector2): void {
+  private recoverOverlaps(actor: Actor, position: Vector): void {
     const character = actor.getComponent(CharacterBody);
     if (!character._needsRecovery) {
       return;
@@ -248,7 +246,7 @@ export class CharacterController extends SceneSystem {
     });
   }
 
-  private move(actor: Actor, position: Vector2, displacement: Vector2): void {
+  private move(actor: Actor, position: Vector, displacement: Vector): void {
     if (displacement.squaredMagnitude <= DISTANCE_EPSILON) {
       return;
     }
@@ -353,7 +351,7 @@ export class CharacterController extends SceneSystem {
         return;
       }
 
-      const position = new Vector2(
+      const position = new Vector(
         transform.world.position.x,
         transform.world.position.y,
       );

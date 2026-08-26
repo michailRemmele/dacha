@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
+import { Vector, VectorOps } from '../../../../../../../engine/math-lib';
 import type { Point, RayGeometry } from '../../types';
 import { chooseNearestIntersection } from '../../intersection-checkers/common/cast';
 import {
@@ -12,7 +12,7 @@ import type { RaycastCheckerFn, RaycastCheckerHit } from '../types';
 interface CapsuleLikeGeometry {
   point1: Point;
   point2: Point;
-  normal: Vector2;
+  normal: Vector;
   radius?: number;
 }
 
@@ -46,7 +46,7 @@ const checkRayAndCap = (
     x: ray.origin.x + ray.direction.x * hitDistance,
     y: ray.origin.y + ray.direction.y * hitDistance,
   };
-  const normal = new Vector2(hitPoint.x - center.x, hitPoint.y - center.y);
+  const normal = new Vector(hitPoint.x - center.x, hitPoint.y - center.y);
 
   if (normal.magnitude === 0) {
     normal.x = -ray.direction.x;
@@ -74,7 +74,7 @@ const checkRayAndSide = (
   ray: RayGeometry,
   point1: Point,
   point2: Point,
-  sideNormal: Vector2,
+  sideNormal: Vector,
 ): RaycastCheckerHit | false => {
   const segmentDirection = {
     x: point2.x - point1.x,

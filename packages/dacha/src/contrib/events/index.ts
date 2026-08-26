@@ -1,5 +1,5 @@
 import type { Actor } from '../../engine/actor';
-import type { Vector2 } from '../../engine/math-lib';
+import type { Vector } from '../../engine/math-lib';
 import type {
   CustomMouseEvent,
   CustomKeyboardEvent,
@@ -122,7 +122,7 @@ type CollisionStateEvent = ActorEvent<{
   /** Actor that is colliding with the target */
   actor: Actor;
   /** Collision normal pointing from the target actor to the colliding actor */
-  normal: Vector2;
+  normal: Vector;
   /** Depth of penetration along the collision normal */
   penetration: number;
   /** Contact manifold points in world space */
@@ -157,7 +157,7 @@ export type CharacterHitEvent = ActorEvent<{
   /** Hit point in world space */
   point: { x: number; y: number };
   /** Hit normal pointing from the hit actor to the character */
-  normal: Vector2;
+  normal: Vector;
   /** Distance from the cast origin to the hit */
   distance: number;
   /** Surface classification used by the character controller */

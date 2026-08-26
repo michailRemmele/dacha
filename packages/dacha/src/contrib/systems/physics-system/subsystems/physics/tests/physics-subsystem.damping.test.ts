@@ -1,7 +1,7 @@
 import { Scene } from '../../../../../../engine/scene';
 import { TemplateCollection } from '../../../../../../engine/template';
 import { ActorCreator, Actor } from '../../../../../../engine/actor';
-import { Vector2 } from '../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../engine/math-lib';
 import { RigidBody } from '../../../../../components/rigid-body';
 import { Collider } from '../../../../../components/collider';
 import { PhysicsSubsystem } from '../index';
@@ -52,12 +52,12 @@ describe('PhysicsSystem -> PhysicsSubsystem -> linear damping', () => {
     const physicsSubsystem = new PhysicsSubsystem({
       scene,
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const body = createBody(1);
     const rigidBody = body.getComponent(RigidBody);
 
-    rigidBody.linearVelocity = new Vector2(10, 0);
+    rigidBody.linearVelocity = new Vector(10, 0);
     scene.appendChild(body);
 
     physicsSubsystem.integrateVelocities();
@@ -72,12 +72,12 @@ describe('PhysicsSystem -> PhysicsSubsystem -> linear damping', () => {
     const physicsSubsystem = new PhysicsSubsystem({
       scene,
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const body = createBody(0);
     const rigidBody = body.getComponent(RigidBody);
 
-    rigidBody.linearVelocity = new Vector2(10, 0);
+    rigidBody.linearVelocity = new Vector(10, 0);
     scene.appendChild(body);
 
     physicsSubsystem.integrateVelocities();

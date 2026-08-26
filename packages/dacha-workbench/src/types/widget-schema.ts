@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import type * as GravityIcons from '@gravity-ui/icons';
+import type { Point } from 'dacha';
 
 export type IconName = keyof typeof GravityIcons;
 
@@ -108,14 +109,9 @@ export interface TextAreaField extends AnyField {
   type: 'textarea';
 }
 
-export interface VectorValue {
-  x: number;
-  y: number;
-}
-
 export interface VectorField extends AnyField {
   type: 'vector';
-  initialValue?: VectorValue;
+  initialValue?: Point;
 }
 
 export interface DataField {

@@ -1,5 +1,5 @@
 import { Component } from '../../../engine/component';
-import { MathOps, Vector2, type Point } from '../../../engine/math-lib';
+import { MathOps, Vector, type Point } from '../../../engine/math-lib';
 import type { Actor } from '../../../engine/actor';
 
 export type CharacterMotionMode = 'surface' | 'free';
@@ -25,17 +25,17 @@ export interface CharacterBodyConfig {
  * @category Components
  */
 export class CharacterBody extends Component {
-  private _up: Vector2;
+  private _up: Vector;
 
   /** @internal Pending one-step displacement consumed by CharacterController */
-  _displacement: Vector2;
+  _displacement: Vector;
   /** @internal Whether CharacterController should run overlap recovery */
   _needsRecovery: boolean;
 
   /** Controls contact classification and whether ground snapping is enabled. */
   motionMode: CharacterMotionMode;
   /** Desired character velocity in world units per second */
-  velocity: Vector2;
+  velocity: Vector;
   /** Small distance kept between the character shape and blocking colliders */
   skinWidth: number;
   /** Maximum walkable ground angle in radians, measured from upDirection */
@@ -56,25 +56,25 @@ export class CharacterBody extends Component {
   /** Whether movement hit a ceiling during the last fixed update */
   onCeiling: boolean;
   /** Normal of the current walkable ground surface, updated by CharacterController */
-  groundNormal: Vector2;
+  groundNormal: Vector;
   /** Actor providing the current walkable ground, or null when not grounded */
   groundActor: Actor | null;
 
   constructor(config: CharacterBodyConfig = {}) {
     super();
 
-    this._up = new Vector2(0, -1);
-    this._displacement = new Vector2(0, 0);
+    this._up = new Vector(0, -1);
+    this._displacement = new Vector(0, 0);
     this._needsRecovery = true;
 
-    this.upDirection = new Vector2(
+    this.upDirection = new Vector(
       config.upDirection?.x ?? 0,
       config.upDirection?.y ?? -1,
     );
 
     this.motionMode = config.motionMode ?? 'surface';
     this.disabled = config.disabled ?? false;
-    this.velocity = new Vector2(0, 0);
+    this.velocity = new Vector(0, 0);
     this.skinWidth = config.skinWidth ?? 0.1;
     this.maxSlopeAngle = MathOps.degToRad(config.maxSlopeAngle ?? 45);
     this.maxSlides = config.maxSlides ?? 4;
@@ -89,11 +89,11 @@ export class CharacterBody extends Component {
   }
 
   /** Direction treated as up for ground, ceiling, slopes, ground probes, and jumps */
-  get upDirection(): Vector2 {
+  get upDirection(): Vector {
     return this._up;
   }
 
-  set upDirection(value: Vector2) {
+  set upDirection(value: Vector) {
     this._up = value.clone().normalize();
 
     if (this._up.magnitude === 0) {
@@ -107,7 +107,7 @@ export class CharacterBody extends Component {
    * The displacement is consumed by CharacterController on the next fixed
    * update and is already expected to be scaled by delta time.
    */
-  move(displacement: Vector2): void {
+  move(displacement: Vector): void {
     this._displacement.add(displacement);
   }
 

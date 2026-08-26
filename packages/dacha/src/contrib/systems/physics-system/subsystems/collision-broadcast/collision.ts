@@ -1,5 +1,5 @@
 import type { Actor } from '../../../../../engine/actor';
-import type { Vector2 } from '../../../../../engine/math-lib';
+import type { Vector } from '../../../../../engine/math-lib';
 import type { Point } from '../collision-detection/types';
 
 const STATE: Record<number, CollisionState> = {
@@ -15,14 +15,14 @@ export class Collision {
 
   actor1: Actor;
   actor2: Actor;
-  normal: Vector2;
+  normal: Vector;
   penetration: number;
   contactPoints: Point[];
 
   constructor(
     actor1: Actor,
     actor2: Actor,
-    normal: Vector2,
+    normal: Vector,
     penetration: number,
     contactPoints: Point[],
   ) {

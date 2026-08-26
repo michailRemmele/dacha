@@ -1,11 +1,11 @@
-import type { Vector2 } from '../../../../../../../engine/math-lib';
+import type { Vector } from '../../../../../../../engine/math-lib';
 import type { Point } from '../../types';
 
 export const orientNormal = (
-  normal: Vector2,
+  normal: Vector,
   from: Point,
   to: Point,
-): Vector2 => {
+): Vector => {
   const directionX = to.x - from.x;
   const directionY = to.y - from.y;
 

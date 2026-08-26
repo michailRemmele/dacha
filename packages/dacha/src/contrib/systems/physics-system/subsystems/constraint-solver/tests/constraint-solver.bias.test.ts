@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../engine/math-lib';
 import { RigidBody } from '../../../../../components/rigid-body';
 import { Transform } from '../../../../../components/transform';
 import type { Contact } from '../../collision-detection/types';
@@ -11,21 +11,21 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   it('Cancels approaching normal velocity against a static body and adds separation bias', () => {
     const solver = new ConstraintSolver({
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('static-body', 'static');
     const rigidBody1 = actor1.getComponent(RigidBody);
     const transform1 = actor1.getComponent(Transform);
 
-    rigidBody1.linearVelocity = new Vector2(0, 5);
+    rigidBody1.linearVelocity = new Vector(0, 5);
     transform1.world.position.y = 2;
 
     const contacts: Contact[] = [
       {
         actor1,
         actor2,
-        normal: new Vector2(0, 1),
+        normal: new Vector(0, 1),
         penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
@@ -41,7 +41,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   it('Resets accumulated bias impulses between solver updates', () => {
     const solver = new ConstraintSolver({
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('static-body', 'static');
@@ -51,7 +51,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       {
         actor1,
         actor2,
-        normal: new Vector2(0, 1),
+        normal: new Vector(0, 1),
         penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
@@ -61,7 +61,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
 
     expect(rigidBody1._biasLinearVelocity.y).toBeCloseTo(-3.2);
 
-    rigidBody1._biasLinearVelocity = new Vector2(0, 0);
+    rigidBody1._biasLinearVelocity = new Vector(0, 0);
     rigidBody1._biasAngularVelocity = 0;
 
     solver.update(contacts);
@@ -72,7 +72,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   it('Applies symmetric two-point bias without angular correction', () => {
     const solver = new ConstraintSolver({
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('static-body', 'static');
@@ -84,7 +84,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       {
         actor1,
         actor2,
-        normal: new Vector2(0, 1),
+        normal: new Vector(0, 1),
         penetration: 2.1,
         contactPoints: [
           { x: -1, y: 0 },
@@ -102,7 +102,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   it('Skips separation bias for high-speed bouncy dynamic-static contacts', () => {
     const solver = new ConstraintSolver({
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('bouncy-floor', 'static', {
@@ -112,7 +112,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
     const rigidBody1 = actor1.getComponent(RigidBody);
     const transform1 = actor1.getComponent(Transform);
 
-    rigidBody1.linearVelocity = new Vector2(0, 5);
+    rigidBody1.linearVelocity = new Vector(0, 5);
     rigidBody1._prevLinearVelocity = rigidBody1.linearVelocity.clone();
     transform1.world.position.y = 2;
 
@@ -120,7 +120,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       {
         actor1,
         actor2,
-        normal: new Vector2(0, 1),
+        normal: new Vector(0, 1),
         penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
@@ -137,7 +137,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
     const solve = (contactPoints: Contact['contactPoints']): RigidBody => {
       const solver = new ConstraintSolver({
         time: createTime(),
-        getGravity: (): Vector2 => new Vector2(0, 0),
+        getGravity: (): Vector => new Vector(0, 0),
       });
       const actor1 = createActor('dynamic-body', 'dynamic', {
         restitution: 1,
@@ -156,7 +156,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
         {
           actor1,
           actor2,
-          normal: new Vector2(0, 1),
+          normal: new Vector(0, 1),
           penetration: 2.1,
           contactPoints,
         },
@@ -183,7 +183,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   it('Skips separation bias for high-speed bouncy dynamic-kinematic contacts', () => {
     const solver = new ConstraintSolver({
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('bouncy-platform', 'kinematic', {
@@ -193,14 +193,14 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
 
-    rigidBody1.linearVelocity = new Vector2(0, 5);
+    rigidBody1.linearVelocity = new Vector(0, 5);
     rigidBody1._prevLinearVelocity = rigidBody1.linearVelocity.clone();
 
     const contacts: Contact[] = [
       {
         actor1,
         actor2,
-        normal: new Vector2(0, 1),
+        normal: new Vector(0, 1),
         penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },
@@ -216,7 +216,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
   it('Applies separation bias for bouncy dynamic-dynamic contacts', () => {
     const solver = new ConstraintSolver({
       time: createTime(),
-      getGravity: (): Vector2 => new Vector2(0, 0),
+      getGravity: (): Vector => new Vector(0, 0),
     });
     const actor1 = createActor('body-1', 'dynamic', {
       mass: 1,
@@ -229,8 +229,8 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
     const rigidBody1 = actor1.getComponent(RigidBody);
     const rigidBody2 = actor2.getComponent(RigidBody);
 
-    rigidBody1.linearVelocity = new Vector2(0, 5);
-    rigidBody2.linearVelocity = new Vector2(0, -5);
+    rigidBody1.linearVelocity = new Vector(0, 5);
+    rigidBody2.linearVelocity = new Vector(0, -5);
     rigidBody1._prevLinearVelocity = rigidBody1.linearVelocity.clone();
     rigidBody2._prevLinearVelocity = rigidBody2.linearVelocity.clone();
 
@@ -238,7 +238,7 @@ describe('PhysicsSystem -> ConstraintSolver -> bias', () => {
       {
         actor1,
         actor2,
-        normal: new Vector2(0, 1),
+        normal: new Vector(0, 1),
         penetration: 2.1,
         contactPoints: [{ x: 0, y: 0 }],
       },

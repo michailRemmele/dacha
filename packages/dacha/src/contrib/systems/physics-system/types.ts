@@ -1,6 +1,6 @@
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { Actor } from '../../../engine/actor';
-import type { Vector2, Point } from '../../../engine/math-lib';
+import type { Vector, Point } from '../../../engine/math-lib';
 
 export interface PhysicsSystemOptions extends SceneSystemOptions {
   gravityX?: number;
@@ -38,7 +38,7 @@ export interface PhysicsQueryFilter<T> {
 }
 
 export interface CommonCastParams extends PhysicsQueryFilter<CastHit> {
-  direction: Vector2;
+  direction: Vector;
   maxDistance: number;
 }
 
@@ -49,13 +49,13 @@ export interface RaycastParams extends CommonCastParams {
 export interface CastHit {
   actor: Actor;
   point: Point;
-  normal: Vector2;
+  normal: Vector;
   distance: number;
 }
 
 export interface OverlapHit {
   actor: Actor;
-  normal: Vector2;
+  normal: Vector;
   penetration: number;
   contactPoints: Point[];
 }

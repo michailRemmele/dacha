@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
+import { Vector, VectorOps } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, EdgeWithNormal, Point } from '../../types';
 import { getProjectionOverlap, projectPolygon } from '../common/projections';
 
@@ -7,7 +7,7 @@ export const OVERLAP_TIE_EPSILON = 1e-4;
 export const MAX_CONTACT_POINTS = 2;
 
 export interface AxisOverlap {
-  axis: Vector2;
+  axis: Vector;
   overlap: number;
 }
 
@@ -58,7 +58,7 @@ export const findMinBoxesOverlap = (
 
 const clipSegmentToLine = (
   vertices: Point[],
-  normal: Vector2,
+  normal: Vector,
   offset: number,
 ): Point[] => {
   const clipped: Point[] = [];
@@ -96,7 +96,7 @@ const clipSegmentToLine = (
  */
 const getMostAntiParallelEdge = (
   polygon: BoxGeometry,
-  normal: Vector2,
+  normal: Vector,
 ): EdgeWithNormal => {
   let bestEdge = polygon.edges[0];
   let minDot = VectorOps.dotProduct(bestEdge.normal, normal);
@@ -121,7 +121,7 @@ const getMostAntiParallelEdge = (
  */
 const getMostParallelEdge = (
   polygon: BoxGeometry,
-  normal: Vector2,
+  normal: Vector,
 ): EdgeWithNormal => {
   let bestEdge = polygon.edges[0];
   let maxDot = VectorOps.dotProduct(bestEdge.normal, normal);
@@ -174,7 +174,7 @@ const dedupePoints = (points: Point[]): Point[] => {
  */
 export const buildContactPoints = (
   referencePolygon: BoxGeometry,
-  referenceNormal: Vector2,
+  referenceNormal: Vector,
   incidentPolygon: BoxGeometry,
 ): Point[] => {
   const referenceEdge = getMostParallelEdge(referencePolygon, referenceNormal);
@@ -183,7 +183,7 @@ export const buildContactPoints = (
     referenceNormal,
   );
 
-  const tangent = new Vector2(
+  const tangent = new Vector(
     referenceEdge.point2.x - referenceEdge.point1.x,
     referenceEdge.point2.y - referenceEdge.point1.y,
   );

@@ -1,7 +1,7 @@
 import { ActorQuery, type Actor } from '../../../../../engine/actor';
 import type { Scene } from '../../../../../engine/scene';
 import type { Time } from '../../../../../engine/time';
-import type { Vector2 } from '../../../../../engine/math-lib';
+import type { Vector } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
 import { Collider } from '../../../../components/collider';
@@ -11,13 +11,13 @@ import { calculateInertia } from './mass-properties';
 export interface PhysicsSubsystemOptions {
   scene: Scene;
   time: Time;
-  getGravity: () => Vector2;
+  getGravity: () => Vector;
 }
 
 export class PhysicsSubsystem {
   private actorQuery: ActorQuery;
   private time: Time;
-  private getGravity: () => Vector2;
+  private getGravity: () => Vector;
 
   private kinematicMovedActors: Set<Actor>;
 

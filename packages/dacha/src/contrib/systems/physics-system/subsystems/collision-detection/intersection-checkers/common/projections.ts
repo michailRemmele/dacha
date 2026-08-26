@@ -1,4 +1,4 @@
-import { VectorOps, type Vector2 } from '../../../../../../../engine/math-lib';
+import { VectorOps, type Vector } from '../../../../../../../engine/math-lib';
 import type { Point } from '../../types';
 import { isDefinitelyPositive } from '../../utils';
 
@@ -7,7 +7,7 @@ export interface Projection {
   max: number;
 }
 
-export const projectPolygon = (points: Point[], axis: Vector2): Projection => {
+export const projectPolygon = (points: Point[], axis: Vector): Projection => {
   let min = VectorOps.dotProduct(points[0], axis);
   let max = min;
 
@@ -27,7 +27,7 @@ export const projectPolygon = (points: Point[], axis: Vector2): Projection => {
 export const projectSegment = (
   point1: Point,
   point2: Point,
-  axis: Vector2,
+  axis: Vector,
 ): Projection => {
   const projection1 = VectorOps.dotProduct(point1, axis);
   const projection2 = VectorOps.dotProduct(point2, axis);

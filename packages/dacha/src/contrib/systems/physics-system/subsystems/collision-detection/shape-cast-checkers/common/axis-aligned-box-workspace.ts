@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, Point } from '../../types';
 import { BOX_CORNER_SIGNS } from './constants';
 
@@ -25,22 +25,22 @@ export class AxisAlignedBoxWorkspace {
       {
         point1: this.points[0],
         point2: this.points[1],
-        normal: new Vector2(-1, 0),
+        normal: new Vector(-1, 0),
       },
       {
         point1: this.points[1],
         point2: this.points[2],
-        normal: new Vector2(0, 1),
+        normal: new Vector(0, 1),
       },
       {
         point1: this.points[2],
         point2: this.points[3],
-        normal: new Vector2(1, 0),
+        normal: new Vector(1, 0),
       },
       {
         point1: this.points[3],
         point2: this.points[0],
-        normal: new Vector2(0, -1),
+        normal: new Vector(0, -1),
       },
     ],
   };

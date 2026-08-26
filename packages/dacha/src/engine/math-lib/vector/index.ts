@@ -3,7 +3,7 @@
  *
  * @category Core
  */
-export class Vector2 {
+export class Vector {
   /** X coordinate of the vector */
   x: number;
   /** Y coordinate of the vector */
@@ -45,7 +45,7 @@ export class Vector2 {
    * @param vector - Vector to add
    * @returns The current vector after the addition
    */
-  add(vector: Vector2): Vector2 {
+  add(vector: Vector): Vector {
     this.x += vector.x;
     this.y += vector.y;
 
@@ -58,7 +58,7 @@ export class Vector2 {
    * @param number - Number to multiply by
    * @returns The current vector after scaling
    */
-  multiplyNumber(number: number): Vector2 {
+  multiplyNumber(number: number): Vector {
     this.x *= number;
     this.y *= number;
 
@@ -72,7 +72,7 @@ export class Vector2 {
    *
    * @returns The current vector after normalization
    */
-  normalize(): Vector2 {
+  normalize(): Vector {
     const magnitude = this.magnitude;
 
     if (magnitude === 0) {
@@ -90,7 +90,7 @@ export class Vector2 {
    * @param vector - Vector to compare with
    * @returns True if the vectors are equal, false otherwise
    */
-  equals(vector: Vector2): boolean {
+  equals(vector: Vector): boolean {
     return this.x === vector.x && this.y === vector.y;
   }
 
@@ -99,7 +99,7 @@ export class Vector2 {
    *
    * @returns A new vector with the same x and y coordinates
    */
-  clone(): Vector2 {
-    return new Vector2(this.x, this.y);
+  clone(): Vector {
+    return new Vector(this.x, this.y);
   }
 }

@@ -1,6 +1,6 @@
 import {
   MathOps,
-  Vector2,
+  Vector,
   VectorOps,
 } from '../../../../../../../engine/math-lib';
 import type {
@@ -31,7 +31,7 @@ import { getClosestPointsBetweenSegments } from '../common/segment-distance';
 const buildAxisContactPoints = (
   box: BoxGeometry,
   capsule: CapsuleGeometry,
-  normal: Vector2,
+  normal: Vector,
 ): Point[] => {
   let start = 0;
   let end = 1;
@@ -97,7 +97,7 @@ const buildAxisContactPoints = (
 const getAxisOverlap = (
   box: BoxGeometry,
   capsule: CapsuleGeometry,
-  axis: Vector2,
+  axis: Vector,
 ): number | false => {
   const boxProjection = projectPolygon(box.points, axis);
   const segmentProjection = projectSegment(
@@ -161,7 +161,7 @@ export const buildBoxCapsuleIntersection = (
   }
 
   if (isDefinitelyPositive(minDistance)) {
-    const normal = new Vector2(
+    const normal = new Vector(
       closestCapsulePoint.x - closestBoxPoint.x,
       closestCapsulePoint.y - closestBoxPoint.y,
     ).normalize();
