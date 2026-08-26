@@ -1,4 +1,4 @@
-import { SceneSystem, Transform, Camera, Vector2 } from 'dacha';
+import { SceneSystem, Transform, Camera, Vector } from 'dacha';
 import type { World, SceneSystemOptions, Actor } from 'dacha';
 import type { MouseControlEvent } from 'dacha/events';
 
@@ -16,7 +16,7 @@ export class HandToolSystem extends SceneSystem {
   private rootNode: HTMLElement;
 
   private isCursorTracking: boolean;
-  private anchor: Vector2;
+  private anchor: Vector;
 
   constructor(options: SceneSystemOptions) {
     super();
@@ -29,7 +29,7 @@ export class HandToolSystem extends SceneSystem {
     this.rootNode = document.getElementById(CANVAS_ROOT) as HTMLElement;
 
     this.isCursorTracking = false;
-    this.anchor = new Vector2(0, 0);
+    this.anchor = new Vector(0, 0);
 
     this.world.addEventListener(EventType.SelectScene, this.handleSceneChange);
     this.world.addEventListener(

@@ -3,7 +3,7 @@ import { eventQueue } from '../../../../engine/event-target';
 import { TemplateCollection } from '../../../../engine/template';
 import { World } from '../../../../engine/world';
 import { Assets } from '../../../../engine/asset';
-import { Vector2 } from '../../../../engine/math-lib';
+import { Vector } from '../../../../engine/math-lib';
 import { CharacterHit } from '../../../../events';
 import type { CharacterHitEvent } from '../../../../events';
 import { CharacterBody, RigidBody, Transform } from '../../../components';
@@ -100,7 +100,7 @@ describe('Systems -> CharacterController', () => {
     const controller = addController(character);
     const transform = character.getComponent(Transform);
 
-    controller.move(new Vector2(2, 0));
+    controller.move(new Vector(2, 0));
     scene.appendChild(character);
 
     characterController.fixedUpdate();
@@ -128,7 +128,7 @@ describe('Systems -> CharacterController', () => {
     const transform = character.getComponent(Transform);
     const wall = createBoxActor('wall', 'static', 3, 0);
 
-    controller.velocity = new Vector2(50, 20);
+    controller.velocity = new Vector(50, 20);
     scene.appendChild(character);
     scene.appendChild(wall);
 
@@ -157,7 +157,7 @@ describe('Systems -> CharacterController', () => {
     const listener = jest.fn();
 
     character.addEventListener(CharacterHit, listener);
-    controller.velocity = new Vector2(50, 0);
+    controller.velocity = new Vector(50, 0);
     scene.appendChild(character);
     scene.appendChild(wall);
 
@@ -193,7 +193,7 @@ describe('Systems -> CharacterController', () => {
 
     character.addEventListener(CharacterHit, listener);
     controller.motionMode = 'free';
-    controller.velocity = new Vector2(50, 0);
+    controller.velocity = new Vector(50, 0);
     scene.appendChild(character);
     scene.appendChild(wall);
 
@@ -506,7 +506,7 @@ describe('Systems -> CharacterController', () => {
     const transform = character.getComponent(Transform);
     const floor = createBoxActor('floor', 'static', 0, 2);
 
-    controller.move(new Vector2(0, -0.1));
+    controller.move(new Vector(0, -0.1));
     scene.appendChild(character);
     scene.appendChild(floor);
 
@@ -531,7 +531,7 @@ describe('Systems -> CharacterController', () => {
     const controller = addController(character);
     const wall = createBoxActor('wall', 'static', -2, 0);
 
-    controller.upDirection = new Vector2(1, 0);
+    controller.upDirection = new Vector(1, 0);
     scene.appendChild(character);
     scene.appendChild(wall);
 

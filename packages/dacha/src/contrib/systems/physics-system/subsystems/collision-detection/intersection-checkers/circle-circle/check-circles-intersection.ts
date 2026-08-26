@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../../engine/math-lib';
 import type { CircleGeometry, Intersection } from '../../types';
 import { isGreaterThan } from '../../utils';
 
@@ -37,7 +37,7 @@ export const checkCirclesIntersection = (
 
   if (distance === 0) {
     return {
-      normal: new Vector2(1, 0),
+      normal: new Vector(1, 0),
       penetration,
       contactPoints: [
         {
@@ -48,7 +48,7 @@ export const checkCirclesIntersection = (
     };
   }
 
-  const normal = new Vector2(offsetX, offsetY);
+  const normal = new Vector(offsetX, offsetY);
   normal.normalize();
 
   return {

@@ -1,4 +1,4 @@
-import type { Vector2, Point } from '../../../../../engine/math-lib';
+import type { Vector, Point } from '../../../../../engine/math-lib';
 import type { Actor } from '../../../../../engine/actor';
 import type { CastHit, OverlapHit } from '../../types';
 import type { DynamicAABBTreeEntryId } from './dynamic-aabb-tree';
@@ -16,7 +16,7 @@ export interface Edge {
 }
 
 export interface EdgeWithNormal extends Edge {
-  normal: Vector2;
+  normal: Vector;
 }
 
 export interface BoxGeometry {
@@ -34,7 +34,7 @@ export interface SegmentGeometry {
   center: Point;
   point1: Point;
   point2: Point;
-  normal: Vector2;
+  normal: Vector;
 }
 
 export interface CapsuleGeometry extends SegmentGeometry {
@@ -51,7 +51,7 @@ export interface ActorGeometryParams {
 
 export interface RayGeometry {
   origin: Point;
-  direction: Vector2;
+  direction: Vector;
   maxDistance: number;
 }
 
@@ -127,13 +127,13 @@ export type ProxyPair = [ActorProxy, ActorProxy];
 export interface Contact {
   actor1: Actor;
   actor2: Actor;
-  normal: Vector2;
+  normal: Vector;
   penetration: number;
   contactPoints: Point[];
 }
 
 export interface Intersection {
-  normal: Vector2;
+  normal: Vector;
   penetration: number;
   contactPoints: Point[];
   distance?: number;

@@ -3,7 +3,7 @@ import type { Time } from '../../../../../engine/time';
 import {
   MathOps,
   type Point,
-  type Vector2,
+  type Vector,
 } from '../../../../../engine/math-lib';
 import { RigidBody } from '../../../../components/rigid-body';
 import { Transform } from '../../../../components/transform';
@@ -36,7 +36,7 @@ import {
 
 interface ConstraintSolverOptions {
   time: Time;
-  getGravity: () => Vector2;
+  getGravity: () => Vector;
   solverIterations?: number;
   maxAllowedPenetration?: number;
   maxBiasVelocity?: number;
@@ -60,7 +60,7 @@ export class ConstraintSolver {
   private contactStateManager: ContactStateManager;
 
   private time: Time;
-  private getGravity: () => Vector2;
+  private getGravity: () => Vector;
   private restitutionThreshold: number;
 
   private solverIterations: number;

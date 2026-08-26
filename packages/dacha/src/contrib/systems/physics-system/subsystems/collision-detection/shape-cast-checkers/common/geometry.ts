@@ -1,4 +1,4 @@
-import type { Vector2 } from '../../../../../../../engine/math-lib';
+import type { Vector } from '../../../../../../../engine/math-lib';
 import type { Point } from '../../types';
 import { isZero } from '../../utils';
 
@@ -17,7 +17,7 @@ export const getSquaredDistance = (point1: Point, point2: Point): number =>
   (point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2;
 
 export const setNormal = (
-  normal: Vector2,
+  normal: Vector,
   point1: Point,
   point2: Point,
 ): void => {

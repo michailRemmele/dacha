@@ -1,6 +1,6 @@
 import { Actor } from '../../../../../../../engine/actor';
 import { Collider, Transform } from '../../../../../../components';
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../../engine/math-lib';
 
 import { buildBoxCastGeometry } from '../build-box-cast-geometry';
 import { buildCapsuleCastGeometry } from '../build-capsule-cast-geometry';
@@ -9,7 +9,7 @@ import { buildCircleCastGeometry } from '../build-circle-cast-geometry';
 describe('PhysicsSystem -> collision-detection -> cast geometry builders', () => {
   const cast = {
     actor: new Actor({ id: 'actor', name: 'actor' }),
-    direction: new Vector2(3, 4),
+    direction: new Vector(3, 4),
     maxDistance: 10,
   };
 
@@ -44,7 +44,7 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
         size: { x: 2, y: 4 },
         rotation: Math.PI / 2,
       },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 
@@ -114,7 +114,7 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
         radius: 0.5,
         rotation: Math.PI / 2,
       },
-      direction: new Vector2(1, 0),
+      direction: new Vector(1, 0),
       maxDistance: 10,
     });
 

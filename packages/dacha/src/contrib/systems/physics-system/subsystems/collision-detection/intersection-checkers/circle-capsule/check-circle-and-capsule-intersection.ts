@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
+import { Vector, VectorOps } from '../../../../../../../engine/math-lib';
 import type {
   CapsuleGeometry,
   CircleGeometry,
@@ -21,7 +21,7 @@ export const checkCircleAndCapsuleIntersection = (
   capsule: CapsuleGeometry,
 ): Intersection | false => {
   const closestPoint = VectorOps.getClosestPointOnEdge(circle.center, capsule);
-  const normal = new Vector2(
+  const normal = new Vector(
     circle.center.x - closestPoint.x,
     circle.center.y - closestPoint.y,
   );

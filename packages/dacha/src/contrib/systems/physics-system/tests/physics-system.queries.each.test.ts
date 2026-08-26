@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../engine/math-lib';
+import { Vector } from '../../../../engine/math-lib';
 import { PhysicsAPI } from '../index';
 import type { CastHit, OverlapHit } from '../types';
 
@@ -28,7 +28,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
     physicsApi.raycastEach(
       {
         origin: { x: 0, y: 0 },
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
       },
       (hit) => {
@@ -46,7 +46,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
     physicsApi.raycastEach(
       {
         origin: { x: 0, y: 0 },
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
         hitFilter: (hit): boolean => hit.actor.id !== 'b',
       },
@@ -65,7 +65,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
     physicsApi.raycastEach(
       {
         origin: { x: 0, y: 0 },
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
       },
       (hit) => {
@@ -83,7 +83,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
     physicsApi.raycastEach(
       {
         origin: { x: 0, y: 0 },
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
       },
       (hit) => {
@@ -105,7 +105,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
     physicsApi.raycastEach(
       {
         origin: { x: 0, y: 0 },
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
       },
       (hit) => {
@@ -113,7 +113,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
         physicsApi.raycastEach(
           {
             origin: { x: 3, y: 0 },
-            direction: new Vector2(1, 0),
+            direction: new Vector(1, 0),
             maxDistance: 2,
           },
           (innerHit) => {
@@ -153,7 +153,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
     physicsApi.shapeCastEach(
       {
         shape: { type: 'circle', center: { x: 0, y: 0 }, radius: 0.5 },
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
       },
       (hit) => {
@@ -182,7 +182,7 @@ describe('Systems -> PhysicsSystem -> Each queries', () => {
     physicsApi.castActorEach(
       {
         actor: caster,
-        direction: new Vector2(1, 0),
+        direction: new Vector(1, 0),
         maxDistance: 20,
       },
       (hit) => {

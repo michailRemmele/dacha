@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../../engine/math-lib';
 import type {
   CapsuleGeometry,
   Intersection,
@@ -29,7 +29,7 @@ export const buildSegmentCapsuleIntersection = (
     return false;
   }
 
-  const normal = new Vector2(
+  const normal = new Vector(
     closest.point2.x - closest.point1.x,
     closest.point2.y - closest.point1.y,
   );

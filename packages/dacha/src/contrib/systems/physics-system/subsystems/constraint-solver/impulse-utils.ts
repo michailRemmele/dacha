@@ -1,4 +1,4 @@
-import type { Vector2 } from '../../../../../engine/math-lib';
+import type { Vector } from '../../../../../engine/math-lib';
 import type { RigidBody } from '../../../../components/rigid-body';
 
 import type { ContactPoint, ContactState } from './contact-state-manager';
@@ -50,9 +50,9 @@ export const getEffectiveMass = (
  * a direction, using the supplied velocity fields (live, previous, or bias).
  */
 const getRelativeVelocityAtPoint = (
-  linearVelocityA: Vector2,
+  linearVelocityA: Vector,
   angularVelocityA: number,
-  linearVelocityB: Vector2,
+  linearVelocityB: Vector,
   angularVelocityB: number,
   point: ContactPoint,
   directionX: number,

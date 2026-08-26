@@ -1,12 +1,5 @@
-import { Vector2 } from './vector2';
-
-/**
- * A point in 2D space with x and y coordinates.
- */
-interface Point {
-  x: number;
-  y: number;
-}
+import { Vector } from './index';
+import type { Point } from '../math/ops';
 
 /**
  * An edge defined by two points in 2D space.
@@ -54,7 +47,7 @@ export class VectorOps {
    * Creates a unit vector from an angle in radians.
    *
    * @param angle - Angle in radians
-   * @returns A normalized Vector2 pointing in the direction of the angle
+   * @returns A normalized Vector pointing in the direction of the angle
    *
    * @example
    * ```typescript
@@ -62,11 +55,11 @@ export class VectorOps {
    * const angle = VectorOps.getVectorByAngle(Math.PI / 2);
    * ```
    */
-  static getVectorByAngle(angle: number): Vector2 {
+  static getVectorByAngle(angle: number): Vector {
     const x = this.fixCalcError(Math.cos(angle));
     const y = this.fixCalcError(Math.sin(angle));
 
-    return new Vector2(x, y);
+    return new Vector(x, y);
   }
 
   /**
@@ -93,7 +86,7 @@ export class VectorOps {
    * @param x2 - X coordinate of the second point
    * @param y1 - Y coordinate of the first point
    * @param y2 - Y coordinate of the second point
-   * @returns A normalized Vector2 representing the line's normal
+   * @returns A normalized Vector representing the line's normal
    *
    * @example
    * ```typescript
@@ -101,12 +94,12 @@ export class VectorOps {
    * const normal = VectorOps.getNormal(0, 10, 0, 0);
    * ```
    */
-  static getNormal(x1: number, x2: number, y1: number, y2: number): Vector2 {
+  static getNormal(x1: number, x2: number, y1: number, y2: number): Vector {
     if (x1 === x2 && y1 === y2) {
       return VectorOps.getVectorByAngle(0);
     }
 
-    const normal = new Vector2(y1 - y2, x2 - x1);
+    const normal = new Vector(y1 - y2, x2 - x1);
     normal.multiplyNumber(1 / normal.magnitude);
 
     return normal;
@@ -122,7 +115,7 @@ export class VectorOps {
    * @example
    * ```typescript
    * const point = { x: 3, y: 4 };
-   * const vector = new Vector2(1, 2);
+   * const vector = new Vector(1, 2);
    * const dot = VectorOps.dotProduct(point, vector);
    * ```
    */

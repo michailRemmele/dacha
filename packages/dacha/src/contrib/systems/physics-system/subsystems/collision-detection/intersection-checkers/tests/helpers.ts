@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
+import { Vector, VectorOps } from '../../../../../../../engine/math-lib';
 import { Collider, Transform } from '../../../../../../components';
 import { buildBoxGeometry } from '../../geometry-builders/build-box-geometry';
 import { buildCircleGeometry } from '../../geometry-builders/build-circle-geometry';
@@ -120,7 +120,7 @@ export const createRayGeometry = (
 ): RayGeometry =>
   buildRayGeometry({
     origin: { x: originX, y: originY },
-    direction: new Vector2(directionX, directionY),
+    direction: new Vector(directionX, directionY),
     maxDistance,
   });
 

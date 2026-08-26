@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../engine/math-lib';
+import { Vector } from '../../../../engine/math-lib';
 import { RigidBody } from '../../../components';
 import { Transform } from '../../../components/transform';
 import { PhysicsAPI } from '../api';
@@ -38,8 +38,8 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
     const rigidBody = body.getComponent(RigidBody);
     const transform = body.getComponent(Transform);
 
-    rigidBody.applyForce(new Vector2(100, 100));
-    rigidBody.applyImpulse(new Vector2(100, 100));
+    rigidBody.applyForce(new Vector(100, 100));
+    rigidBody.applyImpulse(new Vector(100, 100));
 
     scene.appendChild(body);
 
@@ -47,7 +47,7 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
 
     expect(transform.world.position.x).toBeCloseTo(0);
     expect(transform.world.position.y).toBeCloseTo(0);
-    expect(rigidBody.linearVelocity.equals(new Vector2(0, 0))).toEqual(true);
+    expect(rigidBody.linearVelocity.equals(new Vector(0, 0))).toEqual(true);
   });
 
   it('Moves a kinematic body to movePosition target for one fixed update', () => {
@@ -59,12 +59,12 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
 
     scene.appendChild(body);
 
-    rigidBody.movePosition(new Vector2(5, 0));
+    rigidBody.movePosition(new Vector(5, 0));
     physicsSystem.fixedUpdate();
 
     expect(transform.world.position.x).toBeCloseTo(5);
     expect(transform.world.position.y).toBeCloseTo(0);
-    expect(rigidBody.linearVelocity.equals(new Vector2(0, 0))).toEqual(true);
+    expect(rigidBody.linearVelocity.equals(new Vector(0, 0))).toEqual(true);
 
     physicsSystem.fixedUpdate();
 
@@ -76,11 +76,11 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
     const { world } = createPhysicsSystem(scene, undefined, 20, 10);
     const physicsApi = world.systemApi.get(PhysicsAPI);
 
-    expect(physicsApi.gravity.equals(new Vector2(10, 20))).toBe(true);
+    expect(physicsApi.gravity.equals(new Vector(10, 20))).toBe(true);
 
-    physicsApi.gravity = new Vector2(30, 40);
+    physicsApi.gravity = new Vector(30, 40);
 
-    expect(physicsApi.gravity.equals(new Vector2(30, 40))).toBe(true);
+    expect(physicsApi.gravity.equals(new Vector(30, 40))).toBe(true);
   });
 
   it('Applies vector gravity to dynamic bodies', () => {
@@ -92,7 +92,7 @@ describe('Systems -> PhysicsSystem -> kinematic bodies', () => {
     const transform = body.getComponent(Transform);
 
     rigidBody.gravityScale = 1;
-    physicsApi.gravity = new Vector2(10, 20);
+    physicsApi.gravity = new Vector(10, 20);
 
     scene.appendChild(body);
 

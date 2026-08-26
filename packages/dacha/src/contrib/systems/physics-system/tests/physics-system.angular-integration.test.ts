@@ -1,5 +1,5 @@
 import { Actor } from '../../../../engine/actor';
-import { Vector2 } from '../../../../engine/math-lib';
+import { Vector } from '../../../../engine/math-lib';
 import { Collider, RigidBody } from '../../../components';
 import { Transform } from '../../../components/transform';
 
@@ -94,7 +94,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     const actor = createDynamicBody();
     const rigidBody = actor.getComponent(RigidBody);
 
-    rigidBody.applyForce(new Vector2(0, 4), { x: 1, y: 0 });
+    rigidBody.applyForce(new Vector(0, 4), { x: 1, y: 0 });
     scene.appendChild(actor);
 
     physicsSystem.fixedUpdate();
@@ -110,7 +110,7 @@ describe('Systems -> PhysicsSystem -> angular integration', () => {
     const actor = createDynamicBody();
     const rigidBody = actor.getComponent(RigidBody);
 
-    rigidBody.applyImpulse(new Vector2(0, 4), { x: 1, y: 0 });
+    rigidBody.applyImpulse(new Vector(0, 4), { x: 1, y: 0 });
     scene.appendChild(actor);
 
     physicsSystem.fixedUpdate();

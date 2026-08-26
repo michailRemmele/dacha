@@ -1,4 +1,5 @@
 import type { HTMLProps } from 'react';
+import type { Point } from 'dacha';
 
 export interface InputProps
   extends Omit<HTMLProps<HTMLInputElement>, 'size' | 'ref' | 'onChange'> {
@@ -66,14 +67,9 @@ export interface RangeInputProps
   step: number;
 }
 
-export interface VectorValue {
-  x: number;
-  y: number;
-}
-
 export interface VectorInputProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value: VectorValue;
-  onChange?: (value: VectorValue) => void;
+  value: Point;
+  onChange?: (value: Point) => void;
 }
 
 export interface TextAreaProps

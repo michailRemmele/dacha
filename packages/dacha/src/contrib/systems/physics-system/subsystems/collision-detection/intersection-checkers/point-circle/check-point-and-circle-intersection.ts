@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../../../engine/math-lib';
+import { Vector } from '../../../../../../../engine/math-lib';
 import type { CircleGeometry, PointGeometry, Intersection } from '../../types';
 import { isGreaterThan } from '../../utils';
 
@@ -23,8 +23,8 @@ export const checkPointAndCircleIntersection = (
 
   const normal =
     distance === 0
-      ? new Vector2(1, 0)
-      : new Vector2(offsetX, offsetY).normalize();
+      ? new Vector(1, 0)
+      : new Vector(offsetX, offsetY).normalize();
 
   return {
     normal,

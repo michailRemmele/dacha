@@ -1,4 +1,4 @@
-import { VectorOps, type Vector2 } from '../../../../../../../engine/math-lib';
+import { VectorOps, type Vector } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, EdgeWithNormal } from '../../types';
 import {
   isGreaterThan,
@@ -80,7 +80,7 @@ export const checkRayAndBoxIntersection: RaycastCheckerFn<BoxGeometry> = (
     y: ray.origin.y + ray.direction.y * hitDistance,
   };
 
-  const normal: Vector2 = hitEdge.normal.clone();
+  const normal: Vector = hitEdge.normal.clone();
 
   return {
     normal,

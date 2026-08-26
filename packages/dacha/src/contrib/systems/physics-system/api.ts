@@ -1,4 +1,4 @@
-import type { Vector2 } from '../../../engine/math-lib';
+import type { Vector } from '../../../engine/math-lib';
 import type {
   CastHit,
   OverlapHit,
@@ -28,8 +28,8 @@ export interface PhysicsAPIHandlers {
     params: OverlapActorParams,
     callback: OverlapHitCallback,
   ): void;
-  getGravity(): Vector2;
-  setGravity(gravity: Vector2): void;
+  getGravity(): Vector;
+  setGravity(gravity: Vector): void;
 }
 
 /**
@@ -52,7 +52,7 @@ export class PhysicsAPI {
   /**
    * Current gravity vector.
    */
-  get gravity(): Vector2 {
+  get gravity(): Vector {
     return this.handlers.getGravity();
   }
 
@@ -61,7 +61,7 @@ export class PhysicsAPI {
    *
    * @param gravity - New gravity vector
    */
-  set gravity(gravity: Vector2) {
+  set gravity(gravity: Vector) {
     this.handlers.setGravity(gravity);
   }
 

@@ -1,4 +1,4 @@
-import { Vector2, VectorOps } from '../../../../../../../engine/math-lib';
+import { Vector, VectorOps } from '../../../../../../../engine/math-lib';
 import type { BoxGeometry, EdgeWithNormal, Point } from '../../types';
 import { isDefinitelyPositive, isZero } from '../../utils';
 import {
@@ -52,7 +52,7 @@ export class ConvexHullWorkspace {
     this.edges = Array.from({ length: maxPoints }, () => ({
       point1: { x: 0, y: 0 },
       point2: { x: 0, y: 0 },
-      normal: new Vector2(0, 0),
+      normal: new Vector(0, 0),
     }));
   }
 

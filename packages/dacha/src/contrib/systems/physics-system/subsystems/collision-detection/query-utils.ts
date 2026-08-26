@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../../engine/math-lib';
+import { Vector } from '../../../../../engine/math-lib';
 import { Collider, Transform } from '../../../../components';
 import type {
   RaycastParams,
@@ -159,7 +159,7 @@ export const getActorCastQueryType = (
 export const makeCastHit = (): CastHit => ({
   actor: undefined as unknown as CastHit['actor'],
   point: { x: 0, y: 0 },
-  normal: new Vector2(0, 0),
+  normal: new Vector(0, 0),
   distance: 0,
 });
 
@@ -172,7 +172,7 @@ const cloneCastHit = (hit: CastHit): CastHit => ({
 
 export const makeOverlapHit = (): OverlapHit => ({
   actor: undefined as unknown as OverlapHit['actor'],
-  normal: new Vector2(0, 0),
+  normal: new Vector(0, 0),
   penetration: 0,
   contactPoints: [],
 });

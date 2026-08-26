@@ -1,6 +1,6 @@
 import {
   MathOps,
-  Vector2,
+  Vector,
   VectorOps,
 } from '../../../../../../../engine/math-lib';
 import type {
@@ -35,7 +35,7 @@ export const checkCircleAndSegmentIntersection = (
     return false;
   }
 
-  const normal = new Vector2(
+  const normal = new Vector(
     circle.center.x - closestPoint.x,
     circle.center.y - closestPoint.y,
   );

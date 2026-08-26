@@ -1,5 +1,5 @@
 import { Component } from '../../../engine/component';
-import { Vector2, type Point } from '../../../engine/math-lib';
+import { Vector, type Point } from '../../../engine/math-lib';
 
 export type RigidBodyType = 'dynamic' | 'static' | 'kinematic';
 
@@ -18,12 +18,12 @@ export interface RigidBodyConfig {
 }
 
 interface PointForce {
-  force: Vector2;
+  force: Vector;
   position: Point;
 }
 
 interface PointImpulse {
-  impulse: Vector2;
+  impulse: Vector;
   position: Point;
 }
 
@@ -70,13 +70,13 @@ export class RigidBody extends Component {
   private _friction: number;
 
   /** @internal Pending one-step kinematic movement target */
-  _movementTarget: Vector2 | null;
+  _movementTarget: Vector | null;
   /** @internal Linear velocity from the start of the current physics step */
-  _prevLinearVelocity: Vector2;
+  _prevLinearVelocity: Vector;
   /** @internal Angular velocity from the start of the current physics step */
   _prevAngularVelocity: number;
   /** @internal Temporary solver velocity used for contact separation */
-  _biasLinearVelocity: Vector2;
+  _biasLinearVelocity: Vector;
   /** @internal Temporary solver angular velocity used for contact separation */
   _biasAngularVelocity: number;
 
@@ -89,7 +89,7 @@ export class RigidBody extends Component {
   /** Angular damping used to slow down rotation over time */
   angularDamping: number;
   /** Current linear velocity in world units per second */
-  linearVelocity: Vector2;
+  linearVelocity: Vector;
   /** Current angular velocity of the rigid body in radians per second */
   angularVelocity: number;
   /** Whether dynamic rotation is locked. Locked bodies do not spin from torque or contacts. */
@@ -98,9 +98,9 @@ export class RigidBody extends Component {
   disabled: boolean;
 
   /** @internal Force applied at the rigid body center */
-  _centralForce: Vector2;
+  _centralForce: Vector;
   /** @internal Impulse applied at the rigid body center */
-  _centralImpulse: Vector2;
+  _centralImpulse: Vector;
   /** @internal Forces applied at world-space positions */
   _pointForces: PointForce[];
   /** @internal Impulses applied at world-space positions */
@@ -113,7 +113,7 @@ export class RigidBody extends Component {
   /** Whether contacts should only be resolved from one side */
   oneWay: boolean;
   /** Local-space normal that points toward the blocking side */
-  oneWayNormal?: Vector2;
+  oneWayNormal?: Vector;
 
   /**
    * Creates a new RigidBody component.
@@ -130,9 +130,9 @@ export class RigidBody extends Component {
     this._friction = 0;
 
     this._movementTarget = null;
-    this._prevLinearVelocity = new Vector2(0, 0);
+    this._prevLinearVelocity = new Vector(0, 0);
     this._prevAngularVelocity = 0;
-    this._biasLinearVelocity = new Vector2(0, 0);
+    this._biasLinearVelocity = new Vector(0, 0);
     this._biasAngularVelocity = 0;
 
     this.type = config.type;
@@ -145,11 +145,11 @@ export class RigidBody extends Component {
     this.friction = config.friction ?? 0.6;
     this.lockRotation = config.lockRotation ?? false;
     this.disabled = config.disabled;
-    this.linearVelocity = new Vector2(0, 0);
+    this.linearVelocity = new Vector(0, 0);
     this.angularVelocity = 0;
 
-    this._centralForce = new Vector2(0, 0);
-    this._centralImpulse = new Vector2(0, 0);
+    this._centralForce = new Vector(0, 0);
+    this._centralImpulse = new Vector(0, 0);
     this._pointForces = [];
     this._pointImpulses = [];
     this._torque = 0;
@@ -158,7 +158,7 @@ export class RigidBody extends Component {
     this.oneWay = config.oneWay ?? false;
 
     if (this.oneWay) {
-      this.oneWayNormal = new Vector2(
+      this.oneWayNormal = new Vector(
         config.oneWayNormal?.x ?? 0,
         config.oneWayNormal?.y ?? 0,
       ).normalize();
@@ -257,7 +257,7 @@ export class RigidBody extends Component {
    * world-space point where the force is applied; off-center forces can also
    * rotate the body.
    */
-  applyForce(force: Vector2, position?: Point): void {
+  applyForce(force: Vector, position?: Point): void {
     if (this.disabled || this.type !== 'dynamic') {
       return;
     }
@@ -280,7 +280,7 @@ export class RigidBody extends Component {
    * When `position` is provided, it is a world-space point where the impulse is
    * applied; off-center impulses can also rotate the body.
    */
-  applyImpulse(impulse: Vector2, position?: Point): void {
+  applyImpulse(impulse: Vector, position?: Point): void {
     if (this.disabled || this.type !== 'dynamic') {
       return;
     }
@@ -342,7 +342,7 @@ export class RigidBody extends Component {
    * The physics system computes a one-step velocity from the current position
    * to this target so contacts can react to the kinematic movement.
    */
-  movePosition(position: Vector2): void {
+  movePosition(position: Vector): void {
     if (this.disabled || this.type !== 'kinematic') {
       return;
     }

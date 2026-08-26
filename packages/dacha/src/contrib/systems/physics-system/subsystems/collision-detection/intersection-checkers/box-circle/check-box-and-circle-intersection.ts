@@ -1,6 +1,6 @@
 import {
   MathOps,
-  Vector2,
+  Vector,
   VectorOps,
 } from '../../../../../../../engine/math-lib';
 import type {
@@ -17,8 +17,8 @@ const buildNormal = (
   circle: CircleGeometry,
   closestEdge: EdgeWithNormal,
   closestPoint: Point,
-): Vector2 => {
-  let normal = new Vector2(
+): Vector => {
+  let normal = new Vector(
     circle.center.x - closestPoint.x,
     circle.center.y - closestPoint.y,
   );

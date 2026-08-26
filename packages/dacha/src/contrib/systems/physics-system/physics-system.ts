@@ -1,7 +1,7 @@
 import { SceneSystem } from '../../../engine/system';
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { World } from '../../../engine/world';
-import { Vector2 } from '../../../engine/math-lib';
+import { Vector } from '../../../engine/math-lib';
 
 import {
   PhysicsSubsystem,
@@ -29,7 +29,7 @@ export class PhysicsSystem extends SceneSystem {
   private collisionBroadcastSubsystem: CollisionBroadcastSubsystem;
   private constraintSolver: ConstraintSolver;
   private physicsApi: PhysicsAPI;
-  private gravity: Vector2;
+  private gravity: Vector;
 
   constructor(options: SceneSystemOptions) {
     super();
@@ -42,19 +42,19 @@ export class PhysicsSystem extends SceneSystem {
       maxBiasVelocity,
     } = options as PhysicsSystemOptions;
 
-    this.gravity = new Vector2(gravityX, gravityY);
+    this.gravity = new Vector(gravityX, gravityY);
 
     this.world = options.world;
     this.physicsSubsystem = new PhysicsSubsystem({
       scene: options.scene,
       time: options.time,
-      getGravity: (): Vector2 => this.gravity,
+      getGravity: (): Vector => this.gravity,
     });
     this.collisionDetectionSubsystem = new CollisionDetectionSubsystem(options);
     this.collisionBroadcastSubsystem = new CollisionBroadcastSubsystem();
     this.constraintSolver = new ConstraintSolver({
       time: options.time,
-      getGravity: (): Vector2 => this.gravity,
+      getGravity: (): Vector => this.gravity,
       solverIterations,
       maxAllowedPenetration,
       maxBiasVelocity,
@@ -87,7 +87,7 @@ export class PhysicsSystem extends SceneSystem {
         this.collisionDetectionSubsystem.castActorEach(params, callback),
       overlapActorEach: (params, callback): void =>
         this.collisionDetectionSubsystem.overlapActorEach(params, callback),
-      getGravity: (): Vector2 => this.gravity,
+      getGravity: (): Vector => this.gravity,
       setGravity: (gravity): void => {
         this.gravity = gravity;
       },
