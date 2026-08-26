@@ -5,11 +5,9 @@ export const getTransformConfig = (
 ): ComponentConfig => ({
   name: Transform.componentName,
   config: {
-    offsetX: 0,
-    offsetY: 0,
+    offset: { x: 0, y: 0 },
     rotation: 0,
-    scaleX: 1,
-    scaleY: 1,
+    scale: { x: 1, y: 1 },
     ...overrides,
   },
 });

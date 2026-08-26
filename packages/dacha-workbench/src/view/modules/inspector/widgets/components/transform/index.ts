@@ -4,14 +4,9 @@ export const transform: WidgetSchema = {
   icon: 'ArrowsExpand',
   fields: [
     {
-      name: 'offsetX',
-      type: 'number',
-      initialValue: 0,
-    },
-    {
-      name: 'offsetY',
-      type: 'number',
-      initialValue: 0,
+      name: 'offset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
     },
     {
       name: 'rotation',
@@ -19,14 +14,9 @@ export const transform: WidgetSchema = {
       initialValue: 0,
     },
     {
-      name: 'scaleX',
-      type: 'number',
-      initialValue: 1,
-    },
-    {
-      name: 'scaleY',
-      type: 'number',
-      initialValue: 1,
+      name: 'scale',
+      type: 'vector',
+      initialValue: { x: 1, y: 1 },
     },
   ],
 };

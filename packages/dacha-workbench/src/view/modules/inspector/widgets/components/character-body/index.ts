@@ -10,18 +10,9 @@ export const characterBody: WidgetSchema = {
       options: ['surface', 'free'],
     },
     {
-      name: 'upDirectionX',
-      type: 'number',
-      initialValue: 0,
-      dependency: {
-        name: 'motionMode',
-        value: 'surface',
-      },
-    },
-    {
-      name: 'upDirectionY',
-      type: 'number',
-      initialValue: -1,
+      name: 'upDirection',
+      type: 'vector',
+      initialValue: { x: 0, y: -1 },
       dependency: {
         name: 'motionMode',
         value: 'surface',

@@ -1,8 +1,8 @@
 export const formatWidgetName = (name: string): string => {
-  const { formatWidgetNames } = window.electron.getEditorConfig()
+  const { formatWidgetNames } = window.electron.getEditorConfig();
 
   if (!formatWidgetNames) {
-    return name
+    return name;
   }
 
   return name
@@ -13,5 +13,5 @@ export const formatWidgetName = (name: string): string => {
     .replace(/\s+/g, ' ')
     .trim()
     .replace(/^./, (s) => s.toUpperCase())
-    .replace(/ (\w)/g, (_, s: string) => ` ${s.toUpperCase()}`)
-}
+    .replace(/ (\w)/g, (_, s: string) => ` ${s.toUpperCase()}`);
+};

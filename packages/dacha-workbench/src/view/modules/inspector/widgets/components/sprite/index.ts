@@ -29,28 +29,14 @@ export const sprite: WidgetSchema = {
       initialValue: 1,
     },
     {
-      name: 'sortOffsetX',
-      type: 'number',
-      initialValue: 0,
+      name: 'sortOffset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
     },
     {
-      name: 'sortOffsetY',
-      type: 'number',
-      initialValue: 0,
-    },
-    {
-      name: 'textureOffsetX',
-      type: 'number',
-      initialValue: 0,
-      dependency: {
-        name: 'fit',
-        value: 'repeat',
-      },
-    },
-    {
-      name: 'textureOffsetY',
-      type: 'number',
-      initialValue: 0,
+      name: 'textureOffset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
       dependency: {
         name: 'fit',
         value: 'repeat',

@@ -10,8 +10,7 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
     const floor = createBoxActor('floor', 'static', 0, 3, {
       layer: 'default',
       oneWay: true,
-      oneWayNormalX: 0,
-      oneWayNormalY: -1,
+      oneWayNormal: { x: 0, y: -1 },
     });
     const body = createBoxActor('body', 'dynamic', 0, 0);
     const rigidBody = body.getComponent(RigidBody);
@@ -37,8 +36,7 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
     const floor = createBoxActor('floor', 'static', 0, 0, {
       layer: 'default',
       oneWay: true,
-      oneWayNormalX: 0,
-      oneWayNormalY: -1,
+      oneWayNormal: { x: 0, y: -1 },
     });
     const body = createBoxActor('body', 'dynamic', 0, 4);
     const rigidBody = body.getComponent(RigidBody);
@@ -64,8 +62,7 @@ describe('Systems -> PhysicsSystem -> one-way collisions', () => {
     const floor = createBoxActor('floor', 'static', 0, 0, {
       layer: 'default',
       oneWay: true,
-      oneWayNormalX: 0,
-      oneWayNormalY: -1,
+      oneWayNormal: { x: 0, y: -1 },
     });
     const body = createBoxActor('body', 'dynamic', 0, 3);
     const rigidBody = body.getComponent(RigidBody);

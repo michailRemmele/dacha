@@ -26,10 +26,8 @@ const createBody = (linearDamping: number): Actor => {
   actor.setComponent(
     new Collider({
       type: 'box',
-      offsetX: 0,
-      offsetY: 0,
-      sizeX: 2,
-      sizeY: 2,
+      offset: { x: 0, y: 0 },
+      size: { x: 2, y: 2 },
       layer: 'default',
       disabled: false,
     }),

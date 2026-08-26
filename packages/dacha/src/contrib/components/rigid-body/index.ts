@@ -14,8 +14,7 @@ export interface RigidBodyConfig {
   friction?: number;
   disabled: boolean;
   oneWay: boolean;
-  oneWayNormalX?: number;
-  oneWayNormalY?: number;
+  oneWayNormal?: Point;
 }
 
 interface PointForce {
@@ -160,8 +159,8 @@ export class RigidBody extends Component {
 
     if (this.oneWay) {
       this.oneWayNormal = new Vector2(
-        config.oneWayNormalX ?? 0,
-        config.oneWayNormalY ?? 0,
+        config.oneWayNormal?.x ?? 0,
+        config.oneWayNormal?.y ?? 0,
       ).normalize();
 
       if (this.oneWayNormal.magnitude === 0) {

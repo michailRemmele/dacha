@@ -70,18 +70,9 @@ export const rigidBody: WidgetSchema = {
       initialValue: false,
     },
     {
-      name: 'oneWayNormalX',
-      type: 'number',
-      initialValue: 0,
-      dependency: {
-        name: 'oneWay',
-        value: true,
-      },
-    },
-    {
-      name: 'oneWayNormalY',
-      type: 'number',
-      initialValue: 0,
+      name: 'oneWayNormal',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
       dependency: {
         name: 'oneWay',
         value: true,

@@ -15,10 +15,8 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
     src: 'some-path',
     width: 0,
     height: 0,
-    sortOffsetX: 0,
-    sortOffsetY: 0,
-    textureOffsetX: 0,
-    textureOffsetY: 0,
+    sortOffset: { x: 0, y: 0 },
+    textureOffset: { x: 0, y: 0 },
     slice: 1,
     flipX: false,
     flipY: false,
@@ -30,11 +28,9 @@ describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
     opacity: 1,
   };
   const baseTransformProps: TransformConfig = {
-    offsetX: 0,
-    offsetY: 0,
+    offset: { x: 0, y: 0 },
     rotation: 0,
-    scaleX: 1,
-    scaleY: 1,
+    scale: { x: 1, y: 1 },
   };
 
   it('Returns correct order of objects while equals width', () => {

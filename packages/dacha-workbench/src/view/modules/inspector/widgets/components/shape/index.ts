@@ -14,18 +14,9 @@ export const shape: WidgetSchema = {
       options: ['rectangle', 'roundRectangle', 'circle', 'ellipse', 'line'],
     },
     {
-      name: 'sizeX',
-      type: 'number',
-      initialValue: 10,
-      dependency: {
-        name: 'type',
-        value: 'rectangle|roundRectangle',
-      },
-    },
-    {
-      name: 'sizeY',
-      type: 'number',
-      initialValue: 10,
+      name: 'size',
+      type: 'vector',
+      initialValue: { x: 10, y: 10 },
       dependency: {
         name: 'type',
         value: 'rectangle|roundRectangle',
@@ -41,54 +32,27 @@ export const shape: WidgetSchema = {
       },
     },
     {
-      name: 'radiusX',
-      type: 'number',
-      initialValue: 5,
+      name: 'radius',
+      type: 'vector',
+      initialValue: { x: 5, y: 5 },
       dependency: {
         name: 'type',
         value: 'ellipse',
       },
     },
     {
-      name: 'radiusY',
-      type: 'number',
-      initialValue: 5,
-      dependency: {
-        name: 'type',
-        value: 'ellipse',
-      },
-    },
-    {
-      name: 'point1X',
-      type: 'number',
-      initialValue: -5,
+      name: 'point1',
+      type: 'vector',
+      initialValue: { x: -5, y: 0 },
       dependency: {
         name: 'type',
         value: 'line',
       },
     },
     {
-      name: 'point1Y',
-      type: 'number',
-      initialValue: 0,
-      dependency: {
-        name: 'type',
-        value: 'line',
-      },
-    },
-    {
-      name: 'point2X',
-      type: 'number',
-      initialValue: 5,
-      dependency: {
-        name: 'type',
-        value: 'line',
-      },
-    },
-    {
-      name: 'point2Y',
-      type: 'number',
-      initialValue: 0,
+      name: 'point2',
+      type: 'vector',
+      initialValue: { x: 5, y: 0 },
       dependency: {
         name: 'type',
         value: 'line',
@@ -138,14 +102,9 @@ export const shape: WidgetSchema = {
       initialValue: '#fff',
     },
     {
-      name: 'sortOffsetX',
-      type: 'number',
-      initialValue: 0,
-    },
-    {
-      name: 'sortOffsetY',
-      type: 'number',
-      initialValue: 0,
+      name: 'sortOffset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
     },
     {
       name: 'sortingLayer',

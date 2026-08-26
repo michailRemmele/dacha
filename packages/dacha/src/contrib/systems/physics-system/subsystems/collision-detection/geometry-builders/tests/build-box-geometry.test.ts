@@ -7,19 +7,15 @@ describe('PhysicsSystem -> collision-detection -> buildBoxGeometry()', () => {
   it('Builds outward normals for mirrored boxes', () => {
     const collider = new Collider({
       type: 'box',
-      offsetX: 0,
-      offsetY: 0,
-      sizeX: 4,
-      sizeY: 2,
+      offset: { x: 0, y: 0 },
+      size: { x: 4, y: 2 },
       layer: 'default',
       disabled: true,
     });
     const transform = new Transform({
-      offsetX: 3,
-      offsetY: -2,
+      offset: { x: 3, y: -2 },
       rotation: 30,
-      scaleX: -2,
-      scaleY: 1.5,
+      scale: { x: -2, y: 1.5 },
     });
     const geometry = buildBoxGeometry(collider, transform);
 
@@ -36,19 +32,15 @@ describe('PhysicsSystem -> collision-detection -> buildBoxGeometry()', () => {
     const geometry = buildBoxGeometry(
       new Collider({
         type: 'box',
-        offsetX: 2,
-        offsetY: 0,
-        sizeX: 2,
-        sizeY: 2,
+        offset: { x: 2, y: 0 },
+        size: { x: 2, y: 2 },
         layer: 'default',
         disabled: false,
       }),
       new Transform({
-        offsetX: 10,
-        offsetY: 20,
+        offset: { x: 10, y: 20 },
         rotation: 90,
-        scaleX: 1,
-        scaleY: 1,
+        scale: { x: 1, y: 1 },
       }),
     );
 

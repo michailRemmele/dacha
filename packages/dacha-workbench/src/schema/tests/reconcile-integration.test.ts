@@ -136,16 +136,14 @@ describe('reconcileConfig against real built-in widget schemas', () => {
     expect(collider.config).toEqual({
       type: 'circle',
       radius: 5,
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       layer: 'default',
       debugColor: '#4DFFB8',
       disabled: false,
     });
-    expect(collider.config).not.toHaveProperty('sizeX');
-    expect(collider.config).not.toHaveProperty('sizeY');
+    expect(collider.config).not.toHaveProperty('size');
     expect(collider.config).not.toHaveProperty('height');
-    expect(collider.config).not.toHaveProperty('point1X');
+    expect(collider.config).not.toHaveProperty('point1');
 
     expect(camera.config).toEqual({ zoom: 1, current: false });
 

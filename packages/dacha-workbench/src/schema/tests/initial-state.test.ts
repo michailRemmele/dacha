@@ -25,6 +25,10 @@ describe('resolveFieldInitialValue', () => {
     expect(resolveFieldInitialValue({ name: 'x', type: 'multitext' })).toEqual(
       [],
     );
+    expect(resolveFieldInitialValue({ name: 'x', type: 'vector' })).toEqual({
+      x: 0,
+      y: 0,
+    });
   });
 
   it('deep-clones object initial values', () => {

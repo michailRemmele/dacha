@@ -23,8 +23,7 @@ const DEFAULT_PROPS = {
   blending: 'normal' as Shape['blending'],
   disabled: false,
   sortingLayer: 'editor-layer-0',
-  sortOffsetX: 0,
-  sortOffsetY: 0,
+  sortOffset: { x: 0, y: 0 },
 };
 
 const getCapsuleShape = (
@@ -42,8 +41,7 @@ const getCapsuleShape = (
 
   return new Shape({
     type: 'roundRectangle',
-    sizeX: height + radius * 2,
-    sizeY: radius * 2,
+    size: { x: height + radius * 2, y: radius * 2 },
     radius,
     strokeColor: color,
     fill: fillColor,
@@ -79,8 +77,7 @@ export const colliderViewer: DebugViewModule = {
       case 'box':
         shape = new Shape({
           type: 'rectangle',
-          sizeX: collider.shape.size.x,
-          sizeY: collider.shape.size.y,
+          size: collider.shape.size,
           strokeColor: color,
           fill: fillColor,
           ...DEFAULT_PROPS,
@@ -101,10 +98,8 @@ export const colliderViewer: DebugViewModule = {
       case 'segment':
         shape = new Shape({
           type: 'line',
-          point1X: collider.shape.point1.x,
-          point1Y: collider.shape.point1.y,
-          point2X: collider.shape.point2.x,
-          point2Y: collider.shape.point2.y,
+          point1: collider.shape.point1,
+          point2: collider.shape.point2,
           strokeColor: color,
           ...DEFAULT_PROPS,
         });

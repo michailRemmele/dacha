@@ -10,8 +10,7 @@ describe('Contrib -> components -> RigidBody', () => {
       linearDamping: 1,
       disabled: false,
       oneWay: true,
-      oneWayNormalX: 0,
-      oneWayNormalY: -10,
+      oneWayNormal: { x: 0, y: -10 },
     });
 
     expect(rigidBody.oneWay).toEqual(true);
@@ -29,8 +28,7 @@ describe('Contrib -> components -> RigidBody', () => {
           linearDamping: 1,
           disabled: false,
           oneWay: true,
-          oneWayNormalX: 0,
-          oneWayNormalY: 0,
+          oneWayNormal: { x: 0, y: 0 },
         }),
     ).toThrow('One-way rigid body normal must be non-zero');
   });

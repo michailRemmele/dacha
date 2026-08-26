@@ -1,15 +1,13 @@
 import { Component } from '../../../engine/component';
-import { Matrix } from '../../../engine/math-lib';
+import { Matrix, type Point } from '../../../engine/math-lib';
 
 import { LocalTransform } from './local-transform';
 import { WorldTransform } from './world-transform';
 
 export interface TransformConfig {
-  offsetX: number;
-  offsetY: number;
+  offset: Point;
   rotation: number;
-  scaleX: number;
-  scaleY: number;
+  scale: Point;
 }
 
 /**
@@ -23,11 +21,9 @@ export interface TransformConfig {
  * ```typescript
  * // Create a transform for an actor
  * const transform = new Transform({
- *   offsetX: 100,
- *   offsetY: 50,
+ *   offset: { x: 100, y: 50 },
  *   rotation: 45,
- *   scaleX: 1.5,
- *   scaleY: 1.0
+ *   scale: { x: 1.5, y: 1.0 }
  * });
  *
  * // Add to actor

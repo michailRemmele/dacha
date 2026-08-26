@@ -24,6 +24,8 @@ const getFieldTypeDefault = (type: FieldType): unknown => {
       return 0;
     case 'asset':
       return '';
+    case 'vector':
+      return { x: 0, y: 0 };
     default:
       return '';
   }

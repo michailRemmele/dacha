@@ -17,11 +17,15 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 1,
-                "offsetY": 0,
                 "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
+                "offset": {
+                  "x": 1,
+                  "y": 0
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
               }
             }
           ],
@@ -35,11 +39,15 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 0,
-                "offsetY": 0,
                 "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
               }
             }
           ],
@@ -57,11 +65,15 @@
                 {
                   "name": "Transform",
                   "config": {
-                    "offsetX": 0,
-                    "offsetY": 0,
                     "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1
+                    "offset": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1
+                    }
                   }
                 },
                 {
@@ -78,11 +90,15 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 55,
-                "offsetY": 30,
                 "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
+                "offset": {
+                  "x": 55,
+                  "y": 30
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
               }
             },
             {
@@ -169,11 +185,15 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 0,
-                "offsetY": 0,
                 "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
               }
             },
             {
@@ -183,8 +203,6 @@
                 "src": "assets/terrain/grass.png",
                 "width": 320,
                 "height": 320,
-                "sortOffsetX": 0,
-                "sortOffsetY": 0,
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "terrain",
@@ -193,8 +211,14 @@
                 "color": "#fff",
                 "opacity": 1,
                 "disabled": false,
-                "textureOffsetX": 0,
-                "textureOffsetY": 0
+                "sortOffset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "textureOffset": {
+                  "x": 0,
+                  "y": 0
+                }
               }
             }
           ]
@@ -207,11 +231,15 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 0,
-                "offsetY": 0,
                 "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
               }
             },
             {
@@ -221,8 +249,6 @@
                 "src": "assets/terrain/sea.png",
                 "width": 640,
                 "height": 640,
-                "sortOffsetX": 0,
-                "sortOffsetY": 0,
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "background",
@@ -231,8 +257,14 @@
                 "color": "#fff",
                 "opacity": 1,
                 "disabled": false,
-                "textureOffsetX": 0,
-                "textureOffsetY": 0
+                "sortOffset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "textureOffset": {
+                  "x": 0,
+                  "y": 0
+                }
               }
             }
           ]
@@ -245,23 +277,29 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 0,
-                "offsetY": 0,
                 "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
               }
             },
             {
               "name": "Collider",
               "config": {
                 "type": "circle",
-                "offsetX": 0,
-                "offsetY": 0,
                 "layer": "default",
                 "debugColor": "#4DFFB8",
                 "disabled": false,
-                "radius": 5
+                "radius": 5,
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                }
               }
             },
             {
@@ -271,8 +309,6 @@
                 "src": "assets/units/human.png",
                 "width": 26,
                 "height": 26,
-                "sortOffsetX": 0,
-                "sortOffsetY": 0,
                 "flipX": false,
                 "flipY": false,
                 "sortingLayer": "units",
@@ -280,7 +316,11 @@
                 "blending": "normal",
                 "color": "#fff",
                 "opacity": 1,
-                "disabled": false
+                "disabled": false,
+                "sortOffset": {
+                  "x": 0,
+                  "y": 0
+                }
               }
             }
           ]
@@ -345,11 +385,15 @@
             {
               "name": "Transform",
               "config": {
-                "offsetX": 0,
-                "offsetY": 0,
                 "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
               }
             }
           ],
@@ -360,11 +404,15 @@
         {
           "name": "Transform",
           "config": {
-            "offsetX": 0,
-            "offsetY": 0,
             "rotation": 0,
-            "scaleX": 1,
-            "scaleY": 1
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1
+            }
           }
         },
         {
@@ -387,12 +435,16 @@
           "config": {
             "type": "box",
             "layer": "default",
-            "offsetX": 0,
-            "offsetY": 0,
-            "sizeX": 10,
-            "sizeY": 10,
             "debugColor": "#4DFFB8",
-            "disabled": false
+            "disabled": false,
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "size": {
+              "x": 10,
+              "y": 10
+            }
           }
         },
         {
@@ -402,8 +454,6 @@
             "src": "assets/units/rooster.png",
             "width": 47,
             "height": 52,
-            "sortOffsetX": 0,
-            "sortOffsetY": 0,
             "flipX": true,
             "flipY": false,
             "sortingLayer": "units",
@@ -411,7 +461,11 @@
             "blending": "normal",
             "color": "rgb(255,255,255)",
             "opacity": 1,
-            "disabled": false
+            "disabled": false,
+            "sortOffset": {
+              "x": 0,
+              "y": 0
+            }
           }
         },
         {
@@ -705,11 +759,15 @@
         {
           "name": "Transform",
           "config": {
-            "offsetX": 0,
-            "offsetY": 0,
             "rotation": 0,
-            "scaleX": 1,
-            "scaleY": 1
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1
+            }
           }
         },
         {
@@ -719,8 +777,6 @@
             "src": "assets/terrain/space.png",
             "width": 1000,
             "height": 1000,
-            "sortOffsetX": 0,
-            "sortOffsetY": 0,
             "flipX": false,
             "flipY": false,
             "sortingLayer": "background",
@@ -729,8 +785,14 @@
             "color": "#fff",
             "opacity": 1,
             "disabled": false,
-            "textureOffsetX": 0,
-            "textureOffsetY": 0
+            "sortOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "textureOffset": {
+              "x": 0,
+              "y": 0
+            }
           }
         }
       ],
@@ -743,11 +805,15 @@
         {
           "name": "Transform",
           "config": {
-            "offsetX": 0,
-            "offsetY": 0,
             "rotation": 0,
-            "scaleX": 1,
-            "scaleY": 1
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1
+            }
           }
         },
         {
@@ -757,8 +823,6 @@
             "src": "assets/terrain/floor.png",
             "width": 408,
             "height": 408,
-            "sortOffsetX": 0,
-            "sortOffsetY": 0,
             "flipX": false,
             "flipY": false,
             "sortingLayer": "terrain",
@@ -766,9 +830,15 @@
             "blending": "normal",
             "color": "#fff",
             "opacity": 1,
-            "textureOffsetX": 0,
-            "textureOffsetY": 0,
-            "disabled": false
+            "disabled": false,
+            "sortOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "textureOffset": {
+              "x": 0,
+              "y": 0
+            }
           }
         }
       ],

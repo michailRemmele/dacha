@@ -6,19 +6,16 @@ describe('Contrib -> systems -> PhysicsSystem -> collision-detection -> geometry
     const geometry = buildCapsuleGeometry(
       new Collider({
         type: 'capsule',
-        offsetX: 1,
-        offsetY: 2,
+        offset: { x: 1, y: 2 },
         height: 2,
         radius: 0.5,
         layer: 'default',
         disabled: false,
       }),
       new Transform({
-        offsetX: 10,
-        offsetY: 20,
+        offset: { x: 10, y: 20 },
         rotation: 0,
-        scaleX: 2,
-        scaleY: 3,
+        scale: { x: 2, y: 3 },
       }),
     );
 
@@ -33,19 +30,16 @@ describe('Contrib -> systems -> PhysicsSystem -> collision-detection -> geometry
     const geometry = buildCapsuleGeometry(
       new Collider({
         type: 'capsule',
-        offsetX: 2,
-        offsetY: 0,
+        offset: { x: 2, y: 0 },
         height: 2,
         radius: 1,
         layer: 'default',
         disabled: false,
       }),
       new Transform({
-        offsetX: 10,
-        offsetY: 20,
+        offset: { x: 10, y: 20 },
         rotation: 90,
-        scaleX: 1,
-        scaleY: 1,
+        scale: { x: 1, y: 1 },
       }),
     );
 

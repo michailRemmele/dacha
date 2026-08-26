@@ -12,10 +12,8 @@ describe('Contrib -> components -> Shape', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'units',
-      sortOffsetX: 1,
-      sortOffsetY: 2,
-      sizeX: 100,
-      sizeY: 200,
+      sortOffset: { x: 1, y: 2 },
+      size: { x: 100, y: 200 },
       fill: '#999',
     });
 
@@ -45,8 +43,7 @@ describe('Contrib -> components -> Shape', () => {
       blending: 'normal',
       disabled: false,
       sortingLayer: 'units',
-      sortOffsetX: 0,
-      sortOffsetY: 0,
+      sortOffset: { x: 0, y: 0 },
       radius: 100,
       fill: '#999',
     });

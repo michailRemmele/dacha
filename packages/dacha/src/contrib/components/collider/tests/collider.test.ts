@@ -4,36 +4,29 @@ describe('Contrib -> components -> Collider', () => {
   it('Returns correct values ', () => {
     const box = new Collider({
       type: 'box',
-      sizeX: 10,
-      sizeY: 20,
-      offsetX: 1,
-      offsetY: 2,
+      size: { x: 10, y: 20 },
+      offset: { x: 1, y: 2 },
       layer: 'player',
       disabled: false,
     });
     const circle = new Collider({
       type: 'circle',
-      offsetX: 1,
-      offsetY: 2,
+      offset: { x: 1, y: 2 },
       radius: 20,
       layer: 'enemy',
       disabled: false,
     });
     const segment = new Collider({
       type: 'segment',
-      offsetX: 0,
-      offsetY: 0,
-      point1X: -1,
-      point1Y: 0,
-      point2X: 1,
-      point2Y: 0,
+      offset: { x: 0, y: 0 },
+      point1: { x: -1, y: 0 },
+      point2: { x: 1, y: 0 },
       layer: 'ground',
       disabled: false,
     });
     const capsule = new Collider({
       type: 'capsule',
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       height: 4,
       radius: 1,
       layer: 'body',
@@ -73,36 +66,29 @@ describe('Contrib -> components -> Collider', () => {
   it('Correct updates values ', () => {
     const box = new Collider({
       type: 'box',
-      sizeX: 10,
-      sizeY: 20,
-      offsetX: 1,
-      offsetY: 2,
+      size: { x: 10, y: 20 },
+      offset: { x: 1, y: 2 },
       layer: 'default',
       disabled: false,
     });
     const circle = new Collider({
       type: 'circle',
       radius: 20,
-      offsetX: 1,
-      offsetY: 2,
+      offset: { x: 1, y: 2 },
       layer: 'default',
       disabled: false,
     });
     const segment = new Collider({
       type: 'segment',
-      offsetX: 0,
-      offsetY: 0,
-      point1X: -1,
-      point1Y: 0,
-      point2X: 1,
-      point2Y: 0,
+      offset: { x: 0, y: 0 },
+      point1: { x: -1, y: 0 },
+      point2: { x: 1, y: 0 },
       layer: 'default',
       disabled: false,
     });
     const capsule = new Collider({
       type: 'capsule',
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       height: 4,
       radius: 1,
       layer: 'default',

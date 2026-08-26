@@ -50,6 +50,10 @@ export {
   TextArea,
   LabelledTextArea,
 } from './view/modules/inspector/components/text-area';
+export {
+  VectorInput,
+  LabelledVectorInput,
+} from './view/modules/inspector/components/vector-input';
 export { MultiField } from './view/modules/inspector/components/multi-field';
 export { Section } from './view/modules/inspector/components/section';
 
