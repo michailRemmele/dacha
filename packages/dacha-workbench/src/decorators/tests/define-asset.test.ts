@@ -38,4 +38,15 @@ describe('DefineAsset', () => {
       { name: 'damage', type: 'number' },
     ]);
   });
+
+  it('registers a vector-typed field from an explicit override', () => {
+    @DefineAsset({ name: 'spawnPoint' })
+    class SpawnPointKind {
+      @DefineField({ type: 'vector', initialValue: { x: 0, y: 0 } }) offset = { x: 0, y: 0 };
+    }
+    void SpawnPointKind;
+    expect(schemaRegistry.getWidget('asset', 'spawnPoint')?.fields).toEqual([
+      { name: 'offset', type: 'vector', initialValue: { x: 0, y: 0 } },
+    ]);
+  });
 });

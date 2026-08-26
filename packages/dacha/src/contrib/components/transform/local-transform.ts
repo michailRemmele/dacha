@@ -21,8 +21,8 @@ export class LocalTransform {
   constructor(config: TransformConfig, transform: Transform) {
     this.transform = transform;
 
-    this.position = new LocalPoint(config.offsetX, config.offsetY, transform);
-    this.scale = new LocalPoint(config.scaleX, config.scaleY, transform);
+    this.position = new LocalPoint(config.offset.x, config.offset.y, transform);
+    this.scale = new LocalPoint(config.scale.x, config.scale.y, transform);
 
     this._rotation = MathOps.degToRad(config.rotation);
   }

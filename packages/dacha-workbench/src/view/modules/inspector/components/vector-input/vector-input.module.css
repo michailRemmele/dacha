@@ -1,0 +1,14 @@
+.vector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.axisX {
+  color: var(--editor-axis-x-color);
+}
+
+.axisY {
+  color: var(--editor-axis-y-color);
+}

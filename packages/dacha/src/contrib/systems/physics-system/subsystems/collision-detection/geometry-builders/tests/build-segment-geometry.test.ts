@@ -7,21 +7,16 @@ describe('PhysicsSystem -> collision-detection -> buildSegmentGeometry()', () =>
     const geometry = buildSegmentGeometry(
       new Collider({
         type: 'segment',
-        offsetX: 2,
-        offsetY: 0,
-        point1X: 0,
-        point1Y: 0,
-        point2X: 0,
-        point2Y: 2,
+        offset: { x: 2, y: 0 },
+        point1: { x: 0, y: 0 },
+        point2: { x: 0, y: 2 },
         layer: 'default',
         disabled: false,
       }),
       new Transform({
-        offsetX: 10,
-        offsetY: 20,
+        offset: { x: 10, y: 20 },
         rotation: 90,
-        scaleX: 1,
-        scaleY: 1,
+        scale: { x: 1, y: 1 },
       }),
     );
 

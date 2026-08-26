@@ -7,18 +7,15 @@ describe('PhysicsSystem -> collision-detection -> buildCircleGeometry()', () => 
     const geometry = buildCircleGeometry(
       new Collider({
         type: 'circle',
-        offsetX: 2,
-        offsetY: 0,
+        offset: { x: 2, y: 0 },
         radius: 1,
         layer: 'default',
         disabled: false,
       }),
       new Transform({
-        offsetX: 10,
-        offsetY: 20,
+        offset: { x: 10, y: 20 },
         rotation: 90,
-        scaleX: 1,
-        scaleY: 1,
+        scale: { x: 1, y: 1 },
       }),
     );
 

@@ -10,11 +10,7 @@ interface RenderData {
 }
 
 export type ShapeType =
-  | 'rectangle'
-  | 'roundRectangle'
-  | 'circle'
-  | 'ellipse'
-  | 'line';
+  'rectangle' | 'roundRectangle' | 'circle' | 'ellipse' | 'line';
 
 export interface BaseShapeConfig {
   strokeColor?: string;
@@ -26,22 +22,42 @@ export interface BaseShapeConfig {
   blending?: BlendingMode;
   disabled?: boolean;
   sortingLayer?: string;
-  sortOffsetX?: number;
-  sortOffsetY?: number;
+  sortOffset?: Point;
 }
 
-export interface ShapeConfig extends BaseShapeConfig {
-  type?: ShapeType;
-  sizeX?: number;
-  sizeY?: number;
-  radius?: number;
-  radiusX?: number;
-  radiusY?: number;
-  point1X?: number;
-  point1Y?: number;
-  point2X?: number;
-  point2Y?: number;
+export interface RectangleShapeConfig extends BaseShapeConfig {
+  type: 'rectangle';
+  size?: Point;
 }
+
+export interface RoundRectangleShapeConfig extends BaseShapeConfig {
+  type: 'roundRectangle';
+  size?: Point;
+  radius?: number;
+}
+
+export interface CircleShapeConfig extends BaseShapeConfig {
+  type: 'circle';
+  radius?: number;
+}
+
+export interface EllipseShapeConfig extends BaseShapeConfig {
+  type: 'ellipse';
+  radius?: Point;
+}
+
+export interface LineShapeConfig extends BaseShapeConfig {
+  type: 'line';
+  point1?: Point;
+  point2?: Point;
+}
+
+export type ShapeConfig =
+  | RectangleShapeConfig
+  | RoundRectangleShapeConfig
+  | CircleShapeConfig
+  | EllipseShapeConfig
+  | LineShapeConfig;
 
 export interface RectangleShapeGeometry {
   type: 'rectangle';
@@ -88,8 +104,7 @@ export type ShapeGeometry =
  * // Create a basic shape
  * const shape = new Shape({
  *   type: 'rectangle',
- *   sizeX: 100,
- *   sizeY: 50,
+ *   size: { x: 100, y: 50 },
  *   strokeWidth: 2,
  *   strokeColor: '#000',
  *   strokeAlignment: 0.5,
@@ -98,8 +113,7 @@ export type ShapeGeometry =
  *   blending: 'normal',
  *   disabled: false,
  *   sortingLayer: 'units',
- *   sortOffsetX: 0,
- *   sortOffsetY: 0,
+ *   sortOffset: { x: 0, y: 0 },
  * });
  *
  * // Add to actor
@@ -161,43 +175,41 @@ export class Shape extends Component {
     this.disabled = config.disabled ?? false;
     this.sortingLayer = config.sortingLayer ?? 'default';
     this.sortOffset = {
-      x: config.sortOffsetX ?? 0,
-      y: config.sortOffsetY ?? 0,
+      x: config.sortOffset?.x ?? 0,
+      y: config.sortOffset?.y ?? 0,
     };
 
-    const type = config.type ?? 'rectangle';
-
-    switch (type) {
+    switch (config.type) {
       case 'rectangle':
         this.geometry = {
-          type,
-          size: { x: config.sizeX ?? 10, y: config.sizeY ?? 10 },
+          type: config.type,
+          size: { x: config.size?.x ?? 10, y: config.size?.y ?? 10 },
         };
         break;
       case 'roundRectangle':
         this.geometry = {
-          type,
-          size: { x: config.sizeX ?? 10, y: config.sizeY ?? 10 },
+          type: config.type,
+          size: { x: config.size?.x ?? 10, y: config.size?.y ?? 10 },
           radius: config.radius ?? 2,
         };
         break;
       case 'circle':
         this.geometry = {
-          type,
+          type: config.type,
           radius: config.radius ?? 5,
         };
         break;
       case 'ellipse':
         this.geometry = {
-          type,
-          radius: { x: config.radiusX ?? 5, y: config.radiusY ?? 5 },
+          type: config.type,
+          radius: { x: config.radius?.x ?? 5, y: config.radius?.y ?? 5 },
         };
         break;
       case 'line':
         this.geometry = {
-          type,
-          point1: { x: config.point1X ?? -5, y: config.point1Y ?? 0 },
-          point2: { x: config.point2X ?? 5, y: config.point2Y ?? 0 },
+          type: config.type,
+          point1: { x: config.point1?.x ?? -5, y: config.point1?.y ?? 0 },
+          point2: { x: config.point2?.x ?? 5, y: config.point2?.y ?? 0 },
         };
     }
   }

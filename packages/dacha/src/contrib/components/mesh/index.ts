@@ -25,8 +25,7 @@ export interface MeshConfig {
   flipX?: boolean;
   flipY?: boolean;
   sortingLayer?: string;
-  sortOffsetX?: number;
-  sortOffsetY?: number;
+  sortOffset?: Point;
   color?: string;
   blending?: BlendingMode;
   opacity?: number;
@@ -54,8 +53,7 @@ export interface MeshConfig {
  *   flipX: false,
  *   flipY: false,
  *   sortingLayer: 'units',
- *   sortOffsetX: 0,
- *   sortOffsetY: 0,
+ *   sortOffset: { x: 0, y: 0 },
  *   color: '#ffffff',
  *   blending: 'normal',
  *   opacity: 1,
@@ -125,8 +123,8 @@ export class Mesh extends Component {
     this.disabled = config.disabled ?? false;
     this.sortingLayer = config.sortingLayer ?? 'default';
     this.sortOffset = {
-      x: config.sortOffsetX ?? 0,
-      y: config.sortOffsetY ?? 0,
+      x: config.sortOffset?.x ?? 0,
+      y: config.sortOffset?.y ?? 0,
     };
     this.color = config.color ?? '#ffffff';
     this.blending = config.blending ?? 'normal';

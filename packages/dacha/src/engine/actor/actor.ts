@@ -55,11 +55,9 @@ export class Actor extends Entity {
     this.templateId = templateId;
 
     const transform = new Transform({
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       rotation: 0,
-      scaleX: 1,
-      scaleY: 1,
+      scale: { x: 1, y: 1 },
     });
     transform.actor = this;
 
@@ -168,11 +166,9 @@ export class Actor extends Entity {
    * @example
    * ```typescript
    * const transform = new Transform({
-   *   offsetX: 100,
-   *   offsetY: 200,
+   *   offset: { x: 100, y: 200 },
    *   rotation: 0,
-   *   scaleX: 1,
-   *   scaleY: 1
+   *   scale: { x: 1, y: 1 }
    * });
    * actor.setComponent(transform);
    * ```

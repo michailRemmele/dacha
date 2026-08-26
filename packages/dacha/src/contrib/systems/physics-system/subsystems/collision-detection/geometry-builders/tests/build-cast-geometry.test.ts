@@ -16,19 +16,15 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
   it('Builds box cast geometry from collider and transform', () => {
     const collider = new Collider({
       type: 'box',
-      offsetX: 1,
-      offsetY: 2,
-      sizeX: 4,
-      sizeY: 6,
+      offset: { x: 1, y: 2 },
+      size: { x: 4, y: 6 },
       layer: 'default',
       disabled: false,
     });
     const transform = new Transform({
-      offsetX: 10,
-      offsetY: 20,
+      offset: { x: 10, y: 20 },
       rotation: 0,
-      scaleX: 2,
-      scaleY: 3,
+      scale: { x: 2, y: 3 },
     });
 
     const geometry = buildBoxCastGeometry(collider, transform, cast);
@@ -60,18 +56,15 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
   it('Builds circle cast geometry from collider and transform', () => {
     const collider = new Collider({
       type: 'circle',
-      offsetX: -2,
-      offsetY: 5,
+      offset: { x: -2, y: 5 },
       radius: 3,
       layer: 'default',
       disabled: false,
     });
     const transform = new Transform({
-      offsetX: 10,
-      offsetY: 20,
+      offset: { x: 10, y: 20 },
       rotation: 0,
-      scaleX: 2,
-      scaleY: 3,
+      scale: { x: 2, y: 3 },
     });
 
     const geometry = buildCircleCastGeometry(collider, transform, cast);
@@ -86,19 +79,16 @@ describe('PhysicsSystem -> collision-detection -> cast geometry builders', () =>
   it('Builds capsule cast geometry from collider and transform', () => {
     const collider = new Collider({
       type: 'capsule',
-      offsetX: 1,
-      offsetY: 2,
+      offset: { x: 1, y: 2 },
       height: 4,
       radius: 2,
       layer: 'default',
       disabled: false,
     });
     const transform = new Transform({
-      offsetX: 10,
-      offsetY: 20,
+      offset: { x: 10, y: 20 },
       rotation: 0,
-      scaleX: 2,
-      scaleY: 3,
+      scale: { x: 2, y: 3 },
     });
 
     const geometry = buildCapsuleCastGeometry(collider, transform, cast);

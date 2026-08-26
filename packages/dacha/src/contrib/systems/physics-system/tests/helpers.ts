@@ -73,8 +73,7 @@ export const createBoxActor = (
   colliderConfig: {
     layer: string;
     oneWay?: boolean;
-    oneWayNormalX?: number;
-    oneWayNormalY?: number;
+    oneWayNormal?: { x: number; y: number };
   } = { layer: 'default', oneWay: false },
 ): Actor => {
   const actor = new Actor({ id, name: id });
@@ -85,10 +84,8 @@ export const createBoxActor = (
   actor.setComponent(
     new Collider({
       type: 'box',
-      offsetX: 0,
-      offsetY: 0,
-      sizeX: 2,
-      sizeY: 2,
+      offset: { x: 0, y: 0 },
+      size: { x: 2, y: 2 },
       layer: colliderConfig.layer,
       disabled: false,
     }),
@@ -101,8 +98,7 @@ export const createBoxActor = (
       linearDamping: 0,
       disabled: false,
       oneWay: colliderConfig.oneWay ?? false,
-      oneWayNormalX: colliderConfig.oneWayNormalX,
-      oneWayNormalY: colliderConfig.oneWayNormalY,
+      oneWayNormal: colliderConfig.oneWayNormal,
     }),
   );
 
@@ -124,8 +120,7 @@ export const createCircleActor = (
   actor.setComponent(
     new Collider({
       type: 'circle',
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       radius,
       layer: colliderConfig.layer,
       disabled: false,
@@ -154,12 +149,9 @@ export const createSegmentActor = (
   actor.setComponent(
     new Collider({
       type: 'segment',
-      offsetX: 0,
-      offsetY: 0,
-      point1X,
-      point1Y,
-      point2X,
-      point2Y,
+      offset: { x: 0, y: 0 },
+      point1: { x: point1X, y: point1Y },
+      point2: { x: point2X, y: point2Y },
       layer: colliderConfig.layer,
       disabled: false,
     }),
@@ -198,8 +190,7 @@ export const createCapsuleActor = (
   actor.setComponent(
     new Collider({
       type: 'capsule',
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       height,
       radius,
       layer: colliderConfig.layer,

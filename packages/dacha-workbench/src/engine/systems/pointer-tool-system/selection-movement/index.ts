@@ -134,8 +134,10 @@ export class SelectionMovementSubsystem {
       }
 
       newTransformMap.set(actor.id, {
-        offsetX: transform.local.position.x,
-        offsetY: transform.local.position.y,
+        offset: {
+          x: transform.local.position.x,
+          y: transform.local.position.y,
+        },
       })
     })
 

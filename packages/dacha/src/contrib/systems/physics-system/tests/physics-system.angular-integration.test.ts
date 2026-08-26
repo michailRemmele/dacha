@@ -25,8 +25,7 @@ const createDynamicBody = (
     new Collider({
       type: 'circle',
       radius: 2,
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       layer: 'default',
       disabled: false,
     }),

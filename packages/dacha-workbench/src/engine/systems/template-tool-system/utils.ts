@@ -34,8 +34,7 @@ export const createFromTemplate = (
   );
 
   if (transform !== undefined) {
-    transform.config.offsetX = x;
-    transform.config.offsetY = y;
+    transform.config.offset = { x, y };
 
     actor.components?.push(transform);
   }

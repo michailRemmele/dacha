@@ -36,6 +36,7 @@ export type FieldType =
   | 'file'
   | 'range'
   | 'textarea'
+  | 'vector'
   | 'asset';
 
 export interface AnyField {
@@ -107,6 +108,16 @@ export interface TextAreaField extends AnyField {
   type: 'textarea';
 }
 
+export interface VectorValue {
+  x: number;
+  y: number;
+}
+
+export interface VectorField extends AnyField {
+  type: 'vector';
+  initialValue?: VectorValue;
+}
+
 export interface DataField {
   name: string;
   type: 'data';
@@ -124,6 +135,7 @@ export type Field =
   | RangeField
   | ColorField
   | TextAreaField
+  | VectorField
   | AssetField
   | DataField;
 

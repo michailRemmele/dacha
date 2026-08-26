@@ -229,11 +229,9 @@ export const getEditorConfig = ({
                 {
                   name: 'Transform',
                   config: {
-                    offsetX: 0,
-                    offsetY: 0,
+                    offset: { x: 0, y: 0 },
                     rotation: 0,
-                    scaleX: 1,
-                    scaleY: 1,
+                    scale: { x: 1, y: 1 },
                   },
                 },
                 {
@@ -247,17 +245,18 @@ export const getEditorConfig = ({
             {
               name: 'Transform',
               config: {
-                offsetX: persistentStorage.get(
-                  'canvas.mainActor.transform.offsetX',
-                  0,
-                ),
-                offsetY: persistentStorage.get(
-                  'canvas.mainActor.transform.offsetY',
-                  0,
-                ),
+                offset: {
+                  x: persistentStorage.get(
+                    'canvas.mainActor.transform.offsetX',
+                    0,
+                  ),
+                  y: persistentStorage.get(
+                    'canvas.mainActor.transform.offsetY',
+                    0,
+                  ),
+                },
                 rotation: 0,
-                scaleX: 1,
-                scaleY: 1,
+                scale: { x: 1, y: 1 },
               },
             },
             {
@@ -402,19 +401,16 @@ export const getEditorConfig = ({
         {
           name: 'Transform',
           config: {
-            offsetX: 0,
-            offsetY: 0,
+            offset: { x: 0, y: 0 },
             rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
+            scale: { x: 1, y: 1 },
           },
         },
         {
           name: 'Shape',
           config: {
             type: 'rectangle',
-            sizeX: 0,
-            sizeY: 0,
+            size: { x: 0, y: 0 },
             strokeWidth: 1,
             strokeColor: '#fff',
             strokeAlignment: 0,
@@ -423,8 +419,7 @@ export const getEditorConfig = ({
             blending: 'normal',
             disabled: false,
             sortingLayer: 'editor-layer-2',
-            sortOffsetX: 0,
-            sortOffsetY: 0,
+            sortOffset: { x: 0, y: 0 },
           },
         },
         {
@@ -445,19 +440,16 @@ export const getEditorConfig = ({
         {
           name: 'Transform',
           config: {
-            offsetX: 0,
-            offsetY: 0,
+            offset: { x: 0, y: 0 },
             rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
+            scale: { x: 1, y: 1 },
           },
         },
         {
           name: 'Shape',
           config: {
             type: 'rectangle',
-            sizeX: 0,
-            sizeY: 0,
+            size: { x: 0, y: 0 },
             strokeWidth: 1,
             strokeColor: '#1890FF',
             strokeAlignment: 0.5,
@@ -466,8 +458,7 @@ export const getEditorConfig = ({
             blending: 'normal',
             disabled: false,
             sortingLayer: 'editor-layer-3',
-            sortOffsetX: 0,
-            sortOffsetY: 0,
+            sortOffset: { x: 0, y: 0 },
           },
         },
         {
@@ -484,11 +475,9 @@ export const getEditorConfig = ({
         {
           name: 'Transform',
           config: {
-            offsetX: 0,
-            offsetY: 0,
+            offset: { x: 0, y: 0 },
             rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
+            scale: { x: 1, y: 1 },
           },
         },
         {

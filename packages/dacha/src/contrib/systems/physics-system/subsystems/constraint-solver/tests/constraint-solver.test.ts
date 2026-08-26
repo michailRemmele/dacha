@@ -243,8 +243,7 @@ describe('PhysicsSystem -> ConstraintSolver', () => {
     const actor1 = createActor('dynamic-body', 'dynamic');
     const actor2 = createActor('one-way-floor', 'static', {
       oneWay: true,
-      oneWayNormalX: 0,
-      oneWayNormalY: -1,
+      oneWayNormal: { x: 0, y: -1 },
     });
     const rigidBody1 = actor1.getComponent(RigidBody);
 

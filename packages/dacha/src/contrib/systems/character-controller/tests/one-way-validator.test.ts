@@ -19,8 +19,7 @@ const createOneWayActor = (id: string): Actor => {
       linearDamping: 0,
       disabled: false,
       oneWay: true,
-      oneWayNormalX: 0,
-      oneWayNormalY: -1,
+      oneWayNormal: { x: 0, y: -1 },
     }),
   );
 

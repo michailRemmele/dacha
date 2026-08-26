@@ -5,8 +5,7 @@ export type ColliderType = 'box' | 'circle' | 'segment' | 'capsule';
 
 export interface BaseColliderConfig {
   type: ColliderType;
-  offsetX: number;
-  offsetY: number;
+  offset: Point;
   layer: string;
   debugColor?: string;
   disabled: boolean;
@@ -14,8 +13,7 @@ export interface BaseColliderConfig {
 
 export interface BoxColliderConfig extends BaseColliderConfig {
   type: 'box';
-  sizeX?: number;
-  sizeY?: number;
+  size?: Point;
 }
 
 export interface CircleColliderConfig extends BaseColliderConfig {
@@ -25,10 +23,8 @@ export interface CircleColliderConfig extends BaseColliderConfig {
 
 export interface SegmentColliderConfig extends BaseColliderConfig {
   type: 'segment';
-  point1X?: number;
-  point1Y?: number;
-  point2X?: number;
-  point2Y?: number;
+  point1?: Point;
+  point2?: Point;
 }
 
 export interface CapsuleColliderConfig extends BaseColliderConfig {
@@ -82,10 +78,8 @@ export type ColliderShape =
  * // Create a box collider
  * const boxCollider = new Collider({
  *   type: 'box',
- *   offsetX: 0,
- *   offsetY: 0,
- *   sizeX: 64,
- *   sizeY: 64,
+ *   offset: { x: 0, y: 0 },
+ *   size: { x: 64, y: 64 },
  *   layer: 'default',
  *   disabled: false,
  * });
@@ -93,8 +87,7 @@ export type ColliderShape =
  * // Create a circle collider
  * const circleCollider = new Collider({
  *   type: 'circle',
- *   offsetX: 0,
- *   offsetY: 0,
+ *   offset: { x: 0, y: 0 },
  *   radius: 32,
  *   layer: 'default',
  *   disabled: false,
@@ -117,7 +110,7 @@ export class Collider extends Component {
   constructor(config: ColliderConfig) {
     super();
 
-    this.offset = { x: config.offsetX, y: config.offsetY };
+    this.offset = { x: config.offset.x, y: config.offset.y };
     this.layer = config.layer;
     this.debugColor = config.debugColor;
     this.disabled = config.disabled;
@@ -126,7 +119,7 @@ export class Collider extends Component {
       case 'box':
         this.shape = {
           type: config.type,
-          size: { x: config.sizeX ?? 0, y: config.sizeY ?? 0 },
+          size: { x: config.size?.x ?? 0, y: config.size?.y ?? 0 },
         };
         break;
       case 'circle':
@@ -138,8 +131,8 @@ export class Collider extends Component {
       case 'segment':
         this.shape = {
           type: config.type,
-          point1: { x: config.point1X ?? 0, y: config.point1Y ?? 0 },
-          point2: { x: config.point2X ?? 0, y: config.point2Y ?? 0 },
+          point1: { x: config.point1?.x ?? 0, y: config.point1?.y ?? 0 },
+          point2: { x: config.point2?.x ?? 0, y: config.point2?.y ?? 0 },
         };
         break;
       case 'capsule':

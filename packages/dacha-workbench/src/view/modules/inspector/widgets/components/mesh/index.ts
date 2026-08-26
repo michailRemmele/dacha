@@ -32,14 +32,9 @@ export const mesh: WidgetSchema = {
       initialValue: 1,
     },
     {
-      name: 'sortOffsetX',
-      type: 'number',
-      initialValue: 0,
-    },
-    {
-      name: 'sortOffsetY',
-      type: 'number',
-      initialValue: 0,
+      name: 'sortOffset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
     },
     {
       name: 'flipX',

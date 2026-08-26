@@ -66,6 +66,16 @@ export interface RangeInputProps
   step: number;
 }
 
+export interface VectorValue {
+  x: number;
+  y: number;
+}
+
+export interface VectorInputProps extends Omit<InputProps, 'value' | 'onChange'> {
+  value: VectorValue;
+  onChange?: (value: VectorValue) => void;
+}
+
 export interface TextAreaProps
   extends Omit<
     HTMLProps<HTMLTextAreaElement>,

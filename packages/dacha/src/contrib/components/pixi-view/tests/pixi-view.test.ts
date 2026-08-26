@@ -11,8 +11,7 @@ describe('Contrib -> components -> PixiView', () => {
     const pixiView = new PixiView({
       createView: (): ViewContainer => new Sprite(),
       sortingLayer: 'units',
-      sortOffsetX: 1,
-      sortOffsetY: 2,
+      sortOffset: { x: 1, y: 2 },
     });
 
     expect(pixiView.sortingLayer).toEqual('units');
@@ -23,8 +22,7 @@ describe('Contrib -> components -> PixiView', () => {
     const pixiView = new PixiView({
       createView: (): ViewContainer => new Sprite(),
       sortingLayer: 'units',
-      sortOffsetX: 0,
-      sortOffsetY: 0,
+      sortOffset: { x: 0, y: 0 },
     });
 
     pixiView.sortingLayer = 'background';

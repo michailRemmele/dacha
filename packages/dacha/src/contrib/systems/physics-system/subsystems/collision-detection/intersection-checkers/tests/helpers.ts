@@ -87,21 +87,16 @@ export const createSegmentGeometry = (
   buildSegmentGeometry(
     new Collider({
       type: 'segment',
-      offsetX: 0,
-      offsetY: 0,
-      point1X,
-      point1Y,
-      point2X,
-      point2Y,
+      offset: { x: 0, y: 0 },
+      point1: { x: point1X, y: point1Y },
+      point2: { x: point2X, y: point2Y },
       layer: 'default',
       disabled: false,
     }),
     new Transform({
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       rotation: 0,
-      scaleX: 1,
-      scaleY: 1,
+      scale: { x: 1, y: 1 },
     }),
   );
 

@@ -7,6 +7,9 @@
   --editor-badge-fg-lightness: 34%;
 
   --editor-tree-muted-highlight: #ebe9e4;
+
+  --editor-axis-x-color: #b4453a;
+  --editor-axis-y-color: #4b8f5a;
 }
 
 body {
@@ -26,6 +29,9 @@ body {
   --editor-badge-fg-lightness: 68%;
 
   --editor-tree-muted-highlight: #33352e;
+
+  --editor-axis-x-color: #d97c6e;
+  --editor-axis-y-color: #7fc08a;
 }
 
 #root {

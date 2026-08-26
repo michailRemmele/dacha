@@ -13,8 +13,7 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
     const collider = new Collider({
       type: 'circle',
       radius: 2,
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       layer: 'default',
       disabled: false,
     });
@@ -26,10 +25,8 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
     const transform = getTransform();
     const collider = new Collider({
       type: 'box',
-      sizeX: 2,
-      sizeY: 4,
-      offsetX: 0,
-      offsetY: 0,
+      size: { x: 2, y: 4 },
+      offset: { x: 0, y: 0 },
       layer: 'default',
       disabled: false,
     });
@@ -43,8 +40,7 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
       type: 'capsule',
       radius: 1,
       height: 4,
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       layer: 'default',
       disabled: false,
     });
@@ -56,12 +52,9 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
     const transform = getTransform();
     const collider = new Collider({
       type: 'segment',
-      point1X: -2,
-      point1Y: 0,
-      point2X: 2,
-      point2Y: 0,
-      offsetX: 0,
-      offsetY: 0,
+      point1: { x: -2, y: 0 },
+      point2: { x: 2, y: 0 },
+      offset: { x: 0, y: 0 },
       layer: 'default',
       disabled: false,
     });
@@ -74,8 +67,7 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
     const collider = new Collider({
       type: 'circle',
       radius: 1,
-      offsetX: 2,
-      offsetY: 1,
+      offset: { x: 2, y: 1 },
       layer: 'default',
       disabled: false,
     });
@@ -91,8 +83,7 @@ describe('PhysicsSystem -> physics -> mass properties', () => {
     const collider = new Collider({
       type: 'circle',
       radius: 0,
-      offsetX: 0,
-      offsetY: 0,
+      offset: { x: 0, y: 0 },
       layer: 'default',
       disabled: false,
     });

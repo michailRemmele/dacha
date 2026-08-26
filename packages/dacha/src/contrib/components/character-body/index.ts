@@ -1,13 +1,12 @@
 import { Component } from '../../../engine/component';
-import { MathOps, Vector2 } from '../../../engine/math-lib';
+import { MathOps, Vector2, type Point } from '../../../engine/math-lib';
 import type { Actor } from '../../../engine/actor';
 
 export type CharacterMotionMode = 'surface' | 'free';
 
 export interface CharacterBodyConfig {
   motionMode?: CharacterMotionMode;
-  upDirectionX?: number;
-  upDirectionY?: number;
+  upDirection?: Point;
   skinWidth?: number;
   maxSlopeAngle?: number;
   maxSlides?: number;
@@ -69,8 +68,8 @@ export class CharacterBody extends Component {
     this._needsRecovery = true;
 
     this.upDirection = new Vector2(
-      config.upDirectionX ?? 0,
-      config.upDirectionY ?? -1,
+      config.upDirection?.x ?? 0,
+      config.upDirection?.y ?? -1,
     );
 
     this.motionMode = config.motionMode ?? 'surface';
