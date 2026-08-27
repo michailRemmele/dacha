@@ -34,7 +34,7 @@ export const AssetForm: FC<FormComponentProps> = ({ path }) => {
         label={t('inspector.assetForm.field.name.label')}
       />
 
-      <Widget path={dataPath} fields={schemaEntry.schema.fields} />
+      <Widget {...schemaEntry.schema} path={dataPath} />
     </Form>
   );
 };

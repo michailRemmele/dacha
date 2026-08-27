@@ -46,6 +46,7 @@ export interface AnyField {
   title?: string;
   initialValue?: unknown;
   dependency?: Dependency;
+  section?: string;
 }
 
 export interface StringField extends AnyField {
@@ -118,6 +119,7 @@ export interface DataField {
   name: string;
   type: 'data';
   initialValue: unknown;
+  section?: string;
 }
 
 export type Field =
@@ -135,15 +137,21 @@ export type Field =
   | AssetField
   | DataField;
 
+export interface SectionSettings {
+  defaultOpen?: boolean;
+}
+
 export interface WidgetProps {
   path: string[];
   fields?: Field[];
+  sections?: Record<string, SectionSettings>;
   context?: Record<string, unknown>;
 }
 
 export interface WidgetSchema {
   title?: string;
   fields?: Field[];
+  sections?: Record<string, SectionSettings>;
   view?: FC<WidgetProps>;
   icon?: IconName;
 }

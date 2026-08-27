@@ -64,7 +64,7 @@ export const ProjectSettings: FC = () => {
                 />
               ) : (
                 <I18nextProvider i18n={i18n} defaultNS={NAMESPACE_EDITOR}>
-                  <Widget fields={schema.fields} path={path} />
+                  <Widget {...schema} path={path} />
                 </I18nextProvider>
               )}
             </CollapsePanel>
