@@ -45,10 +45,7 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path }) => {
 
   return (
     <I18nextProvider i18n={i18n} defaultNS={namespace}>
-      <Widget
-        fields={schema.fields}
-        path={path}
-      />
+      <Widget {...schema} path={path} />
     </I18nextProvider>
   )
 }

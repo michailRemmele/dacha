@@ -39,7 +39,7 @@ export const BehaviorWidget: FC<BehaviorWidgetProps> = ({
 
   return (
     <I18nextProvider i18n={i18n} defaultNS={NAMESPACE_EXTENSION}>
-      <Widget fields={schema.fields} path={path} context={context} />
+      <Widget {...schema} path={path} context={context} />
     </I18nextProvider>
   )
 }
