@@ -65,9 +65,9 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
         header: styles.header,
       }}
       styles={{
-        header: { alignItems: 'center' },
-        icon: { marginInlineEnd: '8px' },
-        body: { paddingTop: 0 },
+        header: { alignItems: 'center', borderRadius: 0 },
+        icon: { marginInlineStart: 0, marginInlineEnd: '4px' },
+        body: { paddingTop: 0, paddingLeft: '28px' },
       }}
       activeKey={activeKey}
       onChange={handleChange}

@@ -43,7 +43,7 @@ export const EffectPanel: FC<EffectPanelProps> = ({
 
   return (
     <Section
-      className={cx(styles.panel, !schema && styles.panelNoSchema)}
+      className={cx(!schema && styles.panelNoSchema)}
       title={
         schema?.title
           ? t(schema.title, { ns: NAMESPACE_EXTENSION })

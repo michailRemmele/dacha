@@ -75,7 +75,6 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
 
       <Section
         className={cx(
-          styles.panel,
           material?.name !== undefined && !shaderSchema && styles.panelNoSchema,
         )}
         title={t('components.mesh.material.panel.title')}

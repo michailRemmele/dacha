@@ -11,10 +11,6 @@
   margin: 5px 0;
 }
 
-.panel {
-  margin-bottom: 5px;
-}
-
 .panelNoSchema {
   box-shadow: 0 0 0 2px var(--ant-color-error);
   background-color: var(--ant-color-error-bg);

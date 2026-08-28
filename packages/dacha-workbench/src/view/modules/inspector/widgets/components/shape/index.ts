@@ -6,6 +6,9 @@ const PATH = ['globalOptions', 'name:sorting', 'options', 'layers'];
 
 export const shape: WidgetSchema = {
   icon: 'Shapes4',
+  sections: {
+    geometry: { defaultOpen: true },
+  },
   fields: [
     {
       name: 'type',
@@ -17,6 +20,7 @@ export const shape: WidgetSchema = {
       name: 'size',
       type: 'vector',
       initialValue: { x: 10, y: 10 },
+      section: 'geometry',
       dependency: {
         name: 'type',
         value: 'rectangle|roundRectangle',
@@ -26,6 +30,7 @@ export const shape: WidgetSchema = {
       name: 'radius',
       type: 'number',
       initialValue: 5,
+      section: 'geometry',
       dependency: {
         name: 'type',
         value: 'roundRectangle|circle',
@@ -35,6 +40,7 @@ export const shape: WidgetSchema = {
       name: 'radius',
       type: 'vector',
       initialValue: { x: 5, y: 5 },
+      section: 'geometry',
       dependency: {
         name: 'type',
         value: 'ellipse',
@@ -44,6 +50,7 @@ export const shape: WidgetSchema = {
       name: 'point1',
       type: 'vector',
       initialValue: { x: -5, y: 0 },
+      section: 'geometry',
       dependency: {
         name: 'type',
         value: 'line',
@@ -53,6 +60,7 @@ export const shape: WidgetSchema = {
       name: 'point2',
       type: 'vector',
       initialValue: { x: 5, y: 0 },
+      section: 'geometry',
       dependency: {
         name: 'type',
         value: 'line',
@@ -62,11 +70,13 @@ export const shape: WidgetSchema = {
       name: 'strokeColor',
       type: 'color',
       initialValue: '#fff',
+      section: 'appearance',
     },
     {
       name: 'strokeWidth',
       type: 'number',
       initialValue: 0,
+      section: 'appearance',
       dependency: {
         name: 'pixelLine',
         value: false,
@@ -76,6 +86,7 @@ export const shape: WidgetSchema = {
       name: 'strokeAlignment',
       type: 'select',
       initialValue: 0.5,
+      section: 'appearance',
       options: [
         {
           title: 'centered',
@@ -95,34 +106,40 @@ export const shape: WidgetSchema = {
       name: 'pixelLine',
       type: 'boolean',
       initialValue: false,
+      section: 'appearance',
     },
     {
       name: 'fill',
       type: 'color',
       initialValue: '#fff',
-    },
-    {
-      name: 'sortOffset',
-      type: 'vector',
-      initialValue: { x: 0, y: 0 },
-    },
-    {
-      name: 'sortingLayer',
-      type: 'select',
-      initialValue: 'default',
-      options: (getState) =>
-        ((getState(PATH) as SortingLayer[]) ?? []).map((layer) => layer.name),
+      section: 'appearance',
     },
     {
       name: 'blending',
       type: 'select',
       initialValue: 'normal',
+      section: 'appearance',
       options: ['normal', 'addition', 'substract', 'multiply'],
     },
     {
       name: 'opacity',
       type: 'number',
       initialValue: 1,
+      section: 'appearance',
+    },
+    {
+      name: 'sortOffset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
+      section: 'sorting',
+    },
+    {
+      name: 'sortingLayer',
+      type: 'select',
+      initialValue: 'default',
+      section: 'sorting',
+      options: (getState) =>
+        ((getState(PATH) as SortingLayer[]) ?? []).map((layer) => layer.name),
     },
     {
       name: 'disabled',

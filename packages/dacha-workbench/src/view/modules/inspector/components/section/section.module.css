@@ -1,5 +1,8 @@
+.root {
+  margin: 0 0 0 -5px;
+}
+
 .section {
-  /* border-bottom: 1px solid var(--ant-color-border-secondary); */
   border-radius: 0;
   padding: 0;
 }
