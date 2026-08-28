@@ -6,37 +6,47 @@ const PATH = ['globalOptions', 'name:sorting', 'options', 'layers'];
 
 export const sprite: WidgetSchema = {
   icon: 'Picture',
+  sections: {
+    texture: { defaultOpen: true },
+  },
   fields: [
     {
       name: 'src',
       type: 'file',
       initialValue: '',
+      section: 'texture',
       extensions: ['png'],
     },
     {
       name: 'width',
       type: 'number',
       initialValue: 10,
+      section: 'texture',
     },
     {
       name: 'height',
       type: 'number',
       initialValue: 10,
+      section: 'texture',
     },
     {
       name: 'slice',
       type: 'number',
       initialValue: 1,
+      section: 'texture',
     },
     {
-      name: 'sortOffset',
-      type: 'vector',
-      initialValue: { x: 0, y: 0 },
+      name: 'fit',
+      type: 'select',
+      initialValue: 'stretch',
+      section: 'texture',
+      options: ['stretch', 'repeat'],
     },
     {
       name: 'textureOffset',
       type: 'vector',
       initialValue: { x: 0, y: 0 },
+      section: 'texture',
       dependency: {
         name: 'fit',
         value: 'repeat',
@@ -46,41 +56,47 @@ export const sprite: WidgetSchema = {
       name: 'flipX',
       type: 'boolean',
       initialValue: false,
+      section: 'texture',
     },
     {
       name: 'flipY',
       type: 'boolean',
       initialValue: false,
-    },
-    {
-      name: 'sortingLayer',
-      type: 'select',
-      initialValue: 'default',
-      options: (getState) =>
-        ((getState(PATH) as SortingLayer[]) ?? []).map((layer) => layer.name),
-    },
-    {
-      name: 'fit',
-      type: 'select',
-      initialValue: 'stretch',
-      options: ['stretch', 'repeat'],
-    },
-    {
-      name: 'blending',
-      type: 'select',
-      initialValue: 'normal',
-      options: ['normal', 'addition', 'substract', 'multiply'],
+      section: 'texture',
     },
     {
       name: 'color',
       type: 'color',
       initialValue: '#fff',
+      section: 'appearance',
       disabledAlpha: true,
+    },
+    {
+      name: 'blending',
+      type: 'select',
+      initialValue: 'normal',
+      section: 'appearance',
+      options: ['normal', 'addition', 'substract', 'multiply'],
     },
     {
       name: 'opacity',
       type: 'number',
       initialValue: 1,
+      section: 'appearance',
+    },
+    {
+      name: 'sortOffset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
+      section: 'sorting',
+    },
+    {
+      name: 'sortingLayer',
+      type: 'select',
+      initialValue: 'default',
+      section: 'sorting',
+      options: (getState) =>
+        ((getState(PATH) as SortingLayer[]) ?? []).map((layer) => layer.name),
     },
     {
       name: 'disabled',

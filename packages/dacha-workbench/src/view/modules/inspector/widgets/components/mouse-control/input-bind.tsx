@@ -51,7 +51,6 @@ export const InputBind: FC<InputBindProps> = ({
 
   return (
     <Section
-      className={styles.panel}
       title={t('components.mouseControl.bind.title', { index: order + 1 })}
       onDelete={handleDeleteBind}
     >

@@ -2,6 +2,9 @@ import type { WidgetSchema } from '../../../../../../types/widget-schema';
 
 export const rigidBody: WidgetSchema = {
   icon: 'WeightHanging',
+  sections: {
+    dynamics: { defaultOpen: true },
+  },
   fields: [
     {
       name: 'type',
@@ -13,6 +16,7 @@ export const rigidBody: WidgetSchema = {
       name: 'mass',
       type: 'number',
       initialValue: 1,
+      section: 'dynamics',
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -22,6 +26,7 @@ export const rigidBody: WidgetSchema = {
       name: 'gravityScale',
       type: 'number',
       initialValue: 1,
+      section: 'dynamics',
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -31,6 +36,7 @@ export const rigidBody: WidgetSchema = {
       name: 'linearDamping',
       type: 'number',
       initialValue: 0,
+      section: 'dynamics',
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -40,6 +46,7 @@ export const rigidBody: WidgetSchema = {
       name: 'angularDamping',
       type: 'number',
       initialValue: 0,
+      section: 'dynamics',
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -49,6 +56,7 @@ export const rigidBody: WidgetSchema = {
       name: 'lockRotation',
       type: 'boolean',
       initialValue: false,
+      section: 'dynamics',
       dependency: {
         name: 'type',
         value: 'dynamic',
@@ -58,21 +66,25 @@ export const rigidBody: WidgetSchema = {
       name: 'restitution',
       type: 'number',
       initialValue: 0,
+      section: 'material',
     },
     {
       name: 'friction',
       type: 'number',
       initialValue: 0.6,
+      section: 'material',
     },
     {
       name: 'oneWay',
       type: 'boolean',
       initialValue: false,
+      section: 'oneWay',
     },
     {
       name: 'oneWayNormal',
       type: 'vector',
       initialValue: { x: 0, y: 0 },
+      section: 'oneWay',
       dependency: {
         name: 'oneWay',
         value: true,

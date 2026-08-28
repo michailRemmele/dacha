@@ -4,6 +4,7 @@ import { Button } from 'antd';
 import { uuid } from '../../../../../../utils/uuid';
 
 import type { WidgetProps } from '../../../../../../types/widget-schema';
+import { Section } from '../../../components/section';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { setValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
@@ -22,8 +23,7 @@ export const PhysicsWidget: FC<WidgetProps> = () => {
   const { dispatch } = useCommander();
 
   const settings = useConfig(PHYSICS_SETTINGS_PATH) as
-    | PhysicsSettings
-    | undefined;
+    PhysicsSettings | undefined;
 
   const updatePhysics = useCallback(
     (newLayers: CollisionLayer[]) => {
@@ -94,36 +94,38 @@ export const PhysicsWidget: FC<WidgetProps> = () => {
 
   return (
     <>
-      <span className={styles.sectionHeader}>
-        {t('globalOptions.physics.collisionLayers.title')}
-      </span>
+      <Section
+        title={t('globalOptions.physics.collisionLayers.title')}
+        defaultOpen
+      >
+        {settings?.collisionLayers.length ? (
+          <div className={styles.layers}>
+            {settings?.collisionLayers.map((layer, index) => (
+              <CollisionLayerField
+                key={layer.id}
+                id={layer.id}
+                index={index}
+                onDelete={handleDeleteLayer}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptyPlaceholder}>
+            {t('globalOptions.physics.collisionLayers.empty.placeholder')}
+          </div>
+        )}
 
-      {settings?.collisionLayers.length ? (
-        <div className={styles.layers}>
-          {settings?.collisionLayers.map((layer, index) => (
-            <CollisionLayerField
-              key={layer.id}
-              id={layer.id}
-              index={index}
-              onDelete={handleDeleteLayer}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className={styles.emptyPlaceholder}>
-          {t('globalOptions.physics.collisionLayers.empty.placeholder')}
-        </div>
-      )}
+        <Button className={styles.button} onClick={handleAddNewLayer}>
+          {t('globalOptions.physics.collisionLayers.addNew.title')}
+        </Button>
+      </Section>
 
-      <Button className={styles.button} onClick={handleAddNewLayer}>
-        {t('globalOptions.physics.collisionLayers.addNew.title')}
-      </Button>
-
-      <span className={styles.sectionHeader}>
-        {t('globalOptions.physics.collisionMatrix.title')}
-      </span>
-
-      <CollisionMatrixField layers={settings?.collisionLayers} />
+      <Section
+        title={t('globalOptions.physics.collisionMatrix.title')}
+        defaultOpen
+      >
+        <CollisionMatrixField layers={settings?.collisionLayers} />
+      </Section>
     </>
   );
 };

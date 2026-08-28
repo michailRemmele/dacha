@@ -65,12 +65,12 @@ export const Section: FC<SectionProps> = ({
       ghost
       className={cx(styles.section, className)}
       classNames={{
+        root: styles.root,
         header: styles.header,
       }}
       styles={{
-        root: { margin: 0 },
-        header: { alignItems: 'center', padding: '4px 0' },
-        icon: { marginInlineEnd: '4px' },
+        header: { alignItems: 'center', padding: '4px 0', borderRadius: 0 },
+        icon: { marginInlineStart: 0, marginInlineEnd: 0 },
         body: { padding: '0 0 8px 24px' },
       }}
       activeKey={activeKey}
