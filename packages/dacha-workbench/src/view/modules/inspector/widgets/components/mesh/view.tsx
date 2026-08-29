@@ -22,7 +22,7 @@ interface MaterialConfig {
   options: Record<string, unknown>;
 }
 
-export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
+export const MeshWidget: FC<WidgetProps> = ({ path, ...props }) => {
   const { t } = useTranslation();
   const { dispatch } = useCommander();
 
@@ -71,7 +71,7 @@ export const MeshWidget: FC<WidgetProps> = ({ path, fields }) => {
 
   return (
     <div>
-      {fields?.length ? <Widget fields={fields} path={path} /> : null}
+      <Widget {...props} path={path} />
 
       <Section
         className={cx(

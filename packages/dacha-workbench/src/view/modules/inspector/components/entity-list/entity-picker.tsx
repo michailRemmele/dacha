@@ -42,6 +42,7 @@ export const EntityPicker: FC<EntityPickerProps> = ({
         ? t(entity.schema.title, { ns: entity.namespace })
         : formatWidgetName(entity.name),
       value: entity.name,
+      icon: entity.schema.icon,
     })), [entities, addedEntities])
   const schemasMap = useMemo(() => entities.reduce((acc, entity) => {
     acc[entity.name] = entity.schema

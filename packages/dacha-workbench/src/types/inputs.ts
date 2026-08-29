@@ -14,8 +14,10 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps extends InputProps {
+export interface SelectProps extends Omit<InputProps, 'value' | 'onChange'> {
   options: SelectOption[] | string[] | number[];
+  value: string | null;
+  onChange?: (value: string | null) => void;
   allowEmpty?: boolean;
 }
 

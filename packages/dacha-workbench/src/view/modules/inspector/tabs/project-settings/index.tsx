@@ -57,9 +57,8 @@ export const ProjectSettings: FC = () => {
             >
               {schema.view ? (
                 <CustomWidget
-                  fields={schema.fields || []}
+                  {...schema}
                   path={path}
-                  component={schema.view}
                   namespace={NAMESPACE_EDITOR}
                 />
               ) : (
