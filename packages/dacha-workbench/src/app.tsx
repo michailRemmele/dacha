@@ -5,6 +5,7 @@ import { use } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import 'reflect-metadata';
 import 'antd/dist/reset.css';
+import './view/global.css';
 
 import { App } from './view';
 import {
@@ -33,6 +34,11 @@ void use(initReactI18next).init({
     },
   },
 });
+
+document.body.classList.toggle(
+  'editor-platform_win32',
+  window.electron.getPlatform() === 'win32',
+);
 
 const root = createRoot(document.getElementById(APP_ROOT) as HTMLElement);
 
