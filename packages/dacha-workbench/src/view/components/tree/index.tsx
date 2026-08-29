@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect, useRef, FC } from 'react';
+import { useCallback, useMemo, useEffect, useRef, useState, FC } from 'react';
 import type { ReactNode } from 'react';
 import { Tree as AntdTree, TreeProps as AntdTreeProps } from 'antd';
 import { CaretDown } from '@gravity-ui/icons';
@@ -90,6 +90,21 @@ export const Tree: FC<TreeProps> = ({
   showIcon = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState<number>();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) {
+      return undefined;
+    }
+
+    const observer = new ResizeObserver(([entry]) => {
+      setContainerHeight(entry.contentRect.height);
+    });
+    observer.observe(container);
+
+    return (): void => observer.disconnect();
+  }, []);
 
   const { expandedKeys, setExpandedKeys } = useTreeKeys(
     treeData,
@@ -166,6 +181,7 @@ export const Tree: FC<TreeProps> = ({
       <AntdTree.DirectoryTree
         className={cx(styles.tree, className)}
         styles={defaultStyles}
+        height={containerHeight}
         expandedKeys={expandedKeys}
         selectedKeys={selectedKeys}
         onSelect={handleSelect}
