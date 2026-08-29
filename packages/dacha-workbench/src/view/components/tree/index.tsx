@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useEffect, useRef, FC } from 'react';
 import type { ReactNode } from 'react';
 import { Tree as AntdTree, TreeProps as AntdTreeProps } from 'antd';
+import { CaretDown } from '@gravity-ui/icons';
 
+import { Icon } from '../icon';
 import { useTreeKeys } from '../../hooks';
 import type {
   ExplorerDataNode,
@@ -44,6 +46,12 @@ interface TreeProps {
 const defaultStyles: AntdTreeProps['styles'] = {
   item: {
     margin: 0,
+  },
+  itemSwitcher: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginInlineEnd: 0,
   },
 };
 
@@ -175,6 +183,7 @@ export const Tree: FC<TreeProps> = ({
           />
         )}
         showIcon={showIcon}
+        switcherIcon={<Icon icon={<CaretDown />} />}
       />
     </ListWrapper>
   );

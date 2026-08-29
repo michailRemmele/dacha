@@ -30,12 +30,13 @@ export const ActionBar: FC = () => {
   return (
     <header className={editorStyles.actionBar}>
       <IconButton
-        className={editorStyles.actionButton}
         icon={<Icon icon={<Plus />} />}
         onClick={handleAdd}
         title={t('components.animatable.editor.transition.add.button.title')}
         disabled={statePath === undefined}
       />
+
+      <div className={editorStyles.actionDivider} />
 
       <HotkeysBar />
     </header>

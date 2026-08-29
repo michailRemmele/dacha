@@ -76,7 +76,6 @@ export const List: FC = () => {
       onInspect={handleInspect}
       onSelect={handleSelect}
       onClickOutside={handleClickOutside}
-      showIcon={false}
     />
   )
 }
