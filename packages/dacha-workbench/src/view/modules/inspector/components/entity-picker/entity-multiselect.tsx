@@ -1,29 +1,28 @@
-import {
-  useCallback,
-  useState,
-} from 'react'
-import type { ReactElement, FC } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Button, Select } from 'antd'
-import { Plus } from '@gravity-ui/icons'
-import { Icon, IconButton } from '../../../../components'
+import { useCallback, useState } from 'react';
+import type { ReactElement, FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Select } from 'antd';
+import { Plus } from '@gravity-ui/icons';
+import { Icon, IconButton } from '../../../../components';
+import { EntityIcon } from '../entity-icon';
 
-import { CreateNewModal } from './create-new-modal'
-import { cx } from '../../../../../utils/cx'
+import { CreateNewModal } from './create-new-modal';
+import { cx } from '../../../../../utils/cx';
 
-import styles from './entity-picker.module.css'
+import styles from './entity-picker.module.css';
 
 interface EntityMultiselectProps {
-  placeholder: string
+  placeholder: string;
   options: {
-    label: string
-    value: string
-  }[]
-  onAdd: (value: string) => void
-  onCreate: (name: string, path: string) => void
-  type: string
-  size?: 'middle' | 'small'
-  className?: string
+    label: string;
+    value: string;
+    icon?: string;
+  }[];
+  onAdd: (value: string) => void;
+  onCreate: (name: string, path: string) => void;
+  type: string;
+  size?: 'middle' | 'small';
+  className?: string;
 }
 
 export const EntityMultiselect: FC<EntityMultiselectProps> = ({
@@ -35,27 +34,27 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
   size = 'middle',
   className,
 }): ReactElement => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const [value, setValue] = useState<string>()
-  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState<string>();
+  const [open, setOpen] = useState(false);
 
   const handleChange = useCallback((selectedValue: string) => {
-    setValue(selectedValue)
-  }, [])
+    setValue(selectedValue);
+  }, []);
 
   const handleAdd = useCallback(() => {
     if (!value) {
-      return
+      return;
     }
 
-    onAdd(value)
+    onAdd(value);
 
-    setValue(undefined)
-  }, [value, onAdd])
+    setValue(undefined);
+  }, [value, onAdd]);
 
-  const handleCancel = useCallback(() => setOpen(false), [])
-  const handleOpen = useCallback(() => setOpen(true), [])
+  const handleCancel = useCallback(() => setOpen(false), []);
+  const handleOpen = useCallback(() => setOpen(true), []);
 
   return (
     <>
@@ -69,11 +68,19 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
           placeholder={placeholder}
           open={open ? false : undefined}
           showSearch
+          optionRender={(option): ReactElement => (
+            <span className={styles.option}>
+              <EntityIcon
+                name={option.data.label}
+                icon={option.data.icon}
+                background={false}
+              />
+              {option.data.label}
+            </span>
+          )}
           popupRender={(menu: ReactElement): ReactElement => (
             <>
-              <div>
-                {menu}
-              </div>
+              <div>{menu}</div>
               <div className={styles.footer}>
                 <Button block onClick={handleOpen}>
                   {t('inspector.entityPicker.createNew.button.title')}
@@ -99,5 +106,5 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
         />
       )}
     </>
-  )
-}
+  );
+};

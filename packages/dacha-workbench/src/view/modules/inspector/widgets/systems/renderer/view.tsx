@@ -35,7 +35,7 @@ interface FilterEffectEntry {
   options: Record<string, unknown>;
 }
 
-export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
+export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -122,7 +122,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, fields }) => {
 
   return (
     <div className={styles.renderer}>
-      {fields?.length ? <Widget fields={fields} path={path} /> : null}
+      <Widget {...props} path={path} />
 
       <span className={styles.sectionHeader}>
         {t('systems.renderer.filterEffect.title')}

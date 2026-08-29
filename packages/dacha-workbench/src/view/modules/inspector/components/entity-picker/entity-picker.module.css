@@ -12,6 +12,12 @@
   width: 100%;
 }
 
+.option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .button {
   flex-shrink: 0;
 

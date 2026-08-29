@@ -1,38 +1,31 @@
-import type { FC } from 'react'
-import { useTranslation, I18nextProvider } from 'react-i18next'
+import type { FC } from 'react';
+import { useTranslation, I18nextProvider } from 'react-i18next';
 
-import { Widget } from '../widget'
-import { CustomWidget } from '../custom-widget'
+import { Widget } from '../widget';
+import { CustomWidget } from '../custom-widget';
 
-import type { Entity } from './types'
-import styles from './entity-list.module.css'
+import type { Entity } from './types';
+import styles from './entity-list.module.css';
 
 interface EntityFormProps extends Entity {
-  path: string[]
+  path: string[];
 }
 
 export const EntityForm: FC<EntityFormProps> = ({ data, path }) => {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation();
 
-  const { schema, namespace } = data
+  const { schema, namespace } = data;
 
   if (!schema || !namespace) {
     return (
       <div className={styles.entityForm}>
         {t('inspector.entityList.content.noSchema.title')}
       </div>
-    )
+    );
   }
 
   if (schema.view) {
-    return (
-      <CustomWidget
-        fields={schema.fields || []}
-        path={path}
-        component={schema.view}
-        namespace={namespace}
-      />
-    )
+    return <CustomWidget {...schema} path={path} namespace={namespace} />;
   }
 
   if (!schema.fields || schema.fields.length === 0) {
@@ -40,12 +33,12 @@ export const EntityForm: FC<EntityFormProps> = ({ data, path }) => {
       <div className={styles.entityForm}>
         {t('inspector.entityList.content.empty.title')}
       </div>
-    )
+    );
   }
 
   return (
     <I18nextProvider i18n={i18n} defaultNS={namespace}>
       <Widget {...schema} path={path} />
     </I18nextProvider>
-  )
-}
+  );
+};

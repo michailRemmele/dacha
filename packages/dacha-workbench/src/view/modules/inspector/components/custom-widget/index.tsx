@@ -1,27 +1,23 @@
-import { FC } from 'react'
-import { useTranslation, I18nextProvider } from 'react-i18next'
+import { FC } from 'react';
+import { useTranslation, I18nextProvider } from 'react-i18next';
 
-import type { WidgetProps } from '../../../../../types/widget-schema'
+import type { WidgetProps } from '../../../../../types/widget-schema';
 
 interface CustomWidgetProps extends WidgetProps {
-  component: FC<WidgetProps>
-  namespace: string
+  view?: FC<WidgetProps>;
+  namespace: string;
 }
 
 export const CustomWidget: FC<CustomWidgetProps> = ({
-  fields,
-  path,
-  component: View,
+  view: View,
   namespace,
+  ...props
 }) => {
-  const { i18n } = useTranslation()
+  const { i18n } = useTranslation();
 
   return (
     <I18nextProvider i18n={i18n} defaultNS={namespace}>
-      <View
-        fields={fields}
-        path={path}
-      />
+      {View ? <View {...props} /> : null}
     </I18nextProvider>
-  )
-}
+  );
+};

@@ -10,9 +10,12 @@ import { cx } from '../../../../../utils/cx'
 
 import styles from './select.module.css'
 
+const NONE_VALUE = ''
+
 export const Select: FC<SelectProps> = ({
   options = [],
   allowEmpty,
+  value,
   onChange = (): void => void 0,
   onAccept = (): void => void 0,
   defaultValue,
@@ -21,10 +24,10 @@ export const Select: FC<SelectProps> = ({
   ...props
 }) => {
   const { t } = useTranslation(NAMESPACE_EDITOR)
-  const handleChange = useCallback((value: string) => {
-    onChange(value)
+  const handleChange = useCallback((newValue: string) => {
+    onChange(allowEmpty && newValue === NONE_VALUE ? null : newValue)
     onAccept()
-  }, [onChange, onAccept])
+  }, [onChange, onAccept, allowEmpty])
 
   const selectOptions = useMemo(() => {
     const items = options.map((option) => (typeof option === 'object'
@@ -33,7 +36,7 @@ export const Select: FC<SelectProps> = ({
 
     return allowEmpty
       ? [
-        { value: null, label: t('inspector.components.select.option.none.title') },
+        { value: NONE_VALUE, label: t('inspector.components.select.option.none.title') },
         ...items,
       ]
       : items
@@ -44,6 +47,7 @@ export const Select: FC<SelectProps> = ({
       className={cx(styles.select, className)}
       onChange={handleChange}
       options={selectOptions}
+      value={value ?? NONE_VALUE}
       {...props}
     />
   )
