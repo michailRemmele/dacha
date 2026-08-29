@@ -52,25 +52,24 @@ export const ActionBar: FC = () => {
   return (
     <header className={editorStyles.actionBar}>
       <IconButton
-        className={editorStyles.actionButton}
         icon={<Icon icon={<Plus />} />}
         onClick={handleAddState}
         title={t('components.animatable.editor.state.add.button.title')}
       />
       <IconButton
-        className={editorStyles.actionButton}
         icon={<Icon icon={<CirclePlus />} />}
         onClick={handleAddSubstate}
         title={t('components.animatable.editor.substate.add.button.title')}
         disabled={(inspectedEntity?.type !== 'state' || selectedStateConfig?.type !== 'group') && inspectedEntity?.type !== 'substate'}
       />
       <IconButton
-        className={editorStyles.actionButton}
         icon={<Icon icon={<CircleChevronRight />} />}
         onClick={handleInitialSet}
         title={t('components.animatable.editor.state.setInitial.button.title')}
         disabled={inspectedEntity?.type !== 'state'}
       />
+
+      <div className={editorStyles.actionDivider} />
 
       <HotkeysBar />
     </header>

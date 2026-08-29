@@ -79,7 +79,6 @@ export const List: FC<StateListProps> = ({ onDrop }) => {
       onInspect={handleInspect}
       onSelect={handleSelect}
       onClickOutside={handleClickOutside}
-      showIcon={false}
       draggable
       onDrop={onDrop}
     />

@@ -8,6 +8,7 @@ const defaultStyles: AntdModalProps['styles'] = {
   container: {
     padding: 0,
     border: '1px solid var(--ant-color-border)',
+    overflow: 'hidden',
   },
   close: {
     right: '5px',

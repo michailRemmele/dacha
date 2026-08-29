@@ -27,4 +27,8 @@
   :global(.ant-tree-treenode)::before {
     height: 0;
   }
+
+  :global(.ant-tree-node-content-wrapper) {
+    padding-left: 0;
+  }
 }

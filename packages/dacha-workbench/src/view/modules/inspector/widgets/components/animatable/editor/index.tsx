@@ -1,29 +1,36 @@
-import { FC } from 'react'
+import { FC } from 'react';
 
-import {
-  StateList,
-  TransitionList,
-  Timeline,
-  Inspector,
-} from './components'
+import { StateList, TransitionList, Timeline, Inspector } from './components';
 
-import { cx } from '../../../../../../../utils/cx'
+import { Window } from '../../../../../../components';
 
-import styles from './editor.module.css'
+import styles from './editor.module.css';
 
 export const Editor: FC = () => (
   <div className={styles.editor}>
     <section className={styles.editorSection}>
       <section className={styles.stateTree}>
-        <StateList className={cx(styles.column, styles.stateListColumn)} />
-        <TransitionList className={styles.column} />
+        <div className={styles.column}>
+          <Window>
+            <StateList className={styles.panel} />
+          </Window>
+        </div>
+        <div className={styles.column}>
+          <Window>
+            <TransitionList className={styles.panel} />
+          </Window>
+        </div>
       </section>
       <footer className={styles.footer}>
-        <Timeline />
+        <Window>
+          <Timeline />
+        </Window>
       </footer>
     </section>
     <aside className={styles.aside}>
-      <Inspector />
+      <Window>
+        <Inspector />
+      </Window>
     </aside>
   </div>
-)
+);
