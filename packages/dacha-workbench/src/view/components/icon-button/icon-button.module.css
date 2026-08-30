@@ -1,0 +1,9 @@
+.iconButton {
+  &:not(:disabled) {
+    color: var(--ant-color-text-secondary);
+
+    &:hover {
+      color: var(--ant-color-text);
+    }
+  }
+}

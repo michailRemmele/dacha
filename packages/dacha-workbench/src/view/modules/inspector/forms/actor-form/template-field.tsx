@@ -1,6 +1,6 @@
 import { useMemo, useCallback, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Button, Space } from 'antd';
+import { Input, Button, Space, ConfigProvider } from 'antd';
 import { ArrowRight } from '@gravity-ui/icons';
 import { Icon } from '../../../../components';
 import type { ActorConfig, TemplateConfig } from 'dacha';
@@ -13,6 +13,12 @@ import { EventType } from '../../../../../events';
 
 import { parseTemplatePath } from './utils';
 import styles from './actor-form.module.css';
+
+const BUTTON_THEME = {
+  components: {
+    Button: { defaultColor: 'var(--ant-color-text-secondary)' },
+  },
+};
 
 interface TemplateFieldProps {
   path: string[];
@@ -48,10 +54,12 @@ export const TemplateField: FC<TemplateFieldProps> = ({ path }) => {
     <Labelled label={t('inspector.actorForm.field.templateName.label')}>
       <Space.Compact className={styles.spaceCompact}>
         <Input value={name} disabled />
-        <Button
-          icon={<Icon icon={<ArrowRight />} />}
-          onClick={handleTemplateInspect}
-        />
+        <ConfigProvider theme={BUTTON_THEME}>
+          <Button
+            icon={<Icon icon={<ArrowRight />} />}
+            onClick={handleTemplateInspect}
+          />
+        </ConfigProvider>
       </Space.Compact>
     </Labelled>
   );
