@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Field } from '../../../components/field';
 import { Section } from '../../../components/section';
-import { useCommander } from '../../../../../hooks';
+import { useCommander, useConfig } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
 import { PATH } from './consts';
@@ -17,6 +17,7 @@ export const AudioGroup: FC<AudioGroupProps> = ({ id }) => {
   const { dispatch } = useCommander();
 
   const groupPath = useMemo(() => PATH.concat(`id:${id}`), [PATH]);
+  const name = useConfig(groupPath.concat('name')) as string | undefined;
 
   const handleDeleteBind = useCallback(() => {
     dispatch(deleteValue(groupPath));
@@ -24,7 +25,8 @@ export const AudioGroup: FC<AudioGroupProps> = ({ id }) => {
 
   return (
     <Section
-      title={t('globalOptions.audioGroups.panel.name.title')}
+      id={id}
+      title={name || t('globalOptions.audioGroups.panel.name.title')}
       onDelete={handleDeleteBind}
     >
       <Field name="name" type="string" path={groupPath} />

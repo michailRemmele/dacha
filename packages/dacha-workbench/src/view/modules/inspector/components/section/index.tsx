@@ -18,6 +18,7 @@ export interface SectionProps {
   children:
     ReactElement | (ReactElement | null | undefined)[] | null | undefined;
   title: string;
+  id?: string;
   onDelete?: () => void;
   extra?: ReactNode;
   defaultOpen?: boolean;
@@ -27,14 +28,16 @@ export interface SectionProps {
 export const Section: FC<SectionProps> = ({
   children,
   title,
+  id,
   onDelete,
   extra,
   defaultOpen = false,
   className,
 }) => {
+  const key = id ?? title;
   const ignoreRef = useRef(false);
   const [activeKey, setActiveKey] = useState<string | string[] | undefined>(
-    defaultOpen ? title : undefined,
+    defaultOpen ? key : undefined,
   );
 
   const handleChange = useCallback((key: string | string[]): void => {
@@ -78,7 +81,7 @@ export const Section: FC<SectionProps> = ({
       expandIcon={expandIcon}
       items={[
         {
-          key: title,
+          key,
           label: (
             <span className={styles.label}>
               {extra}

@@ -18,6 +18,7 @@ export interface InputBindProps {
   path: string[];
   id: string;
   inputKey: string;
+  inputEventType: string;
   order: number;
 }
 
@@ -25,6 +26,7 @@ export const InputBind: FC<InputBindProps> = ({
   path,
   id,
   inputKey,
+  inputEventType,
   order,
 }) => {
   const { t } = useTranslation();
@@ -35,6 +37,11 @@ export const InputBind: FC<InputBindProps> = ({
     () => path.concat('inputEventBindings', `id:${id}`),
     [path],
   );
+
+  const title =
+    inputKey || inputEventType
+      ? `${inputKey || '—'} → ${inputEventType || '—'}`
+      : t('components.keyboardControl.bind.title', { index: order + 1 });
   const keyPath = useMemo(() => bindPath.concat('key'), [bindPath]);
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath]);
 
@@ -50,10 +57,7 @@ export const InputBind: FC<InputBindProps> = ({
   }, [dispatch, bindPath]);
 
   return (
-    <Section
-      title={t('components.keyboardControl.bind.title', { index: order + 1 })}
-      onDelete={handleDeleteBind}
-    >
+    <Section id={id} title={title} onDelete={handleDeleteBind}>
       <KeyPicker value={inputKey} onChange={handleKeyChange} />
       <Field name="pressed" type="boolean" path={bindPath} />
       <Field
