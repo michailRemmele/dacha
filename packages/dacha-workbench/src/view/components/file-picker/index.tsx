@@ -1,10 +1,16 @@
 import { useCallback } from 'react';
 import type { FC, ChangeEvent, HTMLProps, KeyboardEventHandler } from 'react';
-import { Input, Button, Space } from 'antd';
+import { Input, Button, Space, ConfigProvider } from 'antd';
 import { FolderOpen } from '@gravity-ui/icons';
 import { Icon } from '../icon';
 
 import styles from './file-picker.module.css';
+
+const BUTTON_THEME = {
+  components: {
+    Button: { defaultColor: 'var(--ant-color-text-secondary)' },
+  },
+};
 
 export interface FilePickerProps extends Omit<
   HTMLProps<HTMLInputElement>,
@@ -29,7 +35,9 @@ export const FilePicker: FC<FilePickerProps> = ({
   return (
     <Space.Compact className={styles.spaceCompact}>
       <Input onChange={handleChange} {...props} />
-      <Button icon={<Icon icon={<FolderOpen />} />} onClick={onOpen} />
+      <ConfigProvider theme={BUTTON_THEME}>
+        <Button icon={<Icon icon={<FolderOpen />} />} onClick={onOpen} />
+      </ConfigProvider>
     </Space.Compact>
   );
 };

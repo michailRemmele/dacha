@@ -17,6 +17,7 @@ export const PanelExpand: FC<PanelExpandProps> = ({ isActive, children }) => (
     <Icon
       icon={<CaretRight />}
       className={cx(styles.expandIcon, isActive && styles.expandIconActive)}
+      style={{ color: 'var(--ant-color-text-secondary)' }}
     />
   </>
 );

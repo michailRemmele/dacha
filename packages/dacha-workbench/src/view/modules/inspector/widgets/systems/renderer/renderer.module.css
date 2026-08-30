@@ -31,6 +31,8 @@
 
     cursor: grab;
   }
+
+  color: var(--ant-color-text-secondary);
 }
 
 .dragOverlay {

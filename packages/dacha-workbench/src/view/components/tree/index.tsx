@@ -52,6 +52,7 @@ const defaultStyles: AntdTreeProps['styles'] = {
     justifyContent: 'center',
     alignItems: 'center',
     marginInlineEnd: 0,
+    color: 'var(--ant-color-text-secondary)',
   },
 };
 

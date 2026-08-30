@@ -58,6 +58,7 @@ export const Section: FC<SectionProps> = ({
       <Icon
         icon={<CaretRight />}
         className={cx(styles.expandIcon, isActive && styles.expandIconActive)}
+        style={{ color: 'var(--ant-color-text-secondary)' }}
       />
     ),
     [],
