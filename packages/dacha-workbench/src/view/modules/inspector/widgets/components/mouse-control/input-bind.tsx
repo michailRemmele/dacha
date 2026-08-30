@@ -13,7 +13,9 @@ import styles from './mouse-control.module.css';
 
 export interface InputBindProps {
   path: string[];
+  id: string;
   value: string;
+  eventType: string;
   order: number;
   options: { title: string; value: string }[];
   selectedOptions: string[];
@@ -21,7 +23,9 @@ export interface InputBindProps {
 
 export const InputBind: FC<InputBindProps> = ({
   path,
+  id,
   value,
+  eventType,
   order,
   options,
   selectedOptions,
@@ -34,6 +38,11 @@ export const InputBind: FC<InputBindProps> = ({
     () => path.concat('inputEventBindings', `event:${value}`),
     [path, value],
   );
+
+  const title =
+    value || eventType
+      ? `${value || '—'} → ${eventType || '—'}`
+      : t('components.mouseControl.bind.title', { index: order + 1 });
   const attrsPath = useMemo(() => bindPath.concat('attrs'), [bindPath]);
 
   const inputEvents = useMemo(
@@ -50,10 +59,7 @@ export const InputBind: FC<InputBindProps> = ({
   }, [dispatch, bindPath]);
 
   return (
-    <Section
-      title={t('components.mouseControl.bind.title', { index: order + 1 })}
-      onDelete={handleDeleteBind}
-    >
+    <Section id={id} title={title} onDelete={handleDeleteBind}>
       <Field
         name="event"
         component={LabelledSelect}
