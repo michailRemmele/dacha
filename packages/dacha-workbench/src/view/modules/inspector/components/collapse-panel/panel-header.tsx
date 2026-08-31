@@ -7,10 +7,15 @@ import styles from './collapse-panel.module.css';
 export interface PanelHeaderProps {
   title: string;
   icon?: string;
+  dataTestId?: string;
 }
 
-export const PanelHeader: FC<PanelHeaderProps> = ({ title, icon }) => (
-  <span className={styles.headerLabel} title={title}>
+export const PanelHeader: FC<PanelHeaderProps> = ({
+  title,
+  icon,
+  dataTestId,
+}) => (
+  <span className={styles.headerLabel} title={title} data-testid={dataTestId}>
     <EntityIcon name={title} icon={icon} />
     <span className={styles.title}>{title}</span>
   </span>

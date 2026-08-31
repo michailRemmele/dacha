@@ -6,4 +6,5 @@ module.exports = {
     '\\.css$': '<rootDir>/css-module-stub.js',
   },
   testEnvironment: './FixJSDOMEnvironment.js',
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/e2e/'],
 }

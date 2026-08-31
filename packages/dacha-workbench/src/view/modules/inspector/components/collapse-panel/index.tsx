@@ -1,4 +1,11 @@
-import { useCallback, useState, useRef, FC, ReactElement } from 'react';
+import {
+  useCallback,
+  useMemo,
+  useState,
+  useRef,
+  FC,
+  ReactElement,
+} from 'react';
 import { Collapse } from 'antd';
 import { TrashBin } from '@gravity-ui/icons';
 
@@ -19,6 +26,7 @@ export interface CollapsePanelProps {
   expandExtra?: ReactElement | ReactElement[];
   deletable?: boolean;
   className?: string;
+  dataTestId?: string;
 }
 
 export const CollapsePanel: FC<CollapsePanelProps> = ({
@@ -29,6 +37,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
   expandExtra,
   deletable = true,
   className,
+  dataTestId,
 }) => {
   const ignoreRef = useRef(false);
   const [activeKey, setActiveKey] = useState<string | string[]>();
@@ -56,6 +65,31 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
     [onDelete],
   );
 
+  const items = useMemo(
+    () => [
+      {
+        key: title,
+        label: (
+          <PanelHeader
+            title={title}
+            icon={icon}
+            dataTestId={dataTestId ? `${dataTestId}-header` : undefined}
+          />
+        ),
+        children,
+        extra: deletable ? (
+          <IconButton
+            className={styles.deleteButton}
+            icon={<Icon icon={<TrashBin />} />}
+            onClick={handleDelete}
+          />
+        ) : undefined,
+        'data-testid': dataTestId,
+      },
+    ],
+    [title, icon, dataTestId, children, deletable, handleDelete],
+  );
+
   return (
     <Collapse
       ghost
@@ -72,20 +106,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
       activeKey={activeKey}
       onChange={handleChange}
       expandIcon={expandIcon}
-      items={[
-        {
-          key: title,
-          label: <PanelHeader title={title} icon={icon} />,
-          children,
-          extra: deletable ? (
-            <IconButton
-              className={styles.deleteButton}
-              icon={<Icon icon={<TrashBin />} />}
-              onClick={handleDelete}
-            />
-          ) : undefined,
-        },
-      ]}
+      items={items}
     />
   );
 };
