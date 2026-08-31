@@ -1,0 +1,70 @@
+.editor {
+  display: flex;
+  box-sizing: border-box;
+
+  width: 100%;
+  height: calc(90vh - 45px);
+
+  padding: 3px;
+
+  background-color: var(--ant-color-bg-layout);
+}
+
+.editorSection {
+  display: flex;
+  flex-direction: column;
+
+  width: 67%;
+}
+
+.stateTree {
+  display: flex;
+  flex: 1;
+
+  /* timeline padding + frame padding + frame border + line height + action bar */
+  height: calc(100% - (15px * 2 + 31px * 2 + 20px + 31px));
+}
+
+.footer {
+  width: 100%;
+}
+
+.aside {
+  width: 33%;
+}
+
+.column {
+  width: 50%;
+  height: 100%;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+}
+
+.actionBar {
+  display: flex;
+
+  border-bottom: 1px solid var(--ant-color-border);
+  padding: 3px;
+
+  height: 31px;
+
+  flex-shrink: 0;
+}
+
+.actionDivider {
+  width: 2px;
+  background-color: var(--ant-color-border-secondary);
+
+  margin: 4px;
+}
+
+.tree {
+  border-radius: 0;
+
+  flex: 1;
+}

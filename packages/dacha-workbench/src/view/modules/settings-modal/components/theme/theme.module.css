@@ -1,0 +1,12 @@
+.theme {
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 10px 15px;
+
+  & :global(.ant-radio-group) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}

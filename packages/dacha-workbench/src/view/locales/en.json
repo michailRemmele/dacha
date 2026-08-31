@@ -1,0 +1,204 @@
+{
+  "explorer": {
+    "tab.scenes": "Scenes",
+    "tab.templates": "Templates",
+    "tab.assets": "Assets",
+
+    "actionBar.cut.button.title": "Cut",
+    "actionBar.copy.button.title": "Copy",
+    "actionBar.paste.button.title": "Paste",
+    "actionBar.delete.button.title": "Delete",
+
+    "scenes.actionBar.addActor.button.title": "Add New Actor",
+    "scenes.actionBar.addScene.button.title": "Add New Scene",
+    "scenes.actionBar.focusActor.button.title": "Focus Actor",
+    "scenes.actionBar.actor.new.title": "Actor",
+    "scenes.actionBar.scene.new.title": "Scene",
+
+    "templates.actionBar.addTemplate.button.title": "Add New Template",
+    "templates.actionBar.template.new.title": "Template",
+
+    "assets.actionBar.addAsset.button.title": "Add New Asset"
+  },
+  "toolbar": {
+    "pointer.title": "Pointer Tool",
+    "hand.title": "Hand Tool",
+    "zoom.title": "Zoom Tool",
+    "zoom.features.direction.in.title": "Zoom In Mode",
+    "zoom.features.direction.out.title": "Zoom Out Mode",
+    "template.title": "Template Tool",
+    "template.features.template.title": "Template:",
+    "template.features.nestToSelected.title": "Nesting",
+
+    "common.features.grid.title": "Snap to Grid"
+  },
+  "inspector": {
+    "tab.entityInspector": "Inspector",
+    "tab.systems": "Systems",
+    "tab.projectSettings": "Project settings",
+
+    "entityInspector.scene.title": "Scene",
+    "entityInspector.actor.title": "Actor",
+    "entityInspector.template.title": "Template",
+    "entityInspector.asset.title": "Asset",
+
+    "entityInspector.copyIdButton.title": "Copy id to clipboard",
+
+    "sceneForm.field.name.label": "Name",
+
+    "templateForm.field.name.label": "Name",
+
+    "actorForm.field.name.label": "Name",
+    "actorForm.field.templateName.label": "Template",
+
+    "assetForm.field.name.label": "Name",
+
+    "projectSettings.field.startScene.label": "Start Scene",
+    "projectSettings.globalOptions.title": "Global Options",
+
+    "components.select.option.none.title": "[none]",
+
+    "componentList.addNew.button.title": "Add Component",
+    "systemList.addNew.button.title": "Add System",
+
+    "entityList.content.empty.title": "No params required",
+    "entityList.content.noSchema.title": "Schema not found",
+
+    "entityPicker.createNew.button.title": "Create New",
+    "entityPicker.createNew.modal.system.title": "New System",
+    "entityPicker.createNew.modal.component.title": "New Component",
+    "entityPicker.createNew.modal.behavior.title": "New Behavior",
+    "entityPicker.createNew.modal.filterEffect.title": "New Filter Effect",
+    "entityPicker.createNew.modal.shader.title": "New Shader",
+    "entityPicker.createNew.modal.field.path.label": "File Path:",
+    "entityPicker.createNew.modal.field.baseDirectory.label": "Base Directory",
+    "entityPicker.createNew.modal.field.customizePath.label": "Customize Path",
+    "entityPicker.createNew.modal.field.subdirectory.label": "Subdirectory",
+    "entityPicker.createNew.modal.field.filename.label": "File Name",
+    "entityPicker.createNew.modal.field.name.label": "Class Name",
+    "entityPicker.createNew.modal.button.create.label": "Create",
+    "entityPicker.createNew.modal.button.cancel.label": "Cancel",
+
+    "multifield.field.title": "Field {{index}}",
+    "multifield.addNew.value.title": "Add New Field",
+    "multifield.noFields.title": "No Fields"
+  },
+  "settings": {
+    "modal.title": "Settings",
+
+    "grid.modal.title": "Grid Settings",
+    "grid.modal.field.step.label": "Step",
+    "grid.modal.field.showGrid.label": "Show Grid",
+    "grid.modal.field.color.label": "Color",
+
+    "debugLayers.modal.title": "Debug Layers",
+
+    "theme.modal.title": "Theme",
+    "theme.modal.field.system.label": "System",
+    "theme.modal.field.light.label": "Light",
+    "theme.modal.field.dark.label": "Dark"
+  },
+  "bottomBar": {
+    "reloadWarning.button.tooltip": "To apply changes, the editor should be reloaded.",
+    "reloadWarning.button.title": "Reload Required"
+  },
+  "titleBar": {
+    "menu.file.title": "File",
+    "menu.file.save.title": "Save",
+    "menu.file.exit.title": "Exit",
+
+    "menu.edit.title": "Edit",
+    "menu.edit.undo.title": "Undo",
+    "menu.edit.redo.title": "Redo",
+    "menu.edit.cut.title": "Cut",
+    "menu.edit.copy.title": "Copy",
+    "menu.edit.paste.title": "Paste",
+    "menu.edit.delete.title": "Delete",
+
+    "menu.view.title": "View",
+    "menu.view.settings.title": "Settings",
+
+    "windowControls.minimize.title": "Minimize",
+    "windowControls.maximize.title": "Maximize",
+    "windowControls.restore.title": "Restore",
+    "windowControls.close.title": "Close"
+  },
+
+  "components.animatable.openEditorButton.title": "Open Animation Editor",
+  "components.animatable.editor.title": "Animation Editor",
+
+  "components.animatable.editor.duplicate.appendix.title": "copy",
+
+  "components.animatable.editor.inspector.state.title": "State",
+  "components.animatable.editor.inspector.transition.title": "Transition",
+  "components.animatable.editor.inspector.frame.title": "Frame",
+  "components.animatable.editor.inspector.substate.title": "Substate",
+
+  "components.animatable.editor.state.type.title": "Type",
+  "components.animatable.editor.state.types.individual.title": "individual",
+  "components.animatable.editor.state.types.group.title": "group",
+  "components.animatable.editor.state.looped.title": "Looped",
+  "components.animatable.editor.state.pickMode.title": "Pick Mode",
+  "components.animatable.editor.state.pickModes.1d.title": "1D",
+  "components.animatable.editor.state.pickModes.2d.title": "2D",
+  "components.animatable.editor.state.pickProps.x.title": "X",
+  "components.animatable.editor.state.pickProps.y.title": "Y",
+  "components.animatable.editor.state.initial.title": "(Initial State)",
+  "components.animatable.editor.state.setInitial.button.title": "Set as initial",
+  "components.animatable.editor.state.add.button.title": "Add New State",
+  "components.animatable.editor.state.new.title": "State",
+
+  "components.animatable.editor.frame.add.button.title": "Add New Frame",
+
+  "components.animatable.editor.substate.y.title": "Y",
+  "components.animatable.editor.substate.add.button.title": "Add New Substate",
+  "components.animatable.editor.substate.new.title": "Substate",
+
+  "components.animatable.editor.transition.add.button.title": "Add New Transition",
+  "components.animatable.editor.transition.unknown.state.title": "DELETED",
+
+  "components.animatable.editor.condition.title": "Condition {{index}}",
+  "components.animatable.editor.condition.type.title": "Type",
+  "components.animatable.editor.condition.eventType.title": "Event Type",
+  "components.animatable.editor.condition.operation.title": "Operation",
+  "components.animatable.editor.condition.arg1.type.title": "Arg1 Type",
+  "components.animatable.editor.condition.arg1.value.title": "Arg1 Value",
+  "components.animatable.editor.condition.arg2.type.title": "Arg2 Type",
+  "components.animatable.editor.condition.arg2.value.title": "Arg2 Value",
+  "components.animatable.editor.condition.add.button.title": "Add New Condition",
+  "components.animatable.editor.condition.delete.button.title": "Delete Condition",
+
+  "components.keyboardControl.bind.title": "Event Bind {{index}}",
+  "components.keyboardControl.bind.key.title": "Key",
+  "components.keyboardControl.bind.attributes.title": "Attributes",
+  "components.keyboardControl.bind.addNew.title": "Add New Bind",
+
+  "components.mouseControl.bind.title": "Event Bind {{index}}",
+  "components.mouseControl.bind.attributes.title": "Attributes",
+  "components.mouseControl.bind.addNew.title": "Add New Bind",
+
+  "components.behaviors.behavior.addNew.title": "Add Behavior",
+  "components.behaviors.behavior.noSchema.title": "Schema not found",
+
+  "components.mesh.material.panel.title": "Material",
+  "components.mesh.material.title": "Name",
+  "components.mesh.material.noSchema.title": "Schema not found",
+
+  "systems.renderer.filterEffect.addNew.title": "Add Effect",
+  "systems.renderer.filterEffect.noSchema.title": "Schema not found",
+  "systems.renderer.filterEffect.title": "Filter Effects",
+
+  "globalOptions.sorting.layers.title": "Layers",
+  "globalOptions.sorting.layers.addNew.title": "Add Layer",
+
+  "globalOptions.audioGroups.addNew.title": "Add Group",
+  "globalOptions.audioGroups.panel.name.title": "Group",
+
+  "globalOptions.physics.collisionLayers.title": "Collision Layers",
+  "globalOptions.physics.collisionLayers.empty.placeholder": "No collision layers defined",
+  "globalOptions.physics.collisionMatrix.title": "Collision Matrix",
+  "globalOptions.physics.collisionLayers.addNew.title": "Add Collision Layer",
+  "globalOptions.physics.collisionLayers.name.title": "Layer {{index}}",
+  "globalOptions.physics.collisionLayers.copy.title": "Copy",
+  "globalOptions.physics.collisionLayers.delete.title": "Delete"
+}

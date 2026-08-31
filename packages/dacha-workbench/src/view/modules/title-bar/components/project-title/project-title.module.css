@@ -1,0 +1,40 @@
+.projectTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  max-width: 100%;
+  padding: 0 12px;
+}
+
+.nameWrapper {
+  position: relative;
+  display: inline-block;
+
+  max-width: 100%;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    top: 50%;
+    right: -14px;
+    transform: translateY(-50%);
+
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    background: var(--ant-color-text-tertiary);
+
+    opacity: 0;
+  }
+}
+
+.unsaved::after {
+  opacity: 1;
+}
+
+.name {
+  color: var(--ant-color-text-secondary);
+}

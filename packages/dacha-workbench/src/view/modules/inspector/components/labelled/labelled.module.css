@@ -1,0 +1,16 @@
+.labelled {
+  display: flex;
+  justify-content: space-between;
+
+  margin: 5px 0;
+}
+
+.label {
+  width: 40%;
+
+  flex-shrink: 0;
+}
+
+.input {
+  width: 60%;
+}

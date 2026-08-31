@@ -1,0 +1,40 @@
+.collapse {
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  border-radius: 0;
+  margin: 0 -5px 0 -10px;
+}
+
+.headerLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  overflow: hidden;
+}
+
+.title {
+  font-weight: var(--ant-font-weight-strong);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  padding-right: 5px;
+}
+
+.expandIcon svg {
+  transition: transform 0.24s;
+}
+
+.expandIconActive svg {
+  transform: rotate(90deg);
+}
+
+.deleteButton {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.header:hover .deleteButton {
+  opacity: 1;
+  pointer-events: auto;
+}

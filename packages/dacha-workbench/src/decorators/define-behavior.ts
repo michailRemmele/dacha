@@ -1,0 +1,46 @@
+import type { WidgetSchema, Field } from '../types/widget-schema';
+import { type BehaviorConstructor } from '../types/engine';
+import { widgetRegistry } from '../hocs/widget-registry';
+
+import { schemaRegistry } from './schema-registry';
+import { classRegistry } from './class-registry';
+
+import {
+  defineMetaProperty,
+  mergeFields,
+  isEditor,
+} from './utils';
+
+interface DefineBehaviorOptions extends Omit<WidgetSchema, 'view'> {
+  name: string;
+  type?: string;
+}
+
+export function DefineBehavior({
+  name,
+  type,
+  ...widget
+}: DefineBehaviorOptions): (constructor: BehaviorConstructor) => void {
+  return (constructor: BehaviorConstructor): void => {
+    defineMetaProperty(constructor, 'behaviorName', name);
+
+    if (!isEditor()) {
+      return;
+    }
+
+    const fields = mergeFields(
+      widget.fields,
+      Reflect.getMetadata('schema:fields', constructor) as Field[] | undefined,
+    );
+
+    const groupName = type ? `behavior.${type}` : 'behavior';
+
+    schemaRegistry.addWidget(groupName, name, {
+      ...widget,
+      view: widgetRegistry.getWidget(name),
+      fields,
+    });
+
+    classRegistry.addClass(groupName, name, constructor);
+  };
+}

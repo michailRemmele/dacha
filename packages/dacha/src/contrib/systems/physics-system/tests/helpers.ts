@@ -1,0 +1,215 @@
+import { ActorCreator, ActorSpawner, Actor } from '../../../../engine/actor';
+import { Scene } from '../../../../engine/scene';
+import { TemplateCollection } from '../../../../engine/template';
+import { World } from '../../../../engine/world';
+import { Assets } from '../../../../engine/asset';
+import { Time } from '../../../../engine/time';
+import { Collider, RigidBody } from '../../../components';
+import { Transform } from '../../../components/transform';
+import { PhysicsSystem } from '../index';
+import type { PhysicsSettings, PhysicsSystemOptions } from '../types';
+
+export const createTime = (fixedDeltaTime = 0.1): Time => {
+  const time = new Time();
+  time.fixedDeltaTime = fixedDeltaTime;
+  return time;
+};
+
+export const createScene = (): Scene => {
+  const templateCollection = new TemplateCollection();
+  const actorCreator = new ActorCreator([], templateCollection);
+
+  return new Scene({
+    id: 'scene',
+    name: 'scene',
+    actors: [],
+    actorCreator,
+    templateCollection,
+  });
+};
+
+export const createPhysicsSystem = (
+  scene: Scene,
+  settings?: PhysicsSettings,
+  gravityY = 0,
+  gravityX = 0,
+  solverOptions: Partial<
+    Pick<
+      PhysicsSystemOptions,
+      'solverIterations' | 'maxAllowedPenetration' | 'maxBiasVelocity'
+    >
+  > = {},
+): { physicsSystem: PhysicsSystem; world: World; time: Time } => {
+  const world = new World({ id: 'world', name: 'world' });
+  const templateCollection = new TemplateCollection();
+  const actorCreator = new ActorCreator([], templateCollection);
+  const time = createTime();
+
+  world.appendChild(scene);
+
+  const physicsSystem = new PhysicsSystem({
+    scene,
+    world,
+    gravityX,
+    gravityY,
+    actorSpawner: new ActorSpawner(actorCreator),
+    globalOptions: settings ? { physics: settings } : {},
+    templateCollection,
+    assets: new Assets([]),
+    time,
+    ...solverOptions,
+  });
+
+  physicsSystem.onSceneEnter?.();
+
+  return { physicsSystem, world, time };
+};
+
+export const createBoxActor = (
+  id: string,
+  type: 'dynamic' | 'static' | 'kinematic',
+  positionX: number,
+  positionY: number,
+  colliderConfig: {
+    layer: string;
+    oneWay?: boolean;
+    oneWayNormal?: { x: number; y: number };
+  } = { layer: 'default', oneWay: false },
+): Actor => {
+  const actor = new Actor({ id, name: id });
+  const transform = actor.getComponent(Transform);
+
+  transform.world.position.x = positionX;
+  transform.world.position.y = positionY;
+  actor.setComponent(
+    new Collider({
+      type: 'box',
+      offset: { x: 0, y: 0 },
+      size: { x: 2, y: 2 },
+      layer: colliderConfig.layer,
+      disabled: false,
+    }),
+  );
+  actor.setComponent(
+    new RigidBody({
+      type,
+      mass: 1,
+      gravityScale: 0,
+      linearDamping: 0,
+      disabled: false,
+      oneWay: colliderConfig.oneWay ?? false,
+      oneWayNormal: colliderConfig.oneWayNormal,
+    }),
+  );
+
+  return actor;
+};
+
+export const createCircleActor = (
+  id: string,
+  positionX: number,
+  positionY: number,
+  radius: number,
+  colliderConfig: Pick<Collider, 'layer'> = { layer: 'default' },
+): Actor => {
+  const actor = new Actor({ id, name: id });
+  const transform = actor.getComponent(Transform);
+
+  transform.world.position.x = positionX;
+  transform.world.position.y = positionY;
+  actor.setComponent(
+    new Collider({
+      type: 'circle',
+      offset: { x: 0, y: 0 },
+      radius,
+      layer: colliderConfig.layer,
+      disabled: false,
+    }),
+  );
+
+  return actor;
+};
+
+export const createSegmentActor = (
+  id: string,
+  positionX: number,
+  positionY: number,
+  point1X: number,
+  point1Y: number,
+  point2X: number,
+  point2Y: number,
+  type?: 'dynamic' | 'static' | 'kinematic',
+  colliderConfig: Pick<Collider, 'layer'> = { layer: 'default' },
+): Actor => {
+  const actor = new Actor({ id, name: id });
+  const transform = actor.getComponent(Transform);
+
+  transform.world.position.x = positionX;
+  transform.world.position.y = positionY;
+  actor.setComponent(
+    new Collider({
+      type: 'segment',
+      offset: { x: 0, y: 0 },
+      point1: { x: point1X, y: point1Y },
+      point2: { x: point2X, y: point2Y },
+      layer: colliderConfig.layer,
+      disabled: false,
+    }),
+  );
+
+  if (type) {
+    actor.setComponent(
+      new RigidBody({
+        type,
+        mass: 1,
+        gravityScale: 0,
+        linearDamping: 0,
+        disabled: false,
+        oneWay: false,
+      }),
+    );
+  }
+
+  return actor;
+};
+
+export const createCapsuleActor = (
+  id: string,
+  positionX: number,
+  positionY: number,
+  height: number,
+  radius: number,
+  type?: 'dynamic' | 'static' | 'kinematic',
+  colliderConfig: Pick<Collider, 'layer'> = { layer: 'default' },
+): Actor => {
+  const actor = new Actor({ id, name: id });
+  const transform = actor.getComponent(Transform);
+
+  transform.world.position.x = positionX;
+  transform.world.position.y = positionY;
+  actor.setComponent(
+    new Collider({
+      type: 'capsule',
+      offset: { x: 0, y: 0 },
+      height,
+      radius,
+      layer: colliderConfig.layer,
+      disabled: false,
+    }),
+  );
+
+  if (type) {
+    actor.setComponent(
+      new RigidBody({
+        type,
+        mass: 1,
+        gravityScale: 0,
+        linearDamping: 0,
+        disabled: false,
+        oneWay: false,
+      }),
+    );
+  }
+
+  return actor;
+};

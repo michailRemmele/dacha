@@ -1,0 +1,41 @@
+.tabs,
+.content,
+.body {
+  height: 100%;
+}
+
+.header {
+  background-color: var(--editor-panel-header-background);
+
+  & :global(.ant-tabs-nav-operations) :global(.ant-tabs-nav-more) {
+    padding: 0 12px;
+    margin-left: 4px;
+  }
+
+  & :global(.ant-tabs-nav-wrap):global(.ant-tabs-nav-wrap-ping-left) {
+    overflow: visible;
+  }
+}
+
+.item {
+  &:not(:global(.ant-tabs-tab-active))
+    + :not(:global(.ant-tabs-tab-active))::after {
+    position: absolute;
+    left: 0;
+    content: '';
+    width: 2px;
+    height: 60%;
+    background-color: var(--ant-color-border-secondary);
+  }
+
+  &:global(.ant-tabs-tab):not(:global(.ant-tabs-tab-active)) {
+    background-color: transparent;
+  }
+
+  &:global(.ant-tabs-tab-active) {
+    background-color: var(--ant-color-bg-container);
+    box-shadow:
+      1px 0 0 var(--ant-color-border-secondary),
+      -1px 0 0 var(--ant-color-border-secondary);
+  }
+}

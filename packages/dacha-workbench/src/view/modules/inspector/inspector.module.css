@@ -1,0 +1,21 @@
+.inspector {
+  height: 100%;
+}
+
+.actionBar {
+  border-bottom: 1px solid var(--ant-color-border);
+  padding: 5px;
+
+  height: 34px;
+}
+
+.button:not(:last-child) {
+  margin-right: 5px;
+}
+
+.tabContent {
+  height: 100%;
+  padding: 5px 5px 5px 10px;
+
+  overflow-y: scroll;
+}

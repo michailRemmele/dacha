@@ -1,0 +1,105 @@
+import type { BitmapText as PixiBitmapText } from 'pixi.js';
+
+import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
+import { type BlendingMode } from '../../types/view';
+
+interface RenderData {
+  view: PixiBitmapText;
+  graphicsContextKey?: string;
+}
+
+type TextAlign = 'left' | 'center' | 'right';
+
+export interface BitmapTextConfig {
+  text?: string;
+  font?: string;
+  fontSize?: number;
+  align?: TextAlign;
+  color?: string;
+  opacity?: number;
+  blending?: BlendingMode;
+  disabled?: boolean;
+  sortingLayer?: string;
+  sortOffset?: Point;
+}
+
+/**
+ * BitmapText component for rendering text using a bitmap font.
+ *
+ * It handles text representation of an actor using a bitmap font.
+ * It uses an asset file in the format of a bitmap font (.fnt and .xml are supported) to render text.
+ *
+ * @example
+ * ```typescript
+ * // Create a bitmap text
+ * const bitmapText = new BitmapText({
+ *   text: 'Greetings traveller!',
+ *   font: 'assets/fonts/some-pixel-font.fnt',
+ *   fontSize: 24,
+ *   align: 'center',
+ *   color: '#000',
+ *   opacity: 1,
+ *   blending: 'normal',
+ *   disabled: false,
+ *   sortingLayer: 'text',
+ *   sortOffset: { x: 0, y: 0 }
+ * });
+ *
+ * // Add to actor
+ * actor.setComponent(bitmapText);
+ *
+ * // Modify properties
+ * bitmapText.text = 'Stay a while and listen!';
+ * ```
+ *
+ * @category Components
+ */
+export class BitmapText extends Component {
+  /** Text to render */
+  text: string;
+  /** Path to the font asset */
+  font: string;
+  /** Size of the text */
+  fontSize: number;
+  /** Alignment of the text
+   * - left - Align text to the left edge
+   * - center - Center text horizontally
+   * - right - Align text to the right edge
+   */
+  align: TextAlign;
+  /** Color of the text */
+  color: string;
+  /** Opacity of the text */
+  opacity: number;
+  /** Blending mode of the text */
+  blending: BlendingMode;
+  /** Whether the text is disabled */
+  disabled: boolean;
+  /** Sorting layer of the text */
+  sortingLayer: string;
+  /** Center point of the text */
+  sortOffset: Point;
+  /** Internal rendering data */
+  renderData?: RenderData;
+
+  constructor(config: BitmapTextConfig) {
+    super();
+
+    this.text = config.text ?? 'Text';
+    this.font = config.font ?? '';
+    this.fontSize = config.fontSize ?? 10;
+    this.align = config.align ?? 'center';
+    this.color = config.color ?? '#000000';
+    this.opacity = config.opacity ?? 1;
+    this.blending = config.blending ?? 'normal';
+    this.disabled = config.disabled ?? false;
+    this.sortingLayer = config.sortingLayer ?? 'default';
+    this.sortOffset = {
+      x: config.sortOffset?.x ?? 0,
+      y: config.sortOffset?.y ?? 0,
+    };
+  }
+}
+
+BitmapText.componentName = 'BitmapText';

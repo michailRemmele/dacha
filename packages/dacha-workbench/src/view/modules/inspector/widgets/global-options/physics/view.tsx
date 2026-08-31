@@ -1,0 +1,131 @@
+import { useCallback, FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from 'antd';
+import { uuid } from '../../../../../../utils/uuid';
+
+import type { WidgetProps } from '../../../../../../types/widget-schema';
+import { Section } from '../../../components/section';
+import { useConfig, useCommander } from '../../../../../hooks';
+import { setValue } from '../../../../../commands';
+import { getUniqueName } from '../../../../../../utils/get-unique-name';
+import type {
+  PhysicsSettings,
+  CollisionLayer,
+} from '../../types/physics-system';
+
+import { CollisionLayerField } from './collision-layer';
+import { CollisionMatrixField } from './collision-matrix';
+import styles from './physics.module.css';
+import { PHYSICS_SETTINGS_PATH, DEFAULT_LAYER } from './consts';
+
+export const PhysicsWidget: FC<WidgetProps> = () => {
+  const { t } = useTranslation();
+  const { dispatch } = useCommander();
+
+  const settings = useConfig(PHYSICS_SETTINGS_PATH) as
+    PhysicsSettings | undefined;
+
+  const updatePhysics = useCallback(
+    (newLayers: CollisionLayer[]) => {
+      if (!settings) {
+        return;
+      }
+
+      const { collisionMatrix } = settings;
+
+      const formattedNewLayers = [DEFAULT_LAYER, ...newLayers];
+
+      dispatch(
+        setValue(PHYSICS_SETTINGS_PATH, {
+          collisionLayers: newLayers,
+          collisionMatrix: formattedNewLayers.reduce((rows, rowLayer) => {
+            return {
+              ...rows,
+              [rowLayer.id]: formattedNewLayers.reduce(
+                (columns, columnLayer) => {
+                  return {
+                    ...columns,
+                    [columnLayer.id]:
+                      collisionMatrix[rowLayer.id]?.[columnLayer.id] ?? true,
+                  };
+                },
+                {},
+              ),
+            };
+          }, {}),
+        }),
+      );
+    },
+    [dispatch, settings],
+  );
+
+  const handleAddNewLayer = useCallback(() => {
+    if (!settings) {
+      return;
+    }
+
+    const { collisionLayers } = settings;
+
+    const newLayers = [
+      ...collisionLayers,
+      {
+        id: uuid(),
+        name: getUniqueName('layer', collisionLayers),
+      },
+    ];
+
+    updatePhysics(newLayers);
+  }, [dispatch, settings, updatePhysics]);
+
+  const handleDeleteLayer = useCallback(
+    (id: string) => {
+      if (!settings) {
+        return;
+      }
+
+      const { collisionLayers } = settings;
+
+      const newLayers = collisionLayers.filter((layer) => layer.id !== id);
+
+      updatePhysics(newLayers);
+    },
+    [dispatch, settings, updatePhysics],
+  );
+
+  return (
+    <>
+      <Section
+        title={t('globalOptions.physics.collisionLayers.title')}
+        defaultOpen
+      >
+        {settings?.collisionLayers.length ? (
+          <div className={styles.layers}>
+            {settings?.collisionLayers.map((layer, index) => (
+              <CollisionLayerField
+                key={layer.id}
+                id={layer.id}
+                index={index}
+                onDelete={handleDeleteLayer}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptyPlaceholder}>
+            {t('globalOptions.physics.collisionLayers.empty.placeholder')}
+          </div>
+        )}
+
+        <Button className={styles.button} onClick={handleAddNewLayer}>
+          {t('globalOptions.physics.collisionLayers.addNew.title')}
+        </Button>
+      </Section>
+
+      <Section
+        title={t('globalOptions.physics.collisionMatrix.title')}
+        defaultOpen
+      >
+        <CollisionMatrixField layers={settings?.collisionLayers} />
+      </Section>
+    </>
+  );
+};

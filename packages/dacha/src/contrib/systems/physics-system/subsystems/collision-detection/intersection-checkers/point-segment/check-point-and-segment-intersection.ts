@@ -1,0 +1,44 @@
+import {
+  MathOps,
+  Vector,
+  VectorOps,
+} from '../../../../../../../engine/math-lib';
+import type { PointGeometry, SegmentGeometry, Intersection } from '../../types';
+import { isDefinitelyPositive } from '../../utils';
+import { orientNormal } from '../common/normals';
+
+/**
+ * Checks whether a query point lies on a segment.
+ *
+ * The closest point on the finite segment is projected from the point.
+ * If the projected distance is near zero, that projected point becomes
+ * the contact point and the stored segment normal is used for orientation.
+ */
+export const checkPointAndSegmentIntersection = (
+  point: PointGeometry,
+  segment: SegmentGeometry,
+): Intersection | false => {
+  const closestPoint = VectorOps.getClosestPointOnEdge(point.center, segment);
+  const distance = MathOps.getDistanceBetweenTwoPoints(
+    point.center.x,
+    closestPoint.x,
+    point.center.y,
+    closestPoint.y,
+  );
+
+  if (isDefinitelyPositive(distance)) {
+    return false;
+  }
+
+  return {
+    normal: orientNormal(
+      segment.normal.magnitude === 0
+        ? new Vector(1, 0)
+        : segment.normal.clone(),
+      point.center,
+      segment.center,
+    ),
+    penetration: 0,
+    contactPoints: [closestPoint],
+  };
+};

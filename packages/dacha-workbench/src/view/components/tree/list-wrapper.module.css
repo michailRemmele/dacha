@@ -1,0 +1,4 @@
+.listWrapper {
+  box-sizing: border-box;
+  height: calc(100% - 31px);
+}

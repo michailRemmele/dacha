@@ -1,26 +1,7 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "outDir": "./build/",
-
-        "declaration": true,
-
-        "module": "ESNext",
-        "moduleResolution": "Bundler",
-
-        "strict": true,
-
-        "target": "ESNext",
-        "esModuleInterop": true,
-
-        "resolveJsonModule": true,
-         
-        "typeRoots": [
-            "src/types",
-            "node_modules/@types"
-        ]
-    },
-    "include": [
-        "src/**/*"
-    ]
+  "files": [],
+  "references": [
+    { "path": "packages/dacha/tsconfig.esm.json" },
+    { "path": "packages/dacha-workbench/tsconfig.esm.json" }
+  ]
 }

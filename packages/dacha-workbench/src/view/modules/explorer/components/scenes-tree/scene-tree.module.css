@@ -1,0 +1,6 @@
+.tree:global(.ant-tree.ant-tree-directory) {
+  :global(.scenes-tree__scene_inactive.ant-tree-treenode .ant-tree-node-content-wrapper)::before,
+  :global(.scenes-tree__scene_inactive.ant-tree-treenode .ant-tree-node-content-wrapper:hover)::before {
+    background: var(--editor-tree-muted-highlight);
+  }
+}

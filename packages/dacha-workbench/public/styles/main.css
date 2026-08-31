@@ -1,0 +1,40 @@
+:root {
+  --editor-canvas-background: #e9e7e1;
+  --editor-panel-header-background: #f3f2ee;
+
+  --editor-badge-saturation: 42%;
+  --editor-badge-bg-lightness: 88%;
+  --editor-badge-fg-lightness: 34%;
+
+  --editor-tree-muted-highlight: #ebe9e4;
+
+  --editor-axis-x-color: #b4453a;
+  --editor-axis-y-color: #4b8f5a;
+}
+
+body {
+  margin: 0;
+
+  font-family: sans-serif;
+}
+
+.editor-theme_dark {
+  color-scheme: dark;
+
+  --editor-canvas-background: #2c2d27;
+  --editor-panel-header-background: #1b1c19;
+
+  --editor-badge-saturation: 32%;
+  --editor-badge-bg-lightness: 18%;
+  --editor-badge-fg-lightness: 68%;
+
+  --editor-tree-muted-highlight: #33352e;
+
+  --editor-axis-x-color: #d97c6e;
+  --editor-axis-y-color: #7fc08a;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}

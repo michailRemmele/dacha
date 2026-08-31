@@ -1,0 +1,31 @@
+.explorer {
+  height: 100%;
+
+  & :global(.ant-tree-node-content-wrapper) {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.actionBar {
+  display: flex;
+  overflow: scroll;
+  scrollbar-width: none;
+
+  border-bottom: 1px solid var(--ant-color-border);
+  padding: 3px;
+
+  height: 31px;
+
+  & > * {
+    flex-shrink: 0;
+  }
+}
+
+.actionDivider {
+  width: 2px;
+  background-color: var(--ant-color-border-secondary);
+
+  margin: 4px;
+}

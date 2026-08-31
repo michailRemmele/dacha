@@ -1,0 +1,28 @@
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 24px;
+  height: 24px;
+
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+
+  background-color: hsl(
+    var(--badge-hue) var(--editor-badge-saturation)
+      var(--editor-badge-bg-lightness)
+  );
+  color: hsl(
+    var(--badge-hue) var(--editor-badge-saturation)
+      var(--editor-badge-fg-lightness)
+  );
+
+  border-radius: var(--ant-border-radius-sm);
+}
+
+.plain {
+  background-color: transparent;
+}

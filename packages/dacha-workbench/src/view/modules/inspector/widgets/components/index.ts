@@ -1,0 +1,56 @@
+import {
+  Animatable,
+  Camera,
+  Collider,
+  KeyboardControl,
+  MouseControl,
+  Sprite,
+  Shape,
+  BitmapText,
+  RigidBody,
+  Behaviors,
+  Transform,
+  AudioSource,
+  Mesh,
+  CharacterBody,
+  Interpolation,
+} from 'dacha';
+
+import { EditorMarker } from '../../../../../engine/components';
+import type { WidgetSchema } from '../../../../../types/widget-schema';
+
+import { animatable } from './animatable';
+import { camera } from './camera';
+import { collider } from './collider';
+import { keyboardControl } from './keyboard-control';
+import { mouseControl } from './mouse-control';
+import { sprite } from './sprite';
+import { shape } from './shape';
+import { bitmapText } from './bitmap-text';
+import { rigidBody } from './rigid-body';
+import { behaviors } from './behaviors';
+import { transform } from './transform';
+import { audioSource } from './audio-source';
+import { mesh } from './mesh';
+import { characterBody } from './character-body';
+import { editorMarker } from './editor-marker';
+import { interpolation } from './interpolation';
+
+export const componentsSchema: Record<string, WidgetSchema> = {
+  [Animatable.componentName]: animatable,
+  [Camera.componentName]: camera,
+  [Collider.componentName]: collider,
+  [KeyboardControl.componentName]: keyboardControl,
+  [MouseControl.componentName]: mouseControl,
+  [Sprite.componentName]: sprite,
+  [Shape.componentName]: shape,
+  [BitmapText.componentName]: bitmapText,
+  [RigidBody.componentName]: rigidBody,
+  [Behaviors.componentName]: behaviors,
+  [Transform.componentName]: transform,
+  [AudioSource.componentName]: audioSource,
+  [Mesh.componentName]: mesh,
+  [CharacterBody.componentName]: characterBody,
+  [EditorMarker.componentName]: editorMarker,
+  [Interpolation.componentName]: interpolation,
+};

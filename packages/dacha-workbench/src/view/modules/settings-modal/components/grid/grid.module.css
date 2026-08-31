@@ -1,0 +1,18 @@
+.gridSettings {
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 10px 15px;
+}
+
+.settingsField {
+  display: flex;
+}
+
+.settingsField + .settingsField {
+  margin-top: 10px;
+}
+
+.settingsLabel {
+  width: 40%;
+}

@@ -1,0 +1,21 @@
+.reloadButton {
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  color: var(--ant-color-warning-text);
+
+  &:hover {
+    color: var(--ant-color-warning-text-hover);
+  }
+
+  &:active {
+    color: var(--ant-color-warning-text-active);
+  }
+}
+
+.icon {
+  margin-right: 4px;
+}

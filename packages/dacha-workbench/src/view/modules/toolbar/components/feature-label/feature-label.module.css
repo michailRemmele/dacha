@@ -1,0 +1,8 @@
+.featureLabel {
+  display: flex;
+  align-items: baseline;
+}
+
+.title {
+  margin-right: 5px;
+}
