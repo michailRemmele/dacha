@@ -70,7 +70,7 @@
     "@types/react-dom": "19.2.4",
     "antd": "6.6.0",
     "clean-webpack-plugin": "4.0.0",
-    "copy-webpack-plugin": "11.0.0",
+    "copy-webpack-plugin": "14.0.0",
     "css-loader": "6.7.1",
     "dacha": "0.19.0-alpha.1",
     "dayjs": "1.11.18",
