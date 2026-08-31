@@ -46,6 +46,7 @@ const createWindow = () => {
     height: 800,
     minWidth: 829,
     minHeight: 600,
+    enableLargerThanScreen: Boolean(process.env.DACHA_E2E),
     show: false,
     backgroundColor: '#ffffff',
     icon: path.join(__dirname, 'app-icons', 'icon.png'),
