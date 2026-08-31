@@ -24,6 +24,10 @@
     "build:app": "env NODE_ENV=production webpack --config webpack.config.js",
     "build:esm": "tsc -p tsconfig.esm.json && node ./scripts/copy-styles.js",
     "test": "jest",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "test:e2e:update": "playwright test --config e2e/playwright.config.ts --update-snapshots",
+    "test:e2e:pull-baselines": "aws s3 sync s3://$S3_BUCKET/e2e-screenshots/ e2e/specs/ --endpoint-url $S3_ENDPOINT --exclude \"*\" --include \"*-snapshots/*\"",
+    "test:e2e:push-baselines": "aws s3 sync e2e/specs/ s3://$S3_BUCKET/e2e-screenshots/ --endpoint-url $S3_ENDPOINT --exclude \"*\" --include \"*-snapshots/*\"",
     "postinstall": "node ./bin/install.js",
     "prepublishOnly": "npm run build"
   },
@@ -57,6 +61,7 @@
     "@dnd-kit/sortable": "7.0.2",
     "@dnd-kit/utilities": "3.2.1",
     "@gravity-ui/icons": "^2.21.0",
+    "@playwright/test": "^1.62.1",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.2",

@@ -45,6 +45,7 @@ export const EntityPanel = ({
       onDelete={handleDelete}
       expandExtra={expandExtra}
       deletable={!NON_DELETABLE_MAP[type].includes(entity.data.name)}
+      dataTestId={`entity-panel-${entity.label}`}
     >
       <EntityForm {...entity} path={widgetPath} />
     </CollapsePanel>

@@ -94,6 +94,7 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
           size={size}
           icon={<Icon icon={<Plus />} />}
           onClick={handleAdd}
+          data-testid="entity-picker-add-button"
         />
       </div>
 

@@ -326,6 +326,37 @@
           ]
         }
       ]
+    },
+    {
+      "name": "component-schema-test",
+      "id": "a1b2c3d4-5e6f-4a71-8c9d-0e1f2a3b4c5d",
+      "actors": [
+        {
+          "id": "1",
+          "name": "schema_test_actor",
+          "children": [],
+          "components": [
+            {
+              "name": "Transform",
+              "config": {
+                "rotation": 0,
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
+              }
+            },
+            {
+              "name": "LegacyComponent",
+              "config": {}
+            }
+          ]
+        }
+      ]
     }
   ],
   "systems": [

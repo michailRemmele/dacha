@@ -32,3 +32,61 @@ jobs:
       - run: npm test
 
       - run: npm run build
+
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Pull screenshot baselines
+        if: github.ref != 'refs/heads/master'
+        run: npm run test:e2e:pull-baselines -w dacha-workbench
+
+      - name: Run functional e2e tests
+        working-directory: packages/dacha-workbench
+        run: npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"
+
+      - name: Run screenshot e2e tests (compare against baseline)
+        if: github.ref != 'refs/heads/master'
+        working-directory: packages/dacha-workbench
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change-approved') }}
+        run: npx playwright test --config e2e/playwright.config.ts --grep "screenshot:"
+
+      - name: Regenerate screenshot baselines
+        if: github.ref == 'refs/heads/master'
+        working-directory: packages/dacha-workbench
+        run: npx playwright test --config e2e/playwright.config.ts --grep "screenshot:" --update-snapshots
+
+      - name: Push screenshot baselines
+        if: github.ref == 'refs/heads/master'
+        run: npm run test:e2e:push-baselines -w dacha-workbench
+
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.os }}
+          path: packages/dacha-workbench/playwright-report/

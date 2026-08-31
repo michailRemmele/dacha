@@ -18,6 +18,13 @@ packages/dacha-workbench/build
 packages/dacha-workbench/build-app
 packages/dacha-workbench/esm
 
+# Playwright e2e output
+packages/dacha-workbench/playwright-report
+packages/dacha-workbench/test-results
+
+# e2e screenshot baselines live in S3 (pulled by test:e2e), not committed
+packages/dacha-workbench/e2e/**/*-snapshots/
+
 .DS_Store
 npm-debug.log*
 
@@ -25,3 +32,5 @@ npm-debug.log*
 
 *.tgz
 *.tsbuildinfo
+
+.env*

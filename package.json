@@ -12,6 +12,7 @@
     "clean": "tsc -b --clean && rm -rf packages/dacha-workbench/build packages/dacha-workbench/build-app",
     "pretest": "tsc -b",
     "test": "npm test --workspaces",
+    "test:e2e": "npm run build && npm run test:e2e:pull-baselines -w dacha-workbench && npm run test:e2e -w dacha-workbench",
     "lint": "eslint .",
     "dev": "concurrently -k -n tsc,editor -c blue,green \"tsc -b --watch --preserveWatchOutput\" \"npm start -w dacha-workbench\"",
     "prepare": "husky",
