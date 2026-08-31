@@ -1,0 +1,64 @@
+import { Vector } from '../../../../../../../engine/math-lib';
+import type { CircleGeometry, Intersection } from '../../types';
+import { isGreaterThan } from '../../utils';
+
+/**
+ * Checks circles for intersection.
+ *
+ * The manifold is straightforward:
+ * - the normal follows the line between circle centers
+ * - penetration is the overlap of the radii along that line
+ * - the contact point lies on the surface of the first circle
+ *
+ * When both centers are equal, the X axis is used as a deterministic fallback.
+ */
+export const checkCirclesIntersection = (
+  circle1: CircleGeometry,
+  circle2: CircleGeometry,
+): Intersection | false => {
+  const {
+    radius: radius1,
+    center: { x: x1, y: y1 },
+  } = circle1;
+  const {
+    radius: radius2,
+    center: { x: x2, y: y2 },
+  } = circle2;
+
+  const offsetX = x2 - x1;
+  const offsetY = y2 - y1;
+  const distance = Math.sqrt(offsetX ** 2 + offsetY ** 2);
+
+  if (isGreaterThan(distance, radius1 + radius2)) {
+    return false;
+  }
+
+  const penetration = Math.max(0, radius1 + radius2 - distance);
+
+  if (distance === 0) {
+    return {
+      normal: new Vector(1, 0),
+      penetration,
+      contactPoints: [
+        {
+          x: x1 + radius1,
+          y: y1,
+        },
+      ],
+    };
+  }
+
+  const normal = new Vector(offsetX, offsetY);
+  normal.normalize();
+
+  return {
+    normal,
+    penetration,
+    contactPoints: [
+      {
+        x: x1 + normal.x * radius1,
+        y: y1 + normal.y * radius1,
+      },
+    ],
+  };
+};

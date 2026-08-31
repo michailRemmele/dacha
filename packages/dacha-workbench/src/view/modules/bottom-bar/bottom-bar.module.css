@@ -1,0 +1,22 @@
+.bottomBar {
+  display: flex;
+  align-items: center;
+
+  height: 24px;
+  padding: 0 10px 3px;
+}
+
+.leftSection {
+  display: flex;
+  justify-content: flex-start;
+
+  flex: 1;
+}
+
+.rightSection {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  flex: 1;
+}

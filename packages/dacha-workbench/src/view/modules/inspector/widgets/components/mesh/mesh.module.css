@@ -1,0 +1,8 @@
+.shaderForm {
+  text-align: center;
+}
+
+.panelNoSchema {
+  box-shadow: 0 0 0 2px var(--ant-color-error);
+  background-color: var(--ant-color-error-bg);
+}

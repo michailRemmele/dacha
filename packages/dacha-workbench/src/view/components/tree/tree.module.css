@@ -1,0 +1,34 @@
+.tree:global(.ant-tree.ant-tree-directory) {
+  :global(.ant-tree-icon__customize) {
+    color: var(--ant-color-primary);
+  }
+
+  :global(.tree-node_cut .ant-tree-node-content-wrapper) {
+    opacity: 0.5;
+  }
+
+  :global(
+    .ant-tree-treenode-draggable
+      .ant-tree-node-content-wrapper:has(.ant-tree-drop-indicator)
+  ) {
+    position: static;
+  }
+
+  :global(
+    .ant-tree-treenode-draggable.drop-target .ant-tree-node-content-wrapper
+  )::before {
+    background-color: var(--ant-color-info-bg-hover);
+  }
+
+  :global(.ant-tree-drop-indicator) {
+    display: none;
+  }
+
+  :global(.ant-tree-treenode)::before {
+    height: 0;
+  }
+
+  :global(.ant-tree-node-content-wrapper) {
+    padding-left: 0;
+  }
+}

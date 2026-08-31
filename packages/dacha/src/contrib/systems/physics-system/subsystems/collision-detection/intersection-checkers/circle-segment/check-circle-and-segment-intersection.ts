@@ -1,0 +1,55 @@
+import {
+  MathOps,
+  Vector,
+  VectorOps,
+} from '../../../../../../../engine/math-lib';
+import type {
+  CircleGeometry,
+  SegmentGeometry,
+  Intersection,
+} from '../../types';
+import { isGreaterThan } from '../../utils';
+import { orientNormal } from '../common/normals';
+
+/**
+ * Checks a circle against a segment.
+ *
+ * The circle center is projected onto the finite segment. When the distance
+ * from that closest point to the center is within the circle radius, the
+ * projected point becomes the contact point and the normal points away from
+ * the segment toward the circle center.
+ */
+export const checkCircleAndSegmentIntersection = (
+  circle: CircleGeometry,
+  segment: SegmentGeometry,
+): Intersection | false => {
+  const closestPoint = VectorOps.getClosestPointOnEdge(circle.center, segment);
+  const distance = MathOps.getDistanceBetweenTwoPoints(
+    circle.center.x,
+    closestPoint.x,
+    circle.center.y,
+    closestPoint.y,
+  );
+
+  if (isGreaterThan(distance, circle.radius)) {
+    return false;
+  }
+
+  const normal = new Vector(
+    circle.center.x - closestPoint.x,
+    circle.center.y - closestPoint.y,
+  );
+
+  if (normal.magnitude === 0) {
+    normal.x = segment.normal.x;
+    normal.y = segment.normal.y;
+  } else {
+    normal.normalize();
+  }
+
+  return {
+    normal: orientNormal(normal, circle.center, segment.center),
+    penetration: Math.max(0, circle.radius - distance),
+    contactPoints: [closestPoint],
+  };
+};

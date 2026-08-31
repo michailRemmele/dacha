@@ -1,0 +1,16 @@
+.behaviors {
+  margin: 5px 0;
+}
+
+.behaviorForm {
+  text-align: center;
+}
+
+.panelNoSchema {
+  box-shadow: 0 0 0 2px var(--ant-color-error);
+  background-color: var(--ant-color-error-bg);
+}
+
+.entityPicker {
+  margin-top: 10px;
+}

@@ -1,0 +1,55 @@
+{
+  "name": "dacha",
+  "version": "0.19.0-alpha.1",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./build/index.js",
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
+    },
+    "./events": {
+      "require": "./build/events/index.js",
+      "import": "./build/events/index.js",
+      "types": "./build/events/index.d.ts"
+    },
+    "./renderer": {
+      "types": "./build/contrib/systems/renderer/types.d.ts"
+    },
+    "./physics": {
+      "types": "./build/contrib/systems/physics-system/types.d.ts"
+    }
+  },
+  "dependencies": {
+    "pixi.js": "8.19.0"
+  },
+  "devDependencies": {
+    "typedoc": "^0.28.13"
+  },
+  "sideEffects": false,
+  "files": [
+    "build",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run build:clean && tsc -p tsconfig.esm.json",
+    "build:clean": "rm -rf build tsconfig.esm.tsbuildinfo",
+    "docs": "typedoc",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "description": "dacha is a JavaScript game engine for building games in browser.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michailRemmele/dacha.git"
+  },
+  "author": "Mikhail Remmele",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michailRemmele/dacha/issues"
+  },
+  "homepage": "https://github.com/michailRemmele/dacha#readme"
+}

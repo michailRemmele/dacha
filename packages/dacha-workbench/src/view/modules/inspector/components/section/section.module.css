@@ -1,0 +1,40 @@
+.root {
+  margin: 0 0 0 -5px;
+}
+
+.section {
+  border-radius: 0;
+  padding: 0;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  overflow: hidden;
+}
+
+.title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.expandIcon svg {
+  transition: transform 0.24s;
+}
+
+.expandIconActive svg {
+  transform: rotate(90deg);
+}
+
+.deleteButton {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.header:hover .deleteButton {
+  opacity: 1;
+  pointer-events: auto;
+}

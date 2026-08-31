@@ -1,0 +1,3 @@
+import type { WidgetSchema } from '../../../../../../types/widget-schema';
+
+export const uiBridge: WidgetSchema = { icon: 'LayoutHeaderSideContent' };

@@ -1,0 +1,65 @@
+import { type ViewContainer } from 'pixi.js';
+
+import { Sprite, SpriteConfig } from '../../../../components/sprite';
+import { Transform, TransformConfig } from '../../../../components/transform';
+import { Actor } from '../../../../../engine/actor/actor';
+
+import { sortByXAxis } from '../sort-by-x-axis';
+
+const createGetGlobalPositionMock = (actor: Actor) => (): { x: number } => ({
+  x: actor.getComponent(Transform).world.position.x,
+});
+
+describe('Contrib -> RenderSystem -> Sort -> sortByXAxis()', () => {
+  const baseSpriteProps: SpriteConfig = {
+    src: 'some-path',
+    width: 0,
+    height: 0,
+    sortOffset: { x: 0, y: 0 },
+    textureOffset: { x: 0, y: 0 },
+    slice: 1,
+    flipX: false,
+    flipY: false,
+    disabled: false,
+    sortingLayer: 'some-layer',
+    fit: 'stretch',
+    color: '#fff',
+    blending: 'normal',
+    opacity: 1,
+  };
+  const baseTransformProps: TransformConfig = {
+    offset: { x: 0, y: 0 },
+    rotation: 0,
+    scale: { x: 1, y: 1 },
+  };
+
+  it('Returns correct order of objects while equals width', () => {
+    const actor1 = new Actor({ id: '1', name: 'mock-actor-1' });
+    const actor2 = new Actor({ id: '2', name: 'mock-actor-2' });
+
+    actor1.setComponent(new Sprite(baseSpriteProps));
+    actor1.setComponent(new Transform(baseTransformProps));
+
+    actor2.setComponent(new Sprite(baseSpriteProps));
+    actor2.setComponent(new Transform(baseTransformProps));
+
+    const view1 = {
+      __dacha: { actor: actor1, viewComponent: actor1.getComponent(Sprite) },
+      getGlobalPosition: createGetGlobalPositionMock(actor1),
+    } as unknown as ViewContainer;
+    const view2 = {
+      __dacha: { actor: actor2, viewComponent: actor2.getComponent(Sprite) },
+      getGlobalPosition: createGetGlobalPositionMock(actor2),
+    } as unknown as ViewContainer;
+
+    expect(sortByXAxis(1)(view1, view2)).toBe(0);
+
+    actor2.getComponent(Transform).world.position.x = 50;
+
+    expect(sortByXAxis(1)(view1, view2)).toBeLessThan(0);
+
+    actor1.getComponent(Transform).world.position.x = 100;
+
+    expect(sortByXAxis(1)(view1, view2)).toBeGreaterThan(0);
+  });
+});

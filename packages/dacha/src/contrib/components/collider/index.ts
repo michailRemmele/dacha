@@ -1,0 +1,148 @@
+import { Component } from '../../../engine/component';
+import type { Point } from '../../../engine/math-lib';
+
+export type ColliderType = 'box' | 'circle' | 'segment' | 'capsule';
+
+export interface BaseColliderConfig {
+  type: ColliderType;
+  offset: Point;
+  layer: string;
+  debugColor?: string;
+  disabled: boolean;
+}
+
+export interface BoxColliderConfig extends BaseColliderConfig {
+  type: 'box';
+  size?: Point;
+}
+
+export interface CircleColliderConfig extends BaseColliderConfig {
+  type: 'circle';
+  radius?: number;
+}
+
+export interface SegmentColliderConfig extends BaseColliderConfig {
+  type: 'segment';
+  point1?: Point;
+  point2?: Point;
+}
+
+export interface CapsuleColliderConfig extends BaseColliderConfig {
+  type: 'capsule';
+  height?: number;
+  radius?: number;
+}
+
+export type ColliderConfig =
+  | BoxColliderConfig
+  | CircleColliderConfig
+  | SegmentColliderConfig
+  | CapsuleColliderConfig;
+
+export interface BoxColliderShape {
+  type: 'box';
+  size: Point;
+}
+
+export interface CircleColliderShape {
+  type: 'circle';
+  radius: number;
+}
+
+export interface SegmentColliderShape {
+  type: 'segment';
+  point1: Point;
+  point2: Point;
+}
+
+export interface CapsuleColliderShape {
+  type: 'capsule';
+  height: number;
+  radius: number;
+}
+
+export type ColliderShape =
+  | BoxColliderShape
+  | CircleColliderShape
+  | SegmentColliderShape
+  | CapsuleColliderShape;
+
+/**
+ * Collider component for defining collision boundaries.
+ *
+ * Collider component defines the collision shape for an actor. It's used by the
+ * physics system to detect collisions between actors.
+ *
+ * @example
+ * ```typescript
+ * // Create a box collider
+ * const boxCollider = new Collider({
+ *   type: 'box',
+ *   offset: { x: 0, y: 0 },
+ *   size: { x: 64, y: 64 },
+ *   layer: 'default',
+ *   disabled: false,
+ * });
+ *
+ * // Create a circle collider
+ * const circleCollider = new Collider({
+ *   type: 'circle',
+ *   offset: { x: 0, y: 0 },
+ *   radius: 32,
+ *   layer: 'default',
+ *   disabled: false,
+ * });
+ *
+ * // Add to actor
+ * actor.setComponent(boxCollider);
+ * ```
+ *
+ * @category Components
+ */
+export class Collider extends Component {
+  offset: Point;
+  layer: string;
+  debugColor?: string;
+  disabled: boolean;
+
+  shape: ColliderShape;
+
+  constructor(config: ColliderConfig) {
+    super();
+
+    this.offset = { x: config.offset.x, y: config.offset.y };
+    this.layer = config.layer;
+    this.debugColor = config.debugColor;
+    this.disabled = config.disabled;
+
+    switch (config.type) {
+      case 'box':
+        this.shape = {
+          type: config.type,
+          size: { x: config.size?.x ?? 0, y: config.size?.y ?? 0 },
+        };
+        break;
+      case 'circle':
+        this.shape = {
+          type: config.type,
+          radius: config.radius ?? 0,
+        };
+        break;
+      case 'segment':
+        this.shape = {
+          type: config.type,
+          point1: { x: config.point1?.x ?? 0, y: config.point1?.y ?? 0 },
+          point2: { x: config.point2?.x ?? 0, y: config.point2?.y ?? 0 },
+        };
+        break;
+      case 'capsule':
+        this.shape = {
+          type: config.type,
+          height: config.height ?? 0,
+          radius: config.radius ?? 0,
+        };
+    }
+  }
+}
+
+Collider.componentName = 'Collider';

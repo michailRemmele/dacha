@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+
+    "strict": true,
+
+    "skipLibCheck": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "target": "es6",
+    "esModuleInterop": true,
+
+    "resolveJsonModule": true,
+
+    "jsx": "react-jsx",
+
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["jest", "node"],
+
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ]
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,12 @@
+.canvasCoordinates {
+  display: flex;
+  align-items: center;
+}
+
+.section + .section {
+  margin-left: 10px;
+}
+
+.icon {
+  margin-right: 5px;
+}

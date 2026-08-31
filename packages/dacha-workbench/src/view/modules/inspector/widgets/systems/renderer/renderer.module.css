@@ -1,0 +1,41 @@
+.renderer {
+  margin: 5px 0;
+}
+
+.effectForm {
+  text-align: center;
+}
+
+.sectionHeader {
+  display: block;
+  margin: 5px 0;
+}
+
+.panelNoSchema {
+  box-shadow: 0 0 0 2px var(--ant-color-error);
+  background-color: var(--ant-color-error-bg);
+}
+
+.entityPicker {
+  margin-top: 10px;
+}
+
+.holder {
+  padding: 2px 1px;
+  border-radius: 3px;
+
+  margin-right: 3px;
+
+  &:hover {
+    background-color: var(--ant-color-border-secondary);
+
+    cursor: grab;
+  }
+
+  color: var(--ant-color-text-secondary);
+}
+
+.dragOverlay {
+  background-color: var(--ant-color-bg-container);
+  border-radius: var(--ant-border-radius-lg);
+}
