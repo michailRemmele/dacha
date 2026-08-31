@@ -9,6 +9,9 @@ const WORKBENCH_ROOT = path.resolve(__dirname, '..');
 const MAIN_ENTRY = path.join(WORKBENCH_ROOT, 'index.js');
 const SOURCE_FIXTURE = path.join(WORKBENCH_ROOT, 'fixture');
 
+export const E2E_WINDOW_WIDTH = 1200;
+export const E2E_WINDOW_HEIGHT = 800;
+
 export interface LaunchedApp {
   app: ElectronApplication;
   window: Page;
@@ -41,6 +44,7 @@ export const launchApp = async (): Promise<LaunchedApp> => {
     NODE_ENV: 'production',
     EDITOR_CONFIG: editorConfigPath,
     ORIGINAL_CWD: originalCwd,
+    DACHA_E2E: '1',
   } as Record<string, string>;
   delete env.ELECTRON_RUN_AS_NODE;
 
@@ -51,6 +55,21 @@ export const launchApp = async (): Promise<LaunchedApp> => {
   });
 
   const window = await app.firstWindow();
+
+  await app.evaluate(
+    ({ BrowserWindow }, size) => {
+      const [win] = BrowserWindow.getAllWindows();
+      win.setContentSize(size.width, size.height);
+    },
+    { width: E2E_WINDOW_WIDTH, height: E2E_WINDOW_HEIGHT },
+  );
+
+  await window.waitForFunction(
+    (size) =>
+      globalThis.innerWidth === size.width &&
+      globalThis.innerHeight === size.height,
+    { width: E2E_WINDOW_WIDTH, height: E2E_WINDOW_HEIGHT },
+  );
 
   return { app, window };
 };
