@@ -13,7 +13,7 @@ import { InspectedEntityContext } from '../../providers';
 import { PanelTabs } from '../../components';
 
 import { EntityInspector, ProjectSettings, Systems } from './tabs';
-import styles from './inspector.module.css';
+import * as styles from './inspector.module.css';
 
 export const Inspector = (): ReactElement => {
   const { t } = useTranslation();

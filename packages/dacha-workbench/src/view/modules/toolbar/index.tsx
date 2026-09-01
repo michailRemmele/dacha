@@ -23,7 +23,7 @@ import type { SelectSceneEvent } from '../../../events';
 import { getSavedSelectedSceneId } from '../../../utils/get-saved-selected-scene-id';
 
 import { features } from './components';
-import styles from './toolbar.module.css';
+import * as styles from './toolbar.module.css';
 
 const RADIO_THEME = {
   components: {

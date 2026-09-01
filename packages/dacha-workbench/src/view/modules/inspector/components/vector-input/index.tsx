@@ -6,7 +6,7 @@ import { Labelled, LabelledProps } from '../labelled';
 import type { VectorInputProps } from '../../../../../types/inputs';
 import { cx } from '../../../../../utils/cx';
 
-import styles from './vector-input.module.css';
+import * as styles from './vector-input.module.css';
 
 export const VectorInput: FC<VectorInputProps> = ({
   value,

@@ -4,7 +4,7 @@ import { Icon } from '../../../../../components';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import styles from './renderer.module.css';
+import * as styles from './renderer.module.css';
 import { EffectPanel, type EffectPanelProps } from './effect-panel';
 
 const ACTIVE_ENTRY_OPACITY = 0.5;

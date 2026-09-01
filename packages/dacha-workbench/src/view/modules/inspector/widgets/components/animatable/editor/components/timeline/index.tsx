@@ -16,7 +16,7 @@ import { copyByPaths, moveByPaths } from '../../commands/frames'
 import { getSelectedPaths, getFramesPath } from './utils'
 import { ActionBar } from './action-bar'
 import { List } from './list'
-import styles from './timeline.module.css'
+import * as styles from './timeline.module.css'
 
 interface TimelineProps {
   className?: string

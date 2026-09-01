@@ -14,7 +14,7 @@ import { useConfig } from '../../../../../../../../hooks'
 
 import { getSelectedPaths, getFramesPath, getParentId } from './utils'
 import { Frame } from './frame'
-import styles from './timeline.module.css'
+import * as styles from './timeline.module.css'
 
 export const List: FC = () => {
   const {

@@ -5,7 +5,7 @@ import { Slider } from 'antd'
 import { Labelled, LabelledProps } from '../labelled'
 import type { RangeInputProps } from '../../../../../types/inputs'
 
-import styles from './range-input.module.css'
+import * as styles from './range-input.module.css'
 
 const tooltip = {
   formatter: (value: number | undefined): ReactNode => (

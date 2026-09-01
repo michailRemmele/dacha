@@ -16,7 +16,7 @@ import {
 
 import { Icon } from '../../../../components';
 
-import styles from './app-menu.module.css';
+import * as styles from './app-menu.module.css';
 
 interface MenuButtonProps {
   label: string;

@@ -3,7 +3,7 @@ import { Typography } from 'antd';
 
 import { cx } from '../../../../../utils/cx';
 
-import styles from './project-title.module.css';
+import * as styles from './project-title.module.css';
 
 interface ProjectTitleProps {
   projectName: string;

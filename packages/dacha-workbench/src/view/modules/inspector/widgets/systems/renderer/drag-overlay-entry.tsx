@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { Grip } from '@gravity-ui/icons';
 import { Icon } from '../../../../../components';
 
-import styles from './renderer.module.css';
+import * as styles from './renderer.module.css';
 import { EffectPanel, type EffectPanelProps } from './effect-panel';
 
 export const DragOverlayEntry = forwardRef<HTMLDivElement, EffectPanelProps>(

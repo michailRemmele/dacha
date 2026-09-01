@@ -16,8 +16,8 @@ import { CHILDREN_FIELD_MAP } from '../../const'
 
 import { cx } from '../../../../../../../../../utils/cx'
 
-import editorStyles from '../../editor.module.css'
-import styles from './state-list.module.css'
+import * as editorStyles from '../../editor.module.css'
+import * as styles from './state-list.module.css'
 import { parseStates, getSelectedPaths } from './utils'
 
 export interface StateListProps {

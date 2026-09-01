@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox, Typography } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
-import styles from './grid.module.css';
+import * as styles from './grid.module.css';
 
 interface ShowGridFieldProps {
   value: boolean;

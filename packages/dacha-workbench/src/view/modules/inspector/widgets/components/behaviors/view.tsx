@@ -16,7 +16,7 @@ import {
 import { addValue } from '../../../../../commands'
 import { buildInitialState } from '../../../../../../schema'
 
-import styles from './behavior.module.css'
+import * as styles from './behavior.module.css'
 import { BehaviorPanel } from './behavior-panel'
 import type { BehaviorEntry } from './types'
 

@@ -5,7 +5,7 @@ import { Widget } from '../widget';
 import { CustomWidget } from '../custom-widget';
 
 import type { Entity } from './types';
-import styles from './entity-list.module.css';
+import * as styles from './entity-list.module.css';
 
 interface EntityFormProps extends Entity {
   path: string[];

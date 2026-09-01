@@ -5,7 +5,7 @@ import { Radio } from 'antd';
 import { MagnifierPlus, MagnifierMinus } from '@gravity-ui/icons';
 import { Icon } from '../../../../components';
 
-import styles from '../../toolbar.module.css';
+import * as styles from '../../toolbar.module.css';
 import { EngineContext } from '../../../../providers';
 import type { FeatureValue } from '../../../../../engine/components/tool';
 import type { ToolFeaturesProps } from '../types';

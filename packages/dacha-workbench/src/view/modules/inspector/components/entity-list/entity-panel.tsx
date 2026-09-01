@@ -6,7 +6,7 @@ import { deleteValue } from '../../../../commands';
 
 import { CONFIG_KEY_MAP, PATH_FIELD_MAP, NON_DELETABLE_MAP } from './consts';
 import { EntityForm } from './entity-form';
-import styles from './entity-list.module.css';
+import * as styles from './entity-list.module.css';
 import type { Entity, EntityType } from './types';
 
 export interface EntityPanelProps {

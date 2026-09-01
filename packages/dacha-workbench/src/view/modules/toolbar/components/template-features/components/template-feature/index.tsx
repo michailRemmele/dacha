@@ -10,7 +10,7 @@ import { useConfig } from '../../../../../../hooks';
 import { TEMPLATE_FEATURE_NAME } from '../../consts';
 import { EventType } from '../../../../../../../events';
 
-import styles from './template-feature.module.css';
+import * as styles from './template-feature.module.css';
 
 interface SelectOption {
   label: string;

@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { Tabs as AntdTabs } from 'antd';
 import type { TabsProps } from 'antd';
 
-import styles from './tabs.module.css';
+import * as styles from './tabs.module.css';
 
 const defaultClassNames: TabsProps['classNames'] = {
   root: styles.tabs,

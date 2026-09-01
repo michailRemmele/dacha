@@ -9,7 +9,7 @@ import { formatWidgetName } from '../../../../../utils/format-widget-name'
 import { buildInitialState } from '../../../../../schema'
 import { EntityMultiselect } from '../entity-picker'
 
-import styles from './entity-list.module.css'
+import * as styles from './entity-list.module.css'
 import { CONFIG_KEY_MAP, PATH_FIELD_MAP } from './consts'
 import type { EntityType } from './types'
 

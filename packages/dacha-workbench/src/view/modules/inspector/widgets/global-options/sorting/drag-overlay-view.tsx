@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { Grip } from '@gravity-ui/icons';
 import { Icon } from '../../../../../components';
 
-import styles from './sorting.module.css';
+import * as styles from './sorting.module.css';
 import { SortingLayer } from './sorting-layer';
 import type { SortingLayerProps } from './sorting-layer';
 

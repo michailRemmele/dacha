@@ -12,7 +12,7 @@ import { EngineContext } from '../../../../providers';
 import { EventType } from '../../../../../events';
 
 import { parseTemplatePath } from './utils';
-import styles from './actor-form.module.css';
+import * as styles from './actor-form.module.css';
 
 const BUTTON_THEME = {
   components: {

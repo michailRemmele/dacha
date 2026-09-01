@@ -5,7 +5,7 @@ import { Icon, IconButton } from '../../../../../components';
 
 import { Field } from '../../../components/field';
 
-import styles from './physics.module.css';
+import * as styles from './physics.module.css';
 import { COLLISION_LAYERS_PATH } from './consts';
 
 export interface CollisionLayerFieldProps {

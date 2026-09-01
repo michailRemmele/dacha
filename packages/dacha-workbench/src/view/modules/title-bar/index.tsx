@@ -1,7 +1,7 @@
 import { useMemo, FC } from 'react';
 
 import { WindowControls, AppMenu, ProjectTitle } from './components';
-import styles from './title-bar.module.css';
+import * as styles from './title-bar.module.css';
 
 interface TitleBarProps {
   unsavedChanges: boolean;
