@@ -57,13 +57,13 @@
   },
   "homepage": "https://github.com/michailRemmele/dacha-workbench#readme",
   "devDependencies": {
-    "@dnd-kit/core": "6.0.8",
-    "@dnd-kit/sortable": "7.0.2",
-    "@dnd-kit/utilities": "3.2.1",
+    "@dnd-kit/core": "6.3.1",
+    "@dnd-kit/sortable": "10.0.0",
+    "@dnd-kit/utilities": "3.2.2",
     "@gravity-ui/icons": "^2.22.0",
     "@playwright/test": "^1.62.1",
     "@testing-library/dom": "10.4.1",
-    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
     "@types/lodash.isequal": "^4.5.6",
     "@types/react": "19.2.18",
@@ -75,12 +75,12 @@
     "dacha": "0.19.0-alpha.1",
     "dayjs": "1.11.23",
     "html-webpack-plugin": "5.6.8",
-    "i18next": "21.8.9",
+    "i18next": "26.4.1",
     "jest-environment-jsdom": "30.5.1",
     "lodash.isequal": "4.5.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-i18next": "11.17.2",
+    "react-i18next": "17.0.13",
     "reflect-metadata": "^0.2.2",
     "style-loader": "4.0.0",
     "terser-webpack-plugin": "5.6.1",
@@ -93,9 +93,9 @@
   },
   "dependencies": {
     "@electron/packager": "20.3.0",
-    "commander": "9.3.0",
-    "electron": "43.4.0",
-    "express": "4.18.1"
+    "commander": "15.0.0",
+    "electron": "44.1.1",
+    "express": "5.2.1"
   },
   "engines": {
     "node": ">=22.12.0"
