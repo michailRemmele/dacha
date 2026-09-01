@@ -13,7 +13,7 @@ import { buildInitialState } from '../../../../../../schema';
 
 import { cx } from '../../../../../../utils/cx';
 
-import styles from './mesh.module.css';
+import * as styles from './mesh.module.css';
 
 const BEHAVIOR_TYPE = 'shader';
 

@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputNumber, Typography } from 'antd';
 
-import styles from './grid.module.css';
+import * as styles from './grid.module.css';
 
 const MIN_STEP = 1;
 

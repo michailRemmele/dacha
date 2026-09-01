@@ -11,7 +11,7 @@ import { EventType } from '../../../../../events'
 import { StepField } from './step-field'
 import { ColorField } from './color-field'
 import { ShowGridField } from './show-grid-field'
-import styles from './grid.module.css'
+import * as styles from './grid.module.css'
 
 export const Grid: FC<ModalComponentProps> = ({ settings }) => {
   const { world } = useContext(EngineContext)

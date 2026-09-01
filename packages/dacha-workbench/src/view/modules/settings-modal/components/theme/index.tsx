@@ -7,7 +7,7 @@ import { persistentStorage } from '../../../../../persistent-storage';
 import type { ThemePreference } from '../../../../providers/theme-provider/types';
 import type { ModalComponentProps } from '../types';
 
-import styles from './theme.module.css';
+import * as styles from './theme.module.css';
 
 const PREFERENCES: ThemePreference[] = ['system', 'light', 'dark'];
 

@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import styles from '../../toolbar.module.css';
+import * as styles from '../../toolbar.module.css';
 import type { ToolFeaturesProps } from '../types';
 import { GridFeature, GRID_FEATURE_NAME } from '../grid-feature';
 

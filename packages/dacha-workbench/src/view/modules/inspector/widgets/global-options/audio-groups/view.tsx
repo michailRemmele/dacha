@@ -9,7 +9,7 @@ import { addValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import type { AudioGroup } from '../../types/audio-system';
 
-import styles from './audio-groups.module.css';
+import * as styles from './audio-groups.module.css';
 import { AudioGroup as AudioGroupPanel } from './audio-group';
 import { PATH } from './consts';
 

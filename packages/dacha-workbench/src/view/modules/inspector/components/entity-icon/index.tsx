@@ -5,7 +5,7 @@ import { getEntityColorHue } from '../../../../../utils/component-color';
 import { cx } from '../../../../../utils/cx';
 
 import { resolveIcon } from './resolve-icon';
-import styles from './entity-icon.module.css';
+import * as styles from './entity-icon.module.css';
 
 export interface EntityIconProps {
   name: string;

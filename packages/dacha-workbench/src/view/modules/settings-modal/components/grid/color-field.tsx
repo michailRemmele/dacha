@@ -4,7 +4,7 @@ import { Typography } from 'antd';
 
 import { ColorPicker } from '../../../../components';
 
-import styles from './grid.module.css';
+import * as styles from './grid.module.css';
 
 interface ColorFieldProps {
   value: string;

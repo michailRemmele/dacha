@@ -6,7 +6,7 @@ import type { MultiTextInputProps } from '../../../../../types/inputs';
 
 import { cx } from '../../../../../utils/cx';
 
-import styles from './multi-text-input.module.css';
+import * as styles from './multi-text-input.module.css';
 
 export const MultiTextInput: FC<MultiTextInputProps> = ({
   onChange = (): void => void 0,

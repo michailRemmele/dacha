@@ -7,7 +7,7 @@ import { EntityIcon } from '../entity-icon';
 import { cx } from '../../../../../utils/cx';
 
 import { CreateNewModal } from './create-new-modal';
-import styles from './entity-picker.module.css';
+import * as styles from './entity-picker.module.css';
 
 const NONE_VALUE = '';
 

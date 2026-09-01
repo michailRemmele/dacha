@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { EntityIcon } from '../entity-icon';
 
-import styles from './collapse-panel.module.css';
+import * as styles from './collapse-panel.module.css';
 
 export interface PanelHeaderProps {
   title: string;

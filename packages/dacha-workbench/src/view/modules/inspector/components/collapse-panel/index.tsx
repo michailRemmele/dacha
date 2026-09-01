@@ -14,7 +14,7 @@ import { Icon, IconButton } from '../../../../components';
 import { PanelHeader } from './panel-header';
 import { PanelExpand } from './panel-expand';
 
-import styles from './collapse-panel.module.css';
+import * as styles from './collapse-panel.module.css';
 
 type ExpandIcon = (props: { isActive?: boolean }) => ReactElement;
 

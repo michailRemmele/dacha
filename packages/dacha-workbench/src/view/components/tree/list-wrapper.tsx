@@ -1,6 +1,6 @@
 import { useCallback, forwardRef, ReactElement } from 'react'
 
-import styles from './list-wrapper.module.css'
+import * as styles from './list-wrapper.module.css'
 
 interface ListWrapperProps {
   children: ReactElement | ReactElement[]

@@ -4,7 +4,7 @@ import { StateList, TransitionList, Timeline, Inspector } from './components';
 
 import { Window } from '../../../../../../components';
 
-import styles from './editor.module.css';
+import * as styles from './editor.module.css';
 
 export const Editor: FC = () => (
   <div className={styles.editor}>

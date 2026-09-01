@@ -2,7 +2,7 @@ import type { FC, MouseEvent } from 'react'
 
 import { cx } from '../../../../../../../../../utils/cx'
 
-import styles from './timeline.module.css'
+import * as styles from './timeline.module.css'
 
 interface FrameProps {
   isSelected?: boolean

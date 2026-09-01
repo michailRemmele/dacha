@@ -8,7 +8,7 @@ import { Plus } from '@gravity-ui/icons'
 import type { Animation } from 'dacha'
 
 import { getStatePath, getSubstatePath } from '../../utils/paths'
-import editorStyles from '../../editor.module.css'
+import * as editorStyles from '../../editor.module.css'
 import { useConfig, useCommander } from '../../../../../../../../hooks'
 import { HotkeysBar, Icon, IconButton } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'

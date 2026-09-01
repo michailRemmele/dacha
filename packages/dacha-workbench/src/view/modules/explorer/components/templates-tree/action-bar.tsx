@@ -2,7 +2,7 @@ import { useCallback, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FilePlus } from '@gravity-ui/icons';
 
-import styles from '../../explorer.module.css';
+import * as styles from '../../explorer.module.css';
 import { useCommander } from '../../../../hooks';
 import { addTemplate } from '../../../../commands/templates';
 import { InspectedEntityContext } from '../../../../providers';
@@ -28,7 +28,6 @@ export const ActionBar: FC = () => {
   return (
     <header className={styles.actionBar}>
       <IconButton
-        className={styles.button}
         icon={<Icon icon={<FilePlus />} />}
         onClick={handleAdd}
         title={t('explorer.templates.actionBar.addTemplate.button.title')}

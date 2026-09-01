@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import type { Animation } from 'dacha'
 
-import styles from '../inspector.module.css'
+import * as styles from '../inspector.module.css'
 import {
   Field,
   DependencyField,

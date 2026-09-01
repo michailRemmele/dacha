@@ -13,7 +13,7 @@ import { SubstateInspector } from './substate-inspector'
 import { TransitionInspector } from './transition-inspector'
 import { FrameInspector } from './frame-inspector'
 
-import styles from './inspector.module.css'
+import * as styles from './inspector.module.css'
 
 export const Inspector: FC = () => {
   const { t } = useTranslation()

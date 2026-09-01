@@ -10,7 +10,7 @@ import { useCommander, useExtension } from '../../../../../hooks';
 import { deleteValue, setValue } from '../../../../../commands';
 
 import { KeyPicker } from './key-picker';
-import styles from './keyboard-control.module.css';
+import * as styles from './keyboard-control.module.css';
 
 const KEEP_EMIT_DEPENDENCY_VALUE = true;
 

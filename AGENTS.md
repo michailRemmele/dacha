@@ -30,11 +30,25 @@ All day-to-day commands run from the **repository root**:
 npm run build        # tsc -b (both packages) + webpack app build for the editor
 npm run clean        # remove all build output and incremental state
 npm test             # tsc -b (via pretest), then Jest in both packages
+npm run test:e2e     # build, pull screenshot baselines, run the Playwright suite
 npm run lint         # eslint across the whole repo — there is no package-level lint
 npm run dev          # tsc -b --watch + the editor's dev server, together
 npm run pack:local   # build and produce installable .tgz archives in packs/
 npm run release <v>  # preflight, lockstep version bump, publish, tag, push
 ```
+
+**End-to-end tests** live in `packages/dacha-workbench/e2e/` (Playwright, `_electron`
+launcher — it starts Electron on `index.js` against the production webpack build over a
+throwaway copy of `fixture/`, so `npm run test:e2e` builds first). Specs
+split by test title into functional and screenshot (`test('screenshot: …')`) groups,
+selected in CI with `--grep`/`--grep-invert "screenshot:"`; screenshot baselines are not
+committed but synced from S3-compatible storage by
+`scripts/e2e-baselines.js` (pull/push). **Locally you must load the profile first —
+`source .env.local`** (repo root, gitignored): it exports `AWS_PROFILE`, `S3_ENDPOINT`,
+`S3_BUCKET` and the two `AWS_*_CHECKSUM_*` compatibility vars the baseline sync needs. CI
+sets the same variables from repo secrets. The functional group alone needs no S3 access:
+`npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"` from
+inside `packages/dacha-workbench/`.
 
 `pack:local` stamps every archive with a unique local version
 (`x.y.z-local.<timestamp>`) by rewriting `package.json` **inside the tarball**,
@@ -242,7 +256,8 @@ watches the engine.
 - **Main and CLI (`electron/`, `bin/`)**: plain Node CommonJS, no TypeScript. Excluded
   from linting, like `scripts/` at the root.
 - **Tests** colocated in `tests/` folders; jsdom environment, Testing Library, and a
-  `FixJSDOMEnvironment.js` shim.
+  `FixJSDOMEnvironment.js` shim. Integration tests are separate: Playwright specs in
+  `e2e/` that launch the real Electron app (see **Commands** for `.env.local` setup).
 - Two build toolchains: **webpack** for the runnable app, **tsc** (`tsconfig.esm.json`)
   for the `esm/` library export. `webpack.extension.config.js` builds the project's own
   code as an extension bundle, and it externalises `dacha-workbench*` to

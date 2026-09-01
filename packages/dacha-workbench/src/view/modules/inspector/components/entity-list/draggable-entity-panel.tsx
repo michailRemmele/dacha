@@ -4,7 +4,7 @@ import { Icon } from '../../../../components'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-import styles from './entity-list.module.css'
+import * as styles from './entity-list.module.css'
 import { EntityPanel } from './entity-panel'
 import type { EntityPanelProps } from './entity-panel'
 

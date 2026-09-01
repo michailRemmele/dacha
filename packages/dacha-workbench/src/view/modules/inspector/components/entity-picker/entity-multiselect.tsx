@@ -9,7 +9,7 @@ import { EntityIcon } from '../entity-icon';
 import { CreateNewModal } from './create-new-modal';
 import { cx } from '../../../../../utils/cx';
 
-import styles from './entity-picker.module.css';
+import * as styles from './entity-picker.module.css';
 
 interface EntityMultiselectProps {
   placeholder: string;

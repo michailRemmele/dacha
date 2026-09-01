@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Dropdown } from 'antd';
 import { FilePlus } from '@gravity-ui/icons';
 
-import styles from '../../explorer.module.css';
+import * as styles from '../../explorer.module.css';
 import { useCommander } from '../../../../hooks';
 import { SchemasContext } from '../../../../providers';
 import { addAsset } from '../../../../commands/assets';
@@ -32,7 +32,6 @@ export const ActionBar: FC = () => {
     <header className={styles.actionBar}>
       <Dropdown menu={{ items }} trigger={['click']}>
         <IconButton
-          className={styles.button}
           icon={<Icon icon={<FilePlus />} />}
           title={t('explorer.assets.actionBar.addAsset.button.title')}
         />

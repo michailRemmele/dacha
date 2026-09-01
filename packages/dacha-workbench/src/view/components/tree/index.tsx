@@ -20,7 +20,7 @@ import { useTreeData } from './hooks/use-tree-data';
 import { ListWrapper } from './list-wrapper';
 import { cx } from '../../../utils/cx';
 
-import styles from './tree.module.css';
+import * as styles from './tree.module.css';
 
 interface TreeNodeTitleProps {
   title?: ReactNode | ((data: ExplorerDataNode) => ReactNode);
@@ -73,7 +73,15 @@ export const TreeNodeTitle: FC<TreeNodeTitleProps> = ({
     }
   }, [selected]);
 
-  return <span ref={nodeRef}>{title as string}</span>;
+  return (
+    <span
+      ref={nodeRef}
+      data-testid="explorer-tree-node-title"
+      data-selected={selected || undefined}
+    >
+      {title as string}
+    </span>
+  );
 };
 
 export const Tree: FC<TreeProps> = ({

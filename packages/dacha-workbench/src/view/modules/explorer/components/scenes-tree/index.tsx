@@ -13,7 +13,7 @@ import { CHILDREN_FIELD_MAP } from '../../consts'
 import { getSelectedPaths } from './utils'
 import { ActionBar } from './action-bar'
 import { ScenesTree } from './tree'
-import styles from './scene-tree.module.css'
+import * as styles from './scene-tree.module.css'
 
 const ROOT_PATH = ['scenes']
 

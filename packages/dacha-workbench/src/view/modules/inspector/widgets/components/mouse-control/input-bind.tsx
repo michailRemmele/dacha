@@ -9,7 +9,7 @@ import { Section } from '../../../components/section';
 import { useCommander, useExtension } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
-import styles from './mouse-control.module.css';
+import * as styles from './mouse-control.module.css';
 
 export interface InputBindProps {
   path: string[];

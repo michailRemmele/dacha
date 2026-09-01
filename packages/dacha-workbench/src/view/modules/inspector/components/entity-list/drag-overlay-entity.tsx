@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import { Grip } from '@gravity-ui/icons'
 import { Icon } from '../../../../components'
 
-import styles from './entity-list.module.css'
+import * as styles from './entity-list.module.css'
 import { EntityPanel } from './entity-panel'
 import type { EntityPanelProps } from './entity-panel'
 
