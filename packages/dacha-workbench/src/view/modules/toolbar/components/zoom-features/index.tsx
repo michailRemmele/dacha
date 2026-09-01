@@ -50,12 +50,14 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
       >
         <Radio.Button value="in">
           <Icon
+            data-testid="zoom-direction-in"
             title={t('toolbar.zoom.features.direction.in.title')}
             icon={<MagnifierPlus />}
           />
         </Radio.Button>
         <Radio.Button value="out">
           <Icon
+            data-testid="zoom-direction-out"
             title={t('toolbar.zoom.features.direction.out.title')}
             icon={<MagnifierMinus />}
           />
