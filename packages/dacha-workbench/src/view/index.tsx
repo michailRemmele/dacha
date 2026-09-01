@@ -4,7 +4,7 @@ import { App as DSApp } from 'antd';
 import { BottomBar, TitleBar, SettingsModal } from './modules';
 import { useUnsavedChanges, useEditorReady } from './hooks';
 import { EditorLayout } from './editor-layout';
-import styles from './app.module.css';
+import * as styles from './app.module.css';
 
 export const App = (): ReactElement => {
   const isEditorReady = useEditorReady();

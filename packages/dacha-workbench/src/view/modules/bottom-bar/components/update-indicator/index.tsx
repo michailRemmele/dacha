@@ -2,7 +2,7 @@ import { useState, useEffect, FC } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 
-import styles from './update-indicator.module.css';
+import * as styles from './update-indicator.module.css';
 
 export const UpdateIndicator: FC = () => {
   const [isLoading, setIsLoading] = useState(false);

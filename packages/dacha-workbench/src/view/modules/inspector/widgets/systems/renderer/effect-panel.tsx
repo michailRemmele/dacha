@@ -12,7 +12,7 @@ import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/c
 import { BEHAVIOR_TYPE } from './consts';
 import { cx } from '../../../../../../utils/cx';
 
-import styles from './renderer.module.css';
+import * as styles from './renderer.module.css';
 
 export interface EffectPanelProps {
   id: string;

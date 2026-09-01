@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Checkbox } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
-import styles from '../../toolbar.module.css'
+import * as styles from '../../toolbar.module.css'
 import { ToolFeature } from '../tool-feature'
 import { EngineContext } from '../../../../providers'
 import { EventType } from '../../../../../events'

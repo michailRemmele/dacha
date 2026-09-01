@@ -15,7 +15,7 @@ import type {
 
 import { CollisionLayerField } from './collision-layer';
 import { CollisionMatrixField } from './collision-matrix';
-import styles from './physics.module.css';
+import * as styles from './physics.module.css';
 import { PHYSICS_SETTINGS_PATH, DEFAULT_LAYER } from './consts';
 
 export const PhysicsWidget: FC<WidgetProps> = () => {

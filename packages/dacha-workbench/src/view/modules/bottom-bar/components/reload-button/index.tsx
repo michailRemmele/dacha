@@ -11,7 +11,7 @@ import { Icon } from '../../../../components'
 import { useSaveProject } from '../../../../hooks/use-save-project'
 import { NeedsReloadContext } from '../../../../providers'
 
-import styles from './reload-button.module.css'
+import * as styles from './reload-button.module.css'
 
 export const ReloadButton: FC = () => {
   const { t } = useTranslation()

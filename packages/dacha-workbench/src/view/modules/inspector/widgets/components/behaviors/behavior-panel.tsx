@@ -10,7 +10,7 @@ import { formatWidgetName } from '../../../../../../utils/format-widget-name';
 import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/consts';
 import { cx } from '../../../../../../utils/cx';
 
-import styles from './behavior.module.css';
+import * as styles from './behavior.module.css';
 
 interface BehaviorPanelProps {
   id: string;

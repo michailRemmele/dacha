@@ -3,7 +3,7 @@ import { Typography } from 'antd';
 
 import { cx } from '../../../../../utils/cx';
 
-import styles from './feature-label.module.css';
+import * as styles from './feature-label.module.css';
 
 interface LabelProps {
   title: string;

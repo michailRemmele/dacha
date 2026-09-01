@@ -9,7 +9,7 @@ import { Button } from 'antd'
 import { uuid } from '../../../../../../../../../../utils/uuid'
 import type { Animation } from 'dacha'
 
-import inspectorStyles from '../inspector.module.css'
+import * as inspectorStyles from '../inspector.module.css'
 import {
   Field,
   LabelledSelect,
@@ -20,7 +20,7 @@ import { AnimationEditorContext } from '../../../providers'
 import { CONDITION_TYPE } from '../../../const'
 
 import { Condition } from './condition'
-import styles from './transition-inspector.module.css'
+import * as styles from './transition-inspector.module.css'
 
 export const TransitionInspector: FC = () => {
   const { t } = useTranslation()

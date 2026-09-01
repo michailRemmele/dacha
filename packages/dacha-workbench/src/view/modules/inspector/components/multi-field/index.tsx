@@ -13,7 +13,7 @@ import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 import { Entry } from './entry'
 import type { MultiFieldEntry } from './types'
 
-import styles from './multi-field.module.css'
+import * as styles from './multi-field.module.css'
 
 interface MultiFieldProps {
   path: string[]

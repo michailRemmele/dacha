@@ -8,7 +8,7 @@ import { Icon } from '../../../../../components';
 
 import { Labelled } from '../../../components/labelled';
 
-import styles from './keyboard-control.module.css';
+import * as styles from './keyboard-control.module.css';
 
 const ENTER_KEY_CODE = 'Enter';
 const SPACE_KEY_CODE = 'Space';

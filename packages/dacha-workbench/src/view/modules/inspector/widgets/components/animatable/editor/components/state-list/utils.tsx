@@ -8,7 +8,7 @@ import { getStatePath, getSubstatePath } from '../../utils/paths';
 import { Icon } from '../../../../../../../../components';
 import { STATE_TYPE } from '../../const';
 
-import styles from './state-list.module.css';
+import * as styles from './state-list.module.css';
 
 export interface StateDataNode extends DataNode {
   parent?: StateDataNode;

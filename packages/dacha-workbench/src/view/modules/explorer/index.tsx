@@ -16,7 +16,7 @@ import {
   TemplatesExplorer,
   AssetsExplorer,
 } from './components';
-import styles from './explorer.module.css';
+import * as styles from './explorer.module.css';
 
 export const Explorer = (): ReactElement => {
   const { t } = useTranslation();

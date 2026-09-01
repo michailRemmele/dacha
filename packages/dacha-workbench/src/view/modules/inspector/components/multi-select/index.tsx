@@ -6,7 +6,7 @@ import type { MultiSelectProps } from '../../../../../types/inputs'
 
 import { cx } from '../../../../../utils/cx'
 
-import styles from './multi-select.module.css'
+import * as styles from './multi-select.module.css'
 
 export const MultiSelect: FC<MultiSelectProps> = ({
   options = [],

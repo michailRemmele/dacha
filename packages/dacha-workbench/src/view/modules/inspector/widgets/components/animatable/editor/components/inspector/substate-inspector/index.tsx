@@ -1,7 +1,7 @@
 import { useMemo, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import styles from '../inspector.module.css';
+import * as styles from '../inspector.module.css';
 import {
   Field,
   DependencyField,

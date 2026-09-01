@@ -44,6 +44,8 @@ module.exports = {
               modules: {
                 auto: /\.module\.css$/,
                 localIdentName: '[name]__[local]--[hash:base64:5]',
+                namedExport: true,
+                exportLocalsConvention: 'as-is',
               },
             },
           },

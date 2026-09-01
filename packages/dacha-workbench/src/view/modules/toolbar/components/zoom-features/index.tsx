@@ -5,7 +5,7 @@ import { Radio } from 'antd';
 import { MagnifierPlus, MagnifierMinus } from '@gravity-ui/icons';
 import { Icon } from '../../../../components';
 
-import styles from '../../toolbar.module.css';
+import * as styles from '../../toolbar.module.css';
 import { EngineContext } from '../../../../providers';
 import type { FeatureValue } from '../../../../../engine/components/tool';
 import type { ToolFeaturesProps } from '../types';
@@ -50,12 +50,14 @@ export const ZoomFeatures: FC<ToolFeaturesProps> = ({ features }) => {
       >
         <Radio.Button value="in">
           <Icon
+            data-testid="zoom-direction-in"
             title={t('toolbar.zoom.features.direction.in.title')}
             icon={<MagnifierPlus />}
           />
         </Radio.Button>
         <Radio.Button value="out">
           <Icon
+            data-testid="zoom-direction-out"
             title={t('toolbar.zoom.features.direction.out.title')}
             icon={<MagnifierMinus />}
           />

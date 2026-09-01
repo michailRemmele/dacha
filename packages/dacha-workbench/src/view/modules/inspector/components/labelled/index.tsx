@@ -1,6 +1,6 @@
 import { FC, ReactElement } from 'react'
 
-import styles from './labelled.module.css'
+import * as styles from './labelled.module.css'
 
 export interface LabelledProps {
   label: string

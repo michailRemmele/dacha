@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { Plus } from '@gravity-ui/icons'
 
 import { getStatePath } from '../../utils/paths'
-import editorStyles from '../../editor.module.css'
+import * as editorStyles from '../../editor.module.css'
 import { useCommander } from '../../../../../../../../hooks'
 import { HotkeysBar, Icon, IconButton } from '../../../../../../../../components'
 import { AnimationEditorContext } from '../../providers'

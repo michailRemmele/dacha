@@ -4,7 +4,7 @@ import { Input, Button, Space, ConfigProvider } from 'antd';
 import { FolderOpen } from '@gravity-ui/icons';
 import { Icon } from '../icon';
 
-import styles from './file-picker.module.css';
+import * as styles from './file-picker.module.css';
 
 const BUTTON_THEME = {
   components: {
