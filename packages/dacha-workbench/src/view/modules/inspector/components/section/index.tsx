@@ -12,7 +12,7 @@ import { Icon, IconButton } from '../../../../components';
 
 import { cx } from '../../../../../utils/cx';
 
-import styles from './section.module.css';
+import * as styles from './section.module.css';
 
 export interface SectionProps {
   children:

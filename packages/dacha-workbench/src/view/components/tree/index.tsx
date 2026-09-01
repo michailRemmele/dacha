@@ -20,7 +20,7 @@ import { useTreeData } from './hooks/use-tree-data';
 import { ListWrapper } from './list-wrapper';
 import { cx } from '../../../utils/cx';
 
-import styles from './tree.module.css';
+import * as styles from './tree.module.css';
 
 interface TreeNodeTitleProps {
   title?: ReactNode | ((data: ExplorerDataNode) => ReactNode);

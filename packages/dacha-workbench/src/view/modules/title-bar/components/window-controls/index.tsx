@@ -5,7 +5,7 @@ import { Icon } from '../../../../components';
 
 import { cx } from '../../../../../utils/cx';
 
-import styles from './window-controls.module.css';
+import * as styles from './window-controls.module.css';
 
 export const WindowControls: FC = () => {
   const { t } = useTranslation();

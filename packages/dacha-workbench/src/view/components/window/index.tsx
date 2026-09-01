@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import * as React from 'react';
 
-import styles from './window.module.css';
+import * as styles from './window.module.css';
 
 interface WindowProps {
   children: React.ReactNode;

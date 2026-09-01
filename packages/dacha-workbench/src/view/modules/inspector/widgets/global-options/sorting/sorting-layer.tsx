@@ -6,7 +6,7 @@ import { Field } from '../../../components/field';
 import { useCommander } from '../../../../../hooks';
 import { deleteValue } from '../../../../../commands';
 
-import styles from './sorting.module.css';
+import * as styles from './sorting.module.css';
 import { LAYERS_PATH } from './consts';
 
 export interface SortingLayerProps {

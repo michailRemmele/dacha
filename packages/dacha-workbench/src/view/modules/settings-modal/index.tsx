@@ -15,7 +15,7 @@ import { Settings } from '../../../engine/components';
 import { EventType } from '../../../events';
 
 import { modals } from './components';
-import styles from './settings-modal.module.css';
+import * as styles from './settings-modal.module.css';
 
 export const SettingsModal: FC = () => {
   const { t } = useTranslation();

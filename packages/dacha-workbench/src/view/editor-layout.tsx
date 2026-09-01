@@ -10,7 +10,7 @@ import { Window } from './components';
 import { Explorer } from './modules/explorer';
 import { Inspector } from './modules/inspector';
 import { Toolbar } from './modules/toolbar';
-import styles from './app.module.css';
+import * as styles from './app.module.css';
 
 const MIN_EXPLORER_WIDTH = 200;
 const MIN_INSPECTOR_WIDTH = 225;

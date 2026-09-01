@@ -4,7 +4,7 @@ import type { ButtonProps } from 'antd';
 
 import { cx } from '../../../utils/cx';
 
-import styles from './icon-button.module.css';
+import * as styles from './icon-button.module.css';
 
 export type IconButtonProps = ButtonProps;
 

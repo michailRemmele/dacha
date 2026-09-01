@@ -8,7 +8,7 @@ import { InspectedEntityContext } from '../../../../providers'
 import { useConfig } from '../../../../hooks'
 import { forms } from '../../forms'
 
-import styles from './entity-inspector.module.css'
+import * as styles from './entity-inspector.module.css'
 
 export const EntityInspector = (): ReactElement | null => {
   const { t } = useTranslation()

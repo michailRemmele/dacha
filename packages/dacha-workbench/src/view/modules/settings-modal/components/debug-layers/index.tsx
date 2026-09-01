@@ -6,7 +6,7 @@ import { modules } from '../../../../../engine/systems/debug-visualizer/modules'
 import { persistentStorage } from '../../../../../persistent-storage';
 import type { ModalComponentProps } from '../types';
 
-import styles from './debug-layers.module.css';
+import * as styles from './debug-layers.module.css';
 
 const getStorageKey = (id: string): string =>
   `canvas.debugVisualizer.layers.${id}`;

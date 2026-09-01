@@ -27,7 +27,7 @@ import { buildInitialState } from '../../../../../../schema';
 import { DraggableEffectPanel } from './draggable-effect-panel';
 import { DragOverlayEntry } from './drag-overlay-entry';
 import { BEHAVIOR_TYPE } from './consts';
-import styles from './renderer.module.css';
+import * as styles from './renderer.module.css';
 
 interface FilterEffectEntry {
   id: string;

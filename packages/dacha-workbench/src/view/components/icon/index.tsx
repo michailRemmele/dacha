@@ -7,7 +7,7 @@ import type {
 
 import { cx } from '../../../utils/cx';
 
-import styles from './icon.module.css';
+import * as styles from './icon.module.css';
 
 interface IconProps extends ComponentPropsWithoutRef<'span'> {
   icon: ReactElement;

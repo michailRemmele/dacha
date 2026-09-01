@@ -19,7 +19,7 @@ import {
   getFilePath,
   getDefaultDirectory,
 } from './utils'
-import styles from './entity-picker.module.css'
+import * as styles from './entity-picker.module.css'
 
 interface CreateNewModalProps {
   open: boolean

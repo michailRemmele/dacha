@@ -1,6 +1,6 @@
 import type { FC, ReactElement } from 'react'
 
-import styles from './tool-feature.module.css'
+import * as styles from './tool-feature.module.css'
 
 interface ToolFeatureProps {
   children: ReactElement | ReactElement[]

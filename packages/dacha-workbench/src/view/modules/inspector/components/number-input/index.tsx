@@ -6,7 +6,7 @@ import type { NumberInputProps } from '../../../../../types/inputs'
 
 import { cx } from '../../../../../utils/cx'
 
-import styles from './number-input.module.css'
+import * as styles from './number-input.module.css'
 
 export const NumberInput: FC<NumberInputProps> = ({
   onChange = (): void => void 0,

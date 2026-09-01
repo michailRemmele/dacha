@@ -7,7 +7,6 @@ import { Transform, Actor } from 'dacha'
 import { getActorIdByPath } from '../../../../../../../utils/get-actor-id-by-path'
 import { EngineContext } from '../../../../../../providers'
 import { Icon, IconButton } from '../../../../../../components'
-import styles from '../../../../explorer.module.css'
 
 interface FocusActionButtonProps {
   path?: string[]
@@ -39,7 +38,6 @@ export const FocusActionButton: FC<FocusActionButtonProps> = ({
 
   return (
     <IconButton
-      className={styles.button}
       icon={<Icon icon={<TargetDart />} />}
       onClick={handleClick}
       title={t('explorer.scenes.actionBar.focusActor.button.title')}

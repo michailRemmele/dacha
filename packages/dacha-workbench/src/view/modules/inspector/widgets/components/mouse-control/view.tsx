@@ -9,7 +9,7 @@ import { addValue } from '../../../../../commands';
 
 import { InputBind } from './input-bind';
 
-import styles from './mouse-control.module.css';
+import * as styles from './mouse-control.module.css';
 
 export interface EventOption {
   title: string;

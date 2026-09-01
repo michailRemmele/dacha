@@ -8,7 +8,7 @@ import { NAMESPACE_EDITOR } from '../../../../providers/schemas-provider/consts'
 
 import { cx } from '../../../../../utils/cx'
 
-import styles from './select.module.css'
+import * as styles from './select.module.css'
 
 const NONE_VALUE = ''
 

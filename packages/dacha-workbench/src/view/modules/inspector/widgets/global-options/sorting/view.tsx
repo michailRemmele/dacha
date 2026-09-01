@@ -13,7 +13,7 @@ import { addValue, setValue } from '../../../../../commands';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import { NeedsReloadContext } from '../../../../../providers';
 
-import styles from './sorting.module.css';
+import * as styles from './sorting.module.css';
 import { DraggableSortingLayers } from './draggable-sorting-layers';
 import { SORTING_SETTINGS_PATH, LAYERS_PATH, ORDER_OPTIONS } from './consts';
 

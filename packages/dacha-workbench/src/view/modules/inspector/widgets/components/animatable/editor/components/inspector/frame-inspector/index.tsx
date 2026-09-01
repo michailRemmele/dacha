@@ -4,7 +4,7 @@ import {
   FC,
 } from 'react'
 
-import styles from '../inspector.module.css'
+import * as styles from '../inspector.module.css'
 import { MultiField } from '../../../../../../../components/multi-field'
 import { AnimationEditorContext } from '../../../providers'
 

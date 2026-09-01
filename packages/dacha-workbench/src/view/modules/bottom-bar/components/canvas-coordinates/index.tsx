@@ -17,7 +17,7 @@ import { useStore } from '../../../../hooks/use-store'
 import type { SelectSceneEvent } from '../../../../../events'
 
 import { getGridSection } from './utils'
-import styles from './canvas-coordinates.module.css'
+import * as styles from './canvas-coordinates.module.css'
 
 const DELAY = 50
 

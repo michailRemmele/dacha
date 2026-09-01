@@ -4,7 +4,7 @@ import { CaretRight } from '@gravity-ui/icons';
 import { Icon } from '../../../../components';
 import { cx } from '../../../../../utils/cx';
 
-import styles from './collapse-panel.module.css';
+import * as styles from './collapse-panel.module.css';
 
 interface PanelExpandProps {
   isActive?: boolean;

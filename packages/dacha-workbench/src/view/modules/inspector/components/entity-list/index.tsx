@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { SchemasDataEntry } from '../../../../providers'
 import { formatWidgetName } from '../../../../../utils/format-widget-name'
 
-import styles from './entity-list.module.css'
+import * as styles from './entity-list.module.css'
 import { EntityPicker } from './entity-picker'
 import { Panels } from './panels'
 import { DraggablePanels } from './draggable-panels'

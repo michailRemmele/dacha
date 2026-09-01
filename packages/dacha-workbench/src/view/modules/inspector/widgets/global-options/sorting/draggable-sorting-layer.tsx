@@ -5,7 +5,7 @@ import { Grip } from '@gravity-ui/icons';
 import { Icon } from '../../../../../components';
 
 import { SortingLayer } from './sorting-layer';
-import styles from './sorting.module.css';
+import * as styles from './sorting.module.css';
 
 const ACTIVE_ENTITY_OPACITY = 0.5;
 

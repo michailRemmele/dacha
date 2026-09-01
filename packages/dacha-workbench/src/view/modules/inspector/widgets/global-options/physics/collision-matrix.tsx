@@ -12,7 +12,7 @@ import type {
 
 import { cx } from '../../../../../../utils/cx';
 
-import styles from './physics.module.css';
+import * as styles from './physics.module.css';
 import { COLLISION_MATRIX_PATH, DEFAULT_LAYER } from './consts';
 
 export interface CollisionMatrixProps {

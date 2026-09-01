@@ -7,7 +7,7 @@ import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { addValue } from '../../../../../commands';
 
-import styles from './keyboard-control.module.css';
+import * as styles from './keyboard-control.module.css';
 import { InputBind } from './input-bind';
 import type { InputEventBind } from './types';
 
