@@ -7,6 +7,7 @@ declare global {
       triggerUndo: () => void;
       triggerRedo: () => void;
       openSettings: (type: string) => void;
+      loadPersistentStorage: () => Record<string, unknown>;
     };
   }
 }

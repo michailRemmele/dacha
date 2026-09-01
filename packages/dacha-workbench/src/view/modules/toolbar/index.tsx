@@ -108,16 +108,32 @@ export const Toolbar: FC = () => {
           disabled={disabled}
         >
           <Radio.Button value="hand">
-            <Icon title={t('toolbar.hand.title')} icon={<Hand />} />
+            <Icon
+              data-testid="tool-button-hand"
+              title={t('toolbar.hand.title')}
+              icon={<Hand />}
+            />
           </Radio.Button>
           <Radio.Button value="pointer">
-            <Icon title={t('toolbar.pointer.title')} icon={<HandPointUp />} />
+            <Icon
+              data-testid="tool-button-pointer"
+              title={t('toolbar.pointer.title')}
+              icon={<HandPointUp />}
+            />
           </Radio.Button>
           <Radio.Button value="zoom">
-            <Icon title={t('toolbar.zoom.title')} icon={<Magnifier />} />
+            <Icon
+              data-testid="tool-button-zoom"
+              title={t('toolbar.zoom.title')}
+              icon={<Magnifier />}
+            />
           </Radio.Button>
           <Radio.Button value="template">
-            <Icon title={t('toolbar.template.title')} icon={<Person />} />
+            <Icon
+              data-testid="tool-button-template"
+              title={t('toolbar.template.title')}
+              icon={<Person />}
+            />
           </Radio.Button>
         </Radio.Group>
       </ConfigProvider>

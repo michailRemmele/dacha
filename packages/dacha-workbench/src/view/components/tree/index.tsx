@@ -73,7 +73,15 @@ export const TreeNodeTitle: FC<TreeNodeTitleProps> = ({
     }
   }, [selected]);
 
-  return <span ref={nodeRef}>{title as string}</span>;
+  return (
+    <span
+      ref={nodeRef}
+      data-testid="explorer-tree-node-title"
+      data-selected={selected || undefined}
+    >
+      {title as string}
+    </span>
+  );
 };
 
 export const Tree: FC<TreeProps> = ({

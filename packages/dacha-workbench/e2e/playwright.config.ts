@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
+const isCI = !!process.env.CI;
+
 export default defineConfig({
   testDir: './specs',
   timeout: 60_000,
@@ -9,7 +11,7 @@ export default defineConfig({
   outputDir: '../test-results',
   expect: {
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: isCI ? 0.001 : 0.02,
     },
   },
 });
