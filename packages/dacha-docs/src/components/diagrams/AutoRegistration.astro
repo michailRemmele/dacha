@@ -1,0 +1,49 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="One file, two consumers. The bundler collects it by file-name pattern so the game can construct it, and the editor reads its decorator so the inspector can offer it. Neither step is wired by hand."
+>
+  <svg viewBox="0 0 720 340" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A script generated in the editor lands on disk, is collected into the game bundle by
+      a file-name glob, and is registered back into the editor by its decorator.
+    </title>
+
+    <defs>
+      <marker id="ar-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-accent)" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit">
+      <rect x="252" y="18" width="216" height="56" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="42" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Editor</text>
+      <text x="360" y="60" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">generate a component</text>
+
+      <rect x="252" y="142" width="216" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="166" fill="var(--diagram-text)" text-anchor="middle" stroke="none">File on disk</text>
+      <text x="360" y="184" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">health.component.ts</text>
+
+      <rect x="20" y="256" width="270" height="68" rx="8" fill="var(--diagram-fill)" />
+      <text x="155" y="280" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Game bundle</text>
+      <text x="155" y="298" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">require.context matches the suffix</text>
+      <text x="155" y="314" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">class reaches the Engine</text>
+
+      <rect x="430" y="256" width="270" height="68" rx="8" fill="var(--diagram-fill)" />
+      <text x="565" y="280" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Editor registry</text>
+      <text x="565" y="298" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">the decorator registers the class</text>
+      <text x="565" y="314" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">it appears in the inspector</text>
+
+      <path d="M360 74 L360 142" stroke="var(--diagram-accent)" marker-end="url(#ar-arrow)" />
+      <text x="372" y="112" fill="var(--diagram-accent)" stroke="none" font-size="11">writes</text>
+
+      <path d="M300 202 L155 256" stroke="var(--diagram-accent)" marker-end="url(#ar-arrow)" />
+      <path d="M420 202 L565 256" stroke="var(--diagram-accent)" marker-end="url(#ar-arrow)" />
+
+      <path d="M700 290 L712 290 L712 46 L468 46" stroke="var(--diagram-accent)" stroke-dasharray="5 4" marker-end="url(#ar-arrow)" />
+      <text x="600" y="150" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">available to place</text>
+    </g>
+  </svg>
+</DiagramFigure>

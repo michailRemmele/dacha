@@ -1,0 +1,116 @@
+---
+title: "Scripts & auto-registration"
+description: "The convention that lets a script created in the editor appear in both the game and the inspector without any wiring."
+---
+
+import AutoRegistration from '../../../components/diagrams/AutoRegistration.astro';
+
+Adding a component to a game normally means writing the class, importing it somewhere,
+adding it to an array the engine receives, and separately telling the editor it exists.
+Four steps, three of them clerical, each one easy to forget.
+
+The convention on this page removes all of them. A file with the right name is collected
+into the game automatically, and the decorator on the class registers it with the editor.
+
+<AutoRegistration />
+
+## The convention
+
+A file is picked up when two things are true.
+
+**Its name ends with the right suffix:**
+
+| Suffix | Declares |
+| --- | --- |
+| `*.component.ts` | A component |
+| `*.system.ts` | A system |
+| `*.behavior.ts` | A behavior |
+| `*.shader.ts` | A shader |
+| `*.filter-effect.ts` | A filter effect |
+
+**The class is the default export:**
+
+```ts
+export default class Health extends Component { /* … */ }
+```
+
+A named export will not be found. Neither will `health.ts`. There is no build error in
+either case; the class is simply absent at runtime.
+
+## Collecting the files
+
+Your entry point globs for each suffix:
+
+```ts
+const gameComponents = importAll(
+  require.context('./', true, /.component.ts$/),
+) as ComponentConstructor[];
+const gameSystems = importAll(
+  require.context('./', true, /.system.ts$/),
+) as SystemConstructor[];
+const gameBehaviors = importAll(
+  require.context('./', true, /.behavior.ts$/),
+) as BehaviorConstructor[];
+```
+
+`importAll` is three lines and lives in your project, not in the engine:
+
+```ts
+export const importAll = (
+  context: __WebpackModuleApi.RequireContext,
+): unknown[] => {
+  const modules = context.keys().map(context);
+  return modules.map((module) => (module as Record<string, unknown>).default);
+};
+```
+
+`require.context` is a webpack feature, so its type comes from `@types/webpack-env`. Add
+it to your dev dependencies or TypeScript will not know the symbol.
+
+## Handing them to the engine
+
+The collected arrays are spread in alongside the built-ins:
+
+```ts
+const engine = new Engine({
+  config,
+  systems: [Renderer, PhysicsSystem, BehaviorSystem, ...gameSystems],
+  components: [Transform, Sprite, Behaviors, ...gameComponents],
+  resources: {
+    [BehaviorSystem.systemName]: [...gameBehaviors],
+  },
+});
+```
+
+Behaviors are not systems or components, so they arrive as a resource for the behavior
+system rather than in either array.
+
+From the engine's point of view nothing unusual happened. It received arrays of classes,
+exactly as it would have if you had listed them by hand.
+
+## This is a convention, not a feature
+
+Worth being clear about: the engine has no glob, no file scanner and no knowledge of your
+directory layout. It gets arrays. Everything above is your project's bundler doing the
+collecting.
+
+That means it is not tied to webpack. With Vite the equivalent is `import.meta.glob`; with
+another bundler, whatever that bundler offers. The suffix convention is worth keeping
+whichever you use, because the editor's script generation writes files that follow it.
+
+## The round trip
+
+The payoff is the loop between the editor and your project.
+
+Generate a component from the editor. It writes `health.component.ts` into your project.
+Two independent things then happen without you doing anything:
+
+- **Your game** picks it up on the next rebuild, because the glob matches the filename.
+- **The editor** picks it up by reading the file and finding the decorator, which registers
+  the class and its fields into the inspector.
+
+The component becomes placeable on actors and its fields become editable, in the same
+session, from a class that did not exist a minute ago.
+
+See [generating scripts](/editor/generating-scripts/) for the editor half, and
+[writing a component](/writing-game-code/components/) for what goes in the file.

@@ -1,0 +1,23 @@
+:root {
+  --sl-color-accent-low: #16281f;
+  --sl-color-accent: #2f9e63;
+  --sl-color-accent-high: #b6e3c9;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #d6f0e1;
+  --sl-color-accent: #1f7a49;
+  --sl-color-accent-high: #0d3320;
+}
+
+/* Shared tokens for the inline SVG diagrams in src/components/diagrams. */
+:root {
+  --diagram-stroke: var(--sl-color-gray-3);
+  --diagram-fill: var(--sl-color-gray-6);
+  --diagram-text: var(--sl-color-white);
+  --diagram-accent: var(--sl-color-accent);
+}
+
+:root[data-theme='light'] {
+  --diagram-text: var(--sl-color-black);
+}

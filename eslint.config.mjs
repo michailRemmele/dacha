@@ -49,6 +49,7 @@ export default tseslint.config(
   {
     ignores: [
       'docs',
+      'packages/dacha-docs',
       'packs',
       'scripts',
       'eslint.config.mjs',

@@ -1,0 +1,54 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The editor writes the configuration; the engine turns it into a running world. Inside the loop, systems query actors and mutate their components, and the renderer draws the result once per frame."
+>
+  <svg viewBox="0 0 720 268" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      The editor writes a JSON configuration. The engine bootstraps it into a world, and
+      the game loop drives systems that mutate actors before the renderer draws them.
+    </title>
+
+    <defs>
+      <marker id="ef-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit">
+      <rect x="10" y="22" width="150" height="52" rx="8" fill="var(--diagram-fill)" />
+      <text x="85" y="53" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Editor</text>
+
+      <rect x="10" y="118" width="150" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="85" y="143" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Config</text>
+      <text x="85" y="161" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">data.json</text>
+
+      <rect x="235" y="118" width="150" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="310" y="153" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Engine</text>
+
+      <rect x="235" y="22" width="465" height="52" rx="8" fill="none" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="467" y="45" fill="var(--diagram-accent)" text-anchor="middle" stroke="none">Game loop &#183; requestAnimationFrame</text>
+      <text x="467" y="63" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">fixedUpdate at a fixed rate &#183; update once per frame</text>
+
+      <rect x="428" y="118" width="130" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="493" y="143" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Systems</text>
+      <text x="493" y="161" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">query actors</text>
+
+      <rect x="595" y="118" width="105" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="647" y="143" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Actors</text>
+      <text x="647" y="161" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">+ components</text>
+
+      <rect x="428" y="208" width="272" height="46" rx="8" fill="var(--diagram-fill)" />
+      <text x="564" y="236" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Renderer &#8594; canvas</text>
+
+      <path d="M85 74 L85 118" marker-end="url(#ef-arrow)" />
+      <path d="M160 148 L235 148" marker-end="url(#ef-arrow)" />
+      <path d="M310 118 L310 74" marker-end="url(#ef-arrow)" />
+      <path d="M385 148 L428 148" marker-end="url(#ef-arrow)" />
+      <path d="M558 148 L595 148" marker-end="url(#ef-arrow)" />
+      <path d="M647 178 L647 208" marker-end="url(#ef-arrow)" />
+    </g>
+  </svg>
+</DiagramFigure>

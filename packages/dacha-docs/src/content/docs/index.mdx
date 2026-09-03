@@ -1,0 +1,45 @@
+---
+title: dacha
+description: A data-driven, ECS-flavored game engine for the browser, with a visual editor.
+template: splash
+head:
+  - tag: title
+    content: dacha
+hero:
+  tagline: A data-driven game engine for the browser, and the visual editor built for it.
+  actions:
+    - text: What is dacha
+      link: /introduction/what-is-dacha/
+      icon: right-arrow
+      variant: primary
+    - text: Get started
+      link: /getting-started/installation/
+      icon: rocket
+      variant: secondary
+    - text: API reference
+      link: /api/
+      icon: open-book
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="Describe the game as data" icon="document">
+    Scenes, actors, templates and systems live in a JSON configuration that the engine
+    bootstraps into a running world. [How it works](/introduction/how-it-works/)
+  </Card>
+  <Card title="Build it in the editor" icon="laptop">
+    A desktop editor reads and writes that configuration, so scenes are assembled
+    visually rather than by hand. [The editor's role](/concepts/editor-role/)
+  </Card>
+  <Card title="Extend it from the editor" icon="add-document">
+    Generate a component, system or behavior from the interface. It is picked up by the
+    game and registered in the editor automatically.
+    [Scripts and auto-registration](/writing-game-code/auto-registration/)
+  </Card>
+  <Card title="Batteries included" icon="setting">
+    Rendering on pixi.js, physics, animation, audio, input and interpolation ship with
+    the engine. [Built-in systems](/systems/rendering/)
+  </Card>
+</CardGrid>

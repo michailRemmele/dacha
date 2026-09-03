@@ -1,0 +1,21 @@
+# Virtual host for the documentation site.
+# Shipped by this repository's Docs workflow to /etc/caddy/conf.d/dachajs.caddy.
+#
+# `current` is a symlink swung by the deploy, and file_server resolves it on
+# every request, so publishing content needs no reload. Caddy is reloaded only
+# when this file itself changes.
+
+www.dachajs.org {
+  redir https://dachajs.org{uri} permanent
+}
+
+dachajs.org {
+  root * /srv/sites/dachajs/current
+  encode zstd gzip
+  file_server
+
+  handle_errors {
+    rewrite * /404.html
+    file_server
+  }
+}

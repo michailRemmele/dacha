@@ -1,0 +1,22 @@
+{
+  "name": "dacha-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Documentation site for the dacha game engine",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "api:copy": "node scripts/copy-api.mjs"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.42.0",
+    "astro": "7.2.10",
+    "cookie": "2.0.1"
+  },
+  "devDependencies": {
+    "starlight-links-validator": "0.26.0"
+  }
+}

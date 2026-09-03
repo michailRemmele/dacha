@@ -21,7 +21,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --workspace=dacha --workspace=dacha-workbench --include-workspace-root
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
 
@@ -58,7 +58,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --workspace=dacha --workspace=dacha-workbench --include-workspace-root
 
       - run: npm run build
 
