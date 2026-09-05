@@ -1,0 +1,83 @@
+---
+title: "The game loop & lifecycle"
+description: "How the loop runs, and the exact order the lifecycle hooks fire in."
+---
+
+import Lifecycle from '../../../components/diagrams/Lifecycle.astro';
+
+The loop runs on `requestAnimationFrame` with a fixed-timestep accumulator. Rendering
+happens once per frame at whatever rate the browser offers. Simulation happens at a fixed
+rate that does not depend on frame rate.
+
+## Two callbacks, two clocks
+
+**`update`** runs exactly once per rendered frame and receives a variable time delta. It
+tracks the display.
+
+**`fixedUpdate`** runs at a fixed rate. In one frame it may run several times, once, or
+not at all, depending on how much simulation time has accumulated since the last frame.
+
+The reason for the split is determinism. If movement were applied per frame, a player on a
+144 Hz monitor would move nearly two and a half times as far per second as one on 60 Hz.
+Running simulation on its own clock removes frame rate from the outcome.
+
+The cost is that the simulation and the display are no longer in step, so a drawn frame
+usually falls between two simulation steps. [Interpolation](/systems/interpolation/) is
+what makes that look smooth instead of jittery.
+
+## Settings
+
+These live under the `performance` entry in
+[`globalOptions`](/concepts/configuration/).
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `fixedUpdateRate` | 50 Hz | How often `fixedUpdate` runs |
+| `maxFPS` | uncapped | Upper bound on rendered frames |
+| `maxFrameDelta` | 250 ms | Largest frame gap the loop will believe |
+| `maxFixedUpdatesPerFrame` | 5 | Ceiling on catch-up steps in one frame |
+
+:::note
+`dacha-workbench init` writes `maxFPS: 0` into a new project's configuration. Zero and the
+engine's internal default both mean uncapped.
+:::
+
+The last two settings are not tuning knobs so much as safety rails. When a tab goes into
+the background the browser stops calling `requestAnimationFrame`, and on return the elapsed
+time can be minutes. Without a cap the loop would try to run thousands of catch-up steps
+in one frame and the game would appear to freeze. Clamping the frame delta and the number
+of catch-up steps means the simulation falls behind real time instead, which is the far
+better failure.
+
+## Hook ordering
+
+<Lifecycle />
+
+World hooks bracket the whole run and fire once. Everything inside the dashed frame
+repeats on every scene change.
+
+| Order | Hook | Scope |
+| --- | --- | --- |
+| 1 | `onWorldLoad` | World systems |
+| 2 | `onWorldReady` | World systems |
+| 3 | `onSceneLoad` | Both, async |
+| 4 | `onSceneEnter` | Both |
+| 5 | `fixedUpdate` | Both, zero or more times per frame |
+| 6 | `update` | Both, once per frame |
+| 7 | `onSceneExit` | Both |
+| 8 | `onSceneDestroy` | Both |
+| 9 | `onWorldDestroy` | World systems |
+
+Steps 5 and 6 repeat every frame for as long as the scene is active. Steps 3 through 8
+repeat on every scene change.
+
+Within a single frame, all accumulated `fixedUpdate` calls run before `update`. A system
+reading state in `update` therefore sees the result of that frame's simulation, not the
+previous frame's.
+
+## Controlling the loop
+
+The engine exposes `play()`, `pause()` and `stop()`. Pausing halts the loop without tearing
+anything down, which is what a pause menu wants. Stopping shuts the world down.
+
+Next: [systems](/concepts/systems/) covers what runs inside these hooks.

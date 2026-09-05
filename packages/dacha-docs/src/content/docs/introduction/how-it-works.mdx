@@ -1,0 +1,123 @@
+---
+title: "How it works"
+description: "The path from a JSON configuration to a running game loop."
+---
+
+import EngineFlow from '../../../components/diagrams/EngineFlow.astro';
+
+A dacha game is data first. The editor writes a configuration file, the engine turns that
+configuration into a live world, and a loop driven by `requestAnimationFrame` runs the
+systems that move actors and draw them.
+
+<EngineFlow />
+
+## The configuration is data
+
+Everything the engine needs to build a world lives in one JSON-shaped file. This is what
+`npx dacha-workbench init` puts there before you have built anything:
+
+```json
+{
+  "scenes": [],
+  "systems": [],
+  "templates": [],
+  "globalOptions": [
+    {
+      "name": "sorting",
+      "options": {
+        "order": "bottomRight",
+        "layers": [{ "id": "…", "name": "default" }]
+      }
+    },
+    {
+      "name": "performance",
+      "options": { "maxFPS": 0, "fixedUpdateRate": 50 }
+    }
+  ],
+  "startSceneId": null
+}
+```
+
+`scenes` holds the levels, menus and game states. `templates` holds reusable actor
+blueprints. `systems` lists the logic units that run and the options each one takes.
+`globalOptions` carries settings that apply to the whole game, and `startSceneId` names the
+scene the engine opens with.
+
+There is no logic in this file, only description. That constraint is what makes a visual
+editor possible: anything the editor needs to edit has to be data.
+
+## The engine consumes it
+
+Your game's entry point imports the configuration, hands it to the engine along with the
+classes it will need, and starts the loop:
+
+```ts
+import { Engine, Renderer, PhysicsSystem, Transform, Sprite } from 'dacha';
+
+import config from '../data/data.json';
+
+const engine = new Engine({
+  config,
+  systems: [PhysicsSystem, Renderer],
+  components: [Transform, Sprite],
+});
+
+void engine.play();
+```
+
+The configuration refers to systems and components by name, so the engine has to be given
+the actual classes to match those names against. `play()` checks that: it requires
+`startSceneId` to be set, and it throws if any component or system in the list is missing
+its registered name. Failing loudly at startup is deliberate, because the alternative is a
+scene that silently renders nothing.
+
+## The loop drives everything
+
+Once the world is built, the loop takes over. It runs on `requestAnimationFrame` and calls
+two different things:
+
+- **`update`** runs once per rendered frame and receives a variable time delta. Anything
+  that should track the display goes here.
+- **`fixedUpdate`** runs at a fixed rate that does not depend on frame rate. It may run
+  several times in one frame, or not at all. Physics and other simulation go here.
+
+Separating the two is what keeps a game behaving the same on a 60 Hz laptop and a 144 Hz
+monitor. It also introduces a visual problem, because the simulation and the display are
+no longer in step, which is what [interpolation](/systems/interpolation/) exists to solve.
+
+The [game loop and lifecycle](/concepts/game-loop/) page covers the ordering in full.
+
+## Systems act on actors
+
+Systems hold the logic. A system does not track the actors it cares about by hand; it
+declares the components it needs and receives the matching actors:
+
+```ts
+import { ActorQuery, Transform } from 'dacha';
+
+import { Velocity } from './velocity.component';
+
+const query = new ActorQuery({
+  scene,
+  filter: [Transform, Velocity],
+});
+```
+
+Every actor carrying both a `Transform` and a `Velocity` shows up in that query, including
+actors spawned later. The system reads and writes component values; the renderer picks up
+the result on the next frame.
+
+## The editor is a client of the same file
+
+The editor is not a separate runtime and it does not own a private format. It reads the
+configuration your game reads, writes the configuration your game reads, and runs the same
+engine inside its viewport when you press play.
+
+That is also why it can offer your own components in the inspector. It scans your project
+for classes described with the engine's decorators and builds its editing interface from
+what it finds. See [the editor's role](/concepts/editor-role/).
+
+## Next
+
+- [Core concepts](/concepts/ecs/) explains actors, components, systems and behaviors.
+- [Installation & setup](/getting-started/installation/) gets a project running.

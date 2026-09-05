@@ -1,0 +1,92 @@
+---
+title: "Interpolation"
+description: "Smooth rendering between fixed simulation steps."
+---
+
+import InterpolationTiming from '../../../components/diagrams/InterpolationTiming.astro';
+
+Physics advances at a fixed rate. Frames render whenever the browser is ready. The two
+clocks do not line up, so a frame almost always falls between two simulation steps.
+
+Drawing the raw simulation position in that situation produces visible stutter, even at a
+high frame rate, because objects appear to jump from step to step rather than glide. The
+interpolator fixes it by giving the renderer a position between the last two steps.
+
+<InterpolationTiming />
+
+## Registering it
+
+Two things are needed: the system, and an `Interpolation` component on the actors that
+should be smoothed.
+
+```ts
+import { Engine, Interpolator, Interpolation, Transform } from 'dacha';
+
+const engine = new Engine({
+  config,
+  systems: [Interpolator],
+  components: [Transform, Interpolation],
+});
+```
+
+Actors without the component are drawn from their `Transform` as usual, so smoothing is
+opt-in per actor.
+
+## The component
+
+| Field | What it does |
+| --- | --- |
+| `mode` | `interpolate` or `extrapolate` |
+| `snapThreshold` | Largest move treated as continuous. Bigger jumps snap instead of gliding. `0` disables the check. |
+| `disabled` | Turns smoothing off; the renderer falls back to `Transform` |
+
+**`interpolate`** blends between the last two fixed steps. It is smooth and it is the
+right default. The cost is up to one fixed step of visual latency, because it is drawing
+where the object *was* rather than where it is.
+
+**`extrapolate`** projects the latest step forward using the rigid body's velocity. No
+added latency, but it can overshoot briefly on impacts, since it does not know a collision
+is about to stop the object. It works against world-space velocity using local-space
+snapshots, so it is meant for root-level actors.
+
+`snapThreshold` handles teleports. Without it, moving an actor across the level in one step
+produces a smooth glide across the whole distance instead of an instant jump. Any move
+longer than the threshold skips smoothing.
+
+## Reading the render position
+
+Anything visual that follows another actor must read the interpolated position, not the
+actor's transform:
+
+```ts
+import { InterpolatorAPI } from 'dacha';
+
+const interpolator = world.systemApi.get(InterpolatorAPI);
+const { x, y } = interpolator.getRenderTransform(target);
+```
+
+The API also exposes `snap(actor)`, which discards the stored snapshots so the next frame
+draws without smoothing. Call it after deliberately teleporting an actor.
+
+## The rule worth remembering
+
+**Read the render transform for anything visual. Read the actor's `Transform` for anything
+logical.**
+
+A camera follows the render transform, or the camera will lag one step behind the target
+and the whole screen will judder. A system deciding whether the player reached the exit
+reads the actual `Transform`, because the interpolated value is a drawing convenience and
+is not where the object really is.
+
+Mixing the two up is the bug this page exists to prevent.
+
+## When to leave it out
+
+Interpolation costs a small amount of bookkeeping per actor per step. For a game where
+everything moves on the fixed step it is worth it everywhere. For static scenery it is
+pointless, which is why it is a per-actor component rather than a global setting.
+
+## See also
+
+- [The game loop](/concepts/game-loop/) explains why the two clocks exist.
+- [Physics](/systems/physics/) is the usual source of fixed-step motion.

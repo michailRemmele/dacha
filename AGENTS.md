@@ -45,8 +45,9 @@ selected in CI with `--grep`/`--grep-invert "screenshot:"`; screenshot baselines
 committed but synced from S3-compatible storage by
 `scripts/e2e-baselines.js` (pull/push). **Locally you must load the profile first —
 `source .env.local`** (repo root, gitignored): it exports `AWS_PROFILE`, `S3_ENDPOINT`,
-`S3_BUCKET` and the two `AWS_*_CHECKSUM_*` compatibility vars the baseline sync needs. CI
-sets the same variables from repo secrets. The functional group alone needs no S3 access:
+`S3_BUCKET` and the two `AWS_*_CHECKSUM_*` compatibility vars the baseline sync needs, plus
+`S3_DOCS_PROFILE`/`S3_DOCS_BUCKET` for the documentation media (see below). CI
+sets the baseline variables from repo secrets. The functional group alone needs no S3 access:
 `npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"` from
 inside `packages/dacha-workbench/`.
 
@@ -54,6 +55,19 @@ inside `packages/dacha-workbench/`.
 (`x.y.z-local.<timestamp>`) by rewriting `package.json` **inside the tarball**,
 never in the working tree — otherwise npm treats a reinstall of the same version as a
 no-op and the test project keeps the old code. Pass `--to <project>` to install into a project directly.
+
+**Documentation media.** The docs site's video lives in a second, **public** S3 bucket
+rather than in git — the clips are megabytes each and are replaced wholesale. The site
+links to them by absolute URL built from `MEDIA_BASE_URL` in
+`packages/dacha-docs/src/consts.ts`, so neither the build nor CI needs credentials, and
+pull requests from forks build normally. `packages/dacha-docs/media/` is the gitignored
+local working copy, synced by `npm run docs:media:push` / `docs:media:pull`
+(`packages/dacha-docs/scripts/media.mjs`, an `aws s3 sync` wrapper — it needs
+`S3_DOCS_BUCKET`, `S3_ENDPOINT` and optionally `S3_DOCS_PROFILE` from `.env.local`). **Images are the opposite** — screenshots and posters belong in
+`packages/dacha-docs/src/assets/`, committed, so they diff alongside the prose they
+illustrate and go through the `astro:assets` optimizer. `npm run check:media -w dacha-docs`
+runs in the docs workflow and fails the build on an unreachable media URL, which
+starlight's link validator does not cover.
 
 Run a single test file with `npx jest path/to/file.test.ts` from inside the relevant
 package. `npm run dev` is how you see an engine change end-to-end: the TypeScript watcher

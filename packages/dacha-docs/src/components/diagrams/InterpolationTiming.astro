@@ -1,0 +1,50 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The simulation advances in fixed steps while frames render whenever the browser is ready. A frame landing between two steps draws an interpolated position; the actor's own transform is never changed by this."
+>
+  <svg viewBox="0 0 720 300" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      Fixed simulation steps and variable render frames on two timelines, with a rendered
+      frame interpolated between two simulation positions.
+    </title>
+
+    <defs>
+      <marker id="it-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit">
+      <text x="16" y="44" fill="var(--diagram-text)" stroke="none" font-size="12">fixedUpdate</text>
+      <text x="16" y="60" fill="var(--diagram-text)" stroke="none" font-size="10">fixed rate</text>
+      <path d="M130 52 L700 52" marker-end="url(#it-arrow)" />
+      <g fill="var(--diagram-fill)">
+        <circle cx="170" cy="52" r="7" /><circle cx="310" cy="52" r="7" />
+        <circle cx="450" cy="52" r="7" /><circle cx="590" cy="52" r="7" />
+      </g>
+      <text x="310" y="36" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">step n</text>
+      <text x="450" y="36" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">step n+1</text>
+
+      <text x="16" y="256" fill="var(--diagram-text)" stroke="none" font-size="12">render</text>
+      <text x="16" y="272" fill="var(--diagram-text)" stroke="none" font-size="10">variable rate</text>
+      <path d="M130 264 L700 264" marker-end="url(#it-arrow)" />
+      <g fill="var(--diagram-accent)" stroke="var(--diagram-accent)">
+        <circle cx="200" cy="264" r="5" /><circle cx="290" cy="264" r="5" />
+        <circle cx="390" cy="264" r="5" /><circle cx="500" cy="264" r="5" />
+        <circle cx="620" cy="264" r="5" />
+      </g>
+      <text x="390" y="290" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">this frame falls between two steps</text>
+
+      <rect x="250" y="128" width="260" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="380" y="152" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">interpolated draw position</text>
+      <text x="380" y="171" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="10">between step n and step n+1</text>
+
+      <path d="M310 62 L330 128" stroke-dasharray="4 3" />
+      <path d="M450 62 L430 128" stroke-dasharray="4 3" />
+      <path d="M380 188 L390 254" stroke="var(--diagram-accent)" marker-end="url(#it-arrow)" />
+    </g>
+  </svg>
+</DiagramFigure>
