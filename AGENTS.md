@@ -62,8 +62,8 @@ links to them by absolute URL built from `MEDIA_BASE_URL` in
 `packages/dacha-docs/src/consts.ts`, so neither the build nor CI needs credentials, and
 pull requests from forks build normally. `packages/dacha-docs/media/` is the gitignored
 local working copy, synced by `npm run docs:media:push` / `docs:media:pull`
-(`packages/dacha-docs/scripts/media.mjs`, which also carries the ffmpeg encoding preset
-for new clips). **Images are the opposite** — screenshots and posters belong in
+(`packages/dacha-docs/scripts/media.mjs`, an `aws s3 sync` wrapper — it needs
+`S3_DOCS_BUCKET`, `S3_ENDPOINT` and optionally `S3_DOCS_PROFILE` from `.env.local`). **Images are the opposite** — screenshots and posters belong in
 `packages/dacha-docs/src/assets/`, committed, so they diff alongside the prose they
 illustrate and go through the `astro:assets` optimizer. `npm run check:media -w dacha-docs`
 runs in the docs workflow and fails the build on an unreachable media URL, which
