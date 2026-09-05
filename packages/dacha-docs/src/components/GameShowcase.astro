@@ -1,0 +1,213 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { MEDIA_BASE_URL } from '../consts';
+
+interface Props {
+  title: string;
+  jam: string;
+  description: string;
+  play: string;
+  source: string;
+  slug: string;
+  poster: ImageMetadata;
+  side?: 'left' | 'right';
+}
+
+const {
+  title,
+  jam,
+  description,
+  play,
+  source,
+  slug,
+  poster,
+  side = 'left',
+} = Astro.props;
+
+const posterImage = await getImage({
+  src: poster,
+  format: 'webp',
+  width: 1512,
+});
+---
+
+<div class="game-wrap">
+  <section class:list={['game', side === 'right' && 'game--reversed']}>
+    <div class="game__media">
+      <video
+        class="game__video"
+        poster={posterImage.src}
+        width="1512"
+        height="850"
+        muted
+        loop
+        playsinline
+        preload="none"
+        aria-label={`Gameplay footage from ${title}`}
+      >
+        <source
+          src={`${MEDIA_BASE_URL}/video/games/${slug}.av1.mp4`}
+          type='video/mp4; codecs="av01.0.09M.08"'
+        />
+        <source
+          src={`${MEDIA_BASE_URL}/video/games/${slug}.h264.mp4`}
+          type='video/mp4; codecs="avc1.64002A"'
+        />
+      </video>
+    </div>
+
+    <div class="game__body">
+      <h3 class="game__title">{title}</h3>
+      <p class="game__jam">{jam}</p>
+      <p class="game__description">{description}</p>
+      <p class="game__links">
+        <a class="game__link game__link--primary" href={play}>Play</a>
+        <a class="game__link" href={source}>Source</a>
+      </p>
+    </div>
+  </section>
+</div>
+
+<style>
+  .game-wrap {
+    container-type: inline-size;
+  }
+
+  .game {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  @container (min-width: 800px) {
+    .game {
+      grid-template-columns: minmax(0, 1.7fr) minmax(15rem, 1fr);
+      gap: 2.5rem;
+    }
+    .game--reversed {
+      grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.7fr);
+    }
+    .game--reversed .game__media {
+      order: 2;
+    }
+  }
+
+  @container (min-width: 1072px) {
+    .game {
+      grid-template-columns: 758px 1fr;
+    }
+    .game--reversed {
+      grid-template-columns: 1fr 758px;
+    }
+  }
+
+  .game__media {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    line-height: 0;
+    background-color: var(--sl-color-gray-6);
+  }
+
+  .game__video {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .game__title {
+    margin: 0;
+    font-size: var(--sl-text-2xl);
+    line-height: var(--sl-line-height-headings);
+  }
+
+  .game__jam {
+    margin: 0.25rem 0 0;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+
+  .game__description {
+    margin: 0.75rem 0 0;
+  }
+
+  .game__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.25rem 0 0;
+  }
+
+  .game__link {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--sl-color-accent);
+    border-radius: 0.25rem;
+    color: var(--sl-color-accent-high);
+    text-decoration: none;
+    font-size: var(--sl-text-sm);
+  }
+
+  .game__link--primary {
+    background-color: var(--sl-color-accent);
+    color: var(--sl-color-black);
+  }
+
+  .game__link:hover {
+    border-color: var(--sl-color-accent-high);
+  }
+</style>
+
+<script>
+  const videos =
+    document.querySelectorAll<HTMLVideoElement>('video.game__video');
+
+  if (videos.length > 0) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (reducedMotion.matches) {
+      videos.forEach((video) => {
+        video.controls = true;
+      });
+    } else {
+      const play = (video: HTMLVideoElement): void => {
+        video.play().catch(() => {
+          // Autoplay refused. The poster stays, which is an acceptable end
+          // state.
+        });
+      };
+
+      const onScreen = new Set<HTMLVideoElement>();
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const video = entry.target as HTMLVideoElement;
+            if (entry.isIntersecting) {
+              onScreen.add(video);
+              if (!document.hidden) {
+                play(video);
+              }
+            } else {
+              onScreen.delete(video);
+              video.pause();
+            }
+          });
+        },
+        { threshold: 0.25 },
+      );
+
+      videos.forEach((video) => observer.observe(video));
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          videos.forEach((video) => video.pause());
+        } else {
+          onScreen.forEach(play);
+        }
+      });
+    }
+  }
+</script>

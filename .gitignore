@@ -28,6 +28,8 @@ packages/dacha-workbench/test-results
 # e2e screenshot baselines live in S3 (pulled by test:e2e), not committed
 packages/dacha-workbench/e2e/**/*-snapshots/
 
+packages/dacha-docs/media/
+
 .DS_Store
 npm-debug.log*
 

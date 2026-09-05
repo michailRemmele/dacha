@@ -1,6 +1,6 @@
 ---
 title: dacha
-description: A data-driven, ECS-flavored game engine for the browser, with a visual editor.
+description: A data-driven TypeScript game engine for the browser, with a visual editor.
 template: splash
 head:
   - tag: title
@@ -25,23 +25,56 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
+import GameShowcase from '../../components/GameShowcase.astro';
+import drillersPoster from '../../assets/games/drillers-escape.webp';
+import piranhaPoster from '../../assets/games/piranha-frenzy.webp';
+import SystemsStrip from '../../components/SystemsStrip.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
 
 <CardGrid stagger>
-  <Card title="Describe the game as data" icon="document">
-    Scenes, actors, templates and systems live in a JSON configuration that the engine
-    bootstraps into a running world. [How it works](/introduction/how-it-works/)
+  <Card title="The game is data, not code" icon="seti:json">
+    Game data is described as JSON configuration. The engine turns that data into a running world. [How it works](/introduction/how-it-works/)
   </Card>
-  <Card title="Build it in the editor" icon="laptop">
-    A desktop editor reads and writes that configuration, so scenes are assembled
-    visually rather than by hand. [The editor's role](/concepts/editor-role/)
+  <Card title="An ECS-inspired architecture" icon="puzzle">
+    Actors are composed of components, while systems provide the logic that acts on them. [ECS model](/concepts/ecs/)
   </Card>
-  <Card title="Extend it from the editor" icon="add-document">
-    Generate a component, system or behavior from the interface. It is picked up by the
-    game and registered in the editor automatically.
-    [Scripts and auto-registration](/writing-game-code/auto-registration/)
+  <Card title="Build scenes in the editor" icon="laptop">
+    A visual editor for creating scenes, composing actors and configuring game systems. [Editor workflow](/concepts/editor-role/)
   </Card>
-  <Card title="Batteries included" icon="setting">
-    Rendering on pixi.js, physics, animation, audio, input and interpolation ship with
-    the engine. [Built-in systems](/systems/rendering/)
+  <Card title="Fully open source" icon="github">
+    The engine and editor are open source and free to use.
+    [View source](https://github.com/michailRemmele/dacha)
   </Card>
 </CardGrid>
+
+## Built-in systems
+
+Rendering, physics, animation, audio, input and other common systems ship with the engine.
+
+<SystemsStrip />
+
+## Games built with dacha
+
+<GameShowcase
+  title="Drillers' Escape"
+  jam="GMTK 2026"
+  description="Escape a collapsing planet while keeping your fragile mineral cargo intact!"
+  play="https://michailremmele.github.io/gmtk-jam-2026/"
+  source="https://github.com/michailRemmele/gmtk-jam-2026"
+  slug="drillers-escape"
+  poster={drillersPoster}
+  side="left"
+/>
+
+<GameShowcase
+  title="Piranha Frenzy"
+  jam="Ludum Dare 57"
+  description="Dodge hostile fish and devour them to grow your school of piranhas!"
+  play="https://ludum-dare-57.netlify.app/"
+  source="https://github.com/michailRemmele/ludum-dare-57"
+  slug="piranha-frenzy"
+  poster={piranhaPoster}
+  side="right"
+/>
+
+<SiteFooter />

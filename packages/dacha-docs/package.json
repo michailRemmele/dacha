@@ -9,7 +9,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "api:copy": "node scripts/copy-api.mjs"
+    "check:media": "node scripts/check-media-links.mjs",
+    "api:copy": "node scripts/copy-api.mjs",
+    "media:pull": "node scripts/media.mjs pull",
+    "media:push": "node scripts/media.mjs push"
   },
   "dependencies": {
     "@astrojs/starlight": "0.42.0",

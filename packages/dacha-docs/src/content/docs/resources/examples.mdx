@@ -1,0 +1,38 @@
+---
+title: "Examples & demos"
+description: "Games built with dacha, and the source you can read."
+---
+
+import GameShowcase from '../../../components/GameShowcase.astro';
+import drillersPoster from '../../../assets/games/drillers-escape.webp';
+import piranhaPoster from '../../../assets/games/piranha-frenzy.webp';
+
+The fastest way to see how the pieces fit together is a finished game. Both of these were
+built in a game jam, both are playable in the browser, and the source of both is available.
+
+<GameShowcase
+  title="Drillers' Escape"
+  jam="GMTK 2026"
+  description="Escape a collapsing planet while keeping your fragile mineral cargo intact!"
+  play="https://michailremmele.github.io/gmtk-jam-2026/"
+  source="https://github.com/michailRemmele/gmtk-jam-2026"
+  slug="drillers-escape"
+  poster={drillersPoster}
+/>
+
+What to watch for: the camera tracks the rig continuously, the cave is built from
+destructible blocks, and mined cargo attaches to the vehicle and travels with it.
+
+<GameShowcase
+  title="Piranha Frenzy"
+  jam="Ludum Dare 57"
+  description="Dodge hostile fish and devour them to grow your school of piranhas!"
+  play="https://ludum-dare-57.netlify.app/"
+  source="https://github.com/michailRemmele/ludum-dare-57"
+  slug="piranha-frenzy"
+  poster={piranhaPoster}
+/>
+
+What to watch for: dozens of independent actors on screen at once — the school, the fish
+that attack it, drifting jellyfish and pickups — spawned and destroyed continuously as the
+level runs.

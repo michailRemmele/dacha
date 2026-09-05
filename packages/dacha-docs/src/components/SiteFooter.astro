@@ -1,0 +1,58 @@
+---
+import logo from '../assets/logo.png';
+
+const year = new Date().getFullYear();
+---
+
+<div class="site-footer">
+  <p class="site-footer__brand">
+    <img
+      class="site-footer__logo"
+      src={logo.src}
+      width="32"
+      height="32"
+      alt=""
+    />
+    <span class="site-footer__name">dacha</span>
+  </p>
+  <p class="site-footer__copyright">© {year} Mikhail Remmele</p>
+</div>
+
+<style>
+  .site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--sl-color-hairline);
+  }
+
+  .site-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin: 0;
+  }
+
+  .site-footer__logo {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+  }
+
+  .site-footer__name {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: var(--sl-text-lg);
+    font-weight: 600;
+    color: var(--sl-color-white);
+  }
+
+  .site-footer__copyright {
+    margin: 0;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-3);
+  }
+</style>
