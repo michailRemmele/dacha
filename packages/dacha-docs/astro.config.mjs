@@ -18,12 +18,29 @@ export default defineConfig({
         root: { label: 'English', lang: 'en' },
       },
       logo: {
-        src: './src/assets/logo.svg',
+        src: './src/assets/logo.png',
         alt: 'dacha',
         replacesTitle: false,
       },
-      favicon: '/favicon.svg',
+      favicon: '/favicon.png',
       customCss: ['./src/styles/custom.css'],
+      head: [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'preconnect',
+            href: 'https://fonts.gstatic.com',
+            crossorigin: true,
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&text=dacha&display=swap',
+          },
+        },
+      ],
       social: [
         {
           icon: 'github',
@@ -54,6 +71,10 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Tutorials',
+          items: [{ slug: 'tutorials/garden' }],
+        },
+        {
           label: 'Core Concepts',
           items: [
             { slug: 'concepts/ecs' },
@@ -61,7 +82,6 @@ export default defineConfig({
             { slug: 'concepts/actors' },
             { slug: 'concepts/scenes-and-world' },
             { slug: 'concepts/systems' },
-            { slug: 'concepts/behaviors' },
             { slug: 'concepts/game-loop' },
             { slug: 'concepts/events' },
             { slug: 'concepts/editor-role' },
@@ -92,6 +112,7 @@ export default defineConfig({
         {
           label: 'Built-in Systems',
           items: [
+            { slug: 'systems/behaviors' },
             { slug: 'systems/rendering' },
             { slug: 'systems/physics' },
             { slug: 'systems/character-controller' },

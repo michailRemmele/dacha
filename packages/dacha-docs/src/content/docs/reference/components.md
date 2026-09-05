@@ -15,7 +15,7 @@ page that explains it in context.
 | --- | --- | --- |
 | `Animatable` | Animation timelines attached to an actor | [Animation](/systems/animation/) |
 | `AudioSource` | A sound attached to an actor | [Audio](/systems/audio/) |
-| `Behaviors` | The behaviors attached to an actor | [Behaviors](/concepts/behaviors/) |
+| `Behaviors` | The behaviors attached to an actor | [Behaviors](/systems/behaviors/) |
 | `BitmapText` | Text drawn with a bitmap font | [Rendering](/systems/rendering/) |
 | `Camera` | Defines the view | [Camera](/systems/camera/) |
 | `CharacterBody` | Controlled movement with collision response | [Character Controller](/systems/character-controller/) |

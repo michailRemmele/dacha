@@ -95,6 +95,8 @@ Remember that the page must be served over HTTPS or from `localhost`.
 
 ## Next
 
+- [Build a garden](/tutorials/garden/) carries this the rest of the way, from an empty
+  project to a game you can play.
 - [ECS in dacha](/concepts/ecs/) explains what actors, components and systems actually are.
 - [Writing a component](/writing-game-code/components/) is the next step once the built-in
   components stop being enough.
