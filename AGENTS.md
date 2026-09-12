@@ -230,8 +230,9 @@ side you are on:**
   **[src/](packages/dacha-workbench/src/)**, entry
   [src/app.tsx](packages/dacha-workbench/src/app.tsx).
 - **CLI** — [bin/index.js](packages/dacha-workbench/bin/index.js) (commander): the single
-  default command launches the editor, taking `--config` (default
-  `dacha-workbench.config.js`). In dev it spawns the `electron` CLI, in prod the packaged
+  default command launches the editor, taking `--config`. Without it the CLI looks for
+  `dacha-workbench.config.cjs` in the working directory and falls back to
+  `dacha-workbench.config.js`. In dev it spawns the `electron` CLI, in prod the packaged
   binary. Scaffolding a new project is `create-dacha`'s job, not this CLI's — the `init`
   subcommand was removed when the template landed. `postinstall` runs
   `bin/install.js`, which packages the Electron app — set `DACHA_SKIP_APP_BUILD=1` to skip

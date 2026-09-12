@@ -83,11 +83,9 @@ Install `dacha` and `dacha-workbench`, then create two files by hand:
 
 - A configuration file for the editor to edit. [Project
   structure](/getting-started/project-structure/) describes what has to be in it.
-- `dacha-workbench.config.js`, pointing at that configuration.
+- `dacha-workbench.config.cjs`, pointing at that configuration. The [configuration
+  reference](/editor/config-reference/) lists every key it takes, and where the editor looks
+  for it.
 
 You supply the bundler and the entry point yourself.
-
-The editor looks for `dacha-workbench.config.js` next to your `package.json`. If your project
-sets `"type": "module"`, name the file `.cjs` and pass it explicitly, the way the starter
-project does: `dacha-workbench --config dacha-workbench.config.cjs`.
 :::

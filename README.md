@@ -24,7 +24,7 @@ npm run editor               # launch the editor against it
 You get a running game — a sprite you move with WASD, a camera, an HTML overlay — with
 four dependencies and no trace of the scaffolder left behind. To add dacha to a project you
 already have, install `dacha` and `dacha-workbench` and write a
-`dacha-workbench.config.js`; the editor reads it from the project root.
+`dacha-workbench.config.cjs`; the editor reads it from the project root.
 
 ## Examples
 

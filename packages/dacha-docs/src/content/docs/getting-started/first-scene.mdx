@@ -17,10 +17,10 @@ The editor opens on the starter project's one scene, `level`, with three actors 
 one in the scene tree and the inspector shows its components. Every actor has a `Transform`,
 which holds position, rotation and scale. After that, each actor has whatever it was given:
 
-- **camera** — a `Camera`. This is what the *game* looks through. It is not the editor's own
-  view, which you pan and zoom independently. The actor's `Transform` sets where the game view
-  is centred, and the component's `zoom` sets how close in it is. A scene with no camera still
-  draws, centred on the origin at 1&times; zoom.
+- **camera** — a `Camera`. This is what the *game* looks through, not the [editor's own
+  view](/editor/interface-tour/#the-viewport-runs-the-engine). The actor's `Transform` sets
+  where the game view is centred, and the component's `zoom` sets how close in it is. A scene
+  with no camera still draws, centred on the origin at 1&times; zoom.
 - **player** — a `Sprite` to draw, `KeyboardControl` to turn key presses into events,
   `Animatable` to cycle the sprite's frames, and `Movement`, a component from `src/game/`
   rather than from the engine.
@@ -31,8 +31,8 @@ which holds position, rotation and scale. After that, each actor has whatever it
 Select **player** and open its `Movement` component. Set `speed` to `500`, then look at the
 browser tab. It has already reloaded, and the player is faster.
 
-That loop is the whole workflow. The editor saved `data/data.json`, your entry point imports
-that file, and Vite reloaded the page.
+The editor saved `data/data.json` and Vite reloaded the page. That loop is the whole
+workflow. [How it works](/introduction/how-it-works/) explains it.
 
 `Movement` is not built in. It is [a component in the
 project](/game-code/components/), and the inspector knows about its `speed` field

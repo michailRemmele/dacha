@@ -145,22 +145,43 @@ resources: {
 },
 ```
 
-:::caution
-Being collected is not the same as running. The glob makes a system **available**, and it runs
-only if `systems` in `data/data.json` also lists it. The order of that list decides the order
-systems run in. See [being collected is not the same as
-running](/getting-started/project-structure/#being-collected-is-not-the-same-as-running) for
-how components and behaviors differ here.
-:::
-
 From the engine's point of view nothing unusual happened. It received arrays of classes,
 exactly as it would have if you had listed them by hand.
 
-A name in the configuration with no class behind it fails differently for each kind. A
-missing system is dropped, and so is a missing behavior. Both write a line to the console,
-`System not found: …` or `Behavior not found: …`, and the rest of the game runs. A missing
-component is not handled. The engine tries to construct a class it does not have, and building
-the actor fails. So a renamed component file breaks the scene rather than leaving a gap in it.
+## Collected is not the same as running
+
+The glob makes a class **available** to the engine. Whether it does anything after that
+depends on the kind.
+
+A **system** runs only if `systems` in the configuration lists it too. That list is what the
+editor's [Systems tab](/editor/systems-and-options/) writes, and its order is the order the
+systems run in.
+
+A **component** needs no second list. It is live wherever an actor carries it.
+
+A **behavior** needs both. `BehaviorSystem` has to be in `systems`, and an actor's
+`Behaviors` component has to name the behavior. The starter project enables that system
+already.
+
+## When the class never arrives
+
+The configuration refers to classes by name, so a name with nothing behind it is possible.
+There are two reasons for it: the file stopped matching the glob, or the class never reached
+`new Engine(…)` at all. The second one has a common source. [The editor writes names, not
+classes](/editor/systems-and-options/#the-editor-writes-names-not-classes), so a system you
+add in the Systems tab still has to reach the entry point from your code.
+
+Every kind fails the same way. The engine drops the entry, writes one line to the console,
+and builds the rest:
+
+| Kind | What happens |
+| --- | --- |
+| System | Dropped. `System not found: …` in the console, and the game runs without it |
+| Behavior | Dropped. `Behavior not found: …`, and the actor keeps running |
+| Component | Dropped. `Component not found: …`, and the actor is built without it |
+
+Nothing stops, so nothing points at the problem. A renamed component file leaves actors that
+look right and hold none of the data that component carried. Watch the console.
 
 ## What the decorators cost your game
 

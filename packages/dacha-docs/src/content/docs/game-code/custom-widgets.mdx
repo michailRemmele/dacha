@@ -182,12 +182,10 @@ lay out the label yourself.
 ## Saving the file reloads it
 
 You do not restart the editor to see a widget change. Saving the file rebuilds the extension
-bundle, and the editor then drops the old script, empties its widget and schema registries,
-loads the new bundle, and redraws the inspector with it.
-
-One consequence is worth knowing before it surprises you. That reload also re-checks the saved
-configuration against the current schemas. If the check has to fix anything, which is what
-happens when you add a field to a component, the editor clears the undo history along with it.
+bundle, and the editor drops its widget and schema registries, loads the new bundle, and
+redraws the inspector with it. That is the same rebuild [a generated class goes
+through](/editor/generating-scripts/#after-create), and it clears the undo history for the
+same reason.
 
 ## How the file reaches the editor
 

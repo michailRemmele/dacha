@@ -1,0 +1,147 @@
+---
+title: "Interface tour"
+description: "What each panel of the editor does."
+---
+
+import { Image } from 'astro:assets';
+
+import overviewShot from '../../../assets/editor/interface-overview.png';
+
+The editor is laid out around a viewport. The explorer on the left lists the project. The
+inspector on the right shows the selected object. The toolbar above the viewport carries the
+editing tools, and the bottom bar reports the cursor position and warnings.
+
+<figure class="screenshot">
+  <Image
+    src={overviewShot}
+    alt="The editor window: the explorer on the left with the Scenes tab open and an actor called Player selected, the viewport in the middle showing a level with the grid drawn over it, and the inspector on the right listing the selected actor's components."
+  />
+  <figcaption>
+    The four panels. The window title is the name of the project directory.
+  </figcaption>
+</figure>
+
+## The viewport runs the engine
+
+The editing surface is not a preview drawn by the editor. It is a Dacha world. It runs the
+engine's own `Renderer` and `CameraSystem` over your scene's actors, and the editor adds the
+pointer, hand, zoom and selection tools as ordinary systems and components.
+
+A sprite is therefore positioned, layered, tinted and blended exactly as it will be in the
+game. Sorting layers, camera zoom, opacity, blending modes and shaders resolve the same way,
+because none of it is reimplemented.
+
+That world does not run your code. It never constructs `MovementSystem`, no behavior ticks,
+and no collision is resolved. You edit the scene here, and you watch the game itself in the
+[browser tab](/introduction/how-it-works/).
+
+The view you pan and zoom belongs to the editor. It is not the `Camera` the game looks
+through, and moving it changes nothing in the game.
+
+One consequence is that a component with no visual representation draws nothing. You place it
+and set its fields, and the [debug layers](#debug-layers) can mark it for you.
+
+## Debug layers
+
+Some parts of a scene draw nothing: a collider, a checkpoint, a trigger, an actor that only
+carries data. The debug layers draw them for you, in the editor only. Both are off by
+default. Turn them on in the *Debug Layers* panel of the *Settings* modal.
+
+**Colliders** outlines every `Collider` in the scene and fills the outline with the same
+colour at low opacity, so you can see the shape the physics system uses. The colour comes from
+the collider's `debugColor`, and a collider without one is drawn green.
+
+**Markers** draws an icon for each actor that has an `EditorMarker` component. Add that
+component to a spawn point, a checkpoint or any actor that draws nothing, and it becomes
+something you can see and click in the viewport. The component has two fields: `name` picks
+one of ten icons, and `color` tints it. The icon keeps its size on screen as you zoom.
+
+`EditorMarker` belongs to the editor, so the game has no class for it. It writes
+`Component not found: EditorMarker` to the console once per marked actor and builds the actor
+without it. Nothing else changes.
+
+## The explorer
+
+The explorer has three tabs, and each tab shows one tree:
+
+- **Scenes** — every scene in the project, with its actors under it. Actors nest, so a
+  branch is a parent actor with its children.
+- **Templates** — the actor templates, in folders you arrange yourself. The
+  [templates page](/editor/templates/) covers them.
+- **Assets** — the textures, audio and fonts the game loads, plus any asset kind your
+  project adds.
+
+Each tree has an action bar above it. In the Scenes tab it starts with *Add New Actor* and
+*Add New Scene*, then cut, copy, paste and delete. The last button, *Focus Actor*, moves the
+editor camera to the selected actor. [Building a scene](/editor/building-a-scene/) covers what
+those buttons do.
+
+The Templates tab has the same bar with *Add New Template*. In the Assets tab the add button
+opens a menu of asset kinds, because an asset has a kind from the moment you create it.
+
+Selecting a node fills the inspector with it. An actor is selected in the tree and in the
+viewport at the same time, whichever of the two you click.
+
+## The inspector
+
+The inspector also has three tabs:
+
+- **Inspector** — the selected scene, actor, template or asset. The header names which of
+  those it is, and the button beside it copies the entity's id to the clipboard. An actor and
+  a template list their components under the `Name` field, in alphabetical order, each one
+  collapsible, with *Add Component* at the end.
+- **Systems** — the systems the game runs, in the order it runs them.
+- **Project settings** — the start scene and the global options.
+
+The last two tabs edit settings that belong to the whole game rather than to one actor.
+[Systems & global options](/editor/systems-and-options/) covers both.
+
+Selecting anything in the explorer switches the inspector back to its first tab.
+
+## The toolbar
+
+The toolbar has four tools, and one of them is always active:
+
+- **Pointer** — select actors and drag them.
+- **Hand** — drag to pan the view.
+- **Zoom** — click to zoom. A mode switch decides whether a click zooms in or out.
+- **Template** — click to place an instance of a template.
+
+Each tool shows its own options to the right of the tool buttons. The pointer and the
+template tool show *Snap to Grid*. The zoom tool shows its direction. The template tool also
+shows which template it places, and whether it nests new instances under the selected actor.
+
+The mouse wheel zooms the view whichever tool is active. The toolbar stays disabled until you
+select a scene.
+
+## The bottom bar
+
+The left end reports two positions while the pointer is over the viewport: the world
+coordinates of the cursor, and the grid cell it is in. Both disappear when the pointer leaves.
+
+The right end reports two things. A spinner runs while the editor rebuilds your project's
+code, which it does on its own whenever you save a file in the project. *Reload Required*
+appears when you add or remove a sorting layer, because the renderer builds its layers once at
+startup. That button saves the project and reloads the editor window.
+
+## Settings
+
+The *Settings* item in the View menu opens one modal with three panels:
+
+- **Grid Settings** — the step of the grid, its colour, and whether it is drawn at all. The
+  step is also the step that *Snap to Grid* uses.
+- **Debug Layers** — the two overlays described in [debug layers](#debug-layers).
+- **Theme** — light, dark, or the operating system's setting.
+
+## What the editor remembers
+
+The editor keeps its own state in `.dacha/cache.json` in the project directory. That file
+records:
+
+- the selected scene and entity, and which tabs were open
+- the editor camera position and zoom
+- the active tool and its options
+- the theme, and the debug layers you turned on
+
+None of that is game data. The game never reads the file, and deleting it only resets the
+editor's view.

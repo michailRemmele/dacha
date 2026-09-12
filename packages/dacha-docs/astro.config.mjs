@@ -8,15 +8,6 @@ const site = process.env.SITE_URL ?? 'https://dachajs.org';
 export default defineConfig({
   site,
   base: '/',
-  redirects: {
-    '/introduction/glossary': '/reference/glossary/',
-    '/concepts/editor-role': '/editor/interface-tour/',
-    '/writing-game-code/auto-registration': '/game-code/auto-registration/',
-    '/writing-game-code/components': '/game-code/components/',
-    '/writing-game-code/systems': '/game-code/systems/',
-    '/writing-game-code/behaviors': '/game-code/behaviors/',
-    '/writing-game-code/inspector-fields': '/game-code/inspector-fields/',
-  },
   integrations: [
     starlight({
       title: 'dacha',
@@ -98,7 +89,6 @@ export default defineConfig({
             { slug: 'editor/templates' },
             { slug: 'editor/systems-and-options' },
             { slug: 'editor/generating-scripts' },
-            { slug: 'editor/running-and-debugging' },
             { slug: 'editor/config-reference' },
           ],
         },
@@ -144,6 +134,7 @@ export default defineConfig({
           items: [
             { slug: 'reference/glossary' },
             { slug: 'reference/components' },
+            { slug: 'reference/troubleshooting' },
             { label: 'API Reference', link: '/api/' },
           ],
         },

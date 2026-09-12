@@ -73,9 +73,8 @@ rename.
 Reusable actor blueprints. A template describes an actor and its components once, and a scene
 can then contain many instances of it.
 
-Creating an actor from a template is not the same as copying an actor. Instances keep their link
-to the template, so editing the template updates every instance. That link is the reason to use
-a template at all. See the [templates workflow](/editor/templates/).
+A template is not a copy. Instances keep their link to it, so editing the template updates
+every instance. See the [templates workflow](/editor/templates/).
 
 ## `assets`
 
@@ -111,12 +110,10 @@ does not change anything.
 
 :::caution
 A name here with no matching class is not an error. The engine writes `System not found: …` to
-the console and runs without it. So a system you forgot to pass to `Engine` shows up as a game
-that quietly does nothing, not as a crash. Check the console first when logic that should be
-running is not.
-
-Components are the opposite. An actor that names a component class you did not pass to `Engine`
-crashes while the scene is being built.
+the console and runs without it, so a system you forgot to pass to `Engine` looks like a game
+that quietly does nothing. [When the class never
+arrives](/game-code/auto-registration/#when-the-class-never-arrives) covers how the other
+kinds fail.
 :::
 
 The engine merges an entry's `options` into the object the system's constructor receives. That is

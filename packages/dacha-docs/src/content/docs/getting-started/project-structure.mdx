@@ -47,32 +47,15 @@ site root. An asset at `data/assets/player.png` is referenced as `player.png` in
 | --- | --- |
 | `*.component.ts` | A component |
 | `*.system.ts` | A system |
-| `*.behavior.ts` | A behavior |
+| `*.behavior.ts` | A [behavior](/systems/behaviors/) |
 
 A file named correctly is collected into the game. A file named `movement.ts` is not. The
 class it defines never reaches the engine, and nothing catches that at build time. You find
 out when the game runs. The class must also be the **default export**.
 
-Components and systems are the engine's own vocabulary. A [behavior](/systems/behaviors/) is
-not. A behavior belongs to `BehaviorSystem` and holds logic for a single actor. The entry
-point collects behaviors with the same kind of glob, then passes them to `BehaviorSystem`
-through the engine's `resources`. Shaders and filter effects reach the `Renderer` through
-`resources` too, but the generated entry point does not glob them. Add that glob yourself the
-first time you write one.
-
-The editor scans for the same three suffixes plus two of its own, and every pattern is
-configurable. See the [configuration reference](/editor/config-reference/). For the whole
-mechanism, read [how scripts are found](/game-code/auto-registration/).
-
-## Being collected is not the same as running
-
-This catches people out. The glob makes a system **available** to the engine. A system only
-**runs** if it is also listed in `systems` in `data/data.json`, which is what the editor's
-Systems tab edits.
-
-Components have no such list. A component is live wherever an actor carries it. A behavior
-sits between the two. It runs only if `BehaviorSystem` is in `systems` **and** an actor's
-`Behaviors` component names it. In the starter project that system is enabled already.
+Four more suffixes exist, for shaders, filter effects, asset kinds and inspector widgets.
+[How scripts are found](/game-code/auto-registration/) covers all seven, and explains why
+being collected is not the same as running.
 
 ## The two configuration files
 
