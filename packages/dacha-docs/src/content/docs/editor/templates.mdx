@@ -21,35 +21,15 @@ A template is also the only way to create an actor while the game runs.
 
 ## Creating a template
 
-Templates have their own tab in the explorer. *Add New Template* creates one with a
-`Transform` and nothing else, exactly like a new actor. Rename it in the inspector, then give
-it the components every instance should have.
+Templates have their own tab in the explorer. A template can hold child templates, and placing
+the parent places the whole branch.
 
-The editor has no action that turns an actor already in a scene into a template. Build the
-template first, then place instances of it.
-
-## Templates nest
-
-A template can hold child templates, and *Add New Template* puts one under the selected
-template. The children are part of the definition, so placing the parent places the whole
-branch as one actor with children.
-
-Adding a child to a template that already has instances adds a matching child to every one of
-those instances.
+The editor cannot turn an actor that is already in a scene into a template. Build the template
+first, then place instances of it.
 
 ## Placing instances
 
-The template tool places instances. Select it in the toolbar, pick the template to place, then
-click in the viewport. The tool starts on the first template in the tree, so check which one it
-will place before you click.
-
-The tool shows two options beside the template picker:
-
-- **Snap to Grid** aligns the new actor to the grid by its bounds, not by its origin, so
-  tiles meet edge to edge.
-- **Nesting** makes the new instance a child of the selected actor instead of a top-level
-  actor of the scene. The position you clicked is converted into the parent's space, so the
-  instance lands where you clicked.
+Select the template tool in the toolbar, pick the template, then click in the viewport.
 
 <figure class="screenshot">
   <Image
@@ -61,37 +41,38 @@ The tool shows two options beside the template picker:
   </figcaption>
 </figure>
 
+With this tool, *Snap to Grid* aligns the instance by its bounds, not by its origin, so tiles
+meet edge to edge. *Nesting* makes the instance a child of the selected actor.
+
 ## What an instance stores
 
-An instance is an ordinary actor with a link to its template. It stores almost nothing of its
-own. Placing one writes a single component: a copy of the template's `Transform` with the
-position you clicked. Everything else comes from the template.
+An instance is an ordinary actor with a link to its template. Placing one writes a single
+component: a `Transform` with the position you clicked. Everything else comes from the
+template.
 
 <PanelShot
   src={templateLinkShot}
   alt="The inspector for an actor called Static Obstacle 9. Under the Name field a disabled Template field reads Static Obstacle, with an arrow button beside it. Below that the actor's own Transform component with Offset, Rotation and Scale."
-  caption="An instance shows its template in a read-only field. The arrow selects that template in the explorer. The Transform below is the instance's own."
+  caption="An instance shows its template in a read-only field. The Transform below is the instance's own."
   width={320}
 />
 
-The component list under that field is the set of overrides, so a fresh instance shows only a
-`Transform`.
+The components the inspector lists for an instance are its overrides.
 
 ## Overriding a component
 
 When the engine builds an instance, it applies the template's components first and the
-instance's components second. A component on the instance therefore replaces the template's
-component of that name completely. Overrides work per component, not per field.
+instance's components second. A component on the instance replaces the template's component of
+that name completely. Overrides work per component, not per field.
 
 <TemplateOverrides />
 
-*Add Component* on the instance creates such an override. It starts from the component's
-default values rather than from the template's, so retype the values you want to keep.
+*Add Component* on the instance creates an override. It starts from the component's default
+values, not from the template's, so retype the values you want to keep.
 
 ## Changing a template
 
-Edit a template and every instance follows, in the viewport as you type. An instance only
-ignores the change if it overrides that component.
+Edit a template and every instance follows, unless the instance overrides that component.
 
 <DocVideo
   slug="editor-templates"
@@ -102,9 +83,7 @@ ignores the change if it overrides that component.
   caption="Place instances with the template tool, then change the template. Every instance changes with it."
 />
 
-Deleting a template removes every instance of it from every scene, and the instances of its
-child templates with them. One undo brings all of it back, because the editor records the
-deletion and the cleanup as a single operation.
+Deleting a template removes every instance of it from every scene.
 
 ## Spawning at runtime
 
@@ -115,6 +94,6 @@ while the game runs, and it addresses the template by id:
 const bullet = this.actorSpawner.spawn(BULLET_TEMPLATE_ID);
 ```
 
-Select the template in the explorer and use the copy button in the inspector header to get
-that id. [Creating and destroying actors](/concepts/actors/#creating-and-destroying-actors)
-covers what to do with the actor once you have it.
+The copy button in the inspector header copies the selected template's id.
+[Creating and destroying actors](/concepts/actors/#creating-and-destroying-actors) covers what
+to do with the actor once you have it.

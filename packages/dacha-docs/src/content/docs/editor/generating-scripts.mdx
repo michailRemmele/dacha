@@ -14,13 +14,9 @@ The editor can write a new class into your project: a component, a system, a beh
 shader or a filter effect. You get a file that compiles, with the import, the decorator and
 the class already in place.
 
-The file works in both the game and the editor because of [how scripts are
-found](/game-code/auto-registration/). This page covers the editor half.
-
 ## Where to find it
 
-There is no menu item for it. *Create New* is part of the picker for the thing you are adding,
-so you create a class from the place you were about to use it:
+*Create New* is part of the picker for the thing you are adding:
 
 | To create | Open |
 | --- | --- |
@@ -30,43 +26,22 @@ so you create a class from the place you were about to use it:
 | A filter effect | *Filter Effects*, in the `Renderer` system's options |
 | A shader | *Material*, inside the `Mesh` component |
 
-The class is not added to the actor or the list when it is created. Create it, then pick it
-from the same list.
-
-## The dialog
-
 <figure class="screenshot">
   <Image
     src={newComponentShot}
     alt="The New Component dialog over the editor. It shows the resulting file path, a Base Directory field reading ./src/components, a Class Name field reading MyCustomComponent, an unchecked Customize Path box, and the disabled Subdirectory and File Name fields filled in as my-custom-component and my-custom-component.component.ts."
   />
   <figcaption>
-    The path at the top updates as you type. Here the class name alone decided the directory
-    and the filename.
+    The class name decides the directory and the filename. The path at the top shows the
+    result.
   </figcaption>
 </figure>
 
-Type the class name the way you would write it in code. The editor derives the rest from it:
-a directory in kebab case, and a filename of that same kebab case plus the suffix for the kind
-of class. `MyCustomComponent` becomes
-`my-custom-component/my-custom-component.component.ts`.
-
-`Base Directory` starts at the `contextRoot` from your
-[editor configuration](/editor/config-reference/) plus the plural of the kind, which gives
-`./src/components` for a component. Change it and the editor remembers your choice for that
-kind of class.
-
-Tick `Customize Path` to type the subdirectory and the filename yourself. Clearing the tick
-puts both back to what the class name implies.
-
-Two things the dialog does not do: it does not check that the name is a valid class name, and
-it does not warn you when the file already exists. An existing file is overwritten. Missing
-directories are created.
+If the file already exists, the editor overwrites it without a warning.
 
 ## What you get
 
-The generated file is a working example, not an empty shell. A component arrives with
-one decorated field, so it has something to show in the inspector:
+The generated file is a working example. A component comes with one decorated field:
 
 ```ts
 import { Component } from 'dacha';
@@ -93,29 +68,19 @@ export default class MyCustomComponent extends Component {
 }
 ```
 
-A system arrives as a `SceneSystem` whose `update` writes to the console, and a behavior
-arrives the same way. Change the base class to `WorldSystem` if the system should outlive scene
-changes.
+A system comes as a `SceneSystem`. Change the base class to `WorldSystem` if the system should
+outlive scene changes.
 
-The editor writes the file once and does not track it afterwards. Rename it, move it or
-rewrite it as you like. The one rule is that the filename still matches the pattern the project
-globs.
+After that the file is yours. Rename it or move it, but keep a filename that matches the
+[pattern the project globs](/game-code/auto-registration/).
 
-## Your own templates
-
-The five templates are functions, and the `templates` key in
-[dacha-workbench.config.cjs](/editor/config-reference/#script-templates) replaces any of them.
-A project with its own conventions can generate files that already follow them.
+To generate files that follow your own conventions, replace the templates with the
+[`templates` key](/editor/config-reference/#script-templates).
 
 ## After Create
 
-The editor builds your project's code itself, in watch mode. Writing the file starts a
-rebuild, and the spinner in the bottom bar shows it running. When the build finishes, the
-editor swaps the new bundle in, drops what it knew about your classes, and reads the
-decorators again.
-
-The new class appears in the picker at that point. There is no restart, and nothing to
-import by hand.
+Writing the file starts a rebuild of your project's code. When it finishes, the new class
+appears in the picker. There is no restart.
 
 <DocVideo
   slug="editor-new-component"
@@ -126,7 +91,6 @@ import by hand.
   caption="The editor writes MyCustomComponent and rebuilds the project code. The component then appears in the inspector, without a restart."
 />
 
-One side effect is worth knowing. After a rebuild the editor checks the project configuration
-against the classes it just read, and repairs anything that no longer matches, such as a field
-you renamed. A repair clears the [undo history](/editor/building-a-scene/#undo), because those
-older operations no longer describe the project.
+After every rebuild the editor checks the project configuration against your classes. It
+repairs anything that no longer matches, such as a field you renamed. A repair clears the
+[undo history](/editor/building-a-scene/#undo).

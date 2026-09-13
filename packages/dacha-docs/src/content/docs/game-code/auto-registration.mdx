@@ -4,8 +4,6 @@ description: "The convention that lets a file you create appear in both the game
 ---
 
 import AutoRegistration from '../../../components/diagrams/AutoRegistration.astro';
-import DocVideo from '../../../components/DocVideo.astro';
-import newComponentPoster from '../../../assets/editor/editor-new-component.poster.webp';
 
 Adding a component to a game normally means writing the class, importing it somewhere,
 adding it to an array the engine receives, and separately telling the editor it exists.
@@ -203,15 +201,6 @@ Two independent things then happen without you doing anything:
 
 The component becomes placeable on actors and its fields become editable, in the same
 session, from a class that did not exist a minute ago.
-
-<DocVideo
-  slug="editor-new-component"
-  poster={newComponentPoster}
-  width={1512}
-  height={1008}
-  label="Creating a component from the editor's New Component dialog, after which it appears in the inspector for the selected actor."
-  caption="Creating My Custom Component from the editor. Nothing else is edited; it appears in the inspector as soon as the file is written."
-/>
 
 See [generating scripts](/editor/generating-scripts/) for the editor half, and
 [components](/game-code/components/) for what goes in the file.

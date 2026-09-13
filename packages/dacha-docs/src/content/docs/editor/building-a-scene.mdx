@@ -13,54 +13,32 @@ import snapToGridPoster from '../../../assets/editor/editor-snap-to-grid.poster.
 Scene building is the editor's main job. You create scenes, fill them with actors, arrange
 those actors into a hierarchy, and move them until the level looks right.
 
-## Scenes
-
-The Scenes tab of the explorer lists every scene in the project. *Add New Scene* adds one,
-called `Scene` until you rename it in the inspector's `Name` field. Selecting a scene opens it
-in the viewport.
-
-Switching scenes moves the [editor's own
-view](/editor/interface-tour/#the-viewport-runs-the-engine) back to the origin and resets its
-zoom.
-
 ## The start scene
 
-The engine needs to know which scene to load first. That choice is not part of the scene tree.
-It lives in the inspector's Project settings tab, in the `Start Scene` field.
+The engine needs to know which scene to load first. You choose it in the inspector's Project
+settings tab, in the `Start Scene` field.
 
 <PanelShot
   src={startSceneShot}
   alt="The Project settings tab with the Start Scene select open. The list shows [none], Main Menu, Level 1 and Level 2, with Main Menu selected. Below it the Global Options panels: Audio Groups, Performance, Physics and Sorting."
-  caption="Start Scene lists every scene in the project. [none] leaves the game without a first scene, and the engine refuses to start."
+  caption="Start Scene lists every scene in the project. With [none] the engine refuses to start."
   width={320}
 />
-
-The [global options](/editor/systems-and-options/) fill the rest of that tab.
 
 ## Adding actors
 
 There are three ways to put an actor into a scene:
 
-- **Empty.** *Add New Actor* in the action bar creates an actor with a `Transform` and
-  nothing else. Add the components it needs in the inspector.
-- **From a template.** The template tool places an instance of an existing template where you
-  click. [Templates](/editor/templates/) covers it.
-- **From another actor.** Copy an actor and paste it. The copy is a separate actor, with its
-  own id.
-
-*Add New Actor* acts on the selection. With a scene selected the new actor goes into that
-scene. With an actor selected it becomes a child of that actor.
+- **Empty.** *Add New Actor* creates an actor with only a `Transform`. With an actor selected,
+  the new actor becomes its child.
+- **From a template.** The template tool places an instance where you click. See
+  [Templates](/editor/templates/).
+- **From another actor.** Copy an actor and paste it. The copy gets its own id.
 
 ## The hierarchy
 
-Actors nest, and a child follows its parent. The `offset` in a child's `Transform` is measured
-from its parent, so moving the parent moves the whole branch. Rotation and scale compose the
-same way.
-
-Drag a node in the tree to change its parent. The dragged actors become children of the node
-you drop them on. Drop them on a scene and they become top-level actors of that scene. You
-cannot reorder actors among their siblings this way, and dragging does not expand a branch.
-Double-click a branch to expand it.
+A child's `Transform` is measured from its parent, so moving the parent moves the whole
+branch. Drag a node in the tree onto another node to change its parent.
 
 <DocVideo
   slug="editor-hierarchy"
@@ -71,29 +49,12 @@ Double-click a branch to expand it.
   caption="Drop Actor onto player, and Actor becomes its child. After that, moving or rotating player moves and rotates Actor too."
 />
 
-Deleting an actor deletes its children with it.
-
-## Selecting actors
-
-Click an actor in the tree or in the viewport. It is one selection either way, so the tree
-highlights what you picked in the viewport, and the inspector fills with it.
-
-The editor works with several actors at once:
-
-- In the tree, hold <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> to add single actors to the selection,
-  or <kbd>Shift</kbd> to take a range.
-- In the viewport, hold <kbd>Shift</kbd> and click to add an actor or remove it again.
-- Clicking empty space clears the selection.
-
 ## Moving actors
 
-With the pointer tool active, drag a selected actor to move it. The rest of the selection moves
-with it. Every drag writes the new `offset` into the actor's `Transform`, which is the same
-field you can type into by hand.
+With the pointer tool, drag actors in the viewport. Hold <kbd>Shift</kbd> and click to select
+several. A drag writes the new `offset` into the actor's `Transform`.
 
-*Snap to Grid* in the toolbar rounds the drag to the grid step, which you change in the [grid
-settings](/editor/interface-tour/#settings). The bottom bar reports the cursor position and the
-grid cell under it while you drag.
+*Snap to Grid* in the toolbar moves the actor in grid steps.
 
 <DocVideo
   slug="editor-snap-to-grid"
@@ -104,41 +65,22 @@ grid cell under it while you drag.
   caption="With Snap to Grid off, the player moves freely. With it on, the player moves from one grid step to the next."
 />
 
-Only position is editable in the viewport. Rotation and scale are typed into the `Transform`
-component.
-
-## Copy, cut, paste and delete
-
-The action bar, the Edit menu and the usual shortcuts all do the same four things. They act on
-the current selection, and on the panel you are working in.
-
-Paste needs a destination. It uses the selection: pasting with an actor selected puts the copy
-under that actor, and pasting with a scene selected puts it into the scene. Pasting an actor
-with nothing selected does nothing, because the tree's root contains scenes, not actors.
-
-A copy is a new actor. The editor gives it a fresh id and, if the name is taken, a unique
-name. Cut and paste moves the original instead of duplicating it.
+The viewport edits position only. Type rotation and scale into the `Transform` component.
 
 ## Undo
 
-Every change goes through a command, so everything on this page can be undone with
-<kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Z</kbd>, and redone with <kbd>Shift</kbd> added. The
-editor keeps the last 100 operations. Modal editors, such as the animation editor, keep their
-own history, so undo inside one of them leaves the scene alone.
+Every change can be undone, up to the last 100 operations. Modal editors, such as the
+animation editor, keep their own history.
 
-The history is kept in memory. Reloading the editor starts it empty, and so does a rebuild
-that [repairs the configuration](/editor/generating-scripts/#after-create).
+The history lives in memory. Reloading the editor clears it, and so does a rebuild that
+[repairs the configuration](/editor/generating-scripts/#after-create).
 
 ## Saving
 
-<kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> writes the whole project configuration to the
-file named by `projectConfig` in
-[dacha-workbench.config.cjs](/editor/config-reference/). In the
-[starter project](/getting-started/installation/) that file is `data/data.json`.
+<kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> writes the project configuration to the file
+named by `projectConfig` in [dacha-workbench.config.cjs](/editor/config-reference/). In the
+[starter project](/getting-started/installation/) that file is `data/data.json`, and autosave
+is on.
 
-The starter project also turns autosave on, which saves every ten seconds. Both the switch and
-the interval are keys in the same configuration file.
-
-Nothing reaches the running game until the file is written. The page then reloads and the game
-restarts from the start scene, so a run in progress is lost on every save. [How it
-works](/introduction/how-it-works/) covers that loop.
+Nothing reaches the running game until the file is written. Then the page reloads and the game
+restarts from the start scene. [How it works](/introduction/how-it-works/) covers that loop.

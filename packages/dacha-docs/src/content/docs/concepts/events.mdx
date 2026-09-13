@@ -68,12 +68,6 @@ This is what makes events useful for game logic. A system does not have to attac
 to every enemy that might collide. It listens once, on the scene, and receives the collisions
 from all of them. `event.target` tells it which actor was involved.
 
-Take a system that applies effects: damage, a heal, a poison that ticks for a few seconds. It
-dispatches each effect at whichever actor the effect lands on. To catch those per actor, the
-system would have to attach a listener to every actor in the scene, and then keep that set
-correct as actors spawn and die. A single listener on the scene has neither problem. An event
-from an actor spawned three levels down, one frame ago, reaches it with nothing registered.
-
 `stopPropagation()` ends the climb. It does not cancel the listeners already attached to the
 level that is running now, because those all get their turn. It only stops the event from
 reaching anything further up.
