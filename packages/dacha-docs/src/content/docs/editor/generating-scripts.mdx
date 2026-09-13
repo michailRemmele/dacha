@@ -5,7 +5,10 @@ description: "Create a component, system, behavior or shader from the editor int
 
 import { Image } from 'astro:assets';
 
+import DocVideo from '../../../components/DocVideo.astro';
+
 import newComponentShot from '../../../assets/editor/new-component-dialog.png';
+import newComponentPoster from '../../../assets/editor/editor-new-component.poster.webp';
 
 The editor can write a new class into your project: a component, a system, a behavior, a
 shader or a filter effect. You get a file that compiles, with the import, the decorator and
@@ -113,6 +116,15 @@ decorators again.
 
 The new class appears in the picker at that point. There is no restart, and nothing to
 import by hand.
+
+<DocVideo
+  slug="editor-new-component"
+  poster={newComponentPoster}
+  width={1512}
+  height={1008}
+  label="Creating a component from the editor's New Component dialog, after which it appears in the inspector for the selected actor."
+  caption="The editor writes MyCustomComponent and rebuilds the project code. The component then appears in the inspector, without a restart."
+/>
 
 One side effect is worth knowing. After a rebuild the editor checks the project configuration
 against the classes it just read, and repairs anything that no longer matches, such as a field

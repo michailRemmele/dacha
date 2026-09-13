@@ -5,21 +5,32 @@ description: "What each panel of the editor does."
 
 import { Image } from 'astro:assets';
 
+import AnnotatedShot from '../../../components/AnnotatedShot.astro';
+import ShotPair from '../../../components/ShotPair.astro';
+
 import overviewShot from '../../../assets/editor/interface-overview.png';
+import collidersOffShot from '../../../assets/editor/debug-colliders-off.png';
+import collidersOnShot from '../../../assets/editor/debug-colliders-on.png';
+import markersShot from '../../../assets/editor/debug-markers.png';
 
 The editor is laid out around a viewport. The explorer on the left lists the project. The
 inspector on the right shows the selected object. The toolbar above the viewport carries the
 editing tools, and the bottom bar reports the cursor position and warnings.
 
-<figure class="screenshot">
-  <Image
-    src={overviewShot}
-    alt="The editor window: the explorer on the left with the Scenes tab open and an actor called Player selected, the viewport in the middle showing a level with the grid drawn over it, and the inspector on the right listing the selected actor's components."
-  />
-  <figcaption>
-    The four panels. The window title is the name of the project directory.
-  </figcaption>
-</figure>
+<AnnotatedShot
+  src={overviewShot}
+  alt="The editor window: the explorer on the left with the Scenes tab open and an actor called Player selected, the viewport in the middle showing a level with the grid drawn over it, and the inspector on the right listing the selected actor's components."
+  caption="The parts of the editor window. The window title is the name of the project directory."
+  markers={[
+    { x: 21, y: 20.55, label: 'Explorer', text: 'The scenes, templates and assets of the project, one tab each.' },
+    { x: 20, y: 10.95, label: 'Action bar', text: 'Adds, cuts, copies, pastes and deletes nodes in the tree below it.' },
+    { x: 39.5, y: 7.05, label: 'Tools', text: 'Hand, pointer, zoom and template. One tool is always active.' },
+    { x: 59, y: 7.05, label: 'Tool options', text: 'The options of the active tool.' },
+    { x: 30.75, y: 22.5, label: 'Viewport', text: 'The selected scene, drawn by the engine.' },
+    { x: 86, y: 75, label: 'Inspector', text: 'The selected object, the systems list and the project settings.' },
+    { x: 17, y: 98.2, label: 'Bottom bar', text: 'The cursor position and the grid cell under it.' },
+  ]}
+/>
 
 ## The viewport runs the engine
 
@@ -51,23 +62,44 @@ default. Turn them on in the *Debug Layers* panel of the *Settings* modal.
 colour at low opacity, so you can see the shape the physics system uses. The colour comes from
 the collider's `debugColor`, and a collider without one is drawn green.
 
+<ShotPair
+  first={{
+    src: collidersOffShot,
+    label: 'Off',
+    alt: 'A part of a level in the viewport: walls, ground blocks and obstacles, with no outlines.',
+  }}
+  second={{
+    src: collidersOnShot,
+    label: 'On',
+    alt: 'The same part of the level with the Colliders layer on. Every wall, block and obstacle has a green outline with a light green fill.',
+  }}
+  caption="The same view with the Colliders layer off and on. A long wall shows up as several separate colliders."
+/>
+
 **Markers** draws an icon for each actor that has an `EditorMarker` component. Add that
 component to a spawn point, a checkpoint or any actor that draws nothing, and it becomes
 something you can see and click in the viewport. The component has two fields: `name` picks
 one of ten icons, and `color` tints it. The icon keeps its size on screen as you zoom.
 
-`EditorMarker` belongs to the editor, so the game has no class for it. It writes
-`Component not found: EditorMarker` to the console once per marked actor and builds the actor
-without it. Nothing else changes.
+<figure class="screenshot">
+  <Image
+    src={markersShot}
+    alt="The viewport and the inspector. In the viewport a yellow flag icon with a selection box sits at the top of a shaft. The inspector shows the selected actor, Finish, with an Editor Marker component whose Name is finish and whose Color is yellow."
+  />
+  <figcaption>
+    The Finish actor draws nothing in the game. Its EditorMarker puts a yellow flag in the
+    viewport, so you can see it and click it.
+  </figcaption>
+</figure>
+
+`EditorMarker` belongs to the editor, so it won't be displayed in the game.
 
 ## The explorer
 
 The explorer has three tabs, and each tab shows one tree:
 
-- **Scenes** — every scene in the project, with its actors under it. Actors nest, so a
-  branch is a parent actor with its children.
-- **Templates** — the actor templates, in folders you arrange yourself. The
-  [templates page](/editor/templates/) covers them.
+- **Scenes** — every scene in the project, with its actors under it.
+- **Templates** — the actor templates, in folders you arrange yourself.
 - **Assets** — the textures, audio and fonts the game loads, plus any asset kind your
   project adds.
 
@@ -102,8 +134,8 @@ Selecting anything in the explorer switches the inspector back to its first tab.
 
 The toolbar has four tools, and one of them is always active:
 
-- **Pointer** — select actors and drag them.
 - **Hand** — drag to pan the view.
+- **Pointer** — select actors and drag them.
 - **Zoom** — click to zoom. A mode switch decides whether a click zooms in or out.
 - **Template** — click to place an instance of a template.
 

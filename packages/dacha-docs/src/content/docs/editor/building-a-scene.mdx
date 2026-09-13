@@ -3,9 +3,12 @@ title: "Building a scene"
 description: "Create scenes, place actors, and arrange the hierarchy."
 ---
 
+import DocVideo from '../../../components/DocVideo.astro';
 import PanelShot from '../../../components/PanelShot.astro';
 
 import startSceneShot from '../../../assets/editor/project-settings-start-scene.png';
+import hierarchyPoster from '../../../assets/editor/editor-hierarchy.poster.webp';
+import snapToGridPoster from '../../../assets/editor/editor-snap-to-grid.poster.webp';
 
 Scene building is the editor's main job. You create scenes, fill them with actors, arrange
 those actors into a hierarchy, and move them until the level looks right.
@@ -59,6 +62,15 @@ you drop them on. Drop them on a scene and they become top-level actors of that 
 cannot reorder actors among their siblings this way, and dragging does not expand a branch.
 Double-click a branch to expand it.
 
+<DocVideo
+  slug="editor-hierarchy"
+  poster={hierarchyPoster}
+  width={1512}
+  height={850}
+  label="In the scene tree an actor is dragged onto the player and becomes its child. The player is then moved in the viewport and rotated in the inspector. The child moves and turns with it."
+  caption="Drop Actor onto player, and Actor becomes its child. After that, moving or rotating player moves and rotates Actor too."
+/>
+
 Deleting an actor deletes its children with it.
 
 ## Selecting actors
@@ -82,6 +94,15 @@ field you can type into by hand.
 *Snap to Grid* in the toolbar rounds the drag to the grid step, which you change in the [grid
 settings](/editor/interface-tour/#settings). The bottom bar reports the cursor position and the
 grid cell under it while you drag.
+
+<DocVideo
+  slug="editor-snap-to-grid"
+  poster={snapToGridPoster}
+  width={1512}
+  height={850}
+  label="The player is dragged in the viewport with Snap to Grid off, and the Offset fields in the inspector change with the drag. Snap to Grid is then turned on in the toolbar, and the next drag moves the player in grid steps."
+  caption="With Snap to Grid off, the player moves freely. With it on, the player moves from one grid step to the next."
+/>
 
 Only position is editable in the viewport. Rotation and scale are typed into the `Transform`
 component.

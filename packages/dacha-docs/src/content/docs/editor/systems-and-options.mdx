@@ -3,6 +3,11 @@ title: "Systems & global options"
 description: "Choose which systems run and tune the global options."
 ---
 
+import PanelShot from '../../../components/PanelShot.astro';
+
+import systemsShot from '../../../assets/editor/inspector-systems.png';
+import physicsShot from '../../../assets/editor/physics-collision-matrix.png';
+
 Two parts of a game belong to no scene: the list of systems the game runs, and the global
 options every scene shares. You edit both in the inspector, in its Systems tab and its
 Project settings tab.
@@ -15,6 +20,13 @@ learns about yours from the [file naming convention](/game-code/auto-registratio
 
 Each entry in the list expands to the options of that system. A system with no options says so
 instead.
+
+<PanelShot
+  src={systemsShot}
+  alt="The Systems tab with seven systems: Camera System, Keyboard Input System, Keyboard Control System, Movement System, Animator, Renderer and UIBridge. Each row has a drag handle on the left. Renderer is expanded and shows Window Node Id, Background Color and Filter Effects. Add System is at the bottom."
+  caption="The handle on the left of each system moves it. Renderer is expanded to show its options."
+  width={320}
+/>
 
 ## Order is execution order
 
@@ -48,6 +60,13 @@ when you touch them. [Rendering](/systems/rendering/) explains what the layers d
 **Physics** lists the collision layers and the matrix that says which pairs of layers collide.
 A new layer collides with everything until you clear the boxes. See
 [Physics](/systems/physics/).
+
+<PanelShot
+  src={physicsShot}
+  alt="The Project settings tab with the Physics panel open. Collision Layers lists ship-parts, ship-hull and projectiles, with Add Collision Layer below. The Collision Matrix has a row and a column for each of those layers and for default. Three boxes are checked, all in the default row."
+  caption="Each box in the matrix is one pair of layers. A checked box means the two layers collide."
+  width={320}
+/>
 
 **Audio Groups** names the buses a sound can play through, so you can set the volume of music
 and effects separately. See [Audio](/systems/audio/).
