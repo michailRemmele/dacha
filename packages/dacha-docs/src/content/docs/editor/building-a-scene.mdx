@@ -21,7 +21,7 @@ settings tab, in the `Start Scene` field.
 <PanelShot
   src={startSceneShot}
   alt="The Project settings tab with the Start Scene select open. The list shows [none], Main Menu, Level 1 and Level 2, with Main Menu selected. Below it the Global Options panels: Audio Groups, Performance, Physics and Sorting."
-  caption="Start Scene lists every scene in the project. With [none] the engine refuses to start."
+  caption="With [none], the engine does not start."
   width={320}
 />
 
@@ -46,7 +46,7 @@ branch. Drag a node in the tree onto another node to change its parent.
   width={1512}
   height={850}
   label="In the scene tree an actor is dragged onto the player and becomes its child. The player is then moved in the viewport and rotated in the inspector. The child moves and turns with it."
-  caption="Drop Actor onto player, and Actor becomes its child. After that, moving or rotating player moves and rotates Actor too."
+  caption="Actor becomes a child of player and follows it."
 />
 
 ## Moving actors
@@ -62,7 +62,7 @@ several. A drag writes the new `offset` into the actor's `Transform`.
   width={1512}
   height={850}
   label="The player is dragged in the viewport with Snap to Grid off, and the Offset fields in the inspector change with the drag. Snap to Grid is then turned on in the toolbar, and the next drag moves the player in grid steps."
-  caption="With Snap to Grid off, the player moves freely. With it on, the player moves from one grid step to the next."
+  caption="Snap to Grid off, then on."
 />
 
 The viewport edits position only. Type rotation and scale into the `Transform` component.
