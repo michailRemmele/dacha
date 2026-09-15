@@ -1,0 +1,201 @@
+---
+title: "Behaviors"
+description: "Write logic that belongs to a single actor, and attach it in the editor."
+---
+
+import BehaviorLookup from '../../../components/diagrams/BehaviorLookup.astro';
+import PanelShot from '../../../components/PanelShot.astro';
+import behaviorsShot from '../../../assets/editor/inspector-behaviors.png';
+
+A behavior is logic that belongs to one actor. Where a system works over a whole class of
+actors at once, a behavior is built for one actor and runs only for it.
+
+You declare one by extending `Behavior` and naming it with a decorator. The shape is close
+to a system, and the differences are the interesting part.
+
+## A complete behavior
+
+```ts
+import { Behavior } from 'dacha';
+import type { Actor, BehaviorOptions, Time } from 'dacha';
+import { DefineBehavior, DefineField } from 'dacha-workbench/decorators';
+
+interface GrowPlantOptions extends BehaviorOptions {
+  secondsPerStage: number;
+  stages: number;
+}
+
+@DefineBehavior({
+  name: 'GrowPlant',
+})
+export default class GrowPlant extends Behavior {
+  @DefineField({ initialValue: 4 })
+  secondsPerStage: number;
+
+  @DefineField({ initialValue: 3 })
+  stages: number;
+
+  private actor: Actor;
+  private time: Time;
+  private elapsed = 0;
+  private stage = 0;
+
+  constructor(options: GrowPlantOptions) {
+    super();
+
+    this.actor = options.actor;
+    this.time = options.time;
+    this.secondsPerStage = options.secondsPerStage;
+    this.stages = options.stages;
+  }
+
+  update(): void {
+    if (this.stage === this.stages) {
+      return;
+    }
+
+    this.elapsed += this.time.deltaTime;
+
+    if (this.elapsed < this.secondsPerStage) {
+      return;
+    }
+
+    this.elapsed = 0;
+    this.stage += 1;
+    // swap the sprite for the next growth stage
+  }
+}
+```
+
+A behavior differs from a system in three places.
+
+**`options.actor`** is the actor this instance belongs to. It is the whole reason to write a
+behavior instead of a system, and it is always there. A behavior is never built without one.
+
+**The lifecycle is shorter.** A behavior has `update`, `fixedUpdate` and `destroy`, and
+nothing else. All three are optional, the way a system's hooks are. What is missing are the
+scene hooks. There is no `onSceneLoad`, so a behavior is not the place to load resources, and
+`destroy` is the one hook a system has no equivalent of.
+
+**The fields belong to the attachment, not to the class.** A system's fields are edited once,
+in the systems list. A behavior's fields are edited on the actor that carries it, so two actors
+can run the same behavior with different values. The values arrive in the options object.
+[Inspector fields](/game-code/inspector-fields/) covers the widgets and the options they
+take.
+
+## How the actor finds the class
+
+Nothing imports `GrowPlant` except the glob that collects it. The actor refers to it by name.
+
+<BehaviorLookup />
+
+An actor takes part by carrying a `Behaviors` component, which holds a list of entries. Each
+entry is a name and an options object. When the scene starts, the behavior system reads that
+list, finds the class whose `behaviorName` matches, and constructs it.
+
+Two consequences follow from the indirection, and both are useful.
+
+The same class can be attached twice to the same actor with different options, because each
+entry produces its own instance. And a name with no matching class is not a crash. The
+behavior system writes `Behavior not found: GrowPlant` to the console, skips that entry, and
+runs the rest. See [when the class never
+arrives](/game-code/auto-registration/#when-the-class-never-arrives).
+
+## What a behavior receives
+
+The constructor gets one object. Your own fields sit next to what the engine supplies:
+
+| Field | What it is |
+| --- | --- |
+| `actor` | The actor this behavior belongs to |
+| `scene` | The scene that actor is in |
+| `world` | The world, including `systemApi` |
+| `actorSpawner` | [Creates actors](/concepts/actors/#creating-and-destroying-actors) from templates at runtime |
+| `assets` | The registry of the project's assets |
+| `globalOptions` | The global settings for the game |
+| `time` | Shared timing state |
+
+:::caution
+The engine merges your options first and its own fields second, so a field named `actor`,
+`scene`, `world`, `actorSpawner`, `assets`, `globalOptions` or `time` is overwritten before
+your constructor runs. Give your fields names of their own.
+:::
+
+## When your code runs
+
+The behavior system builds every behavior on every participating actor when the scene becomes
+active, and it builds them for an actor added later as soon as that actor appears. So your
+constructor runs once per attachment, not once per scene.
+
+`update` and `fixedUpdate` then run on the two clocks, exactly as they do for a system. The
+behaviors of one actor run in the order the list holds them.
+
+`destroy` runs when the actor is removed or the scene is torn down. It is where a behavior
+gives back whatever it took:
+
+```ts
+destroy(): void {
+  this.scene.removeEventListener(Harvest, this.handleHarvest);
+}
+```
+
+Whatever you subscribe to in the constructor, you unsubscribe from in `destroy`. Nothing does
+it for you.
+
+This matters more for a behavior than for a scene system. A system is destroyed together with
+its scene, so a listener it put on that scene dies with it either way. A behavior is destroyed
+whenever its actor is removed, which happens constantly while the scene keeps running. Every
+projectile that hits something and disappears leaves its listener behind.
+
+## Attaching one
+
+In the editor, select an actor, add the `Behaviors` component, and pick the behavior from
+the list. Its decorated fields appear underneath, and the values you type there are saved
+into that actor's entry. A template works the same way, and every actor built from it starts
+with the behaviors the template carries.
+
+<PanelShot
+  src={behaviorsShot}
+  alt="The inspector showing a Behaviors component with two behaviors attached. The first, Turret Control, is expanded and shows four numeric fields."
+  caption="Two behaviors on one template. Turret Control is expanded, and the four fields under it are its decorated properties. Build Pickable declares no fields. The Add Behavior control at the bottom is the list you pick from."
+/>
+
+By hand, the same thing is one entry in the configuration:
+
+```json
+{
+  "name": "Behaviors",
+  "config": {
+    "list": [
+      {
+        "id": "5e5c2d5a",
+        "name": "GrowPlant",
+        "options": { "secondsPerStage": 4, "stages": 3 }
+      }
+    ]
+  }
+}
+```
+
+## Registering them
+
+A behavior is neither a system nor a component, so it does not go in either array. It reaches
+the engine as a resource belonging to the behavior system. The `*.behavior.ts` suffix collects
+the class and the [starter project](/getting-started/installation/) passes it on, so there is
+nothing to do by hand. See [how scripts are found](/game-code/auto-registration/) for the code
+that does it.
+
+:::caution
+`BehaviorSystem` must also be listed in `systems` in the configuration. If it is not, no
+behavior on any actor runs, and nothing reports it. The classes are collected either way,
+which is what makes this one hard to spot.
+:::
+
+## When a system is the better choice
+
+A behavior instance exists per actor, and so does its work. Ten thousand actors with the same
+behavior means ten thousand `update` calls, where a system would do one pass over one query.
+
+The question to ask is not about performance, though. It is about what the logic is *about*.
+Logic that is specific to one actor is awkward to write as a system.
+Systems are a better fit for logic that applies to a class of actors, such as damage, movement, or collision response.

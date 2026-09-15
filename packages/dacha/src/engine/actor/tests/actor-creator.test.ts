@@ -194,4 +194,37 @@ describe('Engine -> ActorCreator', () => {
     );
     expect(actor.children[0].getComponent(TestComponent1).testField3).toBe(350);
   });
+
+  it('Skips components without a registered class', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(jest.fn());
+
+    const actorCreator = new ActorCreator(components, templateCollection);
+
+    const actor = actorCreator.create({
+      id: '006',
+      name: 'actorWithUnknownComponent',
+      children: [],
+      components: [
+        { name: 'UnknownComponent', config: {} },
+        {
+          name: 'TestComponent1',
+          config: {
+            testField1: 'testField1Value',
+            testField2: true,
+            testField3: 100,
+          },
+        },
+      ],
+    });
+
+    expect(actor.id).toBe('006');
+    expect(actor.getComponent(TestComponent1).testField1).toBe(
+      'testField1Value',
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Component not found: UnknownComponent',
+    );
+
+    warnSpy.mockRestore();
+  });
 });

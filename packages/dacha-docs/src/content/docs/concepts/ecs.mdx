@@ -1,0 +1,68 @@
+---
+title: "ECS in Dacha"
+description: "What entity-component-system means here, and where Dacha departs from the textbook version."
+---
+
+import EcsRelationships from '../../../components/diagrams/EcsRelationships.astro';
+
+Traditional engines often define game objects through class hierarchies: `Player extends
+Character extends GameObject`. ECS defines them through composition instead. An object is a
+set of components. The logic lives in separate units, and each unit runs over every object
+that holds a certain combination of components.
+
+Dacha follows this idea. It uses its own names, and it adds one thing the textbook version
+does not have.
+
+<EcsRelationships />
+
+## Actor, not entity
+
+Dacha calls the game object an **actor**. An actor holds components. It can hold child actors.
+It has an id and a name. The name `Entity` is taken by an internal base class that actors,
+scenes and the world share.
+
+## Components hold the data
+
+A component is a set of values attached to an actor. `Transform` holds a position, a rotation
+and a scale. `Sprite` holds the image to draw. `Collider` holds a shape.
+
+A component can also have small helpers that read its own values, and it can hold state that
+exists only at runtime. What does not belong in a component is game logic: decisions,
+per-frame work, reaching into other actors.
+
+The reason is the file. The whole game world is [described by data](/concepts/configuration/),
+and a visual editor reads and writes that data. Only the fields you declare survive that trip.
+You cannot save a method into the configuration, and the editor cannot show one in the
+inspector. Everything else on the component is rebuilt from scratch each time the engine
+constructs it.
+
+## Systems hold the logic
+
+A system runs as part of the game loop and acts on the actors it cares about. It does not
+build that list by hand. It declares which components it needs, and it receives every actor
+that has them, including actors created later.
+
+There are two kinds of system, and one question decides between them: does this need to
+survive a scene change? Both kinds, and the way a system selects its actors, are covered on
+[the systems page](/concepts/systems/).
+
+## Behaviors are the addition
+
+A textbook ECS has nothing like a **behavior**. A behavior attaches to a single actor and runs
+for that actor alone.
+
+It exists because not all logic is a sweep over many actors. A door opens when the player
+comes close. A camera follows one target. A boss runs a scripted sequence. Writing each of
+these as a system that queries exactly one actor is awkward. Writing it as a behavior is not.
+See [behaviors](/systems/behaviors/).
+
+## Where to put a piece of logic
+
+| Put it in | When |
+| --- | --- |
+| A component | It is a value, not a decision: speed, health, the current target's id |
+| A system | The logic applies to a class of actors, or to the scene as a whole |
+| A behavior | The logic applies to one actor and is specific to it |
+
+Systems and behaviors have the same two per-frame hooks, `update` and `fixedUpdate`. The
+difference is how many actors one instance covers.

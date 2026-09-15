@@ -1,0 +1,227 @@
+---
+title: "Inspector fields"
+description: "Choose the widget the editor draws for a field, and control how it is labelled, grouped and shown."
+---
+
+import PanelShot from '../../../components/PanelShot.astro';
+import inspectorShot from '../../../assets/editor/inspector-generated-labels.png';
+
+`@DefineField` does more than mark a property as editable. It picks the widget the inspector
+draws, decides the value a new instance starts with, and can label, group and hide fields so
+that a component with a dozen settings still reads well.
+
+Everything on this page works the same way on a component, on a
+[system](/game-code/systems/#settings-you-can-change-in-the-editor) and on a
+[behavior](/game-code/behaviors/). Only the place the values are edited changes.
+
+## The shortest form
+
+```ts
+@DefineField()
+speed: number;
+```
+
+That is a field named `speed`, labelled **Speed**, starting at `0`.
+
+:::caution
+The bare form reads the property's type from the metadata TypeScript emits, and it
+recognises only `string`, `number` and `boolean`. Anything else becomes a text input.
+Decorators need `experimentalDecorators` in your `tsconfig.json`, and this metadata needs
+`emitDecoratorMetadata`. The [starter project](/getting-started/installation/) sets both.
+Passing `type` explicitly settles the question either way.
+:::
+
+## Choosing the widget
+
+```ts
+@DefineField({ type: 'range', min: 0, max: 1, step: 0.05 })
+volume: number;
+```
+
+| `type` | The editor draws | It also takes |
+| --- | --- | --- |
+| `string` | A single-line text input | |
+| `number` | A number input | |
+| `boolean` | A checkbox | |
+| `textarea` | A multi-line text input | |
+| `select` | A dropdown | `options` |
+| `multiselect` | A dropdown that holds several values | `options` |
+| `multitext` | A list of text inputs you can grow | |
+| `range` | A slider | `min`, `max`, `step` |
+| `color` | A colour picker | `disabledAlpha` |
+| `vector` | Paired X and Y inputs | |
+| `file` | A picker over the project's assets folder | `extensions` |
+| `asset` | A dropdown of the project's assets of one kind | `kind` |
+| `data` | Nothing at all | |
+
+`options`, `extensions` and `kind` are required by the types that take them. Everything else
+in that column is optional. A `file` field stores a path relative to the project's assets
+root. An `asset` field stores the asset's id, and shows only the assets whose kind matches. A
+slider without `min`, `max` and `step` runs from 0 to 100 in steps of 1.
+
+`data` is different from the rest. The field is saved and restored like any other, and the
+inspector never draws it. Use it for state that belongs in the configuration but that no
+generated input should show, such as a value only a
+[custom widget](/game-code/custom-widgets/) maintains.
+
+## Initial values
+
+`initialValue` is what a new instance of the component starts with. It belongs to the editor,
+not to the engine. The editor writes it into the configuration the moment you add the component to an
+actor, and the engine then reads a file where the value is already there. Nothing
+fills a gap at run time, so a key deleted by hand from `data.json` reaches your constructor as
+`undefined`.
+
+Leave it out and the field starts at the empty value for its type:
+
+| Type | Starts at |
+| --- | --- |
+| `string`, `textarea`, `select`, `file`, `asset` | `''` |
+| `number`, `range` | `0` |
+| `boolean` | `false` |
+| `multiselect`, `multitext` | `[]` |
+| `color` | `'#ffffff'` |
+| `vector` | `{ x: 0, y: 0 }` |
+
+A `data` field has no default. Give it an `initialValue`.
+
+The same value is used when you add a field to a component that actors already carry. See
+[changing the fields later](/game-code/components/#changing-the-fields-later).
+
+## Titles come from translations
+
+Without a `title`, the editor builds the label from the property name. It splits on case and
+on separators, then capitalises: `projectileSpeed` becomes **Projectile Speed**, and
+`max_hp` becomes **Max Hp**.
+
+`title` replaces that with a translation key:
+
+```ts
+@DefineField({ title: 'health.points.title' })
+points: number;
+```
+
+The editor looks the key up in `src/locales/index.ts`, the file it reads for your project's
+translations. A key with no translation is shown as it is, which makes a missing entry easy to
+spot. The path to that file is a setting in the
+[editor configuration](/editor/config-reference/), like the script patterns.
+
+Section names are not translated. They are run through the same name formatter and shown as
+they are.
+
+<PanelShot
+  src={inspectorShot}
+  alt="The inspector showing the Platform Block, Transform and Weapon components of a selected actor, each with its own fields."
+  caption="Every label here was generated from a property name. Components written for a project sit in the inspector next to the built-in ones."
+/>
+
+## Grouping fields into sections
+
+A component with many fields reads better in groups. `section` puts a field in one, and the
+decorator says which sections start open:
+
+```ts
+@DefineComponent({
+  name: 'Launcher',
+  sections: {
+    projectile: { defaultOpen: true },
+  },
+})
+export default class Launcher extends Component {
+  @DefineField({ initialValue: 1.2 })
+  cooldown: number;
+
+  @DefineField({ section: 'projectile', initialValue: 500 })
+  projectileSpeed: number;
+
+  @DefineField({ section: 'projectile', initialValue: 3 })
+  projectileRadius: number;
+}
+```
+
+The inspector draws fields in the order you declare them. A run of neighbouring fields with
+the same `section` becomes one group, and a field without a `section` ends that run. So
+declaring the same section name again further down draws a second group with the same title.
+Keep the fields of one section together.
+
+## Showing a field only when it matters
+
+`dependency` ties a field to the value of another one. The field appears when the values
+match, and disappears when they stop matching:
+
+```ts
+@DefineField({ type: 'select', options: ['rectangle', 'circle', 'line'] })
+type: string;
+
+@DefineField({ type: 'vector', dependency: { name: 'type', value: 'rectangle' } })
+size: Point;
+
+@DefineField({ type: 'number', dependency: { name: 'type', value: 'circle' } })
+radius: number;
+```
+
+This is how the built-in `Shape` component shows one set of measurements per shape. It is
+worth copying whenever a component covers several cases, because the alternative is a panel
+where most of the inputs do nothing.
+
+:::note
+When the value you compare against is a string, the editor treats it as a **regular
+expression**. So `value: 'rectangle|roundRectangle'` shows the field for either one. That is
+handy on purpose, and it has two consequences. The expression is not anchored, so
+`value: 'circle'` also matches `semicircle`. And a value with regular expression characters in
+it does not compare the way you expect. Write `value: '^circle$'` when you mean the whole
+value.
+:::
+
+A hidden field is not saved. The editor deletes the value when the condition stops matching,
+and writes the initial value again when it starts matching. So a number typed into a
+conditional field does not survive switching the shape to something else and back.
+
+## Options that depend on the project
+
+`options` on a `select` takes a plain list, or a function the editor calls when it draws the
+field:
+
+```ts
+@DefineField({
+  type: 'select',
+  options: (getState) =>
+    (getState(['globalOptions', 'name:sorting', 'options', 'layers']) as Layer[])
+      .map((layer) => layer.name),
+})
+layer: string;
+```
+
+The function receives a reader over the project's configuration, so the list can come from
+anywhere in it. A second argument carries the field's own `path` and whatever `context` the
+widget was drawn with. The built-in components use this to offer the sorting layers, the
+audio groups and the collision groups the project actually defines, rather than a list that
+goes stale.
+
+## Declaring fields on the decorator
+
+Fields can also be listed on the decorator itself, instead of on the properties:
+
+```ts
+@DefineComponent({
+  name: 'Health',
+  icon: 'HeartPulse',
+  fields: [
+    { name: 'points', type: 'number', initialValue: 100 },
+  ],
+})
+```
+
+The two forms merge, and a property's own `@DefineField` wins on a name collision. Reach for
+the decorator's list when there is no property to decorate. That happens with a `data` field,
+or when a widget stores something the class does not hold as a plain property.
+
+`icon` sets the badge next to the component's name in the inspector, from the
+[Gravity UI icon set](https://gravity-ui.com/icons). `title` overrides the component's
+displayed name the way a field's `title` overrides a label.
+
+## When fields are not enough
+
+The list of types covers most components. When yours needs a curve editor, a preview or a
+control that spans several values at once, you write the React component that draws it. See
+[custom widgets](/game-code/custom-widgets/).

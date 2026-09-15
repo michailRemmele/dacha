@@ -21,7 +21,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --workspace=dacha --workspace=dacha-workbench --include-workspace-root
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
 
@@ -32,6 +32,39 @@ jobs:
       - run: npm test
 
       - run: npm run build
+
+  template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --workspace=dacha --workspace=dacha-workbench --include-workspace-root
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+
+      - name: Generate a project from the template
+        run: node packages/create-dacha/bin/index.js "$RUNNER_TEMP/smoke-game"
+
+      - name: Install the local engine and editor into it
+        run: npm run pack:local -- --to "$RUNNER_TEMP/smoke-game"
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+          DACHA_SKIP_APP_BUILD: 1
+
+      - name: Allow esbuild's install script
+        working-directory: ${{ runner.temp }}/smoke-game
+        run: npm approve-scripts esbuild || true
+
+      - name: Typecheck and build the generated project
+        working-directory: ${{ runner.temp }}/smoke-game
+        run: |
+          npm run typecheck
+          npm run build
 
   e2e:
     strategy:
@@ -58,7 +91,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --workspace=dacha --workspace=dacha-workbench --include-workspace-root
 
       - run: npm run build
 

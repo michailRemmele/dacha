@@ -1,0 +1,71 @@
+---
+const systems = [
+  { label: 'Rendering', href: '/systems/rendering/' },
+  { label: 'Physics', href: '/systems/physics/' },
+  { label: 'Animation', href: '/systems/animation/' },
+  { label: 'Audio', href: '/systems/audio/' },
+  { label: 'Input', href: '/systems/input/' },
+  { label: 'Game UI', href: '/systems/game-ui/' },
+];
+
+const allSystemsHref = '/systems/rendering/';
+---
+
+<ul class="systems">
+  {
+    systems.map((system) => (
+      <li class="systems__item">
+        <a class="systems__link" href={system.href}>
+          {system.label}
+        </a>
+      </li>
+    ))
+  }
+  <li class="systems__item">
+    <a class="systems__all" href={allSystemsHref}>Explore all systems →</a>
+  </li>
+</ul>
+
+<style>
+  .systems {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: var(--sl-content-gap-y) 0 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .systems__item {
+    margin: 0;
+    padding: 0;
+  }
+
+  .systems__link {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 2rem;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    font-size: var(--sl-text-sm);
+  }
+
+  .systems__link:hover {
+    border-color: var(--sl-color-accent);
+    color: var(--sl-color-accent-high);
+  }
+
+  .systems__all {
+    display: inline-block;
+    padding: 0.35rem 0.35rem;
+    color: var(--sl-color-accent-high);
+    text-decoration: none;
+    font-size: var(--sl-text-sm);
+  }
+
+  .systems__all:hover {
+    text-decoration: underline;
+  }
+</style>

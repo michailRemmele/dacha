@@ -1,0 +1,35 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The renderer cuts the image into slice frames of equal width, and draws the frame with the index currentFrame."
+>
+  <svg viewBox="0 0 720 190" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A sprite sheet with four frames in one row. slice is 4. The frames have the indexes 0 to 3.
+      The frame with index 2 is highlighted as currentFrame.
+    </title>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M160 36 L160 28 L560 28 L560 36" />
+      <text x="360" y="20" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">slice: 4</text>
+
+      <rect x="160" y="44" width="400" height="90" fill="var(--diagram-fill)" />
+      <path d="M260 44 L260 134 M360 44 L360 134 M460 44 L460 134" />
+
+      <circle cx="202" cy="92" r="14" fill="var(--diagram-muted)" stroke="none" />
+      <circle cx="310" cy="84" r="14" fill="var(--diagram-muted)" stroke="none" />
+      <circle cx="418" cy="92" r="14" fill="var(--diagram-accent)" stroke="none" />
+      <circle cx="510" cy="100" r="14" fill="var(--diagram-muted)" stroke="none" />
+
+      <rect x="360" y="44" width="100" height="90" stroke="var(--diagram-accent)" stroke-width="3" />
+
+      <text x="210" y="154" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">0</text>
+      <text x="310" y="154" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">1</text>
+      <text x="410" y="154" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="12">2</text>
+      <text x="510" y="154" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">3</text>
+      <text x="410" y="178" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="12">currentFrame: 2</text>
+    </g>
+  </svg>
+</DiagramFigure>

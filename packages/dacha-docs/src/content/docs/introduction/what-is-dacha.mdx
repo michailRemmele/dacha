@@ -1,0 +1,102 @@
+---
+title: "What is Dacha"
+description: "An overview of the Dacha game engine, what it does, and how you work with it."
+---
+
+import { Image } from 'astro:assets';
+import { LinkCard } from '@astrojs/starlight/components';
+
+import editorShot from '../../../assets/editor/editor-overview.png';
+
+Dacha is a game engine for 2D browser games, with a visual editor. It has two parts, and you
+use both:
+
+- **`dacha`** — the engine. An npm package your game imports.
+- **`dacha-workbench`** — the editor. A desktop application you point at your project. It
+  also ships a few decorators your game code imports, to name your classes and describe
+  their fields to the inspector.
+
+Your game is an ordinary web application. You add the engine as a dependency and build the
+game with a bundler of your choice.
+
+## The game world is described by data
+
+You do not write a startup script that builds the game world. You describe the world in a
+file. Scenes, actors, components, templates, which systems run, and the settings they run
+under are all entries in one JSON file. This file is called the **configuration**.
+
+The engine reads the configuration at startup and creates the running world from it.
+
+You are not expected to write that file by hand. The editor writes it.
+
+The configuration says what exists. It never says what happens. Logic lives in the
+TypeScript you write.
+
+## The editor is a separate application
+
+You launch the editor yourself, and it reads your project:
+
+- **The configuration**, so you can build scenes by dragging actors around.
+- **Your assets directory**, so an image you drop in becomes selectable straight away.
+- **Your own components and systems**, so they appear in the inspector with their fields laid
+  out, next to the built-in ones.
+
+The third one is what makes the editor useful on a real project. You do not have to wire it
+up.
+
+The editor writes to your project too. Ask it for a new component, system or behavior and the
+file lands in your source. Both the game and the inspector pick it up.
+
+<figure class="screenshot">
+  <Image
+    src={editorShot}
+    alt="The editor: the scene tree on the left listing camera, player and background; the game's grass field with the player sprite in the viewport; the inspector on the right showing the player's Animatable, Keyboard Control, Movement, Sprite and Transform components."
+  />
+  <figcaption>
+    The editor: the scene tree, the viewport, and the inspector for the selected actor.
+    `Movement` there is a component from the game's own source. The inspector lists it
+    exactly like the engine's own components.
+  </figcaption>
+</figure>
+
+<LinkCard
+  title="How scripts are found"
+  description="How a class you write becomes a class the editor knows about."
+  href="/game-code/auto-registration/"
+/>
+
+## What comes with it
+
+- **Built-in systems** for rendering, physics, character movement, interpolation, animation,
+  audio, keyboard and mouse input, cameras, behaviors and mounting a user interface.
+- **Built-in components** for those systems to read: transforms, sprites, meshes, text,
+  shapes, colliders, rigid and character bodies, cameras, audio sources and the rest.
+
+The built-in classes get no special treatment from the engine. They are the same kind of
+class you write yourself. Enable the systems you need, ignore the others, and add your own
+next to them.
+
+## Where it fits
+
+Dacha suits 2D browser games where you want a visual scene editor without adopting a large
+engine, and where the game logic is comfortable in TypeScript. It has been used to build
+[games for game jams](/resources/examples/). That is the workload it is shaped around: small
+teams, short timelines, and a browser as the target.
+
+## When not to use it
+
+- **It is 2D only.** There is no 3D pipeline and none is planned.
+- **The target is the browser.** There is no console export and no native desktop or mobile
+  packaging. Browser games do run on mobile browsers.
+- **It is a small project.** There is no asset store, no plugin marketplace, and no commercial
+  support.
+
+If any of those is a requirement, a larger engine will serve you better.
+
+:::caution[Before version 1.0]
+Breaking changes land between minor versions, and they are not deprecated first. Pin the
+version your project uses, and read the release notes before you raise it.
+:::
+
+If none of that rules it out, [installation](/getting-started/installation/) gets a project
+running in a few minutes.

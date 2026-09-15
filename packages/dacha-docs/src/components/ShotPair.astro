@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Shot {
+  src: ImageMetadata;
+  alt: string;
+  /** Short label shown above the image, such as "Off" or "On". */
+  label: string;
+}
+
+interface Props {
+  /** Two crops of the same framing, compared side by side. */
+  first: Shot;
+  second: Shot;
+  caption: string;
+}
+
+const { first, second, caption } = Astro.props;
+---
+
+<figure class="screenshot shot-pair">
+  <div class="shot-pair__grid not-content">
+    {
+      [first, second].map((shot) => (
+        <div>
+          <p class="shot-pair__label">{shot.label}</p>
+          <Image src={shot.src} alt={shot.alt} />
+        </div>
+      ))
+    }
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<style>
+  .shot-pair__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1rem;
+  }
+
+  .shot-pair__label {
+    margin: 0 0 0.35rem;
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    color: var(--sl-color-gray-2);
+  }
+</style>

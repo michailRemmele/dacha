@@ -1,0 +1,192 @@
+---
+title: "Systems"
+description: "The two kinds of system, and how a system selects the actors it acts on."
+---
+
+import { LinkCard } from '@astrojs/starlight/components';
+import SystemLifetimes from '../../../components/diagrams/SystemLifetimes.astro';
+
+Logic lives in systems. There are two kinds, and one question decides between them:
+
+**Does this need to survive a scene change?**
+
+If yes, write a world system. If no, write a scene system.
+
+<SystemLifetimes />
+
+## World systems
+
+The engine creates a `WorldSystem` once, and the system lives for the whole run. Rendering,
+input and audio are world systems. A renderer that was destroyed and rebuilt on every scene
+change would throw away its GPU state, and audio would cut out between levels.
+
+Your own systems answer the same question. Anything that holds state the player carries
+between levels is a world system: an inventory, a score, which abilities are unlocked.
+
+Without a world system that state has to live somewhere else, usually a module-level variable
+or `localStorage`. Both sit outside the engine's lifecycle. `stop()` does not clear them, so
+they still hold the last run's values when a new game starts.
+
+World systems get three lifecycle hooks that scene systems do not have:
+
+| Hook | Receives | When |
+| --- | --- | --- |
+| `onWorldLoad` | `world` | Once, as the world is being set up. Async: the engine waits for every world system's hook before continuing |
+| `onWorldReady` | `world` | Once, after every world system has loaded |
+| `onWorldDestroy` | `world` | Once, as the game shuts down |
+
+Load and ready are separate so that one system can depend on another being ready. It does not
+have to depend on construction order.
+
+## Scene systems
+
+The engine creates a `SceneSystem` when its scene loads and destroys it when the scene is torn
+down. Use it for anything whose lifetime matches a scene: level logic, enemy AI, a score
+counter for one level.
+
+The engine builds scene systems again for each scene, so a scene system starts with clean
+state every time a scene loads. That is usually what you want. It is also worth remembering
+when something resets and you do not know why.
+
+## The hooks both kinds share
+
+| Hook | Receives | When |
+| --- | --- | --- |
+| `onSceneLoad` | `scene` | Before the scene becomes active. Async: load resources here |
+| `onSceneEnter` | `scene` | Once the scene is active |
+| `fixedUpdate` | nothing | At a fixed rate. May run zero or several times per frame |
+| `update` | nothing | Once per rendered frame |
+| `onSceneExit` | `scene` | As the scene stops being active |
+| `onSceneDestroy` | `scene` | As the scene is torn down. A scene system removes its listeners here |
+
+`update` and `fixedUpdate` take no arguments. Read the frame's timing from the `time` object
+the system was constructed with.
+
+The two per-frame hooks have different jobs. `fixedUpdate` takes the simulation: movement,
+physics, anything whose outcome must not depend on frame rate. `update` takes presentation.
+[The game loop](/concepts/game-loop/) covers both clocks in full, and what it costs to get them
+backwards.
+
+A world system receives the scene hooks too, once per scene change. That is how a persistent
+system reacts to the world moving between levels.
+
+`onSceneLoad` and `onWorldLoad` are the two async hooks, and they are the two the engine waits
+for. The scene does not become active, and the world does not become ready, until every
+system's hook has resolved. So they are the right place to fetch anything that must be present
+before the first frame. Use `onWorldLoad` for what the whole game needs, and `onSceneLoad` for
+what one scene needs.
+
+## What a system receives
+
+The engine constructs both kinds with an options object. These fields are shared:
+
+| Field | What it is |
+| --- | --- |
+| `actorSpawner` | [Creates actors](/concepts/actors/#creating-and-destroying-actors) from templates at runtime |
+| `templateCollection` | The templates defined in the configuration |
+| `assets` | The registry of the project's assets |
+| `globalOptions` | The global settings for the game |
+| `time` | Shared timing state |
+| `resources` | Whatever was passed for this system in the engine's `resources` |
+
+A scene system also receives `scene` and `world`. A world system receives `world`.
+
+The engine merges the system's own `options` from the configuration into the same object. So a
+system reads its settings from there, next to these fields.
+
+## Selecting the actors to act on
+
+A system does not keep its own list of actors. It builds an `ActorQuery` once, in the
+constructor, and reads it each time it runs:
+
+```ts
+import { ActorQuery, SceneSystem, Transform } from 'dacha';
+import type { SceneSystemOptions } from 'dacha';
+
+import Velocity from '../components/velocity.component';
+
+export default class MovementSystem extends SceneSystem {
+  private actorQuery: ActorQuery;
+
+  constructor(options: SceneSystemOptions) {
+    super();
+
+    this.actorQuery = new ActorQuery({
+      scene: options.scene,
+      filter: [Transform, Velocity],
+    });
+  }
+
+  update(): void {
+    for (const actor of this.actorQuery.getActors()) {
+      const transform = actor.getComponent(Transform);
+      const velocity = actor.getComponent(Velocity);
+      // …
+    }
+  }
+}
+```
+
+A query belongs to one scene. It matches the actors in that scene only, and it keeps itself up
+to date. It adds an actor when the actor enters the scene, and removes it when the actor
+leaves. It re-tests an actor when a component is attached to it or detached from it. So do not
+rebuild the query each frame.
+
+These changes reach the query at once, not on the next frame. Attaching a marker component
+puts the actor in the results on the very next line, which makes a marker a workable way to
+move an actor in and out of a system's reach.
+
+A world system has no `scene` in its options, so it cannot build a query in its constructor. It
+builds one in `onSceneEnter` and destroys it in `onSceneExit` instead, once for every scene.
+
+A query is an event target of its own. It dispatches `AddActor` and `RemoveActor` on itself,
+immediately, when an actor starts or stops matching. Listen there when a system has to set
+something up per actor rather than sweep the whole set each frame.
+
+A list of components is not always enough. The filter can also be a function:
+
+```ts
+const query = new ActorQuery({
+  scene,
+  filter: (actor) => Boolean(actor.getComponent(Enemy)) && actor.name.startsWith('boss'),
+});
+```
+
+:::caution
+The engine runs the predicate when an actor enters the scene and when its components change.
+It never runs the predicate because a value inside a component changed. A filter on
+`transform.world.position.y > 100` checks the position once, when the actor appears. After
+that the result goes stale as the actor moves. Filter on what an actor *is*, not on what it is
+doing right now.
+:::
+
+:::caution
+`getActors()` returns the query's own live `Set`, not a copy. Spawning or removing an actor
+while you iterate that `Set` mutates the collection you are looping over. Copy it first when
+the body of the loop can do either.
+:::
+
+## Cleaning up
+
+Whatever a system subscribes to in its constructor, it unsubscribes from when the system goes
+away. Nothing does it for you. For a scene system that is `onSceneDestroy`. For a world system
+it is `onWorldDestroy`. A world system receives `onSceneDestroy` as well, once for every scene,
+so cleaning up there would drop its listeners at the first scene change.
+
+For a scene system, this matters most for anything that outlives the scene. A listener on the
+**world** stays registered after the scene is gone, and the engine builds the system again on
+the next scene load, so you get a second copy. A listener on the **scene** disappears along
+with the scene, but removing it keeps the system's own lifecycle honest.
+
+An `ActorQuery` follows the same rule, because a query is a set of listeners on its scene.
+It stops existing along with the scene it queries, so a scene system does not have to destroy
+its own query. Call `destroy()` when a query stops being useful while its scene is still
+alive: one you rebuild after a setting changes, or one a world system made for a scene the
+game has left but not unloaded. See [removing
+listeners](/concepts/events/#removing-listeners).
+
+<LinkCard
+  title="Systems in code"
+  description="The same ideas as a file you can copy: the class, the query, the decorator and the cleanup."
+  href="/game-code/systems/"
+/>

@@ -1,0 +1,167 @@
+---
+title: "The game loop & lifecycle"
+description: "How the loop runs, and the exact order the lifecycle hooks fire in."
+---
+
+import FixedStepAccumulator from '../../../components/diagrams/FixedStepAccumulator.astro';
+import Lifecycle from '../../../components/diagrams/Lifecycle.astro';
+
+The loop runs on `requestAnimationFrame` with a fixed-timestep accumulator. Rendering happens
+once per frame, at whatever rate the browser offers. Simulation happens at a fixed rate that
+does not depend on frame rate.
+
+## Two callbacks, two clocks
+
+**`update`** runs once per rendered frame. The time it covers varies with the frame rate. It
+tracks the display.
+
+**`fixedUpdate`** runs at a fixed rate. In one frame it may run several times, once, or not at
+all. That depends on how much simulation time has accumulated since the last frame.
+
+<FixedStepAccumulator />
+
+The split exists for two reasons.
+
+**The same input must produce the same result on any machine.** Suppose you moved an actor by
+a fixed amount per frame. A player on a 144 Hz monitor gets 144 frames per second, and a
+player on 60 Hz gets 60. The first player would move nearly two and a half times as far.
+Running the simulation on its own clock removes frame rate from the outcome.
+
+**A long step can miss a collision.** How far something travels between two collision checks
+depends on the length of the step. A slow machine, or the first frame after a backgrounded tab
+comes forward, produces a very long frame. With a per-frame step, a character can cross an
+entire platform inside that one step. No position is ever tested inside the platform, so
+nothing reports a collision, and the character falls through the floor. A fixed step bounds
+that distance. This is why physics in particular runs on this clock.
+
+The cost is that the simulation and the display are no longer in step. A drawn frame usually
+falls between two simulation steps. [Interpolation](/systems/interpolation/) is what makes
+that look smooth instead of jittery.
+
+## The numbers you scale by
+
+Systems and behaviors both receive a `time` object in their options. It is one shared instance,
+and the loop updates it once per frame. Every value on it is in **seconds**.
+
+| Field | What it holds | Read it in |
+| --- | --- | --- |
+| `deltaTime` | Time since the previous rendered frame | `update` |
+| `fixedDeltaTime` | The fixed step, a constant | `fixedUpdate` |
+| `elapsedTime` | Time the loop has been running, since it last started | anywhere but `fixedUpdate` |
+| `alpha` | How far the frame sits between the last two fixed steps, in `[0, 1)` | `update` |
+
+```ts
+import { SceneSystem } from 'dacha';
+import type { SceneSystemOptions, Time } from 'dacha';
+
+export default class MovementSystem extends SceneSystem {
+  private time: Time;
+
+  constructor(options: SceneSystemOptions) {
+    super();
+    this.time = options.time;
+  }
+
+  fixedUpdate(): void {
+    const step = this.time.fixedDeltaTime;
+    // position += velocity * step
+  }
+}
+```
+
+`fixedDeltaTime` never changes. It is `1 / fixedUpdateRate`, decided once at startup. That is
+what makes the fixed clock worth having, and it is why simulation scaled by it produces the
+same result on every machine.
+
+`deltaTime` changes every frame. It is the clamped elapsed time, not the raw one. It never
+exceeds `maxFrameDelta`, so coming back to a backgrounded tab does not teleport everything
+that was scaled by it. Use it for presentation, and expect it to be uneven.
+
+`alpha` is the loop's leftover. It is the fraction of a fixed step that had accumulated but was
+not simulated when the frame was drawn. [Interpolation](/systems/interpolation/) already uses
+it to smooth transforms, so you need it only when you smooth something yourself.
+
+`elapsedTime` is the sum of the frame deltas since the loop last started. It is not wall-clock
+time: it is built from the same clamped values as `deltaTime`, so it falls behind real time
+whenever a frame runs long. `pause()` freezes it, and `play()` after a `pause()` resets it to
+zero, so do not use it as a save-game timer.
+
+:::caution
+The loop refreshes `deltaTime`, `alpha` and `elapsedTime` after the frame's fixed steps have run
+and before `update`. Read inside `fixedUpdate`, all three still hold the previous frame's
+values. Scale simulation by `fixedDeltaTime`, which is a constant and always correct.
+:::
+
+## Settings
+
+These live under the `performance` entry in [`globalOptions`](/concepts/configuration/).
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `fixedUpdateRate` | 50 Hz | How often `fixedUpdate` runs |
+| `maxFPS` | uncapped | Upper bound on how often the loop runs |
+| `maxFrameDelta` | 250 ms | Largest frame gap the loop will believe |
+| `maxFixedUpdatesPerFrame` | 5 | Ceiling on catch-up steps in one frame |
+
+:::note
+The configuration in the [starter project](/getting-started/installation/) carries `maxFPS: 0`.
+Zero and the engine's internal default both mean uncapped.
+
+A cap does not slow a frame down. It skips whole iterations of the loop, and on a skipped
+iteration nothing runs at all, event delivery included.
+:::
+
+The last two settings are safety rails rather than tuning knobs. When a tab goes into the
+background, the browser stops calling `requestAnimationFrame`. On return, the elapsed time can
+be minutes. Without a cap the loop would try to run thousands of catch-up steps in one frame,
+and the game would appear to freeze.
+
+So the loop clamps the frame gap to `maxFrameDelta`, and runs at most
+`maxFixedUpdatesPerFrame` fixed steps per frame. When it hits that ceiling it discards the
+backlog instead of carrying it into the next frame. The simulation falls behind real time,
+which is the far better failure.
+
+## Hook ordering
+
+<Lifecycle />
+
+World hooks bracket the whole run and fire once. Everything inside the dashed frame repeats on
+every scene change.
+
+| Order | Hook | Scope |
+| --- | --- | --- |
+| 1 | `onWorldLoad` | World systems, async |
+| 2 | `onWorldReady` | World systems |
+| 3 | `onSceneLoad` | Both, async |
+| 4 | `onSceneEnter` | Both |
+| 5 | `fixedUpdate` | Both, zero or more times per frame |
+| 6 | `update` | Both, once per frame |
+| 7 | `onSceneExit` | Both |
+| 8 | `onSceneDestroy` | Both |
+| 9 | `onWorldDestroy` | World systems |
+
+Steps 5 and 6 repeat every frame for as long as the scene is active.
+
+Construction comes before all of this. The engine builds every world system before
+`onWorldLoad`, and it builds a scene's systems before that scene's `onSceneLoad`. So a
+constructor cannot rely on anything a hook does.
+
+Within one frame the order is fixed: the engine delivers [queued
+events](/concepts/events/#delivery-happens-on-the-next-frame) first, then runs every
+accumulated `fixedUpdate`, then `update`. So a system that reads state in `update` sees the
+result of this frame's simulation, not the previous frame's.
+
+Within each of those phases, systems run in the order the configuration lists them. See
+[`systems`](/concepts/configuration/#systems).
+
+## Controlling the loop
+
+The engine exposes `play()`, `pause()` and `stop()`.
+
+`pause()` halts the loop without tearing anything down, which is what a pause menu wants. Call
+`play()` again to resume the same world, in the same scene. Nothing drains the event queue while
+the loop is stopped, so events dispatched during a pause are delivered on the first frame after
+it.
+
+`stop()` destroys the world. Every scene and world destroy hook runs, and a later `play()`
+builds the whole game again from the configuration, starting at `startSceneId`.

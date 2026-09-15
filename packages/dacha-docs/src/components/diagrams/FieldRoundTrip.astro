@@ -1,0 +1,60 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="A decorated field travels through the configuration. An undecorated property never leaves your code, and the constructor rebuilds it on every load."
+>
+  <svg viewBox="0 0 720 300" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A field marked with DefineField is saved into data.json and passed back to the
+      component constructor. An undecorated property is not saved, and the constructor
+      computes it again each time the component is built.
+    </title>
+
+    <defs>
+      <marker id="frt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <text x="101" y="32" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">your class</text>
+      <text x="360" y="32" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">data/data.json</text>
+      <text x="619" y="32" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">the live component</text>
+
+      <rect x="16" y="64" width="170" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="101" y="88" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="10">@DefineField()</text>
+      <text x="101" y="107" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">points</text>
+
+      <rect x="275" y="64" width="170" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="99" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">"points": 100</text>
+
+      <rect x="534" y="64" width="170" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="619" y="99" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">points = 100</text>
+
+      <text x="230" y="74" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">the inspector</text>
+      <text x="230" y="87" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">saves it</text>
+      <path d="M186 100 L271 100" marker-end="url(#frt-arrow)" />
+
+      <text x="489" y="74" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">passed to</text>
+      <text x="489" y="87" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">the constructor</text>
+      <path d="M445 100 L530 100" marker-end="url(#frt-arrow)" />
+
+      <rect x="16" y="176" width="170" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="101" y="200" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">maxPoints</text>
+      <text x="101" y="219" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">no decorator</text>
+
+      <rect x="275" y="176" width="170" height="60" rx="8" fill="none" stroke-dasharray="5 4" />
+      <text x="360" y="211" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">not saved</text>
+
+      <rect x="534" y="176" width="170" height="60" rx="8" fill="var(--diagram-fill)" />
+      <text x="619" y="200" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">maxPoints = 100</text>
+      <text x="619" y="219" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">computed on the spot</text>
+
+      <path d="M101 236 L101 268 L619 268 L619 240" marker-end="url(#frt-arrow)" />
+      <text x="360" y="286" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">the constructor rebuilds it every time the component is built</text>
+    </g>
+  </svg>
+</DiagramFigure>

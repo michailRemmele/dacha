@@ -1,0 +1,30 @@
+.ui-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  pointer-events: none;
+  font: 14px/1.4 system-ui, sans-serif;
+  color: #fff;
+}
+
+.ui-hint {
+  opacity: 0.7;
+}
+
+.ui-restart {
+  pointer-events: auto;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ui-restart:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

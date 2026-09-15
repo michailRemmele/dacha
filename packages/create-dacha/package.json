@@ -1,0 +1,26 @@
+{
+  "name": "create-dacha",
+  "version": "0.19.0-alpha.1",
+  "description": "Scaffold a dacha game project",
+  "license": "MIT",
+  "bin": {
+    "create-dacha": "bin/index.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "templates"
+  ],
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\""
+  },
+  "keywords": [
+    "dacha",
+    "game-engine",
+    "scaffold",
+    "template"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

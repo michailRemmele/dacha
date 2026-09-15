@@ -1,0 +1,162 @@
+---
+title: "Components"
+description: "Sprite, Shape, BitmapText and PixiView, and the fields each one has."
+---
+
+import SpriteSheet from '../../../../components/diagrams/SpriteSheet.astro';
+
+This page lists the view components the renderer draws, except `Mesh`, which has its own page:
+[Shaders](/systems/rendering/shaders/). Read [Rendering](/systems/rendering/) first for draw order
+and loading.
+
+## Fields every component has
+
+`Sprite`, `Shape` and `BitmapText` share these fields:
+
+| Field | What it does |
+| --- | --- |
+| `opacity` | From `0` (invisible) to `1` (opaque) |
+| `blending` | `normal`, `addition`, `substract` or `multiply` |
+| `disabled` | Hides the view. The actor and its other components keep working |
+| `sortingLayer` | The layer the view is drawn in. See [draw order](/systems/rendering/#draw-order) |
+| `sortOffset` | Moves the point the renderer sorts by. See [sorting inside a layer](/systems/rendering/#sorting-inside-a-layer) |
+
+`PixiView` has only `sortingLayer` and `sortOffset`.
+
+## Sprite
+
+`Sprite` draws an image.
+
+| Field | What it does |
+| --- | --- |
+| `src` | Path to the image. The editor accepts `png` |
+| `width`, `height` | The size of the sprite in world units. The image stretches to this size |
+| `slice` | The number of frames in the image. `1` means the image is one frame |
+| `currentFrame` | The frame to draw, starting from `0`. Not shown in the editor |
+| `fit` | `stretch` or `repeat` |
+| `textureOffset` | Moves the image inside the sprite. Only for `fit: repeat` |
+| `flipX`, `flipY` | Mirror the image |
+| `color` | A tint. `#ffffff` draws the image unchanged |
+
+### Sprite sheets
+
+A sprite sheet is one image with all frames in a single row. Set `slice` to the number of frames.
+The renderer cuts the image into `slice` frames of equal width, and draws the frame with the
+index `currentFrame`.
+
+<SpriteSheet />
+
+The renderer does not support sheets with several rows.
+
+To play the frames as an animation, change `currentFrame` over time. The
+[Animator](/systems/animation/) does this for you.
+
+### Tiling
+
+With `fit: repeat`, the image keeps its own size and repeats to fill `width` and `height`. The
+[starter project](/getting-started/installation/) uses this for the grass background.
+
+Change `textureOffset` to scroll the image inside the sprite, for example for a moving background.
+With `flipX` or `flipY`, the offset also scrolls in the mirrored direction.
+
+You cannot change `fit` at runtime.
+
+## Shape
+
+`Shape` draws a geometric shape. The `type` field selects the shape, and each type has its own
+size fields:
+
+| `type` | Size fields |
+| --- | --- |
+| `rectangle` | `size` |
+| `roundRectangle` | `size`, `radius` |
+| `circle` | `radius` |
+| `ellipse` | `radius` with `x` and `y` |
+| `line` | `point1`, `point2` |
+
+The shape is centred on the actor. A line goes from `point1` to `point2`, relative to the actor.
+
+| Field | What it does |
+| --- | --- |
+| `fill` | The fill colour. A line has no fill |
+| `strokeColor` | The colour of the outline |
+| `strokeWidth` | The width of the outline. `0` draws no outline |
+| `strokeAlignment` | Where the outline sits: `1` inside the shape, `0.5` centred on the edge, `0` outside |
+| `pixelLine` | Draws a 1-pixel outline at any zoom. `strokeWidth` is ignored |
+
+Outlines use pixi.js stroke styles. See the pixi.js
+[Graphics documentation](https://pixijs.download/release/docs/scene.Graphics.html).
+
+### Changing a shape in code
+
+In the configuration, the size fields sit next to the other fields. In the component, they are
+inside `geometry`:
+
+```ts
+const shape = actor.getComponent(Shape);
+
+if (shape.geometry.type === 'circle') {
+  shape.geometry.radius = 20;
+}
+```
+
+The renderer redraws the shape in the next frame.
+
+## BitmapText
+
+`BitmapText` draws text with a bitmap font.
+
+| Field | What it does |
+| --- | --- |
+| `text` | The text to draw. It can have line breaks |
+| `font` | Path to the font file. The editor accepts `fnt` and `xml` |
+| `fontSize` | The size of the text |
+| `align` | `left`, `center` or `right` |
+| `color` | The colour of the text |
+
+The pixi.js [Bitmap Text guide](https://pixijs.com/8.x/guides/components/scene-objects/text/bitmap)
+covers the supported formats and how to create a font.
+
+If `text` has a character that the font does not have, the renderer removes that character and
+writes a warning to the console.
+
+## PixiView
+
+`PixiView` draws any pixi.js object you create. Use it for things the other components do not
+cover, such as a `Graphics` drawing with several paths.
+
+`PixiView` exists only in code. The editor does not offer it, because its main field is a
+function:
+
+```ts
+import { Graphics } from 'pixi.js';
+import { PixiView } from 'dacha';
+
+actor.setComponent(
+  new PixiView({
+    createView: () =>
+      new Graphics().circle(0, 0, 16).fill(0xffcc00).stroke({ width: 2, color: 0x000000 }),
+    sortingLayer: 'default',
+  }),
+);
+```
+
+The renderer calls `createView` when the actor enters the scene, or when you add the component to
+an actor that is already there. The object must be a pixi.js `ViewContainer`, such as `Sprite`,
+`Graphics` or `Mesh`.
+
+The renderer positions, sorts and destroys the object, like any other view. It changes nothing else
+on it. To change the object later, read it from `view`:
+
+```ts
+const { view } = actor.getComponent(PixiView);
+
+if (view) {
+  view.visible = false;
+}
+```
+
+`view` is `undefined` until the renderer has created the object.
+
+Import pixi.js classes from the `pixi.js` package. For how they work, see the
+[pixi.js documentation](https://pixijs.com/8.x/guides/components/scene-objects).

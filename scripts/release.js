@@ -4,8 +4,13 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+const {
+  TEMPLATE_MANIFEST_PATH,
+  setTemplateVersions,
+} = require('../packages/create-dacha/lib/template-manifest');
+
 const ROOT = path.resolve(__dirname, '..');
-const PACKAGES = ['dacha', 'dacha-workbench'];
+const PACKAGES = ['dacha', 'dacha-workbench', 'create-dacha'];
 
 const run = (command) => execSync(command, { cwd: ROOT, stdio: 'inherit' });
 const read = (command) =>
@@ -51,6 +56,15 @@ PACKAGES.forEach((name) => {
 
   writeManifest(name, manifest);
 });
+
+const templateManifest = JSON.parse(
+  fs.readFileSync(TEMPLATE_MANIFEST_PATH, 'utf8'),
+);
+
+fs.writeFileSync(
+  TEMPLATE_MANIFEST_PATH,
+  `${JSON.stringify(setTemplateVersions(templateManifest, version), null, 2)}\n`,
+);
 
 run('npm i --package-lock-only');
 

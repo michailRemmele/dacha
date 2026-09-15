@@ -1,0 +1,212 @@
+---
+title: "Input"
+description: "Keyboard and mouse input, and how controls turn it into your own events."
+---
+
+import PanelShot from '../../../components/PanelShot.astro';
+import InputPipeline from '../../../components/diagrams/InputPipeline.astro';
+
+import keyboardShot from '../../../assets/editor/inspector-keyboard-control.png';
+
+The engine handles keyboard and mouse input in two steps:
+
+1. An **input system** listens to the browser. It dispatches every key or mouse event on the
+   world as `KeyboardInput` or `MouseInput`.
+2. A **control system** reads those events. It finds actors with a `KeyboardControl` or
+   `MouseControl` component and dispatches **your** events on them, as the component's bindings
+   say.
+
+So game logic does not check keys. You bind `KeyW` to a `Move` event in the editor, and a system
+listens for `Move`.
+
+<InputPipeline />
+
+There are four systems, all of them world systems:
+
+| System | What it does |
+| --- | --- |
+| `KeyboardInputSystem` | Dispatches `KeyboardInput` on the world |
+| `KeyboardControlSystem` | Dispatches the bound events on actors with `KeyboardControl` |
+| `MouseInputSystem` | Dispatches `MouseInput` on the world |
+| `MouseControlSystem` | Dispatches the bound events on actors with `MouseControl` |
+
+The engine has no touch or gamepad input.
+
+## Setting it up
+
+The [starter project](/getting-started/installation/) includes keyboard input and keyboard
+control. To add the mouse:
+
+1. Add `MouseInputSystem` and `MouseControlSystem` to the engine's `systems` array, and
+   `MouseControl` to its `components` array.
+2. Add both systems to the systems list in the editor. `MouseInputSystem` must come before
+   `MouseControlSystem`.
+
+```ts
+import { Engine, MouseInputSystem, MouseControlSystem, MouseControl } from 'dacha';
+
+const engine = new Engine({
+  config,
+  systems: [MouseInputSystem, MouseControlSystem, ...gameSystems],
+  components: [MouseControl, ...gameComponents],
+  assets: [],
+});
+```
+
+`MouseInputSystem` converts mouse coordinates with the current camera, so it also needs
+`CameraSystem`. Without it, every mouse event throws.
+
+If one of your world systems listens for `MouseInput`, put it after `MouseInputSystem` too.
+Otherwise it can receive screen coordinates instead of world coordinates.
+
+## Where input comes from
+
+Both input systems have the same two options:
+
+| Option | What it does |
+| --- | --- |
+| `useWindow` | Listens on `window`. The default is `true` |
+| `windowNodeId` | The id of the element to listen on when `useWindow` is off |
+
+If the element with `windowNodeId` does not exist, the system throws when the engine creates it.
+
+An element receives key events only when it has focus. To listen for keys on a `div`, give it a
+`tabindex` and focus it.
+
+## Keyboard control
+
+A `KeyboardControl` component holds a list of bindings. Each binding has these fields:
+
+| Field | What it does |
+| --- | --- |
+| `key` | The key, as `KeyboardEvent.code`: `KeyW`, `Space`, `ArrowUp` |
+| `pressed` | `true` sends the event when the key goes down. `false` sends it when the key goes up |
+| `keepEmit` | Sends the event again in every frame while the key is held. Only for `pressed` bindings |
+| `eventType` | The name of the event to dispatch on the actor |
+| `attrs` | Values to put in the event payload |
+
+`key` is the physical key, not the character it types. `KeyW` is the same key on every keyboard
+layout.
+
+In the editor, press the pencil next to *Key* and then press the key you want.
+
+<PanelShot
+  src={keyboardShot}
+  alt="The Keyboard Control component in the inspector. It lists bindings such as KeyA to RotateInput, KeyW to ThrustInput and ArrowUp to ThrustInput. The KeyA binding is expanded: Key is KeyA with a pencil button, Pressed and Keep Emit are checked, Event Type is RotateInput, and Attributes has one field. Add New Bind is at the bottom."
+  caption="Each row is one binding, shown as the key and the event it sends."
+  width={320}
+/>
+
+A `pressed` binding without `keepEmit` sends one event per press. The browser repeats `keydown`
+while a key is held, and the system ignores those repeats.
+
+`keepEmit` is for actions that last while the key is down, such as movement. The starter
+project binds `W`, `A`, `S` and `D` to `Move` with `keepEmit`. Each binding sends a direction in
+`attrs`:
+
+```json
+{
+  "key": "KeyW",
+  "pressed": true,
+  "keepEmit": true,
+  "eventType": "Move",
+  "attrs": [
+    { "name": "x", "type": "number", "value": 0 },
+    { "name": "y", "type": "number", "value": -1 }
+  ]
+}
+```
+
+The starter project's `MovementSystem` adds up the directions it receives in a frame, moves the
+actor, and resets the direction to zero. So the actor moves diagonally when two keys are held,
+and stops when no key is held.
+
+`keepEmit` sends one event per rendered frame, so the number of events depends on the frame
+rate. Use it to know that a key is held. Do not count the events.
+
+## Mouse control
+
+A `MouseControl` component also holds a list of bindings:
+
+| Field | What it does |
+| --- | --- |
+| `event` | The browser event: `mousedown`, `mouseup`, `mousemove`, `click`, `contextmenu`, `dblclick`, `mouseenter` or `mouseleave` |
+| `button` | The mouse button for `mousedown` and `mouseup`: `0` is left, `1` is middle, `2` is right |
+| `eventType` | The name of the event to dispatch on the actor |
+| `attrs` | Values to put in the event payload |
+
+In the editor, each mouse event can have one binding.
+
+The payload of a mouse control event has your `attrs` and these fields:
+
+| Field | What it is |
+| --- | --- |
+| `x`, `y` | The pointer position in world coordinates |
+| `screenX`, `screenY` | The pointer position in pixels, relative to the element under the pointer |
+| `nativeEvent` | The browser's `MouseEvent` |
+
+Despite their names, `screenX` and `screenY` are not the browser's `screenX` and `screenY`.
+
+:::caution
+`MouseControlSystem` does not check what is under the pointer. A `click` binding fires on every
+actor with that binding, wherever the player clicks. To react to clicks on one actor, compare
+`x` and `y` with that actor's position or shape yourself.
+:::
+
+## Handling a control event
+
+A control event is an actor event, so it climbs to the scene and the world. A system can listen
+once on the scene and read `event.target` to find the actor:
+
+```ts
+this.scene.addEventListener(Move, this.handleMove);
+
+private handleMove = (event: MoveEvent): void => {
+  const movement = event.target.getComponent(Movement);
+  movement.directionX += event.x;
+  movement.directionY += event.y;
+};
+```
+
+Declare your event names in `src/events/index.ts`, and the editor offers them in the
+`eventType` field. See [declaring your own
+events](/concepts/events/#declaring-your-own-events).
+
+`dacha` has two types for the payload. `KeyboardControlEvent<T>` is an actor event with your
+attributes. `MouseControlEvent<T>` adds the pointer fields:
+
+```ts
+import type { MouseControlEvent } from 'dacha/events';
+
+export type ShootEvent = MouseControlEvent<{ weapon: string }>;
+```
+
+Every actor with a matching binding receives the event. When several actors have the same
+binding, one key press reaches all of them.
+
+## Reading raw input
+
+To handle input without a control component, listen for `KeyboardInput` or `MouseInput` on the
+world:
+
+```ts
+import { KeyboardInput } from 'dacha/events';
+import type { KeyboardInputEvent } from 'dacha/events';
+
+this.world.addEventListener(KeyboardInput, this.handleKey);
+
+private handleKey = (event: KeyboardInputEvent): void => {
+  if (event.key === 'Escape' && event.pressed) {
+    // open the pause menu
+  }
+};
+```
+
+| Event | Payload |
+| --- | --- |
+| `KeyboardInput` | `key`, `pressed`, `nativeEvent` |
+| `MouseInput` | `eventType`, `button`, `x`, `y`, `screenX`, `screenY`, `nativeEvent` |
+
+Raw `KeyboardInput` includes the browser's repeated `keydown` events. `x` and `y` of `MouseInput`
+are in world coordinates, as in control events. This needs the system order from [setting it
+up](#setting-it-up). Without a current camera, they stay in pixels.

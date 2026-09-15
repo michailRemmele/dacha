@@ -1,0 +1,96 @@
+---
+title: "Generating scripts"
+description: "Create a component, system, behavior or shader from the editor interface."
+---
+
+import { Image } from 'astro:assets';
+
+import DocVideo from '../../../components/DocVideo.astro';
+
+import newComponentShot from '../../../assets/editor/new-component-dialog.png';
+import newComponentPoster from '../../../assets/editor/editor-new-component.poster.webp';
+
+The editor can write a new class into your project: a component, a system, a behavior, a
+shader or a filter effect. You get a file that compiles, with the import, the decorator and
+the class already in place.
+
+## Where to find it
+
+*Create New* is part of the picker for the thing you are adding:
+
+| To create | Open |
+| --- | --- |
+| A component | *Add Component*, under an actor or template |
+| A system | *Add System*, in the Systems tab |
+| A behavior | *Add Behavior*, inside the `Behaviors` component |
+| A filter effect | *Filter Effects*, in the `Renderer` system's options |
+| A shader | *Material*, inside the `Mesh` component |
+
+<figure class="screenshot">
+  <Image
+    src={newComponentShot}
+    alt="The New Component dialog over the editor. It shows the resulting file path, a Base Directory field reading ./src/components, a Class Name field reading MyCustomComponent, an unchecked Customize Path box, and the disabled Subdirectory and File Name fields filled in as my-custom-component and my-custom-component.component.ts."
+  />
+  <figcaption>
+    The class name decides the directory and the filename. The path at the top shows the
+    result.
+  </figcaption>
+</figure>
+
+If the file already exists, the editor overwrites it without a warning.
+
+## What you get
+
+The generated file is a working example. A component comes with one decorated field:
+
+```ts
+import { Component } from 'dacha';
+import { DefineComponent, DefineField } from 'dacha-workbench/decorators';
+
+interface MyCustomComponentConfig {
+  exampleField: string
+}
+
+@DefineComponent({
+  name: 'MyCustomComponent',
+})
+export default class MyCustomComponent extends Component {
+  @DefineField()
+  exampleField: string;
+
+  constructor(config: MyCustomComponentConfig) {
+    super();
+
+    const { exampleField } = config;
+
+    this.exampleField = exampleField;
+  }
+}
+```
+
+A system comes as a `SceneSystem`. Change the base class to `WorldSystem` if the system should
+outlive scene changes.
+
+After that the file is yours. Rename it or move it, but keep a filename that matches the
+[pattern the project globs](/game-code/auto-registration/).
+
+To generate files that follow your own conventions, replace the templates with the
+[`templates` key](/editor/config-reference/#script-templates).
+
+## After Create
+
+Writing the file starts a rebuild of your project's code. When it finishes, the new class
+appears in the picker. There is no restart.
+
+<DocVideo
+  slug="editor-new-component"
+  poster={newComponentPoster}
+  width={1512}
+  height={1008}
+  label="Creating a component from the editor's New Component dialog, after which it appears in the inspector for the selected actor."
+  caption="MyCustomComponent appears in the inspector after the rebuild."
+/>
+
+After every rebuild the editor checks the project configuration against your classes. It
+repairs anything that no longer matches, such as a field you renamed. A repair clears the
+[undo history](/editor/building-a-scene/#undo).

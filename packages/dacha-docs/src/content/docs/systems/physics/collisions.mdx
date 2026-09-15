@@ -1,0 +1,204 @@
+---
+title: "Collisions"
+description: "React to collisions with events, and choose which colliders collide with collision layers."
+---
+
+import PanelShot from '../../../../components/PanelShot.astro';
+import CollisionTimeline from '../../../../components/diagrams/CollisionTimeline.astro';
+
+import physicsShot from '../../../../assets/editor/physics-collision-matrix.png';
+
+When two colliders touch, the physics system sends collision events to both actors. Collision
+layers decide which colliders can touch at all.
+
+## Collision events
+
+The physics system sends three events:
+
+| Event | When it is sent |
+| --- | --- |
+| `CollisionEnter` | In the first step in which the two colliders touch |
+| `CollisionStay` | In every following step while they still touch |
+| `CollisionLeave` | In the first step in which they no longer touch |
+
+<CollisionTimeline />
+
+Each of the two actors gets its own event. The event has these fields:
+
+| Field | What it holds |
+| --- | --- |
+| `target` | The actor that got the event |
+| `actor` | The other actor |
+| `normal` | The direction from `target` to the other actor |
+| `penetration` | How deep the colliders overlap along `normal`, in world units |
+| `contactPoints` | The points where the colliders touch, in world space. One or two points |
+
+In `CollisionLeave`, `normal`, `penetration` and `contactPoints` hold the values from the last
+step in which the colliders touched.
+
+### Listening for collisions
+
+The type constants come from `dacha/events`. This system removes a coin when the player touches
+it:
+
+```ts
+import { SceneSystem } from 'dacha';
+import type { Scene, SceneSystemOptions } from 'dacha';
+import { CollisionEnter } from 'dacha/events';
+import type { CollisionEnterEvent } from 'dacha/events';
+import { DefineSystem } from 'dacha-workbench/decorators';
+
+import Coin from '../components/coin.component';
+import Player from '../components/player.component';
+
+@DefineSystem({
+  name: 'CoinSystem',
+})
+export default class CoinSystem extends SceneSystem {
+  private scene: Scene;
+
+  constructor(options: SceneSystemOptions) {
+    super();
+
+    this.scene = options.scene;
+    this.scene.addEventListener(CollisionEnter, this.handleCollisionEnter);
+  }
+
+  onSceneDestroy(): void {
+    this.scene.removeEventListener(CollisionEnter, this.handleCollisionEnter);
+  }
+
+  private handleCollisionEnter = (event: CollisionEnterEvent): void => {
+    const { target, actor } = event;
+
+    if (!target.getComponent(Coin) || !actor.getComponent(Player)) {
+      return;
+    }
+
+    target.remove();
+  };
+}
+```
+
+Events climb the hierarchy, so a listener on the scene gets the collision events of every actor.
+Each collision reaches the scene twice, once for each actor. Check `target` to handle it once. See
+[events climb the hierarchy](/concepts/events/#events-climb-the-hierarchy).
+
+You can also listen on one actor, for example in a [behavior](/systems/behaviors/).
+
+### When events arrive
+
+Collision events are queued like other events. Your listener gets them at the start of the next
+frame. By then, the physics system has already stopped or bounced the bodies. See [delivery
+happens on the next frame](/concepts/events/#delivery-happens-on-the-next-frame).
+
+The physics system sends `CollisionStay` once per step, not once per frame. A frame with two
+steps brings two `CollisionStay` events. A frame with no step brings none.
+
+### When a collision ends
+
+`CollisionLeave` also arrives when a collision ends for another reason:
+
+- One of the colliders is disabled.
+- A collider changes its layer, and the two layers do not collide.
+- The other actor is removed from the scene.
+
+### Which actors get events
+
+Two touching colliders send events when both are enabled and their layers collide. The bodies do
+not matter, with one exception: two `static` bodies get no events about each other.
+
+So these actors get events too:
+
+- an actor with a collider and no body,
+- an actor with a disabled `RigidBody`,
+- a body that passes through a [one-way body](/systems/physics/bodies-and-colliders/#one-way-bodies).
+
+### Using the normal
+
+`normal` points from the actor that got the event to the other actor. The y axis points down. So a
+positive `normal.y` means the other actor is below.
+
+This check finds out that the actor stands on the other actor, not touches it from the side:
+
+```ts
+const isOnTop = event.normal.y > 0.7;
+```
+
+`0.7` allows surfaces that slope up to about 45 degrees.
+
+## Triggers
+
+A **trigger** is an actor with a `Collider` and no `RigidBody`. Bodies pass through it, and it
+still gets collision events. The coin in the example above is a trigger.
+
+Use triggers for pickups, checkpoints, damage zones, and the area where a door opens.
+
+A trigger does not need to stand still. Move it through its `Transform`, or make it a child of a
+moving actor. A child trigger follows its parent, and its events climb to the parent.
+
+## Collision layers
+
+Every collider belongs to one **collision layer**. The **collision matrix** says which pairs of
+layers collide.
+
+Colliders on layers that do not collide pass through each other and get no events. Use layers to
+stop the player's bullets from hitting the player, or to let enemies walk through each other.
+
+### Editing layers
+
+You edit layers in the Project settings tab, in the *Physics* panel. *Add Collision Layer* adds a
+layer. Then pick it in the `layer` field of a `Collider`.
+
+<PanelShot
+  src={physicsShot}
+  alt="The Project settings tab with the Physics panel open. Collision Layers lists ship-parts, ship-hull and projectiles, with Add Collision Layer below. The Collision Matrix has a row and a column for each of those layers and for default. Three boxes are checked, all in the default row."
+  caption="A checked box means the two layers collide."
+  width={320}
+/>
+
+- The `default` layer is always there, and it is not in the list. A new collider uses it.
+- A new layer collides with every layer. Clear the boxes of the pairs that must not collide.
+- A layer can also not collide with itself. Clear the box where its row and its column meet.
+
+### Layers in the configuration
+
+The layers and the matrix are the `physics` entry in [global
+options](/concepts/configuration/). Each layer has an id and a name. The matrix uses the ids:
+
+```json
+{
+  "name": "physics",
+  "options": {
+    "collisionLayers": [
+      { "id": "3f9a1c42-7b1e-4a56-9d0c-2e8f5b6a7d10", "name": "enemies" }
+    ],
+    "collisionMatrix": {
+      "default": {
+        "default": true,
+        "3f9a1c42-7b1e-4a56-9d0c-2e8f5b6a7d10": true
+      },
+      "3f9a1c42-7b1e-4a56-9d0c-2e8f5b6a7d10": {
+        "default": true,
+        "3f9a1c42-7b1e-4a56-9d0c-2e8f5b6a7d10": false
+      }
+    }
+  }
+}
+```
+
+The `layer` field of a `Collider` stores the id, not the name. So you can rename a layer, and the
+colliders keep it.
+
+In code, use the id too. The copy button next to a layer in the *Physics* panel copies its id:
+
+```ts
+const ENEMIES_LAYER = '3f9a1c42-7b1e-4a56-9d0c-2e8f5b6a7d10';
+
+actor.getComponent(Collider).layer = ENEMIES_LAYER;
+```
+
+The next step uses the new layer.
+
+A pair that is not in the matrix collides. A collider whose layer id is not in the matrix, such as
+the id of a deleted layer, collides with every layer.

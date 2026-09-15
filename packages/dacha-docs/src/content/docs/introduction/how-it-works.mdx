@@ -1,0 +1,148 @@
+---
+title: "How it works"
+description: "One project, two programs, and the file they meet at."
+---
+
+import { LinkCard } from '@astrojs/starlight/components';
+import DocVideo from '../../../components/DocVideo.astro';
+import livePreviewPoster from '../../../assets/editor/editor-live-preview.poster.webp';
+import TwoProcesses from '../../../components/diagrams/TwoProcesses.astro';
+import FrameDiagram from '../../../components/diagrams/FrameDiagram.astro';
+
+Two programs work on a Dacha project. Your own toolchain builds and serves the game. You
+launch the editor separately against the same directory. They meet at the project's
+configuration.
+
+<TwoProcesses />
+
+The two programs never talk to each other. One writes the configuration, the other reads it.
+That is enough for an edit-and-see loop:
+
+<DocVideo
+  slug="editor-live-preview"
+  poster={livePreviewPoster}
+  width={1512}
+  height={852}
+  label="The editor on the left and the game running at localhost:8080 on the right; a change made in the editor appears in the browser."
+  caption="The editor and the running game, side by side. Saving in the editor changes data.json, and the dev server reloads the page."
+/>
+
+## What the configuration looks like
+
+In the [starter project](/getting-started/installation/) the configuration lives in
+`data/data.json`. Here is a scene with a single actor in it, shortened, to show the shape of
+what the editor writes:
+
+```json
+{
+  "startSceneId": "690e…",
+  "scenes": [
+    {
+      "id": "690e…",
+      "name": "level",
+      "actors": [
+        {
+          "id": "2190…",
+          "name": "background",
+          "children": [],
+          "components": [
+            {
+              "name": "Transform",
+              "config": {
+                "offset": { "x": 0, "y": 0 },
+                "rotation": 0,
+                "scale": { "x": 1, "y": 1 }
+              }
+            },
+            {
+              "name": "Sprite",
+              "config": {
+                "src": "grass-tile.png",
+                "width": 256,
+                "height": 256,
+                "fit": "repeat",
+                "sortingLayer": "background"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "systems": [
+    { "name": "CameraSystem", "options": { "windowNodeId": "root" } },
+    {
+      "name": "Renderer",
+      "options": { "windowNodeId": "root", "backgroundColor": "#1a1a1a" }
+    }
+  ]
+}
+```
+
+There is no logic anywhere in the file.
+
+Notice that components and systems appear as names, not as code. `"Transform"` and
+`"Renderer"` are strings. Your code supplies the classes behind those strings.
+
+## You give the engine the classes
+
+You pass the engine every class the configuration can refer to, and it builds the world:
+
+```ts
+import {
+  Engine,
+  Renderer,
+  CameraSystem,
+  Transform,
+  Sprite,
+  Texture,
+} from 'dacha';
+
+import config from '../data/data.json';
+
+const engine = new Engine({
+  config,
+  systems: [Renderer, CameraSystem],
+  components: [Transform, Sprite],
+  assets: [Texture],
+});
+
+void engine.play();
+```
+
+That is the whole shape of an entry point. The starter project lists a few more built-in
+classes, and collects your own with a glob instead of naming them one by one.
+
+The `systems` array here is a list of what is **available**. The `systems` list in the
+configuration decides which of them actually run, and in what order. The order of the array
+in this file does not matter. [Configuration](/concepts/configuration/#systems) covers that
+split.
+
+`config` is imported like any other module, so a save in the editor reaches the running game
+through your dev server.
+
+## The editor reads the same project
+
+The editor finds your components and systems by scanning your source for files that match a
+set of patterns. It imports each match, and the decorators on the class register it along
+with the fields the inspector should draw. See
+[how scripts are found](/game-code/auto-registration/). It reads your assets
+directory the same way.
+
+## Inside a frame
+
+Once the world is built, the loop takes over. It runs on `requestAnimationFrame` and calls
+systems in two separate phases.
+
+<FrameDiagram />
+
+**`update`** runs once per rendered frame, at whatever rate the browser gives you.
+**`fixedUpdate`** runs on its own clock, independent of the frame rate, so that a game behaves
+the same on a 60 Hz laptop and a 144 Hz monitor. When you write a system you choose the
+phase.
+
+<LinkCard
+  title="The game loop & lifecycle"
+  description="Both clocks in full, the settings that tune them, and the exact order the lifecycle hooks fire in."
+  href="/concepts/game-loop/"
+/>

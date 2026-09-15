@@ -26,13 +26,14 @@ const copy = (window) => {
   window.webContents.send(MESSAGES.COPY);
 };
 
-const paste = (window) => {
+// Since Electron 44 the main process clipboard API is asynchronous
+const paste = async (window) => {
   if (window.webContents.isDevToolsFocused()) {
     window.webContents.devToolsWebContents?.paste?.();
     return;
   }
 
-  window.webContents.send(MESSAGES.PASTE, clipboard.readText());
+  window.webContents.send(MESSAGES.PASTE, await clipboard.readText());
 };
 
 const deleteSelection = (window) => {

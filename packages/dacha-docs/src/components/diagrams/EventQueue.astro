@@ -1,0 +1,52 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="dispatchEvent puts the event in a queue, which drains at the top of the next frame. dispatchEventImmediately skips the queue."
+>
+  <svg viewBox="0 0 720 134" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      An event dispatched during one frame is queued, and its listeners run at the start of
+      the next frame, before fixedUpdate and update.
+    </title>
+
+    <defs>
+      <marker id="eq-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="12" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <rect x="8" y="40" width="146" height="84" rx="10" fill="none" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="16" y="32" fill="var(--diagram-accent)" stroke="none" font-size="11">frame N</text>
+
+      <rect x="298" y="40" width="406" height="84" rx="10" fill="none" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="306" y="32" fill="var(--diagram-accent)" stroke="none" font-size="11">frame N + 1</text>
+
+      <rect x="16" y="62" width="130" height="40" rx="6" fill="var(--diagram-fill)" />
+      <text x="81" y="86" fill="var(--diagram-text)" text-anchor="middle" stroke="none">dispatchEvent()</text>
+
+      <path d="M154 82 L172 82" marker-end="url(#eq-arrow)" />
+
+      <rect x="180" y="62" width="112" height="40" rx="6" fill="none" stroke-dasharray="4 4" />
+      <text x="236" y="86" fill="var(--diagram-muted)" text-anchor="middle" stroke="none">event queue</text>
+
+      <path d="M292 82 L310 82" marker-end="url(#eq-arrow)" />
+
+      <rect x="318" y="62" width="132" height="40" rx="6" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" />
+      <text x="384" y="86" fill="var(--diagram-text)" text-anchor="middle" stroke="none">listeners run</text>
+
+      <path d="M450 82 L468 82" marker-end="url(#eq-arrow)" />
+
+      <rect x="476" y="62" width="106" height="40" rx="6" fill="var(--diagram-fill)" />
+      <text x="529" y="86" fill="var(--diagram-text)" text-anchor="middle" stroke="none">fixedUpdate</text>
+
+      <path d="M582 82 L600 82" marker-end="url(#eq-arrow)" />
+
+      <rect x="608" y="62" width="88" height="40" rx="6" fill="var(--diagram-fill)" />
+      <text x="652" y="86" fill="var(--diagram-text)" text-anchor="middle" stroke="none">update</text>
+    </g>
+  </svg>
+</DiagramFigure>

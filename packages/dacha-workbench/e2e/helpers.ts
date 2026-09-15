@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, Locator, ElectronApplication } from '@playwright/test';
 
 export const MULTI_SELECT_MODIFIER: 'Meta' | 'Control' =
   process.platform === 'darwin' ? 'Meta' : 'Control';
@@ -6,6 +6,33 @@ export const MULTI_SELECT_MODIFIER: 'Meta' | 'Control' =
 export const CACHE_SAVE_DEBOUNCE = 300;
 
 type CanvasTool = 'hand' | 'pointer' | 'zoom' | 'template';
+
+export const triggerMenuItem = async (
+  app: ElectronApplication,
+  menuLabel: string,
+  itemLabel: string,
+): Promise<void> => {
+  await app.evaluate(
+    ({ Menu, BrowserWindow }, labels) => {
+      const submenu = Menu.getApplicationMenu()?.items.find(
+        (item) => item.label === labels.menuLabel,
+      )?.submenu;
+      const target = submenu?.items.find(
+        (item) => item.label === labels.itemLabel,
+      );
+
+      if (!target) {
+        throw new Error(
+          `No "${labels.itemLabel}" item in the "${labels.menuLabel}" menu`,
+        );
+      }
+
+      const [win] = BrowserWindow.getAllWindows();
+      target.click(undefined, win);
+    },
+    { menuLabel, itemLabel },
+  );
+};
 
 export const selectTool = async (
   window: Page,

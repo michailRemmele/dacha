@@ -1,0 +1,58 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="With the bottomRight order, the view with the lower sort point is drawn in front. The sort point of a tall tree is its centre, so a character behind the tree is drawn over it. A sortOffset moves the tree's sort point down to its base."
+>
+  <svg viewBox="0 0 720 250" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      Two versions of the same scene: a tree and a character who stands behind it. On the left,
+      the tree has no sort offset. Its sort point is its centre, which is higher than the
+      character's, so the character is drawn in front of the trunk. On the right, the tree has a
+      sort offset of 32 on y. Its sort point is at its base, lower than the character's, so the
+      tree is drawn in front.
+    </title>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <!-- Without offset: tree first, character over it -->
+      <text x="180" y="22" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">sortOffset.y = 0</text>
+
+      <rect x="136" y="40" width="88" height="130" stroke-dasharray="4 3" stroke-width="1" />
+      <rect x="170" y="110" width="20" height="60" fill="var(--diagram-fill)" />
+      <circle cx="180" cy="80" r="40" fill="var(--diagram-fill)" />
+      <rect x="184" y="100" width="28" height="50" rx="14" fill="var(--diagram-accent)" stroke="none" />
+
+      <path d="M40 105 L180 105" stroke-dasharray="3 3" stroke-width="1" />
+      <circle cx="180" cy="105" r="4" fill="var(--diagram-text)" stroke="none" />
+      <text x="40" y="99" fill="var(--diagram-muted)" stroke="none" font-size="11">tree</text>
+
+      <path d="M40 125 L198 125" stroke-dasharray="3 3" stroke-width="1" stroke="var(--diagram-accent)" />
+      <circle cx="198" cy="125" r="4" fill="var(--diagram-text)" stroke="none" />
+      <text x="40" y="140" fill="var(--diagram-accent)" stroke="none" font-size="11">character</text>
+
+      <text x="180" y="200" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">The character's sort point is lower.</text>
+      <text x="180" y="218" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">It is drawn in front of the tree.</text>
+
+      <!-- With offset: character first, tree over it -->
+      <text x="540" y="22" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">sortOffset.y = 32</text>
+
+      <rect x="544" y="100" width="28" height="50" rx="14" fill="var(--diagram-accent)" stroke="none" />
+      <rect x="496" y="40" width="88" height="130" stroke-dasharray="4 3" stroke-width="1" />
+      <rect x="530" y="110" width="20" height="60" fill="var(--diagram-fill)" />
+      <circle cx="540" cy="80" r="40" fill="var(--diagram-fill)" />
+
+      <path d="M400 125 L558 125" stroke-dasharray="3 3" stroke-width="1" stroke="var(--diagram-accent)" />
+      <circle cx="558" cy="125" r="4" fill="var(--diagram-text)" stroke="none" />
+      <text x="400" y="119" fill="var(--diagram-accent)" stroke="none" font-size="11">character</text>
+
+      <path d="M400 170 L540 170" stroke-dasharray="3 3" stroke-width="1" />
+      <circle cx="540" cy="170" r="4" fill="var(--diagram-text)" stroke="none" />
+      <text x="400" y="164" fill="var(--diagram-muted)" stroke="none" font-size="11">tree</text>
+
+      <text x="540" y="200" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">The tree's sort point is lower.</text>
+      <text x="540" y="218" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">It is drawn in front of the character.</text>
+    </g>
+  </svg>
+</DiagramFigure>

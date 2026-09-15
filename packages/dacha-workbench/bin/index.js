@@ -5,27 +5,29 @@ const path = require('path');
 const fs = require('fs');
 const { Command } = require('commander');
 
-const init = require('./init');
 const { getExecPath } = require('./utils/get-app-paths');
 
 const isDev = process.env.NODE_ENV === 'development';
+
+const DEFAULT_CONFIG_NAMES = [
+  'dacha-workbench.config.cjs',
+  'dacha-workbench.config.js',
+];
+
+const findDefaultConfig = () =>
+  DEFAULT_CONFIG_NAMES.map((name) => path.resolve(name)).find((configPath) =>
+    fs.existsSync(configPath),
+  );
 
 const program = new Command();
 
 program.description('CLI to GUI editor for Dacha game engine');
 
 program
-  .command('init')
-  .description('Create initial project structure to run editor')
-  .action(init);
-
-program
-  .option(
-    '--config <string>',
-    'Path to configuration file for editor',
-    path.resolve('dacha-workbench.config.js'),
-  )
+  .option('--config <string>', 'Path to configuration file for editor')
   .action((options) => {
+    options.config ??= findDefaultConfig();
+
     if (options.config === undefined || !fs.existsSync(options.config)) {
       console.error(
         'Cannot find configuration file. Use --config option to specify path to configuration file.',
