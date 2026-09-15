@@ -1,0 +1,226 @@
+---
+title: "Queries"
+description: "Find colliders with raycasts, shape casts and overlap tests."
+---
+
+import QueryTypes from '../../../../components/diagrams/QueryTypes.astro';
+
+A query asks the physics system about colliders at a place: what a ray hits, what a moving shape
+would hit, or what is inside an area. Use queries for line of sight, ground checks, explosions and
+aiming.
+
+Queries are methods of `PhysicsAPI`:
+
+```ts
+import { PhysicsAPI } from 'dacha';
+
+const physics = world.systemApi.get(PhysicsAPI);
+```
+
+`PhysicsAPI` exists only while a scene with `PhysicsSystem` is active. See [changing gravity at
+runtime](/systems/physics/#changing-gravity-at-runtime).
+
+## Query types
+
+<QueryTypes />
+
+| Query | What it asks |
+| --- | --- |
+| Raycast | What does a ray from a point hit? |
+| Shape cast | What does a shape hit when it moves in a direction? |
+| Actor cast | What does an actor's collider hit when it moves in a direction? |
+| Overlap | Which colliders are inside a shape right now? |
+| Actor overlap | Which colliders overlap an actor's collider right now? |
+
+Each query type has several methods:
+
+| Query | First hit | All hits | One call per hit |
+| --- | --- | --- | --- |
+| Raycast | `raycast` | `raycastAll` | `raycastEach` |
+| Shape cast | `shapeCast` | `shapeCastAll` | `shapeCastEach` |
+| Actor cast | `castActor` | `castActorAll` | `castActorEach` |
+| Overlap | | `overlapShape` | `overlapEach` |
+| Actor overlap | | `overlapActor` | `overlapActorEach` |
+
+## Raycasts
+
+A raycast sends a ray from `origin` in `direction`, up to `maxDistance` world units:
+
+```ts
+import { PhysicsAPI, Transform, Vector } from 'dacha';
+
+const from = enemy.getComponent(Transform).world.position;
+const to = player.getComponent(Transform).world.position;
+
+const hit = physics.raycast({
+  origin: from,
+  direction: new Vector(to.x - from.x, to.y - from.y),
+  maxDistance: 400,
+  excludeActors: [enemy],
+});
+
+const canSeePlayer = hit?.actor === player;
+```
+
+`direction` can have any length. The physics system uses only its direction.
+
+A ray that starts inside a collider can hit that collider. Exclude the actor that casts the ray, as
+in the example above.
+
+## Shape casts
+
+A shape cast moves a shape from its position in `direction`, up to `maxDistance`. It finds the
+colliders the shape touches on the way:
+
+```ts
+const hit = physics.shapeCast({
+  shape: { type: 'circle', center: { x: 100, y: 50 }, radius: 8 },
+  direction: new Vector(1, 0),
+  maxDistance: 200,
+});
+```
+
+A shape cast can use these shapes:
+
+| `type` | Fields |
+| --- | --- |
+| `circle` | `center`, `radius` |
+| `box` | `center`, `size`, `rotation` |
+| `capsule` | `center`, `height`, `radius`, `rotation` |
+
+The fields work like the fields of a [`Collider`](/systems/physics/bodies-and-colliders/#collider),
+in world space. `rotation` is in radians, and it is optional.
+
+A shape that already overlaps a collider at the start hits it at distance `0`.
+
+### Actor casts
+
+An actor cast moves the collider of an actor. Use it to check whether an actor can move somewhere
+before you move it. This check finds out that an actor stands on something:
+
+```ts
+const hit = physics.castActor({
+  actor,
+  direction: new Vector(0, 1),
+  maxDistance: 2,
+});
+
+const isOnGround = hit !== null && hit.normal.y < -0.7;
+```
+
+An actor cast has these extra fields:
+
+| Field | What it does |
+| --- | --- |
+| `actor` | The actor whose collider moves. The cast starts from its current `Transform` |
+| `offset` | Moves the start of the cast, in world units. Optional |
+| `excludeSelf` | Leaves the actor itself out of the results. `true` by default |
+| `layer` | See [filters](#filters). Without it, the cast uses the layer of the actor's collider |
+
+An actor without a collider finds nothing. An actor with a `segment` collider also finds nothing.
+
+## Overlaps
+
+An overlap finds the colliders that are inside a shape. It can use a `point`, in addition to the
+shapes of a shape cast:
+
+| `type` | Fields |
+| --- | --- |
+| `point` | `point` |
+| `circle` | `center`, `radius` |
+| `box` | `center`, `size`, `rotation` |
+| `capsule` | `center`, `height`, `radius`, `rotation` |
+
+This explosion pushes every body around its centre:
+
+```ts
+import { PhysicsAPI, RigidBody } from 'dacha';
+
+physics.overlapEach(
+  { shape: { type: 'circle', center, radius: 80 } },
+  (hit) => {
+    const body = hit.actor.getComponent(RigidBody);
+
+    if (!body) {
+      return;
+    }
+
+    body.applyImpulse(hit.normal.clone().multiplyNumber(-300));
+  },
+);
+```
+
+`overlapActor` and `overlapActorEach` use the collider of an actor as the shape. They have the same
+extra fields as [actor casts](#actor-casts): `actor`, `offset`, `excludeSelf` and `layer`.
+
+## Hits
+
+Raycasts and casts return a **cast hit**:
+
+| Field | What it holds |
+| --- | --- |
+| `actor` | The actor that was hit |
+| `point` | The point where the ray or the shape touches the collider, in world space |
+| `normal` | The direction out of the surface that was hit. It points back towards the ray or the shape |
+| `distance` | How far the ray or the shape went before it touched the collider |
+
+Overlaps return an **overlap hit**:
+
+| Field | What it holds |
+| --- | --- |
+| `actor` | The actor that overlaps the shape |
+| `normal` | The direction from the actor to the query shape |
+| `penetration` | How deep they overlap along `normal`, in world units |
+| `contactPoints` | The points where they touch, in world space |
+
+To push the query shape out of a collider, move it by `normal * penetration`.
+
+## First hit, all hits, or one call per hit
+
+**First hit.** `raycast`, `shapeCast` and `castActor` return the nearest hit, or `null` when
+nothing is hit. Check the result before you use it.
+
+**All hits.** The `All` methods, `overlapShape` and `overlapActor` return an array. Raycasts and
+casts sort it from the nearest hit to the farthest. Overlaps do not sort it.
+
+**One call per hit.** The `Each` methods call your function once for every hit, in no particular
+order. They create no array and no hit objects, so they suit queries that run in every step.
+
+:::caution
+An `Each` method passes the same hit object to every call. The object is valid only during the
+call. Copy the fields you need to keep. Do not store the hit.
+:::
+
+You can run another query inside the function of an `Each` method or a filter.
+
+## Filters
+
+Every query accepts these optional fields:
+
+| Field | What it does |
+| --- | --- |
+| `layer` | Finds only colliders whose layer collides with this layer, as the [collision matrix](/systems/physics/collisions/#collision-layers) says |
+| `excludeActors` | Leaves these actors out |
+| `actorFilter` | A function that gets each actor and returns `false` to leave it out |
+| `hitFilter` | A function that gets each hit and returns `false` to leave it out |
+
+Without `layer`, raycasts, shape casts and overlaps find colliders on all layers.
+
+`actorFilter` runs before the physics system checks the shape. `hitFilter` runs after it, so it can
+read the hit fields, but it runs only for colliders the shape touches. Like in `Each` methods, the
+hit object in `hitFilter` is valid only during the call.
+
+A query never finds a disabled collider. It finds everything else: triggers, `static` bodies and
+disabled bodies.
+
+## What queries see
+
+Queries see the colliders where the physics system last checked them, in its last step. So:
+
+- If you move an actor through its `Transform`, queries find it at the new position only after the
+  next physics step.
+- A removed actor can still appear in results until the next physics step.
+- An actor you add to the scene is found at once, at the position it had when you added it.
+
+The shape of an actor cast or an actor overlap is different. It comes from the actor's current
+`Transform`, at the moment of the query.

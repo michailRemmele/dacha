@@ -1,0 +1,143 @@
+---
+title: "Audio"
+description: "Play sounds and music, and control volume with audio groups."
+---
+
+import PanelShot from '../../../components/PanelShot.astro';
+
+import audioGroupsShot from '../../../assets/editor/project-settings-audio-groups.png';
+
+`AudioSystem` plays sounds attached to actors. Each sound comes from an `AudioSource` component.
+You start and stop it through that component. Volume for a whole group of sounds goes through
+`AudioAPI`.
+
+The system uses the browser's Web Audio API.
+
+## Setting it up
+
+The [starter project](/getting-started/installation/) does not include audio. To add it:
+
+1. Add `AudioSystem` to the engine's `systems` array and `AudioSource` to its `components`
+   array.
+2. Add `AudioSystem` to the systems list in the editor.
+3. Add an `AudioSource` component to each actor that plays a sound.
+
+```ts
+import { Engine, AudioSystem, AudioSource } from 'dacha';
+
+const engine = new Engine({
+  config,
+  systems: [AudioSystem, ...gameSystems],
+  components: [AudioSource, ...gameComponents],
+  assets: [],
+});
+```
+
+## The component
+
+| Field | What it does |
+| --- | --- |
+| `src` | Path to the sound file. The editor accepts `mp3`, `wav` and `ogg` |
+| `volume` | Volume of this sound, from `0` to `1` |
+| `looped` | Plays the sound again from the start when it ends |
+| `autoplay` | Starts the sound when the actor appears in the active scene |
+| `group` | The audio group the sound plays through. The default is `master` |
+
+## Playing and stopping
+
+Call `play()` and `stop()` on the component:
+
+```ts
+const audioSource = actor.getComponent(AudioSource);
+
+audioSource.play();
+audioSource.stop();
+```
+
+`play()` restarts a sound that is already playing. To leave a playing sound alone, call
+`play(false)`.
+
+A sound without `looped` stops by itself when it ends. There is no pause. `stop()` always
+starts the sound from the beginning the next time you play it.
+
+You can change `volume` while a sound plays, and the change is heard at once. Changes to `src`,
+`looped` and `group` apply only the next time the sound starts.
+
+## One sound per actor
+
+An actor has one `AudioSource`, so it plays one sound at a time. Playing it again cuts off the
+sound that was playing.
+
+When an actor needs several sounds, for example footsteps and a shot, give each sound its own
+child actor with an `AudioSource`.
+
+Removing an actor stops its sound.
+
+## When sounds load
+
+`AudioSystem` loads sounds when a scene loads. It collects every `src` from two places:
+
+- the actors of that scene,
+- all templates in the project.
+
+So an actor you spawn from a template at runtime has its sound ready.
+
+A path that appears in neither place never loads. If you set `src` in code to such a file, the
+sound does not play, and nothing reports it. Put the file on an actor or a template.
+
+If a file fails to load, the system writes an error to the console. Sources with that path stay
+silent.
+
+## Scene changes
+
+`AudioSystem` is a world system, but sounds do not continue across scenes. When the game leaves
+a scene, the system stops every sound that was playing.
+
+In the next scene, sources with `autoplay` start as soon as the scene becomes active. Music that
+should play in several scenes starts from the beginning in each of them.
+
+## Audio groups
+
+A group controls the volume of all sounds that play through it. Use groups to give music and
+effects separate volume settings.
+
+The `master` group always exists. Every other group plays through `master`, so the volume you
+hear is the product of three values: the source's `volume`, its group's volume and the master
+volume.
+
+You create the other groups in the editor, under *Audio Groups* in the Project settings tab.
+Each group has a name and a starting volume. The engine ignores a group named `master`, so do not
+create one.
+
+<PanelShot
+  src={audioGroupsShot}
+  alt="The Project settings tab with the Audio Groups panel open. It lists two groups, music and effects. Each group has a Name field and a Volume slider. Add Group is below them."
+  caption="The volume here is the volume the group has when the game starts."
+  width={320}
+/>
+
+A source whose `group` names a group that does not exist plays nothing.
+
+### Changing group volume at runtime
+
+Get `AudioAPI` from the world:
+
+```ts
+import { AudioAPI } from 'dacha';
+
+const audio = world.systemApi.get(AudioAPI);
+
+audio.masterVolume = 0.5;
+audio.setGroupVolume('music', 0.2);
+
+const effectsVolume = audio.getGroupVolume('effects');
+```
+
+`getGroupVolume` and `setGroupVolume` throw for a group that does not exist.
+
+## Browsers block sound until the player acts
+
+`AudioSystem` starts the audio on the player's first click, key press or touch. Sounds started
+before that, such as music with `autoplay` in the first scene, begin at that moment.
+
+If sound must start with the game, show a start screen that asks the player to click.

@@ -1,0 +1,43 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="CollisionEnter comes in the first step with contact, CollisionStay in every step after it, and CollisionLeave in the first step without contact."
+>
+  <svg viewBox="0 0 720 160" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      Seven fixed steps on a timeline. Two colliders touch during steps two, three and four. Step
+      two sends CollisionEnter, steps three and four send CollisionStay, and step five sends
+      CollisionLeave. The other steps send nothing.
+    </title>
+
+    <defs>
+      <marker id="ct-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+      <text x="16" y="72" fill="var(--diagram-text)" stroke="none" font-size="12">colliders</text>
+      <text x="16" y="88" fill="var(--diagram-muted)" stroke="none" font-size="10">touch</text>
+      <rect x="190" y="62" width="250" height="20" rx="4" fill="var(--diagram-accent)" fill-opacity="0.25" stroke="var(--diagram-accent)" />
+
+      <text x="16" y="116" fill="var(--diagram-text)" stroke="none" font-size="12">steps</text>
+      <path d="M100 112 L700 112" marker-end="url(#ct-arrow)" />
+      <g fill="var(--diagram-fill)">
+        <circle cx="130" cy="112" r="6" /><circle cx="220" cy="112" r="6" />
+        <circle cx="310" cy="112" r="6" /><circle cx="400" cy="112" r="6" />
+        <circle cx="490" cy="112" r="6" /><circle cx="580" cy="112" r="6" />
+        <circle cx="670" cy="112" r="6" />
+      </g>
+
+      <text x="220" y="144" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="12">Enter</text>
+      <text x="310" y="144" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Stay</text>
+      <text x="400" y="144" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Stay</text>
+      <text x="490" y="144" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="12">Leave</text>
+
+      <text x="360" y="30" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">one event per step, not per frame</text>
+    </g>
+  </svg>
+</DiagramFigure>

@@ -1,21 +1,75 @@
 ---
 title: "Behaviors"
-description: "Per-actor logic, and when to prefer it over a system."
+description: "The system that runs behaviors, and when it creates and destroys them."
 ---
 
-A behavior attaches to a single actor and runs for that actor alone. Where a system sweeps
-every actor matching a query, a behavior is scoped to the one actor that holds it, which
-makes it the natural home for logic that is genuinely per-object.
+`BehaviorSystem` runs the behaviors attached to actors.
 
-Like the renderer and the physics system, the behavior system is opt-in: it is registered
-with the engine, and actors take part by carrying a `Behaviors` component.
+To write a behavior and attach it in the editor, see [Behaviors](/game-code/behaviors/) in
+Game Code.
 
-## What this page will cover
+## Setting it up
 
-- What a behavior is and how it is attached
-- The `Behaviors` component and the behavior system
-- The behavior lifecycle
-- What a behavior receives on construction
-- Choosing between a behavior and a system
-- Registering the behavior system with the engine
-- Editor support: attaching and configuring behaviors in the inspector
+A behavior runs only when all of these are in place:
+
+```ts
+import { Engine, BehaviorSystem, Behaviors } from 'dacha';
+
+const engine = new Engine({
+  config,
+  systems: [BehaviorSystem, ...gameSystems],
+  components: [Behaviors, ...gameComponents],
+  assets: [],
+  resources: {
+    [BehaviorSystem.systemName]: [...gameBehaviors],
+  },
+});
+```
+
+## The `Behaviors` component
+
+The component has one field, `list`. It holds the behaviors of the actor, in the order they run.
+Each entry has three fields:
+
+| Field | What it is |
+| --- | --- |
+| `id` | An identifier for the entry. The editor creates it |
+| `name` | The `behaviorName` of the class to create |
+| `options` | Values for the behavior's fields. The system passes them to the constructor |
+
+## When instances are created and destroyed
+
+`BehaviorSystem` is a scene system, so each scene gets its own copy. It creates the behavior
+instances for an actor when:
+
+- the scene becomes active,
+- an actor with `Behaviors` is added to the active scene,
+- an actor in the active scene gets a `Behaviors` component.
+
+It calls `destroy` on the instances of an actor when:
+
+- the actor is removed from the scene,
+- the `Behaviors` component is removed from the actor,
+- the scene is destroyed.
+
+## Changing behaviors at runtime
+
+The system reads `Behaviors` only when it creates the instances. If you update the component later, the
+running instances do not change.
+
+To change the behaviors of an actor, replace the whole component:
+
+```ts
+actor.setComponent(
+  new Behaviors({
+    list: [{ id: 'patrol', name: 'Patrol', options: { speed: 2 } }],
+  }),
+);
+```
+
+`setComponent` removes the old component first, so the system destroys the old instances. Then
+it adds the new component, so the system creates instances from the new list.
+
+## Where behaviors run in the frame
+
+When `BehaviorSystem` gets its turn in the systems list, it calls `update` and `fixedUpdate` on every behavior of every actor.

@@ -104,6 +104,19 @@
   --diagram-accent: var(--sl-color-accent);
 }
 
+/* Nested sidebar groups (Built-in Systems → Rendering) */
+.sidebar-content ul ul .group-label .large {
+  font-size: inherit;
+  font-weight: 400;
+  color: var(--sl-color-gray-2);
+}
+
+@media (min-width: 50rem) {
+  .sidebar-content ul ul .group-label .large {
+    font-size: var(--sl-text-sm);
+  }
+}
+
 /* Editor screenshots */
 .sl-markdown-content figure.screenshot {
   margin: 1.5rem 0;

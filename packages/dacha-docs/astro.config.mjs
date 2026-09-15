@@ -107,8 +107,24 @@ export default defineConfig({
           label: 'Built-in Systems',
           items: [
             { slug: 'systems/behaviors' },
-            { slug: 'systems/rendering' },
-            { slug: 'systems/physics' },
+            {
+              label: 'Rendering',
+              items: [
+                { label: 'Overview', slug: 'systems/rendering' },
+                { slug: 'systems/rendering/components' },
+                { slug: 'systems/rendering/shaders' },
+                { slug: 'systems/rendering/filter-effects' },
+              ],
+            },
+            {
+              label: 'Physics',
+              items: [
+                { label: 'Overview', slug: 'systems/physics' },
+                { slug: 'systems/physics/bodies-and-colliders' },
+                { slug: 'systems/physics/collisions' },
+                { slug: 'systems/physics/queries' },
+              ],
+            },
             { slug: 'systems/character-controller' },
             { slug: 'systems/interpolation' },
             { slug: 'systems/animation' },
