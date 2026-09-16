@@ -3,7 +3,7 @@ import DiagramFigure from './DiagramFigure.astro';
 ---
 
 <DiagramFigure
-  caption="The controller compares the normal of each surface with upDirection. A normal within maxSlopeAngle of up is ground, within maxSlopeAngle of down is a ceiling, and anything else is a wall."
+  caption="The controller sorts a surface by where its normal points."
 >
   <svg viewBox="0 0 720 290" role="img" xmlns="http://www.w3.org/2000/svg">
     <title>
@@ -38,6 +38,7 @@ import DiagramFigure from './DiagramFigure.astro';
       <text x="190" y="38" fill="var(--diagram-accent)" stroke="none" font-size="12">upDirection</text>
 
       <path d="M180 124 A36 36 0 0 0 154.5 134.5" stroke="var(--diagram-text)" />
+      <path d="M180 124 A36 36 0 0 1 205.5 134.5" stroke="var(--diagram-text)" />
       <path d="M104 128 L150 128" stroke-dasharray="3 3" stroke-width="1" />
       <text x="20" y="132" fill="var(--diagram-muted)" stroke="none" font-size="11">maxSlopeAngle</text>
 
@@ -56,6 +57,10 @@ import DiagramFigure from './DiagramFigure.astro';
 
       <path d="M520 40 L520 76" marker-end="url(#sk-arrow)" />
       <text x="530" y="68" fill="var(--diagram-text)" stroke="none" font-size="12">ceiling</text>
+
+      <!-- What each half shows -->
+      <text x="180" y="281" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">where the normal points</text>
+      <text x="535" y="281" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">the surfaces themselves</text>
     </g>
   </svg>
 </DiagramFigure>

@@ -8,15 +8,17 @@ import SurfaceKinds from '../../../components/diagrams/SurfaceKinds.astro';
 
 import controllerPoster from '../../../assets/editor/character-controller.poster.webp';
 
-`CharacterController` moves characters. You set the velocity of a character, and the controller
-moves it as far as the world allows:
+`CharacterController` moves characters through the physics world. A character is an actor that
+moves through the level, such as the player or an enemy. You set the velocity of a character, and the
+controller moves it as far as the world allows:
 
 - It stops the character at walls, and slides it along them.
 - It keeps the character on the ground on slopes and small steps down.
 - It tells you whether the character stands on the ground, touches a wall, or hits a ceiling.
 
-A character is not a `dynamic` body. Gravity, forces and collisions do not move it. It moves only
-by the velocity you give it, so the controls stay exact.
+A character is a `kinematic` body. Gravity, forces and other bodies do not move it. Only your code
+moves it, so for an actor that must fall, roll or bounce by itself, use
+a `dynamic` body instead.
 
 <DocVideo
   slug="character-controller"
@@ -27,17 +29,14 @@ by the velocity you give it, so the controls stay exact.
   caption="A character that the character controller moves."
 />
 
-The controller uses [physics queries](/systems/physics/queries/) to find obstacles. It needs
+The controller uses [physics queries](/systems/physics/queries/) to find obstacles, so it requires
 `PhysicsSystem`.
 
 ## Setting it up
 
-The [starter project](/getting-started/installation/) does not include the character controller.
-To add it:
-
 1. [Set up physics](/systems/physics/#setting-it-up).
 2. In the Systems tab, add *Character Controller*.
-3. Add `CharacterController` and `CharacterBody` to the engine in `src/index.ts`:
+3. Add `CharacterController` and `CharacterBody` to the engine:
 
    ```ts
    import {
@@ -63,9 +62,8 @@ To add it:
    - a `Collider` with the type `box`, `circle` or `capsule`,
    - a `RigidBody` with the type `kinematic`.
 
-The controller skips an actor whose `RigidBody` is not `kinematic`, with no warning. A `segment`
-collider does not work either, because the controller cannot cast it. The character then passes
-through everything.
+The controller skips an actor whose `RigidBody` is not `kinematic`. A character with a `segment`
+collider passes through everything, because the controller cannot cast that shape.
 
 ### Order in the systems list
 
@@ -79,59 +77,21 @@ The controller works in `fixedUpdate`. Put it:
 `CharacterBody.velocity` is the velocity in world units per second. The controller moves the
 character by it in every step. The velocity stays until you change it.
 
-The controller does not add gravity. For a platformer, add it to the velocity yourself. This
-system moves a player left and right, makes it fall, and makes it jump:
+The controller does not add gravity. For a platformer, add it to the velocity yourself. This is
+how a platformer sets the velocity of a character in every fixed update:
 
 ```ts
-import { SceneSystem, ActorQuery, CharacterBody } from 'dacha';
-import type { SceneSystemOptions, Time } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
+body.velocity.x = direction * SPEED;
 
-import Player from '../components/player.component';
-
-const GRAVITY = 1500;
-
-@DefineSystem({
-  name: 'PlayerMovementSystem',
-})
-export default class PlayerMovementSystem extends SceneSystem {
-  private time: Time;
-  private actorQuery: ActorQuery;
-
-  constructor(options: SceneSystemOptions) {
-    super();
-
-    this.time = options.time;
-    this.actorQuery = new ActorQuery({
-      scene: options.scene,
-      filter: [CharacterBody, Player],
-    });
-  }
-
-  fixedUpdate(): void {
-    const { fixedDeltaTime } = this.time;
-
-    this.actorQuery.getActors().forEach((actor) => {
-      const body = actor.getComponent(CharacterBody);
-      const player = actor.getComponent(Player);
-
-      body.velocity.x = player.directionX * player.speed;
-
-      if (body.onGround) {
-        body.velocity.y = player.jumpRequested ? -player.jumpSpeed : 0;
-      }
-
-      if (body.onCeiling && body.velocity.y < 0) {
-        body.velocity.y = 0;
-      }
-
-      body.velocity.y += GRAVITY * fixedDeltaTime;
-
-      player.jumpRequested = false;
-    });
-  }
+if (body.onGround) {
+  body.velocity.y = jumped ? -JUMP_SPEED : 0;
 }
-```
+if (body.onCeiling && body.velocity.y < 0) {
+  body.velocity.y = 0;
+}
+
+body.velocity.y += GRAVITY * fixedDeltaTime;
+``` 
 
 The y axis points down, so a jump has a negative velocity.
 
@@ -147,8 +107,8 @@ movement of the next step, and then forgets it:
 body.move(new Vector(4, 0));
 ```
 
-The distance is in world units. It is not multiplied by the step time. Use `move` for a knockback,
-or to carry a character on a moving platform.
+The distance is in world units. The controller uses it as it is. When the distance comes from a
+speed, multiply it by `fixedDeltaTime` yourself.
 
 ## Character state
 
@@ -164,53 +124,50 @@ After each step, `CharacterBody` holds the result:
 
 ### Ground, walls and ceilings
 
-The controller sorts every surface the character hits by its angle to `upDirection`:
+Each surface has a normal. It is the direction the surface faces. Ground faces up, so its normal
+points up.
 
-- A surface that faces up, and slopes less than `maxSlopeAngle`, is **ground**.
-- A surface that faces down in the same way is a **ceiling**.
+The controller sorts every surface the character hits by the angle between its normal and
+`upDirection`:
+
+- A normal within `maxSlopeAngle` of `upDirection` means **ground**.
+- A normal within `maxSlopeAngle` of the opposite direction means a **ceiling**.
 - Everything else is a **wall**.
 
 <SurfaceKinds />
 
-On ground, the character moves along the slope. At a wall, it slides along the wall.
-
-## Settings
+## Character Body fields
 
 | Field | Default | What it does |
 | --- | --- | --- |
-| `motionMode` | `surface` | `surface` sorts hits into ground, walls and ceilings, and keeps the character on the ground. `free` treats every hit as a wall |
+| `motionMode` | `surface` | `surface` sorts hits into ground, walls and ceilings, and keeps the character on the ground. `free` treats every hit as a wall, so the character is never on the ground |
 | `upDirection` | `{ x: 0, y: -1 }` | The direction that counts as up |
 | `maxSlopeAngle` | `45` | The steepest ground the character can stand on, in degrees |
-| `groundSnapDistance` | `1` | How far down the controller looks for ground, in world units |
-| `skinWidth` | `0.1` | The small gap the controller keeps between the character and obstacles, in world units |
-| `maxSlides` | `4` | How many times in one step the character can hit something and slide on |
+| `groundSnapDistance` | `1` | The maximum distance below the character to search for ground and keep the character grounded, in world units |
+| `skinWidth` | `0.1` | The collision margin kept between the character and obstacles, in world units |
+| `maxSlides` | `4` | The maximum number of collision slides performed in one step |
 | `maxRecoveries` | `3` | How many times the controller tries to push the character out of an overlap |
 | `disabled` | `false` | Turns the controller off for this character |
 
-The editor shows `upDirection`, `maxSlopeAngle` and `groundSnapDistance` only in the `surface` mode.
+You rarely need to change `skinWidth`, `maxSlides` and `maxRecoveries`.
 
 Use `surface` for platformers, and `free` for top-down games, where there is no ground.
 
 `groundSnapDistance` keeps the character on the ground when it walks down a slope or a small step.
-The character does not leave the ground on every bump. A larger value keeps it on the ground over
-larger steps.
+Without it the character leaves the ground on every bump. A larger value keeps it on the ground
+over larger steps.
 
-The editor and the configuration set `maxSlopeAngle` in degrees. In code, the field holds radians.
-
-`upDirection` must not be `{ x: 0, y: 0 }`. The component throws when it gets a zero direction.
+In the editor, and in the component config, `maxSlopeAngle` is in degrees. The field holds
+radians.
 
 ## What stops a character
 
-The controller stops a character at an actor that has an enabled `RigidBody` of any type:
+The controller stops a character at every actor that has an enabled `RigidBody`, of any type.
 
-- `static` and `kinematic` bodies stop the character.
-- A `dynamic` body stops the character like a wall.
-- A trigger, a collider without a body, does not stop it.
-- A disabled body does not stop it.
+The character does not push `dynamic` bodies. It stops at them, as at any other obstacle.
 
 The controller uses the [collision layer](/systems/physics/collisions/#collision-layers) of the
-character's collider. A character passes through colliders on layers that do not collide with
-its layer.
+character's collider.
 
 ### One-way bodies
 
@@ -219,13 +176,9 @@ itself. A platform with `oneWayNormal` `{ x: 0, y: -1 }` stops a character that 
 above. A character that jumps from below passes through, and keeps passing through until it is
 out of the platform.
 
-## Overlaps
+## Teleporting a character
 
-A character can start inside an obstacle. For example, a level places it too low, or you move it
-through its `Transform`. The controller then pushes it out before it moves.
-
-The controller does this when the character appears. After you move a character through its
-`Transform`, call `recover()`:
+To put a character in a new place at once, change its `Transform`, and then call `recover()`:
 
 ```ts
 transform.world.position.x = spawn.x;
@@ -234,9 +187,12 @@ transform.world.position.y = spawn.y;
 body.recover();
 ```
 
+The new place can overlap an obstacle. After `recover()`, the controller pushes the character out
+of it before the next move. The controller also does this when the character appears, for example
+when a level places it too low.
+
 The controller pushes the character out of `static` and `kinematic` bodies. It does not push it
-out of `dynamic` bodies. With `maxRecoveries` set to `0`, it does not push the character out at
-all.
+out of `dynamic` bodies.
 
 ## The CharacterHit event
 
@@ -260,26 +216,7 @@ actor.addEventListener(CharacterHit, (event: CharacterHitEvent) => {
 | `kind` | `ground`, `wall` or `ceiling`. In the `free` mode, always `wall` |
 | `point` | The hit point, in world space |
 | `normal` | The direction from the hit surface to the character |
-| `distance` | How far the character moved before the hit |
-
-One step can send several `CharacterHit` events, one for each slide. A character with zero velocity
-gets no events. A character that gets gravity on the ground, as in the example above, hits the
-ground in every step, so it gets a `ground` event in every step. To know that the character stands
-on something, read `onGround`.
-
-Like other events, `CharacterHit` arrives at the start of the next frame. See [delivery happens on
-the next frame](/concepts/events/#delivery-happens-on-the-next-frame).
-
-`CharacterHit` does not replace collision events. A character with a `kinematic` body also gets
-[collision events](/systems/physics/collisions/), for example from triggers.
-
-## Moving platforms
-
-A character does not ride a moving platform by itself. When the platform moves, the character
-stays where it is.
-
-To carry the character, read `groundActor`. If it is a platform, move the character by the
-distance the platform moved in this step, with `move`.
+| `distance` | The distance to the hit, from where this move started |
 
 ## Smooth movement
 
