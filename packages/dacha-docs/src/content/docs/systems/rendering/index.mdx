@@ -9,7 +9,7 @@ import SortOffset from '../../../../components/diagrams/SortOffset.astro';
 import sortingShot from '../../../../assets/editor/project-settings-sorting.png';
 
 `Renderer` draws the actors of the active scene. It is built on
-[pixi.js](https://pixijs.com/) 8 and draws with WebGL.
+[pixi.js](https://pixijs.com/).
 
 An actor is drawn when it has a **view component**. The renderer creates a pixi.js object for each
 view component and places it at the actor's position.
@@ -19,13 +19,13 @@ view component and places it at the actor's position.
 | `Sprite` | An image, a frame from a sprite sheet, or a tiled image | [Components](/systems/rendering/components/) |
 | `Shape` | A rectangle, circle, ellipse or line | [Components](/systems/rendering/components/) |
 | `BitmapText` | Text with a bitmap font | [Components](/systems/rendering/components/) |
-| `PixiView` | Any pixi.js object you create in code | [Components](/systems/rendering/components/) |
-| `Mesh` | An image with your own shader | [Shaders](/systems/rendering/shaders/) |
+| `Mesh` | Similar to `Sprite`, but with your own shader | [Shaders](/systems/rendering/shaders/) |
+| `PixiView` | Any custom pixi.js object you create in code | [Components](/systems/rendering/components/) |
 
 ## Setting it up
 
-The [starter project](/getting-started/installation/) includes `Renderer`, `CameraSystem` and
-`Sprite`. Add the other view components you use to the engine's `components` array:
+1. In the Systems tab, add *Renderer* and *Camera System*.
+2. Add `Renderer`, `CameraSystem` and the view components you want to use to the engine:
 
 ```ts
 import { Engine, Renderer, CameraSystem, Transform, Sprite, Shape, BitmapText } from 'dacha';
@@ -42,16 +42,14 @@ const engine = new Engine({
 
 | Option | What it does |
 | --- | --- |
-| `windowNodeId` | The id of the element the renderer adds its canvas to. The canvas takes the size of this element |
-| `backgroundColor` | The colour behind everything. It can be transparent |
+| `windowNodeId` | The id of the element the renderer adds its canvas to |
+| `backgroundColor` | The window background color |
 | `filterEffects` | Post-processing for the whole screen. See [Filter effects](/systems/rendering/filter-effects/) |
-
-If the element with `windowNodeId` does not exist, the renderer throws when the engine creates it.
 
 ### Order in the systems list
 
 `Renderer` needs `CameraSystem`, and `CameraSystem` must come before it in the systems list.
-Otherwise the renderer throws when the engine creates it. See [Camera](/systems/camera/).
+See [Camera](/systems/camera/).
 
 Put `Renderer` after every system that moves actors or changes their view components. The
 renderer draws in `update`, and it draws the state it finds at that moment. A change made by a
@@ -94,15 +92,12 @@ unless the sorting settings put it there.
 Every view component has a `sortingLayer` field with the name of a layer. The layers are drawn in
 the order of the list. The first layer is at the back, and the last layer is in front.
 
-The starter project has two layers, `background` and `default`. A new view component uses
-`default`.
-
-A view whose `sortingLayer` names a layer that is not in the list is drawn behind all layers, with
-no sorting.
+:::note
 
 The renderer creates the layers when the game starts. So adding, removing or reordering a layer
-needs a restart. The editor shows *Reload Required* when you change the list. You can move a view
-to another existing layer at runtime by changing its `sortingLayer`.
+needs a restart. The editor shows *Reload Required* when you change the list.
+
+:::
 
 ### Sorting inside a layer
 
@@ -116,12 +111,10 @@ Inside a layer, the renderer sorts views by position in every frame. It compares
 | `topLeft` | Higher views. At the same height, views further left |
 | `topRight` | Higher views. At the same height, views further right |
 
-`bottomRight` is the default. It suits a top-down game: a character in front of a tree is lower on
-the screen, so it is drawn over the tree.
+`bottomRight` is the default.
 
-The renderer sorts by the centre of the view. For a tall sprite, the centre is not where the
-object touches the ground. Use `sortOffset` to move the point the renderer sorts by. For example,
-a tree 64 pixels tall stands on the ground at its bottom edge, so give it a `sortOffset` of
+The renderer sorts by the centre of the view. Use `sortOffset` to move the point the renderer sorts by.
+For example, a tree 64 pixels tall stands on the ground at its bottom edge, so give it a `sortOffset` of
 `{ x: 0, y: 32 }`.
 
 <SortOffset />
@@ -145,10 +138,7 @@ A path that appears in neither place is not loaded in advance:
 - If you change `src` of an existing sprite to a path that was never loaded, nothing changes. The
   sprite keeps its previous image.
 
-To switch a sprite to another image at runtime, put that image on an actor or a template.
-
-The renderer samples all textures with the nearest pixel, with no smoothing. Pixel art stays
-sharp when you scale it. Smooth artwork looks pixelated when it is drawn larger than its size.
+The renderer samples all textures with the nearest pixel, with no smoothing.
 
 ## RendererAPI
 
@@ -191,8 +181,3 @@ private handleClick = (event: MouseControlEvent): void => {
   }
 };
 ```
-
-## Types
-
-The `dacha/renderer` subpath exports TypeScript types only, such as `SortingLayer`, `Sorting` and
-`Bounds`. Import classes and values from `dacha`.

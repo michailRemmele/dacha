@@ -10,7 +10,8 @@ Game Code.
 
 ## Setting it up
 
-A behavior runs only when all of these are in place:
+1. In the Systems tab, add *Behavior System*.
+2. Add `BehaviorSystem`, `Behaviors` and project's `gameBehaviors` to the engine:
 
 ```ts
 import { Engine, BehaviorSystem, Behaviors } from 'dacha';

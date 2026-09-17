@@ -14,28 +14,21 @@ Use a mesh for effects on one actor: a hit flash, a dissolve, a wave, a colour c
 For an effect on the whole screen, use a [filter effect](/systems/rendering/filter-effects/)
 instead.
 
-This page covers what dacha adds around shaders. For how pixi.js compiles and runs them, see the
-pixi.js [Mesh guide](https://pixijs.com/8.x/guides/components/scene-objects/mesh) and
-[Shader API](https://pixijs.download/release/docs/rendering.Shader.html).
-
 ## The Mesh component
 
 `Mesh` has the fields of `Sprite` except `fit` and `textureOffset`, plus `material`:
 
 | Field | What it does |
 | --- | --- |
-| `src` | Path to the image. The editor accepts `png`. Without an image, the shader gets a white texture |
+| `src` | Path to the image. The editor accepts `png` |
 | `width`, `height` | The size of the mesh in world units |
 | `slice`, `currentFrame` | Sprite sheet frames. See [sprite sheets](/systems/rendering/components/#sprite-sheets) |
 | `flipX`, `flipY` | Mirror the mesh |
 | `color`, `opacity`, `blending`, `disabled`, `sortingLayer`, `sortOffset` | As on [every view component](/systems/rendering/components/#fields-every-component-has) |
-| `material` | The shader to use: `{ name, options }` |
-
-`material.name` is the name of a shader class. `material.options` holds the values of that shader's
-fields.
+| `material` | The shader to use |
 
 Without `material`, the mesh uses the default shader. It draws the image with its tint and opacity,
-like a sprite. A `name` with no matching class also uses the default shader, with no warning.
+like a sprite.
 
 In the editor, pick the shader under *Material* in the `Mesh` component. Its fields appear below.
 *Create New* in the same picker [generates a shader class](/editor/generating-scripts/).
@@ -131,10 +124,10 @@ The class has these methods:
 | `updateUniforms(uniforms, options)` | Every frame | Nothing. Write the new uniform values into `uniforms`. Optional |
 | `shaderKey(name, options)` | Every frame | A string. When it changes, the renderer creates the shader again. Optional |
 
-Each method receives `material.options` of the mesh.
-
 The fields on `@DefineShader` become the fields under *Material* in the editor. They work as
 described in [declaring fields on the decorator](/game-code/inspector-fields/#declaring-fields-on-the-decorator).
+
+Each method receives options of the mesh you define as fields.
 
 ## What the renderer provides
 
@@ -179,33 +172,22 @@ shaderKey(name: string, { quality }: BlurOptions): string {
 By default the key is the material name. So assigning a different `material`, or removing it,
 switches the shader in the next frame.
 
-Each mesh has its own shader, so options on one mesh do not affect another.
-
 ## Registering shaders
 
-Shader classes reach the renderer through the engine's `resources`. The
-[starter project](/getting-started/installation/) does not collect them. Add a glob for
-`*.shader.ts` next to the other globs in `src/index.ts`, and pass the result to the renderer:
+Shader classes reach the renderer through the engine's `resources`.
+Import them and pass the result to the renderer:
 
 ```ts
-import type { ShaderConstructor } from 'dacha/renderer';
-
-const gameShaders = importAll(
-  import.meta.glob('./**/*.shader.ts', { eager: true }),
-) as ShaderConstructor[];
+const gameShaders = import.meta.glob('./**/*.shader.ts', { eager: true });
 
 const engine = new Engine({
   // ...
   resources: {
-    [BehaviorSystem.systemName]: gameBehaviors,
     [Renderer.systemName]: {
-      shaders: gameShaders,
+      shaders: Object.values(gameShaders).map((module) => module.default),
     },
   },
 });
 ```
 
-See [how scripts are found](/game-code/auto-registration/) for `importAll` and the naming rules.
-
-If two classes have the same name, the last one wins, and the renderer writes a warning to the
-console.
+See [how scripts are found](/game-code/auto-registration/) for more information.

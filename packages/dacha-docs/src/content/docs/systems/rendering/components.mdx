@@ -5,10 +5,6 @@ description: "Sprite, Shape, BitmapText and PixiView, and the fields each one ha
 
 import SpriteSheet from '../../../../components/diagrams/SpriteSheet.astro';
 
-This page lists the view components the renderer draws, except `Mesh`, which has its own page:
-[Shaders](/systems/rendering/shaders/). Read [Rendering](/systems/rendering/) first for draw order
-and loading.
-
 ## Fields every component has
 
 `Sprite`, `Shape` and `BitmapText` share these fields:
@@ -17,7 +13,7 @@ and loading.
 | --- | --- |
 | `opacity` | From `0` (invisible) to `1` (opaque) |
 | `blending` | `normal`, `addition`, `substract` or `multiply` |
-| `disabled` | Hides the view. The actor and its other components keep working |
+| `disabled` | Hides the view |
 | `sortingLayer` | The layer the view is drawn in. See [draw order](/systems/rendering/#draw-order) |
 | `sortOffset` | Moves the point the renderer sorts by. See [sorting inside a layer](/systems/rendering/#sorting-inside-a-layer) |
 
@@ -32,7 +28,7 @@ and loading.
 | `src` | Path to the image. The editor accepts `png` |
 | `width`, `height` | The size of the sprite in world units. The image stretches to this size |
 | `slice` | The number of frames in the image. `1` means the image is one frame |
-| `currentFrame` | The frame to draw, starting from `0`. Not shown in the editor |
+| `currentFrame` | The frame to draw, starting from `0` |
 | `fit` | `stretch` or `repeat` |
 | `textureOffset` | Moves the image inside the sprite. Only for `fit: repeat` |
 | `flipX`, `flipY` | Mirror the image |
@@ -50,16 +46,6 @@ The renderer does not support sheets with several rows.
 
 To play the frames as an animation, change `currentFrame` over time. The
 [Animator](/systems/animation/) does this for you.
-
-### Tiling
-
-With `fit: repeat`, the image keeps its own size and repeats to fill `width` and `height`. The
-[starter project](/getting-started/installation/) uses this for the grass background.
-
-Change `textureOffset` to scroll the image inside the sprite, for example for a moving background.
-With `flipX` or `flipY`, the offset also scrolls in the mirrored direction.
-
-You cannot change `fit` at runtime.
 
 ## Shape
 
@@ -87,21 +73,6 @@ The shape is centred on the actor. A line goes from `point1` to `point2`, relati
 Outlines use pixi.js stroke styles. See the pixi.js
 [Graphics documentation](https://pixijs.download/release/docs/scene.Graphics.html).
 
-### Changing a shape in code
-
-In the configuration, the size fields sit next to the other fields. In the component, they are
-inside `geometry`:
-
-```ts
-const shape = actor.getComponent(Shape);
-
-if (shape.geometry.type === 'circle') {
-  shape.geometry.radius = 20;
-}
-```
-
-The renderer redraws the shape in the next frame.
-
 ## BitmapText
 
 `BitmapText` draws text with a bitmap font.
@@ -117,8 +88,7 @@ The renderer redraws the shape in the next frame.
 The pixi.js [Bitmap Text guide](https://pixijs.com/8.x/guides/components/scene-objects/text/bitmap)
 covers the supported formats and how to create a font.
 
-If `text` has a character that the font does not have, the renderer removes that character and
-writes a warning to the console.
+If `text` has a character that the font does not have, the renderer removes that character.
 
 ## PixiView
 

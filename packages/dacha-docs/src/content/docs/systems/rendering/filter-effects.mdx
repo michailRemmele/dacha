@@ -32,10 +32,6 @@ A filter effect does not change your HTML [game UI](/systems/game-ui/), because 
 drawn by the renderer. For an effect on one actor, use a [shader](/systems/rendering/shaders/)
 instead.
 
-This page covers what dacha adds around filters. For the filters themselves, see the pixi.js
-[Filters guide](https://pixijs.com/8.x/guides/components/filters). The
-[pixi-filters](https://pixijs.io/filters/docs/) package has many ready-made filters.
-
 ## Writing a filter effect
 
 A filter effect extends `FilterEffect` and is named by `@DefineFilterEffect`. This one blurs the
@@ -94,14 +90,6 @@ reorder it.
 
 The editor viewport does not show filter effects. To see them, open the game in the browser.
 
-In the configuration, the list is `filterEffects` in the renderer's options. Each entry is
-`{ id, name, options }`.
-
-:::caution
-If an entry names a filter effect class that the renderer does not have, the renderer throws when
-the engine creates it, and the game does not start.
-:::
-
 ## Changing effects at runtime
 
 `RendererAPI` adds and removes effects while the game runs:
@@ -121,7 +109,7 @@ renderer.removeFilterEffect(blur);
 
 | Method | What it does |
 | --- | --- |
-| `addFilterEffect(config)` | Adds the effect at the end of the list. Throws for an unknown name |
+| `addFilterEffect(config)` | Adds the effect at the end of the list |
 | `removeFilterEffect(config)` | Removes the effect. Pass the same object you added |
 | `clearFilterEffects()` | Removes all effects, including the ones from the configuration |
 | `getFilterEffects()` | Returns the configs of the active effects, in order |
@@ -136,38 +124,24 @@ in the next frame:
 blur.options.strength = 2;
 ```
 
-If you change `name`, the renderer replaces the filter with the new effect and moves it to the end
-of the list.
-
 The renderer is a world system, so effects stay active when the game changes scenes.
 
 ## Registering filter effects
 
-Filter effect classes reach the renderer through the engine's `resources`. The
-[starter project](/getting-started/installation/) does not collect them. Add a glob for
-`*.filter-effect.ts` next to the other globs in `src/index.ts`, and pass the result to the
-renderer:
+Filter effect classes reach the renderer through the engine's `resources`.
+Import them and pass the result to the renderer:
 
 ```ts
-import type { FilterEffectConstructor } from 'dacha/renderer';
-
-const gameFilterEffects = importAll(
-  import.meta.glob('./**/*.filter-effect.ts', { eager: true }),
-) as FilterEffectConstructor[];
+const gameFilterEffects = import.meta.glob('./**/*.filter-effect.ts', { eager: true });
 
 const engine = new Engine({
   // ...
   resources: {
-    [BehaviorSystem.systemName]: gameBehaviors,
     [Renderer.systemName]: {
-      filterEffects: gameFilterEffects,
+      filterEffects: Object.values(gameFilterEffects).map((module) => module.default),
     },
   },
 });
 ```
 
-If you also use shaders, pass `shaders` and `filterEffects` in the same object. See
-[how scripts are found](/game-code/auto-registration/).
-
-If two classes have the same name, the last one wins, and the renderer writes a warning to the
-console.
+See [how scripts are found](/game-code/auto-registration/) for more information.
