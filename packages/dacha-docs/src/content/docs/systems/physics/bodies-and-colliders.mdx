@@ -18,7 +18,7 @@ A collider has one shape. The shape fields depend on `type`:
 | `box` | `size` | A rectangle, `size.x` wide and `size.y` tall |
 | `circle` | `radius` | A circle |
 | `capsule` | `height`, `radius` | A vertical capsule. `height` is the distance between the centres of the two round ends, so the full height is `height + 2 * radius` |
-| `segment` | `point1`, `point2` | A line between two points, with no thickness |
+| `segment` | `point1`, `point2` | A line between two points |
 
 <CapsuleShape />
 
@@ -27,9 +27,9 @@ Every collider also has these fields:
 | Field | What it does |
 | --- | --- |
 | `offset` | Moves the shape away from the actor's position |
-| `layer` | The [collision layer](/systems/physics/collisions/#collision-layers). Layers decide which colliders collide. A new collider uses `default` |
-| `debugColor` | The colour of the collider in the editor's *Colliders* [debug layer](/editor/interface-tour/#debug-layers). The game does not use it |
-| `disabled` | Turns the collider off. It does not collide, gets no events and is not found by queries |
+| `layer` | The [collision layer](/systems/physics/collisions/#collision-layers). Layers decide which colliders collide |
+| `debugColor` | The colour of the collider in the editor's *Colliders* [debug layer](/editor/interface-tour/#debug-layers) |
+| `disabled` | Turns the collider off |
 
 All sizes are in world units, in the actor's local space.
 
@@ -91,22 +91,20 @@ actor.setComponent(
 
 | Type | How it moves | Use it for |
 | --- | --- | --- |
-| `static` | It does not move | Ground, walls, anything fixed |
-| `dynamic` | By the simulation: gravity, forces, impulses and contacts | Crates, balls, debris |
-| `kinematic` | By your code. Nothing else moves it | Moving platforms, doors, elevators |
+| `static` | By your code | Ground, walls, anything fixed |
+| `dynamic` | By the simulation | Crates, balls, debris |
+| `kinematic` | By your code | Moving platforms, doors, elevators |
 
-A new `RigidBody` in the editor is `static`.
+A `static` body is part of the level. The simulation never moves it, and no contact can push it.
 
-`type` is read-only. To change it, replace the component. The new component starts with zero
-velocity.
-
-A `kinematic` body pushes `dynamic` bodies, and they do not push it back. It passes through
-`static` and other `kinematic` bodies.
+`type` is read-only. To change it, replace the component.
 
 ## Dynamic bodies
 
-These fields control how a `dynamic` body moves. The editor shows them only when `type` is
-`dynamic`.
+A `dynamic` body is a physical object. Gravity pulls it, forces push it, and other bodies push it
+away. The simulation decides where it ends up, not your code.
+
+These fields control how a `dynamic` body moves:
 
 | Field | Default | What it does |
 | --- | --- | --- |
@@ -114,12 +112,10 @@ These fields control how a `dynamic` body moves. The editor shows them only when
 | `gravityScale` | `1` | Multiplies gravity for this body. `0` ignores gravity, `2` doubles it |
 | `linearDamping` | `0` | Slows the movement over time |
 | `angularDamping` | `0` | Slows the rotation over time |
-| `lockRotation` | `false` | Stops the body from rotating. Use it for characters and projectiles |
+| `lockRotation` | `false` | Stops the body from rotating |
 
 Damping removes a part of the velocity in every step. At `linearDamping` `1` and the default 50
 steps per second, the body loses 2% of its speed per step.
-
-A body without a collider does not rotate.
 
 ### Surface fields
 
@@ -127,28 +123,16 @@ These fields apply to every body type:
 
 | Field | Default | What it does |
 | --- | --- | --- |
-| `friction` | `0.6` | How much the surfaces resist sliding. `0` is ice |
-| `restitution` | `0` | How much the body bounces, from `0` to `1`. `1` keeps the full speed |
+| `friction` | `0.6` | How much the surfaces resist sliding |
+| `restitution` | `0` | How much the body bounces, from `0` to `1` |
 
 When two bodies touch, the contact uses the higher `restitution` of the two, and friction from
 both. A body with `friction` `0` slides on any surface.
 
-Slow contacts do not bounce. So a bouncy ball stops bouncing after a while, and a body at rest
-stays at rest.
-
 ### Velocity
 
 `linearVelocity` is the velocity in world units per second. `angularVelocity` is the rotation
-speed in radians per second. Both start at zero, and the editor does not show them.
-
-Read them to know how a body moves. Write them to set the velocity directly, for example for a
-jump:
-
-```ts
-const body = actor.getComponent(RigidBody);
-
-body.linearVelocity.y = -400;
-```
+speed in radians per second. The editor does not show them.
 
 ### Forces and impulses
 
@@ -156,7 +140,7 @@ body.linearVelocity.y = -400;
 
 | Method | What it does |
 | --- | --- |
-| `applyForce(force, position?)` | Pushes the body during the next step. The effect depends on the step length |
+| `applyForce(force, position?)` | Pushes the body during the next step |
 | `applyImpulse(impulse, position?)` | Changes the velocity at once, by `impulse / mass` |
 | `applyTorque(torque)` | Rotates the body during the next step |
 | `applyAngularImpulse(impulse)` | Changes the rotation speed at once |
@@ -169,39 +153,11 @@ The physics system applies forces once, in the next step, and then clears them. 
 push, apply the force in every `fixedUpdate`:
 
 ```ts
-import { SceneSystem, ActorQuery, RigidBody, Vector } from 'dacha';
-import type { SceneSystemOptions } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
-
-import Wind from '../components/wind.component';
-
-@DefineSystem({
-  name: 'WindSystem',
-})
-export default class WindSystem extends SceneSystem {
-  private actorQuery: ActorQuery;
-  private force: Vector;
-
-  constructor(options: SceneSystemOptions) {
-    super();
-
-    this.actorQuery = new ActorQuery({
-      scene: options.scene,
-      filter: [RigidBody, Wind],
-    });
-    this.force = new Vector(200, 0);
-  }
-
-  fixedUpdate(): void {
-    this.actorQuery.getActors().forEach((actor) => {
-      actor.getComponent(RigidBody).applyForce(this.force);
-    });
-  }
+// in your behavior or system
+fixedUpdate(): void {
+  this.actor.getComponent(RigidBody).applyForce(this.force);
 }
 ```
-
-Put this system before `PhysicsSystem` in the systems list. See [order in the systems
-list](/systems/physics/#order-in-the-systems-list).
 
 Use an impulse for a single push, such as an explosion or a hit.
 
@@ -209,6 +165,11 @@ The methods do nothing when the body is not `dynamic`, or when it is disabled. `
 `applyAngularImpulse` also do nothing when `lockRotation` is on.
 
 ## Kinematic bodies
+
+A `kinematic` body moves where your code tells it, and it pushes `dynamic` bodies out of the way.
+Nothing pushes it back, so it never leaves its route. That is what a moving platform or a door
+needs: a `static` body would not push the crate standing on it, and a `dynamic` one would fall
+down.
 
 Move a `kinematic` body in one of two ways.
 
@@ -233,26 +194,18 @@ You can change a body's `Transform` directly. The body is at the new position at
 teleport. Its velocity does not change, and it does not push other bodies on the way.
 
 Use it to place a body, for example at a spawn point. To move a body smoothly, use velocity,
-forces or `movePosition`. If the actor has [`Interpolation`](/systems/interpolation/), call
-`snap()` after a teleport.
+forces or `movePosition`.
 
 ## Disabling a body
 
 With `disabled` on, the physics system does not move the body. It clears the forces applied to
 it, and other bodies pass through it.
 
-The collider still works. The actor still gets collision events, and queries still find it. To
-turn off collisions too, disable the `Collider`.
-
 ## Bodies in a hierarchy
 
 The physics system moves bodies in world space. A body can be a child only of an actor that does
 not move. If the parent moves, both the parent and the physics system change the child's position,
 and the result is undefined.
-
-A child actor with a collider and no body moves with its parent. It works as a trigger that
-follows the parent. Its collision events climb to the parent. See [events climb the
-hierarchy](/concepts/events/#events-climb-the-hierarchy).
 
 ## One-way bodies
 
@@ -262,9 +215,9 @@ platforms that a character jumps onto from below.
 | Field | What it does |
 | --- | --- |
 | `oneWay` | Turns one-way on |
-| `oneWayNormal` | The direction to the side that is blocked, in the actor's local space |
+| `oneWayNormal` | The direction to the side that is blocked |
 
-The y axis points down. So for a platform you can land on from above, set `oneWayNormal` to
+For a platform you can land on from above, set `oneWayNormal` to
 `{ x: 0, y: -1 }`:
 
 - A body that falls onto the platform from above stops on it.
@@ -276,14 +229,3 @@ The normal turns with the actor.
 
 A body that starts to pass through keeps passing through until the two bodies separate. So a body
 that jumps through the platform from below does not get stuck in the middle.
-
-The physics system applies one-way only to `dynamic` bodies. For characters, see [Character
-Controller](/systems/character-controller/).
-
-Collision events still arrive while a body passes through.
-
-:::caution
-With `oneWay` on, `oneWayNormal` must not be `{ x: 0, y: 0 }`. The component throws when the
-engine creates it. The editor starts the field at `{ x: 0, y: 0 }`, so set it right after you
-turn on `oneWay`.
-:::

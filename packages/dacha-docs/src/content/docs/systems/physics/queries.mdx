@@ -17,9 +17,6 @@ import { PhysicsAPI } from 'dacha';
 const physics = world.systemApi.get(PhysicsAPI);
 ```
 
-`PhysicsAPI` exists only while a scene with `PhysicsSystem` is active. See [changing gravity at
-runtime](/systems/physics/#changing-gravity-at-runtime).
-
 ## Query types
 
 <QueryTypes />
@@ -34,7 +31,7 @@ runtime](/systems/physics/#changing-gravity-at-runtime).
 
 Each query type has several methods:
 
-| Query | First hit | All hits | One call per hit |
+| Query | First hit | All hits | Runs callback per hit |
 | --- | --- | --- | --- |
 | Raycast | `raycast` | `raycastAll` | `raycastEach` |
 | Shape cast | `shapeCast` | `shapeCastAll` | `shapeCastEach` |
@@ -61,8 +58,6 @@ const hit = physics.raycast({
 
 const canSeePlayer = hit?.actor === player;
 ```
-
-`direction` can have any length. The physics system uses only its direction.
 
 A ray that starts inside a collider can hit that collider. Exclude the actor that casts the ray, as
 in the example above.
@@ -96,7 +91,7 @@ A shape that already overlaps a collider at the start hits it at distance `0`.
 ### Actor casts
 
 An actor cast moves the collider of an actor. Use it to check whether an actor can move somewhere
-before you move it. This check finds out that an actor stands on something:
+before you move it:
 
 ```ts
 const hit = physics.castActor({
@@ -173,25 +168,21 @@ Overlaps return an **overlap hit**:
 | `penetration` | How deep they overlap along `normal`, in world units |
 | `contactPoints` | The points where they touch, in world space |
 
-To push the query shape out of a collider, move it by `normal * penetration`.
-
 ## First hit, all hits, or one call per hit
 
 **First hit.** `raycast`, `shapeCast` and `castActor` return the nearest hit, or `null` when
-nothing is hit. Check the result before you use it.
+nothing is hit.
 
 **All hits.** The `All` methods, `overlapShape` and `overlapActor` return an array. Raycasts and
-casts sort it from the nearest hit to the farthest. Overlaps do not sort it.
+casts sort it from the nearest hit to the farthest.
 
 **One call per hit.** The `Each` methods call your function once for every hit, in no particular
-order. They create no array and no hit objects, so they suit queries that run in every step.
+order.
 
 :::caution
 An `Each` method passes the same hit object to every call. The object is valid only during the
 call. Copy the fields you need to keep. Do not store the hit.
 :::
-
-You can run another query inside the function of an `Each` method or a filter.
 
 ## Filters
 
@@ -206,13 +197,6 @@ Every query accepts these optional fields:
 
 Without `layer`, raycasts, shape casts and overlaps find colliders on all layers.
 
-`actorFilter` runs before the physics system checks the shape. `hitFilter` runs after it, so it can
-read the hit fields, but it runs only for colliders the shape touches. Like in `Each` methods, the
-hit object in `hitFilter` is valid only during the call.
-
-A query never finds a disabled collider. It finds everything else: triggers, `static` bodies and
-disabled bodies.
-
 ## What queries see
 
 Queries see the colliders where the physics system last checked them, in its last step. So:
@@ -221,6 +205,3 @@ Queries see the colliders where the physics system last checked them, in its las
   next physics step.
 - A removed actor can still appear in results until the next physics step.
 - An actor you add to the scene is found at once, at the position it had when you added it.
-
-The shape of an actor cast or an actor overlap is different. It comes from the actor's current
-`Transform`, at the moment of the query.
