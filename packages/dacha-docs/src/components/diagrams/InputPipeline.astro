@@ -1,0 +1,57 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="A key press becomes your own event in two steps. The control system reads the bindings of the actor's KeyboardControl component."
+>
+  <svg viewBox="0 0 720 326" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      The browser sends a key event to KeyboardInputSystem, which dispatches KeyboardInput on the
+      world. KeyboardControlSystem reads it and dispatches a Move event on the actor, as its
+      binding says. Your system listens for Move.
+    </title>
+
+    <defs>
+      <marker id="ip-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+      <marker id="ip-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-accent)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <rect x="230" y="14" width="260" height="44" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="33" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">Browser</text>
+      <text x="360" y="49" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">key and mouse events</text>
+
+      <path d="M360 58 L360 96" marker-end="url(#ip-arrow)" />
+      <text x="376" y="82" fill="var(--diagram-muted)" stroke="none" font-size="11">the player presses W</text>
+
+      <rect x="230" y="98" width="260" height="44" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="117" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">KeyboardInputSystem</text>
+      <text x="360" y="133" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">input system</text>
+
+      <path d="M360 142 L360 180" stroke="var(--diagram-accent)" marker-end="url(#ip-arrow-accent)" />
+      <text x="376" y="158" fill="var(--diagram-accent)" stroke="none" font-size="12">KeyboardInput</text>
+      <text x="376" y="174" fill="var(--diagram-muted)" stroke="none" font-size="11">dispatched on the world</text>
+
+      <rect x="230" y="182" width="260" height="44" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="201" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">KeyboardControlSystem</text>
+      <text x="360" y="217" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">control system</text>
+
+      <text x="214" y="200" fill="var(--diagram-text)" text-anchor="end" stroke="none" font-size="12">KeyboardControl binding</text>
+      <text x="214" y="216" fill="var(--diagram-muted)" text-anchor="end" stroke="none" font-size="11">KeyW &#8594; Move</text>
+
+      <path d="M360 226 L360 264" stroke="var(--diagram-accent)" marker-end="url(#ip-arrow-accent)" />
+      <text x="376" y="242" fill="var(--diagram-accent)" stroke="none" font-size="12">Move</text>
+      <text x="376" y="258" fill="var(--diagram-muted)" stroke="none" font-size="11">your event, dispatched on the actor</text>
+
+      <rect x="230" y="266" width="260" height="44" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="285" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">Your system</text>
+      <text x="360" y="301" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">listens for Move</text>
+    </g>
+  </svg>
+</DiagramFigure>

@@ -1,0 +1,206 @@
+---
+title: "How scripts are found"
+description: "The convention that lets a file you create appear in both the game and the editor without any wiring."
+---
+
+import AutoRegistration from '../../../components/diagrams/AutoRegistration.astro';
+
+Adding a component to a game normally means writing the class, importing it somewhere,
+adding it to an array the engine receives, and separately telling the editor it exists.
+Four steps. Three of them are clerical, and each one is easy to forget.
+
+The convention on this page removes all of them. A file with the right name is collected
+into the game automatically, and the decorator on the class registers it with the editor.
+
+<AutoRegistration />
+
+## Nothing here is built into the engine
+
+The engine takes arrays of classes. It has no glob, no file scanner, and no knowledge of
+your directory layout. What collects the files is your project's own entry point, in a few
+lines you can read and change.
+
+The editor is no different. It compiles your project with its own bundler, driven by
+regular expressions you can edit. It imports every file that matches, and the decorator inside
+the file registers the class as it runs.
+
+So what follows is a convention, not a feature. It is worth keeping because the editor's
+script generation writes files that follow it, but it is yours.
+
+## The naming convention
+
+Two things make a file part of your project.
+
+**Its name ends with a known suffix:**
+
+| Suffix | Declares |
+| --- | --- |
+| `*.component.ts` | A component |
+| `*.system.ts` | A system |
+| `*.behavior.ts` | A behavior |
+| `*.shader.ts` | A shader |
+| `*.filter-effect.ts` | A filter effect |
+| `*.asset.ts` | An asset kind |
+| `*.widget.tsx` | An inspector widget |
+
+The editor configuration holds these patterns in five settings, and you can change every one
+of them. Shaders and filter effects share a setting with behaviors, because the editor treats
+all three as behavior-like classes. The widget setting also matches `.ts`, `.js` and `.jsx`.
+
+Your game's entry point keeps its own list. The
+[starter project](/getting-started/installation/) globs components, systems and behaviors,
+because that is what most games use. The rest are collected the same way when you need them:
+one more glob, written like the three that are already there.
+
+The widget is the one file that never reaches the game. It draws a component's fields in
+the inspector, so it is editor code. See [custom widgets](/game-code/custom-widgets/).
+
+**The class is the default export:**
+
+```ts
+export default class Health extends Component { /* … */ }
+```
+
+A file named `health.ts` is not collected at all. A named export is worse, because the two
+sides disagree. The editor imports the file and the decorator registers the class, so the
+component appears in the inspector. Your game's glob reads the default export, finds nothing,
+and the class never reaches the engine. There is no build error in either case. A widget file
+is the exception. It registers itself when it is imported and needs no export at all.
+
+## Two files found by their path
+
+Two parts of a project are located by path rather than by suffix:
+
+| Path | Holds |
+| --- | --- |
+| `src/events/index.ts` | [Your event names](/concepts/events/#telling-the-editor-about-your-events), so the editor can offer them where an event has to be chosen |
+| `src/locales/index.ts` | [Translations for your field titles](/game-code/inspector-fields/#titles-come-from-translations) |
+
+Both paths are settings in the [editor configuration](/editor/config-reference/), like every
+pattern in the table above.
+
+## Collecting the files
+
+Here is how the starter project does it. It uses Vite, so it globs with
+`import.meta.glob`:
+
+```ts
+const gameComponents = importAll(
+  import.meta.glob('./**/*.component.ts', { eager: true }),
+) as ComponentConstructor[];
+const gameSystems = importAll(
+  import.meta.glob('./**/*.system.ts', { eager: true }),
+) as SystemConstructor[];
+const gameBehaviors = importAll(
+  import.meta.glob('./**/*.behavior.ts', { eager: true }),
+) as BehaviorConstructor[];
+```
+
+`importAll` is two lines and lives in your project, not in the engine:
+
+```ts
+export const importAll = (modules: Record<string, unknown>): unknown[] =>
+  Object.values(modules).map(
+    (module) => (module as Record<string, unknown>).default,
+  );
+```
+
+The pattern has to be a literal at the call site. Vite rewrites `import.meta.glob` at build
+time, so it cannot come from a variable or be wrapped in a helper of your own.
+
+On another bundler the shape of this code changes, and only this code. With webpack the
+equivalent is `require.context('./', true, /\.component\.ts$/)`, and `importAll` takes a
+`__WebpackModuleApi.RequireContext` instead. That also means adding `@types/webpack-env` to
+your dev dependencies, or TypeScript will not know the symbol.
+
+## Handing them to the engine
+
+The collected arrays are spread in alongside the built-ins:
+
+```ts
+const engine = new Engine({
+  config,
+  systems: [Renderer, PhysicsSystem, BehaviorSystem, ...gameSystems],
+  components: [Transform, Sprite, Behaviors, ...gameComponents],
+  assets: [Texture],
+  resources: {
+    [BehaviorSystem.systemName]: [...gameBehaviors],
+  },
+});
+```
+
+Behaviors are not systems or components, so they arrive as a resource for the behavior
+system rather than in either array. Shaders and filter effects work the same way, keyed to
+the renderer instead:
+
+```ts
+resources: {
+  [BehaviorSystem.systemName]: [...gameBehaviors],
+  [Renderer.systemName]: {
+    shaders: [...gameShaders],
+    filterEffects: [...gameFilterEffects],
+  },
+},
+```
+
+From the engine's point of view nothing unusual happened. It received arrays of classes,
+exactly as it would have if you had listed them by hand.
+
+## Collected is not the same as running
+
+The glob makes a class **available** to the engine. Whether it does anything after that
+depends on the kind.
+
+A **system** runs only if `systems` in the configuration lists it too. That list is what the
+editor's [Systems tab](/editor/systems-and-options/) writes, and its order is the order the
+systems run in.
+
+A **component** needs no second list. It is live wherever an actor carries it.
+
+A **behavior** needs both. `BehaviorSystem` has to be in `systems`, and an actor's
+`Behaviors` component has to name the behavior. The starter project enables that system
+already.
+
+## When the class never arrives
+
+The configuration refers to classes by name, so a name with nothing behind it is possible.
+There are two reasons for it: the file stopped matching the glob, or the class never reached
+`new Engine(…)` at all. The second one has a common source. [The editor writes names, not
+classes](/editor/systems-and-options/#the-editor-writes-names-not-classes), so a system you
+add in the Systems tab still has to reach the entry point from your code.
+
+Every kind fails the same way. The engine drops the entry, writes one line to the console,
+and builds the rest:
+
+| Kind | What happens |
+| --- | --- |
+| System | Dropped. `System not found: …` in the console, and the game runs without it |
+| Behavior | Dropped. `Behavior not found: …`, and the actor keeps running |
+| Component | Dropped. `Component not found: …`, and the actor is built without it |
+
+Nothing stops, so nothing points at the problem. A renamed component file leaves actors that
+look right and hold none of the data that component carried. Watch the console.
+
+## What the decorators cost your game
+
+Nothing at run time. Outside the editor, `@DefineComponent` sets the static name on the
+class and returns, and `@DefineField` does nothing at all. The field and widget metadata is
+built only when the editor is the thing importing the class, which the decorators check for
+as they run.
+
+## The round trip
+
+The payoff is the loop between the editor and your project.
+
+Generate a component from the editor. It writes `health.component.ts` into your project.
+Two independent things then happen without you doing anything:
+
+- **Your game** picks it up on the next rebuild, because the glob matches the filename.
+- **The editor** picks it up by reading the file and finding the decorator, which registers
+  the class and its fields into the inspector.
+
+The component becomes placeable on actors and its fields become editable, in the same
+session, from a class that did not exist a minute ago.
+
+See [generating scripts](/editor/generating-scripts/) for the editor half, and
+[components](/game-code/components/) for what goes in the file.

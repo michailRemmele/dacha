@@ -1,0 +1,117 @@
+---
+title: "Components"
+description: "Define a component with decorators and expose its fields to the editor."
+---
+
+import FieldRoundTrip from '../../../components/diagrams/FieldRoundTrip.astro';
+
+A component is state attached to an actor. You declare one by extending `Component` and
+describing it with a decorator.
+
+## A complete component
+
+```ts
+import { Component } from 'dacha';
+import { DefineComponent, DefineField } from 'dacha-workbench/decorators';
+
+interface HealthConfig {
+  points: number;
+}
+
+@DefineComponent({
+  name: 'Health',
+})
+export default class Health extends Component {
+  @DefineField({
+    initialValue: 100,
+  })
+  points: number;
+
+  maxPoints: number;
+
+  constructor(config: HealthConfig) {
+    super();
+
+    const { points } = config;
+
+    this.points = points;
+    this.maxPoints = points;
+  }
+}
+```
+
+That is the whole thing. Nothing else has to be registered anywhere.
+
+Two rules are not visible in the code. The class has to be the **default export**, because
+that is what the [glob](/game-code/auto-registration/) collects. And the name in
+`@DefineComponent` is the name the configuration uses, so you never assign `componentName`
+yourself.
+
+## What survives a save
+
+`points` and `maxPoints` are both plain properties, and they behave completely differently.
+The decorator is the whole difference.
+
+<FieldRoundTrip />
+
+`points` carries the decorator. You edit it in the inspector, the editor writes it into
+`data/data.json`, and the engine hands the saved object to your constructor when the actor
+is built. The value in the inspector is the value the component starts with.
+
+`maxPoints` carries no decorator. It is not in the inspector, not in the file, and nothing
+restores it. The constructor computes it again every time the component is built.
+
+So decorate what you want to change from the editor, and leave the rest as ordinary
+run-time state.
+
+### Changing the fields later
+
+Adding a field to a component that actors already use is safe. When the editor loads a
+project it compares the saved configuration against the current schemas, and it writes the
+field's initial value wherever the value is missing. Existing actors pick up the new field
+with no work from you.
+
+Renaming a field is not the same operation. The editor sees one name disappear and another
+appear. It fills the new name with its initial value and leaves the old key in the file,
+where nothing reads it. Values do not travel across a rename, so treat a rename as a delete
+plus an add.
+
+## A component is state, not logic
+
+The engine never calls into a component. There is no `update`, and nothing in the loop
+reaches a component except through the system or behavior that reads it.
+
+Methods are fine. A helper that keeps two fields consistent, or a getter that derives a
+value from them, is still state with a convenient surface on it. What a component cannot be
+is a place for work that has to run on its own.
+
+A component can look around from where it sits. `this.actor` is the actor the component is
+attached to, and the engine sets it on attachment. `getParentComponent()` returns the same
+component class from the parent actor, or `undefined` when the parent has none. Both are for
+reading the hierarchy, not for running work of your own.
+
+A component with no fields at all is still useful. It marks an actor, and a query finds the
+actor by that mark. The engine's own `Behaviors` is close to this, and a `Player` marker is
+the kind you might write.
+
+The work itself goes in a [system](/game-code/systems/) when it is about a class of actors,
+or in a [behavior](/game-code/behaviors/) when it is about one.
+
+## Using it
+
+Once the file exists, the component is available in the editor's inspector for any actor,
+and in code by class:
+
+```ts
+import Health from '../components/health/health.component';
+
+const health = actor.getComponent(Health);
+if (health) {
+  health.points -= 10;
+}
+```
+
+## Generating one instead
+
+The editor can write this file for you, with the decorator and the class already in place.
+See [generating scripts](/editor/generating-scripts/).

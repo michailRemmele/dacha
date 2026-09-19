@@ -38,6 +38,8 @@ export {
 export { TemplateCollection } from './engine/template';
 export { Assets, Asset } from './engine/asset';
 export type { AssetOptions, AssetConstructor } from './engine/asset';
+export type { SystemConstructor } from './engine/system';
+export type { ComponentConstructor } from './engine/component';
 
 export * from './types/events';
 export * from './contrib/systems';

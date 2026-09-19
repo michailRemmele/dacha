@@ -19,11 +19,7 @@ export default class ${name} extends Component {
 
     this.exampleField = exampleField;
   }
-
-  clone(): ${name} {
-    return new ${name}({ exampleField: this.exampleField });
-  }
 }
-`
+`;
 
-module.exports = getComponentTemplate
+module.exports = getComponentTemplate;

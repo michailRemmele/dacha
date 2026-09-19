@@ -45,8 +45,9 @@ selected in CI with `--grep`/`--grep-invert "screenshot:"`; screenshot baselines
 committed but synced from S3-compatible storage by
 `scripts/e2e-baselines.js` (pull/push). **Locally you must load the profile first —
 `source .env.local`** (repo root, gitignored): it exports `AWS_PROFILE`, `S3_ENDPOINT`,
-`S3_BUCKET` and the two `AWS_*_CHECKSUM_*` compatibility vars the baseline sync needs. CI
-sets the same variables from repo secrets. The functional group alone needs no S3 access:
+`S3_BUCKET` and the two `AWS_*_CHECKSUM_*` compatibility vars the baseline sync needs, plus
+`S3_DOCS_PROFILE`/`S3_DOCS_BUCKET` for the documentation media (see below). CI
+sets the baseline variables from repo secrets. The functional group alone needs no S3 access:
 `npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"` from
 inside `packages/dacha-workbench/`.
 
@@ -54,6 +55,26 @@ inside `packages/dacha-workbench/`.
 (`x.y.z-local.<timestamp>`) by rewriting `package.json` **inside the tarball**,
 never in the working tree — otherwise npm treats a reinstall of the same version as a
 no-op and the test project keeps the old code. Pass `--to <project>` to install into a project directly.
+
+**Documentation media.** The docs site's video lives in a second, **public** S3 bucket
+rather than in git — the clips are megabytes each and are replaced wholesale. The site
+links to them by absolute URL built from `MEDIA_BASE_URL` in
+`packages/dacha-docs/src/consts.ts`, so neither the build nor CI needs credentials, and
+pull requests from forks build normally. `packages/dacha-docs/media/` is the gitignored
+local working copy, synced by `npm run docs:media:push` / `docs:media:pull`
+(`packages/dacha-docs/scripts/media.mjs`, an `aws s3 sync` wrapper — it needs
+`S3_DOCS_BUCKET`, `S3_ENDPOINT` and optionally `S3_DOCS_PROFILE` from `.env.local`). **Images are the opposite** — screenshots and posters belong in
+`packages/dacha-docs/src/assets/`, committed, so they diff alongside the prose they
+illustrate and go through the `astro:assets` optimizer. `npm run check:media -w dacha-docs`
+runs in the docs workflow and fails the build on an unreachable media URL, which
+starlight's link validator does not cover.
+
+**Documentation prose has a style guide — [packages/dacha-docs/STYLE.md](packages/dacha-docs/STYLE.md).**
+Read it before writing or editing anything under `packages/dacha-docs/src/content/docs/`. The
+short version: the reader is a developer who may not be a fluent English speaker, so write
+short sentences in active voice with concrete verbs, one idea per sentence. Do not chain
+clauses with em dashes, and do not reach for the more elegant phrasing when a plainer one says
+the same thing. The guide is the authority; this paragraph only points at it.
 
 Run a single test file with `npx jest path/to/file.test.ts` from inside the relevant
 package. `npm run dev` is how you see an engine change end-to-end: the TypeScript watcher
@@ -69,6 +90,7 @@ incremental state and will legitimately do nothing when it believes it is up to 
 ```
 packages/dacha/              the engine
 packages/dacha-workbench/    the editor
+packages/dacha-docs/         the documentation site (astro + starlight)
 scripts/                     pack-local.js, release.js (plain Node CommonJS, unlinted)
 docs/                        local planning material — GITIGNORED, never committed
 packs/                       output of pack:local — gitignored
@@ -207,9 +229,12 @@ side you are on:**
 - **Renderer process (React)** — everything under
   **[src/](packages/dacha-workbench/src/)**, entry
   [src/app.tsx](packages/dacha-workbench/src/app.tsx).
-- **CLI** — [bin/index.js](packages/dacha-workbench/bin/index.js) (commander):
-  `dacha-workbench init` scaffolds a project, the default command launches the editor. In
-  dev it spawns the `electron` CLI, in prod the packaged binary. `postinstall` runs
+- **CLI** — [bin/index.js](packages/dacha-workbench/bin/index.js) (commander): the single
+  default command launches the editor, taking `--config`. Without it the CLI looks for
+  `dacha-workbench.config.cjs` in the working directory and falls back to
+  `dacha-workbench.config.js`. In dev it spawns the `electron` CLI, in prod the packaged
+  binary. Scaffolding a new project is `create-dacha`'s job, not this CLI's — the `init`
+  subcommand was removed when the template landed. `postinstall` runs
   `bin/install.js`, which packages the Electron app — set `DACHA_SKIP_APP_BUILD=1` to skip
   that when only the library part matters.
 

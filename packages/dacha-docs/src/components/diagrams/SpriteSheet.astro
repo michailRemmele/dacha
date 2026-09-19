@@ -1,0 +1,174 @@
+---
+import sheet from '../../assets/diagrams/piranha-sheet.png';
+
+/* The sheet is 220x20: eleven 20x20 frames of the piranha from Piranha Frenzy. */
+const SLICE = 11;
+const CURRENT_FRAME = 3;
+
+const frames = Array.from({ length: SLICE }, (_, index) => index);
+
+/*
+ * The single frame below the strip is a square box. The sheet fills it at a
+ * background-size of SLICE * 100%, so it is SLICE boxes wide, and a percentage
+ * position of index / (SLICE - 1) shifts it by exactly that many frames.
+ */
+const framePosition = (CURRENT_FRAME / (SLICE - 1)) * 100;
+---
+
+<figure class="sprite-sheet">
+  <p class="sprite-sheet__slice">slice: {SLICE}</p>
+  <span class="sprite-sheet__bracket" aria-hidden="true"></span>
+
+  <div class="sprite-sheet__strip">
+    <img
+      class="sprite-sheet__image"
+      src={sheet.src}
+      width={sheet.width}
+      height={sheet.height}
+      alt={`One image with ${SLICE} frames of a pixel-art piranha in a single row.`}
+    />
+    <div class="sprite-sheet__cells" aria-hidden="true">
+      {
+        frames.map((index) => (
+          <span
+            class:list={[
+              'sprite-sheet__cell',
+              index === CURRENT_FRAME && 'sprite-sheet__cell--current',
+            ]}
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="sprite-sheet__indexes" aria-hidden="true">
+    {
+      frames.map((index) => (
+        <span
+          class:list={[
+            'sprite-sheet__index',
+            index === CURRENT_FRAME && 'sprite-sheet__index--current',
+          ]}
+        >
+          {index}
+        </span>
+      ))
+    }
+  </div>
+
+  <div class="sprite-sheet__draws">
+    <span class="sprite-sheet__draws-label">currentFrame: {CURRENT_FRAME}</span>
+    <span class="sprite-sheet__draws-arrow" aria-hidden="true">→</span>
+    <span
+      class="sprite-sheet__draws-frame"
+      aria-hidden="true"
+      style={`background-image: url(${sheet.src}); background-position: ${framePosition}% 0`}
+    ></span>
+  </div>
+
+  <figcaption>
+    A sheet from the game Piranha Frenzy. The image is 220x20 pixels, so
+    <code>slice: {SLICE}</code> gives {SLICE} frames of 20x20.
+    <code>currentFrame: {CURRENT_FRAME}</code> picks the frame the sprite draws.
+  </figcaption>
+</figure>
+
+<style define:vars={{ slice: SLICE }}>
+  .sprite-sheet {
+    margin: 1.5rem 0;
+  }
+
+  .sprite-sheet__slice {
+    margin: 0 0 0.35rem;
+    font-size: var(--sl-text-sm);
+    color: var(--diagram-text);
+    text-align: center;
+  }
+
+  .sprite-sheet__bracket {
+    display: block;
+    height: 0.4rem;
+    border: 1px solid var(--diagram-stroke);
+    border-bottom: none;
+  }
+
+  .sprite-sheet__strip {
+    position: relative;
+    margin-top: 0.4rem;
+    /* Pixel art needs a flat backdrop, so this colour is fixed in both themes. */
+    background: #33475c;
+  }
+
+  .sprite-sheet__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+  }
+
+  .sprite-sheet__cells {
+    position: absolute;
+    inset: 0;
+    /* The overlay must match the image exactly, so drop the margin starlight
+       gives every element that follows a sibling in the page content. */
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--slice), 1fr);
+  }
+
+  .sprite-sheet__cell {
+    border-left: 1px solid var(--diagram-stroke);
+  }
+
+  .sprite-sheet__cell:first-child {
+    border-left: none;
+  }
+
+  .sprite-sheet__cell--current {
+    outline: 2px solid var(--diagram-accent);
+    outline-offset: -1px;
+  }
+
+  .sprite-sheet__indexes {
+    display: grid;
+    grid-template-columns: repeat(var(--slice), 1fr);
+    margin-top: 0.35rem;
+    font-size: var(--sl-text-xs);
+    color: var(--diagram-muted);
+    text-align: center;
+  }
+
+  .sprite-sheet__index--current {
+    color: var(--diagram-accent);
+  }
+
+  .sprite-sheet__draws {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    font-size: var(--sl-text-sm);
+    color: var(--diagram-accent);
+  }
+
+  .sprite-sheet__draws-arrow {
+    color: var(--diagram-muted);
+  }
+
+  .sprite-sheet__draws-frame {
+    width: 4rem;
+    height: 4rem;
+    border: 2px solid var(--diagram-accent);
+    background-color: #33475c;
+    background-repeat: no-repeat;
+    background-size: calc(var(--slice) * 100%) 100%;
+    image-rendering: pixelated;
+  }
+
+  .sprite-sheet figcaption {
+    margin-top: 0.75rem;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-3);
+  }
+</style>

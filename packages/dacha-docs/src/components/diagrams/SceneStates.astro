@@ -1,0 +1,56 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The three states a scene moves between, and the event that causes each move."
+>
+  <svg viewBox="0 0 720 176" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A scene moves from not loaded to loaded with LoadScene, from loaded to active with
+      EnterScene, and back again with ExitScene and DestroyScene.
+    </title>
+
+    <defs>
+      <marker id="ss-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+      <marker id="ss-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-accent)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <path d="M115 72 C 115 18, 605 18, 605 72" stroke="var(--diagram-accent)" marker-end="url(#ss-arrow-accent)" />
+      <text x="360" y="16" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">LoadScene &#183; autoEnter defaults to true</text>
+
+      <rect x="40" y="76" width="150" height="76" rx="8" fill="var(--diagram-fill)" />
+      <text x="115" y="102" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">not loaded</text>
+      <text x="115" y="122" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">in the configuration</text>
+      <text x="115" y="136" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">and nowhere else</text>
+
+      <rect x="285" y="76" width="150" height="76" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="102" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">loaded</text>
+      <text x="360" y="122" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">actors and systems built,</text>
+      <text x="360" y="136" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">onSceneLoad resolved</text>
+
+      <rect x="530" y="76" width="150" height="76" rx="8" fill="var(--diagram-fill)" />
+      <text x="605" y="102" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">active</text>
+      <text x="605" y="122" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">in the world tree,</text>
+      <text x="605" y="136" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">its systems tick</text>
+
+      <path d="M194 100 L281 100" marker-end="url(#ss-arrow)" />
+      <text x="237" y="92" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">LoadScene</text>
+
+      <path d="M439 100 L526 100" marker-end="url(#ss-arrow)" />
+      <text x="482" y="92" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="11">EnterScene</text>
+
+      <path d="M526 136 L439 136" marker-end="url(#ss-arrow)" />
+      <text x="482" y="128" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">ExitScene</text>
+
+      <path d="M281 136 L194 136" marker-end="url(#ss-arrow)" />
+      <text x="237" y="128" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">DestroyScene</text>
+    </g>
+  </svg>
+</DiagramFigure>

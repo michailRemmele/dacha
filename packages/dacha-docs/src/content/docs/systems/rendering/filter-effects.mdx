@@ -1,0 +1,147 @@
+---
+title: "Filter effects"
+description: "Apply post-processing to the whole screen."
+---
+
+import PanelShot from '../../../../components/PanelShot.astro';
+import ShotPair from '../../../../components/ShotPair.astro';
+
+import effectOffShot from '../../../../assets/editor/filter-effect-off.png';
+import effectOnShot from '../../../../assets/editor/filter-effect-on.png';
+import filterEffectsShot from '../../../../assets/editor/systems-filter-effects.png';
+
+A filter effect changes the whole rendered frame: blur, colour grading, a CRT look, a screen
+flash. The effect is a class in your project. It creates a pixi.js filter, and the renderer applies
+that filter to everything it draws.
+
+<ShotPair
+  first={{
+    src: effectOffShot,
+    label: 'Without effects',
+    alt: 'A part of a pixel art level: a block vehicle stands on the edge of a red ledge. On the right are a column of blocks and a repair block.',
+  }}
+  second={{
+    src: effectOnShot,
+    label: 'With effects',
+    alt: 'The same place with filter effects. The image has scanlines, and the edges of the blocks and the repair block have split colours.',
+  }}
+  caption="The same place without filter effects, and with dust clouds, chromatic aberration and a CRT look."
+/>
+
+A filter effect does not change your HTML [game UI](/systems/game-ui/), because the UI is not
+drawn by the renderer. For an effect on one actor, use a [shader](/systems/rendering/shaders/)
+instead.
+
+## Writing a filter effect
+
+A filter effect extends `FilterEffect` and is named by `@DefineFilterEffect`. This one blurs the
+screen:
+
+```ts
+import { FilterEffect } from 'dacha';
+import { DefineFilterEffect } from 'dacha-workbench/decorators';
+import { BlurFilter } from 'pixi.js';
+
+interface ScreenBlurOptions {
+  strength: number;
+}
+
+@DefineFilterEffect({
+  name: 'ScreenBlur',
+  fields: [{ name: 'strength', type: 'number', initialValue: 4 }],
+})
+export default class ScreenBlur extends FilterEffect {
+  create({ strength }: ScreenBlurOptions): BlurFilter {
+    return new BlurFilter({ strength });
+  }
+
+  update(filter: BlurFilter, { strength }: ScreenBlurOptions): void {
+    filter.strength = strength;
+  }
+}
+```
+
+| Method | When it runs | What it does |
+| --- | --- | --- |
+| `create(options)` | When the effect is added | Returns a pixi.js `Filter` |
+| `update(filter, options, elapsedTime)` | Every frame | Changes the filter. `elapsedTime` is in seconds. Optional |
+
+Without `update`, the filter keeps the values `create` gave it. Implement `update` if options
+change at runtime, or if the effect animates over time.
+
+The fields on `@DefineFilterEffect` become the fields of the effect in the editor. They work as
+described in [declaring fields on the decorator](/game-code/inspector-fields/#declaring-fields-on-the-decorator).
+
+## Adding effects in the editor
+
+Filter effects are an option of the `Renderer` system. In the Systems tab, expand *Renderer* and
+add effects under *Filter Effects*. *Create New* in the same picker
+[generates a filter effect class](/editor/generating-scripts/).
+
+The renderer applies effects in the order of the list, from top to bottom. Drag an effect to
+reorder it.
+
+<PanelShot
+  src={filterEffectsShot}
+  alt="The Systems tab with Renderer expanded. Under Filter Effects, the list has Dust Clouds, Chromatic Aberration with a Strength field, and Crt with scanline and vignette fields. Each effect has a drag handle. An Add Effect picker is below the list."
+  caption="Each effect shows the fields from its decorator."
+  width={320}
+/>
+
+The editor viewport does not show filter effects. To see them, open the game in the browser.
+
+## Changing effects at runtime
+
+`RendererAPI` adds and removes effects while the game runs:
+
+```ts
+import { RendererAPI } from 'dacha';
+
+const renderer = world.systemApi.get(RendererAPI);
+
+const blur = { name: 'ScreenBlur', options: { strength: 8 } };
+
+renderer.addFilterEffect(blur);
+
+// later
+renderer.removeFilterEffect(blur);
+```
+
+| Method | What it does |
+| --- | --- |
+| `addFilterEffect(config)` | Adds the effect at the end of the list |
+| `removeFilterEffect(config)` | Removes the effect. Pass the same object you added |
+| `clearFilterEffects()` | Removes all effects, including the ones from the configuration |
+| `getFilterEffects()` | Returns the configs of the active effects, in order |
+
+`removeFilterEffect` finds the effect by object, not by name. Keep the object you passed to
+`addFilterEffect`, or find it in `getFilterEffects()`.
+
+To change an active effect, change `options` on its config object. `update` receives the new values
+in the next frame:
+
+```ts
+blur.options.strength = 2;
+```
+
+The renderer is a world system, so effects stay active when the game changes scenes.
+
+## Registering filter effects
+
+Filter effect classes reach the renderer through the engine's `resources`.
+Import them and pass the result to the renderer:
+
+```ts
+const gameFilterEffects = import.meta.glob('./**/*.filter-effect.ts', { eager: true });
+
+const engine = new Engine({
+  // ...
+  resources: {
+    [Renderer.systemName]: {
+      filterEffects: Object.values(gameFilterEffects).map((module) => module.default),
+    },
+  },
+});
+```
+
+See [how scripts are found](/game-code/auto-registration/) for more information.

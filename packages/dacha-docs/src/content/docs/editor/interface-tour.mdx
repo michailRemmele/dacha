@@ -1,0 +1,91 @@
+---
+title: "Interface tour"
+description: "What each panel of the editor does."
+---
+
+import { Image } from 'astro:assets';
+
+import AnnotatedShot from '../../../components/AnnotatedShot.astro';
+import ShotPair from '../../../components/ShotPair.astro';
+
+import overviewShot from '../../../assets/editor/interface-overview.png';
+import collidersOffShot from '../../../assets/editor/debug-colliders-off.png';
+import collidersOnShot from '../../../assets/editor/debug-colliders-on.png';
+import markersShot from '../../../assets/editor/debug-markers.png';
+
+The editor is laid out around a viewport. The explorer on the left lists the project. The
+inspector on the right shows the selected object.
+
+<AnnotatedShot
+  src={overviewShot}
+  alt="The editor window: the explorer on the left with the Scenes tab open and an actor called Player selected, the viewport in the middle showing a level with the grid drawn over it, and the inspector on the right listing the selected actor's components."
+  caption="The parts of the editor window. The window title is the name of the project directory."
+  markers={[
+    { x: 21, y: 20.55, label: 'Explorer', text: 'The scenes, templates and assets of the project, one tab each.' },
+    { x: 20, y: 10.95, label: 'Action bar', text: 'Adds, cuts, copies, pastes and deletes nodes in the tree below it.' },
+    { x: 39.5, y: 7.05, label: 'Tools', text: 'Hand, pointer, zoom and template. One tool is always active.' },
+    { x: 59, y: 7.05, label: 'Tool options', text: 'The options of the active tool.' },
+    { x: 30.75, y: 22.5, label: 'Viewport', text: 'The selected scene, drawn by the engine.' },
+    { x: 86, y: 75, label: 'Inspector', text: 'The selected object, the systems list and the project settings.' },
+    { x: 17, y: 98.2, label: 'Bottom bar', text: 'The cursor position and the grid cell under it.' },
+  ]}
+/>
+
+## The viewport runs the engine
+
+The viewport is not a preview drawn by the editor. It is a Dacha world. It runs the engine's
+own `Renderer` and `CameraSystem` over your scene's actors. Sorting layers, opacity and blending
+modes look exactly as they will in the game.
+
+That world does not run your code. Your systems and behaviors do not run, and no collision is
+resolved. You edit the scene here, and you watch the game itself in the
+[browser tab](/introduction/how-it-works/).
+
+The view you pan and zoom belongs to the editor. It is not the `Camera` the game looks
+through.
+
+## Debug layers
+
+Some parts of a scene draw nothing: a collider, a checkpoint, an actor that only carries data.
+The debug layers draw them in the editor only. Turn them on in *View → Settings*.
+
+**Colliders** outlines every `Collider` in the scene. The colour comes from the collider's
+`debugColor`, and green is the default.
+
+<ShotPair
+  first={{
+    src: collidersOffShot,
+    label: 'Off',
+    alt: 'A part of a level in the viewport: walls, ground blocks and obstacles, with no outlines.',
+  }}
+  second={{
+    src: collidersOnShot,
+    label: 'On',
+    alt: 'The same part of the level with the Colliders layer on. Every wall, block and obstacle has a green outline with a light green fill.',
+  }}
+  caption="A long wall shows up as several separate colliders."
+/>
+
+**Markers** draws an icon for each actor that has an `EditorMarker` component. Add it to a
+spawn point or a checkpoint, and you can see and click that actor in the viewport. The game
+ignores `EditorMarker`.
+
+<figure class="screenshot">
+  <Image
+    src={markersShot}
+    alt="The viewport and the inspector. In the viewport a yellow flag icon with a selection box sits at the top of a shaft. The inspector shows the selected actor, Finish, with an Editor Marker component whose Name is finish and whose Color is yellow."
+  />
+  <figcaption>
+    The Finish actor and its EditorMarker.
+  </figcaption>
+</figure>
+
+## The bottom bar
+
+*Reload Required* appears when you add or remove a sorting layer. The renderer builds its
+layers once at startup, so the editor has to reload to pick them up.
+
+## Settings
+
+*View → Settings* holds the grid, the debug layers and the theme. The grid step there is also
+the step that *Snap to Grid* uses.

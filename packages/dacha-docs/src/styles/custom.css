@@ -1,0 +1,155 @@
+/* Dark theme — Starlight's default, so it goes on bare :root. */
+:root {
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #f2f1eb; /* interpolated */
+  --sl-color-gray-2: #e7e5de; /* colorText — body text */
+  --sl-color-gray-3: #a6a49b; /* colorTextSecondary */
+  --sl-color-gray-4: #6d6b63; /* colorTextTertiary */
+  --sl-color-gray-5: #4d4f45; /* colorBorder */
+  --sl-color-gray-6: #262824; /* colorBgContainer — nav and sidebar */
+  --sl-color-black: #121311; /* colorBgBase — the page */
+
+  --sl-color-accent-low: #263526; /* colorPrimaryBg */
+  --sl-color-accent: #72a85a; /* colorPrimary */
+  --sl-color-accent-high: #b9d9a8; /* interpolated: links, button faces */
+}
+
+:root[data-theme='light'] {
+  --sl-color-white: #141310; /* interpolated */
+  --sl-color-gray-1: #1f1e1a; /* interpolated */
+  --sl-color-gray-2: #2b2a26; /* colorText — body text */
+  --sl-color-gray-3: #67655d; /* colorTextSecondary */
+  --sl-color-gray-4: #9c9a90; /* colorTextTertiary — borders only */
+  --sl-color-gray-5: #cccac2; /* colorBorder */
+  --sl-color-gray-6: #e2e1dd; /* colorBgBase */
+  --sl-color-gray-7: #efeee9; /* interpolated */
+  --sl-color-black: #fbfaf7; /* colorBgContainer — the page */
+
+  --sl-color-accent-low: #e8efe3; /* colorPrimaryBg */
+  --sl-color-accent: #4e7a43; /* colorPrimary */
+  --sl-color-accent-high: #3e6335; /* colorPrimaryActive */
+}
+
+.site-title {
+  gap: 0.625rem;
+}
+
+.site-title img {
+  height: 32px;
+  width: 32px;
+  image-rendering: pixelated;
+}
+
+.site-title span,
+.hero h1 {
+  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+}
+
+:root {
+  --dacha-card-1: #d6a75b; /* colorWarning */
+  --dacha-card-2: #72a85a; /* colorPrimary */
+  --dacha-card-3: #7cacde; /* colorInfo */
+  --dacha-card-4: #d9776a; /* colorError */
+}
+
+:root[data-theme='light'] {
+  --dacha-card-1: #b8862e;
+  --dacha-card-2: #4e7a43;
+  --dacha-card-3: #3e71a8;
+  --dacha-card-4: #c0473b;
+}
+
+.card {
+  --sl-card-border: var(--dacha-card-2);
+  --sl-card-bg: color-mix(
+    in srgb,
+    var(--dacha-card-2) 14%,
+    var(--sl-color-black)
+  );
+}
+
+.card:nth-child(4n + 1) {
+  --sl-card-border: var(--dacha-card-1);
+  --sl-card-bg: color-mix(
+    in srgb,
+    var(--dacha-card-1) 14%,
+    var(--sl-color-black)
+  );
+}
+
+.card:nth-child(4n + 3) {
+  --sl-card-border: var(--dacha-card-3);
+  --sl-card-bg: color-mix(
+    in srgb,
+    var(--dacha-card-3) 14%,
+    var(--sl-color-black)
+  );
+}
+
+.card:nth-child(4n + 4) {
+  --sl-card-border: var(--dacha-card-4);
+  --sl-card-bg: color-mix(
+    in srgb,
+    var(--dacha-card-4) 14%,
+    var(--sl-color-black)
+  );
+}
+
+/* Shared tokens for the inline SVG diagrams in src/components/diagrams. */
+:root {
+  --diagram-stroke: var(--sl-color-gray-3);
+  --diagram-fill: var(--sl-color-gray-6);
+  --diagram-text: var(--sl-color-white);
+  --diagram-muted: var(--sl-color-gray-2);
+  --diagram-accent: var(--sl-color-accent);
+}
+
+/* Nested sidebar groups (Built-in Systems → Rendering) */
+.sidebar-content ul ul .group-label .large {
+  font-size: inherit;
+  font-weight: 400;
+  color: var(--sl-color-gray-2);
+}
+
+@media (min-width: 50rem) {
+  .sidebar-content ul ul .group-label .large {
+    font-size: var(--sl-text-sm);
+  }
+}
+
+/* Editor screenshots */
+.sl-markdown-content figure.screenshot {
+  margin: 1.5rem 0;
+}
+
+.sl-markdown-content figure.screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 8px;
+}
+
+.sl-markdown-content figure.screenshot figcaption {
+  margin-top: 0.5rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-3);
+}
+
+/* Tall panel crops must not be upscaled to the full content width. */
+.sl-markdown-content figure.screenshot--panel {
+  max-width: 360px;
+}
+
+/* Keyboard shortcuts */
+.sl-markdown-content kbd {
+  display: inline-block;
+  padding: 0.05em 0.4em;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 4px;
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-gray-2);
+  font-family: var(--sl-font-mono);
+  font-size: 0.875em;
+  line-height: 1.4;
+}

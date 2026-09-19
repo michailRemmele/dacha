@@ -4,21 +4,24 @@ on:
   push:
     branches: [master]
     paths:
+      - 'packages/dacha-docs/**'
       - 'packages/dacha/src/**'
       - 'packages/dacha/typedoc.json'
       - 'packages/dacha/package.json'
       - 'packages/dacha/tsconfig*.json'
       - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'packages/dacha-docs/**'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -31,20 +34,101 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci --workspace=dacha --include-workspace-root --ignore-scripts
+      - run: npm ci --workspace=dacha --workspace=dacha-docs --include-workspace-root --ignore-scripts
 
-      - run: npm run docs -w dacha
+      - name: Build the API reference
+        run: npm run docs -w dacha
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Place the API reference inside the site
+        run: npm run api:copy -w dacha-docs
+
+      # Link validation runs as part of this build, so a broken cross-link
+      # fails the pull request rather than reaching the published site.
+      - name: Build the documentation site
+        run: npm run build -w dacha-docs
+
+      # The site links to video in a public bucket
+      - name: Check externally hosted media is reachable
+        run: npm run check:media -w dacha-docs
+
+      - uses: actions/upload-artifact@v4
         with:
-          path: packages/dacha/docs
+          name: docs-site
+          path: packages/dacha-docs/dist
+          retention-days: 7
 
   deploy:
+    # Pull requests build and validate the site but never publish it.
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: production
+      url: https://dachajs.org
     steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: docs-site
+          path: dist
+
+      - name: Upload the release
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          source: 'dist/*'
+          strip_components: 1
+          target: /srv/sites/dachajs/releases/${{ github.sha }}
+
+      - name: Upload the virtual host
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          source: 'packages/dacha-docs/ops/dachajs.caddy'
+          strip_components: 3
+          target: /srv/sites/dachajs/vhost
+
+      - name: Activate the release
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -euo pipefail
+            site=/srv/sites/dachajs
+            release="$site/releases/${{ github.sha }}"
+
+            # Refuse to publish a truncated upload.
+            test -f "$release/index.html"
+            test -f "$release/api/index.html"
+
+            # Caddy runs as its own user, so the upload must be world-readable
+            # regardless of the deploy user's umask.
+            chmod -R a+rX "$release"
+
+            # ln -sfn onto an existing symlink is not atomic; swapping via mv is.
+            ln -sfn "$release" "$site/current.tmp"
+            mv -T "$site/current.tmp" "$site/current"
+
+            # Reload only when the virtual host itself changed.
+            if ! cmp -s "$site/vhost/dachajs.caddy" /etc/caddy/conf.d/dachajs.caddy; then
+              cp "$site/vhost/dachajs.caddy" /etc/caddy/conf.d/dachajs.caddy
+              sudo systemctl reload caddy
+            fi
+
+            # Keep the five most recent releases, never removing the live one.
+            live=$(readlink -f "$site/current")
+            ls -1dt "$site"/releases/*/ | tail -n +6 | while read -r dir; do
+              if [ "$(readlink -f "$dir")" != "$live" ]; then
+                rm -rf "$dir"
+              fi
+            done

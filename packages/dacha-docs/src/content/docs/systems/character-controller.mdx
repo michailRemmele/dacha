@@ -1,0 +1,225 @@
+---
+title: "Character Controller"
+description: "Move a character that slides along walls, stands on slopes and stops at obstacles."
+---
+
+import DocVideo from '../../../components/DocVideo.astro';
+import SurfaceKinds from '../../../components/diagrams/SurfaceKinds.astro';
+
+import controllerPoster from '../../../assets/editor/character-controller.poster.webp';
+
+`CharacterController` moves characters through the physics world. A character is an actor that
+moves through the level, such as the player or an enemy. You set the velocity of a character, and the
+controller moves it as far as the world allows:
+
+- It stops the character at walls, and slides it along them.
+- It keeps the character on the ground on slopes and small steps down.
+- It tells you whether the character stands on the ground, touches a wall, or hits a ceiling.
+
+A character is a `kinematic` body. Gravity, forces and other bodies do not move it. Only your code
+moves it, so for an actor that must fall, roll or bounce by itself, use
+a `dynamic` body instead.
+
+<DocVideo
+  slug="character-controller"
+  poster={controllerPoster}
+  width={1512}
+  height={780}
+  label="A red capsule character moves through a level with thin platforms, stacks of boxes, a slope and a vertical wall. The camera follows the character."
+  caption="A character that the character controller moves."
+/>
+
+The controller uses [physics queries](/systems/physics/queries/) to find obstacles, so it requires
+`PhysicsSystem`.
+
+## Setting it up
+
+1. [Set up physics](/systems/physics/#setting-it-up).
+2. In the Systems tab, add *Character Controller*.
+3. Add `CharacterController` and `CharacterBody` to the engine:
+
+   ```ts
+   import {
+     Engine,
+     PhysicsSystem,
+     CharacterController,
+     Transform,
+     Collider,
+     RigidBody,
+     CharacterBody,
+   } from 'dacha';
+
+   const engine = new Engine({
+     config,
+     systems: [CharacterController, PhysicsSystem, ...gameSystems],
+     components: [Transform, Collider, RigidBody, CharacterBody, ...gameComponents],
+     assets: [],
+   });
+   ```
+
+4. Give the character actor three components:
+   - `CharacterBody`,
+   - a `Collider` with the type `box`, `circle` or `capsule`,
+   - a `RigidBody` with the type `kinematic`.
+
+The controller skips an actor whose `RigidBody` is not `kinematic`. A character with a `segment`
+collider passes through everything, because the controller cannot cast that shape.
+
+### Order in the systems list
+
+The controller works in `fixedUpdate`. Put it:
+
+- after the systems that set the velocity of characters,
+- before `PhysicsSystem`.
+
+## Moving a character
+
+`CharacterBody.velocity` is the velocity in world units per second. The controller moves the
+character by it in every step. The velocity stays until you change it.
+
+The controller does not add gravity. For a platformer, add it to the velocity yourself. This is
+how a platformer sets the velocity of a character in every fixed update:
+
+```ts
+body.velocity.x = direction * SPEED;
+
+if (body.onGround) {
+  body.velocity.y = jumped ? -JUMP_SPEED : 0;
+}
+if (body.onCeiling && body.velocity.y < 0) {
+  body.velocity.y = 0;
+}
+
+body.velocity.y += GRAVITY * fixedDeltaTime;
+``` 
+
+The y axis points down, so a jump has a negative velocity.
+
+Reset `velocity.y` when the character stands on the ground. Otherwise gravity keeps adding to it,
+and the character falls very fast from the next edge.
+
+### Moving by a distance
+
+`move(displacement)` moves the character by a distance, once. The controller adds it to the
+movement of the next step, and then forgets it:
+
+```ts
+body.move(new Vector(4, 0));
+```
+
+The distance is in world units. The controller uses it as it is. When the distance comes from a
+speed, multiply it by `fixedDeltaTime` yourself.
+
+## Character state
+
+After each step, `CharacterBody` holds the result:
+
+| Field | What it holds |
+| --- | --- |
+| `onGround` | The character stands on ground it can walk on |
+| `onWall` | The character hit a wall in this step |
+| `onCeiling` | The character hit a ceiling in this step |
+| `groundNormal` | The direction out of the ground, when `onGround` is `true` |
+| `groundActor` | The actor the character stands on, or `null` |
+
+### Ground, walls and ceilings
+
+Each surface has a normal. It is the direction the surface faces. Ground faces up, so its normal
+points up.
+
+The controller sorts every surface the character hits by the angle between its normal and
+`upDirection`:
+
+- A normal within `maxSlopeAngle` of `upDirection` means **ground**.
+- A normal within `maxSlopeAngle` of the opposite direction means a **ceiling**.
+- Everything else is a **wall**.
+
+<SurfaceKinds />
+
+## Character Body fields
+
+| Field | Default | What it does |
+| --- | --- | --- |
+| `motionMode` | `surface` | `surface` sorts hits into ground, walls and ceilings, and keeps the character on the ground. `free` treats every hit as a wall, so the character is never on the ground |
+| `upDirection` | `{ x: 0, y: -1 }` | The direction that counts as up |
+| `maxSlopeAngle` | `45` | The steepest ground the character can stand on, in degrees |
+| `groundSnapDistance` | `1` | The maximum distance below the character to search for ground and keep the character grounded, in world units |
+| `skinWidth` | `0.1` | The collision margin kept between the character and obstacles, in world units |
+| `maxSlides` | `4` | The maximum number of collision slides performed in one step |
+| `maxRecoveries` | `3` | How many times the controller tries to push the character out of an overlap |
+| `disabled` | `false` | Turns the controller off for this character |
+
+You rarely need to change `skinWidth`, `maxSlides` and `maxRecoveries`.
+
+Use `surface` for platformers, and `free` for top-down games, where there is no ground.
+
+`groundSnapDistance` keeps the character on the ground when it walks down a slope or a small step.
+Without it the character leaves the ground on every bump. A larger value keeps it on the ground
+over larger steps.
+
+In the editor, and in the component config, `maxSlopeAngle` is in degrees. The field holds
+radians.
+
+## What stops a character
+
+The controller stops a character at every actor that has an enabled `RigidBody`, of any type.
+
+The character does not push `dynamic` bodies. It stops at them, as at any other obstacle.
+
+The controller uses the [collision layer](/systems/physics/collisions/#collision-layers) of the
+character's collider.
+
+### One-way bodies
+
+The controller handles [one-way bodies](/systems/physics/bodies-and-colliders/#one-way-bodies)
+itself. A platform with `oneWayNormal` `{ x: 0, y: -1 }` stops a character that lands on it from
+above. A character that jumps from below passes through, and keeps passing through until it is
+out of the platform.
+
+## Teleporting a character
+
+To put a character in a new place at once, change its `Transform`, and then call `recover()`:
+
+```ts
+transform.world.position.x = spawn.x;
+transform.world.position.y = spawn.y;
+
+body.recover();
+```
+
+The new place can overlap an obstacle. After `recover()`, the controller pushes the character out
+of it before the next move. The controller also does this when the character appears, for example
+when a level places it too low.
+
+The controller pushes the character out of `static` and `kinematic` bodies. It does not push it
+out of `dynamic` bodies.
+
+## The CharacterHit event
+
+Each time the character hits something while it moves, the controller sends `CharacterHit` to the
+character's actor:
+
+```ts
+import { CharacterHit } from 'dacha/events';
+import type { CharacterHitEvent } from 'dacha/events';
+
+actor.addEventListener(CharacterHit, (event: CharacterHitEvent) => {
+  if (event.kind === 'ceiling') {
+    // play a bump sound
+  }
+});
+```
+
+| Field | What it holds |
+| --- | --- |
+| `actor` | The actor the character hit |
+| `kind` | `ground`, `wall` or `ceiling`. In the `free` mode, always `wall` |
+| `point` | The hit point, in world space |
+| `normal` | The direction from the hit surface to the character |
+| `distance` | The distance to the hit, from where this move started |
+
+## Smooth movement
+
+The controller moves characters in `fixedUpdate`. On a screen with a higher refresh rate than the
+fixed step, the movement can look uneven. Add [Interpolation](/systems/interpolation/) to the
+character to smooth it.

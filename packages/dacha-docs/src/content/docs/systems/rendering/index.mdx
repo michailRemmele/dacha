@@ -1,0 +1,183 @@
+---
+title: "Rendering"
+description: "Draw actors on screen with the pixi.js-based renderer, and control what is drawn in front."
+---
+
+import PanelShot from '../../../../components/PanelShot.astro';
+import SortOffset from '../../../../components/diagrams/SortOffset.astro';
+
+import sortingShot from '../../../../assets/editor/project-settings-sorting.png';
+
+`Renderer` draws the actors of the active scene. It is built on
+[pixi.js](https://pixijs.com/).
+
+An actor is drawn when it has a **view component**. The renderer creates a pixi.js object for each
+view component and places it at the actor's position.
+
+| Component | What it draws | See |
+| --- | --- | --- |
+| `Sprite` | An image, a frame from a sprite sheet, or a tiled image | [Components](/systems/rendering/components/) |
+| `Shape` | A rectangle, circle, ellipse or line | [Components](/systems/rendering/components/) |
+| `BitmapText` | Text with a bitmap font | [Components](/systems/rendering/components/) |
+| `Mesh` | Similar to `Sprite`, but with your own shader | [Shaders](/systems/rendering/shaders/) |
+| `PixiView` | Any custom pixi.js object you create in code | [Components](/systems/rendering/components/) |
+
+## Setting it up
+
+1. In the Systems tab, add *Renderer* and *Camera System*.
+2. Add `Renderer`, `CameraSystem` and the view components you want to use to the engine:
+
+```ts
+import { Engine, Renderer, CameraSystem, Transform, Sprite, Shape, BitmapText } from 'dacha';
+
+const engine = new Engine({
+  config,
+  systems: [Renderer, CameraSystem, ...gameSystems],
+  components: [Transform, Sprite, Shape, BitmapText, ...gameComponents],
+  assets: [],
+});
+```
+
+`Renderer` has three options:
+
+| Option | What it does |
+| --- | --- |
+| `windowNodeId` | The id of the element the renderer adds its canvas to |
+| `backgroundColor` | The window background color |
+| `filterEffects` | Post-processing for the whole screen. See [Filter effects](/systems/rendering/filter-effects/) |
+
+### Order in the systems list
+
+`Renderer` needs `CameraSystem`, and `CameraSystem` must come before it in the systems list.
+See [Camera](/systems/camera/).
+
+Put `Renderer` after every system that moves actors or changes their view components. The
+renderer draws in `update`, and it draws the state it finds at that moment. A change made by a
+system below it appears one frame later.
+
+## How an actor is drawn
+
+The renderer places each view at the actor's `Transform`. Position, rotation and scale all
+apply. The view is centred on the actor's position.
+
+An actor can have several view components, one of each kind. For example, a `Sprite` for the
+body and a `BitmapText` for a name above it.
+
+A child actor moves, rotates and scales with its parent, as its `Transform` says.
+
+The renderer reads the view components in every `update`. Change a field, such as `opacity` or
+`color`, and the next frame shows the change.
+
+If the actor has an [`Interpolation`](/systems/interpolation/) component, the renderer draws it at
+the smoothed position instead of its `Transform`.
+
+## Draw order
+
+Two settings decide what is drawn in front: the **sorting layer** of each view, and the **sorting
+order** inside a layer. You find both under *Sorting* in the editor's Project settings tab. They
+are the `sorting` entry in [global options](/concepts/configuration/).
+
+<PanelShot
+  src={sortingShot}
+  alt="The Project settings tab with the Sorting panel open. Order is bottom right. Layers lists thirteen layers, from background at the top to default at the bottom. Each layer has a drag handle and a delete button. Add Layer is below the list."
+  caption="The first layer in the list is drawn at the back."
+  width={320}
+/>
+
+The actor hierarchy does not affect draw order. A child actor is not drawn above its parent
+unless the sorting settings put it there.
+
+### Sorting layers
+
+Every view component has a `sortingLayer` field with the name of a layer. The layers are drawn in
+the order of the list. The first layer is at the back, and the last layer is in front.
+
+:::note
+
+The renderer creates the layers when the game starts. So adding, removing or reordering a layer
+needs a restart. The editor shows *Reload Required* when you change the list.
+
+:::
+
+### Sorting inside a layer
+
+Inside a layer, the renderer sorts views by position in every frame. It compares `y` first, then
+`x` when `y` is equal. The `order` setting says which views are drawn in front:
+
+| Order | Drawn in front |
+| --- | --- |
+| `bottomRight` | Lower views. At the same height, views further right |
+| `bottomLeft` | Lower views. At the same height, views further left |
+| `topLeft` | Higher views. At the same height, views further left |
+| `topRight` | Higher views. At the same height, views further right |
+
+`bottomRight` is the default.
+
+The renderer sorts by the centre of the view. Use `sortOffset` to move the point the renderer sorts by.
+For example, a tree 64 pixels tall stands on the ground at its bottom edge, so give it a `sortOffset` of
+`{ x: 0, y: 32 }`.
+
+<SortOffset />
+
+## Loading images and fonts
+
+The renderer loads images and fonts by path. It does not use the engine's asset registry.
+
+When a scene loads, the renderer collects every path from two places:
+
+- the `Sprite`, `Mesh` and `BitmapText` components of the actors in that scene,
+- the same components in all templates of the project.
+
+The scene becomes active only after these files have loaded. So an actor you spawn from a template
+is drawn with its image from the first frame.
+
+A path that appears in neither place is not loaded in advance:
+
+- An actor you create in code with a new path loads its image in the background. Until the image
+  arrives, the sprite is drawn as a white rectangle.
+- If you change `src` of an existing sprite to a path that was never loaded, nothing changes. The
+  sprite keeps its previous image.
+
+The renderer samples all textures with the nearest pixel, with no smoothing.
+
+## RendererAPI
+
+Get `RendererAPI` from the world:
+
+```ts
+import { RendererAPI } from 'dacha';
+
+const renderer = world.systemApi.get(RendererAPI);
+```
+
+| Method | What it does |
+| --- | --- |
+| `intersectsWithPoint(x, y)` | Returns the actors whose views contain the point, the one drawn in front first |
+| `intersectsWithRectangle(minX, minY, maxX, maxY)` | Returns the actors whose view centres are inside the rectangle |
+| `getBounds(actor)` | Returns the rectangle that contains all views of the actor, or `null` if it has none |
+| `getRenderingContext()` | Returns the pixi.js `Application` |
+| `addFilterEffect`, `removeFilterEffect`, `clearFilterEffects`, `getFilterEffects` | Change filter effects at runtime. See [Filter effects](/systems/rendering/filter-effects/) |
+
+All coordinates are world coordinates.
+
+`intersectsWithPoint` and `getBounds` use the axis-aligned rectangle around each view, not its
+exact shape. A click on a transparent corner of a sprite still hits it.
+
+### Finding the actor under the pointer
+
+`MouseControl` events carry the pointer position in world coordinates. Pass it to
+`intersectsWithPoint`:
+
+```ts
+import { RendererAPI } from 'dacha';
+import type { MouseControlEvent } from 'dacha/events';
+
+private handleClick = (event: MouseControlEvent): void => {
+  const renderer = this.world.systemApi.get(RendererAPI);
+  const [topActor] = renderer.intersectsWithPoint(event.x, event.y);
+
+  if (topActor) {
+    // the player clicked topActor
+  }
+};
+```

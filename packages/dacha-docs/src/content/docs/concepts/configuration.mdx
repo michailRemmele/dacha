@@ -1,0 +1,161 @@
+---
+title: "Configuration"
+description: "The configuration tree the engine consumes, key by key."
+---
+
+import ConfigToRuntime from '../../../components/diagrams/ConfigToRuntime.astro';
+
+Everything the previous pages describe has to be declared somewhere. Actors, the scenes that
+hold them, the systems that run over them, and the settings the loop runs under all live in one
+JSON-shaped configuration. The engine reads it at startup. By default it is `data/data.json`,
+and it is the file the editor reads and writes.
+
+```json
+{
+  "scenes": [],
+  "systems": [],
+  "templates": [],
+  "assets": [],
+  "globalOptions": [],
+  "startSceneId": null
+}
+```
+
+The file names things. Your code supplies the classes behind those names, and the engine puts
+the two together:
+
+<ConfigToRuntime />
+
+There are six keys, and the rest of this page takes them one at a time:
+
+| Key | What it holds |
+| --- | --- |
+| [`scenes`](#scenes) | The levels, menus and other game states, with the actors in each |
+| [`startSceneId`](#startsceneid) | The scene the engine opens with |
+| [`templates`](#templates) | Reusable actor blueprints |
+| [`assets`](#assets) | The textures, audio clips and fonts the game refers to |
+| [`systems`](#systems) | Which systems run, in what order, and with what options |
+| [`globalOptions`](#globaloptions) | Settings that apply to the whole game |
+
+## `scenes`
+
+The [scenes](/concepts/scenes-and-world/) of the game, each with the actors in it. A scene entry
+carries an `id`, a `name` and those actors, and nothing else. In particular it holds no systems.
+You declare systems once in `systems` below, for the whole game.
+
+The file lists every scene that exists. Which scene is running, and what is loaded behind it, is
+decided at runtime and never here.
+
+## `startSceneId`
+
+The scene the engine opens with. `play()` is async, so it rejects when this is unset rather
+than throwing where you called it. That is the most common error on a brand new project, and it
+surfaces as an unhandled rejection in the console.
+
+## Identifiers
+
+Scenes, actors, templates and assets each carry a generated `id`. The id is what your code
+addresses them by. `LoadScene` takes one, and so does `actorSpawner.spawn`.
+
+Select the thing in the editor, copy its id from the inspector, and keep it as a named constant
+in your source:
+
+```ts
+export const LEVEL_TWO_SCENE_ID = '690e…';
+export const BULLET_TEMPLATE_ID = '0f6a…';
+```
+
+Names are for you and for the editor. Ids are what the engine matches on, and they survive a
+rename.
+
+## `templates`
+
+Reusable actor blueprints. A template describes an actor and its components once, and a scene
+can then contain many instances of it.
+
+A template is not a copy. Instances keep their link to it, so editing the template updates
+every instance. See the [templates workflow](/editor/templates/).
+
+## `assets`
+
+The project's textures, audio clips and bitmap fonts. The engine turns the list into a registry
+that every system receives in its options.
+
+:::note
+Asset handling is being reworked, so the entries and the loading path are not documented yet.
+:::
+
+## `systems`
+
+Which systems run, in what order, and the options each one receives. There is one list for the
+whole game, and it mixes both kinds. Nothing here marks an entry as a `WorldSystem` or a
+`SceneSystem`. That follows from [the class it extends](/concepts/systems/), never from the
+file.
+
+The entries name systems as strings. You pass the classes themselves to the `Engine` constructor
+in your code, and the engine matches the two up at startup.
+
+### Order matters, and only here
+
+Systems are constructed in the order this list gives, and they run in that order every frame.
+World and scene systems take their turn in the same sequence. A system that reads what another
+one wrote has to come after it. The engine does not reorder them for you.
+
+The built-ins depend on this too. `Renderer` asks the world for `CameraAPI` while it is being
+constructed, so `CameraSystem` has to be listed before `Renderer`.
+
+The `systems` array you pass to the `Engine` is a different thing. It is an unordered set of
+classes the engine is allowed to use. Adding a class there does not make it run, and moving it
+does not change anything.
+
+:::caution
+A name here with no matching class is not an error. The engine writes `System not found: …` to
+the console and runs without it, so a system you forgot to pass to `Engine` looks like a game
+that quietly does nothing. [When the class never
+arrives](/game-code/auto-registration/#when-the-class-never-arrives) covers how the other
+kinds fail.
+:::
+
+The engine merges an entry's `options` into the object the system's constructor receives. That is
+how a system reads its own settings.
+
+## `globalOptions`
+
+Settings that apply to the whole game. Note that it is a **list of named entries**, not a map:
+
+```json
+"globalOptions": [
+  {
+    "name": "sorting",
+    "options": {
+      "order": "bottomRight",
+      "layers": [{ "id": "…", "name": "default" }]
+    }
+  },
+  {
+    "name": "performance",
+    "options": { "maxFPS": 0, "fixedUpdateRate": 50 }
+  }
+]
+```
+
+The [starter project](/getting-started/installation/) starts with four entries:
+
+| Entry | What it holds |
+| --- | --- |
+| `sorting` | Draw order, and the layers you can assign actors to |
+| `performance` | The game loop settings. See [the settings table](/concepts/game-loop/#settings) |
+| `physics` | Collision layers and the collision matrix |
+| `audioGroups` | The audio groups you can assign sources to |
+
+The engine passes the whole set to every system as `globalOptions`, so a system reads whichever
+entry it needs.
+
+## Hand-editing
+
+The format is plain JSON and nothing stops you from editing it. In practice you rarely want to.
+Ids are generated, the editor rewrites the file on save, and a malformed entry usually surfaces
+as a runtime error rather than a parse error.
+
+Reading it is a different matter, and it is worth doing. Opening the file after you make a change
+in the editor is the fastest way to understand what the editor actually does.

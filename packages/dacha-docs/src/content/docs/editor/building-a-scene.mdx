@@ -1,0 +1,86 @@
+---
+title: "Building a scene"
+description: "Create scenes, place actors, and arrange the hierarchy."
+---
+
+import DocVideo from '../../../components/DocVideo.astro';
+import PanelShot from '../../../components/PanelShot.astro';
+
+import startSceneShot from '../../../assets/editor/project-settings-start-scene.png';
+import hierarchyPoster from '../../../assets/editor/editor-hierarchy.poster.webp';
+import snapToGridPoster from '../../../assets/editor/editor-snap-to-grid.poster.webp';
+
+Scene building is the editor's main job. You create scenes, fill them with actors, arrange
+those actors into a hierarchy, and move them until the level looks right.
+
+## The start scene
+
+The engine needs to know which scene to load first. You choose it in the inspector's Project
+settings tab, in the `Start Scene` field.
+
+<PanelShot
+  src={startSceneShot}
+  alt="The Project settings tab with the Start Scene select open. The list shows [none], Main Menu, Level 1 and Level 2, with Main Menu selected. Below it the Global Options panels: Audio Groups, Performance, Physics and Sorting."
+  caption="With [none], the engine does not start."
+  width={320}
+/>
+
+## Adding actors
+
+There are three ways to put an actor into a scene:
+
+- **Empty.** *Add New Actor* creates an actor with only a `Transform`. With an actor selected,
+  the new actor becomes its child.
+- **From a template.** The template tool places an instance where you click. See
+  [Templates](/editor/templates/).
+- **From another actor.** Copy an actor and paste it. The copy gets its own id.
+
+## The hierarchy
+
+A child's `Transform` is measured from its parent, so moving the parent moves the whole
+branch. Drag a node in the tree onto another node to change its parent.
+
+<DocVideo
+  slug="editor-hierarchy"
+  poster={hierarchyPoster}
+  width={1512}
+  height={850}
+  label="In the scene tree an actor is dragged onto the player and becomes its child. The player is then moved in the viewport and rotated in the inspector. The child moves and turns with it."
+  caption="Actor becomes a child of player and follows it."
+/>
+
+## Moving actors
+
+With the pointer tool, drag actors in the viewport. Hold <kbd>Shift</kbd> and click to select
+several. A drag writes the new `offset` into the actor's `Transform`.
+
+*Snap to Grid* in the toolbar moves the actor in grid steps.
+
+<DocVideo
+  slug="editor-snap-to-grid"
+  poster={snapToGridPoster}
+  width={1512}
+  height={850}
+  label="The player is dragged in the viewport with Snap to Grid off, and the Offset fields in the inspector change with the drag. Snap to Grid is then turned on in the toolbar, and the next drag moves the player in grid steps."
+  caption="Snap to Grid off, then on."
+/>
+
+The viewport edits position only. Type rotation and scale into the `Transform` component.
+
+## Undo
+
+Every change can be undone, up to the last 100 operations. Modal editors, such as the
+animation editor, keep their own history.
+
+The history lives in memory. Reloading the editor clears it, and so does a rebuild that
+[repairs the configuration](/editor/generating-scripts/#after-create).
+
+## Saving
+
+<kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> writes the project configuration to the file
+named by `projectConfig` in [dacha-workbench.config.cjs](/editor/config-reference/). In the
+[starter project](/getting-started/installation/) that file is `data/data.json`, and autosave
+is on.
+
+Nothing reaches the running game until the file is written. Then the page reloads and the game
+restarts from the start scene. [How it works](/introduction/how-it-works/) covers that loop.

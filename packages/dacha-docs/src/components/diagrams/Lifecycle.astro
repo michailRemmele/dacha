@@ -1,0 +1,68 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="World hooks bracket the whole run and fire once. Everything inside the dashed frame repeats on every scene change. Within a frame, fixedUpdate may run zero or several times before a single update."
+>
+  <svg viewBox="0 0 720 510" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      Lifecycle hook order: world load and ready, then per scene load, enter, the update
+      loop, exit and destroy, and finally world destroy.
+    </title>
+
+    <defs>
+      <marker id="lc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit">
+      <rect x="270" y="14" width="180" height="38" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="38" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">onWorldLoad</text>
+
+      <rect x="270" y="64" width="180" height="38" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="88" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">onWorldReady</text>
+
+      <rect x="90" y="118" width="540" height="326" rx="10" fill="none" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="108" y="140" fill="var(--diagram-accent)" stroke="none" font-size="11">per scene &#183; repeats on every scene change</text>
+
+      <rect x="270" y="150" width="180" height="44" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="170" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">onSceneLoad</text>
+      <text x="360" y="186" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="10">async &#183; load resources here</text>
+
+      <rect x="270" y="206" width="180" height="38" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="230" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">onSceneEnter</text>
+
+      <rect x="186" y="256" width="348" height="86" rx="10" fill="none" stroke="var(--diagram-accent)" />
+      <text x="204" y="276" fill="var(--diagram-accent)" stroke="none" font-size="11">each animation frame</text>
+
+      <rect x="204" y="286" width="146" height="42" rx="6" fill="var(--diagram-fill)" />
+      <text x="277" y="305" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">fixedUpdate</text>
+      <text x="277" y="320" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="10">0..N times</text>
+
+      <rect x="370" y="286" width="146" height="42" rx="6" fill="var(--diagram-fill)" />
+      <text x="443" y="305" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">update</text>
+      <text x="443" y="320" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="10">once</text>
+
+      <path d="M350 307 L370 307" marker-end="url(#lc-arrow)" />
+
+      <rect x="270" y="354" width="180" height="38" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="378" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">onSceneExit</text>
+
+      <rect x="270" y="402" width="180" height="38" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="426" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">onSceneDestroy</text>
+
+      <rect x="270" y="462" width="180" height="38" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="486" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">onWorldDestroy</text>
+
+      <path d="M360 52 L360 64" marker-end="url(#lc-arrow)" />
+      <path d="M360 102 L360 150" marker-end="url(#lc-arrow)" />
+      <path d="M360 194 L360 206" marker-end="url(#lc-arrow)" />
+      <path d="M360 244 L360 256" marker-end="url(#lc-arrow)" />
+      <path d="M360 342 L360 354" marker-end="url(#lc-arrow)" />
+      <path d="M360 392 L360 402" marker-end="url(#lc-arrow)" />
+      <path d="M360 440 L360 462" marker-end="url(#lc-arrow)" />
+    </g>
+  </svg>
+</DiagramFigure>
