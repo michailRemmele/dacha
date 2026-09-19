@@ -6,24 +6,23 @@ description: "Smooth rendering between fixed simulation steps."
 import InterpolationTiming from '../../../components/diagrams/InterpolationTiming.astro';
 
 Physics moves actors in `fixedUpdate`, at a fixed rate. The renderer draws in `update`, whenever
-the browser is ready. The two clocks do not line up, so a frame usually falls between two
-simulation steps.
+the browser is ready. The browser usually draws faster than the fixed rate, so several frames fall
+between two physics steps.
 
-If the renderer draws the `Transform` as it is, a moving actor jumps from step to step. You see
-stutter even at a high frame rate. The `Interpolator` system fixes this. It gives the renderer a
-position between the last two steps.
+If the renderer draws the `Transform` directly, a moving actor stays at one physics position
+until the next step, then jumps to the new one. This causes visible stutter even at a high frame
+rate.
+
+The `Interpolator` system smooths this out. It allows to render the actor at an interpolated position
+between its previous and current physics positions, so movement appears continuous.
 
 <InterpolationTiming />
 
-The system never changes `Transform`.
-
 ## Setting it up
 
-The [starter project](/getting-started/installation/) does not include interpolation. To add it:
-
-1. Add `Interpolator` to the engine's `systems` array and `Interpolation` to its `components`
+1. In the Systems tab, add *Interpolator*.
+2. Add `Interpolator` to the engine's `systems` array and `Interpolation` to its `components`
    array.
-2. Add `Interpolator` to the systems list in the editor.
 3. Add an `Interpolation` component to each actor you want to smooth.
 
 ```ts
@@ -37,11 +36,7 @@ const engine = new Engine({
 });
 ```
 
-The renderer draws actors without the component from their `Transform`, as usual.
-
-A child actor moves with its parent on screen. So when the parent has `Interpolation`, the child
-moves smoothly too. Give the child its own component only if it also moves relative to its
-parent in `fixedUpdate`.
+Only actors with an `Interpolation` component use interpolated positions for rendering.
 
 ## Order in the systems list
 
@@ -49,16 +44,13 @@ Put `Interpolator` after every system that moves actors in `fixedUpdate`, and be
 In the built-in systems, that means after `PhysicsSystem` and `CharacterController`. Behaviors
 that move actors in `fixedUpdate` count too, so put it after `BehaviorSystem` as well.
 
-If a system that moves actors runs after `Interpolator`, the snapshot misses that step's
-movement. If `Renderer` runs before `Interpolator`, it draws the values from the previous frame.
-
 ## The component
 
 | Field | What it does |
 | --- | --- |
-| `mode` | `interpolate` or `extrapolate`. The default is `interpolate` |
-| `snapThreshold` | The largest distance per fixed step that still counts as movement. A longer jump is drawn at once, with no smoothing. The default `0` turns the check off |
-| `disabled` | Turns smoothing off. The renderer draws the actor from its `Transform` |
+| `mode` | `interpolate` or `extrapolate` |
+| `snapThreshold` | Maximum distance in world units treated as continuous movement between two fixed steps. Larger jumps snap instead of gliding. `0` disables the automatic snap detection. |
+| `disabled` | Turns smoothing off |
 
 **`interpolate`** blends between the last two fixed steps. Use it by default. It adds up to one
 fixed step of visual delay, because it draws where the actor was, not where it is now.
@@ -66,15 +58,11 @@ fixed step of visual delay, because it draws where the actor was, not where it i
 **`extrapolate`** starts from the latest step and moves the actor forward by the velocity of its
 `RigidBody`. It adds no delay. It can overshoot for a moment on impact, because it does not know
 that a collision is about to stop the actor. It needs an enabled `RigidBody`. On an actor
-without one, it works like `interpolate`. It is meant for actors at the root of the scene, not
-for children.
+without one, it falls back to `interpolate`.
 
 **`snapThreshold`** handles teleports. Without it, an actor you move across the level in one
 step glides across the whole distance. Set it a little above the fastest speed an actor can
 move in one fixed step.
-
-When you turn `disabled` off again, smoothing starts from the current `Transform`. The actor
-does not glide from where it was when you turned smoothing off.
 
 ## Teleporting an actor
 
@@ -83,9 +71,10 @@ move the actor:
 
 ```ts
 const transform = actor.getComponent(Transform);
+const interpolation = actor.getComponent(Interpolation);
 transform.world.position.x = 500;
 
-actor.getComponent(Interpolation).snap();
+interpolation.snap();
 ```
 
 After `snap()`, the next frame draws the actor at its `Transform` with no smoothing.
@@ -106,8 +95,7 @@ const { x, y, rotation } = interpolator.getRenderTransform(target);
 active `Interpolation` component, it returns the values from the `Transform`.
 
 Call it in `update`, not in `fixedUpdate`. The result depends on the frame's `alpha`, which
-`fixedUpdate` does not have yet. The API exists only while a scene is active. See [resolve an API
-where you use it](/concepts/scenes-and-world/#resolve-an-api-where-you-use-it).
+`fixedUpdate` does not have yet.
 
 `InterpolatorAPI` also has `snap(actor)`. It does the same as calling `snap()` on the component.
 
