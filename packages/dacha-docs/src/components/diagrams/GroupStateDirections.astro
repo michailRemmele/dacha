@@ -1,0 +1,106 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+import sheet from '../../assets/diagrams/enemy-sheet.png';
+
+/* The sheet is 728x26: twenty-eight 26x26 frames of one enemy. */
+const FRAME = 26;
+
+/* One frame is drawn at this size, with this gap between frames. */
+const SIZE = 64;
+const GAP = 8;
+
+const CELL_W = 230;
+const CELL_H = 126;
+const PAD = (CELL_W - (SIZE * 3 + GAP * 2)) / 2;
+
+interface Substate {
+  name: string;
+  x: number;
+  y: number;
+  /** Indexes in the sheet, in the order the timeline plays them. */
+  frames: number[];
+  /** Draws the frames mirrored, the way `flipX` does. */
+  flip?: boolean;
+  /** Position of the cell in the viewBox. */
+  left: number;
+  top: number;
+}
+
+const substates: Substate[] = [
+  { name: 'Up', x: 0, y: -1, frames: [6, 7, 8], left: 265, top: 0 },
+  { name: 'Left', x: -1, y: 0, frames: [9, 10, 11], flip: true, left: 0, top: 166 },
+  { name: 'Right', x: 1, y: 0, frames: [9, 10, 11], left: 530, top: 166 },
+  { name: 'Down', x: 0, y: 1, frames: [3, 4, 5], left: 265, top: 332 },
+];
+---
+
+<DiagramFigure
+  caption="The Idle state is a group. Each substate is the same idle animation in one direction. Animator compares the values of the actor with the x and y of each substate, and plays the closest one."
+>
+  <svg viewBox="-2 -2 764 464" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A group state called Idle in the middle. Four substates around it: Up at the top with x 0
+      and y -1, Left and Right at the sides with x -1 and x 1, and Down at the bottom with y 1.
+      Each substate shows the three frames of a pixel-art enemy facing that direction.
+    </title>
+
+    <g
+      stroke="var(--diagram-stroke)"
+      fill="none"
+      stroke-width="1.5"
+      font-family="inherit"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <!-- Lines from the group to its substates -->
+      <path d="M380 166 L380 126" stroke-dasharray="4 3" />
+      <path d="M380 292 L380 332" stroke-dasharray="4 3" />
+      <path d="M265 229 L230 229" stroke-dasharray="4 3" />
+      <path d="M495 229 L530 229" stroke-dasharray="4 3" />
+
+      <!-- The group state -->
+      <rect x="265" y="166" width={CELL_W} height={CELL_H} rx="6" fill="var(--diagram-fill)" />
+      <text x="380" y="202" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="14">Idle</text>
+      <text x="380" y="222" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">group, pickMode 2D</text>
+      <text x="380" y="248" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">x: components.Facing.x</text>
+      <text x="380" y="266" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">y: components.Facing.y</text>
+
+      <!-- The substates -->
+      {
+        substates.map((substate) => (
+          <g transform={`translate(${substate.left} ${substate.top})`}>
+            <rect width={CELL_W} height={CELL_H} rx="6" fill="var(--diagram-fill)" />
+            <text x={CELL_W / 2} y="22" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">
+              {substate.name}
+            </text>
+            <text x={CELL_W / 2} y="38" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">
+              x: {substate.x}, y: {substate.y}
+            </text>
+            {substate.frames.map((frame, index) => (
+              <svg
+                x={PAD + index * (SIZE + GAP)}
+                y="48"
+                width={SIZE}
+                height={SIZE}
+                viewBox={`0 0 ${FRAME} ${FRAME}`}
+              >
+                {/* Pixel art needs a flat backdrop, so this colour is fixed in both themes. */}
+                <rect width={FRAME} height={FRAME} fill="#9badb7" stroke="none" />
+                <g transform={substate.flip ? `translate(${FRAME} 0) scale(-1 1)` : undefined}>
+                  <image
+                    href={sheet.src}
+                    x={-frame * FRAME}
+                    y="0"
+                    width={sheet.width}
+                    height={sheet.height}
+                    style="image-rendering: pixelated"
+                  />
+                </g>
+              </svg>
+            ))}
+          </g>
+        ))
+      }
+    </g>
+  </svg>
+</DiagramFigure>

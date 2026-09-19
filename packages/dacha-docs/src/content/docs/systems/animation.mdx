@@ -7,6 +7,7 @@ import { Image } from 'astro:assets';
 
 import AnnotatedShot from '../../../components/AnnotatedShot.astro';
 import DocVideo from '../../../components/DocVideo.astro';
+import GroupStateDirections from '../../../components/diagrams/GroupStateDirections.astro';
 
 import editorShot from '../../../assets/editor/animation-editor-state.png';
 import frameShot from '../../../assets/editor/animation-editor-frame.png';
@@ -26,16 +27,27 @@ or a behavior.
 
 ## Setting it up
 
-The [starter project](/getting-started/installation/) includes `Animator` and `Animatable`. The
-player has two states, `Idle` and `Run`, and switches between them when it starts or stops moving.
+1. In the Systems tab, add *Animator*.
+2. Add the classes to the engine in `src/index.ts`:
 
-In the systems list, put `Animator`:
+   ```ts
+   import { Engine, Animator, Animatable } from 'dacha';
 
-- after the systems that change the values your conditions read, so a transition sees this frame's
-  values,
-- before `Renderer`, so the frame it sets is drawn in the same frame.
+   const engine = new Engine({
+     config,
+     systems: [Animator, ...gameSystems],
+     components: [Animatable, ...gameComponents],
+     assets: [],
+   });
+   ```
 
-The starter project already has this order.
+3. Add an `Animatable` component to each actor you want to animate.
+
+### Order in the systems list
+
+Put `Animator` after the systems that change the values its conditions read. A transition then
+sees the latest values. Put it before `Renderer`, so the values an animation frame sets appear on
+screen right away.
 
 ## The animation editor
 
@@ -47,19 +59,14 @@ Editor* in its `Animatable` component.
   alt="The animation editor over the editor window. The States panel lists Idle (Initial State) and Running, with Idle selected. The Transitions panel lists Idle -> Running. The timeline at the bottom shows Frame 0 to Frame 3. The inspector on the right shows the Idle state: Name Idle, Speed 0,3, Type individual, Looped checked."
   caption="The animation editor with the Idle state selected."
   markers={[
-    { x: 20, y: 30, label: 'States', text: 'The states, and the substates inside group states. The initial state is marked (Initial State).' },
-    { x: 50, y: 30, label: 'Transitions', text: 'The transitions of the selected state.' },
-    { x: 62, y: 86, label: 'Timeline', text: 'The frames of the selected state or substate.' },
-    { x: 80, y: 40, label: 'Inspector', text: 'The settings of the selected state, substate, transition or frame.' },
+    { x: 20, y: 30, label: 'States', text: 'Lists all animation states of the actor.' },
+    { x: 50, y: 30, label: 'Transitions', text: 'Lists all transitions from the selected state.' },
+    { x: 62, y: 86, label: 'Timeline', text: 'Shows the frames of the selected animation state.' },
+    { x: 80, y: 40, label: 'Inspector', text: 'Shows and edits the properties of the selected item.' },
   ]}
 />
 
 In the States panel, *Set as initial* makes the selected state the initial one.
-
-A transition to a state you have deleted shows *DELETED* as its target. Point it to another state,
-or delete it.
-
-The animation editor keeps its own undo history. See [undo](/editor/building-a-scene/#undo).
 
 The editor viewport does not play animations. To see them, run the game.
 
@@ -76,8 +83,7 @@ A state has these settings:
 
 One state is the **initial state**. The actor starts in it when it appears in the scene.
 
-A state needs at least one frame, and `speed` must be above `0`. A state without frames, or a
-looped state with `speed` `0`, makes `Animator` throw when the actor enters that state.
+A state needs at least one frame, and `speed` must be above `0`.
 
 ### Frame fields
 
@@ -90,7 +96,7 @@ A frame is a list of fields. Each field has a path, a type and a value. When the
     alt="The animation editor with Frame 0 of the Idle state selected in the timeline. The inspector shows one field: name components.Sprite.currentFrame, type number, value 0."
   />
   <figcaption>
-    Frame 0 of the starter project's `Idle` state shows the first frame of the sprite sheet.
+    Frame 0 of the `Idle` state shows the first frame of the sprite sheet.
   </figcaption>
 </figure>
 
@@ -103,11 +109,7 @@ The path names a value on the actor, with dots between the parts:
 | `children.Sword.components.Sprite.disabled` | Whether the sprite of the child actor named `Sword` is hidden |
 
 A path can reach any field of any component, including your own components. If the component or
-the child does not exist, the field is skipped without an error.
-
-The starter project's `Idle` state has three frames. They set `components.Sprite.currentFrame` to
-`0`, `1` and `2`. See [sprite sheets](/systems/rendering/components/#sprite-sheets) for how
-`currentFrame` selects a part of the image.
+the child does not exist, the field is skipped.
 
 A frame sets only the fields it lists. A value stays as it is until another frame changes it. So
 if one state hides a sprite, the states it switches to must show it again.
@@ -137,7 +139,7 @@ A condition has one of two types.
 **`comparator`** compares two values. Each value is a `number`, a `string`, a `boolean`, or a
 `componentValue`. A `componentValue` is a path to a value on the actor, written like a frame path.
 
-The editor shows the operations as symbols. The configuration stores their names:
+The editor shows the operations as symbols:
 
 | Editor | Configuration |
 | --- | --- |
@@ -148,24 +150,20 @@ The editor shows the operations as symbols. The configuration stores their names
 | `>=` | `greaterOrEqual` |
 | `<=` | `lessOrEqual` |
 
-`==` and `!=` also compare types. The number `1` does not equal the string `"1"`.
-
 <figure class="screenshot">
   <Image
     src={transitionShot}
     alt="The animation editor with the transition Idle -> Run selected. The inspector shows State: Run, Time: 0, and Condition 1 of type comparator: Arg1 Type componentValue, Arg1 Value components.Movement.isMoving, Operation ==, Arg2 Type boolean, Arg2 Value checked."
   />
   <figcaption>
-    The starter project's `Idle` state goes to `Run` when `components.Movement.isMoving` is `true`.
+    The `Idle` state goes to `Run` when `components.Movement.isMoving` is `true`.
   </figcaption>
 </figure>
 
 **`event`** becomes true when the actor receives an event of the given type. Use it for things that
 happen once: a hit, a jump, a death.
 
-- The event must be dispatched on the actor itself. Events dispatched on its children do not count.
-- Only events that arrive after the state started count.
-- Once received, the condition stays true until the state changes.
+The event must be dispatched on the actor itself. Events dispatched on its children do not count.
 
 Declare your event names in `src/events/index.ts`, and the editor offers them in the condition. See
 [declaring your own events](/concepts/events/#declaring-your-own-events).
@@ -202,21 +200,24 @@ right, use `pickMode` `1D`, and set `x` on the state to the value that holds the
   </figcaption>
 </figure>
 
-With `pickMode` `2D`, each substate also has `y`. A walk in four directions then uses `(0, -1)`,
+With `pickMode` `2D`, each substate also has `y`. An idle in four directions then uses `(0, -1)`,
 `(0, 1)`, `(-1, 0)` and `(1, 0)`.
+
+<GroupStateDirections />
+
+Each substate has its own frames, so every direction plays its own part of the sprite sheet. Two
+directions can share one part. Here `Left` plays the frames of `Right` and sets
+`components.Sprite.flipX` to `true`. `Right` sets `flipX` back to `false`, because a frame changes
+only the fields it lists.
 
 When the actor turns, the animation switches to another substate and keeps its progress. A walk
 cycle continues from the same frame in the new direction.
 
-The values must still be set when `Animator` runs. The starter project's `MovementSystem` resets its
-direction to `0` at the end of each update, so a group state cannot read it. Keep the direction the
-actor faces in a component of its own.
-
-A group state needs at least one substate. `Animator` throws if it has none.
+A group state needs at least one substate.
 
 ## Adding a state step by step
 
-This video builds the starter project's `Run` state from scratch. It copies `Idle`, adds the
+This video builds the `Run` state from scratch. It copies `Idle`, adds the
 transitions in both directions, and changes the frames. The game on the right switches between the
 two animations as the player moves.
 
