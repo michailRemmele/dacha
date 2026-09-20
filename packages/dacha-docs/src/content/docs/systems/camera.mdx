@@ -3,30 +3,42 @@ title: "Camera"
 description: "Choose what the player sees, zoom in, and follow an actor."
 ---
 
-import CameraCoordinates from '../../../components/diagrams/CameraCoordinates.astro';
-
 A camera is an actor with a `Camera` component. The renderer centres the view on the position of
 the current camera and scales the view by its `zoom`.
 
-`CameraSystem` finds the current camera and tracks the size of the game window. Other systems ask
-it for the current camera through `CameraAPI`.
+`CameraSystem` finds the current camera and tracks the size of the game window.
 
 ## Setting it up
 
-The [starter project](/getting-started/installation/) includes `CameraSystem` and has a camera in
-its scene. You need `CameraSystem` whenever you use `Renderer`. In the systems list,
-`CameraSystem` must come before `Renderer`.
+1. In the Systems tab, add *Camera System*.
+2. Add the classes to the engine in `src/index.ts`:
+
+   ```ts
+   import { Engine, CameraSystem, Transform, Camera } from 'dacha';
+
+   const engine = new Engine({
+     config,
+     systems: [CameraSystem, ...gameSystems],
+     components: [Transform, Camera, ...gameComponents],
+     assets: [],
+   });
+   ```
+
+3. Add a `Camera` component to the actor the game looks through, and turn on its `current` field.
+
+### Options
 
 `CameraSystem` has one option:
 
 | Option | What it does |
 | --- | --- |
-| `windowNodeId` | The id of the element that holds the game. The system reads the window size from it |
+| `windowNodeId` | The id of the element that is used to display the game |
 
-Use the same `windowNodeId` as the renderer. The renderer sizes its canvas to that element. If
-the camera measures a different element, mouse coordinates come out wrong.
+Use the same `windowNodeId` as the renderer.
 
-If the element does not exist, the system throws when the engine creates it.
+### Order in the systems list
+
+`CameraSystem` must come before `Renderer`.
 
 ## The `Camera` component
 
@@ -34,7 +46,7 @@ If the element does not exist, the system throws when the engine creates it.
 | --- | --- |
 | `zoom` | How much the view is scaled. `2` draws everything twice as large |
 | `current` | Whether this is the camera the game looks through |
-| `windowSizeX`, `windowSizeY` | The size of the game window in pixels. `CameraSystem` writes them. Do not set them yourself |
+| `windowSizeX`, `windowSizeY` | The size of the game window in pixels. `CameraSystem` writes them |
 
 The renderer uses only the camera's position and `zoom`. It ignores the rotation and scale of the
 camera's `Transform`, so the view does not rotate.
@@ -59,14 +71,7 @@ const current = cameraApi.getCurrentCamera();
 ```
 
 `setCurrentCamera` sets `current` to `true` on that actor and to `false` on every other camera in
-the scene. It throws if the actor has no `Camera` component.
-
-`getCurrentCamera` returns `undefined` when no camera is current or no scene is active.
-
-:::caution
-Switch cameras with `setCurrentCamera`, not by setting `current` yourself. Otherwise mouse
-coordinates are wrong until the window is resized.
-:::
+the scene.
 
 If several cameras have `current` set to `true`, the system uses one of them. Which one is not
 defined.
@@ -97,22 +102,3 @@ must run before `Renderer` in the systems list. Otherwise the view is one frame 
 
 If the target actor has an `Interpolation` component, follow its render position instead of its
 `Transform`. See [visual or logical](/systems/interpolation/#visual-or-logical).
-
-## Screen and world coordinates
-
-`MouseInputSystem` already converts the pointer position to world coordinates. See
-[Input](/systems/input/#mouse-control).
-
-For other screen positions, convert them with the current camera. `x` and `y` are pixels
-relative to the game element:
-
-```ts
-const cameraActor = cameraApi.getCurrentCamera()!;
-const { windowSizeX, windowSizeY, zoom } = cameraActor.getComponent(Camera);
-const { position } = cameraActor.getComponent(Transform).world;
-
-const worldX = (x - windowSizeX / 2) / zoom + position.x;
-const worldY = (y - windowSizeY / 2) / zoom + position.y;
-```
-
-<CameraCoordinates />
