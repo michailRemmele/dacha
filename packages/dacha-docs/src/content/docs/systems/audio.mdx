@@ -15,25 +15,28 @@ The system uses the browser's Web Audio API.
 
 ## Setting it up
 
-The [starter project](/getting-started/installation/) does not include audio. To add it:
+1. In the Systems tab, add *Audio System*.
+2. Add the classes to the engine in `src/index.ts`:
 
-1. Add `AudioSystem` to the engine's `systems` array and `AudioSource` to its `components`
-   array.
-2. Add `AudioSystem` to the systems list in the editor.
+   ```ts
+   import { Engine, AudioSystem, AudioSource } from 'dacha';
+
+   const engine = new Engine({
+     config,
+     systems: [AudioSystem, ...gameSystems],
+     components: [AudioSource, ...gameComponents],
+     assets: [],
+   });
+   ```
+
 3. Add an `AudioSource` component to each actor that plays a sound.
 
-```ts
-import { Engine, AudioSystem, AudioSource } from 'dacha';
+### Order in the systems list
 
-const engine = new Engine({
-  config,
-  systems: [AudioSystem, ...gameSystems],
-  components: [AudioSource, ...gameComponents],
-  assets: [],
-});
-```
+`AudioSystem` starts and stops sounds in `update`. Put it after the systems that call `play()`
+and `stop()`. If behaviors play sounds, that includes `BehaviorSystem`.
 
-## The component
+## The `AudioSource` component
 
 | Field | What it does |
 | --- | --- |
@@ -57,16 +60,12 @@ audioSource.stop();
 `play()` restarts a sound that is already playing. To leave a playing sound alone, call
 `play(false)`.
 
-A sound without `looped` stops by itself when it ends. There is no pause. `stop()` always
-starts the sound from the beginning the next time you play it.
-
-You can change `volume` while a sound plays, and the change is heard at once. Changes to `src`,
-`looped` and `group` apply only the next time the sound starts.
+A sound without `looped` stops by itself when it ends. There is no pause. After `stop()`, the
+next `play()` starts the sound from the beginning.
 
 ## One sound per actor
 
-An actor has one `AudioSource`, so it plays one sound at a time. Playing it again cuts off the
-sound that was playing.
+An actor has one `AudioSource`, so it plays one sound at a time.
 
 When an actor needs several sounds, for example footsteps and a shot, give each sound its own
 child actor with an `AudioSource`.
@@ -81,12 +80,6 @@ Removing an actor stops its sound.
 - all templates in the project.
 
 So an actor you spawn from a template at runtime has its sound ready.
-
-A path that appears in neither place never loads. If you set `src` in code to such a file, the
-sound does not play, and nothing reports it. Put the file on an actor or a template.
-
-If a file fails to load, the system writes an error to the console. Sources with that path stay
-silent.
 
 ## Scene changes
 
@@ -105,9 +98,8 @@ The `master` group always exists. Every other group plays through `master`, so t
 hear is the product of three values: the source's `volume`, its group's volume and the master
 volume.
 
-You create the other groups in the editor, under *Audio Groups* in the Project settings tab.
-Each group has a name and a starting volume. The engine ignores a group named `master`, so do not
-create one.
+You add the other groups in the editor, in the *Audio Groups* panel of the Project settings
+tab. Each group has a name and a volume.
 
 <PanelShot
   src={audioGroupsShot}
@@ -115,8 +107,6 @@ create one.
   caption="The volume here is the volume the group has when the game starts."
   width={320}
 />
-
-A source whose `group` names a group that does not exist plays nothing.
 
 ### Changing group volume at runtime
 
@@ -133,11 +123,8 @@ audio.setGroupVolume('music', 0.2);
 const effectsVolume = audio.getGroupVolume('effects');
 ```
 
-`getGroupVolume` and `setGroupVolume` throw for a group that does not exist.
-
 ## Browsers block sound until the player acts
 
-`AudioSystem` starts the audio on the player's first click, key press or touch. Sounds started
-before that, such as music with `autoplay` in the first scene, begin at that moment.
-
-If sound must start with the game, show a start screen that asks the player to click.
+A browser plays no sound until the player interacts with the page. `AudioSystem` turns the
+sound on at the first click, key press or touch. A sound that started before that, such as music
+with `autoplay` in the first scene, becomes audible at that moment.
