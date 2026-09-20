@@ -45,6 +45,38 @@
   font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
 }
 
+:root[data-has-hero] {
+  --dacha-hero-glow: color-mix(
+    in srgb,
+    var(--sl-color-accent) 15%,
+    transparent
+  );
+}
+
+:root[data-has-hero][data-theme='light'] {
+  --dacha-hero-glow: color-mix(
+    in srgb,
+    var(--sl-color-accent) 16%,
+    transparent
+  );
+}
+
+:root[data-has-hero] body {
+  background-image:
+    linear-gradient(215deg, var(--dacha-hero-glow), transparent 40%),
+    radial-gradient(var(--dacha-hero-glow), transparent 40%),
+    radial-gradient(var(--dacha-hero-glow), transparent 65%);
+  background-repeat: no-repeat;
+  background-position:
+    0 0,
+    -60vw -40vh,
+    50% calc(100% + 20rem);
+  background-size:
+    auto,
+    105vw 200vh,
+    60rem 30rem;
+}
+
 :root {
   --dacha-card-1: #d6a75b; /* colorWarning */
   --dacha-card-2: #72a85a; /* colorPrimary */
