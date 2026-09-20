@@ -12,30 +12,33 @@ calls them. Inside them you can use plain DOM, React, Vue or anything else.
 
 ## Setting it up
 
-The [starter project](/getting-started/installation/) includes `UIBridge` and a small interface
-in `src/ui/index.ts`.
+1. In the Systems tab, add *UIBridge*.
+2. Add the class to the engine in `src/index.ts`, and give it a loader for your interface
+   module in `resources`:
 
-The bridge gets your module from a loader in the engine's `resources`:
+   ```ts
+   import { Engine, UIBridge } from 'dacha';
 
-```ts
-import { Engine, UIBridge } from 'dacha';
+   const engine = new Engine({
+     config,
+     systems: [UIBridge, ...gameSystems],
+     components: [...gameComponents],
+     assets: [],
+     resources: {
+       [UIBridge.systemName]: {
+         loadUI: () => import('./ui'),
+       },
+     },
+   });
+   ```
 
-const engine = new Engine({
-  config,
-  systems: [UIBridge, ...gameSystems],
-  components: [...gameComponents],
-  assets: [],
-  resources: {
-    [UIBridge.systemName]: {
-      loadUI: () => import('./ui'),
-    },
-  },
-});
-```
+3. Write the module the loader points at. See [the module](#the-module).
 
-`loadUI` returns a promise with the module. If `loadUI` is missing, the bridge throws when the engine creates it.
+`loadUI` returns a promise with the module.
 
-`UIBridge` must also be in the systems list in the editor. It has no options.
+### Order in the systems list
+
+The place of `UIBridge` in the list does not matter.
 
 ## The module
 
@@ -59,10 +62,8 @@ export const onDestroy = (): void => {
 | --- | --- |
 | `world` | The world. Use it to dispatch and listen for events, and to reach `systemApi` |
 | `actorSpawner` | [Creates actors](/concepts/actors/#creating-and-destroying-actors) from templates |
-| `templateCollection` | The templates defined in the configuration |
+| `templateCollection` | The available templates |
 | `globalOptions` | The global settings for the game |
-
-`onDestroy` removes everything `onInit` created, including listeners on the world.
 
 ## When it runs
 
@@ -79,67 +80,6 @@ So no scene is active when `onInit` runs. If the interface needs the scene, list
 `engine.stop()` calls `onDestroy`. `engine.pause()` does not.
 
 The editor does not run your interface. To see it, open the game in the browser.
-
-## The starter interface
-
-The starter project shows a hint and a *Restart* button that loads the current scene again. It
-uses plain DOM:
-
-```ts
-import { LoadScene, SceneEntered, SceneExited } from 'dacha/events';
-import type { SceneEnteredEvent } from 'dacha/events';
-import type { UIOptions, World, Scene } from 'dacha';
-
-import './ui.css';
-
-let overlay: HTMLDivElement | undefined;
-let world: World | undefined;
-let scene: Scene | undefined;
-
-const handleSceneEntered = (event: SceneEnteredEvent): void => {
-  scene = event.scene;
-};
-
-const handleSceneExited = (): void => {
-  scene = undefined;
-};
-
-export const onInit = (options: UIOptions): void => {
-  world = options.world;
-
-  world.addEventListener(SceneEntered, handleSceneEntered);
-  world.addEventListener(SceneExited, handleSceneExited);
-
-  overlay = document.createElement('div');
-  overlay.className = 'ui-overlay';
-  overlay.innerHTML = `
-    <span class="ui-hint">WASD to move</span>
-    <button class="ui-restart" type="button">Restart</button>
-  `;
-
-  overlay.querySelector('.ui-restart')?.addEventListener('click', () => {
-    if (world !== undefined && scene !== undefined) {
-      world.dispatchEvent(LoadScene, { id: scene.id });
-    }
-  });
-
-  document.body.appendChild(overlay);
-};
-
-export const onDestroy = (): void => {
-  world?.removeEventListener(SceneEntered, handleSceneEntered);
-  world?.removeEventListener(SceneExited, handleSceneExited);
-
-  overlay?.remove();
-
-  overlay = undefined;
-  world = undefined;
-  scene = undefined;
-};
-```
-
-The bridge does not create a DOM element for the interface. The starter project adds its own
-element to `body` and positions it over the game with CSS.
 
 ## Talking to the game
 
@@ -163,22 +103,6 @@ slider.addEventListener('input', () => {
   world.systemApi.get(AudioAPI).setGroupVolume('music', Number(slider.value));
 });
 ```
-
-## Input over the interface
-
-The interface covers the canvas, so it can take clicks that the player meant for the game. The
-starter project turns this off with CSS. The overlay has `pointer-events: none`, and only the
-button has `pointer-events: auto`.
-
-The opposite also happens. The input systems listen on `window` by default, so they also receive
-events that happen in the interface:
-
-- A click on an interface button also sends `MouseInput`, and mouse control bindings fire.
-- Typing in a text field also sends `KeyboardInput`, and keyboard control bindings fire.
-
-For the mouse, set `windowNodeId` of `MouseInputSystem` to the element that holds the game. Keep
-the interface outside that element, as the starter project does. Then clicks on the interface do
-not reach the game. See [where input comes from](/systems/input/#where-input-comes-from).
 
 ## With React
 
