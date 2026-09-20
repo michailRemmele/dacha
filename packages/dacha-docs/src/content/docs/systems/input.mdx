@@ -30,34 +30,49 @@ There are four systems, all of them world systems:
 | `MouseInputSystem` | Dispatches `MouseInput` on the world |
 | `MouseControlSystem` | Dispatches the bound events on actors with `MouseControl` |
 
-The engine has no touch or gamepad input.
-
 ## Setting it up
 
-The [starter project](/getting-started/installation/) includes keyboard input and keyboard
-control. To add the mouse:
+1. In the Systems tab, add the systems for the input you need: *Keyboard Input System* and
+   *Keyboard Control System* for the keyboard, *Mouse Input System* and *Mouse Control System*
+   for the mouse.
+2. Add the classes to the engine in `src/index.ts`:
 
-1. Add `MouseInputSystem` and `MouseControlSystem` to the engine's `systems` array, and
-   `MouseControl` to its `components` array.
-2. Add both systems to the systems list in the editor. `MouseInputSystem` must come before
-   `MouseControlSystem`.
+   ```ts
+   import {
+     Engine,
+     KeyboardInputSystem,
+     KeyboardControlSystem,
+     MouseInputSystem,
+     MouseControlSystem,
+     KeyboardControl,
+     MouseControl,
+   } from 'dacha';
 
-```ts
-import { Engine, MouseInputSystem, MouseControlSystem, MouseControl } from 'dacha';
+   const engine = new Engine({
+     config,
+     systems: [
+       KeyboardInputSystem,
+       KeyboardControlSystem,
+       MouseInputSystem,
+       MouseControlSystem,
+       ...gameSystems,
+     ],
+     components: [KeyboardControl, MouseControl, ...gameComponents],
+     assets: [],
+   });
+   ```
 
-const engine = new Engine({
-  config,
-  systems: [MouseInputSystem, MouseControlSystem, ...gameSystems],
-  components: [MouseControl, ...gameComponents],
-  assets: [],
-});
-```
+3. Add a `KeyboardControl` or `MouseControl` component to each actor that reacts to input.
 
-`MouseInputSystem` converts mouse coordinates with the current camera, so it also needs
-`CameraSystem`. Without it, every mouse event throws.
+The mouse systems also need `CameraSystem`. `MouseInputSystem` use it to convert the pointer position to world coordinates.
 
-If one of your world systems listens for `MouseInput`, put it after `MouseInputSystem` too.
-Otherwise it can receive screen coordinates instead of world coordinates.
+### Order in the systems list
+
+`MouseInputSystem` must come before `MouseControlSystem`.
+
+Put your own systems that read `MouseInput` after `MouseInputSystem` too.
+
+The keyboard systems' order in the list does not matter.
 
 ## Where input comes from
 
@@ -68,10 +83,7 @@ Both input systems have the same two options:
 | `useWindow` | Listens on `window`. The default is `true` |
 | `windowNodeId` | The id of the element to listen on when `useWindow` is off |
 
-If the element with `windowNodeId` does not exist, the system throws when the engine creates it.
-
-An element receives key events only when it has focus. To listen for keys on a `div`, give it a
-`tabindex` and focus it.
+An element receives key events only when it has focus.
 
 ## Keyboard control
 
@@ -100,29 +112,7 @@ In the editor, press the pencil next to *Key* and then press the key you want.
 A `pressed` binding without `keepEmit` sends one event per press. The browser repeats `keydown`
 while a key is held, and the system ignores those repeats.
 
-`keepEmit` is for actions that last while the key is down, such as movement. The starter
-project binds `W`, `A`, `S` and `D` to `Move` with `keepEmit`. Each binding sends a direction in
-`attrs`:
-
-```json
-{
-  "key": "KeyW",
-  "pressed": true,
-  "keepEmit": true,
-  "eventType": "Move",
-  "attrs": [
-    { "name": "x", "type": "number", "value": 0 },
-    { "name": "y", "type": "number", "value": -1 }
-  ]
-}
-```
-
-The starter project's `MovementSystem` adds up the directions it receives in a frame, moves the
-actor, and resets the direction to zero. So the actor moves diagonally when two keys are held,
-and stops when no key is held.
-
-`keepEmit` sends one event per rendered frame, so the number of events depends on the frame
-rate. Use it to know that a key is held. Do not count the events.
+`keepEmit` is for actions that last while the key is down, such as movement.
 
 ## Mouse control
 
@@ -142,30 +132,23 @@ The payload of a mouse control event has your `attrs` and these fields:
 | Field | What it is |
 | --- | --- |
 | `x`, `y` | The pointer position in world coordinates |
-| `screenX`, `screenY` | The pointer position in pixels, relative to the element under the pointer |
+| `screenX`, `screenY` | The pointer position in pixels, relative to the window element |
 | `nativeEvent` | The browser's `MouseEvent` |
 
 Despite their names, `screenX` and `screenY` are not the browser's `screenX` and `screenY`.
 
-:::caution
-`MouseControlSystem` does not check what is under the pointer. A `click` binding fires on every
-actor with that binding, wherever the player clicks. To react to clicks on one actor, compare
-`x` and `y` with that actor's position or shape yourself.
-:::
-
 ## Handling a control event
 
-A control event is an actor event, so it climbs to the scene and the world. A system can listen
-once on the scene and read `event.target` to find the actor:
+A control event is an actor event, so it propagates from the actor to the scene and the world:
 
 ```ts
-this.scene.addEventListener(Move, this.handleMove);
-
-private handleMove = (event: MoveEvent): void => {
+const handleMove = (event: MoveEvent): void => {
   const movement = event.target.getComponent(Movement);
   movement.directionX += event.x;
   movement.directionY += event.y;
 };
+
+scene.addEventListener(Move, handleMove);
 ```
 
 Declare your event names in `src/events/index.ts`, and the editor offers them in the
@@ -190,16 +173,15 @@ To handle input without a control component, listen for `KeyboardInput` or `Mous
 world:
 
 ```ts
-import { KeyboardInput } from 'dacha/events';
-import type { KeyboardInputEvent } from 'dacha/events';
+import { KeyboardInput, type KeyboardInputEvent } from 'dacha/events';
 
-this.world.addEventListener(KeyboardInput, this.handleKey);
-
-private handleKey = (event: KeyboardInputEvent): void => {
+const handleKey = (event: KeyboardInputEvent): void => {
   if (event.key === 'Escape' && event.pressed) {
     // open the pause menu
   }
 };
+
+world.addEventListener(KeyboardInput, handleKey);
 ```
 
 | Event | Payload |
@@ -208,5 +190,4 @@ private handleKey = (event: KeyboardInputEvent): void => {
 | `MouseInput` | `eventType`, `button`, `x`, `y`, `screenX`, `screenY`, `nativeEvent` |
 
 Raw `KeyboardInput` includes the browser's repeated `keydown` events. `x` and `y` of `MouseInput`
-are in world coordinates, as in control events. This needs the system order from [setting it
-up](#setting-it-up). Without a current camera, they stay in pixels.
+are in world coordinates, as in control events. Without a current camera, they stay in pixels.
