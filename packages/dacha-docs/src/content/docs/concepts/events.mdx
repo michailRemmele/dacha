@@ -145,7 +145,7 @@ The engine and its built-in systems dispatch these. The type constants come from
 | `CollisionEnter`, `CollisionStay`, `CollisionLeave` | The colliding actor | [Collisions](/systems/physics/collisions/) |
 | `CharacterHit` | The character's actor | [Character controller](/systems/character-controller/) |
 | `KeyboardInput`, `MouseInput` | The world | [Input](/systems/input/) |
-| `GameStatsUpdate` | The world | [Performance](/shipping/performance/) |
+| `GameStatsUpdate` | The world | [Performance](/production/performance/) |
 
 `AddActor` and `RemoveActor` are the one pair not dispatched on the hierarchy. A query
 dispatches them on itself when an actor starts or stops matching its filter, so listen on the

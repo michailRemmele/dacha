@@ -43,11 +43,19 @@ export default defineConfig({
       ],
       social: [
         {
+          icon: 'notes',
+          label: 'Dev blog',
+          href: 'https://misharemmele.ru/',
+        },
+        {
           icon: 'github',
           label: 'GitHub',
           href: 'https://github.com/michailRemmele/dacha',
         },
       ],
+      components: {
+        SocialIcons: './src/components/SocialIcons.astro',
+      },
       plugins: [
         starlightLinksValidator({
           exclude: ['/api/**'],
@@ -135,28 +143,18 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Tutorials',
-          items: [{ slug: 'tutorials/garden' }],
-        },
-        {
-          label: 'Shipping Your Game',
+          label: 'Production',
           items: [
-            { slug: 'shipping/performance' },
-            { slug: 'shipping/building' },
+            { slug: 'production/performance' },
+            { slug: 'production/building' },
           ],
         },
         {
           label: 'Reference',
           items: [
-            { slug: 'reference/glossary' },
             { slug: 'reference/components' },
-            { slug: 'reference/troubleshooting' },
             { label: 'API Reference', link: '/api/' },
           ],
-        },
-        {
-          label: 'Resources',
-          items: [{ slug: 'resources/examples' }, { slug: 'resources/blog' }],
         },
       ],
     }),

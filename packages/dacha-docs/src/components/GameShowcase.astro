@@ -62,8 +62,22 @@ const posterImage = await getImage({
       <p class="game__jam">{jam}</p>
       <p class="game__description">{description}</p>
       <p class="game__links">
-        <a class="game__link game__link--primary" href={play}>Play</a>
-        <a class="game__link" href={source}>Source</a>
+        <a
+          class="game__link game__link--primary"
+          href={play}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Play
+        </a>
+        <a
+          class="game__link"
+          href={source}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Source
+        </a>
       </p>
     </div>
   </section>
