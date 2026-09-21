@@ -3,6 +3,13 @@
   "entryPoints": ["src/index.docs.ts"],
   "tsconfig": "tsconfig.esm.json",
   "out": "docs",
+  "readme": "../../README.md",
+  "customCss": "./typedoc.css",
+  "favicon": "../dacha-docs/public/favicon.png",
+  "navigationLinks": {
+    "Docs": "https://dachajs.org/",
+    "GitHub": "https://github.com/michailRemmele/dacha"
+  },
   "disableSources": true,
   "excludeExternals": true,
   "excludePrivate": true,

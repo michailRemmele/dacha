@@ -17,9 +17,21 @@
   "keywords": [
     "dacha",
     "game-engine",
+    "gamedev",
     "scaffold",
-    "template"
+    "template",
+    "create-app"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michailRemmele/dacha.git",
+    "directory": "packages/create-dacha"
+  },
+  "author": "Mikhail Remmele",
+  "bugs": {
+    "url": "https://github.com/michailRemmele/dacha/issues"
+  },
+  "homepage": "https://dachajs.org/getting-started/installation/",
   "engines": {
     "node": ">=22.12.0"
   }

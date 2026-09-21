@@ -1,7 +1,7 @@
 {
   "name": "dacha-workbench",
   "version": "0.0.38",
-  "description": "GUI editor for dacha game engine",
+  "description": "The visual editor for the dacha game engine.",
   "exports": {
     ".": {
       "require": "./esm/index.js",
@@ -46,16 +46,27 @@
     "package.json",
     "README.md"
   ],
+  "keywords": [
+    "dacha",
+    "game-engine",
+    "game-editor",
+    "level-editor",
+    "gamedev",
+    "game-development",
+    "electron",
+    "2d"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/michailRemmele/dacha-workbench.git"
+    "url": "git+https://github.com/michailRemmele/dacha.git",
+    "directory": "packages/dacha-workbench"
   },
   "author": "Mikhail Remmele",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/michailRemmele/dacha-workbench/issues"
+    "url": "https://github.com/michailRemmele/dacha/issues"
   },
-  "homepage": "https://github.com/michailRemmele/dacha-workbench#readme",
+  "homepage": "https://dachajs.org/editor/interface-tour/",
   "devDependencies": {
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",

@@ -11,6 +11,22 @@ const {
 
 const ROOT = path.resolve(__dirname, '..');
 const PACKAGES = ['dacha', 'dacha-workbench', 'create-dacha'];
+const CHANGELOG_PATH = path.join(ROOT, 'CHANGELOG.md');
+const UNRELEASED_HEADING = '## Unreleased';
+
+const readChangelog = () => fs.readFileSync(CHANGELOG_PATH, 'utf8');
+
+const readUnreleasedNotes = (changelog) => {
+  const start = changelog.indexOf(UNRELEASED_HEADING);
+  if (start === -1) {
+    throw new Error(`${UNRELEASED_HEADING} is missing from CHANGELOG.md`);
+  }
+
+  const rest = changelog.slice(start + UNRELEASED_HEADING.length);
+  const nextHeading = rest.search(/\n## /);
+
+  return (nextHeading === -1 ? rest : rest.slice(0, nextHeading)).trim();
+};
 
 const run = (command) => execSync(command, { cwd: ROOT, stdio: 'inherit' });
 const read = (command) =>
@@ -27,6 +43,11 @@ if (read('git status --porcelain')) {
 }
 if (read('git rev-parse --abbrev-ref HEAD') !== 'master') {
   throw new Error('Release must be run from master');
+}
+if (!readUnreleasedNotes(readChangelog())) {
+  throw new Error(
+    `${UNRELEASED_HEADING} in CHANGELOG.md is empty — write the release notes first`,
+  );
 }
 
 run('npm whoami');
@@ -64,6 +85,14 @@ const templateManifest = JSON.parse(
 fs.writeFileSync(
   TEMPLATE_MANIFEST_PATH,
   `${JSON.stringify(setTemplateVersions(templateManifest, version), null, 2)}\n`,
+);
+
+fs.writeFileSync(
+  CHANGELOG_PATH,
+  readChangelog().replace(
+    UNRELEASED_HEADING,
+    `${UNRELEASED_HEADING}\n\n## v${version} — ${new Date().toISOString().slice(0, 10)}`,
+  ),
 );
 
 run('npm i --package-lock-only');

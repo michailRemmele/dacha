@@ -51,6 +51,11 @@ sets the baseline variables from repo secrets. The functional group alone needs 
 `npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"` from
 inside `packages/dacha-workbench/`.
 
+**Release notes live in the root [CHANGELOG.md](CHANGELOG.md)** — one file for all three
+packages, since their versions are lockstep. Write what changed under `## Unreleased` as
+you go: `npm run release` refuses to run while that section is empty, and on release it
+renames the section to the version being published.
+
 `pack:local` stamps every archive with a unique local version
 (`x.y.z-local.<timestamp>`) by rewriting `package.json` **inside the tarball**,
 never in the working tree — otherwise npm treats a reinstall of the same version as a
@@ -91,6 +96,8 @@ incremental state and will legitimately do nothing when it believes it is up to 
 packages/dacha/              the engine
 packages/dacha-workbench/    the editor
 packages/dacha-docs/         the documentation site (astro + starlight)
+CHANGELOG.md                 release notes for all three packages (lockstep versions)
+LICENSE                      MIT, with a copy in each published package
 scripts/                     pack-local.js, release.js (plain Node CommonJS, unlinted)
 docs/                        local planning material — GITIGNORED, never committed
 packs/                       output of pack:local — gitignored

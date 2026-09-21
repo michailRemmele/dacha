@@ -41,15 +41,27 @@
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
-  "description": "dacha is a JavaScript game engine for building games in browser.",
+  "description": "A data-driven TypeScript game engine for the browser.",
+  "keywords": [
+    "dacha",
+    "game-engine",
+    "gamedev",
+    "game-development",
+    "2d",
+    "ecs",
+    "pixijs",
+    "typescript",
+    "browser"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/michailRemmele/dacha.git"
+    "url": "git+https://github.com/michailRemmele/dacha.git",
+    "directory": "packages/dacha"
   },
   "author": "Mikhail Remmele",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/michailRemmele/dacha/issues"
   },
-  "homepage": "https://github.com/michailRemmele/dacha#readme"
+  "homepage": "https://dachajs.org/"
 }

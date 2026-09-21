@@ -7,12 +7,17 @@ on:
       - 'packages/dacha-docs/**'
       - 'packages/dacha/src/**'
       - 'packages/dacha/typedoc.json'
+      - 'packages/dacha/typedoc.css'
       - 'packages/dacha/package.json'
       - 'packages/dacha/tsconfig*.json'
+      - 'README.md'
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
       - 'packages/dacha-docs/**'
+      - 'packages/dacha/typedoc.json'
+      - 'packages/dacha/typedoc.css'
+      - 'README.md'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
