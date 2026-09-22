@@ -48,10 +48,15 @@ test('screenshot: create new component modal', async () => {
   await window.getByRole('combobox').click();
   await window.getByRole('button', { name: 'Create New' }).click();
 
-  await expect(
-    window.getByRole('dialog', { name: 'New Component' }),
-  ).toBeVisible();
-  await expect(window).toHaveScreenshot('create-new-component-modal.png');
+  const dialog = window.getByRole('dialog', { name: 'New Component' });
+  await expect(dialog).toBeVisible();
+
+  await expect(window).toHaveScreenshot('create-new-component-modal.png', {
+    mask: [
+      dialog.getByText(/^File Path:/),
+      dialog.getByRole('textbox', { name: 'Base Directory' }),
+    ],
+  });
 });
 
 test('screenshot: schema mismatch', async () => {
