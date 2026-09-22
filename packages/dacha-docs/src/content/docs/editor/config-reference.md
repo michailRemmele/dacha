@@ -38,7 +38,7 @@ an array of regular expressions.
 | `behaviors` | `[/\.behavior\.ts$/, /\.filter-effect\.ts$/, /\.shader\.ts$/]` |
 | `widgets` | `[/\.widget\.(ts\|js\|tsx\|jsx)$/]` |
 
-Your array replaces the default, it does not add to it.
+Your array replaces the default. It does not add to it.
 
 Your game collects its files separately, with the globs in its entry point. Keep the two lists
 in sync. [How scripts are found](/game-code/auto-registration/) explains why.

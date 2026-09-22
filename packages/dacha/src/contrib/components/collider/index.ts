@@ -65,7 +65,7 @@ export interface SegmentColliderConfig extends BaseColliderConfig {
 export interface CapsuleColliderConfig extends BaseColliderConfig {
   type: 'capsule';
   /**
-   * The distance between the centres of the two round ends. The full height is
+   * The distance between the centers of the two round ends. The full height is
    * `height + 2 * radius`.
    */
   height?: number;
@@ -126,7 +126,7 @@ export interface SegmentColliderShape {
  */
 export interface CapsuleColliderShape {
   type: 'capsule';
-  /** The distance between the centres of the two round ends. */
+  /** The distance between the centers of the two round ends. */
   height: number;
   /** The radius of the round ends. */
   radius: number;
@@ -160,7 +160,7 @@ export class Collider extends Component {
    * @see [Collision layers](https://dachajs.org/systems/physics/collisions/#collision-layers)
    */
   layer: string;
-  /** The colour of the collider in the debug view of the editor. */
+  /** The color of the collider in the debug view of the editor. */
   debugColor?: string;
   /** Turns the collider off. */
   disabled: boolean;

@@ -130,7 +130,7 @@ export class Interpolation extends Component {
 
   /**
    * Requests an immediate jump to the Transform instead of
-   * smoothing towards it. Call right after teleporting the actor.
+   * smoothing toward it. Call right after teleporting the actor.
    */
   snap(): void {
     this._snapRequested = true;

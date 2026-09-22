@@ -30,10 +30,10 @@ export interface SortingLayer {
 /**
  * Which views are drawn on top inside one sorting layer.
  *
- * - `bottomRight`: lower views. At the same height, views further right.
- * - `bottomLeft`: lower views. At the same height, views further left.
- * - `topLeft`: higher views. At the same height, views further left.
- * - `topRight`: higher views. At the same height, views further right.
+ * - `bottomRight`: lower views. At the same height, views farther right.
+ * - `bottomLeft`: lower views. At the same height, views farther left.
+ * - `topLeft`: higher views. At the same height, views farther left.
+ * - `topRight`: higher views. At the same height, views farther right.
  *
  * @category Rendering
  */

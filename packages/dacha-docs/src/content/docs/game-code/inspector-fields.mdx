@@ -1,6 +1,6 @@
 ---
 title: "Inspector fields"
-description: "Choose the widget the editor draws for a field, and control how it is labelled, grouped and shown."
+description: "Choose the widget the editor draws for a field, and control how it is labeled, grouped and shown."
 ---
 
 import PanelShot from '../../../components/PanelShot.astro';
@@ -21,11 +21,11 @@ Everything on this page works the same way on a component, on a
 speed: number;
 ```
 
-That is a field named `speed`, labelled **Speed**, starting at `0`.
+That is a field named `speed`, labeled **Speed**, starting at `0`.
 
 :::caution
 The bare form reads the property's type from the metadata TypeScript emits, and it
-recognises only `string`, `number` and `boolean`. Anything else becomes a text input.
+recognizes only `string`, `number` and `boolean`. Anything else becomes a text input.
 Decorators need `experimentalDecorators` in your `tsconfig.json`, and this metadata needs
 `emitDecoratorMetadata`. The [starter project](/getting-started/installation/) sets both.
 Passing `type` explicitly settles the question either way.
@@ -48,7 +48,7 @@ volume: number;
 | `multiselect` | A dropdown that holds several values | `options` |
 | `multitext` | A list of text inputs you can grow | |
 | `range` | A slider | `min`, `max`, `step` |
-| `color` | A colour picker | `disabledAlpha` |
+| `color` | A color picker | `disabledAlpha` |
 | `vector` | Paired X and Y inputs | |
 | `file` | A picker over the project's assets folder | `extensions` |
 | `asset` | A dropdown of the project's assets of one kind | `kind` |
@@ -91,7 +91,7 @@ The same value is used when you add a field to a component that actors already c
 ## Titles come from translations
 
 Without a `title`, the editor builds the label from the property name. It splits on case and
-on separators, then capitalises: `projectileSpeed` becomes **Projectile Speed**, and
+on separators, then capitalizes: `projectileSpeed` becomes **Projectile Speed**, and
 `max_hp` becomes **Max Hp**.
 
 `title` replaces that with a translation key:
@@ -139,7 +139,7 @@ export default class Launcher extends Component {
 }
 ```
 
-The inspector draws fields in the order you declare them. A run of neighbouring fields with
+The inspector draws fields in the order you declare them. A run of neighboring fields with
 the same `section` becomes one group, and a field without a `section` ends that run. So
 declaring the same section name again further down draws a second group with the same title.
 Keep the fields of one section together.

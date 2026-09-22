@@ -12,7 +12,7 @@ import SpriteSheet from '../../../../components/diagrams/SpriteSheet.astro';
 | Field | What it does |
 | --- | --- |
 | `opacity` | From `0` (invisible) to `1` (opaque) |
-| `blending` | `normal`, `addition`, `substract` or `multiply` |
+| `blending` | `normal`, `addition`, `subtract` or `multiply` |
 | `disabled` | Hides the view |
 | `sortingLayer` | The layer the view is drawn in. See [draw order](/systems/rendering/#draw-order) |
 | `sortOffset` | Moves the point the renderer sorts by. See [sorting inside a layer](/systems/rendering/#sorting-inside-a-layer) |
@@ -60,14 +60,14 @@ size fields:
 | `ellipse` | `radius` with `x` and `y` |
 | `line` | `point1`, `point2` |
 
-The shape is centred on the actor. A line goes from `point1` to `point2`, relative to the actor.
+The shape is centered on the actor. A line goes from `point1` to `point2`, relative to the actor.
 
 | Field | What it does |
 | --- | --- |
-| `fill` | The fill colour. A line has no fill |
-| `strokeColor` | The colour of the outline |
+| `fill` | The fill color. A line has no fill |
+| `strokeColor` | The color of the outline |
 | `strokeWidth` | The width of the outline. `0` draws no outline |
-| `strokeAlignment` | Where the outline sits: `1` inside the shape, `0.5` centred on the edge, `0` outside |
+| `strokeAlignment` | Where the outline sits: `1` inside the shape, `0.5` centered on the edge, `0` outside |
 | `pixelLine` | Draws a 1-pixel outline at any zoom. `strokeWidth` is ignored |
 
 Outlines use pixi.js stroke styles. See the pixi.js
@@ -83,7 +83,7 @@ Outlines use pixi.js stroke styles. See the pixi.js
 | `font` | Path to the font file. The editor accepts `fnt` and `xml` |
 | `fontSize` | The size of the text |
 | `align` | `left`, `center` or `right` |
-| `color` | The colour of the text |
+| `color` | The color of the text |
 
 The pixi.js [Bitmap Text guide](https://pixijs.com/8.x/guides/components/scene-objects/text/bitmap)
 covers the supported formats and how to create a font.

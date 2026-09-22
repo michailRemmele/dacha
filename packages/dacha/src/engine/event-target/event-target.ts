@@ -113,7 +113,7 @@ export class EventTarget {
    * Dispatches an event to the event target.
    * 
    * Events are processed in the engine event queue at the beginning of each frame
-   * in order that they were dispatched.
+   * in the order they were dispatched.
    *
    * @param type - Type of event to dispatch
    * @param payload - Payload of the event

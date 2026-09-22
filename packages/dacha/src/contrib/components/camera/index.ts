@@ -23,9 +23,9 @@ export class Camera extends Component {
   /** Whether the camera is the current camera. Only one camera can be the current camera. */
   current: boolean;
 
-  /** Size of the game window in the x axis in pixels */
+  /** Size of the game window on the x axis, in pixels */
   windowSizeX: number;
-  /** Size of the game window in the y axis in pixels */
+  /** Size of the game window on the y axis, in pixels */
   windowSizeY: number;
 
   constructor(config: CameraConfig) {

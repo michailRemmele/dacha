@@ -13,7 +13,7 @@ If the renderer draws the `Transform` directly, a moving actor stays at one phys
 until the next step, then jumps to the new one. This causes visible stutter even at a high frame
 rate.
 
-The `Interpolator` system smooths this out. It allows to render the actor at an interpolated position
+The `Interpolator` system smooths this out. It lets the renderer draw the actor at an interpolated position
 between its previous and current physics positions, so movement appears continuous.
 
 <InterpolationTiming />

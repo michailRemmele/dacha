@@ -17,7 +17,7 @@ A collider has one shape. The shape fields depend on `type`:
 | --- | --- | --- |
 | `box` | `size` | A rectangle, `size.x` wide and `size.y` tall |
 | `circle` | `radius` | A circle |
-| `capsule` | `height`, `radius` | A vertical capsule. `height` is the distance between the centres of the two round ends, so the full height is `height + 2 * radius` |
+| `capsule` | `height`, `radius` | A vertical capsule. `height` is the distance between the centers of the two round ends, so the full height is `height + 2 * radius` |
 | `segment` | `point1`, `point2` | A line between two points |
 
 <CapsuleShape />
@@ -28,7 +28,7 @@ Every collider also has these fields:
 | --- | --- |
 | `offset` | Moves the shape away from the actor's position |
 | `layer` | The [collision layer](/systems/physics/collisions/#collision-layers). Layers decide which colliders collide |
-| `debugColor` | The colour of the collider in the editor's *Colliders* [debug layer](/editor/interface-tour/#debug-layers) |
+| `debugColor` | The color of the collider in the editor's *Colliders* [debug layer](/editor/interface-tour/#debug-layers) |
 | `disabled` | Turns the collider off |
 
 All sizes are in world units, in the actor's local space.
@@ -146,7 +146,7 @@ speed in radians per second. The editor does not show them.
 | `applyAngularImpulse(impulse)` | Changes the rotation speed at once |
 | `clearForces()` | Removes the forces and impulses that are not applied yet |
 
-`position` is a point in world space. A force or an impulse away from the body's centre also
+`position` is a point in world space. A force or an impulse away from the body's center also
 rotates the body.
 
 The physics system applies forces once, in the next step, and then clears them. For a constant

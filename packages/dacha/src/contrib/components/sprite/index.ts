@@ -51,7 +51,7 @@ export class Sprite extends Component {
   width: number;
   /** Height of the sprite in pixels */
   height: number;
-  /** Amount of frames in the sprite sheet */
+  /** Number of frames in the sprite sheet */
   slice: number;
   /** Whether to flip the sprite horizontally */
   flipX: boolean;
@@ -64,7 +64,7 @@ export class Sprite extends Component {
   /** Center point for sorting calculations */
   sortOffset: Point;
   /**
-   * Texture sampling offset in pixels. Only applies to `fit: 'repeat'`
+   * Texture sampling offset in pixels. Only applies to `fit: 'repeat'`.
    * With flipX/flipY the tile is mirrored, so a positive offset scrolls in
    * the mirrored direction.
    */

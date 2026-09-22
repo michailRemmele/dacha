@@ -59,7 +59,7 @@ export class Mesh extends Component {
   width: number;
   /** Height of the mesh in pixels */
   height: number;
-  /** Amount of frames in the sprite sheet */
+  /** Number of frames in the sprite sheet */
   slice: number;
   /** Whether to flip the mesh horizontally */
   flipX: boolean;
@@ -87,7 +87,7 @@ export class Mesh extends Component {
   /**
    * Creates a new Mesh component.
    *
-   * @param config - Configuration for the sprite
+   * @param config - Configuration for the mesh
    */
   constructor(config: MeshConfig) {
     super();

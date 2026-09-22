@@ -60,7 +60,7 @@ export class PixiView extends Component {
     };
   }
 
-  /** Get the pixi.js view. It's only available after the actor with this component is added to a scene */
+  /** The pixi.js view. It is available only after the actor with this component is added to a scene */
   get view(): ViewContainer | undefined {
     return this.renderData?.view;
   }

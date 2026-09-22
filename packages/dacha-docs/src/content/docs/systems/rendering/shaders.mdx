@@ -10,7 +10,7 @@ import meshShot from '../../../../assets/editor/inspector-mesh-material.png';
 `Mesh` draws an image, like `Sprite`, but through a shader you choose. The shader is a class in
 your project. It returns GLSL code and sets its uniforms.
 
-Use a mesh for effects on one actor: a hit flash, a dissolve, a wave, a colour change.
+Use a mesh for effects on one actor: a hit flash, a dissolve, a wave, a color change.
 For an effect on the whole screen, use a [filter effect](/systems/rendering/filter-effects/)
 instead.
 
@@ -127,7 +127,7 @@ The class has these methods:
 The fields on `@DefineShader` become the fields under *Material* in the editor. They work as
 described in [declaring fields on the decorator](/game-code/inspector-fields/#declaring-fields-on-the-decorator).
 
-Each method receives options of the mesh you define as fields.
+Each method receives the options of the mesh. These are the values of the fields you define.
 
 ## What the renderer provides
 
@@ -140,7 +140,7 @@ sets these values in every frame:
 | `uSampler` | `sampler2D` | The image of the mesh |
 | `uUVOffset`, `uUVScale` | `vec2` | The part of the image that holds the current frame. Sample at `uUVOffset + vUV * uUVScale` |
 | `uFrameSize` | `vec2` | The size of the current frame in pixels |
-| `uTint` | `vec3` | The tint colour |
+| `uTint` | `vec3` | The tint color |
 | `uAlpha` | `float` | The opacity |
 | `uTime` | `float` | Seconds since the game loop started. See [the game loop](/concepts/game-loop/) |
 

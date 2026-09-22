@@ -55,7 +55,7 @@ export class Engine {
    * Creates a new engine instance.
    *
    * @param options - Configuration, available systems, components, and asset kinds, and optional shared resources.
-   * @param options.config - Configuration for the engine. It contains game world description such as scenes, actors, and their components.
+   * @param options.config - Configuration for the engine. It describes the game world: scenes, actors and their components.
    * @param options.systems - Available systems for the engine.
    * @param options.components - Available components for the engine.
    * @param options.assets - Available asset kinds for the engine.

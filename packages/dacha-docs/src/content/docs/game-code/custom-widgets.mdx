@@ -5,7 +5,7 @@ description: "Replace a component's generated inspector panel with a React compo
 
 import WidgetStore from '../../../components/diagrams/WidgetStore.astro';
 
-The [field decorator](/game-code/inspector-fields/) generates a panel: one labelled input
+The [field decorator](/game-code/inspector-fields/) generates a panel: one labeled input
 per field, top to bottom. That covers most components. When it stops being enough, you
 replace the whole panel with a component of your own.
 
@@ -48,7 +48,7 @@ const HealthWidget: FC<WidgetProps> = ({ path, fields, sections }) => {
 
     dispatch(commands.setValue(path.concat('points'), brute ? 200 : 30));
     // `true` joins this write to the one above, so one undo takes back both
-    dispatch(commands.setValue(path.concat('armour'), brute ? 5 : 0, true));
+    dispatch(commands.setValue(path.concat('armor'), brute ? 5 : 0, true));
   };
 
   return (
@@ -144,7 +144,7 @@ the value it watches changes.
 It matters that these are commands rather than assignments. The editor never writes into the
 configuration directly. Each command applies the change and hands back the function that
 reverses it, and the store keeps that pair on an undo stack a hundred entries deep. Undo
-walks that stack backwards and redo walks it forwards. So a value written through a command
+walks that stack backward and redo walks it forward. So a value written through a command
 is a value that can be taken back, and a value written any other way is not.
 
 ### Several writes, one undo
@@ -157,7 +157,7 @@ a new entry. The two become a single step in the history:
 
 ```tsx
 dispatch(commands.setValue(path.concat('points'), brute ? 200 : 30));
-dispatch(commands.setValue(path.concat('armour'), brute ? 5 : 0, true));
+dispatch(commands.setValue(path.concat('armor'), brute ? 5 : 0, true));
 ```
 
 Undo now reverses both, in reverse order, as one step. The first write in a group is always
@@ -176,7 +176,7 @@ application without any styling work:
 | `LabelledNumberInput`, `LabelledTextInput`, `LabelledSelect`, `LabelledCheckbox`, `LabelledColorInput`, `LabelledFileInput`, `LabelledVectorInput`, `LabelledTextArea`, `LabelledMultiTextInput`, `LabelledMultiSelect` | One input with its label |
 | `MultiField` | An editable list of name and value pairs |
 
-Each labelled input has an unlabelled twin under the same name without the prefix, for when you
+Each labeled input has an unlabeled twin under the same name without the prefix, for when you
 lay out the label yourself.
 
 ## Saving the file reloads it

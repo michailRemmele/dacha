@@ -29,7 +29,7 @@ export class AudioSource extends Component {
   looped: boolean;
   /** Volume of the audio, from 0 to 1 */
   volume: number;
-  /** Whether the audio is autoplayed on scene enter or after actor is added to scene */
+  /** Whether the audio plays automatically when the scene is entered or when the actor is added to the scene */
   autoplay: boolean;
 
   /** @internal Whether the audio is currently playing */

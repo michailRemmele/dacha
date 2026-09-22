@@ -26,7 +26,7 @@ export interface Point {
  */
 export class MathOps {
   /**
-   * Generate random number in [min, max] range
+   * Generates a random number in the [min, max] range.
    *
    * @param min - Minimum value
    * @param max - Maximum value
@@ -42,7 +42,7 @@ export class MathOps {
   }
 
   /**
-   * Convert radians to degrees
+   * Converts radians to degrees.
    *
    * @param rad - Angle in radians
    * @returns Angle in degrees
@@ -58,7 +58,7 @@ export class MathOps {
   }
 
   /**
-   * Convert degrees to radians
+   * Converts degrees to radians.
    *
    * @param deg - Angle in degrees
    * @returns Angle in radians
@@ -73,7 +73,7 @@ export class MathOps {
   }
 
   /**
-   * Calculate angle between two point in radians
+   * Calculates the angle between two points, in radians.
    *
    * @param x1 - X coordinate of the first point
    * @param x2 - X coordinate of the second point
@@ -96,7 +96,7 @@ export class MathOps {
   }
 
   /**
-   * Calculate distance between two point
+   * Calculates the distance between two points.
    *
    * @param x1 - X coordinate of the first point
    * @param x2 - X coordinate of the second point
@@ -119,7 +119,7 @@ export class MathOps {
   }
 
   /**
-   * Calculate point on line
+   * Calculates a point on a line.
    *
    * @param angle - Angle of the line in degrees
    * @param x - X coordinate of the line start point
@@ -147,7 +147,7 @@ export class MathOps {
   }
 
   /**
-   * Clamp a value between a minimum and maximum value
+   * Clamps a value between a minimum and a maximum value.
    *
    * @param value - Value to clamp
    * @param min - Minimum value

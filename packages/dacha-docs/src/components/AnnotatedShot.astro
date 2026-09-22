@@ -3,9 +3,9 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 interface Marker {
-  /** Horizontal position of the badge centre, in percent of the image width. */
+  /** Horizontal position of the badge center, in percent of the image width. */
   x: number;
-  /** Vertical position of the badge centre, in percent of the image height. */
+  /** Vertical position of the badge center, in percent of the image height. */
   y: number;
   /** Name of the part the badge points at. */
   label: string;
@@ -61,7 +61,7 @@ const { src, alt, caption, markers } = Astro.props;
     position: relative;
   }
 
-  /* The screenshot is always the dark editor theme, so the badge colours are fixed. */
+  /* The screenshot is always the dark editor theme, so the badge colors are fixed. */
   .annotated-shot__badge {
     position: absolute;
     display: grid;

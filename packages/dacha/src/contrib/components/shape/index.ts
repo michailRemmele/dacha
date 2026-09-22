@@ -194,7 +194,7 @@ export class Shape extends Component {
    * 1 - Inside of the shape
    */
   strokeAlignment: number;
-  /** Whether the shape stroke should remains 1 pixel wide regardless of the scale */
+  /** Whether the shape stroke should remain 1 pixel wide regardless of the scale */
   pixelLine: boolean;
   /** Fill color of the shape */
   fill?: string;

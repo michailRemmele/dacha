@@ -73,7 +73,7 @@ level that is running now, because those all get their turn. It only stops the e
 reaching anything further up.
 
 The chain follows the same parent links as the scene tree. An actor's event reaches the scene
-it is in, and then that scene's world. Events never travel downwards. A listener on a child
+it is in, and then that scene's world. Events never travel downward. A listener on a child
 will not see an event dispatched on its parent.
 
 :::note
@@ -93,7 +93,7 @@ Two consequences are worth holding on to:
 
 - **Order is preserved, but timing is not immediate.** The engine delivers events in the order
   they were dispatched. The world may have moved on between the dispatch and the delivery. An
-  actor referenced in a payload can already be removed by the time a listener reads it.
+  actor referenced in a payload may already have been removed by the time a listener reads it.
 - **Listeners run outside `update` and `fixedUpdate`.** They run before both, in their own
   phase. A listener that writes state writes it before this frame's simulation, not after it.
 

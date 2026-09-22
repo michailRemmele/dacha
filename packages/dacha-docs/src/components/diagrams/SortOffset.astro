@@ -3,12 +3,12 @@ import DiagramFigure from './DiagramFigure.astro';
 ---
 
 <DiagramFigure
-  caption="With the bottomRight order, the view with the lower sort point is drawn in front. The sort point of a tall tree is its centre, so a character behind the tree is drawn over it. A sortOffset moves the tree's sort point down to its base."
+  caption="With the bottomRight order, the view with the lower sort point is drawn in front. The sort point of a tall tree is its center, so a character behind the tree is drawn over it. A sortOffset moves the tree's sort point down to its base."
 >
   <svg viewBox="0 0 720 250" role="img" xmlns="http://www.w3.org/2000/svg">
     <title>
       Two versions of the same scene: a tree and a character who stands behind it. On the left,
-      the tree has no sort offset. Its sort point is its centre, which is higher than the
+      the tree has no sort offset. Its sort point is its center, which is higher than the
       character's, so the character is drawn in front of the trunk. On the right, the tree has a
       sort offset of 32 on y. Its sort point is at its base, lower than the character's, so the
       tree is drawn in front.

@@ -11,7 +11,7 @@ Game Code.
 ## Setting it up
 
 1. In the Systems tab, add *Behavior System*.
-2. Add `BehaviorSystem`, `Behaviors` and project's `gameBehaviors` to the engine:
+2. Add `BehaviorSystem`, `Behaviors` and the project's `gameBehaviors` to the engine:
 
 ```ts
 import { Engine, BehaviorSystem, Behaviors } from 'dacha';

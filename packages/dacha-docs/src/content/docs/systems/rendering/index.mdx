@@ -58,7 +58,7 @@ system below it appears one frame later.
 ## How an actor is drawn
 
 The renderer places each view at the actor's `Transform`. Position, rotation and scale all
-apply. The view is centred on the actor's position.
+apply. The view is centered on the actor's position.
 
 An actor can have several view components, one of each kind. For example, a `Sprite` for the
 body and a `BitmapText` for a name above it.
@@ -106,14 +106,14 @@ Inside a layer, the renderer sorts views by position in every frame. It compares
 
 | Order | Drawn in front |
 | --- | --- |
-| `bottomRight` | Lower views. At the same height, views further right |
-| `bottomLeft` | Lower views. At the same height, views further left |
-| `topLeft` | Higher views. At the same height, views further left |
-| `topRight` | Higher views. At the same height, views further right |
+| `bottomRight` | Lower views. At the same height, views farther right |
+| `bottomLeft` | Lower views. At the same height, views farther left |
+| `topLeft` | Higher views. At the same height, views farther left |
+| `topRight` | Higher views. At the same height, views farther right |
 
 `bottomRight` is the default.
 
-The renderer sorts by the centre of the view. Use `sortOffset` to move the point the renderer sorts by.
+The renderer sorts by the center of the view. Use `sortOffset` to move the point the renderer sorts by.
 For example, a tree 64 pixels tall stands on the ground at its bottom edge, so give it a `sortOffset` of
 `{ x: 0, y: 32 }`.
 
@@ -153,7 +153,7 @@ const renderer = world.systemApi.get(RendererAPI);
 | Method | What it does |
 | --- | --- |
 | `intersectsWithPoint(x, y)` | Returns the actors whose views contain the point, the one drawn in front first |
-| `intersectsWithRectangle(minX, minY, maxX, maxY)` | Returns the actors whose view centres are inside the rectangle |
+| `intersectsWithRectangle(minX, minY, maxX, maxY)` | Returns the actors whose view centers are inside the rectangle |
 | `getBounds(actor)` | Returns the rectangle that contains all views of the actor, or `null` if it has none |
 | `getRenderingContext()` | Returns the pixi.js `Application` |
 | `addFilterEffect`, `removeFilterEffect`, `clearFilterEffects`, `getFilterEffects` | Change filter effects at runtime. See [Filter effects](/systems/rendering/filter-effects/) |

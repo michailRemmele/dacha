@@ -117,7 +117,7 @@ export abstract class System {
 export abstract class WorldSystem extends System {
   /**
    * Called when the world is first loaded.
-   * Used to load global resources such as bundle with game user interface
+   * Used to load global resources such as the bundle with the game user interface
    */
   onWorldLoad?(world: World): Promise<void>;
   /** Called when all global resources are loaded */

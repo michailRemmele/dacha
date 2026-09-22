@@ -140,7 +140,7 @@ export interface CastHit {
   /** The point where the ray or the shape touches the collider, in world space. */
   point: Point;
   /**
-   * The direction out of the surface that was hit. It points back towards the
+   * The direction out of the surface that was hit. It points back toward the
    * ray or the shape.
    */
   normal: Vector;
@@ -198,7 +198,7 @@ export interface PointQueryShape {
  */
 export interface CircleQueryShape {
   type: 'circle';
-  /** The centre, in world space. */
+  /** The center, in world space. */
   center: Point;
   /** The radius. */
   radius: number;
@@ -211,9 +211,9 @@ export interface CircleQueryShape {
  */
 export interface CapsuleQueryShape {
   type: 'capsule';
-  /** The centre, in world space. */
+  /** The center, in world space. */
   center: Point;
-  /** The distance between the centres of the two round ends. */
+  /** The distance between the centers of the two round ends. */
   height: number;
   /** The radius of the round ends. */
   radius: number;
@@ -228,7 +228,7 @@ export interface CapsuleQueryShape {
  */
 export interface BoxQueryShape {
   type: 'box';
-  /** The centre, in world space. */
+  /** The center, in world space. */
   center: Point;
   /** The width and the height. */
   size: Point;

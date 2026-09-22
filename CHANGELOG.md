@@ -31,6 +31,9 @@ Releases made before this file existed are recorded in the
 - The event types in `dacha/events` (`LoadSceneEvent`, `CollisionEnterEvent`,
   `KeyboardInputEvent` and the others) are interfaces instead of type aliases. They have the
   same fields, so code that uses them does not change.
+- **Breaking:** the `subtract` blending mode was misspelled `substract`. The view
+  components (`Sprite`, `Shape`, `BitmapText`, `Mesh`) and the editor now use `subtract`.
+  A configuration that still says `"blending": "substract"` needs the new spelling.
 
 ### Fixed
 

@@ -11,7 +11,7 @@ The tips below are the changes that matter most in a Dacha game.
 
 ## Measure with the statistics meter
 
-`GameStatsMeter` system reports the frame rate and the number of actors in the scene. Add it to the
+The `GameStatsMeter` system reports the frame rate and the number of actors in the scene. Add it to the
 systems list like any other system. It has one option, `frequency`, which sets how often it
 reports, in seconds. It defaults to `1`.
 

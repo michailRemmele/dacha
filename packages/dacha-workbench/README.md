@@ -29,8 +29,8 @@
 </p>
 
 A desktop app for building scenes, editing actors and templates, and configuring systems.
-It runs your game inside the editor, so you see every change as you make it. The editor
-reads and writes the same JSON configuration the engine runs.
+The viewport draws your scenes with the engine itself, so you see every change as you make
+it. The editor reads and writes the same JSON configuration the engine runs.
 
 The fastest way to start is the scaffolder — it wires the editor up for you:
 

@@ -216,7 +216,9 @@ like it was written by a very good developer who knows how to explain things.
 
 ## Spelling
 
-British `-ise` endings (`organise`, `serialise`, `initialise`), matching the existing pages.
+American English, matching the code: `color`, `center`, `behavior`, `initialize`,
+`labeled`. The engine and editor APIs already use these spellings (`Behavior`, `ColorInput`,
+`Color`), so the prose should not switch to British forms next to them.
 
-The one exception is **behavior**, spelled with `-or`, because it is the name of an engine
-concept and of the `Behavior` class. Never write `behaviour`.
+The one exception is an identifier that uses British spelling, such as `LabelledSelect`. Write
+the identifier as it is in the code.

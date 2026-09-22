@@ -192,7 +192,7 @@ const physics = this.world.systemApi.get(PhysicsAPI);
 
 Resolve it where you use it rather than in the constructor, because the providing system
 registers its API as it starts up and may not have done so yet. See
-[Scenes, World & systemApi](/concepts/scenes-and-world/).
+[Scenes & the world](/concepts/scenes-and-world/#systemapi).
 
 ## Registering it
 
