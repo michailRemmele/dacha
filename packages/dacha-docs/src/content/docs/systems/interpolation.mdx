@@ -1,0 +1,123 @@
+---
+title: "Interpolation"
+description: "Smooth rendering between fixed simulation steps."
+---
+
+import InterpolationTiming from '../../../components/diagrams/InterpolationTiming.astro';
+
+Physics moves actors in `fixedUpdate`, at a fixed rate. The renderer draws in `update`, whenever
+the browser is ready. The browser usually draws faster than the fixed rate, so several frames fall
+between two physics steps.
+
+If the renderer draws the `Transform` directly, a moving actor stays at one physics position
+until the next step, then jumps to the new one. This causes visible stutter even at a high frame
+rate.
+
+The `Interpolator` system smooths this out. It lets the renderer draw the actor at an interpolated position
+between its previous and current physics positions, so movement appears continuous.
+
+<InterpolationTiming />
+
+## Setting it up
+
+1. In the Systems tab, add *Interpolator*.
+2. Add `Interpolator` to the engine's `systems` array and `Interpolation` to its `components`
+   array.
+3. Add an `Interpolation` component to each actor you want to smooth.
+
+```ts
+import { Engine, Interpolator, Interpolation } from 'dacha';
+
+const engine = new Engine({
+  config,
+  systems: [Interpolator, ...gameSystems],
+  components: [Interpolation, ...gameComponents],
+  assets: [],
+});
+```
+
+Only actors with an `Interpolation` component use interpolated positions for rendering.
+
+## Order in the systems list
+
+Put `Interpolator` after every system that moves actors in `fixedUpdate`, and before `Renderer`.
+In the built-in systems, that means after `PhysicsSystem` and `CharacterController`. Behaviors
+that move actors in `fixedUpdate` count too, so put it after `BehaviorSystem` as well.
+
+## The `Interpolation` component
+
+| Field | What it does |
+| --- | --- |
+| `mode` | `interpolate` or `extrapolate` |
+| `snapThreshold` | Maximum distance in world units treated as continuous movement between two fixed steps. Larger jumps snap instead of gliding. `0` disables the automatic snap detection. |
+| `disabled` | Turns smoothing off |
+
+**`interpolate`** blends between the last two fixed steps. Use it by default. It adds up to one
+fixed step of visual delay, because it draws where the actor was, not where it is now.
+
+**`extrapolate`** starts from the latest step and moves the actor forward by the velocity of its
+`RigidBody`. It adds no delay. It can overshoot for a moment on impact, because it does not know
+that a collision is about to stop the actor. It needs an enabled `RigidBody`. On an actor
+without one, it falls back to `interpolate`.
+
+**`snapThreshold`** handles teleports. Without it, an actor you move across the level in one
+step glides across the whole distance. Set it a little above the fastest speed an actor can
+move in one fixed step.
+
+## Teleporting an actor
+
+If a teleport is shorter than `snapThreshold`, or the threshold is `0`, call `snap()` after you
+move the actor:
+
+```ts
+const transform = actor.getComponent(Transform);
+const interpolation = actor.getComponent(Interpolation);
+transform.world.position.x = 500;
+
+interpolation.snap();
+```
+
+After `snap()`, the next frame draws the actor at its `Transform` with no smoothing.
+
+## Reading the render position
+
+Sometimes your code needs the position the actor is drawn at, not its `Transform`. Ask
+`InterpolatorAPI` for it:
+
+```ts
+import { InterpolatorAPI } from 'dacha';
+
+const interpolator = world.systemApi.get(InterpolatorAPI);
+const { x, y, rotation } = interpolator.getRenderTransform(target);
+```
+
+`getRenderTransform` returns the position and rotation in world space. For an actor without an
+active `Interpolation` component, it returns the values from the `Transform`.
+
+Call it in `update`, not in `fixedUpdate`. The result depends on the frame's `alpha`, which
+`fixedUpdate` does not have yet.
+
+`InterpolatorAPI` also has `snap(actor)`. It does the same as calling `snap()` on the component.
+
+## Visual or logical
+
+Use the render position for anything visual. Use the `Transform` for game logic.
+
+A check that the player reached the exit reads the `Transform`. The render position shows where
+the actor is drawn, not where it is in the simulation.
+
+The camera is the common visual case. The renderer positions the view from the camera's
+`Transform`, and interpolation does not smooth it. A camera that copies the player's `Transform`
+moves in fixed steps, while the player on screen moves smoothly. The player then shakes on screen.
+Move the camera in `update` to the position from `getRenderTransform` instead.
+
+## See also
+
+- [The game loop](/concepts/game-loop/) explains the two clocks and `alpha`.
+- [Physics](/systems/physics/) moves most actors on the fixed step.
+
+## API reference
+
+- [`Interpolator`](/api/classes/Interpolator.html)
+- [`InterpolatorAPI`](/api/classes/InterpolatorAPI.html)
+- [`Interpolation`](/api/classes/Interpolation.html)

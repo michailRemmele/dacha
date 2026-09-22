@@ -9,11 +9,12 @@ export interface AudioAPIHandlers {
  * Actor playback is controlled through AudioSource component state.
  * This API is intended for global audio state such as group and master volume.
  *
- * @category Systems
+ * @category Audio
  */
 export class AudioAPI {
   private handlers: AudioAPIHandlers;
 
+  /** @internal Created by the system; get the instance from `world.systemApi`. */
   constructor(handlers: AudioAPIHandlers) {
     this.handlers = handlers;
   }

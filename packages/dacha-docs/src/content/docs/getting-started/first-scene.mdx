@@ -1,0 +1,71 @@
+---
+title: "Your first scene"
+description: "Change the starter project's scene in the editor, and add an actor of your own."
+---
+
+import { Image } from 'astro:assets';
+import { Steps } from '@astrojs/starlight/components';
+
+import actorShot from '../../../assets/editor/first-scene-actor.png';
+
+This page assumes the [starter project](/getting-started/installation/), with `npm run
+dev` and `npm run editor` both running. Keep the browser tab where you can see it.
+
+## What is already there
+
+The editor opens on the starter project's one scene, `level`, with three actors in it. Select
+one in the scene tree and the inspector shows its components. Every actor has a `Transform`,
+which holds position, rotation and scale. After that, each actor has whatever it was given:
+
+- **camera** — a `Camera`. This is what the *game* looks through, not the [editor's own
+  view](/editor/interface-tour/#the-viewport-runs-the-engine). The actor's `Transform` sets
+  where the game view is centered, and the component's `zoom` sets how close in it is. A scene
+  with no camera still draws, centered on the origin at 1&times; zoom.
+- **player** — a `Sprite` to draw, `KeyboardControl` to turn key presses into events,
+  `Animatable` to cycle the sprite's frames, and `Movement`, a component from `src/game/`
+  rather than from the engine.
+- **background** — a `Sprite` in `repeat` mode, tiling one texture across the field.
+
+## Change something
+
+Select **player** and open its `Movement` component. Set `speed` to `500`, then look at the
+browser tab. It has already reloaded, and the player is faster.
+
+The editor saved `data/data.json` and Vite reloaded the page. That loop is the whole
+workflow. [How it works](/introduction/how-it-works/) explains it.
+
+`Movement` is not built in. It is [a component in the
+project](/game-code/components/), and the inspector knows about its `speed` field
+because the class says so. That is why your own components look no different from the
+engine's here.
+
+## Add an actor
+
+<Steps>
+
+1. Select **level** in the scene tree, then press the first button in the explorer's action
+   bar, just above the tree: *Add New Actor*. The actor appears at the end of the scene, named
+   `Actor`, with a `Transform` already on it. Rename it in the inspector's `Name` field.
+
+   The button acts on whatever is selected. Select an actor instead of the scene, and the new
+   actor becomes its child.
+
+2. Add a `Sprite` to it with *Add Component*, at the foot of the inspector.
+
+3. Point its `src` at an image. Anything in `data/assets/` is selectable, and a file you drop
+   in there appears without restarting the editor.
+
+</Steps>
+
+<figure class="screenshot">
+  <Image
+    src={actorShot}
+    alt="The editor on the starter project's level scene: the scene tree lists camera, player, background and the newly added Actor; the new sprite sits on the grass field with a selection box around it; the inspector shows its Sprite and Transform components."
+  />
+  <figcaption>
+    A new actor, dragged into place beside the player. Its `Transform` came with it. The sprite
+    here points at an image added to `data/assets/`.
+  </figcaption>
+</figure>
+
+Drag it in the viewport, or type coordinates into `Transform`. Either way the tab follows.

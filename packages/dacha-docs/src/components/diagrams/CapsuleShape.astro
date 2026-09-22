@@ -1,0 +1,32 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The height of a capsule is the distance between the centers of its round ends. The full height adds the radius at each end."
+>
+  <svg viewBox="0 0 720 220" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A vertical capsule. The height is measured between the centers of the two round ends. The
+      radius goes from a center to the side. The full height of the capsule is height plus two
+      times the radius.
+    </title>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="260" y="30" width="80" height="160" rx="40" fill="var(--diagram-fill)" />
+
+      <path d="M300 70 L300 150" stroke-dasharray="4 3" />
+      <circle cx="300" cy="70" r="4" fill="var(--diagram-accent)" stroke="none" />
+      <circle cx="300" cy="150" r="4" fill="var(--diagram-accent)" stroke="none" />
+
+      <path d="M300 150 L340 150" stroke="var(--diagram-accent)" />
+      <text x="320" y="142" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="12">radius</text>
+
+      <path d="M370 70 L370 150 M364 70 L376 70 M364 150 L376 150" stroke="var(--diagram-accent)" />
+      <text x="382" y="114" fill="var(--diagram-accent)" stroke="none" font-size="12">height</text>
+
+      <path d="M450 30 L450 190 M444 30 L456 30 M444 190 L456 190" />
+      <text x="462" y="114" fill="var(--diagram-muted)" stroke="none" font-size="12">height + 2 &#215; radius</text>
+    </g>
+  </svg>
+</DiagramFigure>

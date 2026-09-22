@@ -30,6 +30,8 @@ interface SystemOptions extends Record<string, unknown> {
 
 /**
  * Options for scene-level systems.
+ *
+ * @category Systems
  */
 export interface SceneSystemOptions extends SystemOptions {
   /** Scene this system operates on */
@@ -40,6 +42,8 @@ export interface SceneSystemOptions extends SystemOptions {
 
 /**
  * Options for world-level systems.
+ *
+ * @category Systems
  */
 export interface WorldSystemOptions extends SystemOptions {
   /** World this system operates on */
@@ -82,7 +86,7 @@ export interface WorldSystemOptions extends SystemOptions {
  * }
  * ```
  *
- * @category Core
+ * @category Systems
  */
 export abstract class System {
   /** Unique name identifier for the system */
@@ -108,12 +112,12 @@ export abstract class System {
  * World systems operate at the global level and persist across scene changes.
  * They're typically used for core engine functionality like rendering, input, and audio.
  *
- * @category Core
+ * @category Systems
  */
 export abstract class WorldSystem extends System {
   /**
    * Called when the world is first loaded.
-   * Used to load global resources such as bundle with game user interface
+   * Used to load global resources such as the bundle with the game user interface
    */
   onWorldLoad?(world: World): Promise<void>;
   /** Called when all global resources are loaded */
@@ -128,10 +132,15 @@ export abstract class WorldSystem extends System {
  * Scene systems operate within a specific scene and are created/destroyed
  * with the scene. They're typically used for game logic, AI, and scene-specific features.
  *
- * @category Core
+ * @category Systems
  */
 export abstract class SceneSystem extends System {}
 
+/**
+ * A system class: a constructor with a static `systemName`.
+ *
+ * @category Systems
+ */
 export type SystemConstructor = Constructor<System> & {
   systemName: string;
 };

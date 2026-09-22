@@ -7,6 +7,11 @@ interface RenderData {
   view: ViewContainer;
 }
 
+/**
+ * Options for {@link PixiView}.
+ *
+ * @category Rendering
+ */
 export interface PixiViewConfig {
   createView?: () => ViewContainer;
   sortingLayer?: string;
@@ -14,32 +19,20 @@ export interface PixiViewConfig {
 }
 
 /**
- * PixiView component for rendering a view.
- *
- * Handles the visual representation of an actor using a custom pixi.js view.
- * It gives more control over the rendering of the actor and allows to use pixi.js features that are not supported by other components.
+ * Draws a pixi.js object that you create in code.
  *
  * @example
- * ```typescript
- * // Create a pixi view
- * const pixiView = new PixiView({
- *   createView: () => {
- *     const graphics = new Graphics()
- *      .rect(0, 0, 100, 100)
- *      .fill({ color: 0x000000 })
- *      .circle(0, 0, 50)
- *      .stroke({ color: 0x000000, width: 2 });
- *     return graphics;
- *   },
- *   sortingLayer: 'units',
- *   sortOffset: { x: 0, y: 0 },
- * });
- *
- * // Add to actor
- * actor.setComponent(pixiView);
+ * ```ts
+ * actor.setComponent(
+ *   new PixiView({
+ *     createView: () => new Graphics().circle(0, 0, 50).fill(0xffffff),
+ *   }),
+ * );
  * ```
  *
- * @category Components
+ * @see [PixiView](https://dachajs.org/systems/rendering/components/#pixiview)
+ *
+ * @category Rendering
  */
 export class PixiView extends Component {
   /** Function to create a custom pixi.js view */
@@ -48,7 +41,7 @@ export class PixiView extends Component {
   sortingLayer: string;
   /** Center point of the pixi view */
   sortOffset: Point;
-  /** Internal rendering data */
+  /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
 
   /**
@@ -67,7 +60,7 @@ export class PixiView extends Component {
     };
   }
 
-  /** Get the pixi.js view. It's only available after the actor with this component is added to a scene */
+  /** The pixi.js view. It is available only after the actor with this component is added to a scene */
   get view(): ViewContainer | undefined {
     return this.renderData?.view;
   }

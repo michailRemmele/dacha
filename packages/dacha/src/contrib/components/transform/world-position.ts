@@ -1,5 +1,13 @@
 import type { Transform } from '../';
 
+/**
+ * The position of an actor in the scene. It is `transform.world.position`.
+ *
+ * Reading `x` or `y` computes the value from the parent actors. Setting it
+ * changes the local position so that the world position gets the new value.
+ *
+ * @category Actors & Components
+ */
 export class WorldPosition {
   private transform: Transform;
 
@@ -7,6 +15,7 @@ export class WorldPosition {
     this.transform = transform;
   }
 
+  /** The x value of the world position. */
   set x(val: number) {
     const parent = this.transform.getParentComponent();
 
@@ -30,6 +39,7 @@ export class WorldPosition {
     return this.transform.worldMatrix.tx;
   }
 
+  /** The y value of the world position. */
   set y(val: number) {
     const parent = this.transform.getParentComponent();
 

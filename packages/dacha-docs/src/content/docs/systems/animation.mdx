@@ -1,0 +1,237 @@
+---
+title: "Animation"
+description: "Animate actors with a state machine of frames, and edit it in the animation editor."
+---
+
+import { Image } from 'astro:assets';
+
+import AnnotatedShot from '../../../components/AnnotatedShot.astro';
+import DocVideo from '../../../components/DocVideo.astro';
+import GroupStateDirections from '../../../components/diagrams/GroupStateDirections.astro';
+
+import editorShot from '../../../assets/editor/animation-editor-state.png';
+import frameShot from '../../../assets/editor/animation-editor-frame.png';
+import transitionShot from '../../../assets/editor/animation-editor-transition.png';
+import substateShot from '../../../assets/editor/animation-editor-substate.png';
+import animationPoster from '../../../assets/editor/editor-animation.poster.webp';
+
+`Animator` plays animations described by an actor's `Animatable` component. An animation is a
+sequence of **frames**. Each frame sets values on the actor's components, such as the current
+frame of a sprite sheet.
+
+The animations of one actor form a **state machine**. Each **state** is one animation: idle, run,
+jump. **Transitions** switch between states when their **conditions** are true.
+
+Frames set values. They do not blend between them. To move a value smoothly, change it in a system
+or a behavior.
+
+## Setting it up
+
+1. In the Systems tab, add *Animator*.
+2. Add the classes to the engine in `src/index.ts`:
+
+   ```ts
+   import { Engine, Animator, Animatable } from 'dacha';
+
+   const engine = new Engine({
+     config,
+     systems: [Animator, ...gameSystems],
+     components: [Animatable, ...gameComponents],
+     assets: [],
+   });
+   ```
+
+3. Add an `Animatable` component to each actor you want to animate.
+
+### Order in the systems list
+
+Put `Animator` after the systems that change the values its conditions read. A transition then
+sees the latest values. Put it before `Renderer`, so the values an animation frame sets appear on
+screen right away.
+
+## The animation editor
+
+You edit `Animatable` in the animation editor. Select the actor, and press *Open Animation
+Editor* in its `Animatable` component.
+
+<AnnotatedShot
+  src={editorShot}
+  alt="The animation editor over the editor window. The States panel lists Idle (Initial State) and Running, with Idle selected. The Transitions panel lists Idle -> Running. The timeline at the bottom shows Frame 0 to Frame 3. The inspector on the right shows the Idle state: Name Idle, Speed 0,3, Type individual, Looped checked."
+  caption="The animation editor with the Idle state selected."
+  markers={[
+    { x: 20, y: 30, label: 'States', text: 'Lists all animation states of the actor.' },
+    { x: 50, y: 30, label: 'Transitions', text: 'Lists all transitions from the selected state.' },
+    { x: 62, y: 86, label: 'Timeline', text: 'Shows the frames of the selected animation state.' },
+    { x: 80, y: 40, label: 'Inspector', text: 'Shows and edits the properties of the selected item.' },
+  ]}
+/>
+
+In the States panel, *Set as initial* makes the selected state the initial one.
+
+The editor viewport does not play animations. To see them, run the game.
+
+## States and frames
+
+A state has these settings:
+
+| Setting | What it does |
+| --- | --- |
+| `name` | The name shown in the editor |
+| `type` | `individual` has one timeline. `group` picks one of several timelines. See [group states](#group-states) |
+| `speed` | Playback speed. At `1`, each frame lasts 0.1 seconds. At `2`, it lasts 0.05 seconds |
+| `looped` | Starts the timeline again after the last frame. Without it, the state stays on the last frame |
+
+One state is the **initial state**. The actor starts in it when it appears in the scene.
+
+A state needs at least one frame, and `speed` must be above `0`.
+
+### Frame fields
+
+A frame is a list of fields. Each field has a path, a type and a value. When the frame plays,
+`Animator` writes the value to the path.
+
+<figure class="screenshot">
+  <Image
+    src={frameShot}
+    alt="The animation editor with Frame 0 of the Idle state selected in the timeline. The inspector shows one field: name components.Sprite.currentFrame, type number, value 0."
+  />
+  <figcaption>
+    Frame 0 of the `Idle` state shows the first frame of the sprite sheet.
+  </figcaption>
+</figure>
+
+The path names a value on the actor, with dots between the parts:
+
+| Path | Value |
+| --- | --- |
+| `components.Sprite.currentFrame` | The frame of the actor's sprite sheet |
+| `components.Sprite.opacity` | The opacity of the actor's sprite |
+| `children.Sword.components.Sprite.disabled` | Whether the sprite of the child actor named `Sword` is hidden |
+
+A path can reach any field of any component, including your own components. If the component or
+the child does not exist, the field is skipped.
+
+A frame sets only the fields it lists. A value stays as it is until another frame changes it. So
+if one state hides a sprite, the states it switches to must show it again.
+
+A new frame has no fields. To build a timeline quickly, set up the fields of the first frame, copy
+it, paste it several times, and change only the values.
+
+## Transitions
+
+A transition belongs to a state and points to another state. `Animator` checks the transitions of
+the current state in every frame:
+
+- A transition fires when **all** its conditions are true.
+- If several transitions can fire, the first one in the list wins.
+- A transition with no conditions fires as soon as its `time` allows.
+
+`time` is measured in plays of the timeline, not in seconds. `0` means the transition can fire at
+any moment. `1` means it can fire only after the timeline has played once. Use `time` `1` with no
+conditions to play an animation once and then move on, for example from `Attack` back to `Idle`.
+
+When a transition fires, the new state starts from its first frame.
+
+### Conditions
+
+A condition has one of two types.
+
+**`comparator`** compares two values. Each value is a `number`, a `string`, a `boolean`, or a
+`componentValue`. A `componentValue` is a path to a value on the actor, written like a frame path.
+
+The editor shows the operations as symbols:
+
+| Editor | Configuration |
+| --- | --- |
+| `==` | `equals` |
+| `!=` | `notEquals` |
+| `>` | `greater` |
+| `<` | `less` |
+| `>=` | `greaterOrEqual` |
+| `<=` | `lessOrEqual` |
+
+<figure class="screenshot">
+  <Image
+    src={transitionShot}
+    alt="The animation editor with the transition Idle -> Run selected. The inspector shows State: Run, Time: 0, and Condition 1 of type comparator: Arg1 Type componentValue, Arg1 Value components.Movement.isMoving, Operation ==, Arg2 Type boolean, Arg2 Value checked."
+  />
+  <figcaption>
+    The `Idle` state goes to `Run` when `components.Movement.isMoving` is `true`.
+  </figcaption>
+</figure>
+
+**`event`** becomes true when the actor receives an event of the given type. Use it for things that
+happen once: a hit, a jump, a death.
+
+The event must be dispatched on the actor itself. Events dispatched on its children do not count.
+
+Declare your event names in `src/events/index.ts`, and the editor offers them in the condition. See
+[declaring your own events](/concepts/events/#declaring-your-own-events).
+
+## Group states
+
+A group state holds several **substates**. Each substate has its own timeline. In every frame,
+`Animator` picks one substate by comparing values on the actor with the position of each substate.
+
+Use a group state for one animation that has variants, such as a character that faces left or
+right. Transitions belong to the group, so you write them once, not once per variant.
+
+| Setting | What it does |
+| --- | --- |
+| `pickMode` | `1D` compares one value. `2D` compares two |
+| `x`, `y` on the state | Paths to the values to compare, such as `components.Facing.x` |
+| `x`, `y` on a substate | The position of this substate |
+
+`Animator` picks the substate closest to the current values. For a character that faces left or
+right, use `pickMode` `1D`, and set `x` on the state to the value that holds the direction:
+
+| Substate | `x` |
+| --- | --- |
+| `Left` | `-1` |
+| `Right` | `1` |
+
+<figure class="screenshot">
+  <Image
+    src={substateShot}
+    alt="The animation editor with the group state Idle expanded in the States panel. It holds two substates, Left (x: -1) and Right (x: 1). Left is selected, and the inspector shows Name Left, Looped checked and X -1. The timeline shows three frames."
+  />
+  <figcaption>
+    A group state with two substates. The tree shows the `x` of each substate next to its name.
+  </figcaption>
+</figure>
+
+With `pickMode` `2D`, each substate also has `y`. An idle in four directions then uses `(0, -1)`,
+`(0, 1)`, `(-1, 0)` and `(1, 0)`.
+
+<GroupStateDirections />
+
+Each substate has its own frames, so every direction plays its own part of the sprite sheet. Two
+directions can share one part. Here `Left` plays the frames of `Right` and sets
+`components.Sprite.flipX` to `true`. `Right` sets `flipX` back to `false`, because a frame changes
+only the fields it lists.
+
+When the actor turns, the animation switches to another substate and keeps its progress. A walk
+cycle continues from the same frame in the new direction.
+
+A group state needs at least one substate.
+
+## Adding a state step by step
+
+This video builds the `Run` state from scratch. It copies `Idle`, adds the
+transitions in both directions, and changes the frames. The game on the right switches between the
+two animations as the player moves.
+
+<DocVideo
+  slug="editor-animation"
+  poster={animationPoster}
+  width={1512}
+  height={850}
+  label="The player's Animatable component is opened in the animation editor. The Idle state is copied and renamed to Run. A transition from Idle to Run is added with the condition components.Movement.isMoving == true, and a transition back to Idle with false. The frames of Run are changed to other frames of the sprite sheet. In the browser on the right, the player switches between the idle and run animations while it moves."
+  caption="Adding a Run state and the transitions between Idle and Run."
+/>
+
+## API reference
+
+- [`Animator`](/api/classes/Animator.html)
+- [`Animatable`](/api/classes/Animatable.html)
+- [`Animation`](/api/modules/Animation.html)

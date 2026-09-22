@@ -1,8 +1,14 @@
 import { Component } from '../../../engine/component';
 import { Vector, type Point } from '../../../engine/math-lib';
 
+/** @inline */
 export type RigidBodyType = 'dynamic' | 'static' | 'kinematic';
 
+/**
+ * Options for {@link RigidBody}.
+ *
+ * @category Physics
+ */
 export interface RigidBodyConfig {
   type: RigidBodyType;
   mass?: number;
@@ -28,38 +34,12 @@ interface PointImpulse {
 }
 
 /**
- * RigidBody component for defining rigid body physics.
+ * Makes an actor take part in physics. `type` decides what moves the body: the
+ * simulation or your code.
  *
- * Defines the physics properties for an actor. Dynamic bodies react to forces,
- * impulses, gravity, collisions, and rotation. Static and kinematic bodies can
- * participate in collisions but are not moved by solver impulses.
+ * @see [Bodies and colliders](https://dachajs.org/systems/physics/bodies-and-colliders/)
  *
- * Physics is simulated in world space.
- *
- * Rigid bodies may be parented only to actors with static transforms. A moving
- * parent (for example, a dynamic or kinematic rigid body) and the physics
- * simulation would both control the child's transform, so the result is
- * undefined.
- *
- * @example
- * ```typescript
- * // Create a dynamic rigid body
- * const rigidBody = new RigidBody({
- *   type: 'dynamic',
- *   mass: 10,
- *   gravityScale: 1,
- *   linearDamping: 1,
- *   disabled: false,
- * });
- *
- * // Add to actor
- * actor.setComponent(rigidBody);
- *
- * // Modify properties
- * rigidBody.mass = 20;
- * ```
- *
- * @category Components
+ * @category Physics
  */
 export class RigidBody extends Component {
   private _mass: number;
@@ -188,6 +168,8 @@ export class RigidBody extends Component {
    * Returns the inverse mass.
    *
    * Bodies with zero or negative mass return `0`.
+   *
+   * @advanced
    */
   get inverseMass(): number {
     if (this.type === 'static' || this.type === 'kinematic') {
@@ -208,6 +190,8 @@ export class RigidBody extends Component {
    * harder to spin. It is automatically computed from the collider shape, mass,
    * and collider offset every physics step, so user code usually should only
    * read this value.
+   *
+   * @advanced
    */
   set inertia(value: number) {
     this._inertia = value;
@@ -219,6 +203,8 @@ export class RigidBody extends Component {
    *
    * This is the solver-friendly form of inertia. Static bodies, kinematic
    * bodies, locked rotation, or non-positive inertia return `0`.
+   *
+   * @advanced
    */
   get inverseInertia(): number {
     if (

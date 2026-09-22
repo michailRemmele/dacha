@@ -1,0 +1,105 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Marker {
+  /** Horizontal position of the badge center, in percent of the image width. */
+  x: number;
+  /** Vertical position of the badge center, in percent of the image height. */
+  y: number;
+  /** Name of the part the badge points at. */
+  label: string;
+  /** One short sentence about that part. */
+  text: string;
+}
+
+interface Props {
+  /** Imported full-window screenshot. The badges are positioned over it. */
+  src: ImageMetadata;
+  alt: string;
+  caption: string;
+  markers: Marker[];
+}
+
+const { src, alt, caption, markers } = Astro.props;
+---
+
+<figure class="screenshot annotated-shot">
+  <div class="annotated-shot__frame">
+    <Image src={src} alt={alt} />
+    {
+      markers.map((marker, index) => (
+        <span
+          class="annotated-shot__badge"
+          style={`left: ${marker.x}%; top: ${marker.y}%`}
+          aria-hidden="true"
+        >
+          {index + 1}
+        </span>
+      ))
+    }
+  </div>
+  <figcaption>{caption}</figcaption>
+  <ol class="annotated-shot__legend">
+    {
+      markers.map((marker, index) => (
+        <li>
+          <span class="annotated-shot__badge annotated-shot__badge--inline" aria-hidden="true">
+            {index + 1}
+          </span>
+          <span>
+            <strong>{marker.label}</strong>. {marker.text}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<style>
+  .annotated-shot__frame {
+    position: relative;
+  }
+
+  /* The screenshot is always the dark editor theme, so the badge colors are fixed. */
+  .annotated-shot__badge {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: clamp(1.1rem, 2.2vw, 1.5rem);
+    height: clamp(1.1rem, 2.2vw, 1.5rem);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #f2b53a;
+    color: #1b1b1b;
+    font-size: clamp(0.65rem, 1.5vw, 0.95rem);
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 0 0 2px #1b1b1b;
+  }
+
+  .annotated-shot__badge--inline {
+    position: static;
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    transform: none;
+    font-size: 0.8rem;
+    box-shadow: none;
+  }
+
+  .annotated-shot__legend {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .annotated-shot__legend li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    margin: 0;
+  }
+</style>

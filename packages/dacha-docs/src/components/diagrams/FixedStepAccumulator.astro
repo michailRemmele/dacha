@@ -1,0 +1,69 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="Four frames of different lengths, and the fixed updates each one runs against a 20 ms step."
+>
+  <svg viewBox="0 0 720 320" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      Four consecutive frames of uneven length, each running zero, one or three fixedUpdate
+      calls before its single update, with the unsimulated remainder carried forward as
+      alpha.
+    </title>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <text x="8" y="20" fill="var(--diagram-accent)" stroke="none" font-size="12">One column per frame &#183; fixed step 20 ms</text>
+
+      <!-- frame 1 -->
+      <rect x="8" y="32" width="164" height="272" rx="10" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="26" y="56" fill="var(--diagram-text)" stroke="none" font-size="12">frame 1</text>
+      <text x="154" y="56" fill="var(--diagram-muted)" stroke="none" font-size="11" text-anchor="end">+16 ms</text>
+      <rect x="26" y="72" width="128" height="26" rx="6" stroke-dasharray="4 4" />
+      <text x="90" y="89" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">no fixedUpdate</text>
+      <rect x="26" y="222" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="90" y="239" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">update</text>
+      <text x="90" y="278" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">alpha 0.80</text>
+
+      <!-- frame 2 -->
+      <rect x="188" y="32" width="164" height="272" rx="10" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="206" y="56" fill="var(--diagram-text)" stroke="none" font-size="12">frame 2</text>
+      <text x="334" y="56" fill="var(--diagram-muted)" stroke="none" font-size="11" text-anchor="end">+16 ms</text>
+      <rect x="206" y="72" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="270" y="89" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">fixedUpdate</text>
+      <rect x="206" y="222" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="270" y="239" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">update</text>
+      <text x="270" y="278" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">alpha 0.60</text>
+
+      <!-- frame 3 -->
+      <rect x="368" y="32" width="164" height="272" rx="10" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="386" y="56" fill="var(--diagram-text)" stroke="none" font-size="12">frame 3</text>
+      <text x="514" y="56" fill="var(--diagram-muted)" stroke="none" font-size="11" text-anchor="end">+50 ms</text>
+      <rect x="386" y="72" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="450" y="89" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">fixedUpdate</text>
+      <rect x="386" y="106" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="450" y="123" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">fixedUpdate</text>
+      <rect x="386" y="140" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="450" y="157" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">fixedUpdate</text>
+      <text x="450" y="186" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="11">catching up on a long frame</text>
+      <rect x="386" y="222" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="450" y="239" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">update</text>
+      <text x="450" y="278" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">alpha 0.10</text>
+
+      <!-- frame 4 -->
+      <rect x="548" y="32" width="164" height="272" rx="10" stroke="var(--diagram-accent)" stroke-dasharray="5 4" />
+      <text x="566" y="56" fill="var(--diagram-text)" stroke="none" font-size="12">frame 4</text>
+      <text x="694" y="56" fill="var(--diagram-muted)" stroke="none" font-size="11" text-anchor="end">+24 ms</text>
+      <rect x="566" y="72" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="630" y="89" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">fixedUpdate</text>
+      <rect x="566" y="222" width="128" height="26" rx="6" fill="var(--diagram-fill)" />
+      <text x="630" y="239" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">update</text>
+      <text x="630" y="278" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">alpha 0.30</text>
+
+      <text x="180" y="282" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="14">&#8594;</text>
+      <text x="360" y="282" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="14">&#8594;</text>
+      <text x="540" y="282" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="14">&#8594;</text>
+    </g>
+  </svg>
+</DiagramFigure>

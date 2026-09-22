@@ -1,7 +1,8 @@
 export { Engine } from './engine';
+export type { EngineOptions } from './engine/engine';
 export { Component } from './engine/component';
 export { VectorOps, MathOps, Vector } from './engine/math-lib';
-export type { Point } from './engine/math-lib';
+export type { Point, Matrix } from './engine/math-lib';
 
 export * from './engine/consts';
 export * from './engine/types';
@@ -16,7 +17,10 @@ export type {
   ActorCollectionFilter,
   ActorSpawner,
   ActorQueryFilter,
+  ActorQueryOptions,
+  ActorOptions,
 } from './engine/actor';
+export type { Entity, EntityOptions } from './engine/entity';
 export type {
   EventTarget,
   Event,
@@ -25,8 +29,13 @@ export type {
   ListenerFn,
 } from './engine/event-target';
 export type { Scene } from './engine/scene';
-export type { World } from './engine/world';
+export type { World, SystemAPIRegistry } from './engine/world';
 
+/**
+ * Config types of the animation state machine that {@link Animatable} reads.
+ *
+ * @category Animation
+ */
 export * as Animation from './contrib/components/animatable/types';
 
 export {
@@ -38,6 +47,8 @@ export {
 export { TemplateCollection } from './engine/template';
 export { Assets, Asset } from './engine/asset';
 export type { AssetOptions, AssetConstructor } from './engine/asset';
+export type { SystemConstructor } from './engine/system';
+export type { ComponentConstructor } from './engine/component';
 
 export * from './types/events';
 export * from './contrib/systems';

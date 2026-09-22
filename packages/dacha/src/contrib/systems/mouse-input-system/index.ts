@@ -4,15 +4,21 @@ import type { WorldSystemOptions } from '../../../engine/system';
 import { InputSubsystem, CoordinatesProjector } from './subsystems';
 
 /**
- * Mouse input system that captures and processes mouse events
+ * Listens to the mouse and sends the {@link MouseInputEvent | MouseInput} event on the world.
  *
- * Handles mouse input events with coordinate projection from screen space
- * to world space. Dispatches mouse input events to the world with proper
- * coordinate transformation for game world interaction.
+ * The event has the pointer position in world coordinates and in screen pixels.
  *
- * @extends WorldSystem
- * 
- * @category Systems
+ * Options:
+ *
+ * - `useWindow`: listens on `window`.
+ * - `windowNodeId`: the id of the element to listen on when `useWindow` is off.
+ *
+ * Put `MouseInputSystem` before {@link MouseControlSystem} and before your own systems
+ * that read `MouseInput`.
+ *
+ * @see [Input](https://dachajs.org/systems/input/)
+ *
+ * @category Input
  */
 export class MouseInputSystem extends WorldSystem {
   private inputSubsystem: InputSubsystem;

@@ -26,7 +26,7 @@ interface RendererAPIOptions {
  * Offers methods for view intersection testing, bounds calculation, and
  * direct access to the underlying PIXI.js application
  *
- * @category Systems
+ * @category Rendering
  */
 export class RendererAPI {
   private application: Application;
@@ -36,6 +36,7 @@ export class RendererAPI {
   private filterSystem: FilterSystem;
   private materialSystem: MaterialSystem;
 
+  /** @internal Created by the system; get the instance from `world.systemApi`. */
   constructor({
     application,
     worldContainer,
@@ -128,7 +129,7 @@ export class RendererAPI {
 
   /**
    * Returns the bounds of an actor
-   * If actor has multiple views,
+   * If the actor has several views,
    * the bounds will be the smallest rectangle that contains all views
    *
    * @param actor - Actor to get the bounds of
@@ -215,9 +216,9 @@ export class RendererAPI {
   /**
    * Reloads shader classes registered in the renderer.
    *
-   * @param classDenfinitions - Shader constructors to register
+   * @param classDefinitions - Shader constructors to register
    */
-  reloadShaders(classDenfinitions: ShaderConstructor[]): void {
-    this.materialSystem.reloadShaders(classDenfinitions);
+  reloadShaders(classDefinitions: ShaderConstructor[]): void {
+    this.materialSystem.reloadShaders(classDefinitions);
   }
 }

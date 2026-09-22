@@ -1,1 +1,2 @@
-export type BlendingMode = 'normal' | 'addition' | 'substract' | 'multiply';
+/** @inline */
+export type BlendingMode = 'normal' | 'addition' | 'subtract' | 'multiply';

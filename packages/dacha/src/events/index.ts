@@ -21,6 +21,7 @@ export type {
   SceneEnteredEvent,
   SceneExitedEvent,
   SceneDestroyedEvent,
+  ActorQueryEventMap,
 } from '../engine/events';
 
 export {
@@ -38,8 +39,16 @@ export type {
   MouseInputEvent,
   KeyboardControlEvent,
   MouseControlEvent,
+  CollisionEvent,
   CollisionEnterEvent,
   CollisionStayEvent,
   CollisionLeaveEvent,
   CharacterHitEvent,
 } from '../contrib/events';
+export type {
+  CustomKeyboardEvent,
+  CustomMouseEvent,
+  InputEventAttributeConfig,
+  InputEventAttributes,
+  AttributeValue,
+} from '../contrib/types/input-events';

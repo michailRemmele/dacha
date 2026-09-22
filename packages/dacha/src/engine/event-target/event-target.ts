@@ -8,7 +8,7 @@ import { eventQueue } from './event-queue';
 /**
  * Base class for all event targets.
  * 
- * @category Core
+ * @category Events
  */
 export class EventTarget {
   /** Parent event target */
@@ -44,6 +44,8 @@ export class EventTarget {
    *
    * @param type - Type of event to get the listeners for
    * @returns Event listeners for the event target
+   *
+   * @advanced
    */
   getEventListeners(type: EventType): ListenerFn[] | undefined {
     return this.listenersMap.get(type);
@@ -73,6 +75,8 @@ export class EventTarget {
 
   /**
    * Removes all event listeners from the event target.
+   *
+   * @advanced
    */
   removeAllListeners(): void {
     this.listenersMap.clear();
@@ -109,7 +113,7 @@ export class EventTarget {
    * Dispatches an event to the event target.
    * 
    * Events are processed in the engine event queue at the beginning of each frame
-   * in order that they were dispatched.
+   * in the order they were dispatched.
    *
    * @param type - Type of event to dispatch
    * @param payload - Payload of the event
@@ -125,6 +129,8 @@ export class EventTarget {
    *
    * @param type - Type of event to dispatch
    * @param payload - Payload of the event
+   *
+   * @advanced
    */
   dispatchEventImmediately(type: EventType, payload?: Record<string, unknown>): void {
     this.handleEvent(type, payload);

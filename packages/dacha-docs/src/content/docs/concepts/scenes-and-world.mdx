@@ -1,0 +1,151 @@
+---
+title: "Scenes & the world"
+description: "The containers above the actor, how a game moves between them, and the registry that exposes built-in systems to your code."
+---
+
+import SceneStates from '../../../components/diagrams/SceneStates.astro';
+
+There are two containers above the actor. A **scene** holds actors. The **world** holds scenes
+and everything global.
+
+## Scenes
+
+A scene is any distinct state your game can be in: a level, a menu, a game-over screen.
+
+A scene holds actors, and it is what a scene system's lifetime is measured against. The engine
+creates every `SceneSystem` listed in the configuration again for each scene it loads.
+
+One scene is **active** at a time. It is the scene attached to the world's tree, and the only
+one whose systems the loop ticks. Other scenes can be **loaded** and waiting behind it, because
+loading a scene and entering it are separate steps.
+
+A loaded scene that is not active is not attached to the world. Its actors exist, but its
+systems do not run and its events do not reach the world.
+
+Anything that must outlive a scene change belongs to the world instead.
+
+## The world
+
+The world is the root. It holds the scenes, it hosts the systems that persist across scene
+changes, and it exposes the registry described below.
+
+Like scenes and actors, the world is an event target. So world-level events are a good place
+for anything that concerns the whole game rather than one level.
+
+## Changing scenes
+
+To change scenes, dispatch an event on the world. It is the same `world` a system or a
+behavior receives in its options. Your code never calls into the scene manager directly.
+
+You name the scene by its [id](/concepts/configuration/#identifiers), copied from the editor:
+
+```ts
+import { LoadScene } from 'dacha/events';
+
+world.dispatchEvent(LoadScene, { id: LEVEL_TWO_SCENE_ID });
+```
+
+That one line covers the common case. It builds the next scene, enters it, and destroys the
+one you left.
+
+The change does not happen on that line. `LoadScene` is a [queued
+event](/concepts/events/#delivery-happens-on-the-next-frame), so the engine starts the change at
+the top of the next frame. Loading is then asynchronous. The current scene keeps running until
+the new one is ready. Wait for `SceneEntered` if you need to know when the switch is done.
+
+Underneath, a scene moves between three states, and each move is its own event.
+
+<SceneStates />
+
+| Event | What it does | Payload |
+| --- | --- | --- |
+| `LoadScene` | Builds a scene and its systems, then enters it | `{ id, autoEnter?, autoDestroy? }` |
+| `EnterScene` | Makes an already loaded scene the active one | `{ id, autoDestroy? }` |
+| `ExitScene` | Leaves the active scene, leaving none active | `{ autoDestroy? }` |
+| `DestroyScene` | Tears a loaded scene down | `{ id }` |
+
+`autoEnter` and `autoDestroy` both default to `true`.
+
+**`autoDestroy` applies to the scene you leave, not to the scene you load.** Set it to `false`
+to keep the current scene loaded so you can return to it without rebuilding it. On `LoadScene`
+it only has an effect when the new scene is entered, since that is when the old one is left.
+
+Set `autoEnter` to `false` to preload a scene:
+
+```ts
+// build it in the background while the current level is still being played
+world.dispatchEvent(LoadScene, { id: LEVEL_TWO_SCENE_ID, autoEnter: false });
+
+// later, when the player reaches the door
+world.dispatchEvent(EnterScene, { id: LEVEL_TWO_SCENE_ID });
+```
+
+Loading is the expensive half. It constructs the scene's actors and systems, and it waits for
+every `onSceneLoad` to resolve. Entering is immediate. Splitting the two lets the wait happen
+while the player is doing something else.
+
+The world announces each step once it has happened, so a loading screen or a fade can react to
+it:
+
+| Event | Fires when |
+| --- | --- |
+| `SceneLoaded` | The scene and its systems are ready |
+| `SceneEntered` | It has become the active scene |
+| `SceneExited` | It has stopped being the active scene |
+| `SceneDestroyed` | It has been torn down |
+
+Each one carries the scene as `{ scene }`. The world dispatches all four, so listen there.
+
+## `systemApi`
+
+Built-in systems do useful things your code will want to ask about. Physics can answer spatial
+questions. The interpolator can give you a smoothed render position. The camera system knows
+which camera is current.
+
+The world does not hand you system instances. It exposes a registry keyed by API class:
+
+```ts
+import { PhysicsAPI } from 'dacha';
+
+const physics = world.systemApi.get(PhysicsAPI);
+```
+
+The class is both the key and the type, so the result is typed without a cast.
+
+Five systems register an API today. Each API class is exported from `dacha` under the name you
+pass to `get`:
+
+| System | API class | What it answers |
+| --- | --- | --- |
+| `Renderer` | `RendererAPI` | Drawing and view queries |
+| `PhysicsSystem` | `PhysicsAPI` | Spatial queries |
+| `CameraSystem` | `CameraAPI` | The current camera |
+| `AudioSystem` | `AudioAPI` | Playback control |
+| `Interpolator` | `InterpolatorAPI` | Render transforms |
+
+Each one is covered on its own page under [built-in systems](/systems/rendering/).
+
+### Resolve an API where you use it
+
+An API appears in the registry when the system that owns it starts up, and some of them
+disappear again.
+
+`RendererAPI`, `CameraAPI` and `AudioAPI` come from world systems. They are registered as the
+system is constructed, and they stay for the whole run.
+
+`PhysicsAPI` and `InterpolatorAPI` come from scene systems. They are registered in
+`onSceneEnter` and removed in `onSceneExit`, so they exist only while a scene is active.
+
+So call `systemApi.get` at the point of use. Do not resolve an API in a constructor and keep
+the result.
+
+`get` throws when nothing is registered for that class. Either the system is not in the
+configuration, or you asked outside the window above. Use `systemApi.has(PhysicsAPI)` when an
+API is genuinely optional for your game.
+
+### Why the indirection
+
+A direct reference would couple your code to a system instance, to its construction order and
+to its internals. The registry keeps the surface narrow. A system decides what it exposes, and
+everything else stays private. You can also swap a system out, or run without it, and no
+caller is left holding a broken reference.

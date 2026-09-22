@@ -11,6 +11,7 @@ import type {
 } from '../event-target';
 import type { SceneEventMap, ActorEventMap } from '../../types/events';
 
+/** @inline */
 type SceneObjectListenerFn<T extends EventType> = (
   event: T extends keyof SceneEventMap
     ? SceneEventMap[T]
@@ -25,19 +26,14 @@ interface SceneOptions extends EntityOptions, SceneConfig {
 }
 
 /**
- * A scene represents a distinct game level, menu, or gameplay state within the game world.
+ * A level, a menu or another state of the game. A scene holds actors.
  *
- * Scenes serve as the primary organizational unit in the engine architecture.
- * Each scene contains a collection of actors that can be accessed and managed directly
- * or through utilitiy classes such as the {@link ActorQuery}.
+ * The engine creates scenes from the configuration. To find actors in a scene,
+ * use {@link ActorQuery}.
  *
- * Scenes are typically created from configuration data rather than instantiated directly.
- * SceneManager reads scene configurations and creates scene instances with their
- * associated actors automatically.
+ * @see [Scenes and world](https://dachajs.org/concepts/scenes-and-world/)
  *
- * @extends {Entity}
- * 
- * @category Core
+ * @category Scenes & World
  */
 export class Scene extends Entity {
   private actorCreator: ActorCreator;

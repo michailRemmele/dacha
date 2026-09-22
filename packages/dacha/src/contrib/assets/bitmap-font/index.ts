@@ -1,7 +1,13 @@
 import { Asset } from '../../../engine/asset';
 import type { AssetOptions } from '../../../engine/asset';
 
+/**
+ * The `data` of a bitmap font asset in the configuration.
+ *
+ * @category Assets
+ */
 export interface BitmapFontData {
+  /** Path to the font file. */
   src?: string;
 }
 

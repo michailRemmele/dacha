@@ -12,14 +12,18 @@ interface KeyboardInputSystemOptions extends WorldSystemOptions {
 }
 
 /**
- * Keyboard input system that captures and processes keyboard events
+ * Listens to the keyboard and sends the {@link KeyboardInputEvent | KeyboardInput} event on the world.
  *
- * Listens for keyboard input events and dispatches them as KeyboardInput events
- * to the world
+ * The system sends one event when a key goes down and one when it goes up.
  *
- * @extends WorldSystem
- * 
- * @category Systems
+ * Options:
+ *
+ * - `useWindow`: listens on `window`.
+ * - `windowNodeId`: the id of the element to listen on when `useWindow` is off.
+ *
+ * @see [Input](https://dachajs.org/systems/input/)
+ *
+ * @category Input
  */
 export class KeyboardInputSystem extends WorldSystem {
   private world: World;

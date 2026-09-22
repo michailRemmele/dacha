@@ -9,8 +9,14 @@ interface RenderData {
   graphicsContextKey?: string;
 }
 
+/** @inline */
 type TextAlign = 'left' | 'center' | 'right';
 
+/**
+ * Options for {@link BitmapText}.
+ *
+ * @category Rendering
+ */
 export interface BitmapTextConfig {
   text?: string;
   font?: string;
@@ -25,35 +31,11 @@ export interface BitmapTextConfig {
 }
 
 /**
- * BitmapText component for rendering text using a bitmap font.
+ * Draws text with a bitmap font.
  *
- * It handles text representation of an actor using a bitmap font.
- * It uses an asset file in the format of a bitmap font (.fnt and .xml are supported) to render text.
+ * @see [BitmapText](https://dachajs.org/systems/rendering/components/#bitmaptext)
  *
- * @example
- * ```typescript
- * // Create a bitmap text
- * const bitmapText = new BitmapText({
- *   text: 'Greetings traveller!',
- *   font: 'assets/fonts/some-pixel-font.fnt',
- *   fontSize: 24,
- *   align: 'center',
- *   color: '#000',
- *   opacity: 1,
- *   blending: 'normal',
- *   disabled: false,
- *   sortingLayer: 'text',
- *   sortOffset: { x: 0, y: 0 }
- * });
- *
- * // Add to actor
- * actor.setComponent(bitmapText);
- *
- * // Modify properties
- * bitmapText.text = 'Stay a while and listen!';
- * ```
- *
- * @category Components
+ * @category Rendering
  */
 export class BitmapText extends Component {
   /** Text to render */
@@ -80,7 +62,7 @@ export class BitmapText extends Component {
   sortingLayer: string;
   /** Center point of the text */
   sortOffset: Point;
-  /** Internal rendering data */
+  /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
 
   constructor(config: BitmapTextConfig) {

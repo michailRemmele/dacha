@@ -1,0 +1,51 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="A widget does not hold a component. It reads and writes one slice of the project's configuration, addressed by the path it was given."
+>
+  <svg viewBox="0 0 720 250" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A widget reads a value from the editor's store with useConfig and writes it back
+      through a command. The store holds the whole project configuration, and the widget's
+      path addresses the part of it the widget draws. That configuration is written to
+      data.json when the project is saved.
+    </title>
+
+    <defs>
+      <marker id="ws-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <rect x="10" y="98" width="170" height="84" rx="8" fill="var(--diagram-fill)" />
+      <text x="95" y="128" fill="var(--diagram-text)" text-anchor="middle" stroke="none">Your widget</text>
+      <text x="95" y="150" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">a React component</text>
+
+      <rect x="290" y="40" width="210" height="200" rx="8" fill="var(--diagram-fill)" />
+      <text x="395" y="68" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">The editor's store</text>
+      <text x="395" y="100" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="10">['scenes', 'id:8f2a', 'actors',</text>
+      <text x="395" y="116" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="10">'id:31c0', 'components',</text>
+      <text x="395" y="132" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="10">'name:Health', 'config']</text>
+      <path d="M395 146 L395 174" marker-end="url(#ws-arrow)" />
+      <text x="395" y="196" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">&#123; points: 100 &#125;</text>
+      <text x="395" y="220" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">the slice this panel draws</text>
+
+      <rect x="556" y="112" width="150" height="56" rx="8" fill="var(--diagram-fill)" />
+      <text x="631" y="136" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">data/data.json</text>
+      <text x="631" y="156" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">written on save</text>
+
+      <path d="M286 118 L188 118" marker-end="url(#ws-arrow)" />
+      <text x="237" y="108" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">useConfig(path)</text>
+
+      <path d="M188 164 L286 164" marker-end="url(#ws-arrow)" />
+      <text x="237" y="180" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">dispatch(command)</text>
+
+      <path d="M504 140 L552 140" marker-end="url(#ws-arrow)" />
+      <text x="528" y="130" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">saved</text>
+    </g>
+  </svg>
+</DiagramFigure>

@@ -1,0 +1,153 @@
+/*
+ * Theme for the generated API reference, matching the documentation site at
+ * dachajs.org. The palette is a straight port of the tokens in
+ * packages/dacha-docs/src/styles/custom.css — keep the two in sync.
+ *
+ * TypeDoc wraps its own stylesheet in `@layer typedoc`, so unlayered rules
+ * here win without `!important`. Overriding the `--light-color-*` and
+ * `--dark-color-*` pairs is enough: the theme maps them onto the `--color-*`
+ * variables it actually uses.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&text=dacha&display=swap');
+
+:root {
+  /* Dark */
+  --dark-color-background: #121311; /* colorBgBase — the page */
+  --dark-color-background-secondary: #262824; /* colorBgContainer — toolbar and sidebars */
+  --dark-color-background-active: #33372f;
+  --dark-color-accent: #4d4f45; /* colorBorder */
+  --dark-color-active-menu-item: #263526; /* colorPrimaryBg */
+  --dark-color-text: #e7e5de; /* colorText */
+  --dark-color-contrast-text: #ffffff;
+  --dark-color-text-aside: #a6a49b; /* colorTextSecondary */
+
+  --dark-color-icon-background: #262824;
+  --dark-color-comment-tag: #262824;
+
+  --dark-color-link: #b9d9a8;
+  --dark-color-focus-outline: #72a85a; /* colorPrimary */
+
+  /*
+   * Reflection kinds. TypeDoc's defaults are a full rainbow; these group the
+   * kinds into four families taken from the documentation site's card colors,
+   * so the page reads as one palette while still telling the kinds apart.
+   */
+
+  /* Containers — green */
+  --dark-color-ts-class: #8fc47a;
+  --dark-color-ts-interface: #c3e0b2;
+  --dark-color-ts-project: #72a85a;
+
+  /* Callables — blue */
+  --dark-color-ts-function: #7cacde;
+  --dark-color-ts-method: #7cacde;
+  --dark-color-ts-accessor: #a9cdea;
+
+  /* Data — sand */
+  --dark-color-ts-property: #d6a75b;
+  --dark-color-ts-variable: #e0bd85;
+  --dark-color-ts-type-parameter: #d6a75b;
+
+  /* Types — terracotta */
+  --dark-color-ts-enum: #d9776a;
+  --dark-color-ts-enum-member: #e59c92;
+  --dark-color-ts-type-alias: #d9776a;
+
+  /* Neutral */
+  --dark-color-ts-keyword: #a6a49b;
+  --dark-color-ts-reference: #a6a49b;
+  --dark-color-document: #e7e5de;
+}
+
+:root {
+  /* Light */
+  --light-color-background: #fbfaf7; /* colorBgContainer — the page */
+  --light-color-background-secondary: #efeee9; /* toolbar and sidebars */
+  --light-color-background-active: #e2e1dd;
+  --light-color-accent: #cccac2; /* colorBorder */
+  --light-color-active-menu-item: #e8efe3; /* colorPrimaryBg */
+  --light-color-text: #2b2a26; /* colorText */
+  --light-color-contrast-text: #141310;
+  --light-color-text-aside: #67655d; /* colorTextSecondary */
+
+  --light-color-icon-background: #efeee9;
+  --light-color-comment-tag: #efeee9;
+
+  --light-color-link: #4e7a43; /* colorPrimary */
+  --light-color-focus-outline: #4e7a43;
+
+  /* Containers — green */
+  --light-color-ts-class: #3f6a36;
+  --light-color-ts-interface: #4e7a43;
+  --light-color-ts-project: #3e6335;
+
+  /* Callables — blue */
+  --light-color-ts-function: #3e71a8;
+  --light-color-ts-method: #3e71a8;
+  --light-color-ts-accessor: #33608f;
+
+  /* Data — sand */
+  --light-color-ts-property: #8a6420;
+  --light-color-ts-variable: #b8862e;
+  --light-color-ts-type-parameter: #8a6420;
+
+  /* Types — terracotta */
+  --light-color-ts-enum: #b0433a;
+  --light-color-ts-enum-member: #c0473b;
+  --light-color-ts-type-alias: #b0433a;
+
+  /* Neutral */
+  --light-color-ts-keyword: #67655d;
+  --light-color-ts-reference: #67655d;
+  --light-color-document: #2b2a26;
+}
+
+/*
+ * Site title, as on dachajs.org: the watering can followed by the wordmark.
+ * The logo is inlined because TypeDoc only copies files a document links to,
+ * and nothing links to it from the pages themselves.
+ */
+.tsd-toolbar-contents > .title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.tsd-toolbar-contents > .title::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABRElEQVR42u2XvQ3CMBCFswYLQEtBkyYtVSQkOsQWNIwAyiIMQEFJxwKU7AJ6kQ6djzvHTkwiUCy9wiTx+3w/icmycfzimBSLJ2kQ8+pW1uodQjPvDUKay3T0BiDNkgL4wop5eSw+Qp8MgAxImon2u6yHVl2DC9Pt3FlIzjUAqgkuLXLX++MtFcIKuQWgGTcBVKdzLRXCCk8oQFPtkDlpsz+49/kAkApKh682ILpPWwemnQF47mFIEfAB8OdgTIoGgMgoFMDagFkDPvomAG7C29pKS1Cv8vzy3dDCfOcEItMUDKBBSFNf+3GzVuZW68XUADdvDaDlPgQgmbmEiAHg35LOALFtGPJC+n8A/tJJdkDBgsUsdwAuq7XZBUmPZ1gM5iQegV2+dAAwh5KfD2lXAIABB0AkIDL+6uHUOgsO9gdlHKnGCzXEGhSd6GYSAAAAAElFTkSuQmCC');
+  background-size: contain;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+/* Header links to the documentation site and the repository. */
+#tsd-toolbar-links a {
+  color: var(--color-text-aside);
+}
+
+#tsd-toolbar-links a:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+/* The logo leading the index page. It is pixel art; keep the edges hard. */
+.col-content img[alt='dacha'] {
+  image-rendering: pixelated;
+}
+
+/*
+ * The index page renders the repository README, which opens with its own
+ * centered logo and title. Drop TypeDoc's page title there so the heading does
+ * not appear twice. Other pages keep theirs.
+ */
+.col-content:has(> .tsd-panel.tsd-typography > h1[align='center'])
+  > .tsd-page-title {
+  display: none;
+}

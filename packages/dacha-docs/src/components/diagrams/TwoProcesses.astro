@@ -1,0 +1,91 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="Two programs, one directory. The editor reads your code and writes the configuration, and your bundler imports that same configuration."
+>
+  <svg viewBox="0 0 720 336" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      The workbench editor reads a project's source and assets and writes data.json.
+      The project's own bundler imports data.json and builds the game, which runs in a
+      browser tab.
+    </title>
+
+    <defs>
+      <marker id="tp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <!-- editor -->
+      <rect x="200" y="12" width="320" height="64" rx="10" fill="var(--diagram-fill)" />
+      <g transform="translate(218 34)" stroke-width="1.2">
+        <path d="M1.8 2.6 h12.4 v10.8 h-12.4 z" />
+        <path d="M1.8 5.6 h12.4" />
+        <path d="M5.8 5.6 v7.8" />
+      </g>
+      <text x="246" y="40" fill="var(--diagram-text)" stroke="none">Workbench</text>
+      <text x="246" y="58" fill="var(--diagram-muted)" stroke="none" font-size="11">a desktop editor you launch yourself</text>
+
+      <path d="M296 124 L296 78" marker-end="url(#tp-arrow)" />
+      <text x="288" y="106" fill="var(--diagram-muted)" stroke="none" font-size="11" text-anchor="end">reads</text>
+      <path d="M424 78 L424 124" marker-end="url(#tp-arrow)" />
+      <text x="432" y="106" fill="var(--diagram-muted)" stroke="none" font-size="11">writes</text>
+
+      <!-- project -->
+      <rect x="40" y="124" width="640" height="110" rx="12" fill="none" stroke-dasharray="5 4" stroke="var(--diagram-accent)" />
+      <text x="60" y="147" fill="var(--diagram-accent)" stroke="none" font-size="11">your project</text>
+
+      <rect x="60" y="157" width="190" height="60" rx="8" fill="var(--diagram-fill)" />
+      <g transform="translate(74 179)" stroke-width="1.2">
+        <path d="M5.8 4.6 L2.6 8 L5.8 11.4" />
+        <path d="M10.2 4.6 L13.4 8 L10.2 11.4" />
+      </g>
+      <text x="102" y="184" fill="var(--diagram-text)" stroke="none" font-size="12">src/</text>
+      <text x="102" y="201" fill="var(--diagram-muted)" stroke="none" font-size="11">components, systems</text>
+
+      <rect x="266" y="157" width="188" height="60" rx="8" fill="var(--diagram-fill)" />
+      <g transform="translate(280 179)" stroke-width="1.2">
+        <path d="M3.6 1.8 h5.6 l3.2 3.2 v9.2 h-8.8 z" />
+        <path d="M9.2 1.8 v3.2 h3.2" />
+      </g>
+      <text x="308" y="184" fill="var(--diagram-text)" stroke="none" font-size="12">data/data.json</text>
+      <text x="308" y="201" fill="var(--diagram-muted)" stroke="none" font-size="11">scenes, actors, systems</text>
+
+      <rect x="470" y="157" width="190" height="60" rx="8" fill="var(--diagram-fill)" />
+      <g transform="translate(484 179)" stroke-width="1.2">
+        <path d="M2.2 3.6 h11.6 v8.8 h-11.6 z" />
+        <path d="M2.2 10.4 L6 6.8 L9.4 10.2" />
+        <circle cx="11" cy="6.4" r="1.1" />
+      </g>
+      <text x="512" y="184" fill="var(--diagram-text)" stroke="none" font-size="12">data/assets/</text>
+      <text x="512" y="201" fill="var(--diagram-muted)" stroke="none" font-size="11">textures, audio, fonts</text>
+
+      <path d="M360 234 L360 272" marker-end="url(#tp-arrow)" />
+      <text x="370" y="257" fill="var(--diagram-muted)" stroke="none" font-size="11">imported as a module</text>
+
+      <!-- game -->
+      <rect x="200" y="272" width="320" height="64" rx="10" fill="var(--diagram-fill)" />
+      <g transform="translate(218 294)" stroke-width="1.2">
+        <path d="M8 1.8 L14 5 v6 L8 14.2 L2 11 V5 z" />
+        <path d="M2 5 L8 8.2 L14 5" />
+        <path d="M8 8.2 V14.2" />
+      </g>
+      <text x="246" y="300" fill="var(--diagram-text)" stroke="none">Your game</text>
+      <text x="246" y="318" fill="var(--diagram-muted)" stroke="none" font-size="11">your bundler &#183; your dev server &#183; Engine.play()</text>
+
+      <path d="M520 304 L548 304" marker-end="url(#tp-arrow)" />
+
+      <rect x="548" y="272" width="132" height="64" rx="10" fill="var(--diagram-fill)" />
+      <g transform="translate(562 294)" stroke-width="1.2">
+        <path d="M1.8 2.6 h12.4 v10.8 h-12.4 z" />
+        <path d="M1.8 5.6 h12.4" />
+        <path d="M6.6 7.6 L10.4 9.8 L6.6 12 z" fill="var(--diagram-stroke)" />
+      </g>
+      <text x="590" y="308" fill="var(--diagram-text)" stroke="none" font-size="12">browser tab</text>
+    </g>
+  </svg>
+</DiagramFigure>

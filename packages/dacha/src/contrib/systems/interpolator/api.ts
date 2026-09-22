@@ -6,9 +6,17 @@ import { Transform } from '../../components/transform';
 
 import { computeRenderValues } from './utils';
 
+/**
+ * The position and rotation at which an actor is drawn.
+ *
+ * @category Interpolation
+ */
 export interface RenderTransform {
+  /** The x position, in world coordinates. */
   x: number;
+  /** The y position, in world coordinates. */
   y: number;
+  /** The rotation, in radians. */
   rotation: number;
 }
 
@@ -27,11 +35,12 @@ interface InterpolatorAPIOptions {
  * Values are computed from the current `Time.alpha`, so this API is only
  * meaningful during the update phase (not inside `fixedUpdate`).
  *
- * @category Systems
+ * @category Interpolation
  */
 export class InterpolatorAPI {
   private time: Time;
 
+  /** @internal Created by the system; get the instance from `world.systemApi`. */
   constructor(options: InterpolatorAPIOptions) {
     this.time = options.time;
   }

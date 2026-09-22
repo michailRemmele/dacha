@@ -13,7 +13,7 @@ import type {
   RemoveChildEntityEvent,
   AddComponentEvent,
   RemoveComponentEvent,
-  ActorCollectionEventMap,
+  ActorQueryEventMap,
 } from '../events';
 import type { Scene } from '../scene';
 import type { ComponentConstructor } from '../component';
@@ -21,9 +21,10 @@ import { traverseEntity } from '../entity';
 
 import { Actor } from './actor';
 
+/** @inline */
 type ActorQueryListenerFn<T extends EventType> = (
-  event: T extends keyof ActorCollectionEventMap
-    ? ActorCollectionEventMap[T]
+  event: T extends keyof ActorQueryEventMap
+    ? ActorQueryEventMap[T]
     : Event,
 ) => void;
 
@@ -36,6 +37,8 @@ type ActorQueryListenerFn<T extends EventType> = (
  *
  * // Match actors with custom logic
  * const filter = (actor) => actor.getComponent(Transform)?.world.position.y > 100;
+ *
+ * @category Actors & Components
  */
 export type ActorQueryFilter =
   | (ComponentConstructor | string)[]
@@ -43,6 +46,8 @@ export type ActorQueryFilter =
 
 /**
  * Configuration options for creating an ActorQuery.
+ *
+ * @category Actors & Components
  */
 export interface ActorQueryOptions {
   /** Scene to query actors from */
@@ -79,7 +84,7 @@ export interface ActorQueryOptions {
  * }
  * ```
  * 
- * @category Core
+ * @category Actors & Components
  */
 export class ActorQuery extends EventTarget {
   private scene: Scene;

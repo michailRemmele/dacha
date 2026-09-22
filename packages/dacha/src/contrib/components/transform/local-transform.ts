@@ -3,6 +3,12 @@ import type { Transform, TransformConfig } from '../';
 
 import { LocalPoint } from './local-point';
 
+/**
+ * Position, rotation and scale relative to the parent actor. It is
+ * `transform.local`.
+ *
+ * @category Actors & Components
+ */
 export class LocalTransform {
   private transform: Transform;
 

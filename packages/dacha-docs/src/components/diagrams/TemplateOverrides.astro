@@ -1,0 +1,71 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The engine takes a component from the instance when the instance has one, and from the template otherwise. The instance's Sprite replaces the whole template Sprite, so src is not set."
+>
+  <svg viewBox="0 0 720 300" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A template has Transform, Sprite and Collider. An instance of it overrides Transform and
+      Sprite. The built actor gets Transform and Sprite from the instance and Collider from the
+      template. The overriding Sprite sets only color, so the built actor's Sprite has no src,
+      even though the template's Sprite had one.
+    </title>
+
+    <defs>
+      <marker id="tov-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <text x="121" y="32" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">the template</text>
+      <text x="360" y="32" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">the instance</text>
+      <text x="599" y="32" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">the built actor</text>
+
+      <!-- Transform: the instance always has its own -->
+      <rect x="16" y="56" width="210" height="40" rx="8" stroke-dasharray="5 4" />
+      <text x="121" y="81" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">Transform</text>
+
+      <rect x="255" y="56" width="210" height="40" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="81" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Transform</text>
+
+      <rect x="494" y="56" width="210" height="40" rx="8" fill="var(--diagram-fill)" />
+      <text x="599" y="81" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Transform</text>
+
+      <path d="M465 76 L490 76" marker-end="url(#tov-arrow)" />
+
+      <!-- Sprite: overridden as a whole -->
+      <rect x="16" y="116" width="210" height="68" rx="8" stroke-dasharray="5 4" />
+      <text x="121" y="138" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="12">Sprite</text>
+      <text x="121" y="156" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">src: rock.png</text>
+      <text x="121" y="172" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">color: #ffffff</text>
+
+      <rect x="255" y="116" width="210" height="68" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="138" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Sprite</text>
+      <text x="360" y="156" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">src: not set</text>
+      <text x="360" y="172" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="10">color: #3050ff</text>
+
+      <rect x="494" y="116" width="210" height="68" rx="8" fill="var(--diagram-fill)" />
+      <text x="599" y="138" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Sprite</text>
+      <text x="599" y="156" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">src: not set</text>
+      <text x="599" y="172" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="10">color: #3050ff</text>
+
+      <path d="M465 150 L490 150" marker-end="url(#tov-arrow)" />
+
+      <!-- Collider: not overridden, so it comes from the template -->
+      <rect x="16" y="204" width="210" height="40" rx="8" fill="var(--diagram-fill)" />
+      <text x="121" y="229" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Collider</text>
+
+      <text x="360" y="216" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">no override</text>
+      <path d="M226 224 L490 224" marker-end="url(#tov-arrow)" />
+
+      <rect x="494" y="204" width="210" height="40" rx="8" fill="var(--diagram-fill)" />
+      <text x="599" y="229" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">Collider</text>
+
+      <text x="360" y="278" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">dashed: a template component the instance replaces</text>
+    </g>
+  </svg>
+</DiagramFigure>

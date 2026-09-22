@@ -11,7 +11,7 @@ import {
 import type {
   AddComponentEvent,
   RemoveComponentEvent,
-  ActorCollectionEventMap,
+  ActorQueryEventMap,
 } from '../events';
 import type { Scene } from '../scene';
 import type { ComponentConstructor } from '../component';
@@ -19,18 +19,20 @@ import { traverseEntity } from '../entity';
 
 import { Actor } from './actor';
 
+/** @inline */
 type ActorCollectionListenerFn<T extends EventType> = (
-  event: T extends keyof ActorCollectionEventMap
-    ? ActorCollectionEventMap[T]
-    : Event,
+  event: T extends keyof ActorQueryEventMap ? ActorQueryEventMap[T] : Event,
 ) => void;
 
+/** @internal Deprecated together with {@link ActorCollection}. */
 export interface ActorCollectionFilter {
   components?: (ComponentConstructor | string)[];
 }
 
 /**
  * @deprecated Use `ActorQuery` instead.
+ *
+ * @internal Hidden from the API reference until it is removed.
  */
 export class ActorCollection extends EventTarget {
   private components: (ComponentConstructor | string)[];

@@ -1,0 +1,91 @@
+---
+title: "Installation"
+description: "Scaffold a project, and get the game and the editor running side by side."
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+By the end of this page you have a playable game running in a browser tab, and the editor
+open against the same project.
+
+:::note[Prerequisites]
+Node 22.12 or newer. Nothing else. The starter project brings its own build tooling.
+:::
+
+## Scaffold the project
+
+<Steps>
+
+1. Create the project.
+
+   ```bash
+   npm create dacha@latest my-game
+   ```
+
+   Leave the name off and it asks for one. The command runs `create-dacha`, which writes a
+   small, complete game you then change into your own. The documentation calls it the
+   **starter project**.
+
+2. Install dependencies.
+
+   ```bash
+   cd my-game
+   npm install
+   ```
+
+   Expect this one to take a few minutes. `dacha-workbench` builds its desktop application on
+   install. Later installs in the same project are quick.
+
+3. Start the game.
+
+   ```bash
+   npm run dev
+   ```
+
+   Open the address Vite prints. It is `http://localhost:5173` unless the port is taken. A
+   player sprite stands on a grass field. **WASD** moves it.
+
+</Steps>
+
+## Open the editor
+
+Leave the dev server running and open a second terminal:
+
+```bash
+npm run editor
+```
+
+The editor starts as its own desktop application and loads the project it was launched from.
+Two things are now running: the game, served by Vite, and the editor, pointed at the same
+directory.
+
+That is the working setup. Change something in the editor, then look at the browser tab.
+
+## What you got
+
+The scene has three actors: a camera, the player, and a tiled background. The movement is a
+component and a system in `src/game/`, written the same way your own will be. Change it
+rather than read it.
+
+Everything the editor writes lives under `data/`. Everything you write lives under `src/`.
+[Project structure](/getting-started/project-structure/) walks the tree in full.
+
+| Script | What it does |
+| --- | --- |
+| `npm run dev` | Vite dev server |
+| `npm run editor` | The editor, against this project |
+| `npm run build` | Production build into `dist/` |
+| `npm run preview` | Serve the production build |
+| `npm run typecheck` | `tsc --noEmit` |
+
+:::note[Adding Dacha to a project you already have]
+Install `dacha` and `dacha-workbench`, then create two files by hand:
+
+- A configuration file for the editor to edit. [Project
+  structure](/getting-started/project-structure/) describes what has to be in it.
+- `dacha-workbench.config.cjs`, pointing at that configuration. The [configuration
+  reference](/editor/config-reference/) lists every key it takes, and where the editor looks
+  for it.
+
+You supply the bundler and the entry point yourself.
+:::

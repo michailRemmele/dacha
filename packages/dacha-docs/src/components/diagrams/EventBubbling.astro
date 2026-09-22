@@ -1,0 +1,46 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The path an event takes from the actor it was dispatched on, up through the parent actor and the scene, to the world."
+>
+  <svg viewBox="0 0 720 276" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      An event dispatched on a child actor travels up to its parent actor, then the scene,
+      then the world.
+    </title>
+
+    <defs>
+      <marker id="eb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-accent)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <rect x="250" y="14" width="220" height="50" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="36" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">World</text>
+      <text x="360" y="52" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">the root</text>
+
+      <rect x="250" y="78" width="220" height="50" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="100" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">Scene</text>
+      <text x="360" y="116" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">the active scene</text>
+
+      <rect x="250" y="142" width="220" height="50" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="164" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">Actor &#183; player</text>
+      <text x="360" y="180" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">the parent actor</text>
+
+      <rect x="250" y="206" width="220" height="50" rx="8" fill="var(--diagram-fill)" />
+      <text x="360" y="228" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">Actor &#183; weapon</text>
+      <text x="360" y="244" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">where it was dispatched</text>
+
+      <path d="M500 250 L500 30" stroke="var(--diagram-accent)" marker-end="url(#eb-arrow)" />
+      <text x="514" y="128" fill="var(--diagram-accent)" stroke="none" font-size="12">bubbles up</text>
+      <text x="514" y="146" fill="var(--diagram-muted)" stroke="none" font-size="11">currentTarget follows</text>
+
+      <text x="236" y="226" fill="var(--diagram-accent)" text-anchor="end" stroke="none" font-size="12">dispatchEvent()</text>
+      <text x="236" y="244" fill="var(--diagram-muted)" text-anchor="end" stroke="none" font-size="11">target stays here</text>
+    </g>
+  </svg>
+</DiagramFigure>

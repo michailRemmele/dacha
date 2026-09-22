@@ -49,12 +49,15 @@ export default tseslint.config(
   {
     ignores: [
       'docs',
+      'packages/dacha-docs',
       'packs',
       'scripts',
+      'packages/create-dacha',
       'eslint.config.mjs',
       'packages/dacha/build',
       'packages/dacha/docs',
       'packages/dacha/jest.config.js',
+      'packages/dacha/typedoc-plugin.mjs',
       'packages/dacha-workbench/build',
       'packages/dacha-workbench/build-app',
       'packages/dacha-workbench/esm',

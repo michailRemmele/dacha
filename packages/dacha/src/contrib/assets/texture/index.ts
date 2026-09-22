@@ -1,7 +1,13 @@
 import { Asset } from '../../../engine/asset';
 import type { AssetOptions } from '../../../engine/asset';
 
+/**
+ * The `data` of a texture asset in the configuration.
+ *
+ * @category Assets
+ */
 export interface TextureData {
+  /** Path to the image. */
   src?: string;
 }
 

@@ -1,0 +1,110 @@
+---
+title: "Camera"
+description: "Choose what the player sees, zoom in, and follow an actor."
+---
+
+A camera is an actor with a `Camera` component. The renderer centers the view on the position of
+the current camera and scales the view by its `zoom`.
+
+`CameraSystem` finds the current camera and tracks the size of the game window.
+
+## Setting it up
+
+1. In the Systems tab, add *Camera System*.
+2. Add the classes to the engine in `src/index.ts`:
+
+   ```ts
+   import { Engine, CameraSystem, Transform, Camera } from 'dacha';
+
+   const engine = new Engine({
+     config,
+     systems: [CameraSystem, ...gameSystems],
+     components: [Transform, Camera, ...gameComponents],
+     assets: [],
+   });
+   ```
+
+3. Add a `Camera` component to the actor the game looks through, and turn on its `current` field.
+
+### Options
+
+`CameraSystem` has one option:
+
+| Option | What it does |
+| --- | --- |
+| `windowNodeId` | The id of the element that is used to display the game |
+
+Use the same `windowNodeId` as the renderer.
+
+### Order in the systems list
+
+`CameraSystem` must come before `Renderer`.
+
+## The `Camera` component
+
+| Field | What it does |
+| --- | --- |
+| `zoom` | How much the view is scaled. `2` draws everything twice as large |
+| `current` | Whether this is the camera the game looks through |
+| `windowSizeX`, `windowSizeY` | The size of the game window in pixels. `CameraSystem` writes them |
+
+The renderer uses only the camera's position and `zoom`. It ignores the rotation and scale of the
+camera's `Transform`, so the view does not rotate.
+
+At `zoom` `1`, one world unit is one pixel. The visible area of the world is the window size
+divided by `zoom`.
+
+A scene with no current camera still draws. The view is centered on the origin at `zoom` `1`.
+
+## Choosing the current camera
+
+A scene can have several cameras. Change the current one with `CameraAPI`:
+
+```ts
+import { CameraAPI } from 'dacha';
+
+const cameraApi = world.systemApi.get(CameraAPI);
+
+cameraApi.setCurrentCamera(bossCamera);
+
+const current = cameraApi.getCurrentCamera();
+```
+
+`setCurrentCamera` sets `current` to `true` on that actor and to `false` on every other camera in
+the scene.
+
+If several cameras have `current` set to `true`, the system uses one of them. Which one is not
+defined.
+
+## Following an actor
+
+The camera is an ordinary actor, so there are two ways to make it follow another actor.
+
+**Make the camera a child of the actor.** The camera moves with its parent and needs no code. It
+stays exactly on the actor, with no delay and no smoothing.
+
+**Move the camera in code.** Write the camera's position in `update`, from a behavior or a
+system. This lets you add smoothing, limits or look-ahead:
+
+```ts
+update(): void {
+  const target = this.player.getComponent(Transform).world.position;
+  const camera = this.actor.getComponent(Transform).world.position;
+
+  const t = Math.min(1, this.time.deltaTime * 5);
+  camera.x += (target.x - camera.x) * t;
+  camera.y += (target.y - camera.y) * t;
+}
+```
+
+The renderer reads the camera position in its own `update`. So the code that moves the camera
+must run before `Renderer` in the systems list. Otherwise the view is one frame behind.
+
+If the target actor has an `Interpolation` component, follow its render position instead of its
+`Transform`. See [visual or logical](/systems/interpolation/#visual-or-logical).
+
+## API reference
+
+- [`CameraSystem`](/api/classes/CameraSystem.html)
+- [`Camera`](/api/classes/Camera.html)
+- [`CameraAPI`](/api/classes/CameraAPI.html)

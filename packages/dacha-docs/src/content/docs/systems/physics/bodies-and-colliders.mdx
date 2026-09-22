@@ -1,0 +1,236 @@
+---
+title: "Bodies and colliders"
+description: "Give actors a collision shape, choose a body type, and move bodies with forces, impulses and velocity."
+---
+
+import CapsuleShape from '../../../../components/diagrams/CapsuleShape.astro';
+import OneWayBody from '../../../../components/diagrams/OneWayBody.astro';
+
+A `Collider` gives an actor a shape. A `RigidBody` makes the actor a body that the physics system
+moves or that other bodies stop at. See [what each combination does](/systems/physics/#what-each-combination-does).
+
+## Collider
+
+A collider has one shape. The shape fields depend on `type`:
+
+| `type` | Fields | Shape |
+| --- | --- | --- |
+| `box` | `size` | A rectangle, `size.x` wide and `size.y` tall |
+| `circle` | `radius` | A circle |
+| `capsule` | `height`, `radius` | A vertical capsule. `height` is the distance between the centers of the two round ends, so the full height is `height + 2 * radius` |
+| `segment` | `point1`, `point2` | A line between two points |
+
+<CapsuleShape />
+
+Every collider also has these fields:
+
+| Field | What it does |
+| --- | --- |
+| `offset` | Moves the shape away from the actor's position |
+| `layer` | The [collision layer](/systems/physics/collisions/#collision-layers). Layers decide which colliders collide |
+| `debugColor` | The color of the collider in the editor's *Colliders* [debug layer](/editor/interface-tour/#debug-layers) |
+| `disabled` | Turns the collider off |
+
+All sizes are in world units, in the actor's local space.
+
+### Transform and colliders
+
+The shape follows the actor's `Transform`. Position, rotation and scale all apply, and the offset
+turns with the actor.
+
+- A box scales by `scale.x` and `scale.y` separately.
+- A circle and the round ends of a capsule stay round. Their radius scales by the larger of
+  `scale.x` and `scale.y`.
+
+### Segments
+
+Use segments for ground and walls that do not move. A segment has two limits:
+
+- Two segments never collide with each other.
+- `castActor` finds nothing for an actor with a segment collider, because a line with no
+  thickness cannot be swept.
+
+### One collider per actor
+
+An actor has at most one `Collider`, and a body uses only the collider on its own actor. Colliders
+on child actors are not part of the parent's body.
+
+For a shape made of several parts, such as a long wall, use several actors, each with its own
+collider and body.
+
+### Changing colliders at runtime
+
+The physics system reads the collider in every step. Change `offset`, `layer`, `disabled` or a
+field of `shape`, and the next step uses the new value:
+
+```ts
+const collider = actor.getComponent(Collider);
+
+if (collider.shape.type === 'circle') {
+  collider.shape.radius = 20;
+}
+```
+
+To change the shape type, replace the component:
+
+```ts
+actor.setComponent(
+  new Collider({
+    type: 'box',
+    size: { x: 32, y: 16 },
+    offset: { x: 0, y: 0 },
+    layer: 'default',
+    disabled: false,
+  }),
+);
+```
+
+## Body types
+
+`RigidBody.type` is one of three types:
+
+| Type | How it moves | Use it for |
+| --- | --- | --- |
+| `static` | By your code | Ground, walls, anything fixed |
+| `dynamic` | By the simulation | Crates, balls, debris |
+| `kinematic` | By your code | Moving platforms, doors, elevators |
+
+A `static` body is part of the level. The simulation never moves it, and no contact can push it.
+
+`type` is read-only. To change it, replace the component.
+
+## Dynamic bodies
+
+A `dynamic` body is a physical object. Gravity pulls it, forces push it, and other bodies push it
+away. The simulation decides where it ends up, not your code.
+
+These fields control how a `dynamic` body moves:
+
+| Field | Default | What it does |
+| --- | --- | --- |
+| `mass` | `1` | How hard the body is to push. With `0` or less, the body does not move at all |
+| `gravityScale` | `1` | Multiplies gravity for this body. `0` ignores gravity, `2` doubles it |
+| `linearDamping` | `0` | Slows the movement over time |
+| `angularDamping` | `0` | Slows the rotation over time |
+| `lockRotation` | `false` | Stops the body from rotating |
+
+Damping removes a part of the velocity in every step. At `linearDamping` `1` and the default 50
+steps per second, the body loses 2% of its speed per step.
+
+### Surface fields
+
+These fields apply to every body type:
+
+| Field | Default | What it does |
+| --- | --- | --- |
+| `friction` | `0.6` | How much the surfaces resist sliding |
+| `restitution` | `0` | How much the body bounces, from `0` to `1` |
+
+When two bodies touch, the contact uses the higher `restitution` of the two, and friction from
+both. A body with `friction` `0` slides on any surface.
+
+### Velocity
+
+`linearVelocity` is the velocity in world units per second. `angularVelocity` is the rotation
+speed in radians per second. The editor does not show them.
+
+### Forces and impulses
+
+`RigidBody` has methods to push a `dynamic` body:
+
+| Method | What it does |
+| --- | --- |
+| `applyForce(force, position?)` | Pushes the body during the next step |
+| `applyImpulse(impulse, position?)` | Changes the velocity at once, by `impulse / mass` |
+| `applyTorque(torque)` | Rotates the body during the next step |
+| `applyAngularImpulse(impulse)` | Changes the rotation speed at once |
+| `clearForces()` | Removes the forces and impulses that are not applied yet |
+
+`position` is a point in world space. A force or an impulse away from the body's center also
+rotates the body.
+
+The physics system applies forces once, in the next step, and then clears them. For a constant
+push, apply the force in every `fixedUpdate`:
+
+```ts
+// in your behavior or system
+fixedUpdate(): void {
+  this.actor.getComponent(RigidBody).applyForce(this.force);
+}
+```
+
+Use an impulse for a single push, such as an explosion or a hit.
+
+The methods do nothing when the body is not `dynamic`, or when it is disabled. `applyTorque` and
+`applyAngularImpulse` also do nothing when `lockRotation` is on.
+
+## Kinematic bodies
+
+A `kinematic` body moves where your code tells it, and it pushes `dynamic` bodies out of the way.
+Nothing pushes it back, so it never leaves its route. That is what a moving platform or a door
+needs: a `static` body would not push the crate standing on it, and a `dynamic` one would fall
+down.
+
+Move a `kinematic` body in one of two ways.
+
+`movePosition(target)` moves the body to `target` in the next step. The physics system calculates
+the velocity for that step, so the body pushes `dynamic` bodies on its way. After the step, the
+velocity is zero again. Call it in every `fixedUpdate` while the body moves:
+
+```ts
+const body = actor.getComponent(RigidBody);
+
+body.movePosition(new Vector(x, y));
+```
+
+`linearVelocity` moves the body at a constant velocity. The body keeps moving until you change the
+velocity.
+
+Gravity, forces and impulses do not affect a `kinematic` body.
+
+## Moving a body through Transform
+
+You can change a body's `Transform` directly. The body is at the new position at once, like a
+teleport. Its velocity does not change, and it does not push other bodies on the way.
+
+Use it to place a body, for example at a spawn point. To move a body smoothly, use velocity,
+forces or `movePosition`.
+
+## Disabling a body
+
+With `disabled` on, the physics system does not move the body. It clears the forces applied to
+it, and other bodies pass through it.
+
+## Bodies in a hierarchy
+
+The physics system moves bodies in world space. A body can be a child only of an actor that does
+not move. If the parent moves, both the parent and the physics system change the child's position,
+and the result is undefined.
+
+## One-way bodies
+
+A **one-way** body stops bodies from one side, and lets them pass from the other side. Use it for
+platforms that a character jumps onto from below.
+
+| Field | What it does |
+| --- | --- |
+| `oneWay` | Turns one-way on |
+| `oneWayNormal` | The direction to the side that is blocked |
+
+For a platform you can land on from above, set `oneWayNormal` to
+`{ x: 0, y: -1 }`:
+
+- A body that falls onto the platform from above stops on it.
+- A body that comes from below passes through.
+
+<OneWayBody />
+
+The normal turns with the actor.
+
+A body that starts to pass through keeps passing through until the two bodies separate. So a body
+that jumps through the platform from below does not get stuck in the middle.
+
+## API reference
+
+- [`RigidBody`](/api/classes/RigidBody.html)
+- [`Collider`](/api/classes/Collider.html)

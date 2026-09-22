@@ -1,0 +1,216 @@
+---
+title: "Custom widgets"
+description: "Replace a component's generated inspector panel with a React component of your own."
+---
+
+import WidgetStore from '../../../components/diagrams/WidgetStore.astro';
+
+The [field decorator](/game-code/inspector-fields/) generates a panel: one labeled input
+per field, top to bottom. That covers most components. When it stops being enough, you
+replace the whole panel with a component of your own.
+
+The editor is a React application, so a widget is a React component. That is the one place
+where the editor's own stack reaches into your project. Your game is untouched by it, and if
+you never write a widget you never import React.
+
+A widget is worth the effort when the panel has to show something the values alone do not
+say. A preview of what the settings produce, a number that would otherwise be worked out on
+paper, a control that writes several fields at once, a list whose rows have their own shape.
+If the panel only needs different labels or a different order, stay with fields.
+
+## The file
+
+A widget lives in a file named `*.widget.tsx` and registers itself by the name of the class it
+draws:
+
+```tsx
+import { useState, type FC } from 'react';
+import {
+  defineWidget,
+  Widget,
+  LabelledSelect,
+  useConfig,
+  useCommander,
+  commands,
+} from 'dacha-workbench';
+import type { WidgetProps } from 'dacha-workbench';
+
+const HealthWidget: FC<WidgetProps> = ({ path, fields, sections }) => {
+  const { dispatch } = useCommander();
+  const [preset, setPreset] = useState<string | null>('grunt');
+
+  const points = useConfig(path.concat('points')) as number;
+
+  const applyPreset = (name: string | null): void => {
+    setPreset(name);
+
+    const brute = name === 'brute';
+
+    dispatch(commands.setValue(path.concat('points'), brute ? 200 : 30));
+    // `true` joins this write to the one above, so one undo takes back both
+    dispatch(commands.setValue(path.concat('armor'), brute ? 5 : 0, true));
+  };
+
+  return (
+    <>
+      <LabelledSelect
+        label="Preset"
+        value={preset}
+        options={[
+          { title: 'Grunt', value: 'grunt' },
+          { title: 'Brute', value: 'brute' },
+        ]}
+        onChange={applyPreset}
+      />
+
+      <Widget path={path} fields={fields} sections={sections} />
+
+      <p>Dies in {Math.ceil(points / 10)} hits from the starting weapon.</p>
+    </>
+  );
+};
+
+defineWidget('Health')(HealthWidget);
+```
+
+Three rules are doing the work in that file.
+
+**The name passed to `defineWidget` is the component's name**, the same string
+`@DefineComponent` was given. That is the only link between the two. Systems and behaviors work
+the same way, so a widget can replace their panels too.
+
+**There is no default export.** Unlike a component or a system, a widget file is imported for
+its side effect. The call to `defineWidget` is the registration, and the editor never looks for
+an export.
+
+**`<Widget/>` draws the fields you declared.** You are not obliged to hand-write every input.
+Render it where you want the generated part to sit, and put your own controls around it.
+
+The `fields` and `sections` the widget receives are its own schema, handed back to it. That is
+what makes the line above work, and it is also how you draw one field on its own:
+
+```tsx
+<Field {...fields[0]} path={path} />
+```
+
+`WidgetProps` carries a `context` as well. The editor uses it for its own nested panels, such
+as the one drawn for a behavior inside the `Behaviors` list. A widget in a project passes it
+through or ignores it.
+
+## What a widget is actually editing
+
+Not a component. There is no `Health` instance behind the panel, and nothing in the inspector
+holds one. What a widget edits is the project's configuration, the same JSON the engine will
+later build the component from. The editor keeps that configuration in one store, and every
+panel is a view onto a part of it.
+
+<WidgetStore />
+
+`path` is the address of this component's part, as an array of keys:
+
+```tsx
+['scenes', 'id:8f2a', 'actors', 'id:31c0', 'components', 'name:Health', 'config']
+```
+
+Most segments are ordinary object keys. A segment that indexes into an array can be a number,
+or a `field:value` lookup that finds the entry whose field holds that value. The lookup form
+is what the editor uses for anything a person can reorder, because an index stops meaning the
+same thing the moment a list is sorted.
+
+You rarely build a path from scratch. You extend the one you were given, which is what
+`path.concat('points')` does above. Building one from the root is for reaching somewhere else
+in the project, such as the sorting layers a field wants to
+[offer as options](/game-code/inspector-fields/#options-that-depend-on-the-project).
+
+## Reading and writing values
+
+`useConfig(path)` reads the value at a path and subscribes to it. The widget re-renders when
+that value changes, whoever changed it: your own write, another panel, an undo.
+
+Writes go through a command, dispatched by the hook that owns the undo history:
+
+```tsx
+const { dispatch } = useCommander();
+
+dispatch(commands.setValue(path.concat('points'), 120));
+```
+
+`setValue` replaces a value, `addValue` appends to a list, and `deleteValue` removes an entry.
+
+The preset in the example writes this way, and the readout under it reads the same value back.
+Pick a preset and the number of hits changes, because `useConfig` re-renders the widget when
+the value it watches changes.
+
+It matters that these are commands rather than assignments. The editor never writes into the
+configuration directly. Each command applies the change and hands back the function that
+reverses it, and the store keeps that pair on an undo stack a hundred entries deep. Undo
+walks that stack backward and redo walks it forward. So a value written through a command
+is a value that can be taken back, and a value written any other way is not.
+
+### Several writes, one undo
+
+The preset in the example writes two fields. Left alone that would be two entries on the undo
+stack, and one undo would leave half a preset behind.
+
+Passing `true` as the third argument attaches a write to the previous one instead of starting
+a new entry. The two become a single step in the history:
+
+```tsx
+dispatch(commands.setValue(path.concat('points'), brute ? 200 : 30));
+dispatch(commands.setValue(path.concat('armor'), brute ? 5 : 0, true));
+```
+
+Undo now reverses both, in reverse order, as one step. The first write in a group is always
+the plain one. Every write after it carries the flag.
+
+## Reusing the editor's inputs
+
+The editor exports the inputs it uses itself, so a custom panel looks like the rest of the
+application without any styling work:
+
+| Export | Draws |
+| --- | --- |
+| `Widget` | The whole generated field list |
+| `Field` | One declared field, by its schema |
+| `Section` | A collapsible group |
+| `LabelledNumberInput`, `LabelledTextInput`, `LabelledSelect`, `LabelledCheckbox`, `LabelledColorInput`, `LabelledFileInput`, `LabelledVectorInput`, `LabelledTextArea`, `LabelledMultiTextInput`, `LabelledMultiSelect` | One input with its label |
+| `MultiField` | An editable list of name and value pairs |
+
+Each labeled input has an unlabeled twin under the same name without the prefix, for when you
+lay out the label yourself.
+
+## Saving the file reloads it
+
+You do not restart the editor to see a widget change. Saving the file rebuilds the extension
+bundle, and the editor drops its widget and schema registries, loads the new bundle, and
+redraws the inspector with it. That is the same rebuild [a generated class goes
+through](/editor/generating-scripts/#after-create), and it clears the undo history for the
+same reason.
+
+## How the file reaches the editor
+
+The editor compiles your project's widgets into a separate bundle and loads it into the
+inspector. Two details of that bundle matter to you.
+
+The widgets are collected before the components. So by the time `@DefineComponent` runs and
+asks the registry whether a widget exists for `Health`, yours is already there. The order is
+guaranteed, and you do not have to arrange it.
+
+And `dacha-workbench` is external to the bundle. Your import resolves to the running editor's
+own copy, not to a second one, which is what keeps the registries and the React tree single.
+Import from `dacha-workbench` and let the editor supply it.
+
+This is also why a widget never reaches your game. The `*.widget.tsx` suffix is not in the
+globs your game's entry point uses, and nothing in the game imports the file. See
+[how scripts are found](/game-code/auto-registration/).
+
+## Fields still matter
+
+A widget replaces the panel, not the schema. Keep declaring fields, because they are what
+decides the shape of the saved configuration, what fills in the initial values for a new
+component, and what the editor writes into actors that already exist when you add a field
+later.
+
+The `data` field type exists for exactly this pairing: a value your widget maintains and
+saves, which no generated input should draw. See
+[choosing the widget](/game-code/inspector-fields/#choosing-the-widget).

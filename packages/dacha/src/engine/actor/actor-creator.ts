@@ -15,6 +15,7 @@ export interface ActorOptions {
   isNew?: boolean;
 }
 
+/** @internal Builds actors from configs. Used by the engine and the editor. */
 export class ActorCreator {
   private components: Record<string, ComponentConstructor>;
   private templateCollection: TemplateCollection;
@@ -113,6 +114,12 @@ export class ActorCreator {
   ): void {
     components.forEach((componentOptions) => {
       const Component = this.components[componentOptions.name];
+
+      if (!Component) {
+        console.warn(`Component not found: ${componentOptions.name}`);
+        return;
+      }
+
       actor.setComponent(new Component(componentOptions.config));
     });
   }

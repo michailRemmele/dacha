@@ -1,0 +1,52 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="The same position measured two ways. The tank has no parent actor, so its two readings are identical, while the turret's differ by exactly the tank's offset."
+>
+  <svg viewBox="0 0 720 240" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A turret parented to a tank: its local position is measured from the tank, its world
+      position from the scene origin.
+    </title>
+
+    <defs>
+      <marker id="ts-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+      <marker id="ts-arrow-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M10 0 L0 5 L10 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+
+      <path d="M72 44 L72 216" stroke="var(--diagram-accent)" stroke-dasharray="4 4" />
+      <text x="72" y="34" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="11">scene origin</text>
+
+      <rect x="250" y="56" width="140" height="52" rx="8" fill="var(--diagram-fill)" />
+      <text x="320" y="80" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">Actor &#183; tank</text>
+      <text x="320" y="96" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">no parent actor</text>
+
+      <rect x="490" y="56" width="140" height="52" rx="8" fill="var(--diagram-fill)" />
+      <text x="560" y="80" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="13">Actor &#183; turret</text>
+      <text x="560" y="96" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">child of tank</text>
+
+      <path d="M394 82 L486 82" marker-end="url(#ts-arrow)" />
+      <text x="440" y="74" fill="var(--diagram-muted)" text-anchor="middle" stroke="none" font-size="10">parent of</text>
+
+      <path d="M320 112 L320 216" stroke="var(--diagram-muted)" stroke-dasharray="3 4" stroke-width="1" />
+      <path d="M560 112 L560 216" stroke="var(--diagram-muted)" stroke-dasharray="3 4" stroke-width="1" />
+
+      <path d="M72 148 L320 148" marker-start="url(#ts-arrow-start)" marker-end="url(#ts-arrow)" />
+      <text x="196" y="140" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">world.position.x = 100</text>
+
+      <path d="M320 180 L560 180" stroke="var(--diagram-accent)" marker-start="url(#ts-arrow-start)" marker-end="url(#ts-arrow)" />
+      <text x="440" y="172" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="12">local.position.x = 20</text>
+
+      <path d="M72 212 L560 212" marker-start="url(#ts-arrow-start)" marker-end="url(#ts-arrow)" />
+      <text x="440" y="204" fill="var(--diagram-text)" text-anchor="middle" stroke="none" font-size="12">world.position.x = 120</text>
+    </g>
+  </svg>
+</DiagramFigure>

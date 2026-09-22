@@ -1,0 +1,69 @@
+---
+title: "Project structure"
+description: "What lives where in a Dacha project, and which conventions the tooling relies on."
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+A Dacha project keeps two things apart: the data the engine reads, and the TypeScript you
+write. Most of the layout is a suggestion. The file name suffixes are not.
+
+## The layout
+
+<FileTree>
+
+- data/
+  - **data.json** the game, written by the editor
+  - assets/ textures, audio, fonts
+- src/
+  - **index.ts** collects your classes and starts the engine
+  - import-all.ts the glob helper `index.ts` uses
+  - events/
+    - index.ts your event types
+  - game/
+    - components/
+      - movement.component.ts
+    - systems/
+      - movement.system.ts
+  - ui/ the HTML overlay, optional
+- dacha-workbench.config.cjs
+- vite.config.ts
+- tsconfig.json
+- index.html
+
+</FileTree>
+
+Nothing forces the `game` and `ui` split, or one file per class. Group the code however suits
+the project.
+
+`data/assets/` is Vite's `publicDir` in the starter project, so files there are served from the
+site root. An asset at `data/assets/player.png` is referenced as `player.png` in a sprite.
+
+## File name suffixes matter
+
+`src/index.ts` globs your source for these endings and hands what it finds to the engine:
+
+| Suffix | Declares |
+| --- | --- |
+| `*.component.ts` | A component |
+| `*.system.ts` | A system |
+| `*.behavior.ts` | A [behavior](/systems/behaviors/) |
+
+A file named correctly is collected into the game. A file named `movement.ts` is not. The
+class it defines never reaches the engine, and nothing catches that at build time. You find
+out when the game runs. The class must also be the **default export**.
+
+Four more suffixes exist, for shaders, filter effects, asset kinds and inspector widgets.
+[How scripts are found](/game-code/auto-registration/) covers all seven, and explains why
+being collected is not the same as running.
+
+## The two configuration files
+
+`data/data.json` is the game. The engine reads it at runtime, and the editor writes it as you
+work. It is generated, but it is not build output. Commit it, along with the assets under
+`data/` that it references.
+
+`dacha-workbench.config.cjs` holds the editor's own settings: where the configuration lives,
+where assets live, which patterns to scan for, and how autosave behaves. The engine never
+reads it. Every key is documented in the [configuration
+reference](/editor/config-reference/).

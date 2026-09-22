@@ -1,0 +1,99 @@
+---
+title: "Templates"
+description: "Build reusable actor blueprints and instantiate them."
+---
+
+import { Image } from 'astro:assets';
+
+import DocVideo from '../../../components/DocVideo.astro';
+import PanelShot from '../../../components/PanelShot.astro';
+import TemplateOverrides from '../../../components/diagrams/TemplateOverrides.astro';
+
+import templateLinkShot from '../../../assets/editor/inspector-template-link.png';
+import templateToolShot from '../../../assets/editor/template-tool-options.png';
+import templatesPoster from '../../../assets/editor/editor-templates.poster.webp';
+
+A template is a reusable actor definition. Place a hundred instances of one template, change
+the template once, and all hundred change with it. A hundred copied actors give you none of
+that.
+
+A template is also the only way to create an actor while the game runs.
+
+## Creating a template
+
+Templates have their own tab in the explorer. A template can hold child templates, and placing
+the parent places the whole branch.
+
+The editor cannot turn an actor that is already in a scene into a template. Build the template
+first, then place instances of it.
+
+## Placing instances
+
+Select the template tool in the toolbar, pick the template, then click in the viewport.
+
+<figure class="screenshot">
+  <Image
+    src={templateToolShot}
+    alt="The toolbar with the template tool active. To the right of the four tool buttons are an unchecked Nesting box, a checked Snap to Grid box, and a Template select set to Light Obstacle."
+  />
+  <figcaption>
+    The template tool's options.
+  </figcaption>
+</figure>
+
+With this tool, *Snap to Grid* aligns the instance by its bounds, not by its origin, so tiles
+meet edge to edge. *Nesting* makes the instance a child of the selected actor.
+
+## What an instance stores
+
+An instance is an ordinary actor with a link to its template. Placing one writes a single
+component: a `Transform` with the position you clicked. Everything else comes from the
+template.
+
+<PanelShot
+  src={templateLinkShot}
+  alt="The inspector for an actor called Static Obstacle 9. Under the Name field a disabled Template field reads Static Obstacle, with an arrow button beside it. Below that the actor's own Transform component with Offset, Rotation and Scale."
+  caption="An instance shows its template in a read-only field."
+  width={320}
+/>
+
+The components the inspector lists for an instance are its overrides.
+
+## Overriding a component
+
+When the engine builds an instance, it applies the template's components first and the
+instance's components second. A component on the instance replaces the template's component of
+that name completely. Overrides work per component, not per field.
+
+<TemplateOverrides />
+
+*Add Component* on the instance creates an override. It starts from the component's default
+values, not from the template's, so retype the values you want to keep.
+
+## Changing a template
+
+Edit a template and every instance follows, unless the instance overrides that component.
+
+<DocVideo
+  slug="editor-templates"
+  poster={templatesPoster}
+  width={1512}
+  height={850}
+  label="The template tool places Light Obstacle instances in the viewport. Then the Light Obstacle template is selected in the explorer, and the color of its Mesh is changed to blue. The placed instances turn blue at the same time."
+  caption="The Light Obstacle instances follow the template."
+/>
+
+Deleting a template removes every instance of it from every scene.
+
+## Spawning at runtime
+
+Bullets and enemies are not placed by hand. A system or a behavior spawns them from a template
+while the game runs, and it addresses the template by id:
+
+```ts
+const bullet = this.actorSpawner.spawn(BULLET_TEMPLATE_ID);
+```
+
+The copy button in the inspector header copies the selected template's id.
+[Creating and destroying actors](/concepts/actors/#creating-and-destroying-actors) covers what
+to do with the actor once you have it.

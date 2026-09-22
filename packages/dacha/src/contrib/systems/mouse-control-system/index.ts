@@ -8,14 +8,17 @@ import { MouseInput } from '../../events';
 import type { MouseInputEvent } from '../../events';
 
 /**
- * Mouse control system that maps mouse input to actor events
+ * Turns mouse input into events on actors.
  *
- * Processes mouse input events and dispatches corresponding control events
- * to actors with {@link MouseControl} components
+ * The system reads {@link MouseInputEvent | MouseInput} events. For every actor with a
+ * {@link MouseControl} component, it matches them against the bindings of the component
+ * and dispatches the bound events on the actor.
  *
- * @extends WorldSystem
- * 
- * @category Systems
+ * Put `MouseControlSystem` after {@link MouseInputSystem}.
+ *
+ * @see [Input](https://dachajs.org/systems/input/)
+ *
+ * @category Input
  */
 export class MouseControlSystem extends WorldSystem {
   private actorQuery?: ActorQuery;

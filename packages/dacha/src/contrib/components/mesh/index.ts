@@ -12,11 +12,23 @@ interface RenderData {
 
 export { type BlendingMode } from '../../types/view';
 
+/**
+ * The shader of a {@link Mesh} with its options.
+ *
+ * @category Rendering
+ */
 export interface MaterialConfig {
+  /** The `behaviorName` of the shader class. */
   name: string;
+  /** The values of the shader fields. The shader methods get them as `options`. */
   options: Record<string, unknown>;
 }
 
+/**
+ * Options for {@link Mesh}.
+ *
+ * @category Rendering
+ */
 export interface MeshConfig {
   src?: string;
   width?: number;
@@ -34,44 +46,11 @@ export interface MeshConfig {
 }
 
 /**
- * Mesh component for rendering 2D textures with a custom shader.
+ * Draws an image with your own shader. `material` sets the shader.
  *
- * Handles the visual representation of an actor using a texture.
- * The material field specifies a shader and its options for the mesh.
- * Similar to Sprite component,
- * it can render a single texture or a frame from a sprite sheet.
- * When a material is not provided, the default shader is used.
+ * @see [Shaders](https://dachajs.org/systems/rendering/shaders/)
  *
- * @example
- * ```typescript
- * // Create a mesh with a custom material shader
- * const mesh = new Mesh({
- *   src: 'assets/flame.png',
- *   width: 64,
- *   height: 64,
- *   slice: 4,
- *   flipX: false,
- *   flipY: false,
- *   sortingLayer: 'units',
- *   sortOffset: { x: 0, y: 0 },
- *   color: '#ffffff',
- *   blending: 'normal',
- *   opacity: 1,
- *   disabled: false,
- *   material: {
- *     name: 'HeatDistort',
- *     options: { strength: 0.2 }
- *   }
- * });
- *
- * // Add to actor
- * actor.setComponent(mesh);
- *
- * // Modify properties
- * mesh.material = undefined; // Remove the heat-distort shader and apply the default one instead
- * ```
- *
- * @category Components
+ * @category Rendering
  */
 export class Mesh extends Component {
   /** Path to the texture image file */
@@ -80,7 +59,7 @@ export class Mesh extends Component {
   width: number;
   /** Height of the mesh in pixels */
   height: number;
-  /** Amount of frames in the sprite sheet */
+  /** Number of frames in the sprite sheet */
   slice: number;
   /** Whether to flip the mesh horizontally */
   flipX: boolean;
@@ -102,13 +81,13 @@ export class Mesh extends Component {
   opacity: number;
   /** Material describes a shader and its options applied to a texture (optional). */
   material?: MaterialConfig;
-  /** Internal rendering data */
+  /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
 
   /**
    * Creates a new Mesh component.
    *
-   * @param config - Configuration for the sprite
+   * @param config - Configuration for the mesh
    */
   constructor(config: MeshConfig) {
     super();

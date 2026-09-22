@@ -13,12 +13,27 @@ import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 import type { Behavior, BehaviorOptions, BehaviorConstructor } from './types';
 
 /**
- * Behavior system that manages custom behavior execution for actors
- * with {@link Behaviors} components
+ * Runs the behaviors listed in the {@link Behaviors} component of each actor.
  *
- * @extends SceneSystem
- * 
- * @category Systems
+ * Pass your behavior classes to the engine in `resources`, under
+ * `BehaviorSystem.systemName`.
+ *
+ * @example
+ * ```ts
+ * const engine = new Engine({
+ *   config,
+ *   systems: [BehaviorSystem, ...gameSystems],
+ *   components: [Behaviors, ...gameComponents],
+ *   assets: [],
+ *   resources: {
+ *     [BehaviorSystem.systemName]: [...gameBehaviors],
+ *   },
+ * });
+ * ```
+ *
+ * @see [Behaviors](https://dachajs.org/systems/behaviors/)
+ *
+ * @category Behaviors
  */
 export class BehaviorSystem extends SceneSystem {
   private behaviorQuery: ActorQuery;

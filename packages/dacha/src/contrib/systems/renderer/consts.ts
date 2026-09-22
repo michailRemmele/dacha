@@ -12,7 +12,7 @@ import { type SortingOrder } from './types';
 export const BLEND_MODE_MAPPING: Record<BlendingMode, BLEND_MODES> = {
   normal: 'normal',
   addition: 'add',
-  substract: 'subtract',
+  subtract: 'subtract',
   multiply: 'multiply',
 };
 

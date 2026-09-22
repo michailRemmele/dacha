@@ -1,0 +1,60 @@
+---
+title: "Systems & global options"
+description: "Choose which systems run and tune the global options."
+---
+
+import PanelShot from '../../../components/PanelShot.astro';
+
+import systemsShot from '../../../assets/editor/inspector-systems.png';
+import physicsShot from '../../../assets/editor/physics-collision-matrix.png';
+
+Two parts of a game belong to no scene: the list of systems the game runs, and the global
+options every scene shares. You edit both in the inspector, in its Systems tab and its
+Project settings tab.
+
+## The systems list
+
+The Systems tab lists the systems the game runs. *Add System* offers the engine's own systems
+plus the ones in your project. Expand an entry to edit that system's options.
+
+<PanelShot
+  src={systemsShot}
+  alt="The Systems tab with seven systems: Camera System, Keyboard Input System, Keyboard Control System, Movement System, Animator, Renderer and UIBridge. Each row has a drag handle on the left. Renderer is expanded and shows Window Node Id, Background Color and Filter Effects. Add System is at the bottom."
+  caption="Drag the handle on the left to reorder the systems."
+  width={320}
+/>
+
+## Order is execution order
+
+The engine runs systems in the order of this list, every frame. Put the renderer after the
+systems that move things, or it draws positions that are one step old.
+[Configuration](/concepts/configuration/) explains the order rules.
+
+## The editor writes names, not classes
+
+Adding a system here writes only its name into the project configuration. The class still has
+to reach `new Engine({ systems })` in your entry point. If it does not, the game runs without
+the system and prints `System not found: …` to the console. See [when the class never
+arrives](/game-code/auto-registration/#when-the-class-never-arrives).
+
+## Global options
+
+The Project settings tab has four panels under `Global Options`.
+
+**Sorting** lists the named layers an actor can be drawn in, and the order used inside a
+layer. See [Rendering](/systems/rendering/).
+
+**Physics** lists the collision layers and the matrix that says which pairs of layers collide.
+A new layer collides with everything until you clear its boxes. See [Physics](/systems/physics/).
+
+<PanelShot
+  src={physicsShot}
+  alt="The Project settings tab with the Physics panel open. Collision Layers lists ship-parts, ship-hull and projectiles, with Add Collision Layer below. The Collision Matrix has a row and a column for each of those layers and for default. Three boxes are checked, all in the default row."
+  caption="A checked box means the two layers collide."
+  width={320}
+/>
+
+**Audio Groups** names the buses a sound can play through, so music and effects get separate
+volumes. See [Audio](/systems/audio/).
+
+**Performance** tunes the game loop. See [The game loop](/concepts/game-loop/).

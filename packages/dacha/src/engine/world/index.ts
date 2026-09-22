@@ -15,6 +15,9 @@ import type {
 } from '../event-target';
 import { SystemAPIRegistry } from './system-api-registry';
 
+export type { SystemAPIRegistry };
+
+/** @inline */
 type WorldListenerFn<T extends EventType> = (
   event: T extends keyof WorldEventMap
     ? WorldEventMap[T]
@@ -26,12 +29,15 @@ type WorldListenerFn<T extends EventType> = (
 ) => void;
 
 /**
- * A world is the root container for all scenes and actors.
- * It is also provide an access to system APIs.
+ * The root of the game. The world holds the scenes and exists for the whole
+ * game.
  *
- * @extends {Entity}
+ * Systems share their APIs through {@link World.systemApi}. Game-wide events,
+ * such as scene changes and input, are dispatched on the world.
  *
- * @category Core
+ * @see [Scenes and world](https://dachajs.org/concepts/scenes-and-world/)
+ *
+ * @category Scenes & World
  */
 export class World extends Entity {
   /** Registry of system APIs */

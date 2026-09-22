@@ -1,0 +1,235 @@
+---
+title: "Events"
+description: "How actors, scenes and the world dispatch and receive events."
+---
+
+import EventBubbling from '../../../components/diagrams/EventBubbling.astro';
+import EventQueue from '../../../components/diagrams/EventQueue.astro';
+
+Events let one part of a game tell another that something happened, without holding a
+reference to it. A collision reports itself. A key press turns into an action. A system
+announces that the scene has changed. Whoever cares about it listens.
+
+Actors, scenes and the world are all event targets. They share one mechanism: a listener
+registry, an event that travels up the hierarchy, and a queue that decides when delivery
+happens.
+
+That is the browser's event model, and the resemblance is deliberate. `addEventListener`,
+`removeEventListener`, `target`, `currentTarget` and `stopPropagation` mean here what they mean
+in the DOM. If you have ever written a click handler, most of this page will be familiar.
+
+One thing is different, and it is the part worth slowing down for:
+[delivery is deferred to the next frame](#delivery-happens-on-the-next-frame).
+
+## Listening and dispatching
+
+Every event target has the same three methods:
+
+```ts
+import { CollisionEnter } from 'dacha/events';
+
+import { Damaged } from '../../events';
+
+actor.addEventListener(CollisionEnter, this.handleCollision);
+actor.removeEventListener(CollisionEnter, this.handleCollision);
+
+actor.dispatchEvent(Damaged, { amount: 10 });
+```
+
+The engine's own event types are exported from `dacha/events`. Your own types come from
+wherever you declare them, which is [a module of your own](#declaring-your-own-events).
+
+An event type is a string constant, and the payload is a plain object. The listener receives
+one argument. It carries the payload, plus four fields the engine adds:
+
+| Field | What it is |
+| --- | --- |
+| `type` | The event type |
+| `target` | The event target it was dispatched on |
+| `currentTarget` | The event target whose listener is running now |
+| `stopPropagation` | Ends the climb through the hierarchy |
+
+```ts
+private handleCollision = (event: CollisionEnterEvent): void => {
+  const { actor, normal } = event;      // the payload
+  const self = event.target;            // the actor that was hit
+};
+```
+
+## Events climb the hierarchy
+
+The engine does not deliver an event only to the actor you dispatched it on. It offers the
+event to that actor, then to its parent actor, then to any further ancestors. From there the
+event reaches the scene, and finally the world.
+
+<EventBubbling />
+
+This is what makes events useful for game logic. A system does not have to attach a listener
+to every enemy that might collide. It listens once, on the scene, and receives the collisions
+from all of them. `event.target` tells it which actor was involved.
+
+`stopPropagation()` ends the climb. It does not cancel the listeners already attached to the
+level that is running now, because those all get their turn. It only stops the event from
+reaching anything further up.
+
+The chain follows the same parent links as the scene tree. An actor's event reaches the scene
+it is in, and then that scene's world. Events never travel downward. A listener on a child
+will not see an event dispatched on its parent.
+
+:::note
+A scene is attached to the world only while it is the active one. Events dispatched inside a
+[preloaded scene](/concepts/scenes-and-world/#changing-scenes) reach the scene, but not the
+world.
+:::
+
+## Delivery happens on the next frame
+
+`dispatchEvent` does not call anything. It puts the event in a queue. The game loop drains that
+queue at the top of the next frame, before any `fixedUpdate` runs.
+
+<EventQueue />
+
+Two consequences are worth holding on to:
+
+- **Order is preserved, but timing is not immediate.** The engine delivers events in the order
+  they were dispatched. The world may have moved on between the dispatch and the delivery. An
+  actor referenced in a payload may already have been removed by the time a listener reads it.
+- **Listeners run outside `update` and `fixedUpdate`.** They run before both, in their own
+  phase. A listener that writes state writes it before this frame's simulation, not after it.
+
+An event dispatched from inside a listener is an exception to the first point. The loop drains
+the queue until it is empty, so that event is delivered in the same drain, after the events
+already queued ahead of it. It does not wait for the next frame.
+
+:::caution
+The climb up the hierarchy happens at delivery, not at dispatch. Remove an actor in the same
+frame you dispatched an event on it, and the event still runs the listeners on that actor, but
+it reaches nothing above it. A listener on the scene never sees it. When you know the actor is
+about to be removed, dispatch on the scene instead, or use `dispatchEventImmediately`.
+:::
+
+Queuing is the right default. It keeps a dispatch cheap. It stops one event's handler from
+firing another event's handler in the middle of a loop over actors. And it makes the order of
+work in a frame predictable.
+
+### Immediate dispatch
+
+`dispatchEventImmediately` runs the listeners synchronously, on the spot, with the same climb
+through the hierarchy:
+
+```ts
+actor.dispatchEventImmediately(Damaged, { amount: 10 });
+```
+
+Reach for it when the dispatcher needs the result before it continues. The engine uses it
+internally for structural changes, where a queue would leave an `ActorQuery` stale for a frame.
+It is the exception, not the alternative.
+
+:::caution
+An immediate dispatch runs listener code inside whatever was running when you called it. If a
+listener dispatches immediately in turn, you get a chain of synchronous calls with no frame
+boundary to break it. A cycle between two of them is an infinite loop, not a slow frame. Prefer
+`dispatchEvent` unless you can say exactly why waiting is wrong.
+:::
+
+## The engine's own events
+
+The engine and its built-in systems dispatch these. The type constants come from
+`dacha/events`.
+
+| Event | Dispatched on | Documented in |
+| --- | --- | --- |
+| `LoadScene`, `EnterScene`, `ExitScene`, `DestroyScene` | The world, by you | [Scenes & the world](/concepts/scenes-and-world/) |
+| `SceneLoaded`, `SceneEntered`, `SceneExited`, `SceneDestroyed` | The world | [Scenes & the world](/concepts/scenes-and-world/) |
+| `AddActor`, `RemoveActor` | An `ActorQuery`, immediately | [Systems](/concepts/systems/#selecting-the-actors-to-act-on) |
+| `CollisionEnter`, `CollisionStay`, `CollisionLeave` | The colliding actor | [Collisions](/systems/physics/collisions/) |
+| `CharacterHit` | The character's actor | [Character controller](/systems/character-controller/) |
+| `KeyboardInput`, `MouseInput` | The world | [Input](/systems/input/) |
+| `GameStatsUpdate` | The world | [Performance](/production/performance/) |
+
+`AddActor` and `RemoveActor` are the one pair not dispatched on the hierarchy. A query
+dispatches them on itself when an actor starts or stops matching its filter, so listen on the
+query, not on the scene.
+
+The engine also announces component changes on the actor, immediately, which is how a query
+stays current. Those type constants are internal and not exported today, so you cannot listen
+for them from a game.
+
+`KeyboardControl` and `MouseControl` work differently from all of these. They dispatch **your**
+event types on the actor they are attached to, whichever ones you bound in the inspector. That
+is the point of them, and it is why the editor needs to know your event names.
+
+## Declaring your own events
+
+An event is a string constant and a type. Declare both, then register the type in the map for
+the level the event is dispatched on:
+
+```ts
+// src/events/index.ts
+import type { ActorEvent } from 'dacha';
+
+export const Damaged = 'Damaged';
+
+export type DamagedEvent = ActorEvent<{ amount: number }>;
+
+declare module 'dacha' {
+  export interface ActorEventMap {
+    [Damaged]: DamagedEvent;
+  }
+}
+```
+
+There are three maps, one per level. The map you choose decides where you can listen for the
+event with types intact:
+
+| Map | For events dispatched on | Typed listeners available on |
+| --- | --- | --- |
+| `ActorEventMap` | An actor | actors, scenes, the world |
+| `SceneEventMap` | A scene | scenes, the world |
+| `WorldEventMap` | The world | the world |
+
+The widening is deliberate, because it mirrors the climb. You can listen for an actor event on
+the world, because the event will arrive there, and the listener is typed accordingly.
+
+With the map entry in place, `addEventListener` infers the payload and `dispatchEvent` requires
+it:
+
+```ts
+scene.addEventListener(Damaged, (event) => {
+  event.amount;        // number
+  event.target;        // Actor
+});
+
+actor.dispatchEvent(Damaged, { amount: 10 });
+actor.dispatchEvent(Damaged);  // error: amount is required
+```
+
+## Telling the editor about your events
+
+The editor reads one module for event names, `src/events/index.ts` by default, and takes every
+string it exports. Those names become the options in the inspector wherever you have to choose
+an event, such as the bindings on `KeyboardControl` and `MouseControl`.
+
+That is the whole mechanism, and it explains the shape of the file above. The constant has to
+be an exported string. The editor will not see an enum member, or a value hidden inside an
+object. The path is the `events` key in the editor's configuration, documented in [the
+configuration reference](/editor/config-reference/).
+
+## Removing listeners
+
+When you add a listener in a constructor, remove it when the thing that added it goes away.
+That is `onSceneDestroy` for a scene system, `onWorldDestroy` for a world system, and `destroy`
+for a behavior. Nothing does it for you.
+
+It matters most for a listener on a target that outlives the thing that registered it. The
+world outlives every scene. The engine builds a scene system again every time its scene loads,
+so a world listener that is never removed gains a copy on every restart of a level.
+
+```ts
+onSceneDestroy(): void {
+  this.scene.removeEventListener(Damaged, this.handleDamage);
+}
+```
+
+`removeEventListener` matches on the function identity. That is why you write listeners as
+bound class properties, not as methods passed by reference.

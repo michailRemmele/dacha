@@ -1,7 +1,13 @@
 import { Asset } from '../../../engine/asset';
 import type { AssetOptions } from '../../../engine/asset';
 
+/**
+ * The `data` of an audio asset in the configuration.
+ *
+ * @category Assets
+ */
 export interface AudioData {
+  /** Path to the sound file. */
   src?: string;
 }
 

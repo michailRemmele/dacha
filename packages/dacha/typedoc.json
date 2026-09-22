@@ -2,24 +2,74 @@
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/index.docs.ts"],
   "tsconfig": "tsconfig.esm.json",
+  "plugin": ["./typedoc-plugin.mjs"],
+  "theme": "dacha",
   "out": "docs",
+  "readme": "./API.md",
+  "headings": {
+    "readme": false
+  },
+  "customCss": "./typedoc.css",
+  "favicon": "../dacha-docs/public/favicon.png",
+  "navigationLinks": {
+    "Docs": "https://dachajs.org/",
+    "GitHub": "https://github.com/michailRemmele/dacha"
+  },
   "disableSources": true,
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": false,
+  "excludeInternal": true,
   "exclude": ["**/tests/**", "**/*.test.ts"],
+  "intentionallyNotExported": ["Constructor"],
   "navigation": {
     "includeCategories": true,
     "includeGroups": true,
-    "excludeReferences": false,
+    "excludeReferences": true,
     "includeFolders": true
   },
   "categoryOrder": [
-    "Core",
-    "Core Events",
+    "Engine",
+    "Actors & Components",
+    "Scenes & World",
+    "Events",
     "Systems",
-    "Components",
+    "Math",
     "Assets",
-    "Events"
-  ]
+    "Behaviors",
+    "Rendering",
+    "Physics",
+    "Character Controller",
+    "Interpolation",
+    "Animation",
+    "Audio",
+    "Input",
+    "Camera",
+    "Game UI",
+    "Game Stats",
+    "*"
+  ],
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "rewrittenLink": true,
+    "notDocumented": true,
+    "unusedMergeModuleWith": true
+  },
+  "requiredToBeDocumented": [
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Variable",
+    "Function",
+    "Namespace",
+    "Method",
+    "Accessor"
+  ],
+  "treatWarningsAsErrors": true,
+  "visibilityFilters": {
+    "protected": false,
+    "inherited": true,
+    "@advanced": false
+  }
 }

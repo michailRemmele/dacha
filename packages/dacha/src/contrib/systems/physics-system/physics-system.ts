@@ -14,13 +14,22 @@ import { DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y } from './consts';
 import type { PhysicsSystemOptions, CastHit, OverlapHit } from './types';
 
 /**
- * Physics system that handles 2D physics simulation and collision detection
+ * Moves rigid bodies and resolves collisions between them.
  *
- * Manages rigid body physics and collision detection and resolution.
+ * The system works with actors that have a {@link RigidBody} and a {@link Collider}.
+ * It sends {@link CollisionEnterEvent | CollisionEnter}, {@link CollisionStayEvent | CollisionStay} and {@link CollisionLeaveEvent | CollisionLeave}
+ * to the actors that collide. It registers {@link PhysicsAPI} in `world.systemApi` for
+ * raycasts, shape casts and overlap queries.
  *
- * @extends SceneSystem
+ * The options are in {@link PhysicsSystemOptions}. The global option `physics` holds the
+ * collision layers, see {@link PhysicsSettings}.
  *
- * @category Systems
+ * The system works in `fixedUpdate`. Put it after the systems that control bodies in
+ * `fixedUpdate`: the ones that apply forces, set velocity or call `movePosition`.
+ *
+ * @see [Physics](https://dachajs.org/systems/physics/)
+ *
+ * @category Physics
  */
 export class PhysicsSystem extends SceneSystem {
   private world: World;

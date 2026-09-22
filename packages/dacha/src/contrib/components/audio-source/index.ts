@@ -1,5 +1,10 @@
 import { Component } from '../../../engine/component';
 
+/**
+ * Options for {@link AudioSource}.
+ *
+ * @category Audio
+ */
 export interface AudioSourceConfig {
   src: string;
   group: string;
@@ -9,40 +14,11 @@ export interface AudioSourceConfig {
 }
 
 /**
- * AudioSource component for playing audio.
+ * Plays a sound for an actor. Call `play` and `stop`, or turn on `autoplay`.
  *
- * It handles the playing of audio for an actor.
- * It allows to play audio files and control the volume and looping of the audio.
+ * @see [Audio](https://dachajs.org/systems/audio/)
  *
- * @example
- * ```typescript
- * // Create an audio source
- * const audioSource = new AudioSource({
- *   src: 'assets/audio/some-sound.mp3',
- *   group: 'master',
- *   looped: false,
- *   volume: 1,
- *   autoplay: false,
- * });
- *
- * // Add to actor
- * actor.setComponent(audioSource);
- *
- * // Modify properties
- * audioSource.volume = 0.5; // Set volume to 50%
- *
- * // Play the audio (restarts it from the beginning if it's already playing)
- * audioSource.play();
- *
- * // Play it, but leave an already-playing instance alone instead of
- * // restarting it
- * audioSource.play(false);
- *
- * // Stop the audio
- * audioSource.stop();
- * ```
- *
- * @category Components
+ * @category Audio
  */
 export class AudioSource extends Component {
   /** Path to the audio asset */
@@ -53,7 +29,7 @@ export class AudioSource extends Component {
   looped: boolean;
   /** Volume of the audio, from 0 to 1 */
   volume: number;
-  /** Whether the audio is autoplayed on scene enter or after actor is added to scene */
+  /** Whether the audio plays automatically when the scene is entered or when the actor is added to the scene */
   autoplay: boolean;
 
   /** @internal Whether the audio is currently playing */

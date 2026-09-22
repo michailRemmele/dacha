@@ -12,12 +12,15 @@ import type {
 } from '../event-target';
 import { Transform } from '../../contrib/components/transform';
 
+/** @inline */
 type ActorListenerFn<T extends EventType> = (
   event: T extends keyof ActorEventMap ? ActorEventMap[T] : Event,
 ) => void;
 
 /**
  * Configuration options for creating an Actor.
+ *
+ * @category Actors & Components
  */
 export interface ActorOptions extends EntityOptions {
   /** Optional template ID to instantiate from */
@@ -31,7 +34,7 @@ export interface ActorOptions extends EntityOptions {
  * and represent various game objects such as players, enemies, items, decorations, etc.
  * They support hierarchical relationships and can be organized in parent-child structures.
  *
- * @category Core
+ * @category Actors & Components
  */
 export class Actor extends Entity {
   private components: Record<string, Component>;

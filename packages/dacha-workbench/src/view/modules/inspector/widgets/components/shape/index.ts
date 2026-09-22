@@ -119,7 +119,7 @@ export const shape: WidgetSchema = {
       type: 'select',
       initialValue: 'normal',
       section: 'appearance',
-      options: ['normal', 'addition', 'substract', 'multiply'],
+      options: ['normal', 'addition', 'subtract', 'multiply'],
     },
     {
       name: 'opacity',

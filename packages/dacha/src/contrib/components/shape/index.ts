@@ -12,6 +12,11 @@ interface RenderData {
 export type ShapeType =
   'rectangle' | 'roundRectangle' | 'circle' | 'ellipse' | 'line';
 
+/**
+ * Fields shared by every shape config.
+ *
+ * @category Rendering
+ */
 export interface BaseShapeConfig {
   strokeColor?: string;
   strokeWidth?: number;
@@ -25,33 +30,70 @@ export interface BaseShapeConfig {
   sortOffset?: Point;
 }
 
+/**
+ * Options for a `rectangle` shape.
+ *
+ * @category Rendering
+ */
 export interface RectangleShapeConfig extends BaseShapeConfig {
   type: 'rectangle';
+  /** The width and the height. */
   size?: Point;
 }
 
+/**
+ * Options for a `roundRectangle` shape: a rectangle with round corners.
+ *
+ * @category Rendering
+ */
 export interface RoundRectangleShapeConfig extends BaseShapeConfig {
   type: 'roundRectangle';
+  /** The width and the height. */
   size?: Point;
+  /** The radius of the corners. */
   radius?: number;
 }
 
+/**
+ * Options for a `circle` shape.
+ *
+ * @category Rendering
+ */
 export interface CircleShapeConfig extends BaseShapeConfig {
   type: 'circle';
+  /** The radius. */
   radius?: number;
 }
 
+/**
+ * Options for an `ellipse` shape.
+ *
+ * @category Rendering
+ */
 export interface EllipseShapeConfig extends BaseShapeConfig {
   type: 'ellipse';
+  /** The horizontal and the vertical radius. */
   radius?: Point;
 }
 
+/**
+ * Options for a `line` shape.
+ *
+ * @category Rendering
+ */
 export interface LineShapeConfig extends BaseShapeConfig {
   type: 'line';
+  /** The start of the line, relative to the actor. */
   point1?: Point;
+  /** The end of the line, relative to the actor. */
   point2?: Point;
 }
 
+/**
+ * Options for {@link Shape}. The `type` field decides which variant it is.
+ *
+ * @category Rendering
+ */
 export type ShapeConfig =
   | RectangleShapeConfig
   | RoundRectangleShapeConfig
@@ -59,33 +101,70 @@ export type ShapeConfig =
   | EllipseShapeConfig
   | LineShapeConfig;
 
+/**
+ * The geometry of a `rectangle` shape.
+ *
+ * @category Rendering
+ */
 export interface RectangleShapeGeometry {
   type: 'rectangle';
+  /** The width and the height. */
   size: Point;
 }
 
+/**
+ * The geometry of a `roundRectangle` shape: a rectangle with round corners.
+ *
+ * @category Rendering
+ */
 export interface RoundRectangleShapeGeometry {
   type: 'roundRectangle';
+  /** The width and the height. */
   size: Point;
+  /** The radius of the corners. */
   radius: number;
 }
 
+/**
+ * The geometry of a `circle` shape.
+ *
+ * @category Rendering
+ */
 export interface CircleShapeGeometry {
   type: 'circle';
+  /** The radius. */
   radius: number;
 }
 
+/**
+ * The geometry of an `ellipse` shape.
+ *
+ * @category Rendering
+ */
 export interface EllipseShapeGeometry {
   type: 'ellipse';
+  /** The horizontal and the vertical radius. */
   radius: Point;
 }
 
+/**
+ * The geometry of a `line` shape.
+ *
+ * @category Rendering
+ */
 export interface LineShapeGeometry {
   type: 'line';
+  /** The start of the line, relative to the actor. */
   point1: Point;
+  /** The end of the line, relative to the actor. */
   point2: Point;
 }
 
+/**
+ * The geometry of a {@link Shape}. The `type` field decides which variant it is.
+ *
+ * @category Rendering
+ */
 export type ShapeGeometry =
   | RectangleShapeGeometry
   | RoundRectangleShapeGeometry
@@ -94,37 +173,12 @@ export type ShapeGeometry =
   | LineShapeGeometry;
 
 /**
- * Shape component for rendering 2D geometry.
+ * Draws a rectangle, a rectangle with round corners, a circle, an ellipse or a
+ * line.
  *
- * Handles the visual representation of an actor using a shape.
- * It can be used to render such shapes as rectangles or circles.
+ * @see [Shape](https://dachajs.org/systems/rendering/components/#shape)
  *
- * @example
- * ```typescript
- * // Create a basic shape
- * const shape = new Shape({
- *   type: 'rectangle',
- *   size: { x: 100, y: 50 },
- *   strokeWidth: 2,
- *   strokeColor: '#000',
- *   strokeAlignment: 0.5,
- *   pixelLine: false,
- *   opacity: 1,
- *   blending: 'normal',
- *   disabled: false,
- *   sortingLayer: 'units',
- *   sortOffset: { x: 0, y: 0 },
- * });
- *
- * // Add to actor
- * actor.setComponent(shape);
- *
- * // Modify properties
- * shape.opacity = 0.5; // Make semi-transparent
- * shape.color = '#ff0000'; // Apply a red tint
- * ```
- *
- * @category Components
+ * @category Rendering
  */
 export class Shape extends Component {
   /** Geometry of the shape */
@@ -140,7 +194,7 @@ export class Shape extends Component {
    * 1 - Inside of the shape
    */
   strokeAlignment: number;
-  /** Whether the shape stroke should remains 1 pixel wide regardless of the scale */
+  /** Whether the shape stroke should remain 1 pixel wide regardless of the scale */
   pixelLine: boolean;
   /** Fill color of the shape */
   fill?: string;
@@ -154,7 +208,7 @@ export class Shape extends Component {
   sortingLayer: string;
   /** Center point of the shape */
   sortOffset: Point;
-  /** Internal rendering data */
+  /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
 
   /**

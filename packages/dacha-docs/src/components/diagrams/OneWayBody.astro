@@ -1,0 +1,40 @@
+---
+import DiagramFigure from './DiagramFigure.astro';
+---
+
+<DiagramFigure
+  caption="oneWayNormal points to the side that stops bodies. A body that comes from the other side passes through."
+>
+  <svg viewBox="0 0 720 240" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>
+      A horizontal one-way platform with oneWayNormal pointing up. A body that falls from above
+      stops on the platform. A body that moves up from below passes through it.
+    </title>
+
+    <defs>
+      <marker id="ow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-stroke)" stroke="none" />
+      </marker>
+      <marker id="ow-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--diagram-accent)" stroke="none" />
+      </marker>
+    </defs>
+
+    <g stroke="var(--diagram-stroke)" fill="none" stroke-width="1.5" font-size="13" font-family="inherit" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="220" y="130" width="280" height="20" fill="var(--diagram-fill)" />
+
+      <path d="M360 130 L360 82" stroke="var(--diagram-accent)" marker-end="url(#ow-arrow-accent)" />
+      <text x="360" y="72" fill="var(--diagram-accent)" text-anchor="middle" stroke="none" font-size="12">oneWayNormal</text>
+
+      <rect x="240" y="14" width="36" height="36" rx="4" stroke-dasharray="4 3" />
+      <path d="M258 54 L258 88" marker-end="url(#ow-arrow)" />
+      <rect x="240" y="94" width="36" height="36" rx="4" fill="var(--diagram-fill)" />
+      <text x="228" y="116" fill="var(--diagram-text)" text-anchor="end" stroke="none" font-size="12">stops</text>
+
+      <rect x="440" y="192" width="36" height="36" rx="4" stroke-dasharray="4 3" />
+      <path d="M458 188 L458 62" marker-end="url(#ow-arrow)" />
+      <rect x="440" y="20" width="36" height="36" rx="4" fill="var(--diagram-fill)" />
+      <text x="488" y="180" fill="var(--diagram-text)" stroke="none" font-size="12">passes through</text>
+    </g>
+  </svg>
+</DiagramFigure>
