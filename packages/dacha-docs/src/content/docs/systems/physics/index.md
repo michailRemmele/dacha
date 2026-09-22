@@ -92,3 +92,9 @@ gravity from the options, and a change applies only to the scene where you make 
 `PhysicsAPI` exists only while a scene with `PhysicsSystem` is active. Get it where you use it, not
 in a constructor. See [resolve an API where you use
 it](/concepts/scenes-and-world/#resolve-an-api-where-you-use-it).
+
+## API reference
+
+- [`PhysicsSystem`](/api/classes/PhysicsSystem.html)
+- [`PhysicsSystemOptions`](/api/interfaces/PhysicsSystemOptions.html)
+- [`PhysicsAPI`](/api/classes/PhysicsAPI.html)

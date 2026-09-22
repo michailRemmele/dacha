@@ -1,35 +1,43 @@
 import { Component } from '../../../engine/component';
 
+/**
+ * One behavior in the list of {@link Behaviors}.
+ *
+ * @category Behaviors
+ */
 export interface BehaviorConfig {
+  /** An identifier for the entry. The editor creates it. */
   id: string;
+  /** The `behaviorName` of the behavior class. */
   name: string;
+  /** Values for the fields of the behavior. The system passes them to the constructor. */
   options: Record<string, unknown>;
 }
 
+/**
+ * Options for {@link Behaviors}.
+ *
+ * @category Behaviors
+ */
 export interface BehaviorsConfig {
+  /** The behaviors of the actor. */
   list: BehaviorConfig[];
 }
 
 /**
- * Behaviors component for managing a list of behaviors.
+ * Lists the behaviors of an actor. {@link BehaviorSystem} creates an instance of
+ * each.
  *
- * Behavior is a script that allows to add custom game logic to an actor,
- * such as movement, AI or any other custom logic.
+ * @see [Behaviors](https://dachajs.org/systems/behaviors/)
  *
- * @example
- * ```typescript
- * // Create a behaviors component
- * const behaviors = new Behaviors({
- *   list: [{ name: 'some-script', options: {} }],
- * });
- *
- * // Add to actor
- * actor.setComponent(behaviors);
- * ```
- *
- * @category Components
+ * @category Behaviors
  */
 export class Behaviors extends Component {
+  /**
+   * The behaviors of the actor. {@link BehaviorSystem} reads the list once, when
+   * it creates the behavior instances. To change the behaviors, replace the whole
+   * component with `actor.setComponent`.
+   */
   list: BehaviorConfig[];
 
   constructor(config: BehaviorsConfig) {

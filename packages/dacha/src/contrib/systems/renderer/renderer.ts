@@ -38,11 +38,27 @@ interface RendererOptions extends WorldSystemOptions {
 }
 
 /**
- * Renderer system that manages 2D graphics rendering using PIXI.js under the hood
+ * Draws the actors that have a view component: {@link Sprite}, {@link Shape},
+ * {@link BitmapText}, {@link Mesh} or {@link PixiView}.
  *
- * @extends WorldSystem
+ * The system registers {@link RendererAPI} in `world.systemApi`.
  *
- * @category Systems
+ * Options:
+ *
+ * - `windowNodeId`: the id of the element the renderer adds its canvas to.
+ * - `backgroundColor`: the window background color.
+ * - `filterEffects`: post-processing effects for the whole screen.
+ *
+ * The global option `sorting` sets the sorting layers and the draw order, see
+ * {@link Sorting}. Pass your shaders and filter effects in `resources` under
+ * `Renderer.systemName`, see {@link RendererResources}.
+ *
+ * The renderer needs {@link CameraSystem} before it in the systems list. Put it after
+ * every system that moves actors or changes their view components.
+ *
+ * @see [Rendering](https://dachajs.org/systems/rendering/)
+ *
+ * @category Rendering
  */
 export class Renderer extends WorldSystem {
   private window: HTMLElement;

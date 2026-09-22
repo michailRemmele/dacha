@@ -11,33 +11,19 @@ import type {
 export type { AnimatableConfig };
 
 /**
- * Animatable component for managing animations.
+ * Holds the animation state machine of an actor: its states, frames and
+ * transitions. Build it in the animation editor. {@link Animator} plays it.
  *
- * It provides a state machine for an actor to manage its animations.
- * Each state can have a set of transitions to other states,
- * and each transition describes a set of conditions to check before the transition is triggered.
+ * @see [Animation](https://dachajs.org/systems/animation/)
  *
- * State consists of a timeline of frames where each frame represents a snapshot of the actor's state.
- * Frames allow to update any actor's component values.
- * It can be used for example to update the sprite's current frame.
- *
- * In addition to individual states, it supports group states.
- * Group states allow to avoid repeating the states with the same set of transitions,
- * but slightly different frames.
- * For instance, it can be used to describe a character state like "idle",
- * "run" or "jump" from different angles.
- *
- * It is better to use an editor to create the animatable component
- * since it has a quite complex structure.
- *
- * @category Components
+ * @category Animation
  */
 export class Animatable extends Component {
-  /** States of the animatable component */
+  /** @internal States of the animatable component */
   states: (IndividualState | GroupState)[];
   /** Initial state of the animatable component */
   initialState: string;
-  /** Current state of the animatable component */
+  /** @internal Current state of the animatable component */
   currentState?: IndividualState | GroupState;
   /** Duration of the current state relative to the total duration of the timeline */
   duration: number;
@@ -68,6 +54,12 @@ export class Animatable extends Component {
     this.duration = 0;
   }
 
+  /**
+   * Switches the animation to another state at once, without a transition.
+   *
+   * @param currentState - The id of the state.
+   * @throws Error If there is no state with this id.
+   */
   setCurrentState(currentState: string): void {
     const newState = this.states.find((state) => state.id === currentState);
 

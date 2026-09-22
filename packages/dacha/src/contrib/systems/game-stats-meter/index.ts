@@ -14,14 +14,17 @@ interface GameStatsMeterOptions extends WorldSystemOptions {
 }
 
 /**
- * Game statistics meter that tracks and reports performance metrics
+ * Measures the frame rate and the number of actors.
  *
- * Monitors frame rate (FPS) and actor count, dispatching periodic updates
- * via {@link GameStatsUpdate} events. Useful for performance monitoring and debugging.
+ * The system sends the results in the {@link GameStatsUpdateEvent | GameStatsUpdate} event on the world.
  *
- * @extends WorldSystem
+ * Options:
  *
- * @category Systems
+ * - `frequency`: how often to send the event, in seconds. The default is `1`.
+ *
+ * @see [Performance](https://dachajs.org/production/performance/)
+ *
+ * @category Game Stats
  */
 export class GameStatsMeter extends WorldSystem {
   private world: World;

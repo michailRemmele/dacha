@@ -17,11 +17,18 @@ const MASTER_GROUP = 'master';
 const VOLUME_TOLERANCE = 0.001;
 
 /**
- * Audio system that manages audio playback for actors with {@link AudioSource} components
+ * Plays the sounds of actors that have an {@link AudioSource} component.
  *
- * @extends WorldSystem
+ * The system registers {@link AudioAPI} in `world.systemApi`. Use it to read and change
+ * the volume of audio groups. The global option `audioGroups` sets the groups and their
+ * start volume.
  *
- * @category Systems
+ * Put `AudioSystem` after the systems that call {@link AudioSource.play} and
+ * {@link AudioSource.stop}. If behaviors play sounds, that includes {@link BehaviorSystem}.
+ *
+ * @see [Audio](https://dachajs.org/systems/audio/)
+ *
+ * @category Audio
  */
 export class AudioSystem extends WorldSystem {
   private templateCollection: TemplateCollection;

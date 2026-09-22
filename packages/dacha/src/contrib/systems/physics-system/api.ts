@@ -40,11 +40,12 @@ export interface PhysicsAPIHandlers {
  * so direct transform or collider changes made outside physics update
  * are not guaranteed to be reflected immediately in query results.
  *
- * @category Systems
+ * @category Physics
  */
 export class PhysicsAPI {
   private handlers: PhysicsAPIHandlers;
 
+  /** @internal Created by the system; get the instance from `world.systemApi`. */
   constructor(handlers: PhysicsAPIHandlers) {
     this.handlers = handlers;
   }

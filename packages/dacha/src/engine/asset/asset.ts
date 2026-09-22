@@ -2,6 +2,8 @@ import type { Constructor } from '../../types/utils';
 
 /**
  * Options passed to an asset constructor.
+ *
+ * @category Assets
  */
 export interface AssetOptions<T = Record<string, unknown>> {
   /** Unique identifier of the asset */
@@ -19,10 +21,15 @@ export interface AssetOptions<T = Record<string, unknown>> {
  * reference to a media file plus its metadata, or plain data described
  * by the schema of its kind.
  *
- * @category Core
+ * @category Assets
  */
 export abstract class Asset {
-  /** Unique name identifier for the asset kind */
+  /**
+   * The name the configuration uses for the asset kind, such as `texture`.
+   *
+   * `@DefineAsset` from `dacha-workbench/decorators` sets it, so a game usually
+   * does not assign it.
+   */
   static assetName: string;
 
   /** Unique identifier of the asset */
@@ -36,6 +43,11 @@ export abstract class Asset {
   }
 }
 
+/**
+ * An asset class: a constructor with a static `assetName`.
+ *
+ * @category Assets
+ */
 export type AssetConstructor<T extends Asset = Asset> = Constructor<T> & {
   assetName: string;
 };

@@ -4,12 +4,21 @@ import type {
   InputEventAttributeConfig,
 } from '../../types';
 
+/**
+ * A keyboard binding as {@link KeyboardControl} stores it at runtime.
+ *
+ * @category Input
+ */
 export interface KeyboardEventBind {
+  /** The name of the event to dispatch on the actor. */
   eventType: string;
+  /** Values to put in the event payload. */
   attrs: InputEventAttributes;
+  /** Sends the event again in every frame while the key is held. */
   keepEmit: boolean;
 }
 
+/** @inline */
 export type InputEventBindings = Record<
   string,
   {
@@ -18,50 +27,49 @@ export type InputEventBindings = Record<
   }
 >;
 
+/**
+ * One keyboard binding in the configuration.
+ *
+ * @see [Keyboard control](https://dachajs.org/systems/input/#keyboard-control)
+ *
+ * @category Input
+ */
 export interface KeyboardEventBindConfig {
+  /** The key, as `KeyboardEvent.code`: `KeyW`, `Space`, `ArrowUp`. */
   key: string;
+  /**
+   * `true` sends the event when the key goes down. `false` sends it when the
+   * key goes up.
+   */
   pressed: boolean;
+  /**
+   * Sends the event again in every frame while the key is held. Only for
+   * `pressed` bindings.
+   */
   keepEmit?: boolean;
+  /** The name of the event to dispatch on the actor. */
   eventType: string;
+  /** Values to put in the event payload. */
   attrs: InputEventAttributeConfig[];
 }
 
+/**
+ * Options for {@link KeyboardControl}.
+ *
+ * @category Input
+ */
 export interface KeyboardControlConfig extends Record<string, unknown> {
+  /** The keyboard bindings of the actor. */
   inputEventBindings: KeyboardEventBindConfig[];
 }
 
 /**
- * KeyboardControl component for handling keyboard input events.
+ * Binds keys to events on the actor. {@link KeyboardControlSystem} dispatches
+ * the bound event when the key goes down or up.
  *
- * KeyboardControl component handles the keyboard input events for an actor.
- * It can be used to bind keyboard events to game actions.
+ * @see [Keyboard control](https://dachajs.org/systems/input/#keyboard-control)
  *
- * @example
- * ```typescript
- * // Create a keyboard control
- * const keyboardControl = new KeyboardControl({
- *   inputEventBindings: [
- *     {
- *       key: 'KeyW',
- *       pressed: true,
- *       keepEmit: true,
- *       eventType: 'RUN',
- *       attrs: [
- *         {
- *           name: 'angle',
- *           type: 'number',
- *           value: 270,
- *         },
- *       ],
- *     },
- *   ],
- * });
- *
- * // Add to actor
- * actor.setComponent(keyboardControl);
- * ```
- *
- * @category Components
+ * @category Input
  */
 export class KeyboardControl extends Component {
   /** Input event bindings */

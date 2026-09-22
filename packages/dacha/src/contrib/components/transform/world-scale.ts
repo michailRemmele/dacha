@@ -1,5 +1,13 @@
 import type { Transform } from '../';
 
+/**
+ * The scale of an actor in the scene. It is `transform.world.scale`.
+ *
+ * Reading `x` or `y` computes the value from the parent actors. Setting it
+ * changes the local scale so that the world scale gets the new value.
+ *
+ * @category Actors & Components
+ */
 export class WorldScale {
   private transform: Transform;
 
@@ -7,6 +15,7 @@ export class WorldScale {
     this.transform = transform;
   }
 
+  /** The x value of the world scale. */
   set x(val: number) {
     const parent = this.transform.getParentComponent();
 
@@ -29,6 +38,7 @@ export class WorldScale {
     );
   }
 
+  /** The y value of the world scale. */
   set y(val: number) {
     const parent = this.transform.getParentComponent();
 

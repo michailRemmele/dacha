@@ -1,168 +1,200 @@
 import type { Actor } from '../../engine/actor';
+import type { World } from '../../engine/world';
+import type { Event } from '../../engine/event-target';
 import type { Vector } from '../../engine/math-lib';
 import type {
   CustomMouseEvent,
   CustomKeyboardEvent,
 } from '../types/input-events';
-import type { ActorEvent, WorldEvent } from '../../types/events';
+import type { ActorEvent } from '../../types/events';
 
 /**
- * Dispatched when game statistics are updated
+ * Game statistics are updated. See {@link GameStatsUpdateEvent}.
  *
- * @event
- * @type {GameStatsUpdateEvent}
- *
- * @category Events
+ * @hidden
  */
 export const GameStatsUpdate = 'GameStatsUpdate';
 
 /**
- * Dispatched when keyboard input is received
+ * A key goes down or up. See {@link KeyboardInputEvent}.
  *
- * @event
- * @type {KeyboardInputEvent}
- *
- * @category Events
+ * @hidden
  */
 export const KeyboardInput = 'KeyboardInput';
 
 /**
- * Dispatched when mouse input is received
+ * A mouse event happens in the game window. See {@link MouseInputEvent}.
  *
- * @event
- * @type {MouseInputEvent}
- *
- * @category Events
+ * @hidden
  */
 export const MouseInput = 'MouseInput';
 
 /**
- * Dispatched when an actor enters a collision
+ * Two colliders start to touch. See {@link CollisionEnterEvent}.
  *
- * @event
- * @type {CollisionEnterEvent}
- *
- * @category Events
+ * @hidden
  */
 export const CollisionEnter = 'CollisionEnter';
 
 /**
- * Dispatched when an actor stays in collision
+ * Two colliders are still in contact. See {@link CollisionStayEvent}.
  *
- * @event
- * @type {CollisionStayEvent}
- *
- * @category Events
+ * @hidden
  */
 export const CollisionStay = 'CollisionStay';
 
 /**
- * Dispatched when an actor leaves a collision
+ * Two colliders stop touching. See {@link CollisionLeaveEvent}.
  *
- * @event
- * @type {CollisionLeaveEvent}
- *
- * @category Events
+ * @hidden
  */
 export const CollisionLeave = 'CollisionLeave';
 
 /**
- * Dispatched when a character body hits a blocking actor
+ * A character hits an obstacle. See {@link CharacterHitEvent}.
  *
- * @event
- * @type {CharacterHitEvent}
- *
- * @category Events
+ * @hidden
  */
 export const CharacterHit = 'CharacterHit';
 
-/** Event signature for the {@link MouseInput} event
+/**
+ * {@link MouseInputSystem} dispatches it on the world for every mouse event in
+ * the game window.
  *
- * @category Events
+ * Event name: `MouseInput` from `dacha/events`.
+ *
+ * @see [Reading raw input](https://dachajs.org/systems/input/#reading-raw-input)
+ *
+ * @category Input
  */
-export type MouseInputEvent = WorldEvent<CustomMouseEvent>;
+export interface MouseInputEvent extends Event<World>, CustomMouseEvent {}
 
-/** Event signature for the {@link KeyboardInput} event
+/**
+ * {@link KeyboardInputSystem} dispatches it on the world when a key goes down
+ * or up. It includes the repeated `keydown` events of the browser.
  *
- * @category Events
+ * Event name: `KeyboardInput` from `dacha/events`.
+ *
+ * @see [Reading raw input](https://dachajs.org/systems/input/#reading-raw-input)
+ *
+ * @category Input
  */
-export type KeyboardInputEvent = WorldEvent<CustomKeyboardEvent>;
+export interface KeyboardInputEvent extends Event<World>, CustomKeyboardEvent {}
 
-/** Event signature for the {@link GameStatsUpdate} event
+/**
+ * {@link GameStatsMeter} dispatches it on the world, once per `frequency`
+ * seconds.
  *
- * @category Events
+ * Event name: `GameStatsUpdate` from `dacha/events`.
+ *
+ * @category Game Stats
  */
-export type GameStatsUpdateEvent = WorldEvent<{
-  /** Current frames per second */
+export interface GameStatsUpdateEvent extends Event<World> {
+  /** Frames per second. */
   fps: number;
-  /** Current number of actors in the scene */
+  /** The number of actors in the scene. */
   actorsCount: number;
-}>;
+}
 
-/** Event signature for mouse control events
+/**
+ * An event that {@link MouseControlSystem} dispatches on an actor, for a
+ * binding of its {@link MouseControl}. The name of the event is the
+ * `eventType` of the binding.
  *
- * @category Events
+ * It has the pointer position: `x` and `y` in world coordinates, `screenX`
+ * and `screenY` in pixels, and `nativeEvent`. See {@link CustomMouseEvent}.
+ * `T` is the type of the `attrs` of the binding.
+ *
+ * @category Input
  */
 export type MouseControlEvent<T = Record<string, never>> = ActorEvent<
   Pick<CustomMouseEvent, 'x' | 'y' | 'screenX' | 'screenY' | 'nativeEvent'>
 > &
   T;
 
-/** Event signature for keyboard control events
+/**
+ * An event that {@link KeyboardControlSystem} dispatches on an actor, for a
+ * binding of its {@link KeyboardControl}. The name of the event is the
+ * `eventType` of the binding. `T` is the type of the `attrs` of the binding.
  *
- * @category Events
+ * @category Input
  */
 export type KeyboardControlEvent<T = Record<string, never>> = ActorEvent<T>;
 
-/** Base event signature for collision state events
+/**
+ * The fields of every collision event.
  *
- * @category Events
+ * @category Physics
  */
-type CollisionStateEvent = ActorEvent<{
-  /** Actor that is colliding with the target */
+export interface CollisionEvent extends Event<Actor> {
+  /** The other actor. */
   actor: Actor;
-  /** Collision normal pointing from the target actor to the colliding actor */
+  /** The direction from `target` to the other actor. */
   normal: Vector;
-  /** Depth of penetration along the collision normal */
+  /** How deep the colliders overlap along `normal`, in world units. */
   penetration: number;
-  /** Contact manifold points in world space */
+  /** The points where the colliders touch, in world space. One or two points. */
   contactPoints: { x: number; y: number }[];
-}>;
+}
 
-/** Event signature for the {@link CollisionEnter} event
+/**
+ * {@link PhysicsSystem} dispatches it on each of two actors when their
+ * colliders start to touch.
  *
- * @category Events
+ * Event name: `CollisionEnter` from `dacha/events`.
+ *
+ * @see [Collisions](https://dachajs.org/systems/physics/collisions/)
+ *
+ * @category Physics
  */
-export type CollisionEnterEvent = CollisionStateEvent;
+export interface CollisionEnterEvent extends CollisionEvent {}
 
-/** Event signature for the {@link CollisionStay} event
+/**
+ * {@link PhysicsSystem} dispatches it on each of two actors in every physics
+ * step while their colliders are still in contact.
  *
- * @category Events
+ * Event name: `CollisionStay` from `dacha/events`.
+ *
+ * @see [Collisions](https://dachajs.org/systems/physics/collisions/)
+ *
+ * @category Physics
  */
-export type CollisionStayEvent = CollisionStateEvent;
+export interface CollisionStayEvent extends CollisionEvent {}
 
-/** Event signature for the {@link CollisionLeave} event
+/**
+ * {@link PhysicsSystem} dispatches it on each of two actors when their
+ * colliders stop touching.
  *
- * @category Events
+ * Event name: `CollisionLeave` from `dacha/events`.
+ *
+ * @see [Collisions](https://dachajs.org/systems/physics/collisions/)
+ *
+ * @category Physics
  */
-export type CollisionLeaveEvent = CollisionStateEvent;
+export interface CollisionLeaveEvent extends CollisionEvent {}
 
-/** Event signature for the {@link CharacterHit} event
+/**
+ * {@link CharacterController} dispatches it on the actor of a character for
+ * every obstacle it hits.
  *
- * @category Events
+ * Event name: `CharacterHit` from `dacha/events`.
+ *
+ * @see [The CharacterHit event](https://dachajs.org/systems/character-controller/#the-characterhit-event)
+ *
+ * @category Character Controller
  */
-export type CharacterHitEvent = ActorEvent<{
-  /** Actor hit by the character body */
+export interface CharacterHitEvent extends Event<Actor> {
+  /** The actor the character hit. */
   actor: Actor;
-  /** Hit point in world space */
+  /** The hit point, in world space. */
   point: { x: number; y: number };
-  /** Hit normal pointing from the hit actor to the character */
+  /** The direction from the hit surface to the character. */
   normal: Vector;
-  /** Distance from the cast origin to the hit */
+  /** The distance to the hit, from where this move started. */
   distance: number;
-  /** Surface classification used by the character controller */
+  /** `ground`, `wall` or `ceiling`. In the `free` motion mode, always `wall`. */
   kind: 'ground' | 'wall' | 'ceiling';
-}>;
+}
 
 declare module '../../types/events' {
   export interface WorldEventMap {

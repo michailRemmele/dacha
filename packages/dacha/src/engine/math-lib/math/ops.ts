@@ -1,5 +1,7 @@
 /**
  * A point in 2D space with x and y coordinates.
+ *
+ * @category Math
  */
 export interface Point {
   /** X coordinate of the point */
@@ -20,7 +22,7 @@ export interface Point {
  * const distance = MathOps.getDistanceBetweenTwoPoints(point, point);
  * ```
  *
- * @category Core
+ * @category Math
  */
 export class MathOps {
   /**

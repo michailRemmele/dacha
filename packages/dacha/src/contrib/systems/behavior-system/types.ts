@@ -7,6 +7,8 @@ import type { Constructor } from '../../../types/utils';
 
 /**
  * Options for the behavior
+ *
+ * @category Behaviors
  */
 export interface BehaviorOptions {
   /** World instance */
@@ -30,9 +32,16 @@ export interface BehaviorOptions {
  *
  * Behaviors are the core logic units that operate on actors
  * and can be used to add custom behavior to actors
+ *
+ * @category Behaviors
  */
 export abstract class Behavior {
-  /** Name of the behavior */
+  /**
+   * The name the configuration uses for the behavior.
+   *
+   * `@DefineBehavior` from `dacha-workbench/decorators` sets it, so a game
+   * usually does not assign it.
+   */
   static behaviorName: string;
   /** Destroy the behavior */
   destroy?(): void;
@@ -44,6 +53,8 @@ export abstract class Behavior {
 
 /**
  * Constructor for all behaviors
+ *
+ * @category Behaviors
  */
 export type BehaviorConstructor = Constructor<Behavior> & {
   behaviorName: string;

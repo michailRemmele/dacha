@@ -13,11 +13,21 @@ interface CameraSystemOptions extends WorldSystemOptions {
 }
 
 /**
- * Camera system that manages camera control and current camera tracking
+ * Tracks the current camera and keeps its window size up to date.
  *
- * Integrates with the renderer system for viewport transformations.
+ * The system works with actors that have a {@link Camera} component. It registers
+ * {@link CameraAPI} in `world.systemApi`. Use it to get or change the current camera.
  *
- * @category Systems
+ * Options:
+ *
+ * - `windowNodeId`: the id of the element that displays the game. Use the same value as
+ *   in {@link Renderer}.
+ *
+ * Put `CameraSystem` before {@link Renderer}.
+ *
+ * @see [Camera](https://dachajs.org/systems/camera/)
+ *
+ * @category Camera
  */
 export class CameraSystem extends WorldSystem {
   private actorQuery?: ActorQuery;

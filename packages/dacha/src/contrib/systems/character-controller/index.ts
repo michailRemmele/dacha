@@ -25,14 +25,20 @@ const SNAP_EPSILON = 0.000001;
 type CharacterHitKind = 'ground' | 'wall' | 'ceiling';
 
 /**
- * Kinematic character controller system with sweep/slide collision movement.
+ * Moves kinematic characters and stops them at obstacles.
  *
- * The system expects actors to have `CharacterBody`, `Transform`,
- * `Collider`, and a kinematic `RigidBody`. Put this system before
- * `PhysicsSystem` in system configuration so `movePosition()` targets are
- * consumed by physics in the same fixed step.
+ * A character is an actor with a {@link CharacterBody}, a {@link Collider} and a
+ * kinematic {@link RigidBody}. The system moves the collider along the path, slides it
+ * along the surfaces it hits, and passes the result to the body with
+ * {@link RigidBody.movePosition}. It sends {@link CharacterHitEvent | CharacterHit} to the character for
+ * every hit.
  *
- * @category Systems
+ * The system works in `fixedUpdate`. Put it after the systems that set the velocity of
+ * characters, and before {@link PhysicsSystem}.
+ *
+ * @see [Character controller](https://dachajs.org/systems/character-controller/)
+ *
+ * @category Character Controller
  */
 export class CharacterController extends SceneSystem {
   private actorQuery: ActorQuery;

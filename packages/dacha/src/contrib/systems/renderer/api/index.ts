@@ -26,7 +26,7 @@ interface RendererAPIOptions {
  * Offers methods for view intersection testing, bounds calculation, and
  * direct access to the underlying PIXI.js application
  *
- * @category Systems
+ * @category Rendering
  */
 export class RendererAPI {
   private application: Application;
@@ -36,6 +36,7 @@ export class RendererAPI {
   private filterSystem: FilterSystem;
   private materialSystem: MaterialSystem;
 
+  /** @internal Created by the system; get the instance from `world.systemApi`. */
   constructor({
     application,
     worldContainer,

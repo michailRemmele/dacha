@@ -8,16 +8,21 @@ on:
       - 'packages/dacha/src/**'
       - 'packages/dacha/typedoc.json'
       - 'packages/dacha/typedoc.css'
+      - 'packages/dacha/typedoc-plugin.mjs'
+      - 'packages/dacha/API.md'
       - 'packages/dacha/package.json'
       - 'packages/dacha/tsconfig*.json'
-      - 'README.md'
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
       - 'packages/dacha-docs/**'
+      - 'packages/dacha/src/**'
       - 'packages/dacha/typedoc.json'
       - 'packages/dacha/typedoc.css'
-      - 'README.md'
+      - 'packages/dacha/typedoc-plugin.mjs'
+      - 'packages/dacha/API.md'
+      - 'packages/dacha/package.json'
+      - 'packages/dacha/tsconfig*.json'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
@@ -55,6 +60,11 @@ jobs:
       # The site links to video in a public bucket
       - name: Check externally hosted media is reachable
         run: npm run check:media -w dacha-docs
+
+      # starlight's link validator skips /api/**, so the links between the
+      # guide and the API reference get their own check.
+      - name: Check links between the guide and the API reference
+        run: npm run check:api-links -w dacha-docs
 
       - uses: actions/upload-artifact@v4
         with:

@@ -15,6 +15,7 @@ export interface ActorOptions {
   isNew?: boolean;
 }
 
+/** @internal Builds actors from configs. Used by the engine and the editor. */
 export class ActorCreator {
   private components: Record<string, ComponentConstructor>;
   private templateCollection: TemplateCollection;

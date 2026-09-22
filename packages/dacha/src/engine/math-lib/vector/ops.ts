@@ -3,6 +3,8 @@ import type { Point } from '../math/ops';
 
 /**
  * An edge defined by two points in 2D space.
+ *
+ * @inline
  */
 interface Edge {
   point1: Point;
@@ -30,7 +32,7 @@ interface Edge {
  * const inside = VectorOps.isPointInPolygon(point, polygonEdges);
  * ```
  *
- * @category Core
+ * @category Math
  */
 export class VectorOps {
   /**
@@ -187,7 +189,7 @@ export class VectorOps {
    *                           where each endpoint has properties `x` and `y`.
    * @returns {boolean} Returns `true` if the point is inside the polygon, otherwise `false`.
    *
-   * @note The algorithm may be inaccurate in edge cases,
+   * @remarks The algorithm may be inaccurate in edge cases,
    *       such as when the point lies exactly on a polygon corner.
    *
    * @example

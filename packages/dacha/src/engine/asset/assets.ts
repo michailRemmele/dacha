@@ -4,14 +4,23 @@ import { Asset } from './asset';
 import type { AssetConstructor } from './asset';
 
 /**
- * Registry of project assets.
+ * The project assets. Systems get it in `options.assets`.
  *
- * @category Core
+ * The engine creates an {@link Asset} for every entry in `assets` of the
+ * configuration.
+ *
+ * @example
+ * ```ts
+ * const texture = this.assets.get(TEXTURE_ID, Texture);
+ * ```
+ *
+ * @category Assets
  */
 export class Assets {
   private assetClasses: Map<string, AssetConstructor>;
   private storage: Map<string, Asset>;
 
+  /** @internal */
   constructor(assetClasses: AssetConstructor[]) {
     this.assetClasses = assetClasses.reduce((acc, AssetClass) => {
       acc.set(AssetClass.assetName, AssetClass);
@@ -21,6 +30,11 @@ export class Assets {
     this.storage = new Map();
   }
 
+  /**
+   * Creates an asset from its configuration.
+   *
+   * @internal
+   */
   register(config: AssetConfig): void {
     if (this.storage.has(config.id)) {
       throw new Error(
@@ -46,7 +60,17 @@ export class Assets {
     );
   }
 
+  /**
+   * Returns an asset by its id.
+   *
+   * @throws Error If there is no asset with this id.
+   */
   get(id: string): Asset;
+  /**
+   * Returns an asset by its id and checks its class.
+   *
+   * @throws Error If there is no asset with this id, or it is not an instance of `assetClass`.
+   */
   get<T extends Asset>(id: string, assetClass: AssetConstructor<T>): T;
   get<T extends Asset>(
     id: string,
@@ -67,7 +91,9 @@ export class Assets {
     return asset;
   }
 
+  /** Returns all assets. */
   getAll(): Asset[];
+  /** Returns all assets of one class. */
   getAll<T extends Asset>(assetClass: AssetConstructor<T>): T[];
   getAll<T extends Asset>(assetClass?: AssetConstructor<T>): Asset[] | T[] {
     if (!assetClass) {
@@ -79,6 +105,7 @@ export class Assets {
     );
   }
 
+  /** Checks if there is an asset with this id. */
   has(id: string): boolean {
     return this.storage.has(id);
   }

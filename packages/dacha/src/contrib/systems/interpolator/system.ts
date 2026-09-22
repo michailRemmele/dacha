@@ -10,21 +10,22 @@ import { InterpolatorAPI } from './api';
 import { snapToTransform, computeRenderValues } from './utils';
 
 /**
- * System that produces smooth render-facing transforms for actors moved
- * during fixed updates.
+ * Smooths the movement of actors that move in `fixedUpdate`.
  *
- * During `fixedUpdate` it snapshots the local Transform of every actor with
- * an Interpolation component. During `update` it blends the last two
- * snapshots using `Time.alpha` and writes the result into the component's
- * `renderX`/`renderY`/`renderRotation`, which the renderer prefers over the
- * Transform.
+ * In `fixedUpdate` the system saves the local transform of every actor with an
+ * {@link Interpolation} component. In `update` it blends the last two saved states by
+ * `Time.alpha`. It writes the result to `renderX`, `renderY` and `renderRotation` of the
+ * component. The renderer draws these values instead of the transform.
  *
- * Ordering: place this system AFTER every system that moves transforms in
- * fixed updates (`PhysicsSystem`, `CharacterController`, behavior scripts
- * that move actors in `fixedUpdate`) and BEFORE `Renderer` in the system
- * configuration.
+ * The system registers {@link InterpolatorAPI} in `world.systemApi`.
  *
- * @category Systems
+ * Put `Interpolator` after every system that moves actors in `fixedUpdate`, and before
+ * {@link Renderer}. For the built-in systems, that means after {@link PhysicsSystem},
+ * {@link CharacterController} and {@link BehaviorSystem}.
+ *
+ * @see [Interpolation](https://dachajs.org/systems/interpolation/)
+ *
+ * @category Interpolation
  */
 export class Interpolator extends SceneSystem {
   private actorQuery: ActorQuery;

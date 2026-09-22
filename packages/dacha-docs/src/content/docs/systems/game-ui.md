@@ -139,3 +139,9 @@ export const onDestroy = (): void => {
 
 Vue, Svelte and other
 frameworks work the same way: mount in `onInit`, unmount in `onDestroy`.
+
+## API reference
+
+- [`UIBridge`](/api/classes/UIBridge.html)
+- [`LoadUIFn`](/api/types/LoadUIFn.html)
+- [`UIOptions`](/api/interfaces/UIOptions.html)

@@ -1,14 +1,37 @@
+/** @inline */
 export interface Position {
   x: number;
   y: number;
 }
 
+/**
+ * A 2D affine transformation matrix. {@link Transform} uses it for
+ * `localMatrix` and `worldMatrix`.
+ *
+ * The matrix is:
+ *
+ * ```
+ * | a  c  tx |
+ * | b  d  ty |
+ * | 0  0  1  |
+ * ```
+ *
+ * The methods change the matrix in place and return it, so calls can be chained.
+ *
+ * @category Math
+ */
 export class Matrix {
+  /** Scale and rotation, x axis. */
   a: number;
+  /** Skew and rotation, x axis. */
   b: number;
+  /** Skew and rotation, y axis. */
   c: number;
+  /** Scale and rotation, y axis. */
   d: number;
+  /** Translation on x. */
   tx: number;
+  /** Translation on y. */
   ty: number;
 
   constructor(
@@ -27,6 +50,7 @@ export class Matrix {
     this.ty = ty;
   }
 
+  /** Resets the matrix to the identity matrix. */
   identity(): Matrix {
     this.a = 1;
     this.b = 0;
@@ -38,6 +62,10 @@ export class Matrix {
     return this;
   }
 
+  /**
+   * Multiplies this matrix by `m`: `this = this * m`. The result applies `m`
+   * first, then this matrix.
+   */
   multiply(m: Matrix): Matrix {
     const a = this.a * m.a + this.c * m.b;
     const b = this.b * m.a + this.d * m.b;
@@ -56,6 +84,10 @@ export class Matrix {
     return this;
   }
 
+  /**
+   * Multiplies `m` by this matrix: `this = m * this`. The result applies this
+   * matrix first, then `m`.
+   */
   multiplyRight(m: Matrix): Matrix {
     const a = m.a * this.a + m.c * this.b;
     const b = m.b * this.a + m.d * this.b;
@@ -74,6 +106,7 @@ export class Matrix {
     return this;
   }
 
+  /** Writes `a * b` into `res` and returns `res`. */
   static multiply(res: Matrix, a: Matrix, b: Matrix): Matrix {
     res.a = a.a * b.a + a.c * b.b;
     res.b = a.b * b.a + a.d * b.b;
@@ -85,6 +118,7 @@ export class Matrix {
     return res;
   }
 
+  /** Inverts the matrix. A matrix that cannot be inverted becomes the identity matrix. */
   invert(): Matrix {
     const det = this.a * this.d - this.b * this.c;
 
@@ -111,6 +145,7 @@ export class Matrix {
     return this;
   }
 
+  /** Transforms a point and returns the result as a new object. */
   apply(p: Position): Position {
     return {
       x: this.a * p.x + this.c * p.y + this.tx,
@@ -118,6 +153,7 @@ export class Matrix {
     };
   }
 
+  /** Sets all six values. */
   assign(
     a: number,
     b: number,
@@ -126,6 +162,7 @@ export class Matrix {
     tx: number,
     ty: number,
   ): Matrix;
+  /** Copies the values of `m`. */
   assign(m: Matrix): Matrix;
   assign(
     mOrA: Matrix | number,
@@ -154,6 +191,7 @@ export class Matrix {
     return this;
   }
 
+  /** Returns a new matrix with the same values. */
   clone(): Matrix {
     return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty);
   }

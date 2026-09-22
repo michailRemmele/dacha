@@ -5,6 +5,8 @@ import { findChild } from './utils';
 
 /**
  * Options for creating a new entity.
+ *
+ * @category Actors & Components
  */
 export interface EntityOptions {
   /** Id of the entity */
@@ -16,7 +18,7 @@ export interface EntityOptions {
 /**
  * Base class for all entities.
  *
- * @category Core
+ * @category Actors & Components
  */
 export class Entity extends EventTarget {
   /** Id of the entity */

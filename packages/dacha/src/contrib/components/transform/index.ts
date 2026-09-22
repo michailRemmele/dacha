@@ -4,38 +4,40 @@ import { Matrix, type Point } from '../../../engine/math-lib';
 import { LocalTransform } from './local-transform';
 import { WorldTransform } from './world-transform';
 
+export type { LocalPoint } from './local-point';
+export type { WorldPosition } from './world-position';
+export type { WorldScale } from './world-scale';
+export type { LocalTransform, WorldTransform };
+
+/**
+ * Options for {@link Transform}. All values are relative to the parent actor.
+ *
+ * @category Actors & Components
+ */
 export interface TransformConfig {
+  /** The position. */
   offset: Point;
+  /** The rotation, in degrees. */
   rotation: number;
+  /** The scale. */
   scale: Point;
 }
 
 /**
- * Component responsible for handling local and world-space transforms.
+ * The position, rotation and scale of an actor. Every actor has one.
  *
- * A Transform manages position, rotation, and scale, and computes
- * corresponding transformation matrices. It supports hierarchical
- * parent-child relationships via world matrix composition.
+ * `local` holds the values relative to the parent actor. `world` holds the
+ * values in the scene.
  *
  * @example
- * ```typescript
- * // Create a transform for an actor
- * const transform = new Transform({
- *   offset: { x: 100, y: 50 },
- *   rotation: 45,
- *   scale: { x: 1.5, y: 1.0 }
- * });
- *
- * // Add to actor
- * actor.setComponent(transform);
- *
- * // Access world coordinates
- * console.log(`Position: ${transform.world.position.x}, ${transform.world.position.y}`);
- * console.log(`Rotation (in radians): ${transform.world.rotation}`);
- * console.log(`Scale: ${transform.world.scale.x}, ${transform.world.scale.y}`);
+ * ```ts
+ * const transform = actor.getComponent(Transform);
+ * transform.world.position.x += 10;
  * ```
  *
- * @category Components
+ * @see [Actors](https://dachajs.org/concepts/actors/)
+ *
+ * @category Actors & Components
  */
 export class Transform extends Component {
   /**
@@ -52,11 +54,15 @@ export class Transform extends Component {
 
   /**
    * Matrix representing the local-space transformation.
+   *
+   * @advanced
    */
   localMatrix: Matrix;
 
   /**
    * Matrix representing the world-space transformation.
+   *
+   * @advanced
    */
   worldMatrix: Matrix;
 
@@ -97,6 +103,8 @@ export class Transform extends Component {
    * Marks this transform and all descendant transforms as dirty.
    *
    * This signals that their matrices must be recalculated before use.
+   *
+   * @advanced
    */
   markDirty(): void {
     if (this.dirty) {
@@ -115,6 +123,8 @@ export class Transform extends Component {
   /**
    * Recomputes the local transformation matrix from local position,
    * rotation, and scale.
+   *
+   * @advanced
    */
   updateLocalMatrix(): void {
     const cos = Math.cos(this.local.rotation);
@@ -135,6 +145,8 @@ export class Transform extends Component {
    *
    * This method ensures parent transforms are updated first and then
    * composes the local matrix with the parent world matrix.
+   *
+   * @advanced
    */
   updateWorldMatrix(): void {
     if (!this.dirty) {
@@ -158,6 +170,8 @@ export class Transform extends Component {
   /**
    * Inverse of the world transformation matrix.
    * Useful for converting world-space coordinates to local space.
+   *
+   * @advanced
    */
   get invertedWorldMatrix(): Matrix {
     this.updateWorldMatrix();

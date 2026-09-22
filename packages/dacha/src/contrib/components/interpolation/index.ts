@@ -1,7 +1,22 @@
 import { Component } from '../../../engine/component';
 
+/**
+ * How {@link Interpolation} smooths the movement.
+ *
+ * - `interpolate` blends between the last two fixed steps. It adds up to one
+ *   fixed step of visual delay.
+ * - `extrapolate` moves the actor forward from the latest step by the velocity
+ *   of its {@link RigidBody}. It adds no delay, but can overshoot on impact.
+ *
+ * @category Interpolation
+ */
 export type InterpolationMode = 'interpolate' | 'extrapolate';
 
+/**
+ * Options for {@link Interpolation}.
+ *
+ * @category Interpolation
+ */
 export interface InterpolationConfig {
   mode?: InterpolationMode;
   snapThreshold?: number;
@@ -9,28 +24,13 @@ export interface InterpolationConfig {
 }
 
 /**
- * Component that smooths rendering of actors moved during fixed updates.
+ * Smooths the drawn movement of an actor that moves in `fixedUpdate`.
  *
- * Interpolator keeps local-space snapshots of the actor's Transform around
- * each fixed step and blends them into the render-facing
- * `renderX`/`renderY`/`renderRotation` values every render frame using
- * `Time.alpha`. The renderer prefers these values over the Transform.
+ * The transform keeps the real position. The renderer draws the smoothed one.
  *
- * The Transform component always holds the authoritative simulation state.
- * Interpolated values are only visible to the renderer and to consumers of
- * InterpolatorAPI, so simulation code can never accidentally read a
- * visually smoothed but physically incorrect position.
+ * @see [Interpolation](https://dachajs.org/systems/interpolation/)
  *
- * @example
- * ```typescript
- * actor.setComponent(new Interpolation({ mode: 'interpolate' }));
- *
- * // After teleporting the actor, skip smoothing for the jump:
- * actor.getComponent(Transform).world.position.x = 500;
- * actor.getComponent(Interpolation).snap();
- * ```
- *
- * @category Components
+ * @category Interpolation
  */
 export class Interpolation extends Component {
   /**
@@ -71,11 +71,23 @@ export class Interpolation extends Component {
   /** @internal Whether smoothing should be skipped at the next opportunity */
   _snapRequested: boolean;
 
-  /** Render-facing local-space position X, written by Interpolator */
+  /**
+   * Render-facing local-space position X, written by Interpolator
+   *
+   * @advanced
+   */
   renderX: number;
-  /** Render-facing local-space position Y, written by Interpolator */
+  /**
+   * Render-facing local-space position Y, written by Interpolator
+   *
+   * @advanced
+   */
   renderY: number;
-  /** Render-facing local-space rotation, written by Interpolator */
+  /**
+   * Render-facing local-space rotation, written by Interpolator
+   *
+   * @advanced
+   */
   renderRotation: number;
 
   constructor(config: InterpolationConfig = {}) {
@@ -109,6 +121,8 @@ export class Interpolation extends Component {
    * Whether the render-facing values hold a valid snapshot yet. `false`
    * until the Interpolator takes its first snapshot after the component is
    * (re)enabled.
+   *
+   * @advanced
    */
   get initialized(): boolean {
     return this._initialized;

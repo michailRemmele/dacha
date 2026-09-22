@@ -1,313 +1,302 @@
-import type { Actor } from '../actor';
+import type { Actor, ActorQuery } from '../actor';
 import type { Scene } from '../scene';
-import type { ActorEvent, SceneEvent, WorldEvent } from '../../types/events';
+import type { World } from '../world';
 import type { Event } from '../event-target';
 import type { Entity } from '../entity';
 import type { Component } from '../component';
 
 /**
- * Dispatched when a child entity is added
- *
- * @event
- * @type {AddChildEntityEvent}
- *
- * @category Core Events
+ * @internal The engine announces a new child on an entity with it.
  */
 export const AddChildEntity = 'AddChildEntity';
 /**
- * Dispatched when a child entity is removed
- *
- * @event
- * @type {RemoveChildEntityEvent}
- *
- * @category Core Events
+ * @internal The engine announces a removed child on an entity with it.
  */
 export const RemoveChildEntity = 'RemoveChildEntity';
 
 /**
- * Dispatched when an actor is added
+ * An actor starts matching an {@link ActorQuery}. See {@link AddActorEvent}.
  *
- * @event
- * @type {AddActorEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const AddActor = 'AddActor';
 /**
- * Dispatched when an actor is removed
+ * An actor stops matching an {@link ActorQuery}. See {@link RemoveActorEvent}.
  *
- * @event
- * @type {RemoveActorEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const RemoveActor = 'RemoveActor';
 
 /**
- * Dispatched to load a scene
+ * Loads a scene. See {@link LoadSceneEvent}.
  *
- * @event
- * @type {LoadSceneEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const LoadScene = 'LoadScene';
 /**
- * Dispatched to enter a scene
+ * Makes a loaded scene the active one. See {@link EnterSceneEvent}.
  *
- * @event
- * @type {EnterSceneEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const EnterScene = 'EnterScene';
 /**
- * Dispatched to exit a scene
+ * Leaves the active scene. See {@link ExitSceneEvent}.
  *
- * @event
- * @type {ExitSceneEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const ExitScene = 'ExitScene';
 /**
- * Dispatched to destroy a scene
+ * Destroys a loaded scene. See {@link DestroySceneEvent}.
  *
- * @event
- * @type {DestroySceneEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const DestroyScene = 'DestroyScene';
 
 /**
- * Dispatched when a scene is loaded
+ * A scene and its systems are ready. See {@link SceneLoadedEvent}.
  *
- * @event
- * @type {SceneLoadedEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const SceneLoaded = 'SceneLoaded';
 /**
- * Dispatched when a scene is entered
+ * A scene has become the active scene. See {@link SceneEnteredEvent}.
  *
- * @event
- * @type {SceneEnteredEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const SceneEntered = 'SceneEntered';
 /**
- * Dispatched when a scene is exited
+ * A scene has stopped being the active scene. See {@link SceneExitedEvent}.
  *
- * @event
- * @type {SceneExitedEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const SceneExited = 'SceneExited';
 /**
- * Dispatched when a scene is destroyed
+ * A scene has been destroyed. See {@link SceneDestroyedEvent}.
  *
- * @event
- * @type {SceneDestroyedEvent}
- *
- * @category Core Events
+ * @hidden
  */
 export const SceneDestroyed = 'SceneDestroyed';
 
 /**
- * Dispatched when a component is added
- *
- * @event
- * @type {AddComponentEvent}
- *
- * @category Core Events
+ * @internal The engine announces a new component on an actor with it.
  */
 export const AddComponent = 'AddComponent';
 /**
- * Dispatched when a component is removed
- *
- * @event
- * @type {RemoveComponentEvent}
- *
- * @category Core Events
+ * @internal The engine announces a removed component on an actor with it.
  */
 export const RemoveComponent = 'RemoveComponent';
 
-/**
- * Event signature for the {@link AddChildEntity} event
- *
- * @category Core Events
- */
-export type AddChildEntityEvent = Event<Entity> & {
+/** @internal */
+export interface AddChildEntityEvent extends Event<Entity> {
   /** Child entity that was added */
   child: Entity;
-};
-/**
- * Event signature for the {@link RemoveChildEntity} event
- *
- * @category Core Events
- */
-export type RemoveChildEntityEvent = Event<Entity> & {
+}
+/** @internal */
+export interface RemoveChildEntityEvent extends Event<Entity> {
   /** Child entity that was removed */
   child: Entity;
-};
+}
 
-/**
- * Event signature for the {@link AddComponent} event
- *
- * @category Core Events
- */
-export type AddComponentEvent = ActorEvent<{
+/** @internal */
+export interface AddComponentEvent extends Event<Actor> {
   /** Component instance */
   component: Component;
   /** Name of the component */
   name: string;
-}>;
-/**
- * Event signature for the {@link RemoveComponent} event
- *
- * @category Core Events
- */
-export type RemoveComponentEvent = ActorEvent<{
+}
+/** @internal */
+export interface RemoveComponentEvent extends Event<Actor> {
   /** Component instance */
   component: Component;
   /** Name of the component */
   name: string;
-}>;
+}
 
 /**
- * Event signature for the {@link AddActor} event
+ * An actor starts matching an {@link ActorQuery}: it gets the components of
+ * the filter, or it is added to the scene with them.
  *
- * @category Core Events
+ * The query dispatches it on itself, immediately. Listen on the query, not on
+ * the scene.
+ *
+ * Event name: `AddActor` from `dacha/events`.
+ *
+ * @example
+ * ```ts
+ * query.addEventListener(AddActor, ({ actor }) => {
+ *   // set up the new actor
+ * });
+ * ```
+ *
+ * @category Events
  */
-export type AddActorEvent = SceneEvent<{
-  /** Actor that was added */
+export interface AddActorEvent extends Event<ActorQuery> {
+  /** The actor that started matching the query. */
   actor: Actor;
-}>;
+}
 /**
- * Event signature for the {@link RemoveActor} event
+ * An actor stops matching an {@link ActorQuery}: it loses a component of the
+ * filter, or it is removed from the scene.
  *
- * @category Core Events
+ * The query dispatches it on itself, immediately. Listen on the query, not on
+ * the scene.
+ *
+ * Event name: `RemoveActor` from `dacha/events`.
+ *
+ * @category Events
  */
-export type RemoveActorEvent = SceneEvent<{
-  /** Actor that was removed */
+export interface RemoveActorEvent extends Event<ActorQuery> {
+  /** The actor that stopped matching the query. */
   actor: Actor;
-}>;
+}
 
 /**
- * Event signature for the {@link LoadScene} event
+ * Loads a scene: builds its actors and systems, then enters it. Dispatch it on
+ * the world.
  *
- * @category Core Events
+ * The change is queued. Wait for {@link SceneEnteredEvent | SceneEntered} if
+ * you need to know when the switch is done.
+ *
+ * Event name: `LoadScene` from `dacha/events`.
+ *
+ * @example
+ * ```ts
+ * world.dispatchEvent(LoadScene, { id: LEVEL_TWO_SCENE_ID });
+ * ```
+ *
+ * @see [Scenes and world](https://dachajs.org/concepts/scenes-and-world/)
+ *
+ * @category Events
  */
-export type LoadSceneEvent = WorldEvent<{
-  /** Id of the scene */
+export interface LoadSceneEvent extends Event<World> {
+  /** The id of the scene to load. */
   id: string;
   /**
-   * Whether to automatically enter the scene after loading
+   * Enters the scene after it is loaded. Set it to `false` to preload a scene
+   * and enter it later with {@link EnterSceneEvent | EnterScene}.
    *
-   * @default true
+   * @defaultValue `true`
    */
   autoEnter?: boolean;
   /**
-   * Whether to automatically destroy the previous scene after loading
+   * Destroys the scene you leave. Set it to `false` to keep it loaded, so you
+   * can return to it without rebuilding it. It has an effect only when the new
+   * scene is entered.
    *
-   * Works only if loaded scene is auto entered
-   *
-   * @default true
+   * @defaultValue `true`
    */
   autoDestroy?: boolean;
-}>;
+}
 
 /**
- * Event signature for the {@link EnterScene} event
+ * Makes an already loaded scene the active one. Dispatch it on the world.
  *
- * @category Core Events
+ * Event name: `EnterScene` from `dacha/events`.
+ *
+ * @category Events
  */
-export type EnterSceneEvent = WorldEvent<{
-  /** Id of the scene */
+export interface EnterSceneEvent extends Event<World> {
+  /** The id of the scene to enter. */
   id: string;
   /**
-   * Whether to automatically destroy the previous scene after entering
+   * Destroys the scene you leave.
    *
-   * @default true
+   * @defaultValue `true`
    */
   autoDestroy?: boolean;
-}>;
+}
 
 /**
- * Event signature for the {@link ExitScene} event
+ * Leaves the active scene, leaving no scene active. Dispatch it on the world.
  *
- * @category Core Events
+ * Event name: `ExitScene` from `dacha/events`.
+ *
+ * @category Events
  */
-export type ExitSceneEvent = WorldEvent<{
+export interface ExitSceneEvent extends Event<World> {
   /**
-   * Whether to automatically destroy the scene after exiting
+   * Destroys the scene you leave.
    *
-   * @default true
+   * @defaultValue `true`
    */
   autoDestroy?: boolean;
-}>;
+}
 
 /**
- * Event signature for the {@link DestroyScene} event
+ * Destroys a loaded scene. Dispatch it on the world.
  *
- * @category Core Events
+ * Event name: `DestroyScene` from `dacha/events`.
+ *
+ * @category Events
  */
-export type DestroySceneEvent = WorldEvent<{
-  /** Id of the scene */
+export interface DestroySceneEvent extends Event<World> {
+  /** The id of the scene to destroy. */
   id: string;
-}>;
+}
 
 /**
- * Event signature for the {@link SceneLoaded} event
+ * The world dispatches it when a scene and its systems are ready.
  *
- * @category Core Events
+ * Event name: `SceneLoaded` from `dacha/events`.
+ *
+ * @category Events
  */
-export type SceneLoadedEvent = WorldEvent<{
-  /** Scene that was loaded */
+export interface SceneLoadedEvent extends Event<World> {
+  /** The scene that was loaded. */
   scene: Scene;
-}>;
+}
 
 /**
- * Event signature for the {@link SceneEntered} event
+ * The world dispatches it when a scene has become the active scene.
  *
- * @category Core Events
+ * Event name: `SceneEntered` from `dacha/events`.
+ *
+ * @category Events
  */
-export type SceneEnteredEvent = WorldEvent<{
-  /** Scene that was entered */
+export interface SceneEnteredEvent extends Event<World> {
+  /** The scene that was entered. */
   scene: Scene;
-}>;
+}
 
 /**
- * Event signature for the {@link SceneExited} event
+ * The world dispatches it when a scene has stopped being the active scene.
  *
- * @category Core Events
+ * Event name: `SceneExited` from `dacha/events`.
+ *
+ * @category Events
  */
-export type SceneExitedEvent = WorldEvent<{
-  /** Scene that was exited */
+export interface SceneExitedEvent extends Event<World> {
+  /** The scene that was exited. */
   scene: Scene;
-}>;
+}
 
 /**
- * Event signature for the {@link SceneDestroyed} event
+ * The world dispatches it when a scene has been destroyed.
  *
- * @category Core Events
+ * Event name: `SceneDestroyed` from `dacha/events`.
+ *
+ * @category Events
  */
-export type SceneDestroyedEvent = WorldEvent<{
-  /** Scene that was destroyed */
+export interface SceneDestroyedEvent extends Event<World> {
+  /** The scene that was destroyed. */
   scene: Scene;
-}>;
+}
 
-export interface ActorCollectionEventMap {
+/**
+ * The events of {@link ActorQuery}: an actor starts or stops matching the query.
+ *
+ * @category Events
+ */
+export interface ActorQueryEventMap {
   [AddActor]: AddActorEvent;
   [RemoveActor]: RemoveActorEvent;
 }
 
+/** @internal The events every entity gets when its children change. */
 export interface EntityEventMap {
+  /** @internal */
   [AddChildEntity]: AddChildEntityEvent;
+  /** @internal */
   [RemoveChildEntity]: RemoveChildEntityEvent;
 }
 
@@ -326,7 +315,9 @@ declare module '../../types/events' {
   export interface SceneEventMap extends EntityEventMap {}
 
   export interface ActorEventMap extends EntityEventMap {
+    /** @internal */
     [AddComponent]: AddComponentEvent;
+    /** @internal */
     [RemoveComponent]: RemoveComponentEvent;
   }
 }

@@ -1,16 +1,4 @@
-export * from './engine/engine';
-export * from './engine/actor';
-export * from './engine/entity';
-export * from './engine/event-target';
-export * from './engine/events';
-export * from './engine/math-lib';
-export * from './engine/scene';
-export * from './engine/system';
-export * from './engine/component';
-export * from './engine/world';
-export * from './engine/asset';
-
-export * from './contrib/components';
-export * from './contrib/systems';
-export * from './contrib/events';
-export * from './contrib/assets';
+export * from './index';
+export * from './events';
+export type * from './contrib/systems/renderer/types';
+export type * from './contrib/systems/physics-system/types';

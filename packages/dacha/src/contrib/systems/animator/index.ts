@@ -20,12 +20,17 @@ import { setValue } from './utils';
 const FRAME_RATE = 0.1;
 
 /**
- * Animator system that manages the animation of actors with {@link Animatable} components
- * using the state machine approach
+ * Plays the animations of actors that have an {@link Animatable} component.
  *
- * @extends SceneSystem
+ * Every frame the system moves the timeline of the current state forward, writes the
+ * values of the current frame to the actor, and checks the transitions to other states.
  *
- * @category Systems
+ * Put `Animator` after the systems that change the values its conditions read, and
+ * before {@link Renderer}.
+ *
+ * @see [Animation](https://dachajs.org/systems/animation/)
+ *
+ * @category Animation
  */
 export class Animator extends SceneSystem {
   private actorQuery: ActorQuery;

@@ -2,8 +2,14 @@ import { Component } from '../../../engine/component';
 import { MathOps, Vector, type Point } from '../../../engine/math-lib';
 import type { Actor } from '../../../engine/actor';
 
+/** @inline */
 export type CharacterMotionMode = 'surface' | 'free';
 
+/**
+ * Options for {@link CharacterBody}.
+ *
+ * @category Character Controller
+ */
 export interface CharacterBodyConfig {
   motionMode?: CharacterMotionMode;
   upDirection?: Point;
@@ -16,13 +22,14 @@ export interface CharacterBodyConfig {
 }
 
 /**
- * Kinematic character controller state and movement settings.
+ * Makes an actor a character for {@link CharacterController}.
  *
- * The controller system consumes `velocity` during fixed updates, performs
- * sweep/slide collision handling, and writes the resulting target through the
- * actor's kinematic rigid body.
+ * Set `velocity` to move the character. After each fixed step, read `onGround`,
+ * `onWall` and `onCeiling`.
  *
- * @category Components
+ * @see [Character controller](https://dachajs.org/systems/character-controller/)
+ *
+ * @category Character Controller
  */
 export class CharacterBody extends Component {
   private _up: Vector;

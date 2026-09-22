@@ -1,28 +1,21 @@
 import { Component } from '../../../engine/component';
 
+/**
+ * Options for {@link Camera}.
+ *
+ * @category Camera
+ */
 export interface CameraConfig {
   zoom: number;
   current: boolean;
 }
 
 /**
- * Camera component for defining how a scene should be viewed.
+ * Makes an actor a camera. The game shows the scene through the current camera.
  *
- * Camera component marks an actor as the possible camera to view the scene.
+ * @see [Camera](https://dachajs.org/systems/camera/)
  *
- * @example
- * ```typescript
- * // Create a camera
- * const camera = new Camera({
- *   zoom: 2,
- *   current: true,
- * });
- * ```
- *
- * // Add to actor
- * actor.setComponent(camera);
- *
- * @category Components
+ * @category Camera
  */
 export class Camera extends Component {
   /** Zoom of the camera */

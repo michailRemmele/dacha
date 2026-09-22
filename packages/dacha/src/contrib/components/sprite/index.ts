@@ -10,10 +10,16 @@ interface RenderData {
   textureArrayKey?: string;
 }
 
+/** @inline */
 type FitType = 'stretch' | 'repeat';
 
 export { type BlendingMode } from '../../types/view';
 
+/**
+ * Options for {@link Sprite}.
+ *
+ * @category Rendering
+ */
 export interface SpriteConfig {
   src?: string;
   width?: number;
@@ -32,39 +38,11 @@ export interface SpriteConfig {
 }
 
 /**
- * Sprite component for rendering 2D textures.
+ * Draws an image, a frame of a sprite sheet, or a tiled image.
  *
- * Handles the visual representation of an actor using a texture.
- * It can be used to render a single texture or a texture slice from a sprite sheet.
+ * @see [Sprite](https://dachajs.org/systems/rendering/components/#sprite)
  *
- * @example
- * ```typescript
- * // Create a basic sprite
- * const sprite = new Sprite({
- *   src: 'assets/player.png',
- *   width: 64,
- *   height: 64,
- *   slice: 0,
- *   flipX: false,
- *   flipY: false,
- *   sortingLayer: 'units',
- *   sortOffset: { x: 0, y: 0 },
- *   fit: 'stretch',
- *   color: '#ffffff',
- *   blending: 'normal',
- *   opacity: 1,
- *   disabled: false
- * });
- *
- * // Add to actor
- * actor.setComponent(sprite);
- *
- * // Modify properties
- * sprite.opacity = 0.5; // Make semi-transparent
- * sprite.color = '#ff0000'; // Apply a red tint
- * ```
- *
- * @category Components
+ * @category Rendering
  */
 export class Sprite extends Component {
   /** Path to the texture image file */
@@ -101,7 +79,7 @@ export class Sprite extends Component {
   blending: BlendingMode;
   /** Opacity from 0 (transparent) to 1 (opaque) */
   opacity: number;
-  /** Internal rendering data */
+  /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
 
   /**

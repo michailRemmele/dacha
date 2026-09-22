@@ -8,7 +8,7 @@
  *
  * All durations are expressed in seconds.
  *
- * @category Core
+ * @category Systems
  */
 export class Time {
   private _deltaTime: number;

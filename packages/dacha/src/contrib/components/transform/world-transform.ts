@@ -4,6 +4,11 @@ import type { Transform } from '../';
 import { WorldPosition } from './world-position';
 import { WorldScale } from './world-scale';
 
+/**
+ * Position, rotation and scale in the scene. It is `transform.world`.
+ *
+ * @category Actors & Components
+ */
 export class WorldTransform {
   private transform: Transform;
 

@@ -10,14 +10,16 @@ import { KeyboardInput } from '../../events';
 import type { KeyboardInputEvent } from '../../events';
 
 /**
- * Keyboard control system that maps keyboard input to actor events
+ * Turns keyboard input into events on actors.
  *
- * Processes keyboard input events and dispatches corresponding control events
- * to actors with {@link KeyboardControl} components
+ * The system reads {@link KeyboardInputEvent | KeyboardInput} events. For every actor with a
+ * {@link KeyboardControl} component, it matches them against the bindings of the
+ * component and dispatches the bound events on the actor. It needs
+ * {@link KeyboardInputSystem}.
  *
- * @extends WorldSystem
- * 
- * @category Systems
+ * @see [Input](https://dachajs.org/systems/input/)
+ *
+ * @category Input
  */
 export class KeyboardControlSystem extends WorldSystem {
   private world: World;

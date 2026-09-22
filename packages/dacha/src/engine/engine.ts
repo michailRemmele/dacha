@@ -9,11 +9,34 @@ import { GameLoop } from './game-loop';
 import type { PerformanceSettings } from './game-loop';
 import { Time } from './time';
 
+/**
+ * Options for {@link Engine}.
+ *
+ * @category Engine
+ */
 export interface EngineOptions {
+  /** The game configuration: scenes, templates, systems, assets and global options. */
   config: Config;
+  /**
+   * The system classes the game can use. The configuration picks from them by
+   * `systemName`.
+   */
   systems: SystemConstructor[];
+  /**
+   * The component classes the game can use. The configuration picks from them by
+   * `componentName`.
+   */
   components: ComponentConstructor[];
+  /**
+   * The asset classes the game can use. The configuration picks from them by
+   * `assetName`.
+   */
   assets: AssetConstructor[];
+  /**
+   * Extra data for systems, keyed by `systemName`. A system gets its entry in
+   * `options.resources`. For example, {@link BehaviorSystem} gets the behavior
+   * classes this way.
+   */
   resources?: Record<string, unknown>;
 }
 
@@ -21,7 +44,7 @@ export interface EngineOptions {
  * Main game engine responsible for bootstrapping scenes and systems, managing the
  * game loop, and controlling lifecycle actions (play, pause, stop).
  *
- * @category Core
+ * @category Engine
  */
 export class Engine {
   private options: EngineOptions;

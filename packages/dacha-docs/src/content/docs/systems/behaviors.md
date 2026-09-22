@@ -74,3 +74,9 @@ it adds the new component, so the system creates instances from the new list.
 ## Where behaviors run in the frame
 
 When `BehaviorSystem` gets its turn in the systems list, it calls `update` and `fixedUpdate` on every behavior of every actor.
+
+## API reference
+
+- [`BehaviorSystem`](/api/classes/BehaviorSystem.html)
+- [`Behaviors`](/api/classes/Behaviors.html)
+- [`Behavior`](/api/classes/Behavior.html)

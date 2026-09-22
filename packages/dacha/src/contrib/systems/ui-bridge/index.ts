@@ -4,15 +4,39 @@ import type { WorldSystemOptions } from '../../../engine/system';
 import type { TemplateCollection } from '../../../engine/template';
 import type { ActorSpawner } from '../../../engine/actor';
 
+/**
+ * What `onInit` of the interface module gets.
+ *
+ * @category Game UI
+ */
 export interface UIOptions {
+  /** The world. Use it to dispatch and listen for events, and to reach `systemApi`. */
   world: World;
+  /** The actor templates. */
   templateCollection: TemplateCollection;
+  /** Creates actors from templates. */
   actorSpawner: ActorSpawner;
+  /** The global options of the game, by name. */
   globalOptions: Record<string, unknown>;
 }
 
+/**
+ * Starts the interface. {@link UIBridge} calls it when the world is ready.
+ *
+ * @category Game UI
+ */
 export type UIInitFn = (options: UIOptions) => void;
+/**
+ * Stops the interface. {@link UIBridge} calls it when the world is destroyed.
+ *
+ * @category Game UI
+ */
 export type UIDestroyFn = () => void;
+/**
+ * Loads the interface module. It usually is `() => import('./ui')`.
+ *
+ * @category Game UI
+ */
 export type LoadUIFn = () => Promise<{
   onInit: UIInitFn;
   onDestroy: UIDestroyFn;
@@ -23,15 +47,30 @@ interface UIBridgeResources {
 }
 
 /**
- * UI bridge system that manages external UI integration
+ * Loads your game interface and runs it together with the game.
  *
- * Handles loading and lifecycle management of external UI modules.
- * Provides a bridge between the game engine and external UI frameworks,
- * allowing seamless integration of UI components with the game world.
+ * Pass a loader in `resources` under `UIBridge.systemName`. The loader returns a module
+ * with `onInit` and `onDestroy`, see {@link LoadUIFn}. The system calls `onInit` with
+ * {@link UIOptions} when the world is ready, and `onDestroy` when the world is destroyed.
  *
- * @extends WorldSystem
- * 
- * @category Systems
+ * @example
+ * ```ts
+ * const engine = new Engine({
+ *   config,
+ *   systems: [UIBridge, ...gameSystems],
+ *   components: [...gameComponents],
+ *   assets: [],
+ *   resources: {
+ *     [UIBridge.systemName]: {
+ *       loadUI: () => import('./ui'),
+ *     },
+ *   },
+ * });
+ * ```
+ *
+ * @see [Game UI](https://dachajs.org/systems/game-ui/)
+ *
+ * @category Game UI
  */
 export class UIBridge extends WorldSystem {
   private actorSpawner: ActorSpawner;

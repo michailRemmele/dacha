@@ -15,67 +15,63 @@ const MOUSE_BUTTONS_MAP = {
   mouseleave: 0,
 } as Record<string, number>;
 
+/**
+ * A mouse binding as {@link MouseControl} stores it at runtime.
+ *
+ * @category Input
+ */
 export interface MouseEventBind {
+  /** The name of the event to dispatch on the actor. */
   eventType: string;
+  /** Values to put in the event payload. */
   attrs: InputEventAttributes;
 }
 
+/** @inline */
 export type InputEventBindings = Record<string, Record<string, MouseEventBind>>;
 
+/**
+ * One mouse binding in the configuration.
+ *
+ * @see [Mouse control](https://dachajs.org/systems/input/#mouse-control)
+ *
+ * @category Input
+ */
 export interface MouseEventBindConfig {
+  /**
+   * The browser event: `mousedown`, `mouseup`, `mousemove`, `click`,
+   * `contextmenu`, `dblclick`, `mouseenter` or `mouseleave`.
+   */
   event: string;
+  /**
+   * The mouse button for `mousedown` and `mouseup`: `0` is left, `1` is middle,
+   * `2` is right.
+   */
   button?: number;
+  /** The name of the event to dispatch on the actor. */
   eventType: string;
+  /** Values to put in the event payload. */
   attrs: InputEventAttributeConfig[];
 }
 
+/**
+ * Options for {@link MouseControl}.
+ *
+ * @category Input
+ */
 export interface MouseControlConfig {
+  /** The mouse bindings of the actor. */
   inputEventBindings: MouseEventBindConfig[];
 }
 
 /**
- * MouseControl component for handling mouse input events.
+ * Binds mouse events to events on the actor. {@link MouseControlSystem}
+ * dispatches the bound event when the mouse event happens anywhere in the game
+ * window. It does not check whether the pointer is over the actor.
  *
- * Handles the mouse input events for an actor.
- * It can be used to bind mouse events to game actions.
+ * @see [Mouse control](https://dachajs.org/systems/input/#mouse-control)
  *
- * @example
- * ```typescript
- * // Create a mouse control
- * const mouseControl = new MouseControl({
- *   inputEventBindings: [
- *     {
- *       event: 'mousedown',
- *       button: 0,
- *       eventType: 'ATTACK',
- *       attrs: [
- *         {
- *           name: 'type',
- *           type: 'string',
- *           value: 'lightAttack',
- *         },
- *       ],
- *     },
- *     {
- *       event: 'mousedown',
- *       button: 2,
- *       eventType: 'ATTACK',
- *       attrs: [
- *         {
- *           name: 'type',
- *           type: 'string',
- *           value: 'heavyAttack',
- *         },
- *       ],
- *     },
- *   ],
- * });
- *
- * // Add to actor
- * actor.setComponent(mouseControl);
- * ```
- *
- * @category Components
+ * @category Input
  */
 export class MouseControl extends Component {
   /** Input event bindings */

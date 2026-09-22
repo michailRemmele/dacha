@@ -1,7 +1,7 @@
 /**
  * A 2D vector with x and y coordinates.
  *
- * @category Core
+ * @category Math
  */
 export class Vector {
   /** X coordinate of the vector */

@@ -214,6 +214,20 @@ dispatched through a shared `eventQueue`
   base config carries `types: ["jest", "node"]` for the tests, and `@types/node` clashes
   with `lib.dom` (TS2430), so documenting the build config both fixes that and documents
   exactly the published surface.
+- The API reference is strict. `src/index.docs.ts` only re-exports the four public import
+  paths, and typedoc runs with `treatWarningsAsErrors`: a public class, interface, type,
+  function, method or accessor without TSDoc, a `{@link}` that does not resolve, or a
+  public signature that uses an unexported type fails `npm run docs -w dacha` and the docs
+  workflow. Give every public symbol a `@category` from `categoryOrder` in `typedoc.json`
+  (they mirror the guide's sidebar), hide engine-only members with `@internal`, and mark
+  rarely needed ones `@advanced` (hidden by default in the reference). The local
+  `typedoc-plugin.mjs` drops lifecycle hooks from built-in system pages, drops the inherited
+  `componentName`, `assetName` and `behaviorName` from subclasses (the decorators set them;
+  `systemName` stays because games read it), copies member
+  comments onto component `*Config` fields and onto the undocumented half of get/set pairs,
+  and defines the `dacha` theme, which leaves out the code preview typedoc puts on interface
+  pages. An event is documented on its `*Event` interface (fields, where it is dispatched,
+  and "Event name: `X` from `dacha/events`"); the event constant itself is `@hidden`.
 
 ---
 
