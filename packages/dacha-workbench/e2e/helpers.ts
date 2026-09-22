@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test';
 import type { Page, Locator, ElectronApplication } from '@playwright/test';
 
 export const MULTI_SELECT_MODIFIER: 'Meta' | 'Control' =
@@ -98,6 +99,12 @@ export const clickTreeNode = async (
     : window.locator(TREE_NODE_SELECTOR, { hasText: text });
 
   await locator.click({ modifiers: options.modifiers });
+
+  if (!options.modifiers?.length) {
+    await expect(
+      locator.getByTestId('explorer-tree-node-title'),
+    ).toHaveAttribute('data-selected', 'true');
+  }
 };
 
 export const treeNodesWithExactText = (window: Page, text: string): Locator =>
