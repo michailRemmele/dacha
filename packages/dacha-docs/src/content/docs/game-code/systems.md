@@ -17,9 +17,8 @@ Pick the base class by asking whether the system must survive a scene change. If
 ## A complete system
 
 ```ts
-import { ActorQuery, SceneSystem, CharacterBody } from 'dacha';
+import { ActorQuery, SceneSystem, CharacterBody, DefineSystem } from 'dacha';
 import type { Scene, SceneSystemOptions } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
 
 import Movement from '../../components/movement/movement.component';
 import { MoveRequest } from '../../events';
@@ -84,9 +83,8 @@ A system reads its own settings from the same options object, and the field deco
 them in the editor:
 
 ```ts
-import { SceneSystem } from 'dacha';
+import { SceneSystem, DefineSystem, DefineField } from 'dacha';
 import type { SceneSystemOptions } from 'dacha';
-import { DefineSystem, DefineField } from 'dacha-workbench/decorators';
 
 interface SpawnerOptions extends SceneSystemOptions {
   spawnInterval: number;
@@ -150,9 +148,8 @@ class with no decorator and no file-name suffix. Its constructor is the key othe
 look it up by:
 
 ```ts
-import { WorldSystem } from 'dacha';
+import { WorldSystem, DefineSystem } from 'dacha';
 import type { WorldSystemOptions } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
 
 export class ScoreAPI {
   points = 0;

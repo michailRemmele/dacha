@@ -16,9 +16,8 @@ to a system, and the differences are the interesting part.
 ## A complete behavior
 
 ```ts
-import { Behavior } from 'dacha';
+import { Behavior, DefineBehavior, DefineField } from 'dacha';
 import type { Actor, BehaviorOptions, Time } from 'dacha';
-import { DefineBehavior, DefineField } from 'dacha-workbench/decorators';
 
 interface GrowPlantOptions extends BehaviorOptions {
   secondsPerStage: number;

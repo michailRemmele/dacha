@@ -11,8 +11,7 @@ describing it with a decorator.
 ## A complete component
 
 ```ts
-import { Component } from 'dacha';
-import { DefineComponent, DefineField } from 'dacha-workbench/decorators';
+import { Component, DefineComponent, DefineField } from 'dacha';
 
 interface HealthConfig {
   points: number;
@@ -44,8 +43,12 @@ That is the whole thing. Nothing else has to be registered anywhere.
 
 Two rules are not visible in the code. The class has to be the **default export**, because
 that is what the [glob](/game-code/auto-registration/) collects. And the name in
-`@DefineComponent` is the name the configuration uses, so you never assign `componentName`
-yourself.
+`@DefineComponent` is the name the configuration uses, so with the decorator you never assign
+`componentName` yourself.
+
+The decorator is optional. A class can set `static componentName = 'Health'` instead. The
+game then finds it, but the editor does not show it. The editor lists only classes with a
+decorator.
 
 ## What survives a save
 
