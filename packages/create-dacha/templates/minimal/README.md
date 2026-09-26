@@ -47,8 +47,8 @@ Name the file after what it declares and give it a default export:
 | `*.behavior.ts` | A behavior |
 
 `src/index.ts` globs for these, so a new file is picked up by the game with no
-wiring. The decorators from `dacha-workbench/decorators` register the same class
-with the editor, so its fields become editable in the inspector. The editor can
+wiring. The `Define*` decorators from `dacha` name the class and describe it to the
+editor, so its fields become editable in the inspector. The editor can
 generate these files for you.
 
 Two things that are easy to get wrong:

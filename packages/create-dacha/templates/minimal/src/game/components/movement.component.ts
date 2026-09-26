@@ -1,5 +1,4 @@
-import { Component } from 'dacha';
-import { DefineComponent, DefineField } from 'dacha-workbench/decorators';
+import { Component, DefineComponent, DefineField } from 'dacha';
 
 interface MovementConfig {
   speed: number;
@@ -9,7 +8,7 @@ interface MovementConfig {
   name: 'Movement',
 })
 export default class Movement extends Component {
-  @DefineField()
+  @DefineField({ initialValue: 120 })
   speed: number;
 
   directionX: number;

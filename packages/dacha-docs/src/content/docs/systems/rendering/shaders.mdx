@@ -45,9 +45,8 @@ In the editor, pick the shader under *Material* in the `Mesh` component. Its fie
 A shader extends `Shader` and is named by `@DefineShader`. This one flashes the mesh white:
 
 ```ts
-import { Shader } from 'dacha';
+import { Shader, DefineShader } from 'dacha';
 import type { ShaderUniformDefinitions, ShaderUniforms } from 'dacha/renderer';
-import { DefineShader } from 'dacha-workbench/decorators';
 
 interface HitFlashOptions {
   amount: number;

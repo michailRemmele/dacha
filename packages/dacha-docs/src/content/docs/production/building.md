@@ -46,16 +46,8 @@ and inlining that the bundler applies to code.
 looks for. A class that reaches the engine without its name stops the
 game at startup.
 
-These are TypeScript's legacy decorators. The compiler options the starter project uses are a
-working baseline:
-
-```json
-{
-  "experimentalDecorators": true,
-  "emitDecoratorMetadata": true,
-  "useDefineForClassFields": false
-}
-```
+Your bundler has to compile the decorator syntax, because not every browser runs it yet.
+TypeScript and esbuild (which Vite uses) do this. So does Babel with its decorators plugin.
 
 ## Register your classes explicitly
 

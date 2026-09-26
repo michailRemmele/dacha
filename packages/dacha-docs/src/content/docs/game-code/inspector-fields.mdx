@@ -18,18 +18,29 @@ Everything on this page works the same way on a component, on a
 
 ```ts
 @DefineField()
+name: string;
+```
+
+That is a text field named `name`, labeled **Name**, starting at `''`.
+
+The bare form is for string fields. For any other field, give a `type`.
+Without a `type`, the editor tries to pick the widget from the `initialValue`:
+
+| `initialValue` | The editor draws |
+| --- | --- |
+| A number | A number input |
+| A string | A single-line text input |
+| A boolean | A checkbox |
+| `{ x, y }` | Paired X and Y inputs |
+
+```ts
+@DefineField({ initialValue: 5 })
 speed: number;
 ```
 
-That is a field named `speed`, labeled **Speed**, starting at `0`.
-
-:::caution
-The bare form reads the property's type from the metadata TypeScript emits, and it
-recognizes only `string`, `number` and `boolean`. Anything else becomes a text input.
-Decorators need `experimentalDecorators` in your `tsconfig.json`, and this metadata needs
-`emitDecoratorMetadata`. The [starter project](/getting-started/installation/) sets both.
-Passing `type` explicitly settles the question either way.
-:::
+TypeScript checks the decorator against the field. A bare `@DefineField()` on a `number`
+field is a compile error. So is an `initialValue` of the wrong type, or a `type` whose widget
+cannot hold the field's value.
 
 ## Choosing the widget
 
@@ -143,6 +154,9 @@ The inspector draws fields in the order you declare them. A run of neighboring f
 the same `section` becomes one group, and a field without a `section` ends that run. So
 declaring the same section name again further down draws a second group with the same title.
 Keep the fields of one section together.
+
+`@DefineField` also works on a getter or a setter. Decorate one half of a
+get/set pair, not both. These fields keep their place in the declaration order too.
 
 ## Showing a field only when it matters
 
