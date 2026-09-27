@@ -1,4 +1,5 @@
 import { Asset } from '../../../engine/asset';
+import { DefineAsset, DefineField } from '../../../engine/decorators';
 import type { AssetOptions } from '../../../engine/asset';
 
 /**
@@ -16,8 +17,10 @@ export interface TextureData {
  *
  * @category Assets
  */
+@DefineAsset({ name: 'texture' })
 export class Texture extends Asset {
   /** Path to the image file */
+  @DefineField({ type: 'file', extensions: ['png', 'jpg', 'jpeg', 'webp'] })
   src: string;
 
   constructor(options: AssetOptions<TextureData>) {
@@ -26,5 +29,3 @@ export class Texture extends Asset {
     this.src = options.data.src ?? '';
   }
 }
-
-Texture.assetName = 'texture';

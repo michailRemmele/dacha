@@ -1,8 +1,10 @@
 import type { Graphics } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
+import { sortingLayerOptions } from '../../systems/renderer/sorting-layer-options';
 import type { Point } from '../../../engine/math-lib';
-import { type BlendingMode } from '../../types/view';
+import { type BlendingMode } from '../../systems/renderer/blending-mode';
 
 interface RenderData {
   view: Graphics;
@@ -180,12 +182,83 @@ export type ShapeGeometry =
  *
  * @category Rendering
  */
+@DefineComponent({
+  name: 'Shape',
+  icon: 'Shapes4',
+  sections: {
+    geometry: { defaultOpen: true },
+  },
+  fields: [
+    {
+      name: 'type',
+      type: 'select',
+      initialValue: 'rectangle',
+      options: ['rectangle', 'roundRectangle', 'circle', 'ellipse', 'line'],
+    },
+    {
+      name: 'size',
+      type: 'vector',
+      initialValue: { x: 10, y: 10 },
+      section: 'geometry',
+      dependency: {
+        name: 'type',
+        value: 'rectangle|roundRectangle',
+      },
+    },
+    {
+      name: 'radius',
+      type: 'number',
+      initialValue: 5,
+      section: 'geometry',
+      dependency: {
+        name: 'type',
+        value: 'roundRectangle|circle',
+      },
+    },
+    {
+      name: 'radius',
+      type: 'vector',
+      initialValue: { x: 5, y: 5 },
+      section: 'geometry',
+      dependency: {
+        name: 'type',
+        value: 'ellipse',
+      },
+    },
+    {
+      name: 'point1',
+      type: 'vector',
+      initialValue: { x: -5, y: 0 },
+      section: 'geometry',
+      dependency: {
+        name: 'type',
+        value: 'line',
+      },
+    },
+    {
+      name: 'point2',
+      type: 'vector',
+      initialValue: { x: 5, y: 0 },
+      section: 'geometry',
+      dependency: {
+        name: 'type',
+        value: 'line',
+      },
+    },
+  ],
+})
 export class Shape extends Component {
   /** Geometry of the shape */
   geometry: ShapeGeometry;
   /** Color of the stroke */
+  @DefineField({ type: 'color', initialValue: '#fff', section: 'appearance' })
   strokeColor?: string;
   /** Width of the stroke */
+  @DefineField({
+    initialValue: 0,
+    section: 'appearance',
+    dependency: { name: 'pixelLine', value: false },
+  })
   strokeWidth: number;
   /** Alignment of the stroke relative to the path
    *
@@ -193,21 +266,48 @@ export class Shape extends Component {
    * 0.5 - Center of the path
    * 1 - Inside of the shape
    */
+  @DefineField({
+    type: 'select',
+    initialValue: 0.5,
+    section: 'appearance',
+    options: [
+      { title: 'centered', value: 0.5 },
+      { title: 'inside', value: 1 },
+      { title: 'outside', value: 0 },
+    ],
+  })
   strokeAlignment: number;
   /** Whether the shape stroke should remain 1 pixel wide regardless of the scale */
+  @DefineField({ initialValue: false, section: 'appearance' })
   pixelLine: boolean;
   /** Fill color of the shape */
+  @DefineField({ type: 'color', initialValue: '#fff', section: 'appearance' })
   fill?: string;
-  /** Opacity of the shape */
-  opacity: number;
   /** Blending mode of the shape */
+  @DefineField({
+    type: 'select',
+    initialValue: 'normal',
+    section: 'appearance',
+    options: ['normal', 'addition', 'subtract', 'multiply'],
+  })
   blending: BlendingMode;
-  /** Whether the shape is disabled */
-  disabled: boolean;
-  /** Sorting layer of the shape */
-  sortingLayer: string;
+  /** Opacity of the shape */
+  @DefineField({ initialValue: 1, section: 'appearance' })
+  opacity: number;
   /** Center point of the shape */
+  @DefineField({ initialValue: { x: 0, y: 0 }, section: 'sorting' })
   sortOffset: Point;
+  /** Sorting layer of the shape */
+  @DefineField({
+    type: 'select',
+    initialValue: 'default',
+    section: 'sorting',
+    options: sortingLayerOptions,
+  })
+  sortingLayer: string;
+  /** Whether the shape is disabled */
+  @DefineField({ initialValue: false })
+  disabled: boolean;
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
 
@@ -268,5 +368,3 @@ export class Shape extends Component {
     }
   }
 }
-
-Shape.componentName = 'Shape';

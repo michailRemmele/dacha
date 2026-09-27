@@ -18,8 +18,7 @@ export interface FilterEffectConfig {
 /**
  * Base class for post-processing effects on the whole screen.
  *
- * Extend it and name the class with `@DefineFilterEffect` from
- * `dacha-workbench/decorators`.
+ * Extend it and name the class with {@link DefineFilterEffect}.
  *
  * @see [Filter effects](https://dachajs.org/systems/rendering/filter-effects/)
  *
@@ -27,8 +26,8 @@ export interface FilterEffectConfig {
  */
 export abstract class FilterEffect {
   /**
-   * The name the configuration uses for the filter effect. `@DefineFilterEffect` from
-   * `dacha-workbench/decorators` sets it, so a game usually does not assign it.
+   * The name the configuration uses for the filter effect. {@link DefineFilterEffect}
+   * sets it, so a game usually does not assign it.
    */
   static behaviorName: string;
   /** Runs when the effect is added. Returns a pixi.js `Filter`. */

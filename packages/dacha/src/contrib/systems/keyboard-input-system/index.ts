@@ -1,4 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { World } from '../../../engine/world';
 import { KeyboardInput } from '../../events';
@@ -25,6 +26,26 @@ interface KeyboardInputSystemOptions extends WorldSystemOptions {
  *
  * @category Input
  */
+@DefineSystem({
+  name: 'KeyboardInputSystem',
+  icon: 'Keyboard',
+  fields: [
+    {
+      name: 'windowNodeId',
+      type: 'string',
+      initialValue: 'root',
+      dependency: {
+        name: 'useWindow',
+        value: false,
+      },
+    },
+    {
+      name: 'useWindow',
+      type: 'boolean',
+      initialValue: true,
+    },
+  ],
+})
 export class KeyboardInputSystem extends WorldSystem {
   private world: World;
   private inputListener: InputListener;
@@ -58,5 +79,3 @@ export class KeyboardInputSystem extends WorldSystem {
     this.inputListener.clear();
   }
 }
-
-KeyboardInputSystem.systemName = 'KeyboardInputSystem';

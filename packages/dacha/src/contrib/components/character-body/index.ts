@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 import { MathOps, Vector, type Point } from '../../../engine/math-lib';
 import type { Actor } from '../../../engine/actor';
 
@@ -31,6 +32,13 @@ export interface CharacterBodyConfig {
  *
  * @category Character Controller
  */
+@DefineComponent({
+  name: 'CharacterBody',
+  icon: 'PersonFill',
+  sections: {
+    motion: { defaultOpen: true },
+  },
+})
 export class CharacterBody extends Component {
   private _up: Vector;
 
@@ -40,21 +48,61 @@ export class CharacterBody extends Component {
   _needsRecovery: boolean;
 
   /** Controls contact classification and whether ground snapping is enabled. */
+  @DefineField({
+    type: 'select',
+    initialValue: 'surface',
+    section: 'motion',
+    options: ['surface', 'free'],
+  })
   motionMode: CharacterMotionMode;
-  /** Desired character velocity in world units per second */
-  velocity: Vector;
-  /** Small distance kept between the character shape and blocking colliders */
-  skinWidth: number;
+
+  /** Direction treated as up for ground, ceiling, slopes, ground probes, and jumps */
+  @DefineField({
+    initialValue: { x: 0, y: -1 },
+    section: 'motion',
+    dependency: { name: 'motionMode', value: 'surface' },
+  })
+  get upDirection(): Vector {
+    return this._up;
+  }
+
+  set upDirection(value: Vector) {
+    this._up = value.clone().normalize();
+
+    if (this._up.magnitude === 0) {
+      throw new Error('Character controller upDirection must be non-zero');
+    }
+  }
+
   /** Maximum walkable ground angle in radians, measured from upDirection */
+  @DefineField({
+    initialValue: 45,
+    section: 'motion',
+    dependency: { name: 'motionMode', value: 'surface' },
+  })
   maxSlopeAngle: number;
+  /** Distance used to probe opposite upDirection and keep ground contact over small gaps */
+  @DefineField({
+    initialValue: 1,
+    section: 'motion',
+    dependency: { name: 'motionMode', value: 'surface' },
+  })
+  groundSnapDistance: number;
+  /** Small distance kept between the character shape and blocking colliders */
+  @DefineField({ initialValue: 0.1, section: 'collision' })
+  skinWidth: number;
   /** Maximum sweep/slide collision iterations used during one fixed update */
+  @DefineField({ initialValue: 4, section: 'collision' })
   maxSlides: number;
   /** Maximum overlap depenetration iterations used when recovery is requested */
+  @DefineField({ initialValue: 3, section: 'collision' })
   maxRecoveries: number;
-  /** Distance used to probe opposite upDirection and keep ground contact over small gaps */
-  groundSnapDistance: number;
   /** Whether the controller should be ignored by CharacterController */
+  @DefineField({ initialValue: false })
   disabled: boolean;
+
+  /** Desired character velocity in world units per second */
+  velocity: Vector;
 
   /** Whether the controller is standing on walkable ground after the last fixed update */
   onGround: boolean;
@@ -95,19 +143,6 @@ export class CharacterBody extends Component {
     this.groundActor = null;
   }
 
-  /** Direction treated as up for ground, ceiling, slopes, ground probes, and jumps */
-  get upDirection(): Vector {
-    return this._up;
-  }
-
-  set upDirection(value: Vector) {
-    this._up = value.clone().normalize();
-
-    if (this._up.magnitude === 0) {
-      throw new Error('Character controller upDirection must be non-zero');
-    }
-  }
-
   /**
    * Adds a one-step world-space displacement request.
    *
@@ -125,5 +160,3 @@ export class CharacterBody extends Component {
     this._needsRecovery = true;
   }
 }
-
-CharacterBody.componentName = 'CharacterBody';

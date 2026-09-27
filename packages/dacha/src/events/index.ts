@@ -51,4 +51,4 @@ export type {
   InputEventAttributeConfig,
   InputEventAttributes,
   AttributeValue,
-} from '../contrib/types/input-events';
+} from '../contrib/events/input-events';

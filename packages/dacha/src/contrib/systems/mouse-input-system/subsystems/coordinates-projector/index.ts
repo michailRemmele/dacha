@@ -6,7 +6,7 @@ import { CameraAPI } from '../../../camera-system';
 import {
   getProjectedX,
   getProjectedY,
-} from '../../../../utils/coordinates-projection';
+} from './coordinates-projection';
 
 export class CoordinatesProjector {
   private world: World;

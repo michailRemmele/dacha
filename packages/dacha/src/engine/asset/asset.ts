@@ -27,8 +27,7 @@ export abstract class Asset {
   /**
    * The name the configuration uses for the asset kind, such as `texture`.
    *
-   * `@DefineAsset` from `dacha-workbench/decorators` sets it, so a game usually
-   * does not assign it.
+   * {@link DefineAsset} sets it, so a game usually does not assign it.
    */
   static assetName: string;
 

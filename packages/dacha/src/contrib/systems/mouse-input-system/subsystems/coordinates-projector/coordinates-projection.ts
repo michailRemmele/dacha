@@ -1,5 +1,5 @@
-import type { Actor } from '../../engine/actor';
-import { Transform, Camera } from '../components';
+import type { Actor } from '../../../../../engine/actor';
+import { Transform, Camera } from '../../../../components';
 
 export const getProjectedX = (inputX: number, camera: Actor): number => {
   const { windowSizeX, zoom } = camera.getComponent(Camera);

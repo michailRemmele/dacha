@@ -1,6 +1,7 @@
 import type { ViewContainer } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import { DefineComponent } from '../../../engine/decorators';
 import type { Point } from '../../../engine/math-lib';
 
 interface RenderData {
@@ -34,6 +35,7 @@ export interface PixiViewConfig {
  *
  * @category Rendering
  */
+@DefineComponent({ name: 'PixiView' })
 export class PixiView extends Component {
   /** Function to create a custom pixi.js view */
   createView?: () => ViewContainer;
@@ -65,5 +67,3 @@ export class PixiView extends Component {
     return this.renderData?.view;
   }
 }
-
-PixiView.componentName = 'PixiView';

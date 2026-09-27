@@ -1,6 +1,7 @@
 export { Engine } from './engine';
 export type { EngineOptions } from './engine/engine';
 export { Component } from './engine/component';
+export * from './engine/decorators';
 export { VectorOps, MathOps, Vector } from './engine/math-lib';
 export type { Point, Matrix } from './engine/math-lib';
 

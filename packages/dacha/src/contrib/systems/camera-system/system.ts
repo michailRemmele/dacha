@@ -1,4 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { Scene } from '../../../engine/scene';
 import type { WorldSystemOptions } from '../../../engine/system';
 import { ActorQuery } from '../../../engine/actor';
@@ -29,6 +30,17 @@ interface CameraSystemOptions extends WorldSystemOptions {
  *
  * @category Camera
  */
+@DefineSystem({
+  name: 'CameraSystem',
+  icon: 'Video',
+  fields: [
+    {
+      name: 'windowNodeId',
+      type: 'string',
+      initialValue: 'root',
+    },
+  ],
+})
 export class CameraSystem extends WorldSystem {
   private actorQuery?: ActorQuery;
   private window: HTMLElement;
@@ -110,5 +122,3 @@ export class CameraSystem extends WorldSystem {
     }
   };
 }
-
-CameraSystem.systemName = 'CameraSystem';

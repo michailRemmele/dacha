@@ -1,8 +1,9 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 import type {
   InputEventAttributes,
   InputEventAttributeConfig,
-} from '../../types';
+} from '../../events/input-events';
 
 /**
  * A keyboard binding as {@link KeyboardControl} stores it at runtime.
@@ -71,8 +72,13 @@ export interface KeyboardControlConfig extends Record<string, unknown> {
  *
  * @category Input
  */
+@DefineComponent({
+  name: 'KeyboardControl',
+  icon: 'Keyboard',
+})
 export class KeyboardControl extends Component {
   /** Input event bindings */
+  @DefineField({ type: 'data', initialValue: [] })
   inputEventBindings: InputEventBindings;
 
   /**
@@ -104,5 +110,3 @@ export class KeyboardControl extends Component {
     );
   }
 }
-
-KeyboardControl.componentName = 'KeyboardControl';

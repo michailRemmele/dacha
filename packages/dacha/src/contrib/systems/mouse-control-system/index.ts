@@ -1,4 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import { ActorQuery } from '../../../engine/actor';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { Scene } from '../../../engine/scene';
@@ -20,6 +21,7 @@ import type { MouseInputEvent } from '../../events';
  *
  * @category Input
  */
+@DefineSystem({ name: 'MouseControlSystem', icon: 'HandPointUp' })
 export class MouseControlSystem extends WorldSystem {
   private actorQuery?: ActorQuery;
   private world: World;
@@ -69,5 +71,3 @@ export class MouseControlSystem extends WorldSystem {
     });
   };
 }
-
-MouseControlSystem.systemName = 'MouseControlSystem';

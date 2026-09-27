@@ -1,4 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { WorldSystemOptions } from '../../../engine/system';
 
 import { InputSubsystem, CoordinatesProjector } from './subsystems';
@@ -20,6 +21,26 @@ import { InputSubsystem, CoordinatesProjector } from './subsystems';
  *
  * @category Input
  */
+@DefineSystem({
+  name: 'MouseInputSystem',
+  icon: 'HandPointUp',
+  fields: [
+    {
+      name: 'windowNodeId',
+      type: 'string',
+      initialValue: 'root',
+      dependency: {
+        name: 'useWindow',
+        value: false,
+      },
+    },
+    {
+      name: 'useWindow',
+      type: 'boolean',
+      initialValue: true,
+    },
+  ],
+})
 export class MouseInputSystem extends WorldSystem {
   private inputSubsystem: InputSubsystem;
   private coordinatesProjector: CoordinatesProjector;
@@ -40,5 +61,3 @@ export class MouseInputSystem extends WorldSystem {
     this.inputSubsystem.update();
   }
 }
-
-MouseInputSystem.systemName = 'MouseInputSystem';

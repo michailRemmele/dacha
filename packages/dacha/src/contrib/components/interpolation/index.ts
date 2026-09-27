@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 
 /**
  * How {@link Interpolation} smooths the movement.
@@ -32,6 +33,7 @@ export interface InterpolationConfig {
  *
  * @category Interpolation
  */
+@DefineComponent({ name: 'Interpolation', icon: 'ChartAreaStackedNormalized' })
 export class Interpolation extends Component {
   /**
    * How render values are produced. `interpolate` blends between the last
@@ -42,6 +44,11 @@ export class Interpolation extends Component {
    * `extrapolate` uses the world-space rigid body velocity against
    * local-space snapshots, so it is intended for root-level actors.
    */
+  @DefineField({
+    type: 'select',
+    initialValue: 'interpolate',
+    options: ['interpolate', 'extrapolate'],
+  })
   mode: InterpolationMode;
 
   /**
@@ -49,9 +56,11 @@ export class Interpolation extends Component {
    * two fixed steps. Larger jumps snap instead of gliding. `0` disables
    * the automatic snap detection.
    */
+  @DefineField({ initialValue: 0 })
   snapThreshold: number;
 
   /** Whether smoothing is turned off. The renderer falls back to Transform. */
+  @DefineField({ initialValue: false })
   disabled: boolean;
 
   /** @internal Local-space position X from the previous fixed step */
@@ -136,5 +145,3 @@ export class Interpolation extends Component {
     this._snapRequested = true;
   }
 }
-
-Interpolation.componentName = 'Interpolation';
