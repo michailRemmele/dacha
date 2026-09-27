@@ -21,7 +21,7 @@
   "excludeProtected": false,
   "excludeInternal": true,
   "exclude": ["**/tests/**", "**/*.test.ts"],
-  "intentionallyNotExported": ["Constructor"],
+  "intentionallyNotExported": ["Constructor", "DistributiveOmit", "ConfigValue"],
   "navigation": {
     "includeCategories": true,
     "includeGroups": true,
@@ -37,6 +37,7 @@
     "Math",
     "Assets",
     "Behaviors",
+    "Editor Schema",
     "Rendering",
     "Physics",
     "Character Controller",

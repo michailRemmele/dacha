@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 
 /**
  * One behavior in the list of {@link Behaviors}.
@@ -32,12 +33,14 @@ export interface BehaviorsConfig {
  *
  * @category Behaviors
  */
+@DefineComponent({ name: 'Behaviors', icon: 'Thunderbolt' })
 export class Behaviors extends Component {
   /**
    * The behaviors of the actor. {@link BehaviorSystem} reads the list once, when
    * it creates the behavior instances. To change the behaviors, replace the whole
    * component with `actor.setComponent`.
    */
+  @DefineField({ type: 'data', initialValue: [] })
   list: BehaviorConfig[];
 
   constructor(config: BehaviorsConfig) {
@@ -52,5 +55,3 @@ export class Behaviors extends Component {
     }));
   }
 }
-
-Behaviors.componentName = 'Behaviors';

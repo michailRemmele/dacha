@@ -1,4 +1,4 @@
-import type { CustomMouseEvent } from '../../../../types/input-events';
+import type { CustomMouseEvent } from '../../../../events/input-events';
 
 const LISTENING_EVENTS = [
   'mousedown',

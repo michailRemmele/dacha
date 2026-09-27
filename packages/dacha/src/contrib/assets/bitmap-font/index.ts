@@ -1,4 +1,5 @@
 import { Asset } from '../../../engine/asset';
+import { DefineAsset, DefineField } from '../../../engine/decorators';
 import type { AssetOptions } from '../../../engine/asset';
 
 /**
@@ -17,8 +18,10 @@ export interface BitmapFontData {
  *
  * @category Assets
  */
+@DefineAsset({ name: 'bitmapFont' })
 export class BitmapFont extends Asset {
   /** Path to the font descriptor file */
+  @DefineField({ type: 'file', extensions: ['fnt', 'xml'] })
   src: string;
 
   constructor(options: AssetOptions<BitmapFontData>) {
@@ -27,5 +30,3 @@ export class BitmapFont extends Asset {
     this.src = options.data.src ?? '';
   }
 }
-
-BitmapFont.assetName = 'bitmapFont';

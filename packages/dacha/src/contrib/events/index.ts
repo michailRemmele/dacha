@@ -5,7 +5,7 @@ import type { Vector } from '../../engine/math-lib';
 import type {
   CustomMouseEvent,
   CustomKeyboardEvent,
-} from '../types/input-events';
+} from './input-events';
 import type { ActorEvent } from '../../types/events';
 
 /**

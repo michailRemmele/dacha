@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent } from '../../../engine/decorators';
 import { Matrix, type Point } from '../../../engine/math-lib';
 
 import { LocalTransform } from './local-transform';
@@ -39,6 +40,27 @@ export interface TransformConfig {
  *
  * @category Actors & Components
  */
+@DefineComponent({
+  name: 'Transform',
+  icon: 'ArrowsExpand',
+  fields: [
+    {
+      name: 'offset',
+      type: 'vector',
+      initialValue: { x: 0, y: 0 },
+    },
+    {
+      name: 'rotation',
+      type: 'number',
+      initialValue: 0,
+    },
+    {
+      name: 'scale',
+      type: 'vector',
+      initialValue: { x: 1, y: 1 },
+    },
+  ],
+})
 export class Transform extends Component {
   /**
    * Local-space transform values (position, rotation, scale).
@@ -184,5 +206,3 @@ export class Transform extends Component {
     return this._invertedWorldMatrix;
   }
 }
-
-Transform.componentName = 'Transform';

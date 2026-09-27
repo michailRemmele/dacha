@@ -39,7 +39,7 @@ export abstract class Behavior {
   /**
    * The name the configuration uses for the behavior.
    *
-   * `@DefineBehavior` from `dacha-workbench/decorators` sets it, so a game
+   * {@link DefineBehavior} sets it, so a game
    * usually does not assign it.
    */
   static behaviorName: string;

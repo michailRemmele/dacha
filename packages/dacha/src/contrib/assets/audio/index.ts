@@ -1,4 +1,5 @@
 import { Asset } from '../../../engine/asset';
+import { DefineAsset, DefineField } from '../../../engine/decorators';
 import type { AssetOptions } from '../../../engine/asset';
 
 /**
@@ -16,8 +17,10 @@ export interface AudioData {
  *
  * @category Assets
  */
+@DefineAsset({ name: 'audio' })
 export class Audio extends Asset {
   /** Path to the sound file */
+  @DefineField({ type: 'file', extensions: ['mp3', 'wav', 'ogg'] })
   src: string;
 
   constructor(options: AssetOptions<AudioData>) {
@@ -26,5 +29,3 @@ export class Audio extends Asset {
     this.src = options.data.src ?? '';
   }
 }
-
-Audio.assetName = 'audio';

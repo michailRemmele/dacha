@@ -1,5 +1,23 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
+import type { CollisionLayer } from '../../systems/physics-system/types';
+import type { GetFieldOptionsFn, FieldOption } from '../../../engine/decorators';
 import type { Point } from '../../../engine/math-lib';
+
+const COLLISION_LAYERS_PATH = [
+  'globalOptions',
+  'name:physics',
+  'options',
+  'collisionLayers',
+];
+const DEFAULT_LAYER = 'default';
+
+const collisionLayerOptions: GetFieldOptionsFn = (getState): FieldOption[] => [
+  { title: DEFAULT_LAYER, value: DEFAULT_LAYER },
+  ...(
+    (getState(COLLISION_LAYERS_PATH) as CollisionLayer[] | undefined) ?? []
+  ).map((layer) => ({ title: layer.name, value: layer.id })),
+];
 
 /**
  * The shape type of a {@link Collider}.
@@ -151,18 +169,76 @@ export type ColliderShape =
  *
  * @category Physics
  */
+@DefineComponent({
+  name: 'Collider',
+  icon: 'Square',
+  sections: {
+    geometry: { defaultOpen: true },
+  },
+  fields: [
+    {
+      name: 'type',
+      type: 'select',
+      initialValue: 'box',
+      options: ['box', 'capsule', 'circle', 'segment'],
+    },
+    {
+      name: 'size',
+      type: 'vector',
+      initialValue: { x: 10, y: 10 },
+      section: 'geometry',
+      dependency: { name: 'type', value: 'box' },
+    },
+    {
+      name: 'radius',
+      type: 'number',
+      initialValue: 5,
+      section: 'geometry',
+      dependency: { name: 'type', value: 'capsule|circle' },
+    },
+    {
+      name: 'height',
+      type: 'number',
+      initialValue: 5,
+      section: 'geometry',
+      dependency: { name: 'type', value: 'capsule' },
+    },
+    {
+      name: 'point1',
+      type: 'vector',
+      initialValue: { x: -5, y: 0 },
+      section: 'geometry',
+      dependency: { name: 'type', value: 'segment' },
+    },
+    {
+      name: 'point2',
+      type: 'vector',
+      initialValue: { x: 5, y: 0 },
+      section: 'geometry',
+      dependency: { name: 'type', value: 'segment' },
+    },
+  ],
+})
 export class Collider extends Component {
   /** Moves the shape away from the position of the actor. */
+  @DefineField({ initialValue: { x: 0, y: 0 }, section: 'geometry' })
   offset: Point;
   /**
    * The collision layer. Layers decide which colliders collide.
    *
    * @see [Collision layers](https://dachajs.org/systems/physics/collisions/#collision-layers)
    */
+  @DefineField({
+    type: 'select',
+    initialValue: DEFAULT_LAYER,
+    options: collisionLayerOptions,
+  })
   layer: string;
   /** The color of the collider in the debug view of the editor. */
+  @DefineField({ type: 'color', initialValue: '#4DFFB8' })
   debugColor?: string;
   /** Turns the collider off. */
+  @DefineField({ initialValue: false })
   disabled: boolean;
 
   /** The shape and its size. */
@@ -205,5 +281,3 @@ export class Collider extends Component {
     }
   }
 }
-
-Collider.componentName = 'Collider';

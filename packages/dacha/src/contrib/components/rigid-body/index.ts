@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 import { Vector, type Point } from '../../../engine/math-lib';
 
 /** @inline */
@@ -41,6 +42,13 @@ interface PointImpulse {
  *
  * @category Physics
  */
+@DefineComponent({
+  name: 'RigidBody',
+  icon: 'WeightHanging',
+  sections: {
+    dynamics: { defaultOpen: true },
+  },
+})
 export class RigidBody extends Component {
   private _mass: number;
   private _inverseMass: number;
@@ -59,24 +67,6 @@ export class RigidBody extends Component {
   _biasLinearVelocity: Vector;
   /** @internal Temporary solver angular velocity used for contact separation */
   _biasAngularVelocity: number;
-
-  /** Body type that defines how the rigid body participates in simulation */
-  readonly type: RigidBodyType;
-  /** Gravity multiplier. `0` ignores gravity, `1` uses normal world gravity. */
-  gravityScale: number;
-  /** Linear damping used to slow down movement over time */
-  linearDamping: number;
-  /** Angular damping used to slow down rotation over time */
-  angularDamping: number;
-  /** Current linear velocity in world units per second */
-  linearVelocity: Vector;
-  /** Current angular velocity of the rigid body in radians per second */
-  angularVelocity: number;
-  /** Whether dynamic rotation is locked. Locked bodies do not spin from torque or contacts. */
-  lockRotation: boolean;
-  /** Whether rigid body simulation is disabled */
-  disabled: boolean;
-
   /** @internal Force applied at the rigid body center */
   _centralForce: Vector;
   /** @internal Impulse applied at the rigid body center */
@@ -90,10 +80,101 @@ export class RigidBody extends Component {
   /** @internal Angular impulse applied to the rigid body */
   _angularImpulse: number;
 
+  /** Body type that defines how the rigid body participates in simulation */
+  @DefineField({
+    type: 'select',
+    initialValue: 'static',
+    options: ['dynamic', 'static', 'kinematic'],
+  })
+  readonly type: RigidBodyType;
+
+  @DefineField({
+    initialValue: 1,
+    section: 'dynamics',
+    dependency: { name: 'type', value: 'dynamic' },
+  })
+  get mass(): number {
+    return this._mass;
+  }
+
+  /**
+   * Sets the mass used by dynamic bodies.
+   *
+   * Mass is an authored, kilogram-like scalar.
+   * Non-positive values make the body immovable by forces and impulses.
+   */
+  set mass(value: number) {
+    this._mass = value;
+    this._inverseMass = value > 0 ? 1 / value : 0;
+  }
+
+  /** Gravity multiplier. `0` ignores gravity, `1` uses normal world gravity. */
+  @DefineField({
+    initialValue: 1,
+    section: 'dynamics',
+    dependency: { name: 'type', value: 'dynamic' },
+  })
+  gravityScale: number;
+  /** Linear damping used to slow down movement over time */
+  @DefineField({
+    initialValue: 0,
+    section: 'dynamics',
+    dependency: { name: 'type', value: 'dynamic' },
+  })
+  linearDamping: number;
+  /** Angular damping used to slow down rotation over time */
+  @DefineField({
+    initialValue: 0,
+    section: 'dynamics',
+    dependency: { name: 'type', value: 'dynamic' },
+  })
+  angularDamping: number;
+  /** Whether dynamic rotation is locked. Locked bodies do not spin from torque or contacts. */
+  @DefineField({
+    initialValue: false,
+    section: 'dynamics',
+    dependency: { name: 'type', value: 'dynamic' },
+  })
+  lockRotation: boolean;
+
+  /** Bounciness used by contact resolution. `0` does not bounce, `1` keeps full bounce speed. */
+  @DefineField({ initialValue: 0, section: 'material' })
+  get restitution(): number {
+    return this._restitution;
+  }
+
+  set restitution(value: number) {
+    this._restitution = Math.max(0, Math.min(value, 1));
+  }
+
+  /** Surface friction used by contact resolution. Higher values reduce sliding more strongly. */
+  @DefineField({ initialValue: 0.6, section: 'material' })
+  get friction(): number {
+    return this._friction;
+  }
+
+  set friction(value: number) {
+    this._friction = Math.max(0, value);
+  }
+
   /** Whether contacts should only be resolved from one side */
+  @DefineField({ initialValue: false, section: 'oneWay' })
   oneWay: boolean;
   /** Local-space normal that points toward the blocking side */
+  @DefineField({
+    initialValue: { x: 0, y: 0 },
+    section: 'oneWay',
+    dependency: { name: 'oneWay', value: true },
+  })
   oneWayNormal?: Vector;
+  /** Whether rigid body simulation is disabled */
+  @DefineField({ initialValue: false })
+  disabled: boolean;
+
+  /** Current linear velocity in world units per second */
+  linearVelocity: Vector;
+  /** Current angular velocity of the rigid body in radians per second */
+  angularVelocity: number;
 
   /**
    * Creates a new RigidBody component.
@@ -149,21 +230,6 @@ export class RigidBody extends Component {
     }
   }
 
-  get mass(): number {
-    return this._mass;
-  }
-
-  /**
-   * Sets the mass used by dynamic bodies.
-   *
-   * Mass is an authored, kilogram-like scalar.
-   * Non-positive values make the body immovable by forces and impulses.
-   */
-  set mass(value: number) {
-    this._mass = value;
-    this._inverseMass = value > 0 ? 1 / value : 0;
-  }
-
   /**
    * Returns the inverse mass.
    *
@@ -216,24 +282,6 @@ export class RigidBody extends Component {
     }
 
     return this._inverseInertia;
-  }
-
-  /** Bounciness used by contact resolution. `0` does not bounce, `1` keeps full bounce speed. */
-  get restitution(): number {
-    return this._restitution;
-  }
-
-  set restitution(value: number) {
-    this._restitution = Math.max(0, Math.min(value, 1));
-  }
-
-  /** Surface friction used by contact resolution. Higher values reduce sliding more strongly. */
-  get friction(): number {
-    return this._friction;
-  }
-
-  set friction(value: number) {
-    this._friction = Math.max(0, value);
   }
 
   /**
@@ -336,5 +384,3 @@ export class RigidBody extends Component {
     this._movementTarget = position.clone();
   }
 }
-
-RigidBody.componentName = 'RigidBody';

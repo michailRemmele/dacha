@@ -1,5 +1,6 @@
 import { ActorQuery } from '../../../engine/actor';
 import { SceneSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { Time } from '../../../engine/time';
 import type { World } from '../../../engine/world';
@@ -27,6 +28,7 @@ import { snapToTransform, computeRenderValues } from './utils';
  *
  * @category Interpolation
  */
+@DefineSystem({ name: 'Interpolator', icon: 'ChartAreaStackedNormalized' })
 export class Interpolator extends SceneSystem {
   private actorQuery: ActorQuery;
   private time: Time;
@@ -116,5 +118,3 @@ export class Interpolator extends SceneSystem {
     }
   }
 }
-
-Interpolator.systemName = 'Interpolator';

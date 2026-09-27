@@ -1,4 +1,5 @@
 import { SceneSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { World } from '../../../engine/world';
 import { Vector } from '../../../engine/math-lib';
@@ -31,6 +32,37 @@ import type { PhysicsSystemOptions, CastHit, OverlapHit } from './types';
  *
  * @category Physics
  */
+@DefineSystem({
+  name: 'PhysicsSystem',
+  icon: 'Magnet',
+  fields: [
+    {
+      name: 'gravityX',
+      type: 'number',
+      initialValue: 0,
+    },
+    {
+      name: 'gravityY',
+      type: 'number',
+      initialValue: 980,
+    },
+    {
+      name: 'solverIterations',
+      type: 'number',
+      initialValue: 8,
+    },
+    {
+      name: 'maxAllowedPenetration',
+      type: 'number',
+      initialValue: 0.5,
+    },
+    {
+      name: 'maxBiasVelocity',
+      type: 'number',
+      initialValue: 60,
+    },
+  ],
+})
 export class PhysicsSystem extends SceneSystem {
   private world: World;
   private physicsSubsystem: PhysicsSubsystem;
@@ -131,5 +163,3 @@ export class PhysicsSystem extends SceneSystem {
     this.physicsSubsystem.lateUpdate();
   }
 }
-
-PhysicsSystem.systemName = 'PhysicsSystem';

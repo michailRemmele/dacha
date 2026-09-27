@@ -89,7 +89,11 @@ export interface WorldSystemOptions extends SystemOptions {
  * @category Systems
  */
 export abstract class System {
-  /** Unique name identifier for the system */
+  /**
+   * The name the configuration uses for the system.
+   *
+   * {@link DefineSystem} sets it, so a game usually does not assign it.
+   */
   static systemName: string;
 
   /** Called when a scene is loaded. Used to load required resources for the system such as images, fonts, etc. */

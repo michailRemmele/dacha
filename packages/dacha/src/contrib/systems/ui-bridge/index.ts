@@ -1,5 +1,6 @@
 import { World } from '../../../engine/world';
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { TemplateCollection } from '../../../engine/template';
 import type { ActorSpawner } from '../../../engine/actor';
@@ -72,6 +73,7 @@ interface UIBridgeResources {
  *
  * @category Game UI
  */
+@DefineSystem({ name: 'UIBridge', icon: 'LayoutHeaderSideContent' })
 export class UIBridge extends WorldSystem {
   private actorSpawner: ActorSpawner;
   private world: World;
@@ -128,5 +130,3 @@ export class UIBridge extends WorldSystem {
     this.onUIDestroy?.();
   }
 }
-
-UIBridge.systemName = 'UIBridge';

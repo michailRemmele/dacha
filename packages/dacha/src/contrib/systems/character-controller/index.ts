@@ -1,6 +1,7 @@
 import { ActorQuery } from '../../../engine/actor';
 import type { Actor } from '../../../engine/actor';
 import { SceneSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { Time } from '../../../engine/time';
 import { Vector, VectorOps, type Point } from '../../../engine/math-lib';
@@ -40,6 +41,7 @@ type CharacterHitKind = 'ground' | 'wall' | 'ceiling';
  *
  * @category Character Controller
  */
+@DefineSystem({ name: 'CharacterController', icon: 'PersonFill' })
 export class CharacterController extends SceneSystem {
   private actorQuery: ActorQuery;
   private world: SceneSystemOptions['world'];
@@ -394,5 +396,3 @@ export class CharacterController extends SceneSystem {
     this.oneWayValidator.lateUpdate();
   }
 }
-
-CharacterController.systemName = 'CharacterController';

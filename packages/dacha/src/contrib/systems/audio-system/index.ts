@@ -1,4 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { Scene } from '../../../engine/scene';
 import type { World } from '../../../engine/world';
 import type { WorldSystemOptions } from '../../../engine/system';
@@ -30,6 +31,7 @@ const VOLUME_TOLERANCE = 0.001;
  *
  * @category Audio
  */
+@DefineSystem({ name: 'AudioSystem', icon: 'Volume' })
 export class AudioSystem extends WorldSystem {
   private templateCollection: TemplateCollection;
   private world: World;
@@ -55,8 +57,7 @@ export class AudioSystem extends WorldSystem {
     masterAudioGroup.connect(this.audioContext.destination);
 
     const audioGroupsOption = globalOptions.audioGroups as
-      | AudioGroups
-      | undefined;
+      AudioGroups | undefined;
     const audioGroupsSettings = audioGroupsOption?.groups ?? [];
     this.audioGroups = audioGroupsSettings.reduce(
       (acc, groupSettings) => {
@@ -278,8 +279,7 @@ export class AudioSystem extends WorldSystem {
 
   private stopAudio(actor: Actor): void {
     const audioSource = actor.getComponent(AudioSource) as
-      | AudioSource
-      | undefined;
+      AudioSource | undefined;
 
     if (audioSource) {
       audioSource._playing = false;
@@ -336,7 +336,5 @@ export class AudioSystem extends WorldSystem {
     });
   }
 }
-
-AudioSystem.systemName = 'AudioSystem';
 
 export { AudioAPI } from './api';
