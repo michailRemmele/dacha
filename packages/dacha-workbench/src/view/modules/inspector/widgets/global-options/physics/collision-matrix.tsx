@@ -8,7 +8,7 @@ import { setValue } from '../../../../../commands';
 import type {
   CollisionLayer,
   CollisionMatrix,
-} from '../../types/physics-system';
+} from 'dacha/physics';
 
 import { cx } from '../../../../../../utils/cx';
 

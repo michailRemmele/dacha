@@ -1,4 +1,4 @@
-import type { Field } from '../../types/widget-schema';
+import type { Field } from 'dacha';
 
 import {
   resolveFieldInitialValue,

@@ -51,15 +51,6 @@ import {
 } from './view/modules/inspector/components/text-area';
 import { MultiField } from './view/modules/inspector/components/multi-field';
 import { Section } from './view/modules/inspector/components/section';
-import {
-  DefineSystem,
-  DefineComponent,
-  DefineAsset,
-  DefineField,
-  DefineBehavior,
-  DefineFilterEffect,
-  DefineShader,
-} from './decorators';
 
 const commands = {
   setValue,
@@ -106,14 +97,4 @@ window.DachaWorkbench = {
   defineWidget,
 
   commands,
-
-  decorators: {
-    DefineSystem,
-    DefineComponent,
-    DefineAsset,
-    DefineField,
-    DefineBehavior,
-    DefineFilterEffect,
-    DefineShader,
-  },
 };

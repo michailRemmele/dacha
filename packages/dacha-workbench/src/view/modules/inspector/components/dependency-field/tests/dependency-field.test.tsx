@@ -13,13 +13,13 @@ jest.mock('../../../../../providers', () =>
 import React, { FC } from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import type { Field as FieldSchema } from 'dacha';
 
 import { Field } from '../../field';
 import { CommandContext } from '../../../../../providers';
 import { CommanderStore } from '../../../../../../store';
 import type { Data } from '../../../../../../store';
 import { ROOT_SCOPE } from '../../../../../../consts/scopes';
-import type { Field as FieldSchema } from '../../../../../../types/widget-schema';
 
 jest.mock('../../widget/field-types', () => {
   const StubInput: FC<{

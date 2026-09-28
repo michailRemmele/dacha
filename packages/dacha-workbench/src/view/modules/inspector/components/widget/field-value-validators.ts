@@ -1,5 +1,4 @@
-import type { FieldType } from '../../../../../types/widget-schema';
-import type { Point } from 'dacha';
+import type { FieldType, Point } from 'dacha';
 
 const isFiniteNumber = (value: unknown): boolean =>
   typeof value === 'number' && Number.isFinite(value);

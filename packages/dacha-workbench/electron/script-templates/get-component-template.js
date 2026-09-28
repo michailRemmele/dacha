@@ -1,5 +1,6 @@
-const getComponentTemplate = (name) => `import { Component } from 'dacha';
-import { DefineComponent, DefineField } from 'dacha-workbench/decorators';
+const getComponentTemplate = (
+  name,
+) => `import { Component, DefineComponent, DefineField } from 'dacha';
 
 interface ${name}Config {
   exampleField: string

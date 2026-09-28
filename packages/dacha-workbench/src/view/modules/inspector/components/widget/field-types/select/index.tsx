@@ -1,5 +1,6 @@
 import { useMemo, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { GetFieldOptionsFn } from 'dacha';
 
 import { useStore, useConfig } from '../../../../../../hooks';
 import { LabelledSelect } from '../../../select';
@@ -7,13 +8,12 @@ import type {
   SelectProps,
   SelectOption,
 } from '../../../../../../../types/inputs';
-import type { GetOptionsFn } from '../../../../../../../types/widget-schema';
 import type { LabelledProps } from '../../../labelled';
 import { WidgetFieldContext } from '../../widget-field-context';
 import { NAMESPACE_EDITOR } from '../../../../../../providers/schemas-provider/consts';
 
 type SelectFieldProps = {
-  options: SelectOption[] | string[] | GetOptionsFn;
+  options: SelectOption[] | string[] | GetFieldOptionsFn;
 } & Omit<SelectProps, 'options'> &
   LabelledProps;
 

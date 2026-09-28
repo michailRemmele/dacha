@@ -41,7 +41,9 @@ const stampVersion = (version, stamp) =>
     ? `${version}.local.${stamp}`
     : `${version}-local.${stamp}`;
 
-const restampArchive = (archive, name, version) => {
+const restampArchive = (archive, name, versions) => {
+  const version = versions[name];
+
   const stageDir = path.join(STAGE_DIR, name);
 
   fs.rmSync(stageDir, { recursive: true, force: true });
@@ -52,6 +54,9 @@ const restampArchive = (archive, name, version) => {
   const manifestPath = path.join(stageDir, 'package', 'package.json');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   manifest.version = version;
+  if (manifest.peerDependencies?.dacha) {
+    manifest.peerDependencies.dacha = versions.dacha;
+  }
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
   const stamped = path.join(PACKS_DIR, `${name}-${version}.tgz`);
@@ -74,6 +79,10 @@ run(
   `npm pack ${PACKAGES.map((name) => `-w ${name}`).join(' ')} --pack-destination ${PACKS_DIR}`,
 );
 
+const versions = Object.fromEntries(
+  PACKAGES.map((name) => [name, stampVersion(getVersion(name), stamp)]),
+);
+
 const archives = PACKAGES.map((name) => {
   const archive = path.join(PACKS_DIR, `${name}-${getVersion(name)}.tgz`);
 
@@ -81,7 +90,7 @@ const archives = PACKAGES.map((name) => {
     throw new Error(`Expected archive is missing: ${archive}`);
   }
 
-  return restampArchive(archive, name, stampVersion(getVersion(name), stamp));
+  return restampArchive(archive, name, versions);
 });
 
 fs.rmSync(STAGE_DIR, { recursive: true, force: true });

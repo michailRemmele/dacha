@@ -1,3 +1,6 @@
+import * as Dacha from 'dacha';
+import * as DachaEvents from 'dacha/events';
+import * as PIXI from 'pixi.js';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as antd from 'antd';
@@ -11,3 +14,5 @@ window.antd = antd;
 window.ReactI18next = ReactI18next;
 window.dayjs = dayjs;
 window.i18next = i18next;
+window.Dacha = { ...Dacha, events: DachaEvents };
+window.PIXI = PIXI;
