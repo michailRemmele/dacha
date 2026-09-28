@@ -23,8 +23,8 @@ test('adding an existing component to an actor', async () => {
   await toggleSceneExpand(window, 'space-level');
   await clickTreeNode(window, 'background_1');
 
-  await window.getByRole('combobox').click();
-  await window.getByText('Sprite', { exact: true }).click();
+  await window.getByRole('combobox').fill('Sprite');
+  await window.getByRole('combobox').press('Enter');
   await window.getByTestId('entity-picker-add-button').click();
 
   await expect(window.getByTestId('entity-panel-Sprite-header')).toBeVisible();
@@ -34,8 +34,8 @@ test('adding an existing component to a template', async () => {
   await switchExplorerTab(window, 'Templates');
   await clickTreeNode(window, 'terrain');
 
-  await window.getByRole('combobox').click();
-  await window.getByText('Collider', { exact: true }).click();
+  await window.getByRole('combobox').fill('Collider');
+  await window.getByRole('combobox').press('Enter');
   await window.getByTestId('entity-picker-add-button').click();
 
   await expect(window.getByTestId('entity-panel-Collider-header')).toBeVisible();

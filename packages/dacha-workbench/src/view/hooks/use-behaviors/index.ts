@@ -1,8 +1,13 @@
-import { schemaRegistry } from '../../../decorators/schema-registry'
-import type { WidgetSchema } from '../../../types/widget-schema'
+import { useContext } from 'react';
 
-export const useBehaviors = (systemName?: string): Record<string, WidgetSchema> | undefined => {
-  const schemas = schemaRegistry.getGroup(systemName ? `behavior.${systemName}` : 'behavior')
+import { SchemasContext } from '../../providers';
+import type { WidgetSchema } from '../../../types/widget-schema';
 
-  return schemas
-}
+/**
+ * Returns the behavior schemas of one type, such as `shader` or `filterEffect`,
+ * or of behaviors without a type when no type is given.
+ */
+export const useBehaviors = (
+  type?: string,
+): Record<string, WidgetSchema> | undefined =>
+  useContext(SchemasContext).behaviors[type ?? ''];

@@ -2,20 +2,19 @@ import { WorldSystem, RendererAPI } from 'dacha';
 import type { World, Config, WorldSystemOptions, Time } from 'dacha';
 import * as Events from 'dacha/events';
 
-import { schemaRegistry } from '../../../decorators/schema-registry';
-import { classRegistry } from '../../../decorators/class-registry';
 import { widgetRegistry } from '../../../hocs/widget-registry';
 import { EventType } from '../../../events';
 import { CommanderStore } from '../../../store';
 import type { DataValue } from '../../../store/types';
 import type { EditorConfig, Extension } from '../../../types/global';
-import {
-  componentsSchema,
-  systemsSchema,
-  globalOptionsSchema,
-  assetsSchema,
-} from '../../../view/modules/inspector/widgets';
+import { globalOptionsSchema } from '../../../view/modules/inspector/widgets';
 import { reconcileConfig } from '../../../schema';
+import {
+  collectSchemas,
+  type CollectedSchemas,
+  type SchemaEntry,
+} from '../../../schema/collect-schemas';
+import type { WidgetSchema } from '../../../types/widget-schema';
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10;
 
@@ -61,15 +60,11 @@ export class ProjectLoader extends WorldSystem {
     this.extensionScript = undefined;
 
     widgetRegistry.clear();
-    schemaRegistry.clear();
-    classRegistry.clear();
+    window.extension = undefined;
 
     await this.loadScript('./extension.js');
 
-    this.setUpData({
-      events: window.extension?.default.events,
-      locales: window.extension?.default.locales,
-    });
+    this.setUpData({ ...(window.extension as Window['extension'])?.default });
 
     if (this.reconcileProjectConfig() > 0) {
       this.commanderStore.clear();
@@ -83,10 +78,7 @@ export class ProjectLoader extends WorldSystem {
       await this.loadScript('./extension.js');
     }
 
-    this.setUpData({
-      events: window.extension?.default.events,
-      locales: window.extension?.default.locales,
-    });
+    this.setUpData({ ...window.extension?.default });
 
     this.reconcileProjectConfig();
   }
@@ -109,27 +101,31 @@ export class ProjectLoader extends WorldSystem {
   }
 
   private setUpData(extension: Extension): void {
-    const { events = [], locales = {} } = extension;
+    const { events = [], locales = {}, modules = [] } = extension;
 
     this.world.data.extension = {
       events: [...events, ...Object.values(Events)],
       locales,
     };
 
+    const schemas = collectSchemas(modules);
+    this.world.data.schemas = schemas;
+
     const rendererApi = this.world.systemApi.get(RendererAPI);
-    rendererApi.reloadShaders(classRegistry.getGroup('behavior.shader') ?? []);
+    rendererApi.reloadShaders(schemas.shaders);
   }
 
   private reconcileProjectConfig(): number {
+    const schemas = this.world.data.schemas as CollectedSchemas;
+    const toMap = (entries: SchemaEntry[]): Record<string, WidgetSchema> =>
+      Object.fromEntries(entries.map((entry) => [entry.name, entry.schema]));
+
     const fixes = reconcileConfig(this.commanderStore.get([]), {
-      components: {
-        ...componentsSchema,
-        ...schemaRegistry.getGroup('component'),
-      },
-      systems: { ...systemsSchema, ...schemaRegistry.getGroup('system') },
+      components: toMap(schemas.components),
+      systems: toMap(schemas.systems),
       globalOptions: globalOptionsSchema,
-      behaviors: schemaRegistry.getGroup('behavior') ?? {},
-      assets: { ...assetsSchema, ...schemaRegistry.getGroup('asset') },
+      behaviors: schemas.behaviors[''] ?? {},
+      assets: toMap(schemas.assets),
     });
 
     fixes.forEach(({ path, value }) => {

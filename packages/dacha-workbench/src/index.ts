@@ -65,11 +65,4 @@ export const commands = {
 
 export type { Data } from './store';
 
-export type {
-  WidgetSchema,
-  WidgetProps,
-  Field as WidgetField,
-  FieldType,
-  Dependency,
-  DependencyValue,
-} from './types/widget-schema';
+export type { WidgetSchema, WidgetProps } from './types/widget-schema';

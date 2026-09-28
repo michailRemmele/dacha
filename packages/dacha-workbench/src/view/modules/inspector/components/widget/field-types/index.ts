@@ -1,6 +1,5 @@
 import type { FC } from 'react';
-
-import type { FieldType } from '../../../../../../types/widget-schema';
+import type { FieldType } from 'dacha';
 
 import { StringField } from './string';
 import { NumberField } from './number';

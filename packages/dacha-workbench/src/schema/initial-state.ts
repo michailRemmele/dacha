@@ -1,4 +1,4 @@
-import type { Field, FieldType } from '../types/widget-schema';
+import type { Field, FieldType } from 'dacha';
 
 import { checkDependency } from './check-dependency';
 

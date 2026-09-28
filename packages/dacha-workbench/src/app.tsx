@@ -3,7 +3,6 @@ import './vendor';
 import { createRoot } from 'react-dom/client';
 import { use } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import 'reflect-metadata';
 import 'antd/dist/reset.css';
 import './view/global.css';
 

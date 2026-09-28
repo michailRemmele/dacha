@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useTranslation, I18nextProvider } from 'react-i18next';
 
-import { schemaRegistry } from '../../../../../decorators/schema-registry';
+import { useBehaviors } from '../../../../hooks/use-behaviors';
 import { NAMESPACE_EXTENSION } from '../../../../providers/schemas-provider/consts';
 import { Widget } from '../widget';
 import { CustomWidget } from '../custom-widget';
@@ -21,10 +21,7 @@ export const BehaviorWidget: FC<BehaviorWidgetProps> = ({
 }) => {
   const { i18n } = useTranslation();
 
-  const schema = schemaRegistry.getWidget(
-    systemName ? `behavior.${systemName}` : 'behavior',
-    name,
-  );
+  const schema = useBehaviors(systemName)?.[name];
   if (!schema) {
     return null;
   }

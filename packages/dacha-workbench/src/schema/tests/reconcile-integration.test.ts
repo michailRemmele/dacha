@@ -41,6 +41,8 @@ jest.mock('../../persistent-storage', () => ({
 
 jest.mock('dacha', () => ({
   Component: class Component {},
+  DefineComponent: () => (): void => undefined,
+  DefineField: () => (): void => undefined,
   Animatable: { componentName: 'Animatable' },
   Camera: { componentName: 'Camera' },
   Collider: { componentName: 'Collider' },
@@ -80,15 +82,13 @@ jest.mock('dacha', () => ({
 
 import { reconcileConfig } from '..';
 import type { ReconcileSchemas } from '..';
-import {
-  componentsSchema,
-  systemsSchema,
-  globalOptionsSchema,
-} from '../../view/modules/inspector/widgets';
+import { globalOptionsSchema } from '../../view/modules/inspector/widgets';
+import type { WidgetSchema } from '../../types/widget-schema';
+import builtinSchemas from '../../../../dacha/src/engine/decorators/tests/builtin-schemas.json';
 
 const schemas: ReconcileSchemas = {
-  components: componentsSchema,
-  systems: systemsSchema,
+  components: builtinSchemas.components as Record<string, WidgetSchema>,
+  systems: builtinSchemas.systems as Record<string, WidgetSchema>,
   globalOptions: globalOptionsSchema,
   behaviors: {},
   assets: {},

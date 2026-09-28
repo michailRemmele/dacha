@@ -1,6 +1,7 @@
-const getBehaviorTemplate = (name) => `import type { Scene, BehaviorOptions } from 'dacha';
-import { Actor, Behavior } from 'dacha';
-import { DefineBehavior } from 'dacha-workbench/decorators';
+const getBehaviorTemplate = (
+  name,
+) => `import type { Scene, BehaviorOptions } from 'dacha';
+import { Actor, Behavior, DefineBehavior } from 'dacha';
 
 @DefineBehavior({
   name: '${name}',
@@ -22,6 +23,6 @@ export default class ${name} extends Behavior {
     console.log(\`Behavior: Actor Id: \${this.actor.id}, Scene Id: \${this.scene.id}\`);
   }
 }
-`
+`;
 
-module.exports = getBehaviorTemplate
+module.exports = getBehaviorTemplate;

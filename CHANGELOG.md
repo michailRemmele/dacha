@@ -25,9 +25,34 @@ Releases made before this file existed are recorded in the
   `CustomMouseEvent`, `InputEventAttributeConfig`, `InputEventAttributes` and
   `AttributeValue`.
 - `dacha/renderer` exports `ShaderUniform`, `ShaderUniformType` and `ShaderUniformValue`.
+- `dacha` exports the decorators `DefineComponent`, `DefineSystem`, `DefineAsset`,
+  `DefineBehavior`, `DefineShader`, `DefineFilterEffect` and `DefineField`, plus `getSchema`
+  and the field types (`Field`, `FieldType` and the others). They are standard (TC39)
+  decorators and need no TypeScript flags.
+- `@DefineField` picks the widget from `initialValue` when there is no `type`: a number, a
+  string, a boolean or an `{ x, y }` point. TypeScript checks the decorator against the field,
+  so a bare `@DefineField()` on a non-string field, or an `initialValue` of the wrong type,
+  fails to compile.
 
 ### Changed
 
+- **Breaking:** the decorators moved from `dacha-workbench/decorators` to `dacha`, and that
+  subpath is gone. Import them from `dacha`, and remove `experimentalDecorators` and
+  `emitDecoratorMetadata` from `tsconfig.json`. `reflect-metadata` is no longer needed.
+- **Breaking:** some field types have new names: `Option` is `FieldOption`, `Dependency` is
+  `FieldDependency`, `DependencyValue` is `FieldDependencyValue`, `GetOptionsFn` is
+  `GetFieldOptionsFn`, `SectionSettings` is `SchemaSection` and `WidgetOptions` is
+  `SchemaOptions`.
+- **Breaking:** `dacha-workbench` no longer exports the field types (`WidgetField`,
+  `FieldType`, `Dependency`, `DependencyValue`). Import `Field` and the others from `dacha`.
+- The built-in components, systems and assets describe their inspector fields with the same
+  decorators, instead of the editor keeping a separate copy.
+- The editor finds decorated classes among the exports of your script files, so a decorated
+  class must be exported. Widgets no longer need to load before the classes they draw.
+- Project code shares the editor's `dacha` and `pixi.js` instead of bundling second copies.
+- **Breaking:** `dacha-workbench` has a peer dependency on `dacha` of the same version. The
+  editor runs project code with its own engine, so npm now refuses to install the two
+  packages at different versions.
 - The event types in `dacha/events` (`LoadSceneEvent`, `CollisionEnterEvent`,
   `KeyboardInputEvent` and the others) are interfaces instead of type aliases. They have the
   same fields, so code that uses them does not change.

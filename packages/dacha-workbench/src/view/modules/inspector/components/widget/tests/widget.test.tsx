@@ -21,9 +21,9 @@ jest.mock('../../section', () => ({
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import type { Field } from 'dacha';
 
 import { Widget } from '..';
-import type { Field } from '../../../../../../types/widget-schema';
 
 beforeEach(() => {
   mockFieldSpy.mockClear();

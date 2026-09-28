@@ -1,11 +1,7 @@
 import { useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Field as FieldSchema, FieldType, FieldDependency } from 'dacha';
 
-import type {
-  Field as FieldSchema,
-  FieldType,
-  Dependency,
-} from '../../../../../types/widget-schema';
 import { formatWidgetName } from '../../../../../utils/format-widget-name';
 import { resolveFieldInitialValue } from '../../../../../schema';
 import { InputField } from '../input-field';
@@ -19,7 +15,7 @@ export interface FieldProps {
   path: string[];
   type?: FieldType | 'data';
   title?: string;
-  dependency?: Dependency;
+  dependency?: FieldDependency;
   initialValue?: unknown;
   context?: Record<string, unknown>;
   // comment: Allow any input component, mirroring InputField's contract

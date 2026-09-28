@@ -1,5 +1,6 @@
-const getFilterEffectTemplate = (name) => `import { FilterEffect } from 'dacha';
-import { DefineFilterEffect } from 'dacha-workbench/decorators';
+const getFilterEffectTemplate = (
+  name,
+) => `import { FilterEffect, DefineFilterEffect } from 'dacha';
 import { BlurFilter } from 'pixi.js';
 
 interface ${name}Options {
