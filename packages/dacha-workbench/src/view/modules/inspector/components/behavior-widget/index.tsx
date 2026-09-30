@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useTranslation, I18nextProvider } from 'react-i18next';
 
-import { useBehaviors } from '../../../../hooks/use-behaviors';
+import { useSchemas } from '../../../../hooks/use-schemas';
 import { NAMESPACE_EXTENSION } from '../../../../providers/schemas-provider/consts';
 import { Widget } from '../widget';
 import { CustomWidget } from '../custom-widget';
@@ -10,18 +10,18 @@ interface BehaviorWidgetProps {
   name: string;
   path: string[];
   context?: Record<string, unknown>;
-  systemName?: string;
+  kind?: 'behavior' | 'shader' | 'filterEffect';
 }
 
 export const BehaviorWidget: FC<BehaviorWidgetProps> = ({
   name,
   path,
   context,
-  systemName,
+  kind = 'behavior',
 }) => {
   const { i18n } = useTranslation();
 
-  const schema = useBehaviors(systemName)?.[name];
+  const schema = useSchemas(kind)[name];
   if (!schema) {
     return null;
   }

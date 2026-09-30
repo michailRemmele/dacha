@@ -11,7 +11,7 @@ import { EntityMultiselect } from '../../../components/entity-picker'
 import {
   useConfig,
   useCommander,
-  useBehaviors,
+  useSchemas,
 } from '../../../../../hooks'
 import { addValue } from '../../../../../commands'
 import { buildInitialState } from '../../../../../../schema'
@@ -24,7 +24,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
   const { t } = useTranslation()
   const { dispatch } = useCommander()
 
-  const behaviors = useBehaviors()
+  const behaviors = useSchemas('behavior')
 
   const behaviorsPath = useMemo(() => path.concat('list'), [path])
 
@@ -32,7 +32,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
 
   const availableBehaviors = useMemo(() => {
     const selectedSet = new Set(selectedBehaviors.map((item) => item.name))
-    const behaviorNames = Object.keys(behaviors ?? {}).filter((item) => !selectedSet.has(item))
+    const behaviorNames = Object.keys(behaviors).filter((item) => !selectedSet.has(item))
 
     return behaviorNames.map((key) => ({
       label: key,
@@ -44,7 +44,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
     dispatch(addValue(behaviorsPath, {
       id: uuid(),
       name,
-      options: buildInitialState(behaviors?.[name].fields ?? []),
+      options: buildInitialState(behaviors[name].fields ?? []),
     }))
   }, [dispatch, behaviorsPath, behaviors])
 
@@ -60,7 +60,7 @@ export const BehaviorsWidget: FC<WidgetProps> = ({ path }) => {
             key={id}
             id={id}
             path={behaviorsPath}
-            schema={behaviors?.[name]}
+            schema={behaviors[name]}
           />
         ))}
       </div>

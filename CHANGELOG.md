@@ -45,6 +45,15 @@ Releases made before this file existed are recorded in the
   `SchemaOptions`.
 - **Breaking:** `dacha-workbench` no longer exports the field types (`WidgetField`,
   `FieldType`, `Dependency`, `DependencyValue`). Import `Field` and the others from `dacha`.
+- **Breaking:** shaders and filter effects have their own static name. `Shader.behaviorName` is
+  now `Shader.shaderName`, and `FilterEffect.behaviorName` is now
+  `FilterEffect.filterEffectName`. `DefineShader` and `DefineFilterEffect` set it.
+- **Breaking:** the editor configuration has separate `shaders` and `filterEffects` settings.
+  `behaviors` now matches only `*.behavior.ts` by default.
+- **Breaking:** `useBehaviors` in `dacha-workbench` is replaced by `useSchemas(kind)`, and the
+  `systemName` prop of `BehaviorWidget` is now `kind`.
+- When the editor opens a project, it fills in the missing fields of shader options in `Mesh`
+  and of filter effect options in `Renderer`, as it already did for behavior options.
 - The built-in components, systems and assets describe their inspector fields with the same
   decorators, instead of the editor keeping a separate copy.
 - The editor finds decorated classes among the exports of your script files, so a decorated

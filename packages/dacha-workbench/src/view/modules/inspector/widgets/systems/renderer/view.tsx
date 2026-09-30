@@ -20,13 +20,13 @@ import {
 import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { Widget } from '../../../components/widget';
 import { EntityMultiselect } from '../../../components/entity-picker';
-import { useConfig, useCommander, useBehaviors } from '../../../../../hooks';
+import { useConfig, useCommander, useSchemas } from '../../../../../hooks';
 import { addValue, setValue } from '../../../../../commands';
 import { buildInitialState } from '../../../../../../schema';
 
 import { DraggableEffectPanel } from './draggable-effect-panel';
 import { DragOverlayEntry } from './drag-overlay-entry';
-import { BEHAVIOR_TYPE } from './consts';
+import { FILTER_EFFECT_KIND } from './consts';
 import * as styles from './renderer.module.css';
 
 interface FilterEffectEntry {
@@ -46,7 +46,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
   const { t } = useTranslation();
   const { dispatch } = useCommander();
 
-  const effects = useBehaviors(BEHAVIOR_TYPE);
+  const effects = useSchemas(FILTER_EFFECT_KIND);
 
   const [activeEntry, setActiveEntry] = useState<FilterEffectEntry | null>();
 
@@ -61,7 +61,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
   );
 
   const availableEffects = useMemo(() => {
-    return Object.keys(effects ?? {}).map((key) => ({
+    return Object.keys(effects).map((key) => ({
       label: key,
       value: key,
     }));
@@ -73,7 +73,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
         addValue(filterEffectsPath, {
           id: uuid(),
           name,
-          options: buildInitialState(effects?.[name].fields ?? []),
+          options: buildInitialState(effects[name].fields ?? []),
         }),
       );
     },
@@ -81,7 +81,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
   );
 
   const handleCreate = useCallback((name: string, filepath: string) => {
-    window.electron.createBehavior(name, filepath, BEHAVIOR_TYPE);
+    window.electron.createBehavior(name, filepath, FILTER_EFFECT_KIND);
   }, []);
 
   const handleDragStart = useCallback(
@@ -143,7 +143,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
                 key={id}
                 id={id}
                 path={filterEffectsPath}
-                schema={effects?.[name]}
+                schema={effects[name]}
               />
             ))}
           </SortableContext>
@@ -152,7 +152,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
               <DragOverlayEntry
                 id={activeEntry.id}
                 path={filterEffectsPath}
-                schema={effects?.[activeEntry.name]}
+                schema={effects[activeEntry.name]}
               />
             ) : null}
           </DragOverlay>
@@ -164,7 +164,7 @@ export const RendererWidget: FC<WidgetProps> = ({ path, ...props }) => {
         size="small"
         placeholder={t('systems.renderer.filterEffect.addNew.title')}
         options={availableEffects}
-        type={BEHAVIOR_TYPE}
+        type={FILTER_EFFECT_KIND}
         onAdd={handleAddEffect}
         onCreate={handleCreate}
       />

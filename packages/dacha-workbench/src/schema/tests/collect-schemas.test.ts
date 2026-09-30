@@ -40,13 +40,9 @@ const Move = cls({
   name: 'Move',
   fields: [{ name: 'speed', type: 'number' }],
 });
-const Wave = cls({
-  kind: 'behavior',
-  name: 'Wave',
-  type: 'shader',
-  fields: [],
-});
+const Wave = cls({ kind: 'shader', name: 'Wave', fields: [] });
 const Patrol = cls({ kind: 'behavior', name: 'Patrol', fields: [] });
+const Blur = cls({ kind: 'filterEffect', name: 'Blur', fields: [] });
 const Tex = cls({ kind: 'asset', name: 'tex', fields: [] });
 
 const View = (): null => null;
@@ -72,11 +68,13 @@ describe('collectSchemas', () => {
         name: 'Move',
         namespace: NAMESPACE_EXTENSION,
         schema: { fields: [{ name: 'speed', type: 'number' }] },
+        class: Move,
       },
       {
         name: 'Sprite',
         namespace: NAMESPACE_EDITOR,
         schema: { icon: 'Picture', fields: [] },
+        class: Sprite,
       },
     ]);
     expect(result.systems.map((e) => e.name)).toEqual(['Renderer']);
@@ -89,26 +87,42 @@ describe('collectSchemas', () => {
     expect(result.assets.map((e) => e.name)).toEqual(['tex']);
   });
 
-  it('groups behaviors by type and keeps shader classes', () => {
-    const result = collectSchemas([{ default: Wave }, { default: Patrol }]);
+  it('puts every kind in its own group and keeps the class on the entry', () => {
+    const result = collectSchemas([
+      { default: Wave },
+      { default: Patrol },
+      { default: Blur },
+    ]);
 
-    expect(Object.keys(result.behaviors.shader)).toEqual(['Wave']);
-    expect(Object.keys(result.behaviors[''])).toEqual(['Patrol']);
-    expect(result.shaders).toEqual([Wave]);
+    expect(result.shaders.map((e) => e.name)).toEqual(['Wave']);
+    expect(result.shaders[0].class).toBe(Wave);
+    expect(result.behaviors.map((e) => e.name)).toEqual(['Patrol']);
+    expect(result.filterEffects.map((e) => e.name)).toEqual(['Blur']);
+    expect(Object.keys(result).sort()).toEqual([
+      'assets',
+      'behaviors',
+      'components',
+      'filterEffects',
+      'shaders',
+      'systems',
+    ]);
+  });
+
+  it('classifies by schema kind, not by which module exported the class', () => {
+    const result = collectSchemas([{ Patrol, Wave, Blur, Move }]);
+
+    expect(result.behaviors.map((e) => e.name)).toEqual(['Patrol']);
+    expect(result.shaders.map((e) => e.name)).toEqual(['Wave']);
+    expect(result.filterEffects.map((e) => e.name)).toEqual(['Blur']);
   });
 
   it('sorts every group by name, mixing built-ins and project classes', () => {
     const Zoom = cls({ kind: 'component', name: 'Zoom', fields: [] });
     const Audio = cls({ kind: 'asset', name: 'audio', fields: [] });
-    const Blur = cls({
-      kind: 'behavior',
-      name: 'Blur',
-      type: 'shader',
-      fields: [],
-    });
+    const Ash = cls({ kind: 'shader', name: 'Ash', fields: [] });
 
     setBuiltins(Zoom, Sprite, Tex, Wave);
-    const result = collectSchemas([{ Move, Audio, Blur }]);
+    const result = collectSchemas([{ Move, Audio, Ash }]);
 
     expect(result.components.map((e) => e.name)).toEqual([
       'Move',
@@ -116,7 +130,7 @@ describe('collectSchemas', () => {
       'Zoom',
     ]);
     expect(result.assets.map((e) => e.name)).toEqual(['audio', 'tex']);
-    expect(Object.keys(result.behaviors.shader)).toEqual(['Blur', 'Wave']);
+    expect(result.shaders.map((e) => e.name)).toEqual(['Ash', 'Wave']);
   });
 
   it('resolves views by name, from the registry for project classes', () => {

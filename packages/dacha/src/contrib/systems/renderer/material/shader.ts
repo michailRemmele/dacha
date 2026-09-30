@@ -84,7 +84,7 @@ export abstract class Shader {
    * The name the configuration uses for the shader. {@link DefineShader} sets it,
    * so a game usually does not assign it.
    */
-  static behaviorName: string;
+  static shaderName: string;
 
   /**
    * Runs every frame. When the returned string changes, the renderer creates
@@ -107,10 +107,10 @@ export abstract class Shader {
 }
 
 /**
- * A shader class: a constructor with a static `behaviorName`.
+ * A shader class: a constructor with a static `shaderName`.
  *
  * @category Rendering
  */
 export type ShaderConstructor = Constructor<Shader> & {
-  behaviorName: string;
+  shaderName: string;
 };

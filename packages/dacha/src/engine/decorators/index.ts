@@ -15,7 +15,6 @@ export type {
   DefineClassDecorator,
   DefineOptions,
   DefineAssetOptions,
-  DefineBehaviorOptions,
 } from './define-class';
 export { getSchema } from './metadata';
 export type * from './types';

@@ -9,7 +9,7 @@ import type { Constructor } from '../../../../types/utils';
  * @category Rendering
  */
 export interface FilterEffectConfig {
-  /** The `behaviorName` of the filter effect class. */
+  /** The `filterEffectName` of the filter effect class. */
   name: string;
   /** The values of the effect fields. The effect methods get them as `options`. */
   options: Record<string, unknown>;
@@ -29,7 +29,7 @@ export abstract class FilterEffect {
    * The name the configuration uses for the filter effect. {@link DefineFilterEffect}
    * sets it, so a game usually does not assign it.
    */
-  static behaviorName: string;
+  static filterEffectName: string;
   /** Runs when the effect is added. Returns a pixi.js `Filter`. */
   abstract create(options: unknown): Filter;
   /**
@@ -40,10 +40,10 @@ export abstract class FilterEffect {
 }
 
 /**
- * A filter effect class: a constructor with a static `behaviorName`.
+ * A filter effect class: a constructor with a static `filterEffectName`.
  *
  * @category Rendering
  */
 export type FilterEffectConstructor = Constructor<FilterEffect> & {
-  behaviorName: string;
+  filterEffectName: string;
 };

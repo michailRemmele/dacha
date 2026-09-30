@@ -35,7 +35,9 @@ an array of regular expressions.
 | `components` | `[/\.component\.ts$/]` |
 | `systems` | `[/\.system\.ts$/]` |
 | `assets` | `[/\.asset\.ts$/]` |
-| `behaviors` | `[/\.behavior\.ts$/, /\.filter-effect\.ts$/, /\.shader\.ts$/]` |
+| `behaviors` | `[/\.behavior\.ts$/]` |
+| `shaders` | `[/\.shader\.ts$/]` |
+| `filterEffects` | `[/\.filter-effect\.ts$/]` |
 | `widgets` | `[/\.widget\.(ts\|js\|tsx\|jsx)$/]` |
 
 Your array replaces the default. It does not add to it.

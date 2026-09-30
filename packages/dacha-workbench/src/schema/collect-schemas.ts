@@ -1,5 +1,17 @@
 import type { FC } from 'react';
-import { getSchema, type Schema, type RendererAPI } from 'dacha';
+import {
+  getSchema,
+  type Schema,
+  type SchemaKind,
+  type ComponentConstructor,
+  type SystemConstructor,
+  type AssetConstructor,
+  type BehaviorConstructor,
+} from 'dacha';
+import type {
+  ShaderConstructor,
+  FilterEffectConstructor,
+} from 'dacha/renderer';
 
 import type {
   WidgetProps,
@@ -14,29 +26,32 @@ import { widgetRegistry } from '../hocs/widget-registry';
 
 import { BUILTIN_CANDIDATES, builtinViews } from './builtins';
 
-export interface SchemaEntry {
+export interface SchemaEntry<T = unknown> {
   name: string;
   schema: WidgetSchema;
   namespace: string;
+  /** The decorated class. */
+  class: T;
 }
-
-type ShaderClass = Parameters<RendererAPI['reloadShaders']>[0][number];
 
 export interface CollectedSchemas {
-  components: SchemaEntry[];
-  systems: SchemaEntry[];
-  assets: SchemaEntry[];
-  /** Keyed by behavior type; '' holds behaviors without a type. */
-  behaviors: Record<string, Record<string, WidgetSchema>>;
-  /** Shader classes, which the renderer needs to compile the project's materials. */
-  shaders: ShaderClass[];
+  components: SchemaEntry<ComponentConstructor>[];
+  systems: SchemaEntry<SystemConstructor>[];
+  assets: SchemaEntry<AssetConstructor>[];
+  behaviors: SchemaEntry<BehaviorConstructor>[];
+  shaders: SchemaEntry<ShaderConstructor>[];
+  filterEffects: SchemaEntry<FilterEffectConstructor>[];
 }
 
-const KIND_TO_GROUP = {
+/** The group of {@link CollectedSchemas} that holds each schema kind. */
+export const SCHEMA_GROUPS: Record<SchemaKind, keyof CollectedSchemas> = {
   component: 'components',
   system: 'systems',
   asset: 'assets',
-} as const;
+  behavior: 'behaviors',
+  shader: 'shaders',
+  filterEffect: 'filterEffects',
+};
 
 const resolveView = (name: string): FC<WidgetProps> | undefined =>
   builtinViews[name] ?? widgetRegistry.getWidget(name);
@@ -89,27 +104,18 @@ export const collectSchemas = (modules: unknown[]): CollectedSchemas => {
     components: [],
     systems: [],
     assets: [],
-    behaviors: {},
+    behaviors: [],
     shaders: [],
+    filterEffects: [],
   };
 
   found.forEach(({ value, namespace, schema }) => {
-    const widget = toWidget(schema);
-
-    if (schema.kind !== 'behavior') {
-      result[KIND_TO_GROUP[schema.kind]].push({
-        name: schema.name,
-        schema: widget,
-        namespace,
-      });
-      return;
-    }
-
-    const type = schema.type ?? '';
-    (result.behaviors[type] ??= {})[schema.name] = widget;
-    if (type === 'shader') {
-      result.shaders.push(value as ShaderClass);
-    }
+    (result[SCHEMA_GROUPS[schema.kind]] as SchemaEntry[]).push({
+      name: schema.name,
+      schema: toWidget(schema),
+      namespace,
+      class: value,
+    });
   });
 
   return result;

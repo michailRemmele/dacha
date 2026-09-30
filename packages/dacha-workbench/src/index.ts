@@ -6,7 +6,7 @@ export {
   useConfig,
   useCommander,
   useStore,
-  useBehaviors,
+  useSchemas,
 } from './view/hooks';
 export { defineWidget } from './hocs';
 export { InputField } from './view/modules/inspector/components/input-field';

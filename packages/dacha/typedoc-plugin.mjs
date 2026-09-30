@@ -10,11 +10,12 @@
  * the hooks documented, because that is where someone writing a system reads
  * about them.
  *
- * `componentName`, `assetName` and `behaviorName` are the same kind of
- * metadata: the decorators of dacha-workbench set them, and a game does not
- * assign or read them. The plugin keeps them on the base class, where they
- * explain the contract, and drops the inherited copy from every subclass.
- * `systemName` stays, because a game reads it as the key of `resources`.
+ * `componentName`, `assetName`, `behaviorName`, `shaderName` and
+ * `filterEffectName` are the same kind of metadata: the dacha decorators set
+ * them, and a game does not assign or read them. The plugin keeps them on the
+ * base class, where they explain the contract, and drops the inherited copy
+ * from every subclass. `systemName` stays, because a game reads it as the key
+ * of `resources`.
  *
  * A component class and its config interface (Sprite and SpriteConfig) share
  * most field names, and the class documents them. The plugin copies the
@@ -53,6 +54,8 @@ const CLASS_NAME_FIELDS = new Set([
   'componentName',
   'assetName',
   'behaviorName',
+  'shaderName',
+  'filterEffectName',
 ]);
 
 const LIFECYCLE_HOOKS = new Set([

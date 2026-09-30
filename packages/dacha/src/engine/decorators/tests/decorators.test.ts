@@ -149,28 +149,25 @@ describe('class decorators', () => {
     ]);
   });
 
-  it('records assets and behaviors with their kind and type', () => {
+  it('records assets and behaviors with their kind', () => {
     @DefineAsset({
       name: 'sound',
       fields: [{ name: 'src', type: 'file', extensions: ['mp3'] }],
     })
     class Sound {}
-    @DefineBehavior({ name: 'Blink', type: 'shader' })
-    class Blink {}
     @DefineBehavior({ name: 'Patrol' })
     class Patrol {}
 
     expect((Sound as unknown as { assetName: string }).assetName).toBe('sound');
     expect(getSchema(Sound)).toMatchObject({ kind: 'asset', name: 'sound' });
-    expect((Blink as unknown as { behaviorName: string }).behaviorName).toBe(
-      'Blink',
+    expect((Patrol as unknown as { behaviorName: string }).behaviorName).toBe(
+      'Patrol',
     );
-    expect(getSchema(Blink)).toMatchObject({
+    expect(getSchema(Patrol)).toMatchObject({
       kind: 'behavior',
-      name: 'Blink',
-      type: 'shader',
+      name: 'Patrol',
     });
-    expect(getSchema(Patrol)?.type).toBeUndefined();
+    expect(getSchema(Patrol)).not.toHaveProperty('type');
   });
 });
 
@@ -225,23 +222,25 @@ describe('field semantics', () => {
   });
 });
 
-describe('renderer behaviors', () => {
-  it('marks shaders and filter effects with their behavior type', () => {
+describe('renderer decorators', () => {
+  it('gives shaders and filter effects their own kind and static name', () => {
     @DefineShader({ name: 'Wave' })
     class Wave {}
     @DefineFilterEffect({ name: 'Blur' })
     class Blur {}
 
-    expect(getSchema(Wave)).toMatchObject({
-      kind: 'behavior',
-      type: 'shader',
-      name: 'Wave',
-    });
+    expect(getSchema(Wave)).toMatchObject({ kind: 'shader', name: 'Wave' });
     expect(getSchema(Blur)).toMatchObject({
-      kind: 'behavior',
-      type: 'filterEffect',
+      kind: 'filterEffect',
       name: 'Blur',
     });
+    expect((Wave as unknown as { shaderName: string }).shaderName).toBe('Wave');
+    expect(
+      (Blur as unknown as { filterEffectName: string }).filterEffectName,
+    ).toBe('Blur');
+    expect(Wave).not.toHaveProperty('behaviorName');
+    expect(Blur).not.toHaveProperty('behaviorName');
+    expect(getSchema(Wave)).not.toHaveProperty('type');
   });
 });
 

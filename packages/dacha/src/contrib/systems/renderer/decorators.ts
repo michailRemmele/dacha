@@ -1,8 +1,8 @@
-import {
-  DefineBehavior,
-  type DefineClassDecorator,
-  type DefineOptions,
+import type {
+  DefineClassDecorator,
+  DefineOptions,
 } from '../../../engine/decorators';
+import { defineClass } from '../../../engine/decorators/define-class';
 
 /**
  * Names a shader and describes its settings to the editor.
@@ -12,8 +12,11 @@ import {
  *
  * @category Rendering
  */
-export const DefineShader = (options: DefineOptions): DefineClassDecorator =>
-  DefineBehavior({ ...options, type: 'shader' });
+export const DefineShader = ({
+  name,
+  ...options
+}: DefineOptions): DefineClassDecorator =>
+  defineClass('shader', 'shaderName', name, options);
 
 /**
  * Names a filter effect and describes its settings to the editor.
@@ -23,5 +26,8 @@ export const DefineShader = (options: DefineOptions): DefineClassDecorator =>
  *
  * @category Rendering
  */
-export const DefineFilterEffect = (options: DefineOptions): DefineClassDecorator =>
-  DefineBehavior({ ...options, type: 'filterEffect' });
+export const DefineFilterEffect = ({
+  name,
+  ...options
+}: DefineOptions): DefineClassDecorator =>
+  defineClass('filterEffect', 'filterEffectName', name, options);
