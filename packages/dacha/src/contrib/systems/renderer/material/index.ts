@@ -26,19 +26,19 @@ const createShaderBuilders = (
 ): Record<string, Shader | undefined> => {
   return shaders.reduce(
     (acc, MaterialClass) => {
-      if (MaterialClass.behaviorName === undefined) {
+      if (MaterialClass.shaderName === undefined) {
         throw new Error(
-          `Missing behaviorName field for "${MaterialClass.name}" Shader class.`,
+          `Missing shaderName field for "${MaterialClass.name}" Shader class.`,
         );
       }
 
-      if (acc[MaterialClass.behaviorName] !== undefined) {
+      if (acc[MaterialClass.shaderName] !== undefined) {
         console.warn(
-          `Material "${MaterialClass.behaviorName}" already exists and will be overridden.`,
+          `Material "${MaterialClass.shaderName}" already exists and will be overridden.`,
         );
       }
 
-      acc[MaterialClass.behaviorName] = new MaterialClass();
+      acc[MaterialClass.shaderName] = new MaterialClass();
       return acc;
     },
     {} as Record<string, Shader>,

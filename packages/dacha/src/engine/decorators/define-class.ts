@@ -23,7 +23,7 @@ export type DefineClassDecorator = (
 ) => void;
 
 /**
- * Options of {@link DefineComponent} and {@link DefineSystem}.
+ * Options of {@link DefineComponent}, {@link DefineSystem} and {@link DefineBehavior}.
  *
  * @category Editor Schema
  */
@@ -40,29 +40,20 @@ export interface DefineOptions extends SchemaOptions {
 export type DefineAssetOptions = Pick<DefineOptions, 'name' | 'fields'>;
 
 /**
- * Options of {@link DefineBehavior}.
- *
- * @category Behaviors
+ * Builds a class decorator for one schema kind.
  */
-export interface DefineBehaviorOptions extends DefineOptions {
-  /** The behavior type. Shaders and filter effects set it for you. */
-  type?: string;
-}
-
-const defineClass =
+export const defineClass =
   (
     kind: SchemaKind,
     nameKey: string,
     name: string,
     options: SchemaOptions,
-    type?: string,
   ): DefineClassDecorator =>
   (value, context) => {
     const { fields, ...widget } = options;
     const schema: Schema = {
       kind,
       name,
-      ...(type !== undefined ? { type } : {}),
       ...widget,
       fields: mergeFields(fields, getDecoratedFields(context.metadata)),
     };
@@ -116,14 +107,13 @@ export const DefineAsset = ({
 /**
  * Names a behavior and describes its settings to the editor.
  *
- * @param options - The behavior's name, type and inspector options.
+ * @param options - The behavior's name and inspector options.
  * @returns The class decorator.
  *
  * @category Behaviors
  */
 export const DefineBehavior = ({
   name,
-  type,
   ...options
-}: DefineBehaviorOptions): DefineClassDecorator =>
-  defineClass('behavior', 'behaviorName', name, options, type);
+}: DefineOptions): DefineClassDecorator =>
+  defineClass('behavior', 'behaviorName', name, options);

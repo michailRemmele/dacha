@@ -14,6 +14,8 @@ import type { WidgetSchema } from '../types/widget-schema';
 import { fillMissingFields, buildInitialState } from './initial-state';
 
 export const BEHAVIORS_COMPONENT_NAME = 'Behaviors';
+const MESH_COMPONENT_NAME = 'Mesh';
+const RENDERER_SYSTEM_NAME = 'Renderer';
 
 export interface ReconcileFix {
   path: string[];
@@ -25,10 +27,34 @@ export interface ReconcileSchemas {
   systems: Record<string, WidgetSchema>;
   globalOptions: Record<string, WidgetSchema>;
   behaviors: Record<string, WidgetSchema>;
+  shaders: Record<string, WidgetSchema>;
+  filterEffects: Record<string, WidgetSchema>;
   assets: Record<string, WidgetSchema>;
 }
 
 type BehaviorEntry = BehaviorsConfig['list'][number] & { id: string };
+
+interface OptionsEntry {
+  name: string;
+  options?: Record<string, unknown>;
+}
+
+const reconcileOptions = (
+  entry: OptionsEntry,
+  entrySchemas: Record<string, WidgetSchema>,
+  path: string[],
+  fixes: ReconcileFix[],
+): void => {
+  const schema = entrySchemas[entry.name];
+  if (!schema?.fields) {
+    return;
+  }
+  const options = entry.options ?? {};
+  const filledOptions = fillMissingFields(options, schema.fields);
+  if (filledOptions !== options) {
+    fixes.push({ path, value: filledOptions });
+  }
+};
 
 const reconcileGlobalOptions = (
   globalOptions: GlobalOption[],
@@ -83,15 +109,28 @@ const reconcileSystems = (
 ): void => {
   systems.forEach((system) => {
     const schema = schemas.systems[system.name];
-    if (!schema?.fields) {
-      return;
-    }
+    const optionsPath = ['systems', `name:${system.name}`, 'options'];
     const options = system.options ?? {};
-    const filledOptions = fillMissingFields(options, schema.fields);
-    if (filledOptions !== options) {
-      fixes.push({
-        path: ['systems', `name:${system.name}`, 'options'],
-        value: filledOptions,
+
+    let filledOptions = options;
+    if (schema?.fields) {
+      filledOptions = fillMissingFields(options, schema.fields);
+      if (filledOptions !== options) {
+        fixes.push({ path: optionsPath, value: filledOptions });
+      }
+    }
+
+    if (system.name === RENDERER_SYSTEM_NAME) {
+      const effects = (filledOptions.filterEffects ?? []) as (OptionsEntry & {
+        id: string;
+      })[];
+      effects.forEach((effect) => {
+        reconcileOptions(
+          effect,
+          schemas.filterEffects,
+          [...optionsPath, 'filterEffects', `id:${effect.id}`, 'options'],
+          fixes,
+        );
       });
     }
   });
@@ -119,19 +158,25 @@ const reconcileComponents = (
     if (component.name === BEHAVIORS_COMPONENT_NAME) {
       const list = (filledConfig.list ?? []) as BehaviorEntry[];
       list.forEach((entry) => {
-        const behaviorSchema = schemas.behaviors[entry.name];
-        if (!behaviorSchema?.fields) {
-          return;
-        }
-        const options = entry.options ?? {};
-        const filledOptions = fillMissingFields(options, behaviorSchema.fields);
-        if (filledOptions !== options) {
-          fixes.push({
-            path: [...configPath, 'list', `id:${entry.id}`, 'options'],
-            value: filledOptions,
-          });
-        }
+        reconcileOptions(
+          entry,
+          schemas.behaviors,
+          [...configPath, 'list', `id:${entry.id}`, 'options'],
+          fixes,
+        );
       });
+    }
+
+    if (component.name === MESH_COMPONENT_NAME) {
+      const material = filledConfig.material as OptionsEntry | undefined;
+      if (material) {
+        reconcileOptions(
+          material,
+          schemas.shaders,
+          [...configPath, 'material', 'options'],
+          fixes,
+        );
+      }
     }
   });
 };

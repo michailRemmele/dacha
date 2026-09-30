@@ -91,6 +91,8 @@ const schemas: ReconcileSchemas = {
   systems: builtinSchemas.systems as Record<string, WidgetSchema>,
   globalOptions: globalOptionsSchema,
   behaviors: {},
+  shaders: {},
+  filterEffects: {},
   assets: {},
 };
 

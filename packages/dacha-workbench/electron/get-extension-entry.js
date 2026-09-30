@@ -23,6 +23,8 @@ module.exports = () => {
     components,
     assets,
     behaviors,
+    shaders,
+    filterEffects,
     widgets,
     events,
     locales,
@@ -88,7 +90,7 @@ module.exports = () => {
     }
 
     ${widgets.map((regexp) => `importAll(require.context('${contextRoot}', true, ${regexp}));`).join('\n')}
-    ${[...systems, ...components, ...assets, ...behaviors].map((regexp) => `modules.push(...importAll(require.context('${contextRoot}', true, ${regexp})));`).join('\n')}
+    ${[...systems, ...components, ...assets, ...behaviors, ...shaders, ...filterEffects].map((regexp) => `modules.push(...importAll(require.context('${contextRoot}', true, ${regexp})));`).join('\n')}
 
     export default {
       modules,

@@ -4,7 +4,7 @@ import {
   useConfig,
   useCommander,
   useStore,
-  useBehaviors,
+  useSchemas,
 } from './view/hooks';
 import { defineWidget } from './hocs';
 import { addValue, setValue, deleteValue } from './view/commands';
@@ -92,7 +92,7 @@ window.DachaWorkbench = {
   useConfig,
   useCommander,
   useStore,
-  useBehaviors,
+  useSchemas,
 
   defineWidget,
 

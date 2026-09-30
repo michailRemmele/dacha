@@ -112,7 +112,7 @@ export class ProjectLoader extends WorldSystem {
     this.world.data.schemas = schemas;
 
     const rendererApi = this.world.systemApi.get(RendererAPI);
-    rendererApi.reloadShaders(schemas.shaders);
+    rendererApi.reloadShaders(schemas.shaders.map((entry) => entry.class));
   }
 
   private reconcileProjectConfig(): number {
@@ -124,7 +124,9 @@ export class ProjectLoader extends WorldSystem {
       components: toMap(schemas.components),
       systems: toMap(schemas.systems),
       globalOptions: globalOptionsSchema,
-      behaviors: schemas.behaviors[''] ?? {},
+      behaviors: toMap(schemas.behaviors),
+      shaders: toMap(schemas.shaders),
+      filterEffects: toMap(schemas.filterEffects),
       assets: toMap(schemas.assets),
     });
 

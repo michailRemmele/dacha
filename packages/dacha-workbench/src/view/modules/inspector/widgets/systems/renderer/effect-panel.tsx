@@ -9,7 +9,7 @@ import { deleteValue } from '../../../../../commands';
 import { formatWidgetName } from '../../../../../../utils/format-widget-name';
 import { NAMESPACE_EXTENSION } from '../../../../../providers/schemas-provider/consts';
 
-import { BEHAVIOR_TYPE } from './consts';
+import { FILTER_EFFECT_KIND } from './consts';
 import { cx } from '../../../../../../utils/cx';
 
 import * as styles from './renderer.module.css';
@@ -60,7 +60,7 @@ export const EffectPanel: FC<EffectPanelProps> = ({
         <BehaviorWidget
           name={name}
           path={optionsPath}
-          systemName={BEHAVIOR_TYPE}
+          kind={FILTER_EFFECT_KIND}
         />
       ) : null}
     </Section>

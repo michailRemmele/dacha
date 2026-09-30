@@ -303,7 +303,8 @@ export interface SchemaSection {
  *
  * @category Editor Schema
  */
-export type SchemaKind = 'component' | 'system' | 'asset' | 'behavior';
+export type SchemaKind =
+  'component' | 'system' | 'asset' | 'behavior' | 'shader' | 'filterEffect';
 
 /**
  * How the editor draws a class in the inspector. The engine stores it and never reads it.
@@ -331,8 +332,6 @@ export interface Schema extends Omit<SchemaOptions, 'fields'> {
   kind: SchemaKind;
   /** The name the configuration uses for the class. */
   name: string;
-  /** The behavior type, such as `shader` or `filterEffect`. Behaviors only. */
-  type?: string;
   /** Every field, in the order the inspector draws them. */
   fields: Field[];
 }

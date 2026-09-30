@@ -1,1 +1,3 @@
-export const BEHAVIOR_TYPE = 'filterEffect';
+import type { SchemaKind } from 'dacha';
+
+export const FILTER_EFFECT_KIND = 'filterEffect' satisfies SchemaKind;

@@ -15,17 +15,12 @@ import type {
   CollectedSchemas,
   SchemaEntry,
 } from '../../../schema/collect-schemas';
-import type { WidgetSchema } from '../../../types/widget-schema';
 
 import { NAMESPACE_EXTENSION } from './consts';
 
 export type SchemasDataEntry = SchemaEntry;
 
-interface SchemasData {
-  components: SchemasDataEntry[];
-  systems: SchemasDataEntry[];
-  assets: SchemasDataEntry[];
-  behaviors: Record<string, Record<string, WidgetSchema>>;
+interface SchemasData extends CollectedSchemas {
   isReady: boolean;
 }
 
@@ -33,11 +28,13 @@ interface SchemasProviderProps {
   children: ReactElement | ReactElement[];
 }
 
-const INITIAL: Omit<SchemasData, 'isReady'> = {
+const INITIAL: CollectedSchemas = {
   components: [],
   systems: [],
   assets: [],
-  behaviors: {},
+  behaviors: [],
+  shaders: [],
+  filterEffects: [],
 };
 
 export const SchemasContext = React.createContext<SchemasData>({
@@ -51,7 +48,7 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
   const world = useContext(EngineContext)?.world;
   const extension = useExtension();
 
-  const [schemas, setSchemas] = useState<Omit<SchemasData, 'isReady'>>(
+  const [schemas, setSchemas] = useState<CollectedSchemas>(
     () => (world?.data.schemas as CollectedSchemas | undefined) ?? INITIAL,
   );
 
@@ -99,13 +96,7 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
   }, [world]);
 
   const context = useMemo(
-    () => ({
-      components: schemas.components,
-      systems: schemas.systems,
-      assets: schemas.assets,
-      behaviors: schemas.behaviors,
-      isReady,
-    }),
+    () => ({ ...schemas, isReady }),
     [schemas, isReady],
   );
 

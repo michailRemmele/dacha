@@ -20,7 +20,7 @@ export { type BlendingMode } from '../../systems/renderer/blending-mode';
  * @category Rendering
  */
 export interface MaterialConfig {
-  /** The `behaviorName` of the shader class. */
+  /** The `shaderName` of the shader class. */
   name: string;
   /** The values of the shader fields. The shader methods get them as `options`. */
   options: Record<string, unknown>;
