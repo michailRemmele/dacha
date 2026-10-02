@@ -1,26 +1,26 @@
-.renderer {
+.list {
   margin: 5px 0;
 }
 
-.effectForm {
-  text-align: center;
-}
-
-.sectionHeader {
+.label {
   display: block;
   margin: 5px 0;
 }
 
-.panelNoSchema {
+.message {
+  text-align: center;
+}
+
+.noSchema {
   box-shadow: 0 0 0 2px var(--ant-color-error);
   background-color: var(--ant-color-error-bg);
 }
 
-.entityPicker {
+.picker {
   margin-top: 10px;
 }
 
-.holder {
+.handle {
   padding: 2px 1px;
   border-radius: 3px;
 

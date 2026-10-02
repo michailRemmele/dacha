@@ -32,6 +32,9 @@ const getFieldTypeDefault = (type: FieldType): unknown => {
 };
 
 export const resolveFieldInitialValue = (field: Field): unknown => {
+  if (field.type === 'script') {
+    return field.multiple ? [] : undefined;
+  }
   if (field.type === 'data') {
     return structuredClone(field.initialValue);
   }
@@ -59,6 +62,9 @@ export const fillMissingFields = (
   let result = state;
 
   const fill = (field: Field): void => {
+    if (field.type === 'script' && !field.multiple) {
+      return;
+    }
     if (getFieldValue(result, field.name) !== undefined) {
       return;
     }

@@ -36,7 +36,15 @@ const colliderSchema: WidgetSchema = {
 };
 
 const behaviorsSchema: WidgetSchema = {
-  fields: [{ name: 'list', type: 'data', initialValue: [] }],
+  fields: [
+    {
+      name: 'list',
+      type: 'script',
+      kind: 'behavior',
+      multiple: true,
+      unique: true,
+    },
+  ],
 };
 
 const schemas: ReconcileSchemas = {
@@ -44,10 +52,21 @@ const schemas: ReconcileSchemas = {
     Camera: cameraSchema,
     Collider: colliderSchema,
     Behaviors: behaviorsSchema,
+    Mesh: { fields: [{ name: 'material', type: 'script', kind: 'shader' }] },
   },
   systems: {
     Physics: {
       fields: [{ name: 'gravityY', type: 'number', initialValue: 980 }],
+    },
+    Renderer: {
+      fields: [
+        {
+          name: 'filterEffects',
+          type: 'script',
+          kind: 'filterEffect',
+          multiple: true,
+        },
+      ],
     },
   },
   globalOptions: {
@@ -72,14 +91,25 @@ const schemas: ReconcileSchemas = {
       ],
     },
   },
-  behaviors: {
-    Patrol: { fields: [{ name: 'speed', type: 'number', initialValue: 100 }] },
-  },
-  shaders: {
-    Wave: { fields: [{ name: 'amplitude', type: 'number', initialValue: 2 }] },
-  },
-  filterEffects: {
-    Blur: { fields: [{ name: 'strength', type: 'number', initialValue: 8 }] },
+  scripts: {
+    behavior: {
+      Patrol: {
+        fields: [{ name: 'speed', type: 'number', initialValue: 100 }],
+      },
+      Carrier: {
+        fields: [{ name: 'material', type: 'script', kind: 'shader' }],
+      },
+    },
+    shader: {
+      Wave: {
+        fields: [{ name: 'amplitude', type: 'number', initialValue: 2 }],
+      },
+    },
+    filterEffect: {
+      Blur: {
+        fields: [{ name: 'strength', type: 'number', initialValue: 8 }],
+      },
+    },
   },
   assets: {},
 };
@@ -374,6 +404,102 @@ describe('reconcileConfig', () => {
     expect(reconcileConfig(config, schemas)).toEqual([]);
   });
 
+  it('reconciles script fields nested in a script entry', () => {
+    const config = {
+      ...emptyConfig,
+      globalOptions: filledGlobalOptions,
+      templates: [
+        {
+          id: 't1',
+          name: 'boat',
+          components: [
+            {
+              name: 'Behaviors',
+              config: {
+                list: [
+                  {
+                    id: 'b1',
+                    name: 'Carrier',
+                    options: { material: { name: 'Wave', options: {} } },
+                  },
+                ],
+              },
+            },
+          ],
+          children: [],
+        },
+      ],
+    };
+    expect(reconcileConfig(config, schemas)).toEqual([
+      {
+        path: [
+          'templates',
+          'id:t1',
+          'components',
+          'name:Behaviors',
+          'config',
+          'list',
+          'id:b1',
+          'options',
+          'material',
+          'options',
+        ],
+        value: { amplitude: 2 },
+      },
+    ]);
+  });
+
+  it('reconciles a script field on any component, not only the built-ins', () => {
+    const config = {
+      ...emptyConfig,
+      globalOptions: filledGlobalOptions,
+      templates: [
+        {
+          id: 't1',
+          name: 'lamp',
+          components: [
+            {
+              name: 'Glow',
+              config: { effects: [{ id: 'e1', name: 'Blur', options: {} }] },
+            },
+          ],
+          children: [],
+        },
+      ],
+    };
+    const withGlow: ReconcileSchemas = {
+      ...schemas,
+      components: {
+        ...schemas.components,
+        Glow: {
+          fields: [
+            {
+              name: 'effects',
+              type: 'script',
+              kind: 'filterEffect',
+              multiple: true,
+            },
+          ],
+        },
+      },
+    };
+    expect(reconcileConfig(config, withGlow)).toEqual([
+      {
+        path: [
+          'templates',
+          'id:t1',
+          'components',
+          'name:Glow',
+          'config',
+          'effects',
+          'id:e1',
+          'options',
+        ],
+        value: { strength: 8 },
+      },
+    ]);
+  });
+
   it('never shares initialValue references between entities', () => {
     const config = {
       ...emptyConfig,
@@ -440,10 +566,8 @@ describe('reconcileConfig', () => {
       components: {},
       systems: {},
       globalOptions: {},
-      behaviors: {},
+      scripts: { behavior: {}, shader: {}, filterEffect: {} },
       assets: {},
-      shaders: {},
-      filterEffects: {},
     });
     expect(fixes).toContainEqual({ path: ['assets'], value: [] });
   });
@@ -460,9 +584,7 @@ describe('reconcileConfig', () => {
       components: {},
       systems: {},
       globalOptions: {},
-      behaviors: {},
-      shaders: {},
-      filterEffects: {},
+      scripts: { behavior: {}, shader: {}, filterEffect: {} },
       assets: {
         texture: {
           fields: [

@@ -57,8 +57,8 @@ module.exports = () => {
     ${libLocales.map((name, index) => `import libLocales${index} from '${name}/locales';`).join('\n')}
     ${libEvents.map((name, index) => `import * as libEvents${index} from '${name}/events';`).join('\n')}
     ${libraries.map((name, index) => `import * as lib${index} from '${name}';`).join('\n')}
-    ${fs.existsSync(normalizePath(locales)) ? `import locales from '${getImportPath(locales)}';` : ''}
-    ${fs.existsSync(normalizePath(events)) ? `import * as events from '${getImportPath(events)}';` : ''}
+    ${fs.existsSync(normalizePath(locales)) ? `import locales from ${JSON.stringify(getImportPath(locales))};` : ''}
+    ${fs.existsSync(normalizePath(events)) ? `import * as events from ${JSON.stringify(getImportPath(events))};` : ''}
 
     function importAll(r) {
       return r.keys().map(r);
@@ -89,8 +89,8 @@ module.exports = () => {
       return output;
     }
 
-    ${widgets.map((regexp) => `importAll(require.context('${contextRoot}', true, ${regexp}));`).join('\n')}
-    ${[...systems, ...components, ...assets, ...behaviors, ...shaders, ...filterEffects].map((regexp) => `modules.push(...importAll(require.context('${contextRoot}', true, ${regexp})));`).join('\n')}
+    ${widgets.map((regexp) => `importAll(require.context(${JSON.stringify(contextRoot)}, true, ${regexp}));`).join('\n')}
+    ${[...systems, ...components, ...assets, ...behaviors, ...shaders, ...filterEffects].map((regexp) => `modules.push(...importAll(require.context(${JSON.stringify(contextRoot)}, true, ${regexp})));`).join('\n')}
 
     export default {
       modules,

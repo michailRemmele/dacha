@@ -55,8 +55,10 @@
       "fields": [
         {
           "name": "list",
-          "type": "data",
-          "initialValue": []
+          "type": "script",
+          "kind": "behavior",
+          "multiple": true,
+          "unique": true
         }
       ]
     },
@@ -453,6 +455,12 @@
           "name": "disabled",
           "type": "boolean",
           "initialValue": false
+        },
+        {
+          "name": "material",
+          "type": "script",
+          "kind": "shader",
+          "section": "material"
         }
       ]
     },
@@ -1001,8 +1009,10 @@
         },
         {
           "name": "filterEffects",
-          "type": "data",
-          "initialValue": []
+          "type": "script",
+          "kind": "filterEffect",
+          "multiple": true,
+          "sortable": true
         }
       ]
     },

@@ -3,19 +3,35 @@ import type { Point } from '../math-lib';
 import type { DataField, FieldDependency, Field, FieldType } from './types';
 import { addField, inferFieldType, nextFieldOrder } from './metadata';
 
-type FieldTypeFor<V> = [V] extends [number]
-  ? 'number' | 'range' | 'select'
-  : [V] extends [string]
-    ? 'string' | 'textarea' | 'select' | 'color' | 'file' | 'asset'
-    : [V] extends [boolean]
-      ? 'boolean'
-      : [V] extends [Point]
-        ? 'vector'
-        : [V] extends [string[]]
-          ? 'multiselect' | 'multitext'
-          : [V] extends [number[]]
-            ? 'multiselect'
-            : never;
+/** @inline */
+interface ScriptValue {
+  name: string;
+  options: Record<string, unknown>;
+}
+
+/**
+ * The value type each field type edits. {@link DefineField} accepts a field type on a
+ * member whose type matches its value type here.
+ */
+export interface FieldValueMap {
+  string: string;
+  textarea: string;
+  color: string;
+  file: string;
+  asset: string;
+  select: string | number;
+  number: number;
+  range: number;
+  boolean: boolean;
+  vector: Point;
+  multitext: string[];
+  multiselect: string[] | number[];
+  script: ScriptValue | (ScriptValue & { id: string })[];
+}
+
+type FieldTypeFor<V> = {
+  [T in keyof FieldValueMap]: [V] extends [FieldValueMap[T]] ? T : never;
+}[keyof FieldValueMap];
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
   ? Omit<T, K>
@@ -104,7 +120,9 @@ export function DefineField<
 >(
   options: FieldOptions<T> & {
     type: T;
-    initialValue?: ConfigValue<NoInfer<NonNullable<V>>>;
+    initialValue?: T extends 'script'
+      ? never
+      : ConfigValue<NoInfer<NonNullable<V>>>;
   },
 ): FieldDecorator<This, V>;
 export function DefineField<This, V extends Inferable | undefined>(

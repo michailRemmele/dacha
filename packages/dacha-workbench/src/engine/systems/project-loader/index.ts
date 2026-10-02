@@ -74,9 +74,7 @@ export class ProjectLoader extends WorldSystem {
   };
 
   async onWorldLoad(): Promise<void> {
-    if (process.env.NODE_ENV === 'production') {
-      await this.loadScript('./extension.js');
-    }
+    await this.loadScript('./extension.js');
 
     this.setUpData({ ...window.extension?.default });
 
@@ -124,9 +122,11 @@ export class ProjectLoader extends WorldSystem {
       components: toMap(schemas.components),
       systems: toMap(schemas.systems),
       globalOptions: globalOptionsSchema,
-      behaviors: toMap(schemas.behaviors),
-      shaders: toMap(schemas.shaders),
-      filterEffects: toMap(schemas.filterEffects),
+      scripts: {
+        behavior: toMap(schemas.behaviors),
+        shader: toMap(schemas.shaders),
+        filterEffect: toMap(schemas.filterEffects),
+      },
       assets: toMap(schemas.assets),
     });
 

@@ -120,9 +120,7 @@ const createWindow = () => {
 
   win.loadURL(`http://localhost:${server.address().port}`);
 
-  if (!isDev) {
-    applyExtension(expressApp, win);
-  }
+  applyExtension(expressApp, win);
 
   watchProjectConfig(editorConfig.projectConfig, win);
 };

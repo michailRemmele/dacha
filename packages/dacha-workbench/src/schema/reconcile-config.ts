@@ -2,20 +2,17 @@ import type {
   Config,
   ComponentConfig,
   GlobalOption,
-  BehaviorsConfig,
   TemplateConfig,
   ActorConfig,
   SystemConfig,
   AssetConfig,
+  Field,
+  ScriptFieldKind,
 } from 'dacha';
 
 import type { WidgetSchema } from '../types/widget-schema';
 
 import { fillMissingFields, buildInitialState } from './initial-state';
-
-export const BEHAVIORS_COMPONENT_NAME = 'Behaviors';
-const MESH_COMPONENT_NAME = 'Mesh';
-const RENDERER_SYSTEM_NAME = 'Renderer';
 
 export interface ReconcileFix {
   path: string[];
@@ -26,34 +23,69 @@ export interface ReconcileSchemas {
   components: Record<string, WidgetSchema>;
   systems: Record<string, WidgetSchema>;
   globalOptions: Record<string, WidgetSchema>;
-  behaviors: Record<string, WidgetSchema>;
-  shaders: Record<string, WidgetSchema>;
-  filterEffects: Record<string, WidgetSchema>;
+  scripts: Record<ScriptFieldKind, Record<string, WidgetSchema>>;
   assets: Record<string, WidgetSchema>;
 }
 
-type BehaviorEntry = BehaviorsConfig['list'][number] & { id: string };
-
-interface OptionsEntry {
+interface ScriptEntry {
+  id?: string;
   name: string;
   options?: Record<string, unknown>;
 }
 
-const reconcileOptions = (
-  entry: OptionsEntry,
-  entrySchemas: Record<string, WidgetSchema>,
+const reconcileFields = (
+  value: Record<string, unknown>,
+  fields: Field[],
   path: string[],
+  schemas: ReconcileSchemas,
   fixes: ReconcileFix[],
 ): void => {
-  const schema = entrySchemas[entry.name];
-  if (!schema?.fields) {
-    return;
+  const filled = fillMissingFields(value, fields);
+  if (filled !== value) {
+    fixes.push({ path, value: filled });
   }
-  const options = entry.options ?? {};
-  const filledOptions = fillMissingFields(options, schema.fields);
-  if (filledOptions !== options) {
-    fixes.push({ path, value: filledOptions });
-  }
+
+  fields.forEach((field) => {
+    if (field.type !== 'script') {
+      return;
+    }
+
+    const reconcileEntry = (
+      entry: ScriptEntry | undefined,
+      entryPath: string[],
+    ): void => {
+      const entryFields = entry
+        ? schemas.scripts[field.kind][entry.name]?.fields
+        : undefined;
+      if (!entry || !entryFields) {
+        return;
+      }
+      reconcileFields(
+        entry.options ?? {},
+        entryFields,
+        entryPath,
+        schemas,
+        fixes,
+      );
+    };
+
+    if (field.multiple) {
+      ((filled[field.name] ?? []) as ScriptEntry[]).forEach((entry) => {
+        reconcileEntry(entry, [
+          ...path,
+          field.name,
+          `id:${entry.id}`,
+          'options',
+        ]);
+      });
+    } else {
+      reconcileEntry(filled[field.name] as ScriptEntry | undefined, [
+        ...path,
+        field.name,
+        'options',
+      ]);
+    }
+  });
 };
 
 const reconcileGlobalOptions = (
@@ -91,14 +123,13 @@ const reconcileGlobalOptions = (
     if (group === undefined) {
       return;
     }
-    const options = group.options ?? {};
-    const filledOptions = fillMissingFields(options, schema.fields);
-    if (filledOptions !== options) {
-      fixes.push({
-        path: ['globalOptions', `name:${name}`, 'options'],
-        value: filledOptions,
-      });
-    }
+    reconcileFields(
+      group.options ?? {},
+      schema.fields,
+      ['globalOptions', `name:${name}`, 'options'],
+      schemas,
+      fixes,
+    );
   });
 };
 
@@ -108,31 +139,17 @@ const reconcileSystems = (
   fixes: ReconcileFix[],
 ): void => {
   systems.forEach((system) => {
-    const schema = schemas.systems[system.name];
-    const optionsPath = ['systems', `name:${system.name}`, 'options'];
-    const options = system.options ?? {};
-
-    let filledOptions = options;
-    if (schema?.fields) {
-      filledOptions = fillMissingFields(options, schema.fields);
-      if (filledOptions !== options) {
-        fixes.push({ path: optionsPath, value: filledOptions });
-      }
+    const fields = schemas.systems[system.name]?.fields;
+    if (!fields) {
+      return;
     }
-
-    if (system.name === RENDERER_SYSTEM_NAME) {
-      const effects = (filledOptions.filterEffects ?? []) as (OptionsEntry & {
-        id: string;
-      })[];
-      effects.forEach((effect) => {
-        reconcileOptions(
-          effect,
-          schemas.filterEffects,
-          [...optionsPath, 'filterEffects', `id:${effect.id}`, 'options'],
-          fixes,
-        );
-      });
-    }
+    reconcileFields(
+      system.options ?? {},
+      fields,
+      ['systems', `name:${system.name}`, 'options'],
+      schemas,
+      fixes,
+    );
   });
 };
 
@@ -143,41 +160,17 @@ const reconcileComponents = (
   fixes: ReconcileFix[],
 ): void => {
   components.forEach((component) => {
-    const schema = schemas.components[component.name];
-    const configPath = [...basePath, `name:${component.name}`, 'config'];
-    const config = component.config ?? {};
-
-    let filledConfig = config;
-    if (schema?.fields) {
-      filledConfig = fillMissingFields(config, schema.fields);
-      if (filledConfig !== config) {
-        fixes.push({ path: configPath, value: filledConfig });
-      }
+    const fields = schemas.components[component.name]?.fields;
+    if (!fields) {
+      return;
     }
-
-    if (component.name === BEHAVIORS_COMPONENT_NAME) {
-      const list = (filledConfig.list ?? []) as BehaviorEntry[];
-      list.forEach((entry) => {
-        reconcileOptions(
-          entry,
-          schemas.behaviors,
-          [...configPath, 'list', `id:${entry.id}`, 'options'],
-          fixes,
-        );
-      });
-    }
-
-    if (component.name === MESH_COMPONENT_NAME) {
-      const material = filledConfig.material as OptionsEntry | undefined;
-      if (material) {
-        reconcileOptions(
-          material,
-          schemas.shaders,
-          [...configPath, 'material', 'options'],
-          fixes,
-        );
-      }
-    }
+    reconcileFields(
+      component.config ?? {},
+      fields,
+      [...basePath, `name:${component.name}`, 'config'],
+      schemas,
+      fixes,
+    );
   });
 };
 
@@ -221,14 +214,13 @@ const reconcileAssets = (
     }
 
     if (schema.fields) {
-      const data = asset.data ?? {};
-      const filledData = fillMissingFields(data, schema.fields);
-      if (filledData !== data) {
-        fixes.push({
-          path: ['assets', `id:${asset.id}`, 'data'],
-          value: filledData,
-        });
-      }
+      reconcileFields(
+        asset.data ?? {},
+        schema.fields,
+        ['assets', `id:${asset.id}`, 'data'],
+        schemas,
+        fixes,
+      );
     }
   });
 };

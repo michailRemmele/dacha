@@ -1,4 +1,4 @@
-import { cpSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, realpathSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -18,10 +18,30 @@ export interface LaunchedApp {
 }
 
 export const launchApp = async (): Promise<LaunchedApp> => {
-  const originalCwd = mkdtempSync(path.join(tmpdir(), 'dacha-workbench-e2e-'));
+  // realpath: on macOS the temp dir is a symlink (/var → /private/var), and webpack
+  // resolves the extension entry to the real path, missing the virtual module.
+  const originalCwd = realpathSync(
+    mkdtempSync(path.join(tmpdir(), 'dacha-workbench-e2e-')),
+  );
 
   const fixtureCopy = path.join(originalCwd, 'fixture');
   cpSync(SOURCE_FIXTURE, fixtureCopy, { recursive: true });
+
+  // A real project has a tsconfig.json at its root, where the editor puts the
+  // extension entry. Without one, ts-loader walks up to an unrelated config.
+  writeFileSync(
+    path.join(originalCwd, 'tsconfig.json'),
+    JSON.stringify({
+      compilerOptions: {
+        target: 'es2021',
+        module: 'esnext',
+        moduleResolution: 'bundler',
+        strict: true,
+        skipLibCheck: true,
+        isolatedModules: true,
+      },
+    }),
+  );
 
   const editorConfigPath = path.join(originalCwd, 'editor-config.json');
   writeFileSync(

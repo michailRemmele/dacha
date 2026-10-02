@@ -77,8 +77,10 @@ interface RendererOptions extends WorldSystemOptions {
     },
     {
       name: 'filterEffects',
-      type: 'data',
-      initialValue: [],
+      type: 'script',
+      kind: 'filterEffect',
+      multiple: true,
+      sortable: true,
     },
   ],
 })

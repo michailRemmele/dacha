@@ -67,6 +67,7 @@ export const Field: FC<FieldProps> = ({
         dependencyPath={dependencyPath}
         dependencyValue={dependency.value}
         initialValue={resolveFieldInitialValue({
+          ...properties,
           type,
           initialValue,
         } as unknown as FieldSchema)}
@@ -84,7 +85,7 @@ export const Field: FC<FieldProps> = ({
     );
 
   return (
-    <WidgetFieldProvider path={path} data={context}>
+    <WidgetFieldProvider path={path} fieldPath={fieldPath} data={context}>
       {inner}
     </WidgetFieldProvider>
   );

@@ -1,6 +1,8 @@
 import { Component } from '../../component';
 import { Vector } from '../../math-lib';
 import { DefineField } from '..';
+import type { FieldType } from '..';
+import type { FieldValueMap } from '../define-field';
 
 class Valid extends Component {
   @DefineField() s!: string;
@@ -17,6 +19,10 @@ class Valid extends Component {
   @DefineField({ type: 'multiselect', options: [1, 2] }) ids!: number[];
   @DefineField({ type: 'color', disabledAlpha: true }) c!: string;
   @DefineField({ type: 'file', extensions: ['png'] }) f!: string;
+  @DefineField({ type: 'script', kind: 'shader' })
+  sh?: { name: string; options: Record<string, unknown> };
+  @DefineField({ type: 'script', kind: 'behavior', multiple: true })
+  bs!: { id: string; name: string; options: Record<string, unknown> }[];
 }
 
 class Invalid extends Component {
@@ -34,9 +40,25 @@ class Invalid extends Component {
   @DefineField({ type: 'data' }) raw!: string[];
   // @ts-expect-error multitext holds strings only
   @DefineField({ type: 'multitext' }) numbers!: number[];
+  // @ts-expect-error a script field holds { name, options }
+  @DefineField({ type: 'script', kind: 'shader' }) notScript!: number;
+  @DefineField({
+    type: 'script',
+    kind: 'shader',
+    // @ts-expect-error a script field has no initialValue
+    initialValue: { name: 'a', options: {} },
+  })
+  withInitial?: { name: string; options: Record<string, unknown> };
 }
+
+// Every field type needs a value type, or @DefineField accepts it on no member.
+type MissingFieldTypes = Exclude<FieldType, keyof FieldValueMap>;
+const everyFieldTypeHasAValue: [MissingFieldTypes] extends [never]
+  ? true
+  : MissingFieldTypes = true;
 
 it('compiles', () => {
   expect(Valid).toBeDefined();
   expect(Invalid).toBeDefined();
+  expect(everyFieldTypeHasAValue).toBe(true);
 });

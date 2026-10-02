@@ -149,3 +149,35 @@ describe('initial-state asset field', () => {
     expect(buildInitialState(fields)).toEqual({ texture: '' });
   });
 });
+
+describe('script fields', () => {
+  it('start a list as an empty array and a single field as absent', () => {
+    expect(
+      buildInitialState([
+        { name: 'list', type: 'script', kind: 'behavior', multiple: true },
+        { name: 'material', type: 'script', kind: 'shader' },
+      ]),
+    ).toEqual({ list: [] });
+  });
+
+  it('do not fill an absent single field', () => {
+    const state = { other: 1 };
+    expect(
+      fillMissingFields(state, [
+        { name: 'material', type: 'script', kind: 'shader' },
+      ]),
+    ).toBe(state);
+  });
+
+  it('give each list its own array', () => {
+    const field = {
+      name: 'list',
+      type: 'script',
+      kind: 'behavior',
+      multiple: true,
+    } as const;
+    expect(resolveFieldInitialValue(field)).not.toBe(
+      resolveFieldInitialValue(field),
+    );
+  });
+});

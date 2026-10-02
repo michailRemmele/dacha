@@ -350,3 +350,34 @@ describe('data fields', () => {
     ]);
   });
 });
+
+describe('script fields', () => {
+  it('stores kind and list settings and no initial value', () => {
+    @DefineComponent({ name: 'Holder' })
+    class Holder extends Component {
+      @DefineField({ type: 'script', kind: 'shader' })
+      material?: { name: string; options: Record<string, unknown> };
+
+      @DefineField({
+        type: 'script',
+        kind: 'behavior',
+        multiple: true,
+        unique: true,
+        sortable: true,
+      })
+      list!: { id: string; name: string; options: Record<string, unknown> }[];
+    }
+
+    expect(getSchema(Holder)?.fields).toEqual([
+      { name: 'material', type: 'script', kind: 'shader' },
+      {
+        name: 'list',
+        type: 'script',
+        kind: 'behavior',
+        multiple: true,
+        unique: true,
+        sortable: true,
+      },
+    ]);
+  });
+});

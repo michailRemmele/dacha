@@ -30,6 +30,27 @@ test('adding an existing component to an actor', async () => {
   await expect(window.getByTestId('entity-panel-Sprite-header')).toBeVisible();
 });
 
+test('a project component shows its fields with their initial values', async () => {
+  await toggleSceneExpand(window, 'space-level');
+  await clickTreeNode(window, 'background_1');
+
+  await window.getByRole('combobox').fill('Health');
+  await window.getByRole('combobox').press('Enter');
+  await window.getByTestId('entity-picker-add-button').click();
+
+  const header = window.getByTestId('entity-panel-Health-header');
+  await expect(header).toBeVisible();
+  await header.click();
+
+  const panel = window.getByTestId('entity-panel-Health');
+  await expect(
+    panel.getByRole('spinbutton', { name: /^Points/ }),
+  ).toHaveValue('100');
+  await expect(
+    panel.getByRole('checkbox', { name: 'Regenerates' }),
+  ).not.toBeChecked();
+});
+
 test('adding an existing component to a template', async () => {
   await switchExplorerTab(window, 'Templates');
   await clickTreeNode(window, 'terrain');

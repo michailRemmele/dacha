@@ -120,6 +120,11 @@ export class Mesh extends Component {
   /** Current frame to render */
   currentFrame: number;
   /** Material describes a shader and its options applied to a texture (optional). */
+  @DefineField({
+    type: 'script',
+    kind: 'shader',
+    section: 'material',
+  })
   material?: MaterialConfig;
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;

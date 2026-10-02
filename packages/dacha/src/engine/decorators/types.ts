@@ -70,7 +70,8 @@ export type FieldType =
   | 'range'
   | 'textarea'
   | 'vector'
-  | 'asset';
+  | 'asset'
+  | 'script';
 
 /**
  * Settings every field shares.
@@ -229,6 +230,37 @@ export interface AssetField extends AnyField {
 }
 
 /**
+ * The kinds of class a {@link ScriptField} can hold.
+ *
+ * @category Editor Schema
+ * @advanced
+ */
+export type ScriptFieldKind = 'behavior' | 'shader' | 'filterEffect';
+
+/**
+ * A script of the {@link ScriptFieldKind} set in `kind`, with its options. The value is
+ * `{ name, options }`, where `name` is the class name and `options` holds the values
+ * of its fields. With `multiple`, the value is a list, and each entry also has an `id`.
+ *
+ * @category Editor Schema
+ * @advanced
+ */
+export interface ScriptField extends AnyField {
+  /** The widget type. */
+  type: 'script';
+  /** Which kind of class the field holds. */
+  kind: ScriptFieldKind;
+  /** Holds a list of classes instead of one. */
+  multiple?: boolean;
+  /** Each class can appear in the list once. Lists only. */
+  unique?: boolean;
+  /** The inspector lets you reorder the list by dragging. Lists only. */
+  sortable?: boolean;
+  /** A script field has no initial value. */
+  initialValue?: never;
+}
+
+/**
  * A multi-line text input.
  *
  * @category Editor Schema
@@ -286,6 +318,7 @@ export type Field =
   | TextAreaField
   | VectorField
   | AssetField
+  | ScriptField
   | DataField;
 
 /**

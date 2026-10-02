@@ -40,7 +40,12 @@ export class Behaviors extends Component {
    * it creates the behavior instances. To change the behaviors, replace the whole
    * component with `actor.setComponent`.
    */
-  @DefineField({ type: 'data', initialValue: [] })
+  @DefineField({
+    type: 'script',
+    kind: 'behavior',
+    multiple: true,
+    unique: true,
+  })
   list: BehaviorConfig[];
 
   constructor(config: BehaviorsConfig) {

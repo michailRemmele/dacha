@@ -50,8 +50,11 @@ Releases made before this file existed are recorded in the
   `FilterEffect.filterEffectName`. `DefineShader` and `DefineFilterEffect` set it.
 - **Breaking:** the editor configuration has separate `shaders` and `filterEffects` settings.
   `behaviors` now matches only `*.behavior.ts` by default.
-- **Breaking:** `useBehaviors` in `dacha-workbench` is replaced by `useSchemas(kind)`, and the
-  `systemName` prop of `BehaviorWidget` is now `kind`.
+- **Breaking:** `useBehaviors` in `dacha-workbench` is replaced by `useSchemas(kind)`, and
+  `BehaviorWidget` is removed. The inspector draws the options of behaviors, shaders and
+  filter effects itself.
+- `Mesh.material` is a declared inspector field. The behaviors list, the mesh material and
+  the renderer filter effects share one inspector widget.
 - When the editor opens a project, it fills in the missing fields of shader options in `Mesh`
   and of filter effect options in `Renderer`, as it already did for behavior options.
 - The built-in components, systems and assets describe their inspector fields with the same
@@ -71,5 +74,8 @@ Releases made before this file existed are recorded in the
 
 ### Fixed
 
+- On Windows, the editor found no project scripts when `contextRoot`, `locales` or `events`
+  in the editor configuration was an absolute path. The backslashes in the path were read as
+  escape characters.
 - `AddActorEvent` and `RemoveActorEvent` type `target` as the `ActorQuery` that dispatches
   them. They typed it as a `Scene` before, which never matched the object a listener got.
