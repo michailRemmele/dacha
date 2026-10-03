@@ -460,6 +460,7 @@
           "name": "material",
           "type": "script",
           "kind": "shader",
+          "title": "Shader",
           "section": "material"
         }
       ]

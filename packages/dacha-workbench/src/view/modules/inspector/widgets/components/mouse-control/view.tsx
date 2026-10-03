@@ -6,6 +6,7 @@ import { uuid } from '../../../../../../utils/uuid';
 import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { addValue } from '../../../../../commands';
+import { NewItemTracker } from '../../../components/new-item-tracker';
 
 import { InputBind } from './input-bind';
 
@@ -70,19 +71,20 @@ export const MouseControlWidget: FC<WidgetProps> = ({ path }) => {
   return (
     <div>
       <ul className={styles.eventList}>
-        {inputEventBindings.map((inputEventBind, index) => (
-          <li key={inputEventBind.id}>
-            <InputBind
-              path={path}
-              id={inputEventBind.id}
-              value={inputEventBind.event}
-              eventType={inputEventBind.eventType}
-              order={index}
-              options={options}
-              selectedOptions={selectedOptions}
-            />
-          </li>
-        ))}
+        <NewItemTracker resetKey={bindingsPath.join('.')}>
+          {inputEventBindings.map((inputEventBind, index) => (
+            <li key={inputEventBind.id}>
+              <InputBind
+                path={path}
+                value={inputEventBind.event}
+                eventType={inputEventBind.eventType}
+                order={index}
+                options={options}
+                selectedOptions={selectedOptions}
+              />
+            </li>
+          ))}
+        </NewItemTracker>
       </ul>
       <Button
         className={styles.button}

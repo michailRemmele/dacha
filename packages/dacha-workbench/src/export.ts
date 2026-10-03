@@ -50,6 +50,7 @@ import {
 } from './view/modules/inspector/components/text-area';
 import { MultiField } from './view/modules/inspector/components/multi-field';
 import { Section } from './view/modules/inspector/components/section';
+import { NewItemTracker } from './view/modules/inspector/components/new-item-tracker';
 
 const commands = {
   setValue,
@@ -85,6 +86,7 @@ window.DachaWorkbench = {
   LabelledTextArea,
   MultiField,
   Section,
+  NewItemTracker,
 
   useExtension,
   useConfig,

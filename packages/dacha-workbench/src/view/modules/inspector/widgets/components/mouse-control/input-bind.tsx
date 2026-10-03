@@ -13,7 +13,6 @@ import * as styles from './mouse-control.module.css';
 
 export interface InputBindProps {
   path: string[];
-  id: string;
   value: string;
   eventType: string;
   order: number;
@@ -23,7 +22,6 @@ export interface InputBindProps {
 
 export const InputBind: FC<InputBindProps> = ({
   path,
-  id,
   value,
   eventType,
   order,
@@ -59,7 +57,7 @@ export const InputBind: FC<InputBindProps> = ({
   }, [dispatch, bindPath]);
 
   return (
-    <Section id={id} title={title} onDelete={handleDeleteBind}>
+    <Section title={title} onDelete={handleDeleteBind}>
       <Field
         name="event"
         component={LabelledSelect}

@@ -55,6 +55,7 @@ export {
 } from './view/modules/inspector/components/vector-input';
 export { MultiField } from './view/modules/inspector/components/multi-field';
 export { Section } from './view/modules/inspector/components/section';
+export { NewItemTracker } from './view/modules/inspector/components/new-item-tracker';
 
 export const commands = {
   setValue,

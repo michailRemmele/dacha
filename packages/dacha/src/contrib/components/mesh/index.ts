@@ -123,6 +123,7 @@ export class Mesh extends Component {
   @DefineField({
     type: 'script',
     kind: 'shader',
+    title: 'Shader',
     section: 'material',
   })
   material?: MaterialConfig;

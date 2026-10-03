@@ -6,6 +6,7 @@ import { uuid } from '../../../../../../utils/uuid';
 import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { addValue } from '../../../../../commands';
+import { NewItemTracker } from '../../../components/new-item-tracker';
 import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import type { AudioGroup } from './types';
 
@@ -36,9 +37,11 @@ export const AudioGroupsWidget: FC<WidgetProps> = () => {
   return (
     <>
       <div className={styles.groups}>
-        {groups?.map(({ id }) => (
-          <AudioGroupPanel key={id} id={id} />
-        ))}
+        <NewItemTracker>
+          {groups?.map(({ id }) => (
+            <AudioGroupPanel key={id} id={id} />
+          ))}
+        </NewItemTracker>
       </div>
       <Button className={styles.button} onClick={handleAddNewGroup}>
         {t('globalOptions.audioGroups.addNew.title')}

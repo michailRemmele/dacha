@@ -71,6 +71,18 @@ Releases made before this file existed are recorded in the
 - **Breaking:** the `subtract` blending mode was misspelled `substract`. The view
   components (`Sprite`, `Shape`, `BitmapText`, `Mesh`) and the editor now use `subtract`.
   A configuration that still says `"blending": "substract"` needs the new spelling.
+- The inspector opens what you add: a component, a system, a behavior, a filter effect, an
+  animation condition, an input binding, an audio group or a multi-field entry. Entries that
+  were already there stay closed. Custom widgets get the same behavior by wrapping their
+  lists in the new `NewItemTracker` from `dacha-workbench`.
+- The inspector remembers which components and systems you keep open. The state belongs to
+  the type, not to one actor: open `Sprite` once and it is open on every actor and template.
+  It is saved with the rest of the editor state in `.dacha/cache.json` and survives a restart.
+- The inspector hides a section while all of its fields are hidden by their dependencies.
+- **Breaking:** `Section` from `dacha-workbench` no longer takes an `id`. A section keeps its
+  state when its title changes without one.
+- The shader picker in the `Mesh` material section is labelled "Shader" instead of repeating
+  "Material".
 
 ### Fixed
 
@@ -79,3 +91,8 @@ Releases made before this file existed are recorded in the
   escape characters.
 - `AddActorEvent` and `RemoveActorEvent` type `target` as the `ActorQuery` that dispatches
   them. They typed it as a `Scene` before, which never matched the object a listener got.
+- An inspector section no longer closes when its title changes. Deleting an animation
+  condition or a multi-field entry renumbered the ones below it and closed them.
+- A field in a closed inspector section gets its initial value when its dependency shows
+  it, and loses its value when the dependency hides it. Before, this only worked once the
+  section had been opened.

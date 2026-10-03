@@ -20,7 +20,6 @@ const addComponent = async (name: string): Promise<void> => {
   await window.getByRole('combobox').last().press('Enter');
   await window.getByTestId('entity-picker-add-button').last().click();
   await expect(window.getByTestId(`entity-panel-${name}-header`)).toBeVisible();
-  await window.getByTestId(`entity-panel-${name}-header`).click();
 };
 
 test('a project behavior can be added to an actor and shows its options', async () => {
@@ -33,7 +32,6 @@ test('a project behavior can be added to an actor and shows its options', async 
   await panel.getByRole('combobox').press('Enter');
   await panel.getByTestId('entity-picker-add-button').click();
 
-  await panel.getByRole('button', { name: 'Wobble' }).click();
   await expect(panel.getByText('Amplitude', { exact: true })).toBeVisible();
 });
 
@@ -60,6 +58,5 @@ test('a project filter effect can be added to the renderer and shows its options
   await panel.getByRole('combobox').last().press('Enter');
   await panel.getByTestId('entity-picker-add-button').click();
 
-  await panel.getByRole('button', { name: 'Tint' }).click();
   await expect(panel.getByText('Color', { exact: true })).toBeVisible();
 });

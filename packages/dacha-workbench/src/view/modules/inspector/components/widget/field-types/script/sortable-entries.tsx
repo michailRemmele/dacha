@@ -19,6 +19,7 @@ import { Grip } from '@gravity-ui/icons';
 
 import type { WidgetSchema } from '../../../../../../../types/widget-schema';
 import { Icon } from '../../../../../../components/icon';
+import { NewItemTracker } from '../../../new-item-tracker';
 
 import {
   ScriptEntryPanel,
@@ -122,16 +123,18 @@ export const SortableEntries: FC<SortableEntriesProps> = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-        {entries.map((entry) => (
-          <DraggableEntryPanel
-            key={entry.id}
-            entry={entry}
-            path={path}
-            schema={schemas[entry.name]}
-            context={context}
-            onDelete={onDelete}
-          />
-        ))}
+        <NewItemTracker resetKey={path.join('.')}>
+          {entries.map((entry) => (
+            <DraggableEntryPanel
+              key={entry.id}
+              entry={entry}
+              path={path}
+              schema={schemas[entry.name]}
+              context={context}
+              onDelete={onDelete}
+            />
+          ))}
+        </NewItemTracker>
       </SortableContext>
       <DragOverlay>
         {activeEntry ? (

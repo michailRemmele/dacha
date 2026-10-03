@@ -8,6 +8,7 @@ import { buildInitialState } from '../../../../../../../schema/initial-state';
 import { uuid } from '../../../../../../../utils/uuid';
 import { formatWidgetName } from '../../../../../../../utils/format-widget-name';
 import { EntityMultiselect } from '../../../entity-picker';
+import { NewItemTracker } from '../../../new-item-tracker';
 
 import { ScriptEntryPanel } from './script-entry-panel';
 import { SortableEntries, type ListEntry } from './sortable-entries';
@@ -93,16 +94,18 @@ export const ScriptListField: FC<ScriptListFieldProps> = ({
           onMove={handleMove}
         />
       ) : (
-        entries.map((entry) => (
-          <ScriptEntryPanel
-            key={entry.id}
-            entry={entry}
-            path={path}
-            schema={schemas[entry.name]}
-            context={context}
-            onDelete={handleDelete}
-          />
-        ))
+        <NewItemTracker resetKey={path.join('.')}>
+          {entries.map((entry) => (
+            <ScriptEntryPanel
+              key={entry.id}
+              entry={entry}
+              path={path}
+              schema={schemas[entry.name]}
+              context={context}
+              onDelete={handleDelete}
+            />
+          ))}
+        </NewItemTracker>
       )}
 
       <EntityMultiselect

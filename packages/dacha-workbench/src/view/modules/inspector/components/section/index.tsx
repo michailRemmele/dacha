@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useContext,
   useRef,
   useState,
   type FC,
@@ -11,14 +12,16 @@ import { CaretRight, TrashBin } from '@gravity-ui/icons';
 import { Icon, IconButton } from '../../../../components';
 
 import { cx } from '../../../../../utils/cx';
+import { NewItemContext } from '../new-item-tracker';
 
 import * as styles from './section.module.css';
+
+const ITEM_KEY = 'section';
 
 export interface SectionProps {
   children:
     ReactElement | (ReactElement | null | undefined)[] | null | undefined;
   title: string;
-  id?: string;
   onDelete?: () => void;
   extra?: ReactNode;
   defaultOpen?: boolean;
@@ -28,23 +31,20 @@ export interface SectionProps {
 export const Section: FC<SectionProps> = ({
   children,
   title,
-  id,
   onDelete,
   extra,
-  defaultOpen = false,
+  defaultOpen,
   className,
 }) => {
-  const key = id ?? title;
+  const isNewItem = useContext(NewItemContext);
   const ignoreRef = useRef(false);
-  const [activeKey, setActiveKey] = useState<string | string[] | undefined>(
-    defaultOpen ? key : undefined,
-  );
+  const [open, setOpen] = useState(defaultOpen ?? isNewItem);
 
-  const handleChange = useCallback((key: string | string[]): void => {
+  const handleChange = useCallback((keys: string | string[]): void => {
     if (ignoreRef.current) {
       ignoreRef.current = false;
     } else {
-      setActiveKey(key);
+      setOpen(keys.includes(ITEM_KEY));
     }
   }, []);
 
@@ -71,18 +71,20 @@ export const Section: FC<SectionProps> = ({
       classNames={{
         root: styles.root,
         header: styles.header,
+        body: styles.body,
       }}
       styles={{
         header: { alignItems: 'center', padding: '4px 0', borderRadius: 0 },
         icon: { marginInlineStart: 0, marginInlineEnd: 0 },
         body: { padding: '0 0 8px 24px' },
       }}
-      activeKey={activeKey}
+      activeKey={open ? [ITEM_KEY] : []}
       onChange={handleChange}
       expandIcon={expandIcon}
       items={[
         {
-          key,
+          key: ITEM_KEY,
+          forceRender: true,
           label: (
             <span className={styles.label}>
               {extra}
@@ -91,7 +93,11 @@ export const Section: FC<SectionProps> = ({
               </span>
             </span>
           ),
-          children,
+          children: (
+            <NewItemContext.Provider value={false}>
+              {children}
+            </NewItemContext.Provider>
+          ),
           extra: onDelete ? (
             <IconButton
               className={styles.deleteButton}
