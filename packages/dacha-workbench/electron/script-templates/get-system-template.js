@@ -10,7 +10,7 @@ export default class ${name} extends SceneSystem {
   private scene: Scene;
 
   constructor(options: SceneSystemOptions) {
-    super();
+    super(options);
 
     const { scene } = options;
 

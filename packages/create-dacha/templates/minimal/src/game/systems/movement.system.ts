@@ -14,7 +14,7 @@ export default class MovementSystem extends SceneSystem {
   private actorQuery: ActorQuery;
 
   constructor(options: SceneSystemOptions) {
-    super();
+    super(options);
 
     this.scene = options.scene;
     this.time = options.time;

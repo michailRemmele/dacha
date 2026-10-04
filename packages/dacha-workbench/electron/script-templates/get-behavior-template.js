@@ -11,7 +11,7 @@ export default class ${name} extends Behavior {
   private scene: Scene;
 
   constructor(options: BehaviorOptions) {
-    super();
+    super(options);
 
     const { actor, scene } = options;
 

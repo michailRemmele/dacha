@@ -33,6 +33,12 @@ Releases made before this file existed are recorded in the
   string, a boolean or an `{ x, y }` point. TypeScript checks the decorator against the field,
   so a bare `@DefineField()` on a non-string field, or an `initialValue` of the wrong type,
   fails to compile.
+- A field with `@DefineField` fills itself. The engine takes the configuration value, then
+  the field's initializer, then a copy of `initialValue`, so a component, behavior, system
+  or asset no longer needs a constructor that copies its configuration. `Component`,
+  `Behavior` and `System` accept the configuration in their constructors; a subclass with
+  its own constructor passes it to `super`. Getters, setters and fields listed on the class
+  decorator are not filled.
 
 ### Changed
 

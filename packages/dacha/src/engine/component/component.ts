@@ -1,5 +1,6 @@
 import type { Actor } from '../actor';
 import type { Constructor } from '../../types/utils';
+import { setFieldSource } from '../decorators/field-init';
 
 /**
  * A component class: a constructor with a static `componentName`.
@@ -33,12 +34,7 @@ export const findParentComponent = (
  * @DefineComponent({ name: 'Health' })
  * class Health extends Component {
  *   @DefineField({ initialValue: 100 })
- *   points: number;
- *
- *   constructor(config: { points: number }) {
- *     super();
- *     this.points = config.points;
- *   }
+ *   points!: number;
  * }
  * ```
  *
@@ -61,8 +57,15 @@ export abstract class Component {
    */
   public actor?: Actor;
 
-  constructor() {
+  /**
+   * Creates the component.
+   *
+   * @param config - The component's configuration. Fields marked with {@link DefineField} take their values from
+   * `config`, or its decorated fields keep their initial values.
+   */
+  constructor(config?: object) {
     this.actor = undefined;
+    setFieldSource(this, config);
   }
 
   /**

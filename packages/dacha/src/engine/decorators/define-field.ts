@@ -2,6 +2,7 @@ import type { Point } from '../math-lib';
 
 import type { DataField, FieldDependency, Field, FieldType } from './types';
 import { addField, inferFieldType, nextFieldOrder } from './metadata';
+import { resolveFieldValue } from './field-init';
 
 /** @inline */
 interface ScriptValue {
@@ -96,7 +97,12 @@ export interface FieldBaseOptions {
 }
 
 /**
- * Makes a member editable in the inspector.
+ * Makes a member editable in the inspector, and fills a field from the configuration.
+ *
+ * On a plain field, the engine sets the value before the constructor body runs. It takes
+ * the configuration value under the field's `name`. When that is missing or `null`, it
+ * takes the field's initializer, and then a copy of `initialValue`. Without either, the
+ * field is `undefined`. Getters, setters and accessors are not filled.
  *
  * The widget comes from `type`. Without it, it comes from the type of `initialValue`:
  * a number, a string, a boolean, or a point for a vector. Without either, the field is a
@@ -140,14 +146,22 @@ export function DefineField(
         `DefineField works only on public instance members with a string name, not on ${String(context.name)}`,
       );
     }
+    const name = options.name ?? String(context.name);
     addField(
       context.metadata,
       {
         ...options,
-        name: options.name ?? String(context.name),
+        name,
         type: inferFieldType(options.type, options.initialValue),
       } as Field,
       order,
     );
+
+    if (context.kind !== 'field') {
+      return undefined;
+    }
+    return function fill(this: object, init: unknown): unknown {
+      return resolveFieldValue(this, name, init, options.initialValue);
+    };
   };
 }

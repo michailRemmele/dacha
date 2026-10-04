@@ -19,33 +19,26 @@ to a system, and the differences are the interesting part.
 import { Behavior, DefineBehavior, DefineField } from 'dacha';
 import type { Actor, BehaviorOptions, Time } from 'dacha';
 
-interface GrowPlantOptions extends BehaviorOptions {
-  secondsPerStage: number;
-  stages: number;
-}
-
 @DefineBehavior({
   name: 'GrowPlant',
 })
 export default class GrowPlant extends Behavior {
   @DefineField({ initialValue: 4 })
-  secondsPerStage: number;
+  secondsPerStage!: number;
 
   @DefineField({ initialValue: 3 })
-  stages: number;
+  stages!: number;
 
   private actor: Actor;
   private time: Time;
   private elapsed = 0;
   private stage = 0;
 
-  constructor(options: GrowPlantOptions) {
-    super();
+  constructor(options: BehaviorOptions) {
+    super(options);
 
     this.actor = options.actor;
     this.time = options.time;
-    this.secondsPerStage = options.secondsPerStage;
-    this.stages = options.stages;
   }
 
   update(): void {
@@ -78,9 +71,18 @@ scene hooks. There is no `onSceneLoad`, so a behavior is not the place to load r
 
 **The fields belong to the attachment, not to the class.** A system's fields are edited once,
 in the systems list. A behavior's fields are edited on the actor that carries it, so two actors
-can run the same behavior with different values. The values arrive in the options object.
+can run the same behavior with different values. The engine fills them from the options
+object, the same way it fills
+[component fields](/game-code/components/#how-a-field-gets-its-value). Pass `options` to
+`super`, or the fields keep their initial values.
 [Inspector fields](/game-code/inspector-fields/) covers the widgets and the options they
 take.
+
+:::caution
+The engine adds its own fields to the options object after yours. A field named `actor`,
+`scene`, `world`, `time`, `assets`, `actorSpawner` or `globalOptions` gets the engine's value,
+not the one from the editor. Give fields names of their own.
+:::
 
 ## How the actor finds the class
 

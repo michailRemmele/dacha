@@ -77,13 +77,12 @@ generated input should show, such as a value only a
 
 ## Initial values
 
-`initialValue` is what a new instance of the component starts with. It belongs to the editor,
-not to the engine. The editor writes it into the configuration the moment you add the component to an
-actor, and the engine then reads a file where the value is already there. Nothing
-fills a gap at run time, so a key deleted by hand from `data.json` reaches your constructor as
-`undefined`.
+`initialValue` is what a new instance of the component starts with. The editor writes it into
+the configuration when you add the component to an actor. The engine uses it too. When a key
+is missing from the configuration, the field gets `initialValue`. See
+[how a field gets its value](/game-code/components/#how-a-field-gets-its-value).
 
-Leave it out and the field starts at the empty value for its type:
+Leave it out and the editor writes the empty value for the type:
 
 | Type | Starts at |
 | --- | --- |
@@ -229,6 +228,9 @@ Fields can also be listed on the decorator itself, instead of on the properties:
 The two forms merge, and a property's own `@DefineField` wins on a name collision. Reach for
 the decorator's list when there is no property to decorate. That happens with a `data` field,
 or when a widget stores something the class does not hold as a plain property.
+
+The engine does not fill a field from this list, because there is no property to fill. Read
+its value in the constructor.
 
 `icon` sets the badge next to the component's name in the inspector, from the
 [Gravity UI icon set](https://gravity-ui.com/icons). `title` overrides the component's

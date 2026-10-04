@@ -1,4 +1,5 @@
 import type { Constructor } from '../../types/utils';
+import { setFieldSource } from '../decorators/field-init';
 
 /**
  * Options passed to an asset constructor.
@@ -39,6 +40,7 @@ export abstract class Asset {
   constructor(options: AssetOptions<unknown>) {
     this.id = options.id;
     this.name = options.name;
+    setFieldSource(this, options.data);
   }
 }
 
