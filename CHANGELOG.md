@@ -39,8 +39,17 @@ Releases made before this file existed are recorded in the
   `Behavior` and `System` accept the configuration in their constructors; a subclass with
   its own constructor passes it to `super`. Getters, setters and fields listed on the class
   decorator are not filled.
+- `Component` takes the configuration type as a type parameter, `Component<Config>`. It
+  types the configuration when code creates a component with `new`.
 
 ### Changed
+
+- `Sprite`, `Mesh`, `BitmapText`, `AudioSource`, `Camera`, `Interpolation`, `Shape` and
+  `Behaviors` fill their fields with `@DefineField` instead of a constructor. A key missing
+  from the configuration now gets the field's initial value: `AudioSource` and `Camera`
+  used to leave it `undefined`, and `Behaviors` used to throw on a missing `list`. The
+  initial `color` of `Sprite` and `Mesh`, and the initial `fill` and `strokeColor` of
+  `Shape`, are written as `'#ffffff'` instead of `'#fff'`.
 
 - **Breaking:** the decorators moved from `dacha-workbench/decorators` to `dacha`, and that
   subpath is gone. Import them from `dacha`, and remove `experimentalDecorators` and

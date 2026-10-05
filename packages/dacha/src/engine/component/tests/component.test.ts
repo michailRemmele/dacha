@@ -32,4 +32,12 @@ describe('Engine -> Component -> findParentComponent()', () => {
       mockComponent,
     );
   });
+
+  it('types the constructor by the config type parameter', () => {
+    class Typed extends Component<{ speed: number }> {}
+
+    // @ts-expect-error the config type rejects a wrong value
+    expect(() => new Typed({ speed: 'fast' })).not.toThrow();
+    expect(new Typed({ speed: 1 })).toBeInstanceOf(Component);
+  });
 });

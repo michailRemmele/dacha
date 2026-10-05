@@ -59,7 +59,7 @@ export interface MeshConfig {
   icon: 'VectorSquare',
   sections: { texture: { defaultOpen: true } },
 })
-export class Mesh extends Component {
+export class Mesh extends Component<MeshConfig> {
   /** Path to the texture image file */
   @DefineField({
     type: 'file',
@@ -67,30 +67,30 @@ export class Mesh extends Component {
     section: 'texture',
     extensions: ['png'],
   })
-  src: string;
+  src!: string;
   /** Width of the mesh in pixels */
   @DefineField({ initialValue: 10, section: 'texture' })
-  width: number;
+  width!: number;
   /** Height of the mesh in pixels */
   @DefineField({ initialValue: 10, section: 'texture' })
-  height: number;
+  height!: number;
   /** Number of frames in the sprite sheet */
   @DefineField({ initialValue: 1, section: 'texture' })
-  slice: number;
+  slice!: number;
   /** Whether to flip the mesh horizontally */
   @DefineField({ initialValue: false, section: 'texture' })
-  flipX: boolean;
+  flipX!: boolean;
   /** Whether to flip the mesh vertically */
   @DefineField({ initialValue: false, section: 'texture' })
-  flipY: boolean;
+  flipY!: boolean;
   /** Color tint applied to the mesh */
   @DefineField({
     type: 'color',
-    initialValue: '#fff',
+    initialValue: '#ffffff',
     section: 'appearance',
     disabledAlpha: true,
   })
-  color: string;
+  color!: string;
   /** Blending mode for rendering */
   @DefineField({
     type: 'select',
@@ -98,13 +98,13 @@ export class Mesh extends Component {
     section: 'appearance',
     options: ['normal', 'addition', 'subtract', 'multiply'],
   })
-  blending: BlendingMode;
+  blending!: BlendingMode;
   /** Opacity from 0 (transparent) to 1 (opaque) */
   @DefineField({ initialValue: 1, section: 'appearance' })
-  opacity: number;
+  opacity!: number;
   /** Center point for sorting calculations */
   @DefineField({ initialValue: { x: 0, y: 0 }, section: 'sorting' })
-  sortOffset: Point;
+  sortOffset!: Point;
   /** Sorting layer name for rendering order */
   @DefineField({
     type: 'select',
@@ -112,13 +112,13 @@ export class Mesh extends Component {
     section: 'sorting',
     options: sortingLayerOptions,
   })
-  sortingLayer: string;
+  sortingLayer!: string;
   /** Whether the mesh is disabled and should not render */
   @DefineField({ initialValue: false })
-  disabled: boolean;
+  disabled!: boolean;
 
   /** Current frame to render */
-  currentFrame: number;
+  currentFrame = 0;
   /** Material describes a shader and its options applied to a texture (optional). */
   @DefineField({
     type: 'script',
@@ -129,33 +129,4 @@ export class Mesh extends Component {
   material?: MaterialConfig;
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
-
-  /**
-   * Creates a new Mesh component.
-   *
-   * @param config - Configuration for the mesh
-   */
-  constructor(config: MeshConfig) {
-    super();
-
-    this.src = config.src ?? '';
-    this.width = config.width ?? 10;
-    this.height = config.height ?? 10;
-    this.slice = config.slice ?? 1;
-    this.currentFrame = 0;
-    this.flipX = config.flipX ?? false;
-    this.flipY = config.flipY ?? false;
-    this.disabled = config.disabled ?? false;
-    this.sortingLayer = config.sortingLayer ?? 'default';
-    this.sortOffset = {
-      x: config.sortOffset?.x ?? 0,
-      y: config.sortOffset?.y ?? 0,
-    };
-    this.color = config.color ?? '#ffffff';
-    this.blending = config.blending ?? 'normal';
-    this.opacity = config.opacity ?? 1;
-    this.material = config.material
-      ? { name: config.material.name, options: { ...config.material.options } }
-      : undefined;
-  }
 }

@@ -34,7 +34,7 @@ export interface BehaviorsConfig {
  * @category Behaviors
  */
 @DefineComponent({ name: 'Behaviors', icon: 'Thunderbolt' })
-export class Behaviors extends Component {
+export class Behaviors extends Component<BehaviorsConfig> {
   /**
    * The behaviors of the actor. {@link BehaviorSystem} reads the list once, when
    * it creates the behavior instances. To change the behaviors, replace the whole
@@ -46,17 +46,5 @@ export class Behaviors extends Component {
     multiple: true,
     unique: true,
   })
-  list: BehaviorConfig[];
-
-  constructor(config: BehaviorsConfig) {
-    super();
-
-    const { list } = config;
-
-    this.list = list.map(({ id, name, options }) => ({
-      id,
-      name,
-      options: { ...options },
-    }));
-  }
+  list: BehaviorConfig[] = [];
 }

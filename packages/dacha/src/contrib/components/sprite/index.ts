@@ -51,7 +51,7 @@ export interface SpriteConfig {
   icon: 'Picture',
   sections: { texture: { defaultOpen: true } },
 })
-export class Sprite extends Component {
+export class Sprite extends Component<SpriteConfig> {
   /** Path to the texture image file */
   @DefineField({
     type: 'file',
@@ -59,16 +59,16 @@ export class Sprite extends Component {
     section: 'texture',
     extensions: ['png'],
   })
-  src: string;
+  src!: string;
   /** Width of the sprite in pixels */
   @DefineField({ initialValue: 10, section: 'texture' })
-  width: number;
+  width!: number;
   /** Height of the sprite in pixels */
   @DefineField({ initialValue: 10, section: 'texture' })
-  height: number;
+  height!: number;
   /** Number of frames in the sprite sheet */
   @DefineField({ initialValue: 1, section: 'texture' })
-  slice: number;
+  slice!: number;
   /** How the texture should fit within the sprite bounds */
   @DefineField({
     type: 'select',
@@ -76,7 +76,7 @@ export class Sprite extends Component {
     section: 'texture',
     options: ['stretch', 'repeat'],
   })
-  readonly fit: FitType;
+  readonly fit!: FitType;
   /**
    * Texture sampling offset in pixels. Only applies to `fit: 'repeat'`.
    * With flipX/flipY the tile is mirrored, so a positive offset scrolls in
@@ -87,21 +87,21 @@ export class Sprite extends Component {
     section: 'texture',
     dependency: { name: 'fit', value: 'repeat' },
   })
-  textureOffset: Point;
+  textureOffset!: Point;
   /** Whether to flip the sprite horizontally */
   @DefineField({ initialValue: false, section: 'texture' })
-  flipX: boolean;
+  flipX!: boolean;
   /** Whether to flip the sprite vertically */
   @DefineField({ initialValue: false, section: 'texture' })
-  flipY: boolean;
+  flipY!: boolean;
   /** Color tint applied to the sprite */
   @DefineField({
     type: 'color',
-    initialValue: '#fff',
+    initialValue: '#ffffff',
     section: 'appearance',
     disabledAlpha: true,
   })
-  color: string;
+  color!: string;
   /** Blending mode for rendering */
   @DefineField({
     type: 'select',
@@ -109,13 +109,13 @@ export class Sprite extends Component {
     section: 'appearance',
     options: ['normal', 'addition', 'subtract', 'multiply'],
   })
-  blending: BlendingMode;
+  blending!: BlendingMode;
   /** Opacity from 0 (transparent) to 1 (opaque) */
   @DefineField({ initialValue: 1, section: 'appearance' })
-  opacity: number;
+  opacity!: number;
   /** Center point for sorting calculations */
   @DefineField({ initialValue: { x: 0, y: 0 }, section: 'sorting' })
-  sortOffset: Point;
+  sortOffset!: Point;
   /** Sorting layer name for rendering order */
   @DefineField({
     type: 'select',
@@ -123,44 +123,13 @@ export class Sprite extends Component {
     section: 'sorting',
     options: sortingLayerOptions,
   })
-  sortingLayer: string;
+  sortingLayer!: string;
   /** Whether the sprite is disabled and should not render */
   @DefineField({ initialValue: false })
-  disabled: boolean;
+  disabled!: boolean;
 
   /** Current frame to render */
-  currentFrame?: number;
+  currentFrame?: number = 0;
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
-
-  /**
-   * Creates a new Sprite component.
-   *
-   * @param config - Configuration for the sprite
-   */
-  constructor(config: SpriteConfig) {
-    super();
-
-    this.src = config.src ?? '';
-    this.width = config.width ?? 10;
-    this.height = config.height ?? 10;
-    this.slice = config.slice ?? 1;
-    this.currentFrame = 0;
-    this.flipX = config.flipX ?? false;
-    this.flipY = config.flipY ?? false;
-    this.disabled = config.disabled ?? false;
-    this.sortingLayer = config.sortingLayer ?? 'default';
-    this.sortOffset = {
-      x: config.sortOffset?.x ?? 0,
-      y: config.sortOffset?.y ?? 0,
-    };
-    this.textureOffset = {
-      x: config.textureOffset?.x ?? 0,
-      y: config.textureOffset?.y ?? 0,
-    };
-    this.fit = config.fit ?? 'stretch';
-    this.color = config.color ?? '#ffffff';
-    this.blending = config.blending ?? 'normal';
-    this.opacity = config.opacity ?? 1;
-  }
 }

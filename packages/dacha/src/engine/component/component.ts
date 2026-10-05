@@ -38,11 +38,13 @@ export const findParentComponent = (
  * }
  * ```
  *
+ * @typeParam C - The type of the configuration passed to the constructor.
+ *
  * @see [Components](https://dachajs.org/game-code/components/)
  *
  * @category Actors & Components
  */
-export abstract class Component {
+export abstract class Component<C extends object = object> {
   /**
    * The name the configuration uses for the component. It must be unique among
    * the components of the game.
@@ -63,7 +65,7 @@ export abstract class Component {
    * @param config - The component's configuration. Fields marked with {@link DefineField} take their values from
    * `config`, or its decorated fields keep their initial values.
    */
-  constructor(config?: object) {
+  constructor(config?: C) {
     this.actor = undefined;
     setFieldSource(this, config);
   }

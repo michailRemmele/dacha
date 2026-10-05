@@ -1,4 +1,5 @@
 import { Camera } from '../index';
+import type { CameraConfig } from '../index';
 
 describe('Contrib -> components -> Camera', () => {
   it('Returns correct values ', () => {
@@ -28,5 +29,12 @@ describe('Contrib -> components -> Camera', () => {
     expect(camera.current).toEqual(true);
     expect(camera.windowSizeX).toEqual(1920);
     expect(camera.windowSizeY).toEqual(1080);
+  });
+
+  it('Uses initial values for missing keys', () => {
+    const camera = new Camera({} as CameraConfig);
+
+    expect(camera.zoom).toEqual(1);
+    expect(camera.current).toEqual(false);
   });
 });

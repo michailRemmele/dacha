@@ -42,48 +42,35 @@ export interface AudioSourceConfig {
  * @category Audio
  */
 @DefineComponent({ name: 'AudioSource', icon: 'Volume' })
-export class AudioSource extends Component {
+export class AudioSource extends Component<AudioSourceConfig> {
   /** Path to the audio asset */
   @DefineField({
     type: 'file',
     initialValue: '',
     extensions: ['mp3', 'wav', 'ogg'],
   })
-  src: string;
+  src!: string;
   /** Volume of the audio, from 0 to 1 */
   @DefineField({ type: 'range', initialValue: 1, min: 0, max: 1, step: 0.01 })
-  volume: number;
+  volume!: number;
   /** Whether the audio is looped */
   @DefineField({ initialValue: false })
-  looped: boolean;
+  looped!: boolean;
   /** Whether the audio plays automatically when the scene is entered or when the actor is added to the scene */
   @DefineField({ initialValue: false })
-  autoplay: boolean;
+  autoplay!: boolean;
   /** Group of the audio, used to combine audio sources together and control them at once */
   @DefineField({
     type: 'select',
     initialValue: MASTER_GROUP,
     options: groupOptions,
   })
-  group: string;
+  group!: string;
 
   /** @internal Whether the audio is currently playing */
-  _playing: boolean;
+  _playing = false;
   /** @internal Whether a still-playing sound should restart from the beginning */
-  _restarting: boolean;
-
-  constructor(config: AudioSourceConfig) {
-    super();
-
-    this.src = config.src;
-    this.group = config.group;
-    this.looped = config.looped;
-    this.volume = config.volume;
-    this.autoplay = config.autoplay;
-
-    this._playing = false;
-    this._restarting = false;
-  }
+  _restarting = false;
 
   /**
    * Starts playback.

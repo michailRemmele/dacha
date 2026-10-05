@@ -19,26 +19,16 @@ export interface CameraConfig {
  * @category Camera
  */
 @DefineComponent({ name: 'Camera', icon: 'Video' })
-export class Camera extends Component {
+export class Camera extends Component<CameraConfig> {
   /** Zoom of the camera */
   @DefineField({ initialValue: 1 })
-  zoom: number;
+  zoom!: number;
   /** Whether the camera is the current camera. Only one camera can be the current camera. */
   @DefineField({ initialValue: false })
-  current: boolean;
+  current!: boolean;
 
   /** Size of the game window on the x axis, in pixels */
-  windowSizeX: number;
+  windowSizeX = 0;
   /** Size of the game window on the y axis, in pixels */
-  windowSizeY: number;
-
-  constructor(config: CameraConfig) {
-    super();
-
-    this.current = config.current;
-    this.zoom = config.zoom;
-
-    this.windowSizeX = 0;
-    this.windowSizeY = 0;
-  }
+  windowSizeY = 0;
 }

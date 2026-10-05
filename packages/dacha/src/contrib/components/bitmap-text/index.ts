@@ -44,10 +44,10 @@ export interface BitmapTextConfig {
   icon: 'Font',
   sections: { text: { defaultOpen: true } },
 })
-export class BitmapText extends Component {
+export class BitmapText extends Component<BitmapTextConfig> {
   /** Text to render */
   @DefineField({ type: 'textarea', initialValue: 'Text', section: 'text' })
-  text: string;
+  text!: string;
   /** Path to the font asset */
   @DefineField({
     type: 'file',
@@ -55,10 +55,10 @@ export class BitmapText extends Component {
     section: 'text',
     extensions: ['fnt', 'xml'],
   })
-  font: string;
+  font!: string;
   /** Size of the text */
   @DefineField({ initialValue: 10, section: 'text' })
-  fontSize: number;
+  fontSize!: number;
   /** Alignment of the text
    * - left - Align text to the left edge
    * - center - Center text horizontally
@@ -70,17 +70,17 @@ export class BitmapText extends Component {
     section: 'text',
     options: ['left', 'center', 'right', 'justify'],
   })
-  align: TextAlign;
+  align!: TextAlign;
   /** Color of the text */
   @DefineField({
     type: 'color',
     initialValue: '#000000',
     section: 'appearance',
   })
-  color: string;
+  color!: string;
   /** Opacity of the text */
   @DefineField({ initialValue: 1, section: 'appearance' })
-  opacity: number;
+  opacity!: number;
   /** Blending mode of the text */
   @DefineField({
     type: 'select',
@@ -88,10 +88,10 @@ export class BitmapText extends Component {
     section: 'appearance',
     options: ['normal', 'addition', 'subtract', 'multiply'],
   })
-  blending: BlendingMode;
+  blending!: BlendingMode;
   /** Center point of the text */
   @DefineField({ initialValue: { x: 0, y: 0 }, section: 'sorting' })
-  sortOffset: Point;
+  sortOffset!: Point;
   /** Sorting layer of the text */
   @DefineField({
     type: 'select',
@@ -99,29 +99,11 @@ export class BitmapText extends Component {
     section: 'sorting',
     options: sortingLayerOptions,
   })
-  sortingLayer: string;
+  sortingLayer!: string;
   /** Whether the text is disabled */
   @DefineField({ initialValue: false })
-  disabled: boolean;
+  disabled!: boolean;
 
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
-
-  constructor(config: BitmapTextConfig) {
-    super();
-
-    this.text = config.text ?? 'Text';
-    this.font = config.font ?? '';
-    this.fontSize = config.fontSize ?? 10;
-    this.align = config.align ?? 'center';
-    this.color = config.color ?? '#000000';
-    this.opacity = config.opacity ?? 1;
-    this.blending = config.blending ?? 'normal';
-    this.disabled = config.disabled ?? false;
-    this.sortingLayer = config.sortingLayer ?? 'default';
-    this.sortOffset = {
-      x: config.sortOffset?.x ?? 0,
-      y: config.sortOffset?.y ?? 0,
-    };
-  }
 }

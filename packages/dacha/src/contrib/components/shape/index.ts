@@ -247,11 +247,11 @@ export type ShapeGeometry =
     },
   ],
 })
-export class Shape extends Component {
+export class Shape extends Component<ShapeConfig> {
   /** Geometry of the shape */
   geometry: ShapeGeometry;
   /** Color of the stroke */
-  @DefineField({ type: 'color', initialValue: '#fff', section: 'appearance' })
+  @DefineField({ type: 'color', initialValue: '#ffffff', section: 'appearance' })
   strokeColor?: string;
   /** Width of the stroke */
   @DefineField({
@@ -259,7 +259,7 @@ export class Shape extends Component {
     section: 'appearance',
     dependency: { name: 'pixelLine', value: false },
   })
-  strokeWidth: number;
+  strokeWidth!: number;
   /** Alignment of the stroke relative to the path
    *
    * 0 - Outside of the shape
@@ -276,12 +276,12 @@ export class Shape extends Component {
       { title: 'outside', value: 0 },
     ],
   })
-  strokeAlignment: number;
+  strokeAlignment!: number;
   /** Whether the shape stroke should remain 1 pixel wide regardless of the scale */
   @DefineField({ initialValue: false, section: 'appearance' })
-  pixelLine: boolean;
+  pixelLine!: boolean;
   /** Fill color of the shape */
-  @DefineField({ type: 'color', initialValue: '#fff', section: 'appearance' })
+  @DefineField({ type: 'color', initialValue: '#ffffff', section: 'appearance' })
   fill?: string;
   /** Blending mode of the shape */
   @DefineField({
@@ -290,13 +290,13 @@ export class Shape extends Component {
     section: 'appearance',
     options: ['normal', 'addition', 'subtract', 'multiply'],
   })
-  blending: BlendingMode;
+  blending!: BlendingMode;
   /** Opacity of the shape */
   @DefineField({ initialValue: 1, section: 'appearance' })
-  opacity: number;
+  opacity!: number;
   /** Center point of the shape */
   @DefineField({ initialValue: { x: 0, y: 0 }, section: 'sorting' })
-  sortOffset: Point;
+  sortOffset!: Point;
   /** Sorting layer of the shape */
   @DefineField({
     type: 'select',
@@ -304,10 +304,10 @@ export class Shape extends Component {
     section: 'sorting',
     options: sortingLayerOptions,
   })
-  sortingLayer: string;
+  sortingLayer!: string;
   /** Whether the shape is disabled */
   @DefineField({ initialValue: false })
-  disabled: boolean;
+  disabled!: boolean;
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
 
@@ -317,21 +317,7 @@ export class Shape extends Component {
    * @param config - Configuration for the shape
    */
   constructor(config: ShapeConfig) {
-    super();
-
-    this.strokeColor = config.strokeColor ?? '#ffffff';
-    this.strokeWidth = config.strokeWidth ?? 0;
-    this.strokeAlignment = config.strokeAlignment ?? 0.5;
-    this.pixelLine = config.pixelLine ?? false;
-    this.fill = config.fill ?? '#ffffff';
-    this.opacity = config.opacity ?? 1;
-    this.blending = config.blending ?? 'normal';
-    this.disabled = config.disabled ?? false;
-    this.sortingLayer = config.sortingLayer ?? 'default';
-    this.sortOffset = {
-      x: config.sortOffset?.x ?? 0,
-      y: config.sortOffset?.y ?? 0,
-    };
+    super(config);
 
     switch (config.type) {
       case 'rectangle':

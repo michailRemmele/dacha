@@ -418,7 +418,7 @@
         {
           "name": "color",
           "type": "color",
-          "initialValue": "#fff",
+          "initialValue": "#ffffff",
           "section": "appearance",
           "disabledAlpha": true
         },
@@ -662,7 +662,7 @@
         {
           "name": "strokeColor",
           "type": "color",
-          "initialValue": "#fff",
+          "initialValue": "#ffffff",
           "section": "appearance"
         },
         {
@@ -704,7 +704,7 @@
         {
           "name": "fill",
           "type": "color",
-          "initialValue": "#fff",
+          "initialValue": "#ffffff",
           "section": "appearance"
         },
         {
@@ -811,7 +811,7 @@
         {
           "name": "color",
           "type": "color",
-          "initialValue": "#fff",
+          "initialValue": "#ffffff",
           "section": "appearance",
           "disabledAlpha": true
         },
