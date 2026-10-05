@@ -6,14 +6,13 @@ export {
   useConfig,
   useCommander,
   useStore,
-  useBehaviors,
+  useSchemas,
 } from './view/hooks';
 export { defineWidget } from './hocs';
 export { InputField } from './view/modules/inspector/components/input-field';
 export { Field } from './view/modules/inspector/components/field';
 export { DependencyField } from './view/modules/inspector/components/dependency-field';
 export { Widget } from './view/modules/inspector/components/widget';
-export { BehaviorWidget } from './view/modules/inspector/components/behavior-widget';
 export {
   TextInput,
   LabelledTextInput,
@@ -56,6 +55,7 @@ export {
 } from './view/modules/inspector/components/vector-input';
 export { MultiField } from './view/modules/inspector/components/multi-field';
 export { Section } from './view/modules/inspector/components/section';
+export { NewItemTracker } from './view/modules/inspector/components/new-item-tracker';
 
 export const commands = {
   setValue,
@@ -65,11 +65,4 @@ export const commands = {
 
 export type { Data } from './store';
 
-export type {
-  WidgetSchema,
-  WidgetProps,
-  Field as WidgetField,
-  FieldType,
-  Dependency,
-  DependencyValue,
-} from './types/widget-schema';
+export type { WidgetSchema, WidgetProps } from './types/widget-schema';

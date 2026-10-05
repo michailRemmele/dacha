@@ -1,24 +1,21 @@
-import { FC } from 'react'
+import { FC } from 'react';
 
-import { EntityPanel } from './entity-panel'
+import { NewItemTracker } from '../new-item-tracker';
 
-import type { Entity, EntityType } from './types'
+import { EntityPanel } from './entity-panel';
+
+import type { Entity, EntityType } from './types';
 
 export interface PanelsProps {
-  path: string[]
-  panels: Entity[]
-  type: EntityType
+  path: string[];
+  panels: Entity[];
+  type: EntityType;
 }
 
 export const Panels: FC<PanelsProps> = ({ path, panels, type }) => (
-  <>
+  <NewItemTracker resetKey={path.join('.')}>
     {panels.map((entity) => (
-      <EntityPanel
-        key={entity.id}
-        path={path}
-        entity={entity}
-        type={type}
-      />
+      <EntityPanel key={entity.id} path={path} entity={entity} type={type} />
     ))}
-  </>
-)
+  </NewItemTracker>
+);

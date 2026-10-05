@@ -1,25 +1,26 @@
-import React, { useState, useContext, useMemo, useEffect, FC, ReactElement } from 'react';
+import React, {
+  useState,
+  useContext,
+  useMemo,
+  useEffect,
+  FC,
+  ReactElement,
+} from 'react';
 import i18next from 'i18next';
 
-import { schemaRegistry } from '../../../decorators/schema-registry';
-import {
-  componentsSchema,
-  systemsSchema,
-  assetsSchema,
-} from '../../modules/inspector/widgets';
 import { useExtension } from '../../hooks';
 import { EngineContext } from '../engine-provider';
 import { EventType } from '../../../events';
+import type {
+  CollectedSchemas,
+  SchemaEntry,
+} from '../../../schema/collect-schemas';
 
-import { buildSchema, type SchemasDataEntry } from './build-schema';
 import { NAMESPACE_EXTENSION } from './consts';
 
-export type { SchemasDataEntry };
+export type SchemasDataEntry = SchemaEntry;
 
-interface SchemasData {
-  components: SchemasDataEntry[];
-  systems: SchemasDataEntry[];
-  assets: SchemasDataEntry[];
+interface SchemasData extends CollectedSchemas {
   isReady: boolean;
 }
 
@@ -27,10 +28,17 @@ interface SchemasProviderProps {
   children: ReactElement | ReactElement[];
 }
 
-export const SchemasContext = React.createContext<SchemasData>({
+const INITIAL: CollectedSchemas = {
   components: [],
   systems: [],
   assets: [],
+  behaviors: [],
+  shaders: [],
+  filterEffects: [],
+};
+
+export const SchemasContext = React.createContext<SchemasData>({
+  ...INITIAL,
   isReady: false,
 });
 
@@ -40,32 +48,11 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
   const world = useContext(EngineContext)?.world;
   const extension = useExtension();
 
-  const [extComponentsSchema, setExtComponentsSchema] = useState(() =>
-    schemaRegistry.getGroup('component'),
-  );
-  const [extSystemsSchema, setExtSystemsSchema] = useState(() =>
-    schemaRegistry.getGroup('system'),
-  );
-  const [extAssetsSchema, setExtAssetsSchema] = useState(() =>
-    schemaRegistry.getGroup('asset'),
+  const [schemas, setSchemas] = useState<CollectedSchemas>(
+    () => (world?.data.schemas as CollectedSchemas | undefined) ?? INITIAL,
   );
 
   const [isReady, setIsReady] = useState(false);
-
-  const components = useMemo(
-    () => buildSchema(componentsSchema, extComponentsSchema),
-    [extComponentsSchema],
-  );
-
-  const systems = useMemo(
-    () => buildSchema(systemsSchema, extSystemsSchema),
-    [extSystemsSchema],
-  );
-
-  const assets = useMemo(
-    () => buildSchema(assetsSchema, extAssetsSchema),
-    [extAssetsSchema],
-  );
 
   useMemo(() => {
     if (!extension) {
@@ -90,9 +77,9 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
     }
 
     const handleExtensionUpdated = (): void => {
-      setExtComponentsSchema(schemaRegistry.getGroup('component'));
-      setExtSystemsSchema(schemaRegistry.getGroup('system'));
-      setExtAssetsSchema(schemaRegistry.getGroup('asset'));
+      setSchemas(
+        (world.data.schemas as CollectedSchemas | undefined) ?? INITIAL,
+      );
     };
 
     handleExtensionUpdated();
@@ -109,13 +96,8 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
   }, [world]);
 
   const context = useMemo(
-    () => ({
-      components,
-      systems,
-      assets,
-      isReady,
-    }),
-    [components, systems, assets, isReady],
+    () => ({ ...schemas, isReady }),
+    [schemas, isReady],
   );
 
   return (

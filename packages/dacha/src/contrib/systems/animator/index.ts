@@ -1,4 +1,5 @@
 import { SceneSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { Time } from '../../../engine/time';
 import { Actor, ActorQuery } from '../../../engine/actor';
@@ -32,6 +33,7 @@ const FRAME_RATE = 0.1;
  *
  * @category Animation
  */
+@DefineSystem({ name: 'Animator', icon: 'CirclePlay' })
 export class Animator extends SceneSystem {
   private actorQuery: ActorQuery;
   private time: Time;
@@ -169,5 +171,3 @@ export class Animator extends SceneSystem {
     });
   }
 }
-
-Animator.systemName = 'Animator';

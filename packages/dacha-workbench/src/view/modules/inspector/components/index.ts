@@ -22,3 +22,4 @@ export { TextArea, LabelledTextArea } from './text-area';
 export { Form } from './form';
 export { CollapsePanel } from './collapse-panel';
 export { Section } from './section';
+export { NewItemTracker } from './new-item-tracker';

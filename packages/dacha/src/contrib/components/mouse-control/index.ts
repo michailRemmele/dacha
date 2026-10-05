@@ -1,8 +1,9 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 import type {
   InputEventAttributes,
   InputEventAttributeConfig,
-} from '../../types';
+} from '../../events/input-events';
 
 const MOUSE_BUTTONS_MAP = {
   mousedown: 0,
@@ -73,8 +74,13 @@ export interface MouseControlConfig {
  *
  * @category Input
  */
+@DefineComponent({
+  name: 'MouseControl',
+  icon: 'HandPointUp',
+})
 export class MouseControl extends Component {
   /** Input event bindings */
+  @DefineField({ type: 'data', initialValue: [] })
   inputEventBindings: InputEventBindings;
 
   /**
@@ -103,5 +109,3 @@ export class MouseControl extends Component {
     );
   }
 }
-
-MouseControl.componentName = 'MouseControl';

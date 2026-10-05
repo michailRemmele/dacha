@@ -1,6 +1,7 @@
-const getSystemTemplate = (name) => `import { SceneSystem } from 'dacha';
+const getSystemTemplate = (
+  name,
+) => `import { SceneSystem, DefineSystem } from 'dacha';
 import type { Scene, SceneSystemOptions } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
 
 @DefineSystem({
   name: '${name}',
@@ -9,7 +10,7 @@ export default class ${name} extends SceneSystem {
   private scene: Scene;
 
   constructor(options: SceneSystemOptions) {
-    super();
+    super(options);
 
     const { scene } = options;
 
@@ -20,6 +21,6 @@ export default class ${name} extends SceneSystem {
     console.log(\`Scene Id: \${this.scene.id}, System Name: ${name}\`);
   }
 }
-`
+`;
 
-module.exports = getSystemTemplate
+module.exports = getSystemTemplate;

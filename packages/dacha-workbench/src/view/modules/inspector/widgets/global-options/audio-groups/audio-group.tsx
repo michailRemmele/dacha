@@ -25,7 +25,6 @@ export const AudioGroup: FC<AudioGroupProps> = ({ id }) => {
 
   return (
     <Section
-      id={id}
       title={name || t('globalOptions.audioGroups.panel.name.title')}
       onDelete={handleDeleteBind}
     >

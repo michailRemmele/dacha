@@ -182,25 +182,17 @@ lay out the label yourself.
 ## Saving the file reloads it
 
 You do not restart the editor to see a widget change. Saving the file rebuilds the extension
-bundle, and the editor drops its widget and schema registries, loads the new bundle, and
-redraws the inspector with it. That is the same rebuild [a generated class goes
+bundle, and the editor drops its widget registry, loads the new bundle, and redraws the
+inspector with it. That is the same rebuild [a generated class goes
 through](/editor/generating-scripts/#after-create), and it clears the undo history for the
 same reason.
 
 ## How the file reaches the editor
 
 The editor compiles your project's widgets into a separate bundle and loads it into the
-inspector. Two details of that bundle matter to you.
+inspector.
 
-The widgets are collected before the components. So by the time `@DefineComponent` runs and
-asks the registry whether a widget exists for `Health`, yours is already there. The order is
-guaranteed, and you do not have to arrange it.
-
-And `dacha-workbench` is external to the bundle. Your import resolves to the running editor's
-own copy, not to a second one, which is what keeps the registries and the React tree single.
-Import from `dacha-workbench` and let the editor supply it.
-
-This is also why a widget never reaches your game. The `*.widget.tsx` suffix is not in the
+A widget never reaches your game. The `*.widget.tsx` suffix is not in the
 globs your game's entry point uses, and nothing in the game imports the file. See
 [how scripts are found](/game-code/auto-registration/).
 

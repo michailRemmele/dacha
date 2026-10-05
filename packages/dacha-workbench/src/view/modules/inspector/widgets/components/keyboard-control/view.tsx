@@ -6,6 +6,7 @@ import { uuid } from '../../../../../../utils/uuid';
 import type { WidgetProps } from '../../../../../../types/widget-schema';
 import { useConfig, useCommander } from '../../../../../hooks';
 import { addValue } from '../../../../../commands';
+import { NewItemTracker } from '../../../components/new-item-tracker';
 
 import * as styles from './keyboard-control.module.css';
 import { InputBind } from './input-bind';
@@ -44,17 +45,19 @@ export const KeyboardControlWidget: FC<WidgetProps> = ({ path }) => {
   return (
     <div>
       <ul className={styles.eventList}>
-        {addedKeys.map(({ id, key, eventType }, index) => (
-          <li key={id}>
-            <InputBind
-              path={path}
-              id={id}
-              inputKey={key}
-              inputEventType={eventType}
-              order={index}
-            />
-          </li>
-        ))}
+        <NewItemTracker resetKey={bindingsPath.join('.')}>
+          {addedKeys.map(({ id, key, eventType }, index) => (
+            <li key={id}>
+              <InputBind
+                path={path}
+                id={id}
+                inputKey={key}
+                inputEventType={eventType}
+                order={index}
+              />
+            </li>
+          ))}
+        </NewItemTracker>
       </ul>
       <Button className={styles.button} onClick={handleAddNewBind}>
         {t('components.keyboardControl.bind.addNew.title')}

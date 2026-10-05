@@ -1,30 +1,14 @@
-import { Component } from 'dacha';
-import { DefineComponent, DefineField } from 'dacha-workbench/decorators';
-
-interface MovementConfig {
-  speed: number;
-}
+import { Component, DefineComponent, DefineField } from 'dacha';
 
 @DefineComponent({
   name: 'Movement',
 })
 export default class Movement extends Component {
-  @DefineField()
-  speed: number;
+  @DefineField({ initialValue: 120 })
+  speed!: number;
 
-  directionX: number;
-  directionY: number;
+  directionX = 0;
+  directionY = 0;
 
-  isMoving: boolean;
-
-  constructor(config: MovementConfig) {
-    super();
-
-    this.speed = config.speed;
-
-    this.directionX = 0;
-    this.directionY = 0;
-
-    this.isMoving = false;
-  }
+  isMoving = false;
 }

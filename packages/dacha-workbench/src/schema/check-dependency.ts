@@ -1,8 +1,8 @@
-import type { DependencyValue } from '../types/widget-schema';
+import type { FieldDependencyValue } from 'dacha';
 
 export const checkDependency = (
   value: unknown,
-  checker: DependencyValue,
+  checker: FieldDependencyValue,
 ): boolean => {
   if (typeof value === 'string' && typeof checker === 'string') {
     return new RegExp(checker).test(value);

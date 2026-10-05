@@ -1,4 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { Time } from '../../../engine/time';
 import type { World } from '../../../engine/world';
@@ -26,6 +27,17 @@ interface GameStatsMeterOptions extends WorldSystemOptions {
  *
  * @category Game Stats
  */
+@DefineSystem({
+  name: 'GameStatsMeter',
+  icon: 'Speedometer',
+  fields: [
+    {
+      name: 'frequency',
+      type: 'number',
+      initialValue: 1,
+    },
+  ],
+})
 export class GameStatsMeter extends WorldSystem {
   private world: World;
   private time: Time;
@@ -70,5 +82,3 @@ export class GameStatsMeter extends WorldSystem {
     }
   }
 }
-
-GameStatsMeter.systemName = 'GameStatsMeter';

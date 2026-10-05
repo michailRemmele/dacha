@@ -1,4 +1,5 @@
 import type { Constructor } from '../../types/utils';
+import { setFieldSource } from '../decorators/field-init';
 
 /**
  * Options passed to an asset constructor.
@@ -27,8 +28,7 @@ export abstract class Asset {
   /**
    * The name the configuration uses for the asset kind, such as `texture`.
    *
-   * `@DefineAsset` from `dacha-workbench/decorators` sets it, so a game usually
-   * does not assign it.
+   * {@link DefineAsset} sets it, so a game usually does not assign it.
    */
   static assetName: string;
 
@@ -40,6 +40,7 @@ export abstract class Asset {
   constructor(options: AssetOptions<unknown>) {
     this.id = options.id;
     this.name = options.name;
+    setFieldSource(this, options.data);
   }
 }
 

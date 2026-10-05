@@ -33,19 +33,19 @@ export class FilterSystem {
     this.application = application;
     this.effects = availableFilterEffects.reduce(
       (acc, FilterEffect) => {
-        if (FilterEffect.behaviorName === undefined) {
+        if (FilterEffect.filterEffectName === undefined) {
           throw new Error(
-            `Missing behaviorName field for "${FilterEffect.name}" FilterEffect class.`,
+            `Missing filterEffectName field for "${FilterEffect.name}" FilterEffect class.`,
           );
         }
 
-        if (acc[FilterEffect.behaviorName] !== undefined) {
+        if (acc[FilterEffect.filterEffectName] !== undefined) {
           console.warn(
-            `FilterEffect "${FilterEffect.behaviorName}" already exists and will be overridden.`,
+            `FilterEffect "${FilterEffect.filterEffectName}" already exists and will be overridden.`,
           );
         }
 
-        acc[FilterEffect.behaviorName] = new FilterEffect();
+        acc[FilterEffect.filterEffectName] = new FilterEffect();
         return acc;
       },
       {} as Record<string, FilterEffect>,

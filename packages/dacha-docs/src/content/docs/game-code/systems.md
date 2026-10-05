@@ -17,9 +17,8 @@ Pick the base class by asking whether the system must survive a scene change. If
 ## A complete system
 
 ```ts
-import { ActorQuery, SceneSystem, CharacterBody } from 'dacha';
+import { ActorQuery, SceneSystem, CharacterBody, DefineSystem } from 'dacha';
 import type { Scene, SceneSystemOptions } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
 
 import Movement from '../../components/movement/movement.component';
 import { MoveRequest } from '../../events';
@@ -33,7 +32,7 @@ export default class MovementSystem extends SceneSystem {
   private actorQuery: ActorQuery;
 
   constructor(options: SceneSystemOptions) {
-    super();
+    super(options);
 
     this.scene = options.scene;
 
@@ -80,37 +79,25 @@ Anything whose outcome must not depend on frame rate goes on the fixed clock. Se
 
 ## Settings you can change in the editor
 
-A system reads its own settings from the same options object, and the field decorator puts
-them in the editor:
+A system's settings come from the same options object. The field decorator puts them in the
+editor, and the engine fills them:
 
 ```ts
-import { SceneSystem } from 'dacha';
-import type { SceneSystemOptions } from 'dacha';
-import { DefineSystem, DefineField } from 'dacha-workbench/decorators';
-
-interface SpawnerOptions extends SceneSystemOptions {
-  spawnInterval: number;
-  maxEnemies: number;
-}
+import { SceneSystem, DefineSystem, DefineField } from 'dacha';
 
 @DefineSystem({
   name: 'SpawnerSystem',
 })
 export default class SpawnerSystem extends SceneSystem {
   @DefineField({ initialValue: 2 })
-  spawnInterval: number;
+  spawnInterval!: number;
 
   @DefineField({ initialValue: 10 })
-  maxEnemies: number;
-
-  constructor(options: SpawnerOptions) {
-    super();
-
-    this.spawnInterval = options.spawnInterval;
-    this.maxEnemies = options.maxEnemies;
-  }
+  maxEnemies!: number;
 }
 ```
+
+A system with its own constructor passes `options` to `super`. Then the settings still fill.
 
 The decorator works the same way it does on a component, and
 [inspector fields](/game-code/inspector-fields/) applies here too. The difference is where
@@ -150,9 +137,8 @@ class with no decorator and no file-name suffix. Its constructor is the key othe
 look it up by:
 
 ```ts
-import { WorldSystem } from 'dacha';
+import { WorldSystem, DefineSystem } from 'dacha';
 import type { WorldSystemOptions } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
 
 export class ScoreAPI {
   points = 0;

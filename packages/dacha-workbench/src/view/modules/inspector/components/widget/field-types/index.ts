@@ -1,6 +1,5 @@
 import type { FC } from 'react';
-
-import type { FieldType } from '../../../../../../types/widget-schema';
+import type { FieldType } from 'dacha';
 
 import { StringField } from './string';
 import { NumberField } from './number';
@@ -14,6 +13,7 @@ import { RangeField } from './range';
 import { TextAreaField } from './text-area';
 import { VectorField } from './vector';
 import { AssetField } from './asset';
+import { ScriptField } from './script';
 
 // comment: TODO: Find the way to avoid using any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,4 +30,5 @@ export const fieldTypes: Record<FieldType, FC<any>> = {
   textarea: TextAreaField,
   vector: VectorField,
   asset: AssetField,
+  script: ScriptField,
 };

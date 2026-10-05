@@ -1,4 +1,5 @@
-import type { Field } from '../../../../../../types/widget-schema';
+import type { Field } from 'dacha';
+
 import { groupFields } from '../group-fields';
 
 const field = (overrides: Partial<Field> & { name: string }): Field =>

@@ -57,7 +57,7 @@ export const InputBind: FC<InputBindProps> = ({
   }, [dispatch, bindPath]);
 
   return (
-    <Section id={id} title={title} onDelete={handleDeleteBind}>
+    <Section title={title} onDelete={handleDeleteBind}>
       <KeyPicker value={inputKey} onChange={handleKeyChange} />
       <Field name="pressed" type="boolean" path={bindPath} />
       <Field

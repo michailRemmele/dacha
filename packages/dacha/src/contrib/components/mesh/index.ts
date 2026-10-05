@@ -1,8 +1,10 @@
 import type { Mesh as PixiMesh } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
+import { sortingLayerOptions } from '../../systems/renderer/sorting-layer-options';
 import type { Point } from '../../../engine/math-lib';
-import { type BlendingMode } from '../../types/view';
+import { type BlendingMode } from '../../systems/renderer/blending-mode';
 
 interface RenderData {
   view: PixiMesh;
@@ -10,7 +12,7 @@ interface RenderData {
   textureArrayKey?: string;
 }
 
-export { type BlendingMode } from '../../types/view';
+export { type BlendingMode } from '../../systems/renderer/blending-mode';
 
 /**
  * The shader of a {@link Mesh} with its options.
@@ -18,7 +20,7 @@ export { type BlendingMode } from '../../types/view';
  * @category Rendering
  */
 export interface MaterialConfig {
-  /** The `behaviorName` of the shader class. */
+  /** The `shaderName` of the shader class. */
   name: string;
   /** The values of the shader fields. The shader methods get them as `options`. */
   options: Record<string, unknown>;
@@ -52,66 +54,79 @@ export interface MeshConfig {
  *
  * @category Rendering
  */
-export class Mesh extends Component {
+@DefineComponent({
+  name: 'Mesh',
+  icon: 'VectorSquare',
+  sections: { texture: { defaultOpen: true } },
+})
+export class Mesh extends Component<MeshConfig> {
   /** Path to the texture image file */
-  src: string;
+  @DefineField({
+    type: 'file',
+    initialValue: '',
+    section: 'texture',
+    extensions: ['png'],
+  })
+  src!: string;
   /** Width of the mesh in pixels */
-  width: number;
+  @DefineField({ initialValue: 10, section: 'texture' })
+  width!: number;
   /** Height of the mesh in pixels */
-  height: number;
+  @DefineField({ initialValue: 10, section: 'texture' })
+  height!: number;
   /** Number of frames in the sprite sheet */
-  slice: number;
+  @DefineField({ initialValue: 1, section: 'texture' })
+  slice!: number;
   /** Whether to flip the mesh horizontally */
-  flipX: boolean;
+  @DefineField({ initialValue: false, section: 'texture' })
+  flipX!: boolean;
   /** Whether to flip the mesh vertically */
-  flipY: boolean;
-  /** Whether the mesh is disabled and should not render */
-  disabled: boolean;
-  /** Sorting layer name for rendering order */
-  sortingLayer: string;
-  /** Center point for sorting calculations */
-  sortOffset: Point;
-  /** Current frame to render */
-  currentFrame: number;
+  @DefineField({ initialValue: false, section: 'texture' })
+  flipY!: boolean;
   /** Color tint applied to the mesh */
-  color: string;
+  @DefineField({
+    type: 'color',
+    initialValue: '#ffffff',
+    section: 'appearance',
+    disabledAlpha: true,
+  })
+  color!: string;
   /** Blending mode for rendering */
-  blending: BlendingMode;
+  @DefineField({
+    type: 'select',
+    initialValue: 'normal',
+    section: 'appearance',
+    options: ['normal', 'addition', 'subtract', 'multiply'],
+  })
+  blending!: BlendingMode;
   /** Opacity from 0 (transparent) to 1 (opaque) */
-  opacity: number;
+  @DefineField({ initialValue: 1, section: 'appearance' })
+  opacity!: number;
+  /** Center point for sorting calculations */
+  @DefineField({ initialValue: { x: 0, y: 0 }, section: 'sorting' })
+  sortOffset!: Point;
+  /** Sorting layer name for rendering order */
+  @DefineField({
+    type: 'select',
+    initialValue: 'default',
+    section: 'sorting',
+    options: sortingLayerOptions,
+  })
+  sortingLayer!: string;
+  /** Whether the mesh is disabled and should not render */
+  @DefineField({ initialValue: false })
+  disabled!: boolean;
+
+  /** Current frame to render */
+  currentFrame = 0;
   /** Material describes a shader and its options applied to a texture (optional). */
+  @DefineField({
+    type: 'script',
+    kind: 'shader',
+    title: 'Shader',
+    section: 'material',
+  })
   material?: MaterialConfig;
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
-
-  /**
-   * Creates a new Mesh component.
-   *
-   * @param config - Configuration for the mesh
-   */
-  constructor(config: MeshConfig) {
-    super();
-
-    this.src = config.src ?? '';
-    this.width = config.width ?? 10;
-    this.height = config.height ?? 10;
-    this.slice = config.slice ?? 1;
-    this.currentFrame = 0;
-    this.flipX = config.flipX ?? false;
-    this.flipY = config.flipY ?? false;
-    this.disabled = config.disabled ?? false;
-    this.sortingLayer = config.sortingLayer ?? 'default';
-    this.sortOffset = {
-      x: config.sortOffset?.x ?? 0,
-      y: config.sortOffset?.y ?? 0,
-    };
-    this.color = config.color ?? '#ffffff';
-    this.blending = config.blending ?? 'normal';
-    this.opacity = config.opacity ?? 1;
-    this.material = config.material
-      ? { name: config.material.name, options: { ...config.material.options } }
-      : undefined;
-  }
 }
-
-Mesh.componentName = 'Mesh';

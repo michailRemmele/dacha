@@ -4,6 +4,7 @@ import type { Scene } from '../../../engine/scene';
 import type { Time } from '../../../engine/time';
 import type { Assets } from '../../../engine/asset';
 import type { Constructor } from '../../../types/utils';
+import { setFieldSource } from '../../../engine/decorators/field-init';
 
 /**
  * Options for the behavior
@@ -39,10 +40,20 @@ export abstract class Behavior {
   /**
    * The name the configuration uses for the behavior.
    *
-   * `@DefineBehavior` from `dacha-workbench/decorators` sets it, so a game
+   * {@link DefineBehavior} sets it, so a game
    * usually does not assign it.
    */
   static behaviorName: string;
+
+  /**
+   * Creates the behavior.
+   *
+   * @param options - The behavior's options. Fields marked with {@link DefineField} take their values from
+   * `options`, or its decorated fields keep their initial values.
+   */
+  constructor(options?: object) {
+    setFieldSource(this, options);
+  }
   /** Destroy the behavior */
   destroy?(): void;
   /** Update the behavior every frame with a variable timestep */

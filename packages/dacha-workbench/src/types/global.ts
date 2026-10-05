@@ -7,6 +7,7 @@ import '../events';
 export interface Extension {
   events?: string[];
   locales?: Resource;
+  modules?: unknown[];
 }
 
 export interface EditorConfig {
@@ -93,8 +94,11 @@ declare global {
       default: {
         events: string[];
         locales: Resource;
+        modules: unknown[];
       };
     };
     DachaWorkbench: Record<string, unknown>;
+    Dacha: typeof import('dacha') & { events: typeof import('dacha/events') };
+    PIXI: typeof import('pixi.js');
   }
 }

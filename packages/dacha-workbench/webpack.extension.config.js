@@ -5,6 +5,13 @@ const getExtensionEntry = require('./electron/get-extension-entry');
 const normalizePath = require('./electron/utils/normilize-path');
 const baseConfig = require('./webpack.base');
 
+const SHARED_MODULES = {
+  'dacha-workbench': ['DachaWorkbench'],
+  dacha: ['Dacha'],
+  'dacha/events': ['Dacha', 'events'],
+  'pixi.js': ['PIXI'],
+};
+
 module.exports = () => ({
   ...baseConfig,
 
@@ -24,19 +31,17 @@ module.exports = () => ({
 
   externals: [
     baseConfig.externals,
-    function dachaWorkbench({ request }, callback) {
-      if (
-        request === 'dacha-workbench' ||
-        request.startsWith('dacha-workbench/')
-      ) {
-        return callback(null, {
-          commonjs: request,
-          commonjs2: request,
-          amd: request,
-          root: ['DachaWorkbench', ...request.split('/').slice(1)],
-        });
+    function sharedModules({ request }, callback) {
+      const root = SHARED_MODULES[request];
+      if (!root) {
+        return callback();
       }
-      return callback();
+      return callback(null, {
+        commonjs: request,
+        commonjs2: request,
+        amd: request,
+        root,
+      });
     },
   ],
 

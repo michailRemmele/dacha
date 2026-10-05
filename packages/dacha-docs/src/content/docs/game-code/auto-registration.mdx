@@ -10,7 +10,7 @@ adding it to an array the engine receives, and separately telling the editor it 
 Four steps. Three of them are clerical, and each one is easy to forget.
 
 The convention on this page removes all of them. A file with the right name is collected
-into the game automatically, and the decorator on the class registers it with the editor.
+into the game automatically, and the decorator on the class describes it to the editor.
 
 <AutoRegistration />
 
@@ -21,8 +21,8 @@ your directory layout. What collects the files is your project's own entry point
 lines you can read and change.
 
 The editor is no different. It compiles your project with its own bundler, driven by
-regular expressions you can edit. It imports every file that matches, and the decorator inside
-the file registers the class as it runs.
+regular expressions you can edit. It imports every file that matches and reads what each file
+exports. Every exported class with a decorator appears in the editor.
 
 So what follows is a convention, not a feature. It is worth keeping because the editor's
 script generation writes files that follow it, but it is yours.
@@ -43,9 +43,8 @@ Two things make a file part of your project.
 | `*.asset.ts` | An asset kind |
 | `*.widget.tsx` | An inspector widget |
 
-The editor configuration holds these patterns in five settings, and you can change every one
-of them. Shaders and filter effects share a setting with behaviors, because the editor treats
-all three as behavior-like classes. The widget setting also matches `.ts`, `.js` and `.jsx`.
+The editor configuration holds these patterns in seven settings, one for each suffix. You can
+change every one of them. The widget setting also matches `.ts`, `.js` and `.jsx`.
 
 Your game's entry point keeps its own list. The
 [starter project](/getting-started/installation/) globs components, systems and behaviors,
@@ -62,10 +61,11 @@ export default class Health extends Component { /* … */ }
 ```
 
 A file named `health.ts` is not collected at all. A named export is worse, because the two
-sides disagree. The editor imports the file and the decorator registers the class, so the
-component appears in the inspector. Your game's glob reads the default export, finds nothing,
-and the class never reaches the engine. There is no build error in either case. A widget file
-is the exception. It registers itself when it is imported and needs no export at all.
+sides disagree. The editor finds the class among the file's exports, so the component appears
+in the inspector. Your game's glob reads the default export, finds nothing, and the class never
+reaches the engine. A class that is not exported at all reaches neither side. There is no
+build error in any of these cases. A widget file is the exception. It registers itself when it
+is imported and needs no export at all.
 
 ## Two files found by their path
 
@@ -183,10 +183,9 @@ look right and hold none of the data that component carried. Watch the console.
 
 ## What the decorators cost your game
 
-Nothing at run time. Outside the editor, `@DefineComponent` sets the static name on the
-class and returns, and `@DefineField` does nothing at all. The field and widget metadata is
-built only when the editor is the thing importing the class, which the decorators check for
-as they run.
+Almost nothing. `@DefineComponent` sets the static name on the class. It also stores the
+fields and widget options on the class, once, when the class is defined. The engine never
+reads them. Only the editor does.
 
 ## The round trip
 
@@ -196,8 +195,8 @@ Generate a component from the editor. It writes `health.component.ts` into your 
 Two independent things then happen without you doing anything:
 
 - **Your game** picks it up on the next rebuild, because the glob matches the filename.
-- **The editor** picks it up by reading the file and finding the decorator, which registers
-  the class and its fields into the inspector.
+- **The editor** picks it up by importing the file and finding the decorated class among its
+  exports. The decorator describes the class and its fields to the inspector.
 
 The component becomes placeable on actors and its fields become editable, in the same
 session, from a class that did not exist a minute ago.

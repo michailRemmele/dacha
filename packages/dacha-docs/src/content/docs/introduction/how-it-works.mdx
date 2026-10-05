@@ -124,8 +124,8 @@ through your dev server.
 ## The editor reads the same project
 
 The editor finds your components and systems by scanning your source for files that match a
-set of patterns. It imports each match, and the decorators on the class register it along
-with the fields the inspector should draw. See
+set of patterns. It imports each match and reads the decorators on the exported classes. They
+name each class and list the fields the inspector should draw. See
 [how scripts are found](/game-code/auto-registration/). It reads your assets
 directory the same way.
 

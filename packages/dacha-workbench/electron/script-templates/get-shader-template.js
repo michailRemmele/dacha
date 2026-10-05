@@ -1,5 +1,6 @@
-const getShaderTemplate = (name) => `import { Shader } from 'dacha';
-import { DefineShader } from 'dacha-workbench/decorators';
+const getShaderTemplate = (
+  name,
+) => `import { Shader, DefineShader } from 'dacha';
 
 @DefineShader({
   name: '${name}',

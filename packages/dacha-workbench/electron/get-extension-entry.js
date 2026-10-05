@@ -23,6 +23,8 @@ module.exports = () => {
     components,
     assets,
     behaviors,
+    shaders,
+    filterEffects,
     widgets,
     events,
     locales,
@@ -54,13 +56,15 @@ module.exports = () => {
     ${libWidgets.map((name) => `import '${name}/widgets';`).join('\n')}
     ${libLocales.map((name, index) => `import libLocales${index} from '${name}/locales';`).join('\n')}
     ${libEvents.map((name, index) => `import * as libEvents${index} from '${name}/events';`).join('\n')}
-    ${libraries.map((name) => `import '${name}';`).join('\n')}
-    ${fs.existsSync(normalizePath(locales)) ? `import locales from '${getImportPath(locales)}';` : ''}
-    ${fs.existsSync(normalizePath(events)) ? `import * as events from '${getImportPath(events)}';` : ''}
+    ${libraries.map((name, index) => `import * as lib${index} from '${name}';`).join('\n')}
+    ${fs.existsSync(normalizePath(locales)) ? `import locales from ${JSON.stringify(getImportPath(locales))};` : ''}
+    ${fs.existsSync(normalizePath(events)) ? `import * as events from ${JSON.stringify(getImportPath(events))};` : ''}
 
     function importAll(r) {
-      r.keys().forEach(r);
+      return r.keys().map(r);
     }
+
+    const modules = [${libraries.map((_, index) => `lib${index}`).join(', ')}];
 
     function isObject(item) {
       return item !== null && typeof item === 'object' && !Array.isArray(item);
@@ -85,13 +89,11 @@ module.exports = () => {
       return output;
     }
 
-    ${widgets.map((regexp) => `importAll(require.context('${contextRoot}', true, ${regexp}));`).join('\n')}
-    ${systems.map((regexp) => `importAll(require.context('${contextRoot}', true, ${regexp}));`).join('\n')}
-    ${components.map((regexp) => `importAll(require.context('${contextRoot}', true, ${regexp}));`).join('\n')}
-    ${assets.map((regexp) => `importAll(require.context('${contextRoot}', true, ${regexp}));`).join('\n')}
-    ${behaviors.map((regexp) => `importAll(require.context('${contextRoot}', true, ${regexp}));`).join('\n')}
+    ${widgets.map((regexp) => `importAll(require.context(${JSON.stringify(contextRoot)}, true, ${regexp}));`).join('\n')}
+    ${[...systems, ...components, ...assets, ...behaviors, ...shaders, ...filterEffects].map((regexp) => `modules.push(...importAll(require.context(${JSON.stringify(contextRoot)}, true, ${regexp})));`).join('\n')}
 
     export default {
+      modules,
       events: [
         ${fs.existsSync(normalizePath(events)) ? "...Object.values(events).filter((entry) => typeof entry === 'string')," : ''}
         ${libEvents.map((_, index) => `...Object.values(libEvents${index}).filter((entry) => typeof entry === 'string'),`)}

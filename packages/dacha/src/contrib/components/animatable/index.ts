@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 import { State } from './state';
 import { IndividualState } from './individual-state';
 import { GroupState } from './group-state';
@@ -18,11 +19,17 @@ export type { AnimatableConfig };
  *
  * @category Animation
  */
+@DefineComponent({
+  name: 'Animatable',
+  icon: 'Filmstrip',
+})
 export class Animatable extends Component {
-  /** @internal States of the animatable component */
-  states: (IndividualState | GroupState)[];
   /** Initial state of the animatable component */
+  @DefineField({ type: 'data', initialValue: '' })
   initialState: string;
+  /** @internal States of the animatable component */
+  @DefineField({ type: 'data', initialValue: [] })
+  states: (IndividualState | GroupState)[];
   /** @internal Current state of the animatable component */
   currentState?: IndividualState | GroupState;
   /** Duration of the current state relative to the total duration of the timeline */
@@ -70,5 +77,3 @@ export class Animatable extends Component {
     this.currentState = newState;
   }
 }
-
-Animatable.componentName = 'Animatable';

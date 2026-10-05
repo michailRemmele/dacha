@@ -9,6 +9,7 @@ import type { Scene } from '../scene';
 import type { World } from '../world';
 import type { Time } from '../time';
 import type { Constructor } from '../../types/utils';
+import { setFieldSource } from '../decorators/field-init';
 
 /**
  * Base options for all systems.
@@ -89,8 +90,22 @@ export interface WorldSystemOptions extends SystemOptions {
  * @category Systems
  */
 export abstract class System {
-  /** Unique name identifier for the system */
+  /**
+   * The name the configuration uses for the system.
+   *
+   * {@link DefineSystem} sets it, so a game usually does not assign it.
+   */
   static systemName: string;
+
+  /**
+   * Creates the system.
+   *
+   * @param options - The system's options. Fields marked with {@link DefineField} take their values from
+   * `options`, or its decorated fields keep their initial values.
+   */
+  constructor(options?: object) {
+    setFieldSource(this, options);
+  }
 
   /** Called when a scene is loaded. Used to load required resources for the system such as images, fonts, etc. */
   onSceneLoad?(scene: Scene): Promise<void>;

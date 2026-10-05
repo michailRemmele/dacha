@@ -74,6 +74,9 @@ PACKAGES.forEach((name) => {
   if (manifest.devDependencies?.dacha) {
     manifest.devDependencies.dacha = version;
   }
+  if (manifest.peerDependencies?.dacha) {
+    manifest.peerDependencies.dacha = version;
+  }
 
   writeManifest(name, manifest);
 });

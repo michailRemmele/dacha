@@ -1,6 +1,5 @@
-import { SceneSystem, ActorQuery, Transform } from 'dacha';
+import { SceneSystem, ActorQuery, Transform, DefineSystem } from 'dacha';
 import type { Scene, SceneSystemOptions, Time } from 'dacha';
-import { DefineSystem } from 'dacha-workbench/decorators';
 
 import { Move } from '../../events';
 import type { MoveEvent } from '../../events';
@@ -15,7 +14,7 @@ export default class MovementSystem extends SceneSystem {
   private actorQuery: ActorQuery;
 
   constructor(options: SceneSystemOptions) {
-    super();
+    super(options);
 
     this.scene = options.scene;
     this.time = options.time;

@@ -1,4 +1,5 @@
 import { SceneSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { SceneSystemOptions } from '../../../engine/system';
 import type { Time } from '../../../engine/time';
 import { Actor, ActorQuery } from '../../../engine/actor';
@@ -35,6 +36,7 @@ import type { Behavior, BehaviorOptions, BehaviorConstructor } from './types';
  *
  * @category Behaviors
  */
+@DefineSystem({ name: 'BehaviorSystem', icon: 'Thunderbolt' })
 export class BehaviorSystem extends SceneSystem {
   private behaviorQuery: ActorQuery;
   private actorSpawner: ActorSpawner;
@@ -145,9 +147,7 @@ export class BehaviorSystem extends SceneSystem {
 
   update(): void {
     this.behaviorQuery.getActors().forEach((actor) => {
-      this.activeBehaviors[actor.id].forEach((behavior) =>
-        behavior.update?.(),
-      );
+      this.activeBehaviors[actor.id].forEach((behavior) => behavior.update?.());
     });
   }
 
@@ -159,5 +159,3 @@ export class BehaviorSystem extends SceneSystem {
     });
   }
 }
-
-BehaviorSystem.systemName = 'BehaviorSystem';

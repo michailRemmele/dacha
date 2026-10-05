@@ -1,8 +1,10 @@
 import type { BitmapText as PixiBitmapText } from 'pixi.js';
 
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
+import { sortingLayerOptions } from '../../systems/renderer/sorting-layer-options';
 import type { Point } from '../../../engine/math-lib';
-import { type BlendingMode } from '../../types/view';
+import { type BlendingMode } from '../../systems/renderer/blending-mode';
 
 interface RenderData {
   view: PixiBitmapText;
@@ -37,51 +39,71 @@ export interface BitmapTextConfig {
  *
  * @category Rendering
  */
-export class BitmapText extends Component {
+@DefineComponent({
+  name: 'BitmapText',
+  icon: 'Font',
+  sections: { text: { defaultOpen: true } },
+})
+export class BitmapText extends Component<BitmapTextConfig> {
   /** Text to render */
-  text: string;
+  @DefineField({ type: 'textarea', initialValue: 'Text', section: 'text' })
+  text!: string;
   /** Path to the font asset */
-  font: string;
+  @DefineField({
+    type: 'file',
+    initialValue: '',
+    section: 'text',
+    extensions: ['fnt', 'xml'],
+  })
+  font!: string;
   /** Size of the text */
-  fontSize: number;
+  @DefineField({ initialValue: 10, section: 'text' })
+  fontSize!: number;
   /** Alignment of the text
    * - left - Align text to the left edge
    * - center - Center text horizontally
    * - right - Align text to the right edge
    */
-  align: TextAlign;
+  @DefineField({
+    type: 'select',
+    initialValue: 'center',
+    section: 'text',
+    options: ['left', 'center', 'right', 'justify'],
+  })
+  align!: TextAlign;
   /** Color of the text */
-  color: string;
+  @DefineField({
+    type: 'color',
+    initialValue: '#000000',
+    section: 'appearance',
+  })
+  color!: string;
   /** Opacity of the text */
-  opacity: number;
+  @DefineField({ initialValue: 1, section: 'appearance' })
+  opacity!: number;
   /** Blending mode of the text */
-  blending: BlendingMode;
-  /** Whether the text is disabled */
-  disabled: boolean;
-  /** Sorting layer of the text */
-  sortingLayer: string;
+  @DefineField({
+    type: 'select',
+    initialValue: 'normal',
+    section: 'appearance',
+    options: ['normal', 'addition', 'subtract', 'multiply'],
+  })
+  blending!: BlendingMode;
   /** Center point of the text */
-  sortOffset: Point;
+  @DefineField({ initialValue: { x: 0, y: 0 }, section: 'sorting' })
+  sortOffset!: Point;
+  /** Sorting layer of the text */
+  @DefineField({
+    type: 'select',
+    initialValue: 'default',
+    section: 'sorting',
+    options: sortingLayerOptions,
+  })
+  sortingLayer!: string;
+  /** Whether the text is disabled */
+  @DefineField({ initialValue: false })
+  disabled!: boolean;
+
   /** @internal Rendering data owned by the renderer */
   renderData?: RenderData;
-
-  constructor(config: BitmapTextConfig) {
-    super();
-
-    this.text = config.text ?? 'Text';
-    this.font = config.font ?? '';
-    this.fontSize = config.fontSize ?? 10;
-    this.align = config.align ?? 'center';
-    this.color = config.color ?? '#000000';
-    this.opacity = config.opacity ?? 1;
-    this.blending = config.blending ?? 'normal';
-    this.disabled = config.disabled ?? false;
-    this.sortingLayer = config.sortingLayer ?? 'default';
-    this.sortOffset = {
-      x: config.sortOffset?.x ?? 0,
-      y: config.sortOffset?.y ?? 0,
-    };
-  }
 }
-
-BitmapText.componentName = 'BitmapText';

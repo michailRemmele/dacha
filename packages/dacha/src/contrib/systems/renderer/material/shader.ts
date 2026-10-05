@@ -72,8 +72,7 @@ export type ShaderUniforms = Record<string, ShaderUniformValue>;
 /**
  * Base class for the shaders of the {@link Mesh} component.
  *
- * Extend it and name the class with `@DefineShader` from
- * `dacha-workbench/decorators`. Every method gets the material options of the
+ * Extend it and name the class with {@link DefineShader}. Every method gets the material options of the
  * mesh as `options`.
  *
  * @see [Shaders](https://dachajs.org/systems/rendering/shaders/)
@@ -82,10 +81,10 @@ export type ShaderUniforms = Record<string, ShaderUniformValue>;
  */
 export abstract class Shader {
   /**
-   * The name the configuration uses for the shader. `@DefineShader` from
-   * `dacha-workbench/decorators` sets it, so a game usually does not assign it.
+   * The name the configuration uses for the shader. {@link DefineShader} sets it,
+   * so a game usually does not assign it.
    */
-  static behaviorName: string;
+  static shaderName: string;
 
   /**
    * Runs every frame. When the returned string changes, the renderer creates
@@ -108,10 +107,10 @@ export abstract class Shader {
 }
 
 /**
- * A shader class: a constructor with a static `behaviorName`.
+ * A shader class: a constructor with a static `shaderName`.
  *
  * @category Rendering
  */
 export type ShaderConstructor = Constructor<Shader> & {
-  behaviorName: string;
+  shaderName: string;
 };

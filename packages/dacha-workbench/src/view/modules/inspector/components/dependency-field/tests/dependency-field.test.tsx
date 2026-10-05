@@ -13,13 +13,13 @@ jest.mock('../../../../../providers', () =>
 import React, { FC } from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import type { Field as FieldSchema } from 'dacha';
 
 import { Field } from '../../field';
 import { CommandContext } from '../../../../../providers';
 import { CommanderStore } from '../../../../../../store';
 import type { Data } from '../../../../../../store';
 import { ROOT_SCOPE } from '../../../../../../consts/scopes';
-import type { Field as FieldSchema } from '../../../../../../types/widget-schema';
 
 jest.mock('../../widget/field-types', () => {
   const StubInput: FC<{
@@ -50,6 +50,9 @@ jest.mock('../../widget/field-types', () => {
     fieldTypes: {
       string: StubInput,
       number: StubInput,
+      script: ({ label }: { label: string }): React.ReactElement => (
+        <div data-testid="script-field">{label}</div>
+      ),
     },
   };
 });
@@ -72,6 +75,14 @@ const buildFields = (): FieldSchema[] => [
     name: 'blob',
     type: 'data',
     initialValue: [],
+  },
+  {
+    name: 'effects',
+    type: 'script',
+    title: 'Effects',
+    kind: 'filterEffect',
+    multiple: true,
+    dependency: { name: 'mode', value: 'b' },
   },
 ];
 
@@ -125,6 +136,26 @@ describe('Field + DependencyField', () => {
     const extraInput = screen.getByLabelText('Extra') as HTMLInputElement;
     expect(extraInput.value).toBe('5');
     expect(store.get(['collider', 'extra'])).toBe(5);
+  });
+
+  it('shows a script field only while its dependency holds', () => {
+    const store = createStore();
+    render(<Harness store={store} />);
+
+    expect(screen.queryByTestId('script-field')).toBeNull();
+
+    const modeInput = screen.getByLabelText('Mode');
+    fireEvent.change(modeInput, { target: { value: 'b' } });
+    fireEvent.blur(modeInput);
+
+    expect(screen.getByTestId('script-field')).toHaveTextContent('Effects');
+    expect(store.get(['collider', 'effects'])).toEqual([]);
+
+    fireEvent.change(modeInput, { target: { value: 'a' } });
+    fireEvent.blur(modeInput);
+
+    expect(screen.queryByTestId('script-field')).toBeNull();
+    expect(store.get(['collider', 'effects'])).toBeUndefined();
   });
 
   it('groups the fill with the triggering change for undo', () => {

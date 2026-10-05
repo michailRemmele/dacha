@@ -1,9 +1,7 @@
 import type { FC, ReactElement } from 'react';
+import type { Field as FieldSchema } from 'dacha';
 
-import type {
-  Field as FieldSchema,
-  WidgetProps,
-} from '../../../../../types/widget-schema';
+import type { WidgetProps } from '../../../../../types/widget-schema';
 import { formatWidgetName } from '../../../../../utils/format-widget-name';
 
 import { Field } from '../field';

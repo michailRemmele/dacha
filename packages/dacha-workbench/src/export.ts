@@ -4,7 +4,7 @@ import {
   useConfig,
   useCommander,
   useStore,
-  useBehaviors,
+  useSchemas,
 } from './view/hooks';
 import { defineWidget } from './hocs';
 import { addValue, setValue, deleteValue } from './view/commands';
@@ -12,7 +12,6 @@ import { InputField } from './view/modules/inspector/components/input-field';
 import { Field } from './view/modules/inspector/components/field';
 import { DependencyField } from './view/modules/inspector/components/dependency-field';
 import { Widget } from './view/modules/inspector/components/widget';
-import { BehaviorWidget } from './view/modules/inspector/components/behavior-widget';
 import {
   TextInput,
   LabelledTextInput,
@@ -51,15 +50,7 @@ import {
 } from './view/modules/inspector/components/text-area';
 import { MultiField } from './view/modules/inspector/components/multi-field';
 import { Section } from './view/modules/inspector/components/section';
-import {
-  DefineSystem,
-  DefineComponent,
-  DefineAsset,
-  DefineField,
-  DefineBehavior,
-  DefineFilterEffect,
-  DefineShader,
-} from './decorators';
+import { NewItemTracker } from './view/modules/inspector/components/new-item-tracker';
 
 const commands = {
   setValue,
@@ -75,7 +66,6 @@ window.DachaWorkbench = {
   Field,
   DependencyField,
   Widget,
-  BehaviorWidget,
   TextInput,
   LabelledTextInput,
   NumberInput,
@@ -96,24 +86,15 @@ window.DachaWorkbench = {
   LabelledTextArea,
   MultiField,
   Section,
+  NewItemTracker,
 
   useExtension,
   useConfig,
   useCommander,
   useStore,
-  useBehaviors,
+  useSchemas,
 
   defineWidget,
 
   commands,
-
-  decorators: {
-    DefineSystem,
-    DefineComponent,
-    DefineAsset,
-    DefineField,
-    DefineBehavior,
-    DefineFilterEffect,
-    DefineShader,
-  },
 };

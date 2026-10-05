@@ -11,12 +11,7 @@ describing it with a decorator.
 ## A complete component
 
 ```ts
-import { Component } from 'dacha';
-import { DefineComponent, DefineField } from 'dacha-workbench/decorators';
-
-interface HealthConfig {
-  points: number;
-}
+import { Component, DefineComponent, DefineField } from 'dacha';
 
 @DefineComponent({
   name: 'Health',
@@ -25,18 +20,9 @@ export default class Health extends Component {
   @DefineField({
     initialValue: 100,
   })
-  points: number;
+  points!: number;
 
-  maxPoints: number;
-
-  constructor(config: HealthConfig) {
-    super();
-
-    const { points } = config;
-
-    this.points = points;
-    this.maxPoints = points;
-  }
+  maxPoints = this.points;
 }
 ```
 
@@ -44,8 +30,37 @@ That is the whole thing. Nothing else has to be registered anywhere.
 
 Two rules are not visible in the code. The class has to be the **default export**, because
 that is what the [glob](/game-code/auto-registration/) collects. And the name in
-`@DefineComponent` is the name the configuration uses, so you never assign `componentName`
-yourself.
+`@DefineComponent` is the name the configuration uses, so with the decorator you never assign
+`componentName` yourself.
+
+The decorator is optional. A class can set `static componentName = 'Health'` instead. The
+game then finds it, but the editor does not show it. The editor lists only classes with a
+decorator.
+
+## How a field gets its value
+
+The engine fills every field that has `@DefineField`. It takes the value from the
+configuration. When the key is missing or the value is `null`, it uses the field's
+initializer, and then `initialValue`. A field without either stays `undefined`.
+
+The `!` after `points` tells TypeScript that the field gets a value without a constructor.
+
+Fields fill in the order you declare them. That is why `maxPoints = this.points` sees the
+value of `points`.
+
+Write a constructor when a field needs additional initialization beyond its configured value.
+Pass the configuration to `super`.
+Without it, the decorated fields keep their initial values:
+
+```ts
+constructor(config: object) {
+  super(config);
+
+  this.maxPoints = this.points * 2;
+}
+```
+
+The constructor body runs after the fields are filled, so it can read and change them.
 
 ## What survives a save
 
@@ -54,12 +69,12 @@ The decorator is the whole difference.
 
 <FieldRoundTrip />
 
-`points` carries the decorator. You edit it in the inspector, the editor writes it into
-`data/data.json`, and the engine hands the saved object to your constructor when the actor
-is built. The value in the inspector is the value the component starts with.
+`points` carries the decorator. You edit it in the inspector, and the editor writes it into
+`data/data.json`. The engine copies the saved value into `points` when it builds the actor.
+The value in the inspector is the value the component starts with.
 
 `maxPoints` carries no decorator. It is not in the inspector, not in the file, and nothing
-restores it. The constructor computes it again every time the component is built.
+restores it.
 
 So decorate what you want to change from the editor, and leave the rest as ordinary
 run-time state.

@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 
 /**
  * How {@link Interpolation} smooths the movement.
@@ -32,7 +33,8 @@ export interface InterpolationConfig {
  *
  * @category Interpolation
  */
-export class Interpolation extends Component {
+@DefineComponent({ name: 'Interpolation', icon: 'ChartAreaStackedNormalized' })
+export class Interpolation extends Component<InterpolationConfig> {
   /**
    * How render values are produced. `interpolate` blends between the last
    * two fixed steps (smooth, adds up to one fixed step of visual latency).
@@ -42,80 +44,60 @@ export class Interpolation extends Component {
    * `extrapolate` uses the world-space rigid body velocity against
    * local-space snapshots, so it is intended for root-level actors.
    */
-  mode: InterpolationMode;
+  @DefineField({
+    type: 'select',
+    initialValue: 'interpolate',
+    options: ['interpolate', 'extrapolate'],
+  })
+  mode!: InterpolationMode;
 
   /**
    * Maximum distance in world units treated as continuous movement between
    * two fixed steps. Larger jumps snap instead of gliding. `0` disables
    * the automatic snap detection.
    */
-  snapThreshold: number;
+  @DefineField({ initialValue: 0 })
+  snapThreshold!: number;
 
   /** Whether smoothing is turned off. The renderer falls back to Transform. */
-  disabled: boolean;
+  @DefineField({ initialValue: false })
+  disabled!: boolean;
 
   /** @internal Local-space position X from the previous fixed step */
-  _prevX: number;
+  _prevX = 0;
   /** @internal Local-space position Y from the previous fixed step */
-  _prevY: number;
+  _prevY = 0;
   /** @internal Local-space rotation from the previous fixed step */
-  _prevRotation: number;
+  _prevRotation = 0;
   /** @internal Local-space position X from the latest fixed step */
-  _currX: number;
+  _currX = 0;
   /** @internal Local-space position Y from the latest fixed step */
-  _currY: number;
+  _currY = 0;
   /** @internal Local-space rotation from the latest fixed step */
-  _currRotation: number;
+  _currRotation = 0;
   /** @internal Whether snapshots have been initialized since (re)enabling */
-  _initialized: boolean;
+  _initialized = false;
   /** @internal Whether smoothing should be skipped at the next opportunity */
-  _snapRequested: boolean;
+  _snapRequested = false;
 
   /**
    * Render-facing local-space position X, written by Interpolator
    *
    * @advanced
    */
-  renderX: number;
+  renderX = 0;
   /**
    * Render-facing local-space position Y, written by Interpolator
    *
    * @advanced
    */
-  renderY: number;
+  renderY = 0;
   /**
    * Render-facing local-space rotation, written by Interpolator
    *
    * @advanced
    */
-  renderRotation: number;
-
-  constructor(config: InterpolationConfig = {}) {
-    super();
-
-    const {
-      mode = 'interpolate',
-      snapThreshold = 0,
-      disabled = false,
-    } = config;
-
-    this.mode = mode;
-    this.snapThreshold = snapThreshold;
-    this.disabled = disabled;
-
-    this._prevX = 0;
-    this._prevY = 0;
-    this._prevRotation = 0;
-    this._currX = 0;
-    this._currY = 0;
-    this._currRotation = 0;
-    this._initialized = false;
-    this._snapRequested = false;
-
-    this.renderX = 0;
-    this.renderY = 0;
-    this.renderRotation = 0;
-  }
+  renderRotation = 0;
 
   /**
    * Whether the render-facing values hold a valid snapshot yet. `false`
@@ -136,5 +118,3 @@ export class Interpolation extends Component {
     this._snapRequested = true;
   }
 }
-
-Interpolation.componentName = 'Interpolation';

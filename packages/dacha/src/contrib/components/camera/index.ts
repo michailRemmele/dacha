@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/component';
+import { DefineComponent, DefineField } from '../../../engine/decorators';
 
 /**
  * Options for {@link Camera}.
@@ -17,26 +18,17 @@ export interface CameraConfig {
  *
  * @category Camera
  */
-export class Camera extends Component {
+@DefineComponent({ name: 'Camera', icon: 'Video' })
+export class Camera extends Component<CameraConfig> {
   /** Zoom of the camera */
-  zoom: number;
+  @DefineField({ initialValue: 1 })
+  zoom!: number;
   /** Whether the camera is the current camera. Only one camera can be the current camera. */
-  current: boolean;
+  @DefineField({ initialValue: false })
+  current!: boolean;
 
   /** Size of the game window on the x axis, in pixels */
-  windowSizeX: number;
+  windowSizeX = 0;
   /** Size of the game window on the y axis, in pixels */
-  windowSizeY: number;
-
-  constructor(config: CameraConfig) {
-    super();
-
-    this.current = config.current;
-    this.zoom = config.zoom;
-
-    this.windowSizeX = 0;
-    this.windowSizeY = 0;
-  }
+  windowSizeY = 0;
 }
-
-Camera.componentName = 'Camera';

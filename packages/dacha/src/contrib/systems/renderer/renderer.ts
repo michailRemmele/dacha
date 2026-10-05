@@ -7,6 +7,7 @@ import {
 } from 'pixi.js';
 
 import { WorldSystem, type WorldSystemOptions } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import type { Time } from '../../../engine/time';
 import { type Scene } from '../../../engine/scene';
 import { Transform } from '../../components/transform';
@@ -60,6 +61,29 @@ interface RendererOptions extends WorldSystemOptions {
  *
  * @category Rendering
  */
+@DefineSystem({
+  name: 'Renderer',
+  icon: 'Filmstrip',
+  fields: [
+    {
+      name: 'windowNodeId',
+      type: 'string',
+      initialValue: 'root',
+    },
+    {
+      name: 'backgroundColor',
+      type: 'color',
+      initialValue: '#000',
+    },
+    {
+      name: 'filterEffects',
+      type: 'script',
+      kind: 'filterEffect',
+      multiple: true,
+      sortable: true,
+    },
+  ],
+})
 export class Renderer extends WorldSystem {
   private window: HTMLElement;
   private application: Application;
@@ -254,5 +278,3 @@ export class Renderer extends WorldSystem {
     this.application.renderer.render({ container: this.application.stage });
   }
 }
-
-Renderer.systemName = 'Renderer';

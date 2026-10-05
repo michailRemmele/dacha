@@ -1,4 +1,4 @@
-import type { CustomKeyboardEvent } from '../../types/input-events';
+import type { CustomKeyboardEvent } from '../../events/input-events';
 
 export class InputListener {
   private windowNode: Window | HTMLElement;

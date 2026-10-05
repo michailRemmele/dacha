@@ -1,5 +1,7 @@
 import {
   useCallback,
+  useContext,
+  useEffect,
   useMemo,
   useState,
   useRef,
@@ -11,10 +13,15 @@ import { TrashBin } from '@gravity-ui/icons';
 
 import { Icon, IconButton } from '../../../../components';
 
+import { NewItemContext } from '../new-item-tracker';
+
+import { isPanelExpanded, setPanelExpanded } from './expanded-panels';
 import { PanelHeader } from './panel-header';
 import { PanelExpand } from './panel-expand';
 
 import * as styles from './collapse-panel.module.css';
+
+const ITEM_KEY = 'panel';
 
 type ExpandIcon = (props: { isActive?: boolean }) => ReactElement;
 
@@ -25,6 +32,8 @@ export interface CollapsePanelProps {
   onDelete?: (event: React.MouseEvent<HTMLElement>) => void;
   expandExtra?: ReactElement | ReactElement[];
   deletable?: boolean;
+  defaultOpen?: boolean;
+  persistKey?: string;
   className?: string;
   dataTestId?: string;
 }
@@ -36,11 +45,24 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
   onDelete,
   expandExtra,
   deletable = true,
+  defaultOpen,
+  persistKey,
   className,
   dataTestId,
 }) => {
   const ignoreRef = useRef(false);
-  const [activeKey, setActiveKey] = useState<string | string[]>();
+  const isNewItem = useContext(NewItemContext);
+  const [open, setOpen] = useState(
+    () =>
+      defaultOpen ??
+      (isNewItem || (persistKey !== undefined && isPanelExpanded(persistKey))),
+  );
+
+  useEffect(() => {
+    if (persistKey) {
+      setPanelExpanded(persistKey, open);
+    }
+  }, []);
 
   const expandIcon = useCallback<ExpandIcon>(
     ({ isActive }) => (
@@ -49,13 +71,20 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
     [expandExtra],
   );
 
-  const handleChange = useCallback((key: string | string[]): void => {
-    if (ignoreRef.current) {
-      ignoreRef.current = false;
-    } else {
-      setActiveKey(key);
-    }
-  }, []);
+  const handleChange = useCallback(
+    (keys: string | string[]): void => {
+      if (ignoreRef.current) {
+        ignoreRef.current = false;
+      } else {
+        const nextOpen = keys.includes(ITEM_KEY);
+        setOpen(nextOpen);
+        if (persistKey) {
+          setPanelExpanded(persistKey, nextOpen);
+        }
+      }
+    },
+    [persistKey],
+  );
 
   const handleDelete = useCallback(
     (event: React.MouseEvent<HTMLElement>): void => {
@@ -68,7 +97,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
   const items = useMemo(
     () => [
       {
-        key: title,
+        key: ITEM_KEY,
         label: (
           <PanelHeader
             title={title}
@@ -76,7 +105,11 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
             dataTestId={dataTestId ? `${dataTestId}-header` : undefined}
           />
         ),
-        children,
+        children: (
+          <NewItemContext.Provider value={false}>
+            {children}
+          </NewItemContext.Provider>
+        ),
         extra: deletable ? (
           <IconButton
             className={styles.deleteButton}
@@ -103,7 +136,7 @@ export const CollapsePanel: FC<CollapsePanelProps> = ({
         icon: { marginInlineStart: 0, marginInlineEnd: '4px' },
         body: { paddingTop: 0, paddingLeft: '28px' },
       }}
-      activeKey={activeKey}
+      activeKey={open ? [ITEM_KEY] : []}
       onChange={handleChange}
       expandIcon={expandIcon}
       items={items}

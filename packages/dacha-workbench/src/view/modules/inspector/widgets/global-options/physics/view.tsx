@@ -11,7 +11,7 @@ import { getUniqueName } from '../../../../../../utils/get-unique-name';
 import type {
   PhysicsSettings,
   CollisionLayer,
-} from '../../types/physics-system';
+} from 'dacha/physics';
 
 import { CollisionLayerField } from './collision-layer';
 import { CollisionMatrixField } from './collision-matrix';

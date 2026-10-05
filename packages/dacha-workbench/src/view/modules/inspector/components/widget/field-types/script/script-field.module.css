@@ -1,0 +1,41 @@
+.list {
+  margin: 5px 0;
+}
+
+.label {
+  display: block;
+  margin: 5px 0;
+}
+
+.message {
+  text-align: center;
+}
+
+.noSchema {
+  box-shadow: 0 0 0 2px var(--ant-color-error);
+  background-color: var(--ant-color-error-bg);
+}
+
+.picker {
+  margin-top: 10px;
+}
+
+.handle {
+  padding: 2px 1px;
+  border-radius: 3px;
+
+  margin-right: 3px;
+
+  &:hover {
+    background-color: var(--ant-color-border-secondary);
+
+    cursor: grab;
+  }
+
+  color: var(--ant-color-text-secondary);
+}
+
+.dragOverlay {
+  background-color: var(--ant-color-bg-container);
+  border-radius: var(--ant-border-radius-lg);
+}

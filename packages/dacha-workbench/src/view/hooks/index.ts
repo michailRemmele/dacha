@@ -5,5 +5,5 @@ export { useCommander } from './use-commander';
 export { useSaveProject } from './use-save-project';
 export { useTreeKeys } from './use-tree-keys';
 export { useUnsavedChanges } from './use-unsaved-changes';
-export { useBehaviors } from './use-behaviors';
+export { useSchemas } from './use-schemas';
 export { useEditorReady } from './use-editor-ready';

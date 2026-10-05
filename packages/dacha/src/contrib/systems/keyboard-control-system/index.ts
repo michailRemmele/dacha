@@ -1,4 +1,5 @@
 import { WorldSystem } from '../../../engine/system';
+import { DefineSystem } from '../../../engine/decorators';
 import { ActorQuery } from '../../../engine/actor';
 import type { WorldSystemOptions } from '../../../engine/system';
 import type { Actor } from '../../../engine/actor';
@@ -21,6 +22,7 @@ import type { KeyboardInputEvent } from '../../events';
  *
  * @category Input
  */
+@DefineSystem({ name: 'KeyboardControlSystem', icon: 'Keyboard' })
 export class KeyboardControlSystem extends WorldSystem {
   private world: World;
   private actorQuery?: ActorQuery;
@@ -108,5 +110,3 @@ export class KeyboardControlSystem extends WorldSystem {
     this.events = [];
   }
 }
-
-KeyboardControlSystem.systemName = 'KeyboardControlSystem';
