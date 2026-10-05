@@ -11,8 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "dacha": "0.19.0-alpha.1",
-    "dacha-workbench": "0.19.0-alpha.1"
+    "dacha": "0.19.0",
+    "dacha-workbench": "0.19.0"
   },
   "devDependencies": {
     "typescript": "6.0.3",

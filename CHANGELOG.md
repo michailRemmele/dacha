@@ -12,6 +12,8 @@ Releases made before this file existed are recorded in the
 
 ## Unreleased
 
+## v0.19.0 — 2026-10-05
+
 ### Added
 
 - A documentation site at [dachajs.org](https://dachajs.org/).

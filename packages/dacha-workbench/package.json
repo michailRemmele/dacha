@@ -1,6 +1,6 @@
 {
   "name": "dacha-workbench",
-  "version": "0.0.38",
+  "version": "0.19.0",
   "description": "The visual editor for the dacha game engine.",
   "exports": {
     ".": {
@@ -78,7 +78,7 @@
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "14.0.0",
     "css-loader": "7.1.5",
-    "dacha": "0.19.0-alpha.1",
+    "dacha": "0.19.0",
     "dayjs": "1.11.23",
     "html-webpack-plugin": "5.6.8",
     "i18next": "26.4.1",
@@ -104,7 +104,7 @@
     "express": "5.2.1"
   },
   "peerDependencies": {
-    "dacha": "0.19.0-alpha.1"
+    "dacha": "0.19.0"
   },
   "engines": {
     "node": ">=22.12.0"
