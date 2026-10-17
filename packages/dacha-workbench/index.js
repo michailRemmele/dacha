@@ -18,6 +18,7 @@ const menuActions = require('./electron/menu-actions');
 const editorConfig = getEditorConfig();
 
 const isDev = process.env.NODE_ENV === 'development';
+const isHidden = Boolean(process.env.DACHA_E2E_HIDDEN);
 
 const expressApp = express();
 
@@ -59,10 +60,13 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       sandbox: false,
+      backgroundThrottling: !isHidden,
     },
   });
   win.once('ready-to-show', () => {
-    win.show();
+    if (!isHidden) {
+      win.show();
+    }
   });
 
   Menu.setApplicationMenu(getMenu(win));
@@ -128,6 +132,9 @@ const createWindow = () => {
 app.whenReady().then(() => {
   if (isDev && process.platform === 'darwin') {
     app.dock?.setIcon(path.join(__dirname, 'app-icons', 'icon-mac.png'));
+  }
+  if (isHidden) {
+    app.dock?.hide();
   }
 
   createWindow();

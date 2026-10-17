@@ -1,6 +1,7 @@
 import { Texture, Sprite as PixiSprite, TilingSprite } from 'pixi.js';
 
-import type { Assets } from '../../assets';
+import type { Assets } from '../../../../../engine/asset';
+import { Texture as TextureAsset } from '../../../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Sprite } from '../../../../components/sprite';
@@ -19,7 +20,7 @@ export class SpriteBuilder implements Builder<Sprite> {
   constructor({ assets }: SpriteBuilderOptions) {
     this.assets = assets;
 
-    this.textureArrayStore = new TextureArrayStore(assets);
+    this.textureArrayStore = new TextureArrayStore();
   }
 
   destroy(sprite: Sprite): void {
@@ -73,13 +74,15 @@ export class SpriteBuilder implements Builder<Sprite> {
       meta.opacity = sprite.opacity;
     }
 
-    if (
-      this.assets.get(sprite) &&
-      (sprite.src !== meta.src || sprite.slice !== meta.slice)
-    ) {
-      view.label = sprite.src;
-      this.textureArrayStore.updateTextureArray(sprite);
-      meta.src = sprite.src;
+    const textureAsset = this.assets.get(TextureAsset, sprite.texture);
+    if (textureAsset && !textureAsset.resource) {
+      void textureAsset.load();
+    }
+    const resource = textureAsset?.resource;
+    if (resource !== meta.resource || sprite.slice !== meta.slice) {
+      view.label = sprite.texture;
+      this.textureArrayStore.updateTextureArray(sprite, resource);
+      meta.resource = resource;
       meta.slice = sprite.slice;
     }
 

@@ -1,0 +1,96 @@
+---
+title: "Assets"
+description: "Textures, sounds, fonts and data entries that the configuration refers to by id."
+---
+
+An asset is a reusable entry in the `assets` section of the [configuration](/concepts/configuration/).
+Each asset has an `id`, a `name`, a `kind` and `data`:
+
+```json
+{
+  "id": "6b1e…",
+  "name": "hero",
+  "kind": "texture",
+  "data": { "src": "images/hero.png" }
+}
+```
+
+## Kinds of assets
+
+The `kind` names the class that describes the asset. There are two families of kinds.
+
+- **Media** kinds point to a file. The engine has three: `texture`, `audio` and `bitmapFont`.
+- **Data** kinds hold only fields. Use them for things that are not actors, such as items,
+  quests or lines of dialogue.
+
+## Loading
+
+Only media assets load. A data asset is ready when the game starts.
+
+The rule for media assets is short:
+
+- Put an asset id in an `asset` field, and the engine loads the asset for you.
+- Take an asset id from code, and load the asset yourself.
+
+The engine looks for `asset` fields in the configuration that the scene uses. It also follows
+`asset` fields inside other assets. It loads every media asset it finds before the scene
+starts.
+
+When the engine destroys a scene, it unloads the assets of that scene that nothing else holds.
+An asset you load from code stays loaded. Bitmap fonts also stay loaded until the game ends.
+
+## Reading an asset in code
+
+Game code gets the project's assets as `assets`. Ask it for an asset by its class and id:
+
+```ts
+import { Texture } from 'dacha';
+
+const texture = this.assets.get(Texture, sprite.texture);
+texture?.resource; // the loaded texture, or undefined
+```
+
+A data asset has its fields right away. A media asset gives its file as `resource`. It is
+`undefined` until the file loads. If the engine did not load the asset for you, call `load()`
+and wait for it:
+
+```ts
+import { Audio } from 'dacha';
+
+const buffer = await this.assets.get(Audio, soundId)?.load();
+```
+
+## Your own kinds
+
+A data kind extends `Asset`. Describe its fields with `@DefineField`, as you do in a component:
+
+```ts
+import { Asset, DefineAsset, DefineField } from 'dacha';
+
+@DefineAsset({ name: 'item' })
+export default class Item extends Asset {
+  @DefineField() title!: string;
+  @DefineField({ initialValue: 1 }) maxStack!: number;
+  @DefineField({ type: 'asset', kind: 'texture' }) icon!: string;
+}
+```
+
+A media kind extends `MediaAsset`. It fetches its file and returns the resource in
+`fetchResource`. If the resource needs cleanup, free it in `disposeResource`:
+
+```ts
+import { MediaAsset, DefineAsset, DefineField } from 'dacha';
+
+@DefineAsset({ name: 'levelMap' })
+export default class LevelMap extends MediaAsset<LevelData> {
+  @DefineField({ type: 'file', extensions: ['json'] }) src!: string;
+
+  protected async fetchResource(): Promise<LevelData> {
+    const response = await fetch(this.src);
+    return response.json();
+  }
+}
+```
+
+Pass your kinds to the engine in `assets`, next to the built-in ones. The editor finds them in
+files that end with `.asset.ts`. See [auto-registration](/game-code/auto-registration/).

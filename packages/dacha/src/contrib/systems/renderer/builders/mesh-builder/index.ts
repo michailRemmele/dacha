@@ -1,7 +1,8 @@
 import { Texture, Mesh as PixiMesh, MeshGeometry } from 'pixi.js';
 
 import type { MaterialSystem } from '../../material';
-import type { Assets } from '../../assets';
+import type { Assets } from '../../../../../engine/asset';
+import { Texture as TextureAsset } from '../../../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Mesh } from '../../../../components/mesh';
@@ -24,7 +25,7 @@ export class MeshBuilder implements Builder<Mesh> {
     this.assets = assets;
     this.materialSystem = materialSystem;
 
-    this.textureArrayStore = new TextureArrayStore(assets);
+    this.textureArrayStore = new TextureArrayStore();
   }
 
   destroy(mesh: Mesh): void {
@@ -83,13 +84,21 @@ export class MeshBuilder implements Builder<Mesh> {
       meta.opacity = mesh.opacity;
     }
 
-    if (
-      mesh.src !== meta.src ||
-      mesh.slice !== meta.slice ||
-      mesh.currentFrame !== meta.currentFrame
-    ) {
-      this.updateTexture(mesh);
+    const textureAsset = this.assets.get(TextureAsset, mesh.texture);
+    if (textureAsset && !textureAsset.resource) {
+      void textureAsset.load();
     }
+    const resource = textureAsset?.resource;
+    if (resource !== meta.resource || mesh.slice !== meta.slice) {
+      view.label = mesh.texture;
+      this.textureArrayStore.updateTextureArray(mesh, resource);
+      meta.resource = resource;
+      meta.slice = mesh.slice;
+    }
+
+    const textureArray = this.textureArrayStore.getTextureArray(mesh);
+    const texture = textureArray?.[mesh.currentFrame];
+    view.texture = texture ?? Texture.WHITE;
 
     const scaleX = mesh.flipX ? -1 : 1;
     const scaleY = mesh.flipY ? -1 : 1;
@@ -108,25 +117,5 @@ export class MeshBuilder implements Builder<Mesh> {
     }
 
     this.materialSystem.updateShader(mesh);
-  }
-
-  private updateTexture(mesh: Mesh): void {
-    const view = mesh.renderData!.view;
-    const meta = view.__dacha.meta;
-
-    if (
-      this.assets.get(mesh) &&
-      (mesh.src !== meta.src || mesh.slice !== meta.slice)
-    ) {
-      view.label = mesh.src;
-      this.textureArrayStore.updateTextureArray(mesh);
-      meta.src = mesh.src;
-      meta.slice = mesh.slice;
-    }
-
-    const textureArray = this.textureArrayStore.getTextureArray(mesh);
-    const texture = textureArray?.[mesh.currentFrame];
-    view.texture = texture ?? Texture.WHITE;
-    meta.currentFrame = mesh.currentFrame;
   }
 }

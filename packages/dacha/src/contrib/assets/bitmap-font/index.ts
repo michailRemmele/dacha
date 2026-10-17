@@ -1,6 +1,10 @@
-import { Asset } from '../../../engine/asset';
+import {
+  Assets as PixiAssets,
+  type BitmapFont as PixiBitmapFont,
+} from 'pixi.js';
+
+import { MediaAsset } from '../../../engine/asset';
 import { DefineAsset, DefineField } from '../../../engine/decorators';
-import type { AssetOptions } from '../../../engine/asset';
 
 /**
  * The `data` of a bitmap font asset in the configuration.
@@ -13,20 +17,20 @@ export interface BitmapFontData {
 }
 
 /**
- * Bitmap font asset. Points to a font descriptor file; companion pages
- * are resolved by the loader.
+ * Bitmap font asset. Points to a font descriptor file.
+ * Its {@link MediaAsset.resource} is a pixi.js bitmap font.
+ *
+ * A loaded font stays loaded until the game ends.
  *
  * @category Assets
  */
 @DefineAsset({ name: 'bitmapFont' })
-export class BitmapFont extends Asset {
+export class BitmapFont extends MediaAsset<PixiBitmapFont> {
   /** Path to the font descriptor file */
-  @DefineField({ type: 'file', extensions: ['fnt', 'xml'] })
-  src: string;
+  @DefineField({ type: 'file', initialValue: '', extensions: ['fnt', 'xml'] })
+  src!: string;
 
-  constructor(options: AssetOptions<BitmapFontData>) {
-    super(options);
-
-    this.src = options.data.src ?? '';
+  protected async fetchResource(): Promise<PixiBitmapFont> {
+    return (await PixiAssets.load(this.src)) as PixiBitmapFont;
   }
 }

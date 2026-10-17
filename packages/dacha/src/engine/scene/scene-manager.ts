@@ -113,6 +113,15 @@ export class SceneManager {
     this.loadedScenes = new Map();
     this.activeSceneId = undefined;
 
+    this.world.addEventListener(LoadScene, this.handleLoadScene);
+    this.world.addEventListener(EnterScene, this.handleEnterScene);
+    this.world.addEventListener(ExitScene, this.handleExitScene);
+    this.world.addEventListener(DestroyScene, this.handleDestroyScene);
+  }
+
+  async loadWorld(): Promise<void> {
+    await this.assets.acquire(this.world, { systems: this.systemConfigs });
+
     this.systemConfigs.forEach((config) => {
       const SystemClass = this.availableSystems[config.name];
       if (isSubclassOf(SystemClass, WorldSystem)) {
@@ -133,13 +142,6 @@ export class SceneManager {
       }
     });
 
-    this.world.addEventListener(LoadScene, this.handleLoadScene);
-    this.world.addEventListener(EnterScene, this.handleEnterScene);
-    this.world.addEventListener(ExitScene, this.handleExitScene);
-    this.world.addEventListener(DestroyScene, this.handleDestroyScene);
-  }
-
-  async loadWorld(): Promise<void> {
     const worldSystems = this.getSystems().filter(
       (system) => system instanceof WorldSystem,
     );
@@ -172,6 +174,8 @@ export class SceneManager {
     this.world.removeEventListener(EnterScene, this.handleEnterScene);
     this.world.removeEventListener(ExitScene, this.handleExitScene);
     this.world.removeEventListener(DestroyScene, this.handleDestroyScene);
+
+    this.assets.release(this.world);
   }
 
   private handleLoadScene = (event: LoadSceneEvent): void => {
@@ -233,18 +237,24 @@ export class SceneManager {
     if (this.loadedScenes.get(id)?.isLoading) {
       return;
     }
-    if (this.loadedScenes.has(id) && !this.loadedScenes.get(id)?.isLoading) {
-      if (id === this.activeSceneId) {
-        this.exitActiveScene();
-      }
-      this.destroyScene(id);
-    }
 
     const scene = new Scene({
       ...this.sceneConfigs[id],
       actorCreator: this.actorCreator,
       templateCollection: this.templateCollection,
     });
+
+    const assetsLoading = this.assets.acquire(scene, {
+      actors: this.sceneConfigs[id].actors,
+      templates: this.templateCollection.getAll(true),
+    });
+
+    if (this.loadedScenes.has(id) && !this.loadedScenes.get(id)?.isLoading) {
+      if (id === this.activeSceneId) {
+        this.exitActiveScene();
+      }
+      this.destroyScene(id);
+    }
 
     const sceneSystems = this.systemConfigs.reduce(
       (acc: Map<string, SceneSystem>, config) => {
@@ -274,6 +284,8 @@ export class SceneManager {
       isLoading: true,
     };
     this.loadedScenes.set(scene.id, loadEntry);
+
+    await assetsLoading;
 
     await Promise.all(
       this.getSystems(scene).map((system) => system.onSceneLoad?.(scene)),
@@ -353,6 +365,7 @@ export class SceneManager {
     this.getSystems(scene).forEach((system) => system.onSceneDestroy?.(scene));
 
     this.loadedScenes.delete(id);
+    this.assets.release(scene);
     this.world.dispatchEvent(SceneDestroyed, { scene });
   }
 }

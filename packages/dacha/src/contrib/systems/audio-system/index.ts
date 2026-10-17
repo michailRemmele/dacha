@@ -3,16 +3,15 @@ import { DefineSystem } from '../../../engine/decorators';
 import type { Scene } from '../../../engine/scene';
 import type { World } from '../../../engine/world';
 import type { WorldSystemOptions } from '../../../engine/system';
-import type { TemplateCollection } from '../../../engine/template';
+import type { Assets } from '../../../engine/asset';
 import { Actor, ActorQuery } from '../../../engine/actor';
 import { AddActor, RemoveActor } from '../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
-import { CacheStore } from '../../../engine/data-lib';
 import { AudioSource } from '../../components';
+import { Audio } from '../../assets';
 
 import { AudioAPI } from './api';
 import type { AudioGroups, AudioStateNode } from './types';
-import { getAllSources, getAllTemplateSources, loadAudio } from './utils';
 
 const MASTER_GROUP = 'master';
 const VOLUME_TOLERANCE = 0.001;
@@ -33,21 +32,20 @@ const VOLUME_TOLERANCE = 0.001;
  */
 @DefineSystem({ name: 'AudioSystem', icon: 'Volume' })
 export class AudioSystem extends WorldSystem {
-  private templateCollection: TemplateCollection;
+  private assets: Assets;
   private world: World;
 
   private audioContext: AudioContext;
   private audioGroups: Record<string, GainNode | undefined>;
-  private audioStore: CacheStore<AudioBuffer>;
   private audioState: Map<string, AudioStateNode>;
   private actorQuery?: ActorQuery;
 
   constructor(options: WorldSystemOptions) {
     super();
 
-    const { world, globalOptions, templateCollection } = options;
+    const { world, globalOptions, assets } = options;
 
-    this.templateCollection = templateCollection;
+    this.assets = assets;
     this.world = world;
 
     this.audioContext = new AudioContext();
@@ -79,7 +77,6 @@ export class AudioSystem extends WorldSystem {
       >,
     );
 
-    this.audioStore = new CacheStore<AudioBuffer>();
     this.audioState = new Map();
 
     const audioApi = new AudioAPI({
@@ -95,27 +92,6 @@ export class AudioSystem extends WorldSystem {
     window.addEventListener('touchstart', this.resumeIfSuspended, {
       once: true,
     });
-  }
-
-  async onSceneLoad(scene: Scene): Promise<void> {
-    const allSources = [
-      ...getAllTemplateSources(this.templateCollection.getAll()),
-      ...getAllSources(scene.children),
-    ];
-    const uniqueSources = [...new Set(allSources)];
-
-    const audioBuffers = await Promise.all(
-      uniqueSources.map((src) => {
-        return !this.audioStore.has(src) ? this.loadAudio(src) : undefined;
-      }),
-    );
-
-    uniqueSources.forEach((src, index) => {
-      if (audioBuffers[index]) {
-        this.audioStore.add(src, audioBuffers[index]!);
-      }
-    });
-    allSources.forEach((src) => this.audioStore.retain(src));
   }
 
   onSceneEnter(scene: Scene): void {
@@ -141,16 +117,6 @@ export class AudioSystem extends WorldSystem {
     this.actorQuery = undefined;
   }
 
-  onSceneDestroy(scene: Scene): void {
-    const allSources = [
-      ...getAllTemplateSources(this.templateCollection.getAll()),
-      ...getAllSources(scene.children),
-    ];
-
-    allSources.forEach((src) => this.audioStore.release(src));
-    this.audioStore.cleanReleased();
-  }
-
   onWorldDestroy(): void {
     void this.audioContext.close();
 
@@ -159,38 +125,14 @@ export class AudioSystem extends WorldSystem {
     window.removeEventListener('touchstart', this.resumeIfSuspended);
   }
 
-  private async loadAudio(src: string): Promise<AudioBuffer | undefined> {
-    if (!src) {
-      return undefined;
-    }
-
-    try {
-      const arrayBuffer = await loadAudio(src);
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      return audioBuffer;
-    } catch (error: unknown) {
-      console.error(
-        `An error occurred during audio source loading: ${src}`,
-        error,
-      );
-      return undefined;
-    }
-  }
-
   private handleActorAdd = (event: AddActorEvent): void => {
     const { actor } = event;
-
-    const { src } = actor.getComponent(AudioSource);
-    this.audioStore.retain(src);
 
     this.initAudio(actor);
   };
 
   private handleActorRemove = (event: RemoveActorEvent): void => {
     const { actor } = event;
-
-    const { src } = actor.getComponent(AudioSource);
-    this.audioStore.release(src);
 
     this.stopAudio(actor);
   };
@@ -237,10 +179,15 @@ export class AudioSystem extends WorldSystem {
       return;
     }
 
-    const { src, group, volume, looped, _playing: playing } = audioSource;
+    const { audio, group, volume, looped, _playing: playing } = audioSource;
     const audioGroupNode = this.audioGroups[group];
+    const audioAsset = this.assets.get(Audio, audio);
+    if (audioAsset && !audioAsset.resource) {
+      void audioAsset.load();
+    }
+    const buffer = audioAsset?.resource;
 
-    if (!audioGroupNode || !this.audioStore.has(src)) {
+    if (!audioGroupNode || !buffer) {
       return;
     }
 
@@ -255,7 +202,7 @@ export class AudioSystem extends WorldSystem {
     }
 
     const sourceNode = new AudioBufferSourceNode(this.audioContext, {
-      buffer: this.audioStore.get(src),
+      buffer,
       loop: looped,
     });
     const gainNode = new GainNode(this.audioContext, {

@@ -55,7 +55,7 @@ export const createPhysicsSystem = (
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: settings ? { physics: settings } : {},
     templateCollection,
-    assets: new Assets([]),
+    assets: new Assets(),
     time,
     ...solverOptions,
   });

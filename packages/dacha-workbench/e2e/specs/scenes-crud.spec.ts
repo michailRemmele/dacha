@@ -21,13 +21,6 @@ test.afterEach(async () => {
   await closeApp({ app, window });
 });
 
-test('creating a new actor adds it to the tree', async () => {
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Add New Actor').click();
-
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
-});
-
 test('creating a new scene adds it to the tree', async () => {
   await window.getByTitle('Add New Scene').click();
 
@@ -92,4 +85,33 @@ test('cut and paste moves an actor to a different scene', async () => {
 
   await toggleSceneExpand(window, 'space-level');
   await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+});
+
+test('undo/redo an actor creation in the explorer', async () => {
+  await clickTreeNode(window, 'space-level');
+  await window.getByTitle('Add New Actor').click();
+  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+
+  await window.evaluate(() => globalThis.window.electron.triggerUndo());
+  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(0);
+
+  await window.evaluate(() => globalThis.window.electron.triggerRedo());
+  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+});
+
+test('screenshot: shown scene after deleting actors from two scenes at once', async () => {
+  await toggleSceneExpand(window, 'island-level');
+  await clickTreeNode(window, 'background_1', { exact: true });
+  await clickTreeNode(window, 'player', {
+    exact: true,
+    modifiers: [MULTI_SELECT_MODIFIER],
+  });
+
+  await window.getByTitle('Delete').click();
+  await expect(treeNodesWithExactText(window, 'background_1')).toHaveCount(0);
+  await expect(treeNodesWithExactText(window, 'player')).toHaveCount(0);
+
+  await expect(window.locator('#canvas-root')).toHaveScreenshot(
+    'scenes-deleted-from-two-scenes.png',
+  );
 });

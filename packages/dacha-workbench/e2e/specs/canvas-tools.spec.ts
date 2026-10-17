@@ -70,19 +70,7 @@ test('pointer tool rubber-band selects every enclosed actor', async () => {
   ]);
 });
 
-test('zoom tool in mode zooms the camera in', async () => {
-  await selectTool(window, 'zoom');
-  const box = await getCanvasBox(window);
-
-  await window.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-  await window.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-  await window.waitForTimeout(CACHE_SAVE_DEBOUNCE * 2);
-
-  const cache = await readCache(window);
-  expect(cache['canvas.mainActor.camera.zoom']).toBeGreaterThan(1);
-});
-
-test('zoom tool out mode zooms the camera back out', async () => {
+test('zoom tool zooms the camera in, then back out', async () => {
   await selectTool(window, 'zoom');
   const box = await getCanvasBox(window);
   const cx = box.x + box.width / 2;
@@ -94,6 +82,7 @@ test('zoom tool out mode zooms the camera back out', async () => {
   const zoomedIn = (await readCache(window))[
     'canvas.mainActor.camera.zoom'
   ] as number;
+  expect(zoomedIn).toBeGreaterThan(1);
 
   await window.getByTestId('zoom-direction-out').click();
   await window.mouse.click(cx, cy);

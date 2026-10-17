@@ -2,70 +2,156 @@ import { SceneManager } from '../scene-manager';
 import { WorldSystem, SceneSystem } from '../../system';
 import type { WorldSystemOptions, SceneSystemOptions } from '../../system';
 import { TemplateCollection } from '../../template';
-import { Assets } from '../../asset';
-import { Texture } from '../../../contrib/assets';
+import { Assets, MediaAsset } from '../../asset';
+import { Component } from '../../component';
+import {
+  DefineAsset,
+  DefineComponent,
+  DefineField,
+  DefineSystem,
+} from '../../decorators';
 import { Time } from '../../time';
+import type { SceneConfig } from '../../types';
 
-import { getSceneConfigMock } from './mocks/scene-config.mock';
-import { getSystemConfigMock } from './mocks/system-config.mock';
+const events: string[] = [];
 
-let worldSystemAssets: Assets | undefined;
-let sceneSystemAssets: Assets | undefined;
+@DefineAsset({ name: 'picture' })
+class Picture extends MediaAsset<string> {
+  protected fetchResource(): Promise<string> {
+    events.push(`load ${this.id}`);
+    return Promise.resolve(`res-${this.id}`);
+  }
 
-class AssetsWorldSystem extends WorldSystem {
+  protected disposeResource(): void {
+    events.push(`unload ${this.id}`);
+  }
+}
+
+@DefineComponent({ name: 'View' })
+class View extends Component {
+  @DefineField({ type: 'asset', kind: 'picture' }) picture!: string;
+}
+
+@DefineSystem({
+  name: 'Background',
+  fields: [{ name: 'picture', type: 'asset', kind: 'picture' }],
+})
+class Background extends WorldSystem {
   constructor(options: WorldSystemOptions) {
     super();
-    worldSystemAssets = options.assets;
+    events.push(
+      `construct world: ${String(options.assets.get(Picture, 'bg')!.resource)}`,
+    );
   }
 }
-AssetsWorldSystem.systemName = 'assets-world-system';
 
-class AssetsSceneSystem extends SceneSystem {
+let sceneAssets: Assets | undefined;
+
+@DefineSystem({ name: 'Probe' })
+class Probe extends SceneSystem {
   constructor(options: SceneSystemOptions) {
     super();
-    sceneSystemAssets = options.assets;
+    sceneAssets = options.assets;
+  }
+
+  async onSceneLoad(): Promise<void> {
+    events.push(
+      `onSceneLoad: ${String(sceneAssets?.get(Picture, 'hero')!.resource)}`,
+    );
   }
 }
-AssetsSceneSystem.systemName = 'assets-scene-system';
+
+const scene = (id: string, picture: string): SceneConfig => ({
+  id,
+  name: id,
+  actors: [
+    {
+      id: `${id}-actor`,
+      name: 'actor',
+      children: [],
+      components: [{ name: 'View', config: { picture } }],
+    },
+  ],
+});
 
 describe('SceneManager -> assets', () => {
   let assets: Assets;
+  let sceneManager: SceneManager;
 
   beforeEach(() => {
-    worldSystemAssets = undefined;
-    sceneSystemAssets = undefined;
+    events.length = 0;
 
-    assets = new Assets([Texture]);
-    assets.register({
-      id: 'a1',
-      name: 'Hero',
-      kind: 'texture',
-      data: { src: 'img/hero.png' },
+    assets = new Assets({
+      assetClasses: [Picture],
+      configs: ['bg', 'hero', 'villain'].map((id) => ({
+        id,
+        name: id,
+        kind: 'picture',
+        data: {},
+      })),
+      components: [View],
+      systems: [Background, Probe],
     });
-  });
 
-  it('passes the asset registry to world and scene systems', async () => {
-    const sceneManager = new SceneManager({
-      sceneConfigs: [getSceneConfigMock('scene-1')],
+    sceneManager = new SceneManager({
+      sceneConfigs: [scene('scene-1', 'hero'), scene('scene-2', 'villain')],
       systemConfigs: [
-        getSystemConfigMock('assets-world-system'),
-        getSystemConfigMock('assets-scene-system'),
+        { name: 'Background', options: { picture: 'bg' } },
+        { name: 'Probe', options: {} },
       ],
-      availableSystems: [AssetsWorldSystem, AssetsSceneSystem],
-      components: [],
+      availableSystems: [Background, Probe],
+      components: [View],
       globalOptions: {},
       resources: {},
       templateCollection: new TemplateCollection(),
       assets,
       time: new Time(),
     });
+  });
 
-    expect(worldSystemAssets).toBe(assets);
+  it('loads the world set before constructing world systems', async () => {
+    await sceneManager.loadWorld();
 
+    expect(events).toEqual(['load bg', 'construct world: res-bg']);
+  });
+
+  it('loads the scene set before onSceneLoad and passes the registry', async () => {
     await sceneManager.loadWorld();
     await sceneManager.loadScene('scene-1', true);
 
-    expect(sceneSystemAssets).toBe(assets);
-    expect(sceneSystemAssets?.get('a1', Texture).src).toBe('img/hero.png');
+    expect(sceneAssets).toBe(assets);
+    expect(events).toContain('onSceneLoad: res-hero');
+  });
+
+  it('unloads the old scene set after switching scenes', async () => {
+    await sceneManager.loadWorld();
+    await sceneManager.loadScene('scene-1', true);
+    await sceneManager.loadScene('scene-2', true, true);
+
+    expect(events).toContain('unload hero');
+    expect(events).not.toContain('unload villain');
+    expect(events).not.toContain('unload bg');
+  });
+
+  it('keeps textures when the active scene reloads', async () => {
+    await sceneManager.loadWorld();
+    await sceneManager.loadScene('scene-1', true);
+    events.length = 0;
+
+    await sceneManager.loadScene('scene-1', true);
+
+    expect(events).not.toContain('unload hero');
+    expect(events).not.toContain('load hero');
+  });
+
+  it('releases the world set on destroyWorld', async () => {
+    await sceneManager.loadWorld();
+    await sceneManager.loadScene('scene-1', true);
+
+    sceneManager.destroyWorld();
+
+    expect(events).toEqual(
+      expect.arrayContaining(['unload hero', 'unload bg']),
+    );
   });
 });

@@ -8,6 +8,7 @@ import {
   TEMPLATE_TOOL,
 } from '../consts/tools';
 import { EventType } from '../events';
+import { EDITOR_MARKER_ICONS_ASSET_ID } from '../consts/editor-assets';
 import { persistentStorage } from '../persistent-storage';
 import type { CommanderStore } from '../store';
 
@@ -514,6 +515,13 @@ export const getEditorConfig = ({
       },
     },
   ],
-  assets: [],
+  assets: [
+    {
+      id: EDITOR_MARKER_ICONS_ASSET_ID,
+      name: 'Editor marker icons',
+      kind: 'texture',
+      data: { src: '/images/editor-marker-icons.png' },
+    },
+  ],
   startSceneId: '0481caa3-c28c-40cc-a1f8-0f2496f1c403',
 });

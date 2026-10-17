@@ -26,12 +26,16 @@ describe('Contrib -> systems -> BehaviorSystem', () => {
   });
 
   it('passes the asset registry to behaviors', () => {
-    const assets = new Assets([Texture]);
-    assets.register({
-      id: 'a1',
-      name: 'Hero',
-      kind: 'texture',
-      data: { src: 'img/hero.png' },
+    const assets = new Assets({
+      assetClasses: [Texture],
+      configs: [
+        {
+          id: 'a1',
+          name: 'Hero',
+          kind: 'texture',
+          data: { src: 'img/hero.png' },
+        },
+      ],
     });
 
     const templateCollection = new TemplateCollection();
@@ -66,7 +70,7 @@ describe('Contrib -> systems -> BehaviorSystem', () => {
     system.onSceneEnter();
 
     expect(capturedOptions?.assets).toBe(assets);
-    expect(capturedOptions?.assets.get('a1', Texture).src).toBe(
+    expect(capturedOptions?.assets.get(Texture, 'a1')!.src).toBe(
       'img/hero.png',
     );
   });

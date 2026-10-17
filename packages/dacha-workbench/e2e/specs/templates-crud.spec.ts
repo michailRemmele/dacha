@@ -20,12 +20,6 @@ test.afterEach(async () => {
   await closeApp({ app, window });
 });
 
-test('creating a new template adds it to the tree', async () => {
-  await window.getByTitle('Add New Template').click();
-
-  await expect(treeNodesWithExactText(window, 'Template')).toHaveCount(1);
-});
-
 test('deleting a template removes it from the tree', async () => {
   await window.getByTitle('Add New Template').click();
   await expect(treeNodesWithExactText(window, 'Template')).toHaveCount(1);

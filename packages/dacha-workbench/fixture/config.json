@@ -200,7 +200,6 @@
               "name": "Sprite",
               "config": {
                 "slice": 1,
-                "src": "assets/terrain/grass.png",
                 "width": 320,
                 "height": 320,
                 "flipX": false,
@@ -218,7 +217,8 @@
                 "textureOffset": {
                   "x": 0,
                   "y": 0
-                }
+                },
+                "texture": "asset-grass"
               }
             }
           ]
@@ -246,7 +246,6 @@
               "name": "Sprite",
               "config": {
                 "slice": 1,
-                "src": "assets/terrain/sea.png",
                 "width": 640,
                 "height": 640,
                 "flipX": false,
@@ -264,7 +263,8 @@
                 "textureOffset": {
                   "x": 0,
                   "y": 0
-                }
+                },
+                "texture": "asset-sea"
               }
             }
           ]
@@ -306,7 +306,6 @@
               "name": "Sprite",
               "config": {
                 "slice": 1,
-                "src": "assets/units/human.png",
                 "width": 26,
                 "height": 26,
                 "flipX": false,
@@ -320,6 +319,54 @@
                 "sortOffset": {
                   "x": 0,
                   "y": 0
+                },
+                "texture": "asset-human"
+              }
+            }
+          ]
+        },
+        {
+          "id": "masked-floor",
+          "name": "masked-floor",
+          "children": [],
+          "components": [
+            {
+              "name": "Transform",
+              "config": {
+                "rotation": 0,
+                "offset": {
+                  "x": -80,
+                  "y": -80
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                }
+              }
+            },
+            {
+              "name": "Mesh",
+              "config": {
+                "texture": "asset-floor",
+                "width": 64,
+                "height": 64,
+                "slice": 1,
+                "flipX": false,
+                "flipY": false,
+                "color": "#ffffff",
+                "blending": "normal",
+                "opacity": 1,
+                "sortOffset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "sortingLayer": "units",
+                "disabled": false,
+                "material": {
+                  "name": "Masked",
+                  "options": {
+                    "mask": "asset-mask"
+                  }
                 }
               }
             }
@@ -482,7 +529,6 @@
           "name": "Sprite",
           "config": {
             "slice": 1,
-            "src": "assets/units/rooster.png",
             "width": 47,
             "height": 52,
             "flipX": true,
@@ -496,7 +542,8 @@
             "sortOffset": {
               "x": 0,
               "y": 0
-            }
+            },
+            "texture": "asset-rooster"
           }
         },
         {
@@ -773,11 +820,11 @@
         {
           "name": "AudioSource",
           "config": {
-            "src": "",
             "volume": 0.5,
             "looped": false,
             "autoplay": false,
-            "group": "effects"
+            "group": "effects",
+            "audio": ""
           }
         }
       ],
@@ -805,7 +852,6 @@
           "name": "Sprite",
           "config": {
             "slice": 1,
-            "src": "assets/terrain/space.png",
             "width": 1000,
             "height": 1000,
             "flipX": false,
@@ -823,7 +869,8 @@
             "textureOffset": {
               "x": 0,
               "y": 0
-            }
+            },
+            "texture": "asset-space"
           }
         }
       ],
@@ -851,7 +898,6 @@
           "name": "Sprite",
           "config": {
             "slice": 1,
-            "src": "assets/terrain/floor.png",
             "width": 408,
             "height": 408,
             "flipX": false,
@@ -869,7 +915,8 @@
             "textureOffset": {
               "x": 0,
               "y": 0
-            }
+            },
+            "texture": "asset-floor"
           }
         }
       ],
@@ -974,5 +1021,62 @@
     }
   ],
   "startSceneId": "ebe4ebe0-849e-4628-a9d1-e7f7dbe58f2a",
-  "assets": []
+  "assets": [
+    {
+      "id": "asset-grass",
+      "name": "grass",
+      "kind": "texture",
+      "data": {
+        "src": "assets/terrain/grass.png"
+      }
+    },
+    {
+      "id": "asset-sea",
+      "name": "sea",
+      "kind": "texture",
+      "data": {
+        "src": "assets/terrain/sea.png"
+      }
+    },
+    {
+      "id": "asset-human",
+      "name": "human",
+      "kind": "texture",
+      "data": {
+        "src": "assets/units/human.png"
+      }
+    },
+    {
+      "id": "asset-rooster",
+      "name": "rooster",
+      "kind": "texture",
+      "data": {
+        "src": "assets/units/rooster.png"
+      }
+    },
+    {
+      "id": "asset-space",
+      "name": "space",
+      "kind": "texture",
+      "data": {
+        "src": "assets/terrain/space.png"
+      }
+    },
+    {
+      "id": "asset-floor",
+      "name": "floor",
+      "kind": "texture",
+      "data": {
+        "src": "assets/terrain/floor.png"
+      }
+    },
+    {
+      "id": "asset-mask",
+      "name": "mask",
+      "kind": "texture",
+      "data": {
+        "src": "assets/terrain/mask.png"
+      }
+    }
+  ]
 }

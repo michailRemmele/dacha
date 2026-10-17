@@ -15,13 +15,6 @@ test.afterEach(async () => {
   await closeApp({ app, window });
 });
 
-test('selecting an actor shows its component widgets in the inspector', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
-
-  await expect(window.getByTestId('entity-panel-Transform-header')).toBeVisible();
-});
-
 test('component widget expands and collapses on header click', async () => {
   await toggleSceneExpand(window, 'space-level');
   await clickTreeNode(window, 'background_1');
@@ -41,8 +34,13 @@ test('screenshot: inspector widget expanded', async () => {
   await clickTreeNode(window, 'background_1');
 
   await window.getByTestId('entity-panel-Transform-header').click();
+  await expect(window.getByTestId('entity-panel-Transform')).toHaveClass(
+    /ant-collapse-item-active/,
+  );
 
-  await expect(window).toHaveScreenshot('inspector-widget-expanded.png');
+  await expect(window.getByTestId('inspector')).toHaveScreenshot(
+    'inspector-widget-expanded.png',
+  );
 });
 
 test('inspector tabs switch between Systems and Project settings', async () => {

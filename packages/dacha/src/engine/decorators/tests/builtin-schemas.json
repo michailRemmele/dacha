@@ -19,10 +19,10 @@
       "icon": "Volume",
       "fields": [
         {
-          "name": "src",
-          "type": "file",
+          "name": "audio",
+          "type": "asset",
           "initialValue": "",
-          "extensions": ["mp3", "wav", "ogg"]
+          "kind": "audio"
         },
         {
           "name": "volume",
@@ -78,10 +78,10 @@
         },
         {
           "name": "font",
-          "type": "file",
+          "type": "asset",
           "initialValue": "",
           "section": "text",
-          "extensions": ["fnt", "xml"]
+          "kind": "bitmapFont"
         },
         {
           "name": "fontSize",
@@ -379,11 +379,11 @@
       },
       "fields": [
         {
-          "name": "src",
-          "type": "file",
+          "name": "texture",
+          "type": "asset",
           "initialValue": "",
           "section": "texture",
-          "extensions": ["png"]
+          "kind": "texture"
         },
         {
           "name": "width",
@@ -752,11 +752,11 @@
       },
       "fields": [
         {
-          "name": "src",
-          "type": "file",
+          "name": "texture",
+          "type": "asset",
           "initialValue": "",
           "section": "texture",
-          "extensions": ["png"]
+          "kind": "texture"
         },
         {
           "name": "width",
@@ -1028,7 +1028,14 @@
         {
           "name": "src",
           "type": "file",
-          "extensions": ["png", "jpg", "jpeg", "webp"]
+          "extensions": ["png", "jpg", "jpeg", "webp"],
+          "initialValue": ""
+        },
+        {
+          "name": "filter",
+          "type": "select",
+          "initialValue": "nearest",
+          "options": ["nearest", "linear"]
         }
       ]
     },
@@ -1037,7 +1044,8 @@
         {
           "name": "src",
           "type": "file",
-          "extensions": ["mp3", "wav", "ogg"]
+          "extensions": ["mp3", "wav", "ogg"],
+          "initialValue": ""
         }
       ]
     },
@@ -1046,7 +1054,8 @@
         {
           "name": "src",
           "type": "file",
-          "extensions": ["fnt", "xml"]
+          "extensions": ["fnt", "xml"],
+          "initialValue": ""
         }
       ]
     }

@@ -1,6 +1,6 @@
 import { CommanderStore } from '../commander-store';
 import type { Data } from '../types';
-import { DELETE } from '../../command-types';
+import { DELETE, DELETE_BY_PATHS } from '../../command-types';
 import { ROOT_SCOPE } from '../../consts/scopes';
 
 describe('CommanderStore', () => {
@@ -57,5 +57,25 @@ describe('CommanderStore', () => {
       zoom: 3,
       current: false,
     });
+  });
+
+  it('undo restores several deleted items', () => {
+    const store = new CommanderStore({
+      assets: [{ id: 'x' }, { id: 'y' }],
+      templates: [{ id: 't' }],
+    } as unknown as Data);
+
+    store.dispatch({
+      command: DELETE_BY_PATHS,
+      scope: ROOT_SCOPE,
+      options: { paths: [['assets', 'id:x'], ['templates', 'id:t']] },
+    });
+    expect(store.get(['assets'])).toEqual([{ id: 'y' }]);
+    expect(store.get(['templates'])).toEqual([]);
+
+    store.undo({ scope: ROOT_SCOPE });
+
+    expect(store.get(['assets'])).toEqual([{ id: 'x' }, { id: 'y' }]);
+    expect(store.get(['templates'])).toEqual([{ id: 't' }]);
   });
 });

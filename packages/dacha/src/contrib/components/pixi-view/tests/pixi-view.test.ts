@@ -1,9 +1,5 @@
 import { Sprite, type ViewContainer } from 'pixi.js';
 
-jest.mock('pixi.js', () => ({
-  Sprite: class {},
-}));
-
 import { PixiView } from '../index';
 
 describe('Contrib -> components -> PixiView', () => {

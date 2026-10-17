@@ -1,48 +1,36 @@
 import { Assets } from '../assets';
 import { Asset } from '../asset';
-import type { AssetOptions } from '../asset';
 import type { AssetConfig } from '../../types';
+import { MediaAsset } from '../media-asset';
+import { DefineAsset, DefineField } from '../../decorators';
 
-interface FileData {
-  src?: string;
+@DefineAsset({ name: 'sound' })
+class SoundKind extends MediaAsset<string> {
+  unloaded: string[] = [];
+
+  protected fetchResource(): Promise<string> {
+    return Promise.resolve(`buffer-${this.id}`);
+  }
+
+  protected disposeResource(resource: string): void {
+    this.unloaded.push(resource);
+  }
 }
 
-interface ItemData {
-  damage?: number;
-}
-
+@DefineAsset({ name: 'texture' })
 class TextureKind extends Asset {
-  src: string;
-
-  constructor(options: AssetOptions<FileData>) {
-    super(options);
-
-    this.src = options.data.src ?? '';
-  }
+  @DefineField() src!: string;
 }
-TextureKind.assetName = 'texture';
 
+@DefineAsset({ name: 'audio' })
 class AudioKind extends Asset {
-  src: string;
-
-  constructor(options: AssetOptions<FileData>) {
-    super(options);
-
-    this.src = options.data.src ?? '';
-  }
+  @DefineField() src!: string;
 }
-AudioKind.assetName = 'audio';
 
+@DefineAsset({ name: 'item' })
 class ItemKind extends Asset {
-  damage: number;
-
-  constructor(options: AssetOptions<ItemData>) {
-    super(options);
-
-    this.damage = options.data.damage ?? 0;
-  }
+  @DefineField({ initialValue: 0 }) damage!: number;
 }
-ItemKind.assetName = 'item';
 
 const textureConfig: AssetConfig = {
   id: 'a1',
@@ -67,63 +55,44 @@ describe('Assets', () => {
   let collection: Assets;
 
   beforeEach(() => {
-    collection = new Assets([TextureKind, AudioKind, ItemKind]);
-    [textureConfig, audioConfig, itemConfig].forEach((config) =>
-      collection.register(config),
-    );
+    collection = new Assets({
+      assetClasses: [TextureKind, AudioKind, ItemKind],
+      configs: [textureConfig, audioConfig, itemConfig],
+    });
   });
 
-  it('instantiates the class of the registered kind', () => {
-    const asset = collection.get('a1');
+  it('creates an instance of the kind for every config', () => {
+    const asset = collection.get('a1')!;
 
     expect(asset).toBeInstanceOf(TextureKind);
-    expect(asset.id).toBe('a1');
     expect(asset.name).toBe('Hero');
-    expect((asset as TextureKind).src).toBe('img/hero.png');
+    expect(collection.get(TextureKind, 'a1')).toBe(asset);
     expect(collection.has('a1')).toBe(true);
   });
 
-  it('returns a typed instance when given the asset class', () => {
-    const texture = collection.get('a1', TextureKind);
-    const item = collection.get('a3', ItemKind);
-
-    expect(texture.src).toBe('img/hero.png');
-    expect(item.damage).toBe(10);
-  });
-
-  it('returns the same instance on every lookup', () => {
-    expect(collection.get('a1')).toBe(collection.get('a1'));
-  });
-
-  it('returns all assets of a given kind', () => {
-    expect(collection.getAll(TextureKind)).toEqual([collection.get('a1')]);
-    expect(collection.getAll(ItemKind)).toEqual([collection.get('a3')]);
-  });
-
-  it('returns every asset', () => {
+  it('returns all assets, or all assets of a kind', () => {
     expect(collection.getAll()).toEqual([
       collection.get('a1'),
       collection.get('a2'),
       collection.get('a3'),
     ]);
+    expect(collection.getAll(TextureKind)).toEqual([collection.get('a1')]);
   });
 
-  it('throws on unknown id', () => {
-    expect(() => collection.get('missing')).toThrow(
-      "Can't find asset with the following id: missing",
-    );
+  it('gives undefined for an empty or unknown id without a warning', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+    expect(collection.get('')).toBeUndefined();
+    expect(collection.get(TextureKind, '')).toBeUndefined();
+    expect(collection.get('missing')).toBeUndefined();
+    expect(collection.get(TextureKind, 'missing')).toBeUndefined();
+    expect(warn).not.toHaveBeenCalled();
+
+    warn.mockRestore();
   });
 
-  it('throws when the asset is of another kind', () => {
-    expect(() => collection.get('a1', ItemKind)).toThrow(
-      'Asset a1 is not an instance of item kind',
-    );
-  });
-
-  it('throws on duplicate id', () => {
-    expect(() => collection.register(textureConfig)).toThrow(
-      'Asset with the following id is already registered: a1',
-    );
+  it('gives undefined for an asset of another kind', () => {
+    expect(collection.get(ItemKind, 'a1')).toBeUndefined();
   });
 
   it('throws on unknown kind', () => {
@@ -136,11 +105,134 @@ describe('Assets', () => {
       }),
     ).toThrow("Can't register asset a4. Unknown asset kind: unknown");
   });
+});
 
-  it('returns an empty list for a kind with no assets', () => {
-    const empty = new Assets([TextureKind]);
+@DefineAsset({ name: 'bundle' })
+class Bundle extends Asset {
+  @DefineField({ type: 'asset', kind: 'any' }) first!: string;
+  @DefineField({ type: 'asset', kind: 'any' }) second!: string;
+}
 
-    expect(empty.getAll(TextureKind)).toEqual([]);
-    expect(empty.getAll()).toEqual([]);
+describe('Assets -> refs and lifecycle', () => {
+  const sound = (id: string): AssetConfig => ({
+    id,
+    name: id,
+    kind: 'sound',
+    data: {},
+  });
+  const item = (id: string, refs: string[]): AssetConfig => ({
+    id,
+    name: id,
+    kind: 'bundle',
+    data: { first: refs[0] ?? '', second: refs[1] ?? '' },
+  });
+
+  let assets: Assets;
+
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+    assets = new Assets({
+      assetClasses: [SoundKind, Bundle],
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const resourceOf = (id: string): string | undefined =>
+    assets.get(SoundKind, id)?.resource;
+
+  it('loads what an owner acquires, closed over refs with cycles', async () => {
+    assets.register(item('i1', ['i2', 's1']));
+    assets.register(item('i2', ['i1']));
+    assets.register(sound('s1'));
+    const owner = {};
+
+    await assets.acquire(owner, { ids: ['i1'] });
+
+    expect(resourceOf('s1')).toBe('buffer-s1');
+  });
+
+  it('skips unknown ids and warns about them', () => {
+    void assets.acquire({}, { ids: ['missing'] });
+
+    expect(console.warn).toHaveBeenCalledWith(
+      "Can't find asset with the following id: missing",
+    );
+  });
+
+  it('unloads on release only when no other owner holds the asset', async () => {
+    assets.register(sound('s1'));
+    const first = {};
+    const second = {};
+    await assets.acquire(first, { ids: ['s1'] });
+    await assets.acquire(second, { ids: ['s1'] });
+
+    assets.release(first);
+    expect(resourceOf('s1')).toBe('buffer-s1');
+
+    assets.release(second);
+    expect(resourceOf('s1')).toBeUndefined();
+  });
+
+  it('replaces the set of an owner that acquires again, keeping shared assets', async () => {
+    assets.register(sound('s1'));
+    assets.register(sound('s2'));
+    const owner = {};
+    await assets.acquire(owner, { ids: ['s1', 's2'] });
+    const s1 = assets.get(SoundKind, 's1')!;
+
+    await assets.acquire(owner, { ids: ['s2'] });
+
+    expect(s1.unloaded).toEqual(['buffer-s1']);
+    expect(resourceOf('s2')).toBe('buffer-s2');
+  });
+
+  it('ignores release of an owner that holds nothing', () => {
+    expect(() => assets.release({})).not.toThrow();
+  });
+
+  it('unregister removes the asset and unloads it', async () => {
+    assets.register(sound('s1'));
+    const asset = assets.get(SoundKind, 's1')!;
+    const owner = {};
+    await assets.acquire(owner, { ids: ['s1'] });
+
+    assets.unregister('s1');
+
+    expect(assets.has('s1')).toBe(false);
+    expect(asset.unloaded).toEqual(['buffer-s1']);
+  });
+
+  it('register of a known id replaces the instance and unloads the old resource', async () => {
+    assets.register(sound('s1'));
+    const owner = {};
+    await assets.acquire(owner, { ids: ['s1'] });
+    const old = assets.get(SoundKind, 's1')!;
+
+    assets.register({ ...sound('s1'), name: 'renamed' });
+
+    expect(assets.get('s1')).not.toBe(old);
+    expect(assets.get('s1')!.name).toBe('renamed');
+    expect(old.unloaded).toEqual(['buffer-s1']);
+    expect(resourceOf('s1')).toBeUndefined();
+
+    await assets.acquire(owner, { ids: ['s1'] });
+    assets.release(owner);
+    expect(assets.get(SoundKind, 's1')!.unloaded).toEqual(['buffer-s1']);
+  });
+
+  it('recomputes refs when an asset is registered again', async () => {
+    assets.register(sound('s1'));
+    assets.register(sound('s2'));
+    assets.register(item('i1', ['s1']));
+    assets.register(item('i1', ['s2']));
+    const owner = {};
+
+    await assets.acquire(owner, { ids: ['i1'] });
+
+    expect(resourceOf('s1')).toBeUndefined();
+    expect(resourceOf('s2')).toBe('buffer-s2');
   });
 });

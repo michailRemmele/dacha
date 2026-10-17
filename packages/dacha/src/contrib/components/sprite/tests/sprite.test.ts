@@ -3,7 +3,7 @@ import { Sprite } from '../index';
 describe('Contrib -> components -> Sprite', () => {
   it('Returns correct values ', () => {
     const sprite = new Sprite({
-      src: 'some-path-to-texture',
+      texture: 'some-path-to-texture',
       width: 100,
       height: 200,
       slice: 10,
@@ -19,7 +19,7 @@ describe('Contrib -> components -> Sprite', () => {
       opacity: 1,
     });
 
-    expect(sprite.src).toEqual('some-path-to-texture');
+    expect(sprite.texture).toEqual('some-path-to-texture');
     expect(sprite.width).toEqual(100);
     expect(sprite.height).toEqual(200);
     expect(sprite.slice).toEqual(10);
@@ -37,7 +37,7 @@ describe('Contrib -> components -> Sprite', () => {
 
   it('Correct updates values ', () => {
     const sprite = new Sprite({
-      src: 'some-path-to-texture',
+      texture: 'some-path-to-texture',
       width: 100,
       height: 200,
       slice: 10,
@@ -53,7 +53,7 @@ describe('Contrib -> components -> Sprite', () => {
       opacity: 1,
     });
 
-    sprite.src = 'another-path-to-texture';
+    sprite.texture = 'another-path-to-texture';
     sprite.width = 200;
     sprite.height = 400;
     sprite.slice = 55;
@@ -67,7 +67,7 @@ describe('Contrib -> components -> Sprite', () => {
     sprite.blending = 'multiply';
     sprite.opacity = 0.5;
 
-    expect(sprite.src).toEqual('another-path-to-texture');
+    expect(sprite.texture).toEqual('another-path-to-texture');
     expect(sprite.width).toEqual(200);
     expect(sprite.height).toEqual(400);
     expect(sprite.slice).toEqual(55);

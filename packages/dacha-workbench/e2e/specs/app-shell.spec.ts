@@ -14,13 +14,6 @@ test.afterEach(async () => {
   await closeApp({ app, window });
 });
 
-test('main panels render on boot', async () => {
-  await expect(window.locator('#canvas-root')).toBeVisible();
-  await expect(window.getByTitle('Pointer Tool')).toBeVisible();
-  await expect(window.getByRole('tab', { name: 'Scenes' })).toBeVisible();
-  await expect(window.getByRole('tab', { name: 'Inspector' })).toBeVisible();
-});
-
 test('screenshot: main panels', async () => {
   await expect(window.locator('#canvas-root')).toBeVisible();
   await expect(window).toHaveScreenshot('app-shell.png');
@@ -31,6 +24,7 @@ test('screenshot: settings modal', async () => {
 
   await window.evaluate(() => globalThis.window.electron.openSettings('grid'));
 
-  await expect(window.getByRole('dialog', { name: 'Settings' })).toBeVisible();
-  await expect(window).toHaveScreenshot('settings-modal.png');
+  const dialog = window.getByRole('dialog', { name: 'Settings' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveScreenshot('settings-modal.png');
 });

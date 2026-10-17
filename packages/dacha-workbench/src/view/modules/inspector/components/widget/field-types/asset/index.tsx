@@ -2,7 +2,7 @@ import { useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AssetConfig } from 'dacha';
 
-import { useStore } from '../../../../../../hooks';
+import { useConfig } from '../../../../../../hooks';
 import { LabelledSelect } from '../../../select';
 import type {
   SelectProps,
@@ -11,6 +11,8 @@ import type {
 import type { LabelledProps } from '../../../labelled';
 import { NAMESPACE_EDITOR } from '../../../../../../providers/schemas-provider/consts';
 
+import { getAssetOptions } from './get-asset-options';
+
 type AssetFieldProps = {
   kind: string;
 } & Omit<SelectProps, 'options'> &
@@ -18,14 +20,12 @@ type AssetFieldProps = {
 
 export const AssetField: FC<AssetFieldProps> = ({ kind, value, ...props }) => {
   const { t } = useTranslation();
-  const store = useStore();
+  const assets = useConfig('assets') as AssetConfig[] | undefined;
 
-  const options = useMemo<SelectOption[]>(() => {
-    const assets = store.get(['assets']) as AssetConfig[];
-    return assets
-      .filter((asset) => asset.kind === kind)
-      .map((asset) => ({ title: asset.name, value: asset.id }));
-  }, [store, kind]);
+  const options = useMemo<SelectOption[]>(
+    () => getAssetOptions(assets, kind),
+    [assets, kind],
+  );
 
   const formattedValue = useMemo(() => {
     const option = options.find((opt) => opt.value === value);

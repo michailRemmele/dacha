@@ -97,4 +97,73 @@ describe('Store', () => {
     expect(store.get(['a', 'c', 'id:item1'])).toBeUndefined()
     expect((object as { a: { c: unknown[] } }).a.c.length).toBe(2)
   })
+
+  it('Notifies the shared array when deleting several of its items', () => {
+    const store = new Store({ assets: [{ id: 'x' }, { id: 'y' }, { id: 'z' }] })
+    const listener = jest.fn()
+    store.subscribe(listener)
+
+    store.deleteByPaths([['assets', 'id:x'], ['assets', 'id:y']])
+
+    expect(store.get(['assets'])).toEqual([{ id: 'z' }])
+    expect(listener).toHaveBeenCalledWith(['assets'], [{ id: 'z' }])
+  })
+
+  it('Notifies the parent array when deleting a single item by paths', () => {
+    const store = new Store(example)
+    const listener = jest.fn()
+    store.subscribe(listener)
+
+    store.deleteByPaths([['a', 'c', 'id:item1']])
+
+    expect(listener.mock.calls[0][0]).toEqual(['a', 'c'])
+  })
+
+  it('Deletes an item together with its own descendant', () => {
+    const store = new Store({
+      actors: [{ id: 'p', children: [{ id: 'c' }] }, { id: 'q', children: [] }],
+    })
+
+    store.deleteByPaths([
+      ['actors', 'id:p'],
+      ['actors', 'id:p', 'children', 'id:c'],
+    ])
+
+    expect(store.get(['actors'])).toEqual([{ id: 'q', children: [] }])
+  })
+
+  it('Finds items whose id contains the key delimiter', () => {
+    const store = new Store({ list: [{ id: 'a:b', v: 1 }] })
+
+    store.set(['list', 'id:a:b', 'v'], 2)
+
+    expect(store.get(['list', 'id:a:b', 'v'])).toBe(2)
+  })
+
+  it('Leaves an array alone and does not notify for a key it cannot find', () => {
+    const store = new Store({ list: [{ id: 'a' }, { id: 'b' }] })
+    const listener = jest.fn()
+    store.subscribe(listener)
+
+    store.delete(['list', 'missing'])
+    store.delete(['list', 'id:missing'])
+    store.set(['list', '5'], { id: 'c' })
+
+    expect(store.get(['list'])).toEqual([{ id: 'a' }, { id: 'b' }])
+    expect(listener).not.toHaveBeenCalled()
+  })
+
+  it('Replaces the whole data when setting the root path', () => {
+    const store = new Store(example)
+
+    store.set([], { x: 1 })
+
+    expect(store.get([])).toEqual({ x: 1 })
+  })
+
+  it('Gives undefined for a path through a null value', () => {
+    const store = new Store({ a: null } as unknown as Data)
+
+    expect(store.get(['a', 'b'])).toBeUndefined()
+  })
 })

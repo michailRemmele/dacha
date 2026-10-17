@@ -46,7 +46,7 @@ export {
   ActorQuery,
 } from './engine/actor';
 export { TemplateCollection } from './engine/template';
-export { Assets, Asset } from './engine/asset';
+export { Assets, Asset, MediaAsset } from './engine/asset';
 export type { AssetOptions, AssetConstructor } from './engine/asset';
 export type { SystemConstructor } from './engine/system';
 export type { ComponentConstructor } from './engine/component';
