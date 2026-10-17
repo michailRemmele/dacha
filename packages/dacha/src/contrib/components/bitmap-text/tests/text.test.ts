@@ -4,7 +4,7 @@ describe('Contrib -> components -> BitmapText', () => {
   it('Returns correct values ', () => {
     const text = new BitmapText({
       text: 'Hello World',
-      font: 'Arial',
+      font: 'font-asset-id',
       fontSize: 24,
       align: 'center',
       color: '#000',
@@ -16,7 +16,7 @@ describe('Contrib -> components -> BitmapText', () => {
     });
 
     expect(text.text).toEqual('Hello World');
-    expect(text.font).toEqual('Arial');
+    expect(text.font).toEqual('font-asset-id');
     expect(text.fontSize).toEqual(24);
     expect(text.align).toEqual('center');
     expect(text.color).toEqual('#000');
@@ -30,7 +30,7 @@ describe('Contrib -> components -> BitmapText', () => {
   it('Correct updates values ', () => {
     const text = new BitmapText({
       text: 'Hello World',
-      font: 'Arial',
+      font: 'font-asset-id',
       fontSize: 24,
       align: 'center',
       color: '#000',

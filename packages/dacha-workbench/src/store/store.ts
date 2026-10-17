@@ -1,110 +1,79 @@
 import {
   get,
   getImmutable,
-  findIndexByKey,
   getCommonPath,
-} from './utils'
-import type {
-  Data,
-  DataValue,
-  ListenerFn,
-} from './types'
+  setByKey,
+  deleteByKey,
+} from './utils';
+import type { Data, DataValue, ListenerFn } from './types';
 
 export class Store {
-  private data: Data
-  private listeners: ListenerFn[]
+  private data: Data;
+  private listeners: ListenerFn[];
 
   constructor(data: Data) {
-    this.data = data
-    this.listeners = []
+    this.data = data;
+    this.listeners = [];
   }
 
   get(path: string[]): unknown {
-    return get(this.data, path)
+    return get(this.data, path);
   }
 
   set(path: string[], value: DataValue): void {
-    const item = getImmutable(this.data, path.slice(0, -1), this, 'data')
-
-    if (typeof item !== 'object' || item === null) {
-      return
-    }
-
-    const key = path.at(-1) as string
-
-    if (Array.isArray(item)) {
-      const index = findIndexByKey(item, key)
-      if (index !== -1) {
-        item[index] = value
-      }
+    if (path.length === 0) {
+      this.data = value as Data;
     } else {
-      item[key] = value
+      const parent = getImmutable(this.data, path.slice(0, -1), this, 'data');
+      if (!parent || !setByKey(parent, path.at(-1) as string, value)) {
+        return;
+      }
     }
 
-    this.listeners.forEach((listener) => listener(path, value))
+    this.listeners.forEach((listener) => listener(path, value));
   }
 
   delete(path: string[]): void {
-    const item = getImmutable(this.data, path.slice(0, -1), this, 'data')
-
-    if (typeof item !== 'object' || item === null) {
-      return
+    const parent = getImmutable(this.data, path.slice(0, -1), this, 'data');
+    if (!deleteByKey(parent, path.at(-1) as string)) {
+      return;
     }
 
-    const key = path.at(-1) as string
-
-    if (Array.isArray(item)) {
-      const index = findIndexByKey(item, key)
-      if (index !== -1) {
-        item.splice(index, 1)
-      }
-    } else {
-      delete item[key]
-    }
-
-    this.listeners.forEach((listener) => listener(path))
+    this.listeners.forEach((listener) => listener(path));
   }
 
   deleteByPaths(paths: string[][]): void {
     if (!paths.length) {
-      return
+      return;
     }
 
-    const commonPath = getCommonPath(paths)
-    // Go one level upper to avoid issue when common path points to object in array
-    commonPath.pop()
+    const commonPath = getCommonPath(paths);
+    if (paths.some((path) => path.length === commonPath.length)) {
+      commonPath.pop();
+    }
 
-    const subRoot = getImmutable(this.data, commonPath, this, 'data')
+    const subRoot = getImmutable(this.data, commonPath, this, 'data');
     if (!subRoot) {
-      return
+      return;
     }
 
     for (const path of paths) {
-      const item = getImmutable(subRoot, path.slice(commonPath.length, -1))
-      if (typeof item !== 'object' || item === null) {
-        continue
-      }
-
-      const key = path.at(-1) as string
-
-      if (Array.isArray(item)) {
-        const index = findIndexByKey(item, key)
-        if (index !== -1) {
-          item.splice(index, 1)
-        }
-      } else {
-        delete item[key]
-      }
+      const parent = getImmutable(subRoot, path.slice(commonPath.length, -1));
+      deleteByKey(parent, path.at(-1) as string);
     }
 
-    this.listeners.forEach((listener) => listener(commonPath, subRoot as DataValue))
+    this.listeners.forEach((listener) =>
+      listener(commonPath, subRoot as DataValue),
+    );
   }
 
   subscribe(listener: ListenerFn): () => void {
-    this.listeners.push(listener)
+    this.listeners.push(listener);
 
     return () => {
-      this.listeners = this.listeners.filter((currentListener) => currentListener !== listener)
-    }
+      this.listeners = this.listeners.filter(
+        (currentListener) => currentListener !== listener,
+      );
+    };
   }
 }

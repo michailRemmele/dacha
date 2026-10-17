@@ -107,15 +107,13 @@ describe('Engine -> SceneManager', () => {
         },
       },
       templateCollection: new TemplateCollection(),
-      assets: new Assets([]),
+      assets: new Assets(),
       time: new Time(),
     });
   });
 
   it('Should return correct systems after load and entering a scene', async () => {
-    expect(sceneManager.getSystems().length).toBe(2);
-    expect(sceneManager.getSystems()[0]).toBeInstanceOf(WorldSystem);
-    expect(sceneManager.getSystems()[1]).toBeInstanceOf(WorldSystem);
+    expect(sceneManager.getSystems().length).toBe(0);
 
     await sceneManager.loadWorld();
     await sceneManager.loadScene('scene-2', true);

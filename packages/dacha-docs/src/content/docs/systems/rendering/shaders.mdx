@@ -20,7 +20,7 @@ instead.
 
 | Field | What it does |
 | --- | --- |
-| `src` | Path to the image. The editor accepts `png` |
+| `texture` | The id of a [texture asset](/concepts/assets/) |
 | `width`, `height` | The size of the mesh in world units |
 | `slice`, `currentFrame` | Sprite sheet frames. See [sprite sheets](/systems/rendering/components/#sprite-sheets) |
 | `flipX`, `flipY` | Mirror the mesh |
@@ -145,6 +145,35 @@ sets these values in every frame:
 
 Declare in GLSL only the ones you use. The code the editor generates is the default shader, so it
 is a good start.
+
+## Extra textures
+
+A shader can sample more textures than the image of the mesh. Declare each one as an `asset`
+field of the shader, and write the textures in `textures`:
+
+```ts
+import { Shader, DefineShader, Texture } from 'dacha';
+import type { ShaderTextures } from 'dacha/renderer';
+
+interface MaskedOptions {
+  mask: string;
+}
+
+@DefineShader({
+  name: 'Masked',
+  fields: [{ name: 'mask', type: 'asset', kind: 'texture', initialValue: '' }],
+})
+export default class Masked extends Shader {
+  // vertex() and fragment() as above
+
+  textures(textures: ShaderTextures, { mask }: MaskedOptions) {
+    textures.uMask = this.assets.get(Texture, mask)?.resource;
+  }
+}
+```
+
+The engine loads a texture from an `asset` field before the scene starts. See
+[Assets](/concepts/assets/#loading).
 
 ## Changing a shader at runtime
 

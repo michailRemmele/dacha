@@ -27,7 +27,7 @@ const groupOptions: GetFieldOptionsFn = (getState) => [
  * @category Audio
  */
 export interface AudioSourceConfig {
-  src: string;
+  audio: string;
   group: string;
   looped: boolean;
   volume: number;
@@ -43,13 +43,9 @@ export interface AudioSourceConfig {
  */
 @DefineComponent({ name: 'AudioSource', icon: 'Volume' })
 export class AudioSource extends Component<AudioSourceConfig> {
-  /** Path to the audio asset */
-  @DefineField({
-    type: 'file',
-    initialValue: '',
-    extensions: ['mp3', 'wav', 'ogg'],
-  })
-  src!: string;
+  /** The id of the audio asset. Empty means none. */
+  @DefineField({ type: 'asset', kind: 'audio', initialValue: '' })
+  audio!: string;
   /** Volume of the audio, from 0 to 1 */
   @DefineField({ type: 'range', initialValue: 1, min: 0, max: 1, step: 0.01 })
   volume!: number;

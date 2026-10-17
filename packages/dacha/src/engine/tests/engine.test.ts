@@ -80,7 +80,7 @@ describe('Engine', () => {
 
     await engine.play();
 
-    expect(capturedAssets?.get('a1', Texture).src).toBe('img/hero.png');
+    expect(capturedAssets?.get(Texture, 'a1')!.src).toBe('img/hero.png');
 
     engine.stop();
   });

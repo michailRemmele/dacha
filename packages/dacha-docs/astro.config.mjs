@@ -87,6 +87,7 @@ export default defineConfig({
             { slug: 'concepts/systems' },
             { slug: 'concepts/game-loop' },
             { slug: 'concepts/configuration' },
+            { slug: 'concepts/assets' },
           ],
         },
         {

@@ -68,6 +68,9 @@ export default class ScreenBlur extends FilterEffect {
 Without `update`, the filter keeps the values `create` gave it. Implement `update` if options
 change at runtime, or if the effect animates over time.
 
+A filter effect can read the project's [assets](/concepts/assets/) as `this.assets`. For example,
+`create` can pass a texture to the filter with `this.assets.get(Texture, id)?.resource`.
+
 The fields on `@DefineFilterEffect` become the fields of the effect in the editor. They work as
 described in [declaring fields on the decorator](/game-code/inspector-fields/#declaring-fields-on-the-decorator).
 

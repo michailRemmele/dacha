@@ -25,7 +25,7 @@ import SpriteSheet from '../../../../components/diagrams/SpriteSheet.astro';
 
 | Field | What it does |
 | --- | --- |
-| `src` | Path to the image. The editor accepts `png` |
+| `texture` | The id of a [texture asset](/concepts/assets/) |
 | `width`, `height` | The size of the sprite in world units. The image stretches to this size |
 | `slice` | The number of frames in the image. `1` means the image is one frame |
 | `currentFrame` | The frame to draw, starting from `0` |
@@ -80,7 +80,7 @@ Outlines use pixi.js stroke styles. See the pixi.js
 | Field | What it does |
 | --- | --- |
 | `text` | The text to draw. It can have line breaks |
-| `font` | Path to the font file. The editor accepts `fnt` and `xml` |
+| `font` | The id of a bitmap font [asset](/concepts/assets/) |
 | `fontSize` | The size of the text |
 | `align` | `left`, `center` or `right` |
 | `color` | The color of the text |

@@ -40,7 +40,7 @@ and `stop()`. If behaviors play sounds, that includes `BehaviorSystem`.
 
 | Field | What it does |
 | --- | --- |
-| `src` | Path to the sound file. The editor accepts `mp3`, `wav` and `ogg` |
+| `audio` | The id of an audio [asset](/concepts/assets/) |
 | `volume` | Volume of this sound, from `0` to `1` |
 | `looped` | Plays the sound again from the start when it ends |
 | `autoplay` | Starts the sound when the actor appears in the active scene |
@@ -74,12 +74,9 @@ Removing an actor stops its sound.
 
 ## When sounds load
 
-`AudioSystem` loads sounds when a scene loads. It collects every `src` from two places:
-
-- the actors of that scene,
-- all templates in the project.
-
-So an actor you spawn from a template at runtime has its sound ready.
+The engine loads sounds before a scene starts. It loads every audio asset that the scene's actors
+and all templates refer to. So an actor you spawn from a template at runtime has its sound ready.
+See [Assets](/concepts/assets/#loading).
 
 ## Scene changes
 

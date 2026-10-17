@@ -133,11 +133,13 @@ export class Engine {
       templateCollection.register(template);
     }
 
-    const assets = new Assets(availableAssets);
-
-    for (const config of assetConfigs) {
-      assets.register(config);
-    }
+    const assets = new Assets({
+      assetClasses: availableAssets,
+      configs: assetConfigs,
+      components,
+      systems: availableSystems,
+      resources,
+    });
 
     const globalOptions = rawGlobalOptions.reduce(
       (acc: Record<string, unknown>, option) => {

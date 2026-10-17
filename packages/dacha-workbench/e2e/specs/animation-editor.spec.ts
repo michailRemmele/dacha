@@ -34,8 +34,7 @@ test('opening the animation editor from the Animatable widget', async () => {
 test('screenshot: animation editor open', async () => {
   await openAnimationEditor(window);
 
-  await expect(
-    window.getByRole('dialog', { name: 'Animation Editor' }),
-  ).toBeVisible();
-  await expect(window).toHaveScreenshot('animation-editor-open.png');
+  const dialog = window.getByRole('dialog', { name: 'Animation Editor' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveScreenshot('animation-editor-open.png');
 });

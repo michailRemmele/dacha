@@ -12,7 +12,7 @@ const createGetGlobalPositionMock = (actor: Actor) => (): { y: number } => ({
 
 describe('Contrib -> RenderSystem -> Sort -> sortByYAxis()', () => {
   const baseSpriteProps: SpriteConfig = {
-    src: 'some-path',
+    texture: '',
     width: 0,
     height: 0,
     sortOffset: { x: 0, y: 0 },

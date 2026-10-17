@@ -110,23 +110,6 @@ describe('fillMissingFields', () => {
     const state = { zoom: 3, current: true };
     expect(fillMissingFields(state, fields)).toBe(state);
   });
-
-  it('supports dot-path dependency names', () => {
-    const depFields: Field[] = [
-      {
-        name: 'flag',
-        type: 'string',
-        initialValue: 'on',
-        dependency: { name: 'nested.mode', value: 'on' },
-      },
-    ];
-    expect(fillMissingFields({ nested: { mode: 'on' } }, depFields)).toEqual({
-      nested: { mode: 'on' },
-      flag: 'on',
-    });
-    const off = { nested: { mode: 'off' } };
-    expect(fillMissingFields(off, depFields)).toBe(off);
-  });
 });
 
 describe('initial-state asset field', () => {

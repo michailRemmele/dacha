@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import type { ElectronApplication, Page } from '@playwright/test';
 
 import { launchApp, closeApp } from '../launch-app';
-import { toggleSceneExpand, clickTreeNode } from '../helpers';
+import { toggleSceneExpand, clickTreeNode, addComponent } from '../helpers';
 
 let app: ElectronApplication;
 let window: Page;
@@ -15,17 +15,10 @@ test.afterEach(async () => {
   await closeApp({ app, window });
 });
 
-const addComponent = async (name: string): Promise<void> => {
-  await window.getByRole('combobox').last().fill(name);
-  await window.getByRole('combobox').last().press('Enter');
-  await window.getByTestId('entity-picker-add-button').last().click();
-  await expect(window.getByTestId(`entity-panel-${name}-header`)).toBeVisible();
-};
-
 test('a project behavior can be added to an actor and shows its options', async () => {
   await toggleSceneExpand(window, 'space-level');
   await clickTreeNode(window, 'background_1');
-  await addComponent('Behaviors');
+  await addComponent(window, 'Behaviors');
 
   const panel = window.getByTestId('entity-panel-Behaviors');
   await panel.getByRole('combobox').fill('Wobble');
@@ -38,7 +31,7 @@ test('a project behavior can be added to an actor and shows its options', async 
 test('a project shader can be chosen on a mesh and shows its options', async () => {
   await toggleSceneExpand(window, 'space-level');
   await clickTreeNode(window, 'background_1');
-  await addComponent('Mesh');
+  await addComponent(window, 'Mesh');
 
   const panel = window.getByTestId('entity-panel-Mesh');
   await panel.getByText('Material', { exact: true }).first().click();

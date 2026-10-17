@@ -8,7 +8,6 @@ import { type BlendingMode } from '../../systems/renderer/blending-mode';
 
 interface RenderData {
   view: PixiSprite | TilingSprite;
-  textureSourceKey?: string;
   textureArrayKey?: string;
 }
 
@@ -23,7 +22,7 @@ export { type BlendingMode } from '../../systems/renderer/blending-mode';
  * @category Rendering
  */
 export interface SpriteConfig {
-  src?: string;
+  texture?: string;
   width?: number;
   height?: number;
   slice?: number;
@@ -52,14 +51,14 @@ export interface SpriteConfig {
   sections: { texture: { defaultOpen: true } },
 })
 export class Sprite extends Component<SpriteConfig> {
-  /** Path to the texture image file */
+  /** The id of the texture asset. Empty means none. */
   @DefineField({
-    type: 'file',
+    type: 'asset',
+    kind: 'texture',
     initialValue: '',
     section: 'texture',
-    extensions: ['png'],
   })
-  src!: string;
+  texture!: string;
   /** Width of the sprite in pixels */
   @DefineField({ initialValue: 10, section: 'texture' })
   width!: number;

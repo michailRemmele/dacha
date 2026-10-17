@@ -5,14 +5,17 @@ import type { Component } from '../../../engine/component';
 import type {
   FilterEffectConstructor,
   FilterEffectConfig,
+  FilterEffectOptions,
 } from './filters/filter-effect';
 import type {
   ShaderConstructor,
+  ShaderOptions,
   ShaderUniform,
   ShaderUniformDefinitions,
   ShaderUniformType,
   ShaderUniformValue,
   ShaderUniforms,
+  ShaderTextures,
 } from './material/shader';
 
 /**
@@ -88,12 +91,15 @@ export interface ViewComponent extends Component {
 export type {
   FilterEffectConstructor,
   FilterEffectConfig,
+  FilterEffectOptions,
   ShaderConstructor,
+  ShaderOptions,
   ShaderUniform,
   ShaderUniformDefinitions,
   ShaderUniformType,
   ShaderUniformValue,
   ShaderUniforms,
+  ShaderTextures,
 };
 
 /**

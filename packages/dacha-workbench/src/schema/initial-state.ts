@@ -44,17 +44,6 @@ export const resolveFieldInitialValue = (field: Field): unknown => {
   return getFieldTypeDefault(field.type);
 };
 
-const getFieldValue = (state: Record<string, unknown>, path: string): unknown =>
-  path
-    .split('.')
-    .reduce<unknown>(
-      (acc, key) =>
-        typeof acc === 'object' && acc !== null
-          ? (acc as Record<string, unknown>)[key]
-          : undefined,
-      state,
-    );
-
 export const fillMissingFields = (
   state: Record<string, unknown>,
   fields: Field[],
@@ -65,11 +54,11 @@ export const fillMissingFields = (
     if (field.type === 'script' && !field.multiple) {
       return;
     }
-    if (getFieldValue(result, field.name) !== undefined) {
+    if (result[field.name] !== undefined) {
       return;
     }
     if (field.type !== 'data' && field.dependency !== undefined) {
-      const dependencyValue = getFieldValue(result, field.dependency.name);
+      const dependencyValue = result[field.dependency.name];
       if (!checkDependency(dependencyValue, field.dependency.value)) {
         return;
       }

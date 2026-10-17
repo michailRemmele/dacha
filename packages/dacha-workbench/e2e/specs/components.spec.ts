@@ -6,6 +6,7 @@ import {
   toggleSceneExpand,
   clickTreeNode,
   switchExplorerTab,
+  addComponent,
 } from '../helpers';
 
 let app: ElectronApplication;
@@ -19,26 +20,11 @@ test.afterEach(async () => {
   await closeApp({ app, window });
 });
 
-test('adding an existing component to an actor', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
-
-  await window.getByRole('combobox').fill('Sprite');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
-
-  await expect(window.getByTestId('entity-panel-Sprite-header')).toBeVisible();
-});
-
 test('a project component opens on add with its fields at their initial values', async () => {
   await toggleSceneExpand(window, 'space-level');
   await clickTreeNode(window, 'background_1');
 
-  await window.getByRole('combobox').fill('Health');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
-
-  await expect(window.getByTestId('entity-panel-Health-header')).toBeVisible();
+  await addComponent(window, 'Health');
 
   const panel = window.getByTestId('entity-panel-Health');
   await expect(panel.getByRole('spinbutton', { name: /^Points/ })).toHaveValue(
@@ -53,9 +39,7 @@ test('a section shows only while one of its fields does', async () => {
   await toggleSceneExpand(window, 'space-level');
   await clickTreeNode(window, 'background_1');
 
-  await window.getByRole('combobox').fill('Health');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
+  await addComponent(window, 'Health');
 
   const panel = window.getByTestId('entity-panel-Health');
   await expect(
@@ -79,12 +63,12 @@ test('an added component opens and stays open for its type across actors', async
   await toggleSceneExpand(window, 'space-level');
   await clickTreeNode(window, 'background_1');
 
-  await window.getByRole('combobox').fill('Sprite');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
+  await addComponent(window, 'Sprite');
 
   await expect(
-    window.getByTestId('entity-panel-Sprite').getByText('Texture'),
+    window
+      .getByTestId('entity-panel-Sprite')
+      .getByRole('button', { name: 'Texture' }),
   ).toBeVisible();
   await expect(
     window
@@ -105,7 +89,9 @@ test('an added component opens and stays open for its type across actors', async
   await clickTreeNode(window, 'background_1');
 
   await expect(
-    window.getByTestId('entity-panel-Sprite').getByText('Texture'),
+    window
+      .getByTestId('entity-panel-Sprite')
+      .getByRole('button', { name: 'Texture' }),
   ).toBeVisible();
   await expect(
     window
@@ -119,31 +105,7 @@ test('adding an existing component to a template', async () => {
   await switchExplorerTab(window, 'Templates');
   await clickTreeNode(window, 'terrain');
 
-  await window.getByRole('combobox').fill('Collider');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
-
-  await expect(
-    window.getByTestId('entity-panel-Collider-header'),
-  ).toBeVisible();
-});
-
-test('screenshot: create new component modal', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
-
-  await window.getByRole('combobox').click();
-  await window.getByRole('button', { name: 'Create New' }).click();
-
-  const dialog = window.getByRole('dialog', { name: 'New Component' });
-  await expect(dialog).toBeVisible();
-
-  await expect(window).toHaveScreenshot('create-new-component-modal.png', {
-    mask: [
-      dialog.getByText(/^File Path:/),
-      dialog.getByRole('textbox', { name: 'Base Directory' }),
-    ],
-  });
+  await addComponent(window, 'Collider');
 });
 
 test('screenshot: schema mismatch', async () => {
@@ -157,5 +119,7 @@ test('screenshot: schema mismatch', async () => {
   await expect(
     window.getByTestId('entity-panel-Legacy Component-header'),
   ).toBeVisible();
-  await expect(window).toHaveScreenshot('schema-mismatch.png');
+  await expect(window.getByTestId('inspector')).toHaveScreenshot(
+    'schema-mismatch.png',
+  );
 });

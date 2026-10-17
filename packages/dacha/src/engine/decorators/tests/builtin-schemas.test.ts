@@ -1,17 +1,3 @@
-// The barrel loads the renderer, whose pixi.js import is ESM that Jest cannot run.
-// Nothing here renders, so every pixi.js export is an empty class.
-jest.mock(
-  'pixi.js',
-  () =>
-    new Proxy(
-      {},
-      {
-        get: (_target, key): unknown =>
-          key === '__esModule' ? false : class {},
-      },
-    ),
-);
-
 import * as Dacha from '../../../index';
 import { getSchema } from '..';
 

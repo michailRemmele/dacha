@@ -49,7 +49,10 @@ committed but synced from S3-compatible storage by
 `S3_DOCS_PROFILE`/`S3_DOCS_BUCKET` for the documentation media (see below). CI
 sets the baseline variables from repo secrets. The functional group alone needs no S3 access:
 `npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"` from
-inside `packages/dacha-workbench/`.
+inside `packages/dacha-workbench/`. Set `DACHA_E2E_HIDDEN=1` to run without a visible window: the
+editor then never shows its window, hides its dock icon and does not take focus. Both the
+functional and the screenshot groups pass this way; use it whenever someone else is working
+on the machine.
 
 **Release notes live in the root [CHANGELOG.md](CHANGELOG.md)** — one file for all three
 packages, since their versions are lockstep. Write what changed under `## Unreleased` as

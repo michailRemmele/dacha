@@ -12,6 +12,41 @@ Releases made before this file existed are recorded in the
 
 ## Unreleased
 
+### Added
+
+- The engine loads assets. Before a scene starts, it loads every media asset that an `asset`
+  field refers to: in the components of the scene's actors and of all templates, in system
+  options, in the options of behaviors, shaders and filter effects, and inside other assets.
+  When it destroys a scene, it unloads what nothing else holds. Bitmap fonts stay loaded.
+- `MediaAsset`, the base class of asset kinds backed by a file. `resource` gives the loaded
+  file, and `load()` loads it from code. A kind implements `fetchResource` and, if needed,
+  `disposeResource`. `Texture`, `Audio` and `BitmapFont` extend it.
+- `Shader.textures(textures, options)` writes extra textures for the shader by uniform name.
+- A `texture` asset has a `filter`: `nearest` (the default, sharp pixels) or `linear` (smooth).
+  Before, every texture used `nearest`.
+- Shaders and filter effects read the project assets as `this.assets`.
+- A [page about assets](https://dachajs.org/concepts/assets/) in the documentation.
+
+### Changed
+
+- **Breaking:** `Sprite.src` and `Mesh.src` are now `texture`, and `AudioSource.src` is now
+  `audio`. These fields and `BitmapText.font` hold the id of an asset instead of a file path.
+- **Breaking:** `Assets.get(id, Class)` is now `Assets.get(Class, id)`, to match
+  `getAll(Class)`. `get` no longer throws: it returns `undefined` for an empty or unknown id
+  and for an asset of another kind. The engine warns about ids without an asset when a scene
+  loads.
+- World systems are created in `loadWorld`, after the assets their options refer to have
+  loaded.
+- The asset field in the inspector updates its list when assets change. The editor's scene view
+  follows changes to the project's assets.
+
+### Fixed
+
+- The editor's scene view now follows a deletion of several items at once: assets, or actors
+  from different scenes. Before, it kept showing the deleted items.
+- The editor finds an item whose id contains `:`. A path to a missing array item no longer
+  changes or removes another item.
+
 ## v0.19.0 — 2026-10-05
 
 ### Added

@@ -55,7 +55,6 @@
               "name": "Sprite",
               "config": {
                 "slice": 6,
-                "src": "player.png",
                 "width": 24,
                 "height": 24,
                 "flipX": false,
@@ -69,7 +68,8 @@
                 "sortOffset": {
                   "x": 0,
                   "y": 0
-                }
+                },
+                "texture": "asset-player"
               }
             },
             {
@@ -336,7 +336,6 @@
             {
               "name": "Sprite",
               "config": {
-                "src": "grass-tile.png",
                 "width": 256,
                 "height": 256,
                 "slice": 1,
@@ -355,7 +354,8 @@
                 "textureOffset": {
                   "x": 0,
                   "y": 0
-                }
+                },
+                "texture": "asset-grass-tile"
               }
             }
           ],
@@ -407,7 +407,24 @@
     }
   ],
   "templates": [],
-  "assets": [],
+  "assets": [
+    {
+      "id": "asset-player",
+      "name": "player",
+      "kind": "texture",
+      "data": {
+        "src": "player.png"
+      }
+    },
+    {
+      "id": "asset-grass-tile",
+      "name": "grass-tile",
+      "kind": "texture",
+      "data": {
+        "src": "grass-tile.png"
+      }
+    }
+  ],
   "globalOptions": [
     {
       "name": "sorting",

@@ -111,3 +111,24 @@ export const treeNodesWithExactText = (window: Page, text: string): Locator =>
   window
     .locator(TREE_NODE_SELECTOR)
     .filter({ has: window.getByText(text, { exact: true }) });
+
+export const addComponent = async (
+  window: Page,
+  name: string,
+): Promise<void> => {
+  await window.getByRole('combobox').last().fill(name);
+  await window.getByRole('combobox').last().press('Enter');
+  await window.getByTestId('entity-picker-add-button').last().click();
+  await expect(window.getByTestId(`entity-panel-${name}-header`)).toBeVisible();
+};
+
+export const collectPageErrors = (window: Page): string[] => {
+  const errors: string[] = [];
+  window.on('pageerror', (error) => errors.push(error.message));
+  window.on('console', (message) => {
+    if (message.type() === 'error') {
+      errors.push(message.text());
+    }
+  });
+  return errors;
+};

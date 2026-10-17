@@ -42,7 +42,7 @@ export const Inspector = (): ReactElement => {
   }, [path]);
 
   return (
-    <div className={styles.inspector}>
+    <div className={styles.inspector} data-testid="inspector">
       <PanelTabs
         classNames={{ content: styles.tabContent }}
         activeKey={activeTab}

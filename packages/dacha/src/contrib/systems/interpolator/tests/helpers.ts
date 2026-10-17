@@ -39,7 +39,7 @@ export const createInterpolator = (
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: {},
     templateCollection,
-    assets: new Assets([]),
+    assets: new Assets(),
     time,
   });
 

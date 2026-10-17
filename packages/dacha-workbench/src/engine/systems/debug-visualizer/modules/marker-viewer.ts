@@ -1,6 +1,7 @@
 import { Sprite, Transform } from 'dacha';
 
 import { MARKERS } from '../../../../consts/markers';
+import { EDITOR_MARKER_ICONS_ASSET_ID } from '../../../../consts/editor-assets';
 import { getCurrentZoom } from '../../../../utils/get-current-zoom';
 import { EditorMarker, Technical } from '../../../components';
 import type { DebugViewModule } from '../types';
@@ -19,7 +20,7 @@ export const markerViewer: DebugViewModule = {
     const debugActor = actorSpawner.spawn('debugActor');
 
     const sprite = new Sprite({
-      src: '/images/editor-marker-icons.png',
+      texture: EDITOR_MARKER_ICONS_ASSET_ID,
       slice: 10,
       width: 16,
       height: 16,

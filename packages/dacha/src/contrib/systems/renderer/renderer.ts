@@ -25,7 +25,7 @@ import {
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
 import type { Sorting, RendererResources } from './types';
-import { Assets } from './assets';
+import type { Assets } from '../../../engine/asset';
 import { ActorRenderTree } from './actor-render-tree';
 import { FilterSystem } from './filters';
 import { MaterialSystem } from './material';
@@ -108,7 +108,7 @@ export class Renderer extends WorldSystem {
       globalOptions,
       windowNodeId,
       backgroundColor,
-      templateCollection,
+      assets,
       world,
       resources,
       filterEffects,
@@ -148,15 +148,17 @@ export class Renderer extends WorldSystem {
     this.application = new Application();
     this.worldContainer = new Container();
 
-    this.assets = new Assets({ templateCollection });
+    this.assets = assets;
 
     this.materialSystem = new MaterialSystem({
       shaders: this.resources?.shaders,
       time: this.time,
+      assets: this.assets,
     });
     this.filterSystem = new FilterSystem({
       application: this.application,
       time: this.time,
+      assets: this.assets,
       filterEffects,
       availableFilterEffects: this.resources?.filterEffects,
     });
@@ -226,10 +228,6 @@ export class Renderer extends WorldSystem {
     window.__PIXI_DEVTOOLS__ = undefined;
   }
 
-  async onSceneLoad(scene: Scene): Promise<void> {
-    await this.assets.load(scene);
-  }
-
   onSceneEnter(scene: Scene): void {
     this.actorRenderTree = new ActorRenderTree({
       scene,
@@ -245,10 +243,6 @@ export class Renderer extends WorldSystem {
     this.actorRenderTree = undefined;
 
     this.application.renderer.clear();
-  }
-
-  onSceneDestroy(scene: Scene): void {
-    this.assets.unload(scene);
   }
 
   private updateCamera(): void {

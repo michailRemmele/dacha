@@ -8,7 +8,6 @@ import { type BlendingMode } from '../../systems/renderer/blending-mode';
 
 interface RenderData {
   view: PixiMesh;
-  textureSourceKey?: string;
   textureArrayKey?: string;
 }
 
@@ -32,7 +31,7 @@ export interface MaterialConfig {
  * @category Rendering
  */
 export interface MeshConfig {
-  src?: string;
+  texture?: string;
   width?: number;
   height?: number;
   slice?: number;
@@ -60,14 +59,14 @@ export interface MeshConfig {
   sections: { texture: { defaultOpen: true } },
 })
 export class Mesh extends Component<MeshConfig> {
-  /** Path to the texture image file */
+  /** The id of the texture asset. Empty means none. */
   @DefineField({
-    type: 'file',
+    type: 'asset',
+    kind: 'texture',
     initialValue: '',
     section: 'texture',
-    extensions: ['png'],
   })
-  src!: string;
+  texture!: string;
   /** Width of the mesh in pixels */
   @DefineField({ initialValue: 10, section: 'texture' })
   width!: number;
