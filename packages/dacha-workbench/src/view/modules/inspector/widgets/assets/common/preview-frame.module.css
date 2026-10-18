@@ -1,0 +1,9 @@
+.previewFrame {
+  margin-top: 8px;
+}
+
+.error {
+  margin-top: 8px;
+  color: var(--ant-color-error);
+  text-align: center;
+}

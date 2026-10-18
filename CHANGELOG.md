@@ -26,6 +26,10 @@ Releases made before this file existed are recorded in the
   Before, every texture used `nearest`.
 - Shaders and filter effects read the project assets as `this.assets`.
 - A [page about assets](https://dachajs.org/concepts/assets/) in the documentation.
+- The inspector shows a preview under the fields of texture, audio and bitmap font assets:
+  the image with its size, drawn as its `filter` samples it; a small player; and a sample
+  string drawn with the font, without the characters the font has no glyphs for, as in the game.
+- The asset field in the inspector has a search: type to filter the assets by name.
 
 ### Changed
 

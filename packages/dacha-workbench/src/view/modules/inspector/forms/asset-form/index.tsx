@@ -1,5 +1,5 @@
 import { useMemo, useContext, FC } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, I18nextProvider } from 'react-i18next';
 import type { AssetConfig } from 'dacha';
 
 import { useConfig } from '../../../../hooks';
@@ -9,7 +9,7 @@ import { Widget } from '../../components/widget';
 import type { FormComponentProps } from '../types';
 
 export const AssetForm: FC<FormComponentProps> = ({ path }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { assets } = useContext(SchemasContext);
 
   const asset = useConfig(path) as AssetConfig | undefined;
@@ -26,6 +26,8 @@ export const AssetForm: FC<FormComponentProps> = ({ path }) => {
     return null;
   }
 
+  const { view: View } = schemaEntry.schema;
+
   return (
     <Form>
       <InputField
@@ -34,7 +36,13 @@ export const AssetForm: FC<FormComponentProps> = ({ path }) => {
         label={t('inspector.assetForm.field.name.label')}
       />
 
-      <Widget {...schemaEntry.schema} path={dataPath} />
+      <I18nextProvider i18n={i18n} defaultNS={schemaEntry.namespace}>
+        {View ? (
+          <View {...schemaEntry.schema} path={dataPath} />
+        ) : (
+          <Widget {...schemaEntry.schema} path={dataPath} />
+        )}
+      </I18nextProvider>
     </Form>
   );
 };

@@ -15,7 +15,9 @@
       "types": "./build/events/index.d.ts"
     },
     "./renderer": {
-      "types": "./build/contrib/systems/renderer/types.d.ts"
+      "require": "./build/contrib/systems/renderer/exports.js",
+      "import": "./build/contrib/systems/renderer/exports.js",
+      "types": "./build/contrib/systems/renderer/exports.d.ts"
     },
     "./physics": {
       "types": "./build/contrib/systems/physics-system/types.d.ts"

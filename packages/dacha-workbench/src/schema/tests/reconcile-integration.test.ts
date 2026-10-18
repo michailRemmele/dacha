@@ -3,6 +3,8 @@ import * as React from 'react';
 import { applyFixes } from './utils';
 
 jest.mock('dacha/events', () => ({}));
+jest.mock('dacha/renderer', () => ({}));
+jest.mock('pixi.js', () => ({}));
 
 jest.mock('../../view/providers', () => ({
   ...jest.requireActual('../../view/providers/command-provider'),

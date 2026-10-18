@@ -23,10 +23,10 @@ test.afterEach(async () => {
   await closeApp({ app, window });
 });
 
-const selectAsset = async (name: string): Promise<void> => {
+const selectAsset = async (name: string, group = 'Texture'): Promise<void> => {
   await switchExplorerTab(window, 'Assets');
   if (!(await treeNodesWithExactText(window, name).isVisible())) {
-    await toggleSceneExpand(window, 'Texture');
+    await toggleSceneExpand(window, group);
   }
   await clickTreeNode(window, name, { exact: true });
 };
@@ -52,6 +52,19 @@ test('a sprite shows its texture asset and switches to another one', async () =>
   await window.getByTitle('floor', { exact: true }).click();
 
   await expect(textureSelect).toContainText('floor');
+});
+
+test('the sprite texture picker filters assets by name', async () => {
+  const panel = await openPlayerSprite();
+
+  await panel.locator('.ant-select').first().click();
+  await window.keyboard.type('FLO');
+
+  await expect(window.getByTitle('floor', { exact: true })).toBeVisible();
+  await expect(window.getByTitle('grass', { exact: true })).toHaveCount(0);
+
+  await window.keyboard.press('Enter');
+  await expect(panel.locator('.ant-select').first()).toContainText('floor');
 });
 
 const editHumanSrc = async (): Promise<Locator> => {
@@ -132,5 +145,81 @@ test('screenshot: scene after texture assets in use are deleted', async () => {
 
   await expect(window.locator('#canvas-root')).toHaveScreenshot(
     'assets-deleted.png',
+  );
+});
+
+const textureImage = (): Locator => window.getByTestId('texture-preview-image');
+
+const selectTextureFilter = async (filter: string): Promise<void> => {
+  await window.getByTestId('inspector').locator('.ant-select').first().click();
+  await window.getByTitle(filter, { exact: true }).click();
+};
+
+test('a texture asset shows a preview with the image size', async () => {
+  await selectAsset('human');
+
+  await expect(window.getByTestId('texture-preview-size')).toHaveText(
+    '26 × 26 px',
+  );
+});
+
+test('the texture preview follows the filter field and undo', async () => {
+  await selectAsset('human');
+  await expect(textureImage()).toHaveCSS('image-rendering', 'pixelated');
+
+  await selectTextureFilter('linear');
+  await expect(textureImage()).toHaveCSS('image-rendering', 'auto');
+
+  await window.getByTestId('inspector').click({ position: { x: 5, y: 5 } });
+  await undo();
+  await expect(textureImage()).toHaveCSS('image-rendering', 'pixelated');
+});
+
+test('a texture asset with a missing file shows the error state', async () => {
+  await selectAsset('human');
+  const src = window.getByRole('textbox', { name: 'Src' });
+  await src.fill('assets/missing.png');
+  await src.press('Enter');
+
+  await expect(window.getByTestId('asset-preview-error')).toBeVisible();
+});
+
+test('an audio asset shows a player with the duration', async () => {
+  await selectAsset('bite', 'Audio');
+
+  await expect(window.getByTestId('audio-player-current-time')).toHaveText(
+    '0:00.0',
+  );
+  await expect(window.getByTestId('audio-player-duration')).toHaveText(
+    '0:00.1',
+  );
+});
+
+test('a bitmap font asset renders a sample', async () => {
+  await selectAsset('monocraft', 'Bitmap Font');
+
+  await expect(
+    window.getByTestId('bitmap-font-canvas').locator('canvas'),
+  ).toBeAttached();
+  await expect(window.getByTestId('asset-preview-error')).toHaveCount(0);
+});
+
+test('screenshot: texture asset preview', async () => {
+  await selectAsset('human');
+  await expect(window.getByTestId('texture-preview-size')).toBeVisible();
+
+  await expect(window.getByTestId('inspector')).toHaveScreenshot(
+    'assets-texture-preview.png',
+  );
+});
+
+test('screenshot: bitmap font asset preview', async () => {
+  await selectAsset('monocraft', 'Bitmap Font');
+  await expect(
+    window.getByTestId('bitmap-font-canvas').locator('canvas'),
+  ).toBeAttached();
+
+  await expect(window.getByTestId('inspector')).toHaveScreenshot(
+    'assets-bitmap-font-preview.png',
   );
 });

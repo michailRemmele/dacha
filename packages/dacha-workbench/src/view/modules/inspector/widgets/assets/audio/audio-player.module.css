@@ -1,0 +1,20 @@
+.audioPreview {
+  margin-top: 16px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slider {
+  flex: 1;
+  margin: 0 4px;
+}
+
+.time {
+  color: var(--ant-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

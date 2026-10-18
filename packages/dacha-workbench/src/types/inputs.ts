@@ -19,6 +19,7 @@ export interface SelectProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: string | null;
   onChange?: (value: string | null) => void;
   allowEmpty?: boolean;
+  searchable?: boolean;
 }
 
 export interface MultiTextInputProps

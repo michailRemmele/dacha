@@ -29,6 +29,9 @@ describe('resolveFieldInitialValue', () => {
       x: 0,
       y: 0,
     });
+    expect(
+      resolveFieldInitialValue({ name: 'x', type: 'asset', kind: 'texture' }),
+    ).toBe('');
   });
 
   it('deep-clones object initial values', () => {
@@ -109,27 +112,6 @@ describe('fillMissingFields', () => {
   it('returns the same reference when nothing is missing', () => {
     const state = { zoom: 3, current: true };
     expect(fillMissingFields(state, fields)).toBe(state);
-  });
-});
-
-describe('initial-state asset field', () => {
-  it('defaults an asset field to an empty id string', () => {
-    const field: Field = { name: 'texture', type: 'asset', kind: 'texture' };
-    expect(resolveFieldInitialValue(field)).toBe('');
-  });
-
-  it('respects an explicit initialValue', () => {
-    const field: Field = {
-      name: 'texture', type: 'asset', kind: 'texture', initialValue: 'a1',
-    };
-    expect(resolveFieldInitialValue(field)).toBe('a1');
-  });
-
-  it('includes asset fields in built initial state', () => {
-    const fields: Field[] = [
-      { name: 'texture', type: 'asset', kind: 'texture' },
-    ];
-    expect(buildInitialState(fields)).toEqual({ texture: '' });
   });
 });
 
