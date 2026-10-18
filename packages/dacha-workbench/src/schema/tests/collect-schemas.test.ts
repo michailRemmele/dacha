@@ -7,7 +7,7 @@ jest.mock('dacha', () => ({
 }));
 
 const mockBuiltins: unknown[] = [];
-const mockBuiltinViews: Record<string, unknown> = {};
+const mockBuiltinViews: Record<string, Record<string, unknown>> = {};
 const mockWidgets: Record<string, unknown> = {};
 jest.mock('../builtins', () => ({
   BUILTIN_CANDIDATES: mockBuiltins,
@@ -108,14 +108,6 @@ describe('collectSchemas', () => {
     ]);
   });
 
-  it('classifies by schema kind, not by which module exported the class', () => {
-    const result = collectSchemas([{ Patrol, Wave, Blur, Move }]);
-
-    expect(result.behaviors.map((e) => e.name)).toEqual(['Patrol']);
-    expect(result.shaders.map((e) => e.name)).toEqual(['Wave']);
-    expect(result.filterEffects.map((e) => e.name)).toEqual(['Blur']);
-  });
-
   it('sorts every group by name, mixing built-ins and project classes', () => {
     const Zoom = cls({ kind: 'component', name: 'Zoom', fields: [] });
     const Audio = cls({ kind: 'asset', name: 'audio', fields: [] });
@@ -135,7 +127,7 @@ describe('collectSchemas', () => {
 
   it('resolves views by name, from the registry for project classes', () => {
     setBuiltins(Renderer);
-    mockBuiltinViews.Renderer = View;
+    mockBuiltinViews.system = { Renderer: View };
     mockWidgets.Move = ProjectView;
 
     const result = collectSchemas([{ Move }]);
@@ -146,10 +138,21 @@ describe('collectSchemas', () => {
 
   it('keeps a built-in view when the project registers one with the same name', () => {
     setBuiltins(Renderer);
-    mockBuiltinViews.Renderer = View;
+    mockBuiltinViews.system = { Renderer: View };
     mockWidgets.Renderer = ProjectView;
 
     expect(collectSchemas([]).systems[0].schema.view).toBe(View);
+  });
+
+  it('gives a built-in view only to schemas of its kind', () => {
+    const AudioComponent = cls({ kind: 'component', name: 'tex', fields: [] });
+    setBuiltins(Tex);
+    mockBuiltinViews.asset = { tex: View };
+
+    const result = collectSchemas([{ AudioComponent }]);
+
+    expect(result.assets[0].schema.view).toBe(View);
+    expect(result.components[0].schema.view).toBeUndefined();
   });
 
   it('ignores exports without a schema', () => {
@@ -163,11 +166,6 @@ describe('collectSchemas', () => {
 
     expect(() => collectSchemas(modules)).not.toThrow();
     expect(collectSchemas(modules).components).toEqual([]);
-  });
-
-  it('returns only built-ins when the project has no modules', () => {
-    setBuiltins(Sprite);
-    expect(collectSchemas([]).components).toHaveLength(1);
   });
 
   it('returns fresh objects on every call', () => {

@@ -53,6 +53,12 @@
 
     "assetForm.field.name.label": "Name",
 
+    "assetPreview.error.title": "Can't load the file",
+    "assetPreview.texture.size.title": "{{width}} × {{height}} px",
+    "assetPreview.audio.play.button.title": "Play",
+    "assetPreview.audio.pause.button.title": "Pause",
+    "assetPreview.bitmapFont.sample.label": "Sample text",
+
     "projectSettings.field.startScene.label": "Start Scene",
     "projectSettings.globalOptions.title": "Global Options",
 

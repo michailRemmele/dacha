@@ -36,5 +36,12 @@ export const AssetField: FC<AssetFieldProps> = ({ kind, value, ...props }) => {
         });
   }, [value, options, t]);
 
-  return <LabelledSelect options={options} value={formattedValue} {...props} />;
+  return (
+    <LabelledSelect
+      options={options}
+      value={formattedValue}
+      searchable
+      {...props}
+    />
+  );
 };

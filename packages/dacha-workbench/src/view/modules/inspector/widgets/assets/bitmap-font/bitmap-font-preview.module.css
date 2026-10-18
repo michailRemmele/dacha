@@ -1,0 +1,10 @@
+.frame {
+  margin-top: 16px;
+  padding: 8px;
+  background-color: var(--ant-color-fill-tertiary);
+  border-radius: var(--ant-border-radius);
+}
+
+.canvas {
+  line-height: 0;
+}

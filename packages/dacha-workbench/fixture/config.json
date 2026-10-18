@@ -1027,7 +1027,8 @@
       "name": "grass",
       "kind": "texture",
       "data": {
-        "src": "assets/terrain/grass.png"
+        "src": "assets/terrain/grass.png",
+        "filter": "nearest"
       }
     },
     {
@@ -1035,7 +1036,8 @@
       "name": "sea",
       "kind": "texture",
       "data": {
-        "src": "assets/terrain/sea.png"
+        "src": "assets/terrain/sea.png",
+        "filter": "nearest"
       }
     },
     {
@@ -1043,7 +1045,8 @@
       "name": "human",
       "kind": "texture",
       "data": {
-        "src": "assets/units/human.png"
+        "src": "assets/units/human.png",
+        "filter": "nearest"
       }
     },
     {
@@ -1051,7 +1054,8 @@
       "name": "rooster",
       "kind": "texture",
       "data": {
-        "src": "assets/units/rooster.png"
+        "src": "assets/units/rooster.png",
+        "filter": "nearest"
       }
     },
     {
@@ -1059,7 +1063,8 @@
       "name": "space",
       "kind": "texture",
       "data": {
-        "src": "assets/terrain/space.png"
+        "src": "assets/terrain/space.png",
+        "filter": "nearest"
       }
     },
     {
@@ -1067,7 +1072,8 @@
       "name": "floor",
       "kind": "texture",
       "data": {
-        "src": "assets/terrain/floor.png"
+        "src": "assets/terrain/floor.png",
+        "filter": "nearest"
       }
     },
     {
@@ -1075,7 +1081,24 @@
       "name": "mask",
       "kind": "texture",
       "data": {
-        "src": "assets/terrain/mask.png"
+        "src": "assets/terrain/mask.png",
+        "filter": "nearest"
+      }
+    },
+    {
+      "id": "701a3494-53b6-49ce-88a2-506679f2f5a0",
+      "name": "bite",
+      "kind": "audio",
+      "data": {
+        "src": "assets/audio/bite.wav"
+      }
+    },
+    {
+      "id": "287c483a-b7f0-4274-a0f5-7428c62cc0e7",
+      "name": "monocraft",
+      "kind": "bitmapFont",
+      "data": {
+        "src": "assets/fonts/Monocraft.fnt"
       }
     }
   ]
