@@ -42,8 +42,8 @@ const engine = new Engine({
     CameraSystem,
     KeyboardInputSystem,
     KeyboardControlSystem,
-    BehaviorSystem,
-    UIBridge,
+    BehaviorSystem.with({ behaviors: gameBehaviors }),
+    UIBridge.with({ loadUI: () => import('./ui') }),
     Animator,
     ...gameSystems,
   ],
@@ -57,12 +57,6 @@ const engine = new Engine({
     ...gameComponents,
   ],
   assets: [Texture],
-  resources: {
-    [BehaviorSystem.systemName]: gameBehaviors,
-    [UIBridge.systemName]: {
-      loadUI: () => import('./ui'),
-    },
-  },
 });
 
 void engine.play();

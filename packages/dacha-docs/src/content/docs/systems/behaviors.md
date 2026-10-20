@@ -18,12 +18,9 @@ import { Engine, BehaviorSystem, Behaviors } from 'dacha';
 
 const engine = new Engine({
   config,
-  systems: [BehaviorSystem, ...gameSystems],
+  systems: [BehaviorSystem.with({ behaviors: gameBehaviors }), ...gameSystems],
   components: [Behaviors, ...gameComponents],
   assets: [],
-  resources: {
-    [BehaviorSystem.systemName]: [...gameBehaviors],
-  },
 });
 ```
 

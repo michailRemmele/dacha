@@ -1,5 +1,5 @@
 import type { ComponentConstructor } from '../component';
-import type { SystemConstructor } from '../system';
+import type { SystemBinding } from '../system';
 import type { AssetConfig } from '../types';
 
 import { Asset } from './asset';
@@ -17,8 +17,7 @@ export interface AssetsOptions {
   assetClasses?: AssetConstructor[];
   configs?: AssetConfig[];
   components?: ComponentConstructor[];
-  systems?: SystemConstructor[];
-  resources?: Record<string, unknown>;
+  systems?: SystemBinding[];
 }
 
 interface AssetEntry {
@@ -53,7 +52,6 @@ export class Assets {
     configs = [],
     components = [],
     systems = [],
-    resources = {},
   }: AssetsOptions = {}) {
     this.assetClasses = assetClasses.reduce((acc, AssetClass) => {
       acc.set(AssetClass.assetName, AssetClass);
@@ -65,7 +63,6 @@ export class Assets {
       components,
       systems,
       assets: assetClasses,
-      resources,
     });
     this.counts = new Map();
     this.owners = new Map();

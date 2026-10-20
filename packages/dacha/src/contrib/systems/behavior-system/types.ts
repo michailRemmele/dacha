@@ -70,3 +70,14 @@ export abstract class Behavior {
 export type BehaviorConstructor = Constructor<Behavior> & {
   behaviorName: string;
 };
+
+/**
+ * The dependencies of {@link BehaviorSystem}. Pass them with
+ * `BehaviorSystem.with({ behaviors })`.
+ *
+ * @category Behaviors
+ */
+export interface BehaviorSystemDependencies {
+  /** The behavior classes of the game. */
+  behaviors: BehaviorConstructor[];
+}

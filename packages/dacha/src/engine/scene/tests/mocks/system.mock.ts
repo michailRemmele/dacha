@@ -23,9 +23,10 @@ interface WorldSystemFns extends SceneSystemFns {
 export class SceneSystemMock extends SceneSystem {
   private fns?: SceneSystemFns;
 
-  constructor(options: SceneSystemOptions) {
+  constructor(options: SceneSystemOptions, dependencies?: SceneSystemFns) {
     super();
-    this.fns = options.resources as SceneSystemFns | undefined;
+    void options;
+    this.fns = dependencies;
   }
 
   async onSceneLoad(scene: Scene): Promise<void> {
@@ -48,9 +49,10 @@ export class SceneSystemMock extends SceneSystem {
 export class WorldSystemMock extends WorldSystem {
   private fns?: WorldSystemFns;
 
-  constructor(options: WorldSystemOptions) {
+  constructor(options: WorldSystemOptions, dependencies?: WorldSystemFns) {
     super();
-    this.fns = options.resources as WorldSystemFns | undefined;
+    void options;
+    this.fns = dependencies;
   }
 
   async onWorldLoad(world: World): Promise<void> {

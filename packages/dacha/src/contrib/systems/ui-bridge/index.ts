@@ -43,14 +43,21 @@ export type LoadUIFn = () => Promise<{
   onDestroy: UIDestroyFn;
 }>;
 
-interface UIBridgeResources {
-  loadUI?: LoadUIFn;
+/**
+ * The dependencies of {@link UIBridge}. Pass them with
+ * `UIBridge.with({ loadUI })`.
+ *
+ * @category Game UI
+ */
+export interface UIBridgeDependencies {
+  /** Loads the interface module. */
+  loadUI: LoadUIFn;
 }
 
 /**
  * Loads your game interface and runs it together with the game.
  *
- * Pass a loader in `resources` under `UIBridge.systemName`. The loader returns a module
+ * Pass a loader with `UIBridge.with({ loadUI })`. The loader returns a module
  * with `onInit` and `onDestroy`, see {@link LoadUIFn}. The system calls `onInit` with
  * {@link UIOptions} when the world is ready, and `onDestroy` when the world is destroyed.
  *
@@ -58,14 +65,12 @@ interface UIBridgeResources {
  * ```ts
  * const engine = new Engine({
  *   config,
- *   systems: [UIBridge, ...gameSystems],
+ *   systems: [
+ *     UIBridge.with({ loadUI: () => import('./ui') }),
+ *     ...gameSystems,
+ *   ],
  *   components: [...gameComponents],
  *   assets: [],
- *   resources: {
- *     [UIBridge.systemName]: {
- *       loadUI: () => import('./ui'),
- *     },
- *   },
  * });
  * ```
  *
@@ -83,22 +88,19 @@ export class UIBridge extends WorldSystem {
   private onUIInit?: UIInitFn;
   private onUIDestroy?: UIDestroyFn;
 
-  constructor(options: WorldSystemOptions) {
+  constructor(
+    options: WorldSystemOptions,
+    dependencies?: UIBridgeDependencies,
+  ) {
     super();
 
-    const {
-      world,
-      actorSpawner,
-      templateCollection,
-      resources,
-      globalOptions,
-    } = options;
+    const { world, actorSpawner, templateCollection, globalOptions } = options;
 
-    const loadUI = (resources as UIBridgeResources | undefined)?.loadUI;
+    const loadUI = dependencies?.loadUI;
 
     if (loadUI === undefined) {
       throw new Error(
-        'UIBridge requires a UI loader. Please specify the loader in the resources section.',
+        'UIBridge requires a UI loader. Pass it with UIBridge.with({ loadUI }).',
       );
     }
 

@@ -18,7 +18,7 @@ import type { WidgetSchema } from '../../../types/widget-schema';
 
 const DEFAULT_AUTO_SAVE_INTERVAL = 10;
 
-interface ProjectLoaderResources {
+interface ProjectLoaderDependencies {
   store: CommanderStore;
 }
 
@@ -32,13 +32,20 @@ export class ProjectLoader extends WorldSystem {
 
   private autoSaveInterval: number;
 
-  constructor(options: WorldSystemOptions) {
+  constructor(
+    options: WorldSystemOptions,
+    dependencies?: ProjectLoaderDependencies,
+  ) {
     super();
 
     this.world = options.world;
     this.time = options.time;
     this.editorConfig = window.electron.getEditorConfig();
-    this.commanderStore = (options.resources as ProjectLoaderResources).store;
+    const store = dependencies?.store;
+    if (store === undefined) {
+      throw new Error('ProjectLoader requires a store.');
+    }
+    this.commanderStore = store;
 
     this.world.data.configStore = this.commanderStore;
     this.world.data.editorConfig = this.editorConfig;

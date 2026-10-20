@@ -1,5 +1,5 @@
 import { Component } from '../../component';
-import { WorldSystem } from '../../system';
+import { WorldSystem, normalizeSystems } from '../../system';
 import { Asset } from '../asset';
 import {
   DefineAsset,
@@ -8,7 +8,11 @@ import {
   DefineSystem,
   DefineBehavior,
 } from '../../decorators';
-import { Behavior } from '../../../contrib/systems/behavior-system';
+import {
+  Behavior,
+  BehaviorSystem,
+} from '../../../contrib/systems/behavior-system';
+import { UIBridge } from '../../../contrib/systems/ui-bridge';
 import { AssetCollector } from '../asset-collector';
 import type { ActorConfig, SceneConfig, TemplateConfig } from '../../types';
 
@@ -54,12 +58,15 @@ const actor = (
 describe('AssetCollector', () => {
   const collector = new AssetCollector({
     components: [Picture, Scripts, Legacy],
-    systems: [Music],
+    systems: normalizeSystems([
+      Music,
+      BehaviorSystem.with({ behaviors: [Shoot] }),
+      UIBridge.with({
+        loadUI: () =>
+          Promise.resolve({ onInit: () => void 0, onDestroy: () => void 0 }),
+      }),
+    ]),
     assets: [Item],
-    resources: {
-      BehaviorSystem: [Shoot],
-      Other: { loadUI: (): void => void 0 },
-    },
   });
 
   it('collects asset fields of actors and their children by configuration key', () => {
@@ -92,7 +99,7 @@ describe('AssetCollector', () => {
     ]);
   });
 
-  it('recurses into script fields through the classes found in resources', () => {
+  it('recurses into script fields through the classes found in dependencies', () => {
     const scene: SceneConfig = {
       id: 's',
       name: 's',

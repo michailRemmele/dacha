@@ -84,4 +84,41 @@ describe('Engine', () => {
 
     engine.stop();
   });
+
+  it('passes dependencies from with() to the world system constructor', async () => {
+    let capturedDependencies: unknown;
+
+    class DepsCapturingSystem extends WorldSystem {
+      constructor(
+        options: WorldSystemOptions,
+        dependencies?: { value: number },
+      ) {
+        super();
+        void options;
+        capturedDependencies = dependencies;
+      }
+    }
+    DepsCapturingSystem.systemName = 'dependencies-capturing-system';
+
+    const dependencies = { value: 1 };
+    const engine = new Engine({
+      config: {
+        scenes: [{ id: 'scene-1', name: 'Scene 1', actors: [] }],
+        templates: [],
+        systems: [{ name: 'dependencies-capturing-system', options: {} }],
+        assets: [],
+        startSceneId: 'scene-1',
+        globalOptions: [],
+      },
+      systems: [DepsCapturingSystem, DepsCapturingSystem.with(dependencies)],
+      components: [],
+      assets: [],
+    });
+
+    await engine.play();
+
+    expect(capturedDependencies).toBe(dependencies);
+
+    engine.stop();
+  });
 });

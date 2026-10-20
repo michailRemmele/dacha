@@ -6,7 +6,7 @@ import { ActorCreator, ActorSpawner } from '../actor';
 import type { TemplateCollection } from '../template';
 import type { Assets } from '../asset';
 import type {
-  SystemConstructor,
+  SystemBinding,
   SceneSystemOptions,
   WorldSystemOptions,
 } from '../system';
@@ -40,26 +40,27 @@ interface LoadEntry {
   isLoading: boolean;
 }
 
+interface SystemEntry extends SystemBinding {
+  config: SystemConfig;
+}
+
 interface SceneManagerOptions {
   sceneConfigs: SceneConfig[];
   systemConfigs: SystemConfig[];
-  availableSystems: SystemConstructor[];
+  systems: SystemBinding[];
   components: ComponentConstructor[];
   templateCollection: TemplateCollection;
   assets: Assets;
   globalOptions: Record<string, unknown>;
-  resources: Record<string, unknown>;
   time: Time;
 }
 
 export class SceneManager {
   private sceneConfigs: Record<string, SceneConfig>;
-  private systemConfigs: SystemConfig[];
-  private availableSystems: Record<string, SystemConstructor>;
+  private systems: SystemEntry[];
   private templateCollection: TemplateCollection;
   private assets: Assets;
   private globalOptions: Record<string, unknown>;
-  private resources: Record<string, unknown>;
   private time: Time;
   private actorCreator: ActorCreator;
   private actorSpawner: ActorSpawner;
@@ -72,21 +73,13 @@ export class SceneManager {
   constructor({
     sceneConfigs,
     systemConfigs,
-    availableSystems,
+    systems,
     components,
     templateCollection,
     assets,
     globalOptions,
-    resources,
     time,
   }: SceneManagerOptions) {
-    this.availableSystems = availableSystems.reduce(
-      (acc, AvailableSystem) => {
-        acc[AvailableSystem.systemName] = AvailableSystem;
-        return acc;
-      },
-      {} as Record<string, SystemConstructor>,
-    );
     this.sceneConfigs = sceneConfigs.reduce(
       (acc: Record<string, SceneConfig>, scene) => {
         acc[scene.id] = scene;
@@ -94,16 +87,20 @@ export class SceneManager {
       },
       {},
     );
-    this.systemConfigs = systemConfigs.filter((config) => {
-      if (!this.availableSystems[config.name]) {
+    const systemsByName = new Map(
+      systems.map((entry) => [entry.system.systemName, entry]),
+    );
+    this.systems = systemConfigs.flatMap((config) => {
+      const entry = systemsByName.get(config.name);
+      if (!entry) {
         console.warn(`System not found: ${config.name}`);
+        return [];
       }
-      return this.availableSystems[config.name];
+      return [{ ...entry, config }];
     });
     this.templateCollection = templateCollection;
     this.assets = assets;
     this.globalOptions = globalOptions;
-    this.resources = resources;
     this.time = time;
     this.actorCreator = new ActorCreator(components, templateCollection);
     this.actorSpawner = new ActorSpawner(this.actorCreator);
@@ -120,24 +117,24 @@ export class SceneManager {
   }
 
   async loadWorld(): Promise<void> {
-    await this.assets.acquire(this.world, { systems: this.systemConfigs });
+    await this.assets.acquire(this.world, {
+      systems: this.systems.map(({ config }) => config),
+    });
 
-    this.systemConfigs.forEach((config) => {
-      const SystemClass = this.availableSystems[config.name];
+    this.systems.forEach(({ system: SystemClass, dependencies, config }) => {
       if (isSubclassOf(SystemClass, WorldSystem)) {
         const options: WorldSystemOptions = {
           ...config.options,
           templateCollection: this.templateCollection,
           assets: this.assets,
           actorSpawner: this.actorSpawner,
-          resources: this.resources[config.name],
           globalOptions: this.globalOptions,
           time: this.time,
           world: this.world,
         };
         this.worldSystems.set(
           config.name,
-          new SystemClass(options) as WorldSystem,
+          new SystemClass(options, dependencies) as WorldSystem,
         );
       }
     });
@@ -214,7 +211,7 @@ export class SceneManager {
       ? this.loadedScenes.get(scene.id)?.systems
       : undefined;
 
-    return this.systemConfigs.reduce((acc: System[], config) => {
+    return this.systems.reduce((acc: System[], { config }) => {
       const system =
         this.worldSystems.get(config.name) ?? sceneSystems?.get(config.name);
       if (system) {
@@ -256,22 +253,26 @@ export class SceneManager {
       this.destroyScene(id);
     }
 
-    const sceneSystems = this.systemConfigs.reduce(
-      (acc: Map<string, SceneSystem>, config) => {
-        const SystemClass = this.availableSystems[config.name];
+    const sceneSystems = this.systems.reduce(
+      (
+        acc: Map<string, SceneSystem>,
+        { system: SystemClass, dependencies, config },
+      ) => {
         if (isSubclassOf(SystemClass, SceneSystem)) {
           const options: SceneSystemOptions = {
             ...config.options,
             templateCollection: this.templateCollection,
             assets: this.assets,
             actorSpawner: this.actorSpawner,
-            resources: this.resources[config.name],
             globalOptions: this.globalOptions,
             time: this.time,
             scene,
             world: this.world,
           };
-          acc.set(config.name, new SystemClass(options) as SceneSystem);
+          acc.set(
+            config.name,
+            new SystemClass(options, dependencies) as SceneSystem,
+          );
         }
         return acc;
       },

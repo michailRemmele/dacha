@@ -10,9 +10,19 @@ export { MouseControlSystem } from './mouse-control-system';
 export { MouseInputSystem } from './mouse-input-system';
 export { PhysicsSystem, PhysicsAPI } from './physics-system';
 export { BehaviorSystem, Behavior } from './behavior-system';
-export type { BehaviorOptions, BehaviorConstructor } from './behavior-system';
+export type {
+  BehaviorOptions,
+  BehaviorConstructor,
+  BehaviorSystemDependencies,
+} from './behavior-system';
 export { UIBridge } from './ui-bridge';
-export type { UIOptions, UIInitFn, UIDestroyFn, LoadUIFn } from './ui-bridge';
+export type {
+  UIOptions,
+  UIInitFn,
+  UIDestroyFn,
+  LoadUIFn,
+  UIBridgeDependencies,
+} from './ui-bridge';
 export { AudioSystem, AudioAPI } from './audio-system';
 export {
   Renderer,

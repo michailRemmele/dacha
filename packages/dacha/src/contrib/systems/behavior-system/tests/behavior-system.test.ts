@@ -56,16 +56,18 @@ describe('Contrib -> systems -> BehaviorSystem', () => {
     );
     scene.appendChild(actor);
 
-    const system = new BehaviorSystem({
-      scene,
-      world: new World({ id: 'world', name: 'world' }),
-      actorSpawner: new ActorSpawner(actorCreator),
-      templateCollection,
-      assets,
-      globalOptions: {},
-      resources: [CaptureBehavior],
-      time: new Time(),
-    });
+    const system = new BehaviorSystem(
+      {
+        scene,
+        world: new World({ id: 'world', name: 'world' }),
+        actorSpawner: new ActorSpawner(actorCreator),
+        templateCollection,
+        assets,
+        globalOptions: {},
+        time: new Time(),
+      },
+      { behaviors: [CaptureBehavior] },
+    );
 
     system.onSceneEnter();
 

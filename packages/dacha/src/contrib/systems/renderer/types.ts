@@ -103,12 +103,11 @@ export type {
 };
 
 /**
- * The resources of {@link Renderer}. Pass them to the engine in `resources`
- * under `Renderer.systemName`.
+ * The dependencies of {@link Renderer}. Pass them with `Renderer.with(...)`.
  *
  * @category Rendering
  */
-export interface RendererResources {
+export interface RendererDependencies {
   /** The filter effect classes of the game. */
   filterEffects?: FilterEffectConstructor[];
   /** The shader classes of the game. */

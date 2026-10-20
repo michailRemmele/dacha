@@ -120,27 +120,27 @@ The collected arrays are spread in alongside the built-ins:
 ```ts
 const engine = new Engine({
   config,
-  systems: [Renderer, PhysicsSystem, BehaviorSystem, ...gameSystems],
+  systems: [
+    Renderer,
+    PhysicsSystem,
+    BehaviorSystem.with({ behaviors: gameBehaviors }),
+    ...gameSystems,
+  ],
   components: [Transform, Sprite, Behaviors, ...gameComponents],
   assets: [Texture],
-  resources: {
-    [BehaviorSystem.systemName]: [...gameBehaviors],
-  },
 });
 ```
 
-Behaviors are not systems or components, so they arrive as a resource for the behavior
-system rather than in either array. Shaders and filter effects work the same way, keyed to
-the renderer instead:
+Behaviors are not systems or components, so they do not go into either array. The behavior
+system gets them as its dependencies, through `with`. Shaders and filter effects work the same
+way, for the renderer:
 
 ```ts
-resources: {
-  [BehaviorSystem.systemName]: [...gameBehaviors],
-  [Renderer.systemName]: {
-    shaders: [...gameShaders],
-    filterEffects: [...gameFilterEffects],
-  },
-},
+systems: [
+  Renderer.with({ shaders: gameShaders, filterEffects: gameFilterEffects }),
+  BehaviorSystem.with({ behaviors: gameBehaviors }),
+  ...gameSystems,
+],
 ```
 
 From the engine's point of view nothing unusual happened. It received arrays of classes,

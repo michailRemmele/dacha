@@ -17,8 +17,6 @@ import { setFieldSource } from '../decorators/field-init';
 interface SystemOptions extends Record<string, unknown> {
   /** Actor spawner for creating new actors */
   actorSpawner: ActorSpawner;
-  /** Optional resources available to the system */
-  resources?: unknown;
   /** Global engine options */
   globalOptions: Record<string, unknown>;
   /** Template collection for actor creation */
@@ -98,6 +96,36 @@ export abstract class System {
   static systemName: string;
 
   /**
+   * Lists the system in {@link EngineOptions.systems} together with its
+   * dependencies: classes and functions from the game code that cannot live in
+   * the configuration. The system receives them as the second argument of its
+   * constructor.
+   *
+   * @example
+   * ```ts
+   * const engine = new Engine({
+   *   config,
+   *   systems: [
+   *     Renderer.with({ shaders: [WaveShader] }),
+   *     BehaviorSystem.with({ behaviors: [PlayerScript] }),
+   *     CameraSystem,
+   *   ],
+   *   components: [...],
+   *   assets: [...],
+   * });
+   * ```
+   *
+   * @param dependencies - The dependencies of the system.
+   * @returns A binding to put into {@link EngineOptions.systems}.
+   */
+  static with<T extends SystemConstructor>(
+    this: T,
+    dependencies: SystemDependencies<T>,
+  ): SystemBinding<T> {
+    return { system: this, dependencies };
+  }
+
+  /**
    * Creates the system.
    *
    * @param options - The system's options. Fields marked with {@link DefineField} take their values from
@@ -159,3 +187,34 @@ export abstract class SceneSystem extends System {}
 export type SystemConstructor = Constructor<System> & {
   systemName: string;
 };
+
+/**
+ * The dependencies type of a system class.
+ *
+ * @category Systems
+ */
+export type SystemDependencies<T> = T extends new (
+  options: never,
+  dependencies?: infer D,
+) => unknown
+  ? 0 extends 1 & D
+    ? unknown // the general SystemConstructor: any dependencies
+    : unknown extends D
+      ? never
+      : Exclude<D, undefined>
+  : never;
+
+/**
+ * A system class together with its dependencies, created by
+ * {@link System.with}.
+ *
+ * @category Systems
+ */
+export interface SystemBinding<
+  T extends SystemConstructor = SystemConstructor,
+> {
+  /** The system class. */
+  system: T;
+  /** The dependencies, the second argument of the system constructor. */
+  dependencies: SystemDependencies<T>;
+}

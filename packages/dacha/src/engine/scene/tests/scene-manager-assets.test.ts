@@ -1,5 +1,5 @@
 import { SceneManager } from '../scene-manager';
-import { WorldSystem, SceneSystem } from '../../system';
+import { WorldSystem, SceneSystem, normalizeSystems } from '../../system';
 import type { WorldSystemOptions, SceneSystemOptions } from '../../system';
 import { TemplateCollection } from '../../template';
 import { Assets, MediaAsset } from '../../asset';
@@ -90,7 +90,7 @@ describe('SceneManager -> assets', () => {
         data: {},
       })),
       components: [View],
-      systems: [Background, Probe],
+      systems: normalizeSystems([Background, Probe]),
     });
 
     sceneManager = new SceneManager({
@@ -99,10 +99,9 @@ describe('SceneManager -> assets', () => {
         { name: 'Background', options: { picture: 'bg' } },
         { name: 'Probe', options: {} },
       ],
-      availableSystems: [Background, Probe],
+      systems: normalizeSystems([Background, Probe]),
       components: [View],
       globalOptions: {},
-      resources: {},
       templateCollection: new TemplateCollection(),
       assets,
       time: new Time(),

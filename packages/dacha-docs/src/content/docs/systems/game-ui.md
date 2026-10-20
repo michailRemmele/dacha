@@ -14,21 +14,16 @@ calls them. Inside them you can use plain DOM, React, Vue or anything else.
 
 1. In the Systems tab, add *UIBridge*.
 2. Add the class to the engine in `src/index.ts`, and give it a loader for your interface
-   module in `resources`:
+   module with `with`:
 
    ```ts
    import { Engine, UIBridge } from 'dacha';
 
    const engine = new Engine({
      config,
-     systems: [UIBridge, ...gameSystems],
+     systems: [UIBridge.with({ loadUI: () => import('./ui') }), ...gameSystems],
      components: [...gameComponents],
      assets: [],
-     resources: {
-       [UIBridge.systemName]: {
-         loadUI: () => import('./ui'),
-       },
-     },
    });
    ```
 

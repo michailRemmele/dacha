@@ -1,7 +1,7 @@
 import { getSchema } from '../decorators';
 import type { Schema } from '../decorators';
 import type { ComponentConstructor } from '../component';
-import type { SystemConstructor } from '../system';
+import type { SystemBinding, SystemConstructor } from '../system';
 import type {
   ActorConfig,
   AssetConfig,
@@ -12,13 +12,11 @@ import type {
 import type { AssetConstructor } from './asset';
 
 const SCRIPT_KINDS = new Set(['behavior', 'shader', 'filterEffect']);
-const MAX_RESOURCE_DEPTH = 2;
 
 interface AssetCollectorOptions {
   components: ComponentConstructor[];
-  systems: SystemConstructor[];
+  systems: SystemBinding[];
   assets: AssetConstructor[];
-  resources: Record<string, unknown>;
 }
 
 type ConfigData = Record<string, unknown> | undefined;
@@ -64,18 +62,13 @@ export class AssetCollector {
   private assetSchemas: Map<string, Schema>;
   private scriptSchemas: Map<string, Schema>;
 
-  constructor({
-    components,
-    systems,
-    assets,
-    resources,
-  }: AssetCollectorOptions) {
+  constructor({ components, systems, assets }: AssetCollectorOptions) {
     this.componentSchemas = toSchemaMap(
       components,
       (value: ComponentConstructor) => value.componentName,
     );
     this.systemSchemas = toSchemaMap(
-      systems,
+      systems.map(({ system }) => system),
       (value: SystemConstructor) => value.systemName,
     );
     this.assetSchemas = toSchemaMap(
@@ -84,7 +77,7 @@ export class AssetCollector {
     );
 
     this.scriptSchemas = new Map();
-    Object.values(resources).forEach((value) => this.findScripts(value, 0));
+    systems.forEach(({ dependencies }) => this.findScripts(dependencies));
   }
 
   /**
@@ -173,23 +166,18 @@ export class AssetCollector {
     });
   }
 
-  private findScripts(value: unknown, depth: number): void {
-    const schema = getSchema(value);
-    if (schema && SCRIPT_KINDS.has(schema.kind)) {
-      this.scriptSchemas.set(`${schema.kind}:${schema.name}`, schema);
+  private findScripts(dependencies: unknown): void {
+    if (typeof dependencies !== 'object' || dependencies === null) {
       return;
     }
 
-    if (
-      depth >= MAX_RESOURCE_DEPTH ||
-      typeof value !== 'object' ||
-      value === null
-    ) {
-      return;
-    }
-
-    (Array.isArray(value) ? value : Object.values(value)).forEach((child) =>
-      this.findScripts(child, depth + 1),
+    Object.values(dependencies).forEach((value) =>
+      (Array.isArray(value) ? value : [value]).forEach((item) => {
+        const schema = getSchema(item);
+        if (schema && SCRIPT_KINDS.has(schema.kind)) {
+          this.scriptSchemas.set(`${schema.kind}:${schema.name}`, schema);
+        }
+      }),
     );
   }
 }
