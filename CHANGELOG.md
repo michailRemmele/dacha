@@ -33,6 +33,15 @@ Releases made before this file existed are recorded in the
 
 ### Changed
 
+- **Breaking:** `EngineOptions.resources` is removed. A system gets its dependencies from game
+  code through `with` in the `systems` list, and receives them as the second argument of its
+  constructor:
+  `resources: { [Renderer.systemName]: { shaders } }` becomes `Renderer.with({ shaders })`.
+  `BehaviorSystem` takes `BehaviorSystem.with({ behaviors })` instead of an array, and
+  `UIBridge` takes `UIBridge.with({ loadUI })`. A `with` entry replaces a plain entry of the
+  same system, and two `with` entries of one system throw. The type of the second constructor
+  argument is the type `with` accepts, so any system can declare its dependencies.
+  `RendererResources` is now `RendererDependencies`.
 - **Breaking:** `Sprite.src` and `Mesh.src` are now `texture`, and `AudioSource.src` is now
   `audio`. These fields and `BitmapText.font` hold the id of an asset instead of a file path.
 - **Breaking:** `Assets.get(id, Class)` is now `Assets.get(Class, id)`, to match

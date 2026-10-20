@@ -1,5 +1,5 @@
 import { SceneManager } from '../scene-manager';
-import { WorldSystem, SceneSystem } from '../../system';
+import { WorldSystem, SceneSystem, normalizeSystems } from '../../system';
 import { TemplateCollection } from '../../template';
 import { Assets } from '../../asset';
 import { Time } from '../../time';
@@ -66,46 +66,40 @@ describe('Engine -> SceneManager', () => {
         getSystemConfigMock('world-system-3'),
         getSystemConfigMock('scene-system-4'),
       ],
-      availableSystems: [
-        WorldSystem1,
-        SceneSystem2,
-        WorldSystem3,
-        SceneSystem4,
-      ],
+      systems: normalizeSystems([
+        WorldSystem1.with({
+          loadWorldFn: loadWorldAsyncFn,
+          readyWorldFn,
+          destroyWorldFn,
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+        SceneSystem2.with({
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+        WorldSystem3.with({
+          loadWorldFn: loadWorldAsyncFn,
+          readyWorldFn,
+          destroyWorldFn,
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+        SceneSystem4.with({
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+      ]),
       components: [],
       globalOptions: {},
-      resources: {
-        [WorldSystem1.systemName]: {
-          loadWorldFn: loadWorldAsyncFn,
-          readyWorldFn,
-          destroyWorldFn,
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-        [SceneSystem2.systemName]: {
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-        [WorldSystem3.systemName]: {
-          loadWorldFn: loadWorldAsyncFn,
-          readyWorldFn,
-          destroyWorldFn,
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-        [SceneSystem4.systemName]: {
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-      },
       templateCollection: new TemplateCollection(),
       assets: new Assets(),
       time: new Time(),

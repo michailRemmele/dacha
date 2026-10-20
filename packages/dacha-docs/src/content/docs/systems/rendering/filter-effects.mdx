@@ -130,7 +130,7 @@ The renderer is a world system, so effects stay active when the game changes sce
 
 ## Registering filter effects
 
-Filter effect classes reach the renderer through the engine's `resources`.
+Filter effect classes reach the renderer through `Renderer.with`.
 Import them and pass the result to the renderer:
 
 ```ts
@@ -138,11 +138,12 @@ const gameFilterEffects = import.meta.glob('./**/*.filter-effect.ts', { eager: t
 
 const engine = new Engine({
   // ...
-  resources: {
-    [Renderer.systemName]: {
+  systems: [
+    Renderer.with({
       filterEffects: Object.values(gameFilterEffects).map((module) => module.default),
-    },
-  },
+    }),
+    // ...
+  ],
 });
 ```
 

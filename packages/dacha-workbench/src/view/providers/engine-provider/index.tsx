@@ -77,9 +77,15 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           MouseInputSystem,
           MouseControlSystem,
           CameraSystem,
-          UIBridge,
+          UIBridge.with({
+            loadUI: (): ReturnType<LoadUIFn> =>
+              Promise.resolve({
+                onInit: (options: UIOptions): void => setContext(options),
+                onDestroy: (): void => setContext(void 0),
+              }),
+          }),
           Renderer,
-          ProjectLoader,
+          ProjectLoader.with({ store }),
           SceneViewer,
           ToolManager,
           ZoomToolSystem,
@@ -106,18 +112,6 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           Technical,
         ],
         assets: [Texture, Audio, BitmapFont],
-        resources: {
-          [ProjectLoader.systemName]: {
-            store,
-          },
-          [UIBridge.systemName]: {
-            loadUI: (): ReturnType<LoadUIFn> =>
-              Promise.resolve({
-                onInit: (options: UIOptions): void => setContext(options),
-                onDestroy: (): void => setContext(void 0),
-              }),
-          },
-        },
       }),
     [sorting],
   );

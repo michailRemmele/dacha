@@ -107,10 +107,42 @@ A system's settings belong to the whole game and are edited under
 
 :::caution
 The engine merges your options first and its own fields second. A setting named `scene`,
-`world`, `time`, `assets`, `actorSpawner`, `globalOptions`, `resources` or
+`world`, `time`, `assets`, `actorSpawner`, `globalOptions` or
 `templateCollection` is overwritten before your constructor runs. Give settings names of
 their own.
 :::
+
+## Dependencies from game code
+
+Systems can receive dependencies from game code through their constructor.
+Pass them using `with` when registering the system with the engine.
+
+The system receives them as the second argument of its constructor:
+
+```ts
+import { SceneSystem, DefineSystem } from 'dacha';
+import type { SceneSystemOptions } from 'dacha';
+
+interface SpawnerDependencies {
+  enemies: EnemyConstructor[];
+}
+
+@DefineSystem({ name: 'SpawnerSystem' })
+export default class SpawnerSystem extends SceneSystem {
+  private enemies: EnemyConstructor[];
+
+  constructor(options: SceneSystemOptions, dependencies?: SpawnerDependencies) {
+    super(options);
+    this.enemies = dependencies?.enemies ?? [];
+  }
+}
+```
+
+The game passes the dependencies with `with` in the systems list of the engine:
+
+```ts
+systems: [SpawnerSystem.with({ enemies: [Bat, Slime] }), ...gameSystems],
+```
 
 ## Loading before the scene starts
 

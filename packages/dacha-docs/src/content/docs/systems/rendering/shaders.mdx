@@ -202,7 +202,7 @@ switches the shader in the next frame.
 
 ## Registering shaders
 
-Shader classes reach the renderer through the engine's `resources`.
+Shader classes reach the renderer through `Renderer.with`.
 Import them and pass the result to the renderer:
 
 ```ts
@@ -210,11 +210,12 @@ const gameShaders = import.meta.glob('./**/*.shader.ts', { eager: true });
 
 const engine = new Engine({
   // ...
-  resources: {
-    [Renderer.systemName]: {
+  systems: [
+    Renderer.with({
       shaders: Object.values(gameShaders).map((module) => module.default),
-    },
-  },
+    }),
+    // ...
+  ],
 });
 ```
 
