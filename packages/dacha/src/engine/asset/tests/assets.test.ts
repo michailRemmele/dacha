@@ -2,7 +2,9 @@ import { Assets } from '../assets';
 import { Asset } from '../asset';
 import type { AssetConfig } from '../../types';
 import { MediaAsset } from '../media-asset';
-import { DefineAsset, DefineField } from '../../decorators';
+import { DefineAsset, DefineComponent, DefineField } from '../../decorators';
+import { Component } from '../../component';
+import { ReferenceWalker } from '../../reference';
 
 @DefineAsset({ name: 'sound' })
 class SoundKind extends MediaAsset<string> {
@@ -32,6 +34,12 @@ class ItemKind extends Asset {
   @DefineField({ initialValue: 0 }) damage!: number;
 }
 
+@DefineComponent({ name: 'Strip' })
+class Strip extends Component {
+  @DefineField({ type: 'asset', kind: 'sound', multiple: true })
+  frames!: string[];
+}
+
 const textureConfig: AssetConfig = {
   id: 'a1',
   name: 'Hero',
@@ -58,6 +66,7 @@ describe('Assets', () => {
     collection = new Assets({
       assetClasses: [TextureKind, AudioKind, ItemKind],
       configs: [textureConfig, audioConfig, itemConfig],
+      walker: new ReferenceWalker([TextureKind, AudioKind, ItemKind]),
     });
   });
 
@@ -133,6 +142,7 @@ describe('Assets -> refs and lifecycle', () => {
     jest.spyOn(console, 'warn').mockImplementation(() => void 0);
     assets = new Assets({
       assetClasses: [SoundKind, Bundle],
+      walker: new ReferenceWalker([SoundKind, Bundle]),
     });
   });
 
@@ -152,6 +162,32 @@ describe('Assets -> refs and lifecycle', () => {
     await assets.acquire(owner, { ids: ['i1'] });
 
     expect(resourceOf('s1')).toBe('buffer-s1');
+  });
+
+  it('acquires every asset of an asset list', async () => {
+    const listAssets = new Assets({
+      assetClasses: [SoundKind],
+      walker: new ReferenceWalker([Strip, SoundKind]),
+    });
+    listAssets.register(sound('s1'));
+    listAssets.register(sound('s2'));
+
+    await listAssets.acquire(
+      {},
+      {
+        actors: [
+          {
+            id: 'a',
+            name: 'a',
+            children: [],
+            components: [{ name: 'Strip', config: { frames: ['s1', 's2'] } }],
+          },
+        ],
+      },
+    );
+
+    expect(listAssets.get(SoundKind, 's1')?.resource).toBe('buffer-s1');
+    expect(listAssets.get(SoundKind, 's2')?.resource).toBe('buffer-s2');
   });
 
   it('skips unknown ids and warns about them', () => {

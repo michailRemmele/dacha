@@ -3,6 +3,7 @@ import { Scene } from '../../../../engine/scene';
 import { TemplateCollection } from '../../../../engine/template';
 import { World } from '../../../../engine/world';
 import { Assets } from '../../../../engine/asset';
+import { ReferenceWalker } from '../../../../engine/reference';
 import { Time } from '../../../../engine/time';
 import { Collider, RigidBody } from '../../../components';
 import { Transform } from '../../../components/transform';
@@ -55,7 +56,7 @@ export const createPhysicsSystem = (
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: settings ? { physics: settings } : {},
     templateCollection,
-    assets: new Assets(),
+    assets: new Assets({ walker: new ReferenceWalker([]) }),
     time,
     ...solverOptions,
   });

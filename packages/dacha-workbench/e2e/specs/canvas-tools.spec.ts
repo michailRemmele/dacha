@@ -1,148 +1,98 @@
-import { test, expect } from '@playwright/test';
-import type { ElectronApplication, Page } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
-import { launchApp, closeApp } from '../launch-app';
-import {
-  selectScene,
-  selectTool,
-  getCanvasBox,
-  readCache,
-  treeNodesWithExactText,
-  CACHE_SAVE_DEBOUNCE,
-} from '../helpers';
-
-let app: ElectronApplication;
-let window: Page;
-
-const SCENE = 'space-level';
-
-test.beforeEach(async () => {
-  ({ app, window } = await launchApp());
-  await selectScene(window, SCENE);
+test.beforeEach(async ({ editor }) => {
+  await editor.explorer.open('space-level');
 });
 
-test.afterEach(async () => {
-  await closeApp({ app, window });
+test('pointer tool selects an actor on canvas and reflects it in explorer and inspector', async ({
+  editor,
+}) => {
+  await editor.canvas.selectTool('pointer');
+  await editor.canvas.click();
+
+  await expect(editor.explorer.selectedNodes()).toHaveText('terrain_1');
+  await expect(editor.inspector.panel('Transform')).toBeVisible();
 });
 
-const clickCanvasCenter = async (): Promise<void> => {
-  const box = await getCanvasBox(window);
-  await window.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-};
+test('pointer tool rubber-band selects every enclosed actor', async ({
+  editor,
+}) => {
+  const { canvas } = editor;
 
-const selectedTreeNode = (): ReturnType<Page['locator']> =>
-  window.locator(
-    '[data-testid="explorer-tree-node-title"][data-selected="true"]',
-  );
+  await canvas.selectTool('zoom');
+  await canvas.zoomOutMode();
+  await canvas.click({ times: 3 });
+  await editor.waitForCacheSave();
 
-test('pointer tool selects an actor on canvas and reflects it in explorer and inspector', async () => {
-  await selectTool(window, 'pointer');
-  await clickCanvasCenter();
+  await canvas.selectTool('pointer');
+  await canvas.drag([0.08, 0.08], [0.92, 0.92], 15);
 
-  await expect(selectedTreeNode()).toHaveText('terrain_1');
-  await expect(window.getByTestId('entity-panel-Transform')).toBeVisible();
-});
-
-test('pointer tool rubber-band selects every enclosed actor', async () => {
-  const box = await getCanvasBox(window);
-  const cx = box.x + box.width / 2;
-  const cy = box.y + box.height / 2;
-
-  await selectTool(window, 'zoom');
-  await window.getByTestId('zoom-direction-out').click();
-  await window.mouse.click(cx, cy);
-  await window.mouse.click(cx, cy);
-  await window.mouse.click(cx, cy);
-  await window.waitForTimeout(CACHE_SAVE_DEBOUNCE * 2);
-
-  await selectTool(window, 'pointer');
-  await window.mouse.move(box.x + box.width * 0.08, box.y + box.height * 0.08);
-  await window.mouse.down();
-  await window.mouse.move(box.x + box.width * 0.92, box.y + box.height * 0.92, {
-    steps: 15,
-  });
-  await window.mouse.up();
-
-  await expect(selectedTreeNode()).toHaveText([
+  await expect(editor.explorer.selectedNodes()).toHaveText([
     'background_1',
     'terrain_1',
     'player_1',
   ]);
 });
 
-test('zoom tool zooms the camera in, then back out', async () => {
-  await selectTool(window, 'zoom');
-  const box = await getCanvasBox(window);
-  const cx = box.x + box.width / 2;
-  const cy = box.y + box.height / 2;
+test('zoom tool zooms the camera in, then back out', async ({ editor }) => {
+  const { canvas } = editor;
+  const readZoom = async (): Promise<number> =>
+    (await editor.readCache())['canvas.mainActor.camera.zoom'] as number;
 
-  await window.mouse.click(cx, cy);
-  await window.mouse.click(cx, cy);
-  await window.waitForTimeout(CACHE_SAVE_DEBOUNCE * 2);
-  const zoomedIn = (await readCache(window))[
-    'canvas.mainActor.camera.zoom'
-  ] as number;
+  await canvas.selectTool('zoom');
+  await canvas.click({ times: 2 });
+  await editor.waitForCacheSave();
+  const zoomedIn = await readZoom();
   expect(zoomedIn).toBeGreaterThan(1);
 
-  await window.getByTestId('zoom-direction-out').click();
-  await window.mouse.click(cx, cy);
-  await window.mouse.click(cx, cy);
-  await window.waitForTimeout(CACHE_SAVE_DEBOUNCE * 2);
-  const zoomedOut = (await readCache(window))[
-    'canvas.mainActor.camera.zoom'
-  ] as number;
+  await canvas.zoomOutMode();
+  await canvas.click({ times: 2 });
+  await editor.waitForCacheSave();
 
-  expect(zoomedOut).toBeLessThan(zoomedIn);
+  expect(await readZoom()).toBeLessThan(zoomedIn);
 });
 
-test('hand tool pans the camera while dragging', async () => {
-  await selectTool(window, 'hand');
-  const box = await getCanvasBox(window);
+test('hand tool pans the camera while dragging', async ({ editor }) => {
+  await editor.canvas.selectTool('hand');
+  await editor.canvas.drag([0.5, 0.5], [0.2, 0.3]);
+  await editor.waitForCacheSave();
 
-  await window.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
-  await window.mouse.down();
-  await window.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.3, {
-    steps: 10,
-  });
-  await window.mouse.up();
-  await window.waitForTimeout(CACHE_SAVE_DEBOUNCE * 2);
-
-  const cache = await readCache(window);
+  const cache = await editor.readCache();
   expect(cache['canvas.mainActor.transform.offsetX']).not.toBe(0);
   expect(cache['canvas.mainActor.transform.offsetY']).not.toBe(0);
 });
 
-test('template tool creates an actor in the selected scene on canvas click', async () => {
-  await selectTool(window, 'template');
+test('template tool creates an actor in the selected scene on canvas click', async ({
+  editor,
+}) => {
+  const { canvas, explorer } = editor;
+  await canvas.selectTool('template');
 
-  await window.getByTestId('template-tool-select').click();
-  await window.keyboard.type('player');
-  await window.keyboard.press('Enter');
-  await expect(window.getByTestId('template-tool-select')).toContainText(
-    'player',
-  );
+  const select = await canvas.chooseTemplate('player');
+  await expect(select).toContainText('player');
 
-  await expect(treeNodesWithExactText(window, 'player')).toHaveCount(0);
+  await expect(explorer.nodes('player')).toHaveCount(0);
 
-  await clickCanvasCenter();
+  await canvas.click();
 
-  await expect(treeNodesWithExactText(window, 'player')).toHaveCount(1);
+  await expect(explorer.nodes('player')).toHaveCount(1);
 });
 
-test('enabling the grid in settings changes what the canvas renders', async () => {
-  const canvas = window.locator('#canvas-root');
-  const before = await canvas.screenshot();
+test('enabling the grid in settings changes what the canvas renders', async ({
+  editor,
+}) => {
+  const before = await editor.canvas.root.screenshot();
 
-  await window.evaluate(() => globalThis.window.electron.openSettings('grid'));
-  await expect(window.getByRole('dialog', { name: 'Settings' })).toBeVisible();
-  await window.getByTestId('settings-show-grid').click();
-  await window.keyboard.press('Escape');
-  await expect(window.getByRole('dialog', { name: 'Settings' })).toBeHidden();
-  await window.waitForTimeout(CACHE_SAVE_DEBOUNCE * 2);
+  const dialog = await editor.openSettings('grid');
+  await expect(dialog).toBeVisible();
+  await editor.window.getByTestId('settings-show-grid').click();
+  await editor.window.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await editor.waitForCacheSave();
 
-  const after = await canvas.screenshot();
+  const after = await editor.canvas.root.screenshot();
 
   expect(before.equals(after)).toBe(false);
-  const cache = await readCache(window);
+  const cache = await editor.readCache();
   expect(cache['canvas.mainActor.settings.showGrid']).toBe(true);
 });

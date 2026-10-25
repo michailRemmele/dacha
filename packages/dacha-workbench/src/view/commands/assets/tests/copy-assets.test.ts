@@ -1,58 +1,59 @@
+jest.mock('dacha', () => ({
+  ...jest.requireActual('../../../../../../dacha/src/engine/reference'),
+  ...jest.requireActual('../../../../../../dacha/src/engine/decorators'),
+}));
+
+import { DefineAsset, ReferenceWalker } from 'dacha';
+import type { AssetConfig } from 'dacha';
+
 import { copyAssets } from '../copy-assets';
-import { ADD_VALUES } from '../../../../command-types';
+import { runCommand } from '../../tests/run-command';
 
-interface Asset {
-  id: string;
-  name: string;
-  kind: string;
-  data: Record<string, unknown>;
-}
+@DefineAsset({
+  name: 'item',
+  fields: [{ name: 'icon', type: 'asset', kind: 'texture' }],
+})
+class Item {}
 
-const makeGetState =
-  (assets: Asset[]) =>
-  (path: string[]): unknown => {
-    if (path.length === 1) {
-      return assets;
-    }
-    const id = path[1].replace('id:', '');
-    return assets.find((asset) => asset.id === id);
-  };
+const context = { walker: new ReferenceWalker([Item]) };
+
+const project = {
+  assets: [
+    { id: 'sword', name: 'Sword', kind: 'item', data: { icon: 'tex' } },
+    { id: 'tex', name: 'Icon', kind: 'texture', data: { src: 's.png' } },
+  ],
+};
+
+const copy = (ids: string[]): AssetConfig[] => {
+  const store = runCommand(
+    project,
+    copyAssets(ids.map((id) => ['assets', `id:${id}`])),
+    context,
+  );
+  return store.get(['assets']) as AssetConfig[];
+};
 
 describe('copyAssets', () => {
-  it('duplicates an asset with a new id, unique name and same kind', () => {
-    const assets: Asset[] = [
-      { id: 'a1', name: 'Hero', kind: 'texture', data: { src: 'h.png' } },
-    ];
-    const dispatched: unknown[] = [];
+  it('adds a copy with a new id and a unique name', () => {
+    const [, , copied] = copy(['tex']);
 
-    copyAssets([['assets', 'id:a1']])(
-      (cmd) => dispatched.push(cmd),
-      makeGetState(assets),
-    );
-
-    expect(dispatched).toHaveLength(1);
-    const cmd = dispatched[0] as {
-      command: string;
-      options: { path: string[]; values: Asset[] };
-    };
-    expect(cmd.command).toBe(ADD_VALUES);
-    expect(cmd.options.path).toEqual(['assets']);
-    expect(cmd.options.values).toHaveLength(1);
-
-    const dup = cmd.options.values[0];
-    expect(dup.id).not.toBe('a1');
-    expect(typeof dup.id).toBe('string');
-    expect(dup.name).toBe('Hero 2');
-    expect(dup.kind).toBe('texture');
-    expect(dup.data).toEqual({ src: 'h.png' });
+    expect(copied).toEqual({
+      id: expect.not.stringMatching(/^tex$/),
+      name: 'Icon 2',
+      kind: 'texture',
+      data: { src: 's.png' },
+    });
   });
 
-  it('does not dispatch when no source assets resolve', () => {
-    const dispatched: unknown[] = [];
-    copyAssets([['assets', 'id:missing']])(
-      (cmd) => dispatched.push(cmd),
-      makeGetState([]),
-    );
-    expect(dispatched).toHaveLength(0);
+  it('adds nothing when no source asset exists', () => {
+    expect(copy(['missing'])).toEqual(project.assets);
+  });
+
+  it('points a copied asset at the asset copied with it', () => {
+    const [sword, , swordCopy, texCopy] = copy(['sword', 'tex']);
+
+    expect(texCopy.id).not.toBe('tex');
+    expect(swordCopy.data.icon).toBe(texCopy.id);
+    expect(sword.data.icon).toBe('tex');
   });
 });

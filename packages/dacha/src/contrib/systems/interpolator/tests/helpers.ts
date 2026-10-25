@@ -3,6 +3,7 @@ import { Scene } from '../../../../engine/scene';
 import { TemplateCollection } from '../../../../engine/template';
 import { World } from '../../../../engine/world';
 import { Assets } from '../../../../engine/asset';
+import { ReferenceWalker } from '../../../../engine/reference';
 import { Time } from '../../../../engine/time';
 import { Interpolation } from '../../../components/interpolation';
 import type { InterpolationConfig } from '../../../components/interpolation';
@@ -39,7 +40,7 @@ export const createInterpolator = (
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: {},
     templateCollection,
-    assets: new Assets(),
+    assets: new Assets({ walker: new ReferenceWalker([]) }),
     time,
   });
 

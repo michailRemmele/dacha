@@ -1,9 +1,15 @@
 import { Engine } from '../engine';
-import { Asset } from '../asset';
+import { Asset, MediaAsset } from '../asset';
 import type { Assets } from '../asset';
 import { WorldSystem } from '../system';
 import type { WorldSystemOptions } from '../system';
+import { DefineAsset, DefineBehavior, DefineField } from '../decorators';
 import { Texture } from '../../contrib/assets';
+import { Behaviors } from '../../contrib/components';
+import {
+  Behavior,
+  BehaviorSystem,
+} from '../../contrib/systems/behavior-system';
 
 class Broken extends Asset {}
 
@@ -16,6 +22,18 @@ class AssetsCapturingSystem extends WorldSystem {
   }
 }
 AssetsCapturingSystem.systemName = 'assets-capturing-system';
+
+@DefineAsset({ name: 'sound' })
+class Sound extends MediaAsset<string> {
+  protected fetchResource(): Promise<string> {
+    return Promise.resolve(`buffer-${this.id}`);
+  }
+}
+
+@DefineBehavior({ name: 'Shoot' })
+class Shoot extends Behavior {
+  @DefineField({ type: 'asset', kind: 'sound' }) sound!: string;
+}
 
 describe('Engine', () => {
   let originalRequestAnimationFrame: typeof requestAnimationFrame;
@@ -118,6 +136,52 @@ describe('Engine', () => {
     await engine.play();
 
     expect(capturedDependencies).toBe(dependencies);
+
+    engine.stop();
+  });
+
+  it('loads assets referenced by scripts passed to a system with with()', async () => {
+    const engine = new Engine({
+      config: {
+        scenes: [
+          {
+            id: 'scene-1',
+            name: 'Scene 1',
+            actors: [
+              {
+                id: 'player',
+                name: 'Player',
+                children: [],
+                components: [
+                  {
+                    name: 'Behaviors',
+                    config: {
+                      list: [{ id: '1', name: 'Shoot', options: { sound: 's1' } }],
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        templates: [],
+        systems: [{ name: 'assets-capturing-system', options: {} }],
+        assets: [{ id: 's1', name: 'Shot', kind: 'sound', data: {} }],
+        startSceneId: 'scene-1',
+        globalOptions: [],
+      },
+      systems: [
+        AssetsCapturingSystem,
+        BehaviorSystem.with({ behaviors: [Shoot] }),
+      ],
+      components: [Behaviors],
+      assets: [Sound],
+    });
+
+    await engine.play();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(capturedAssets?.get(Sound, 's1')?.resource).toBe('buffer-s1');
 
     engine.stop();
   });

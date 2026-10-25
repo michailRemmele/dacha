@@ -9,9 +9,10 @@ jest.mock('../../../../../../../hooks', () => {
   );
   return { useConfig, useCommander, useSchemas: (): unknown => mockSchemas };
 });
-jest.mock('../../../../../../../providers', () =>
-  jest.requireActual('../../../../../../../providers/command-provider'),
-);
+jest.mock('../../../../../../../providers', () => ({
+  ...jest.requireActual('../../../../../../../providers/command-provider'),
+  SchemasContext: jest.requireActual('react').createContext({}),
+}));
 jest.mock('../..', () => ({
   fieldTypes: {
     script: jest.requireActual('..').ScriptField,

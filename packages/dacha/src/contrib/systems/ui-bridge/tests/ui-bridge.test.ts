@@ -3,6 +3,7 @@ import { World } from '../../../../engine/world';
 import { ActorCreator, ActorSpawner } from '../../../../engine/actor';
 import { TemplateCollection } from '../../../../engine/template';
 import { Assets } from '../../../../engine/asset';
+import { ReferenceWalker } from '../../../../engine/reference';
 import { Time } from '../../../../engine/time';
 
 describe('UIBridge', () => {
@@ -17,7 +18,7 @@ describe('UIBridge', () => {
             new ActorCreator([], templateCollection),
           ),
           templateCollection,
-          assets: new Assets(),
+          assets: new Assets({ walker: new ReferenceWalker([]) }),
           globalOptions: {},
           time: new Time(),
         }),

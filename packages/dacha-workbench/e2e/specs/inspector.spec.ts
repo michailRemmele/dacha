@@ -1,26 +1,14 @@
-import { test, expect } from '@playwright/test';
-import type { ElectronApplication, Page } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
-import { launchApp, closeApp } from '../launch-app';
-import { toggleSceneExpand, clickTreeNode } from '../helpers';
+test('component widget expands and collapses on header click', async ({
+  editor,
+}) => {
+  const { explorer, inspector } = editor;
+  await explorer.expand('space-level');
+  await explorer.select('background_1');
 
-let app: ElectronApplication;
-let window: Page;
-
-test.beforeEach(async () => {
-  ({ app, window } = await launchApp());
-});
-
-test.afterEach(async () => {
-  await closeApp({ app, window });
-});
-
-test('component widget expands and collapses on header click', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
-
-  const header = window.getByTestId('entity-panel-Transform-header');
-  const panel = window.getByTestId('entity-panel-Transform');
+  const header = inspector.header('Transform');
+  const panel = inspector.panel('Transform');
 
   await header.click();
   await expect(panel).toHaveClass(/ant-collapse-item-active/);
@@ -29,24 +17,24 @@ test('component widget expands and collapses on header click', async () => {
   await expect(panel).not.toHaveClass(/ant-collapse-item-active/);
 });
 
-test('screenshot: inspector widget expanded', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
+test('screenshot: inspector widget expanded', async ({ editor }) => {
+  const { explorer, inspector } = editor;
+  await explorer.expand('space-level');
+  await explorer.select('background_1');
 
-  await window.getByTestId('entity-panel-Transform-header').click();
-  await expect(window.getByTestId('entity-panel-Transform')).toHaveClass(
-    /ant-collapse-item-active/,
-  );
+  await inspector.expand('Transform');
 
-  await expect(window.getByTestId('inspector')).toHaveScreenshot(
+  await expect(inspector.root).toHaveScreenshot(
     'inspector-widget-expanded.png',
   );
 });
 
-test('inspector tabs switch between Systems and Project settings', async () => {
-  await window.getByRole('tab', { name: 'Systems' }).click();
-  await expect(window.getByText('Add System')).toBeVisible();
+test('inspector tabs switch between Systems and Project settings', async ({
+  editor,
+}) => {
+  await editor.inspector.openTab('Systems');
+  await expect(editor.window.getByText('Add System')).toBeVisible();
 
-  await window.getByRole('tab', { name: 'Project settings' }).click();
-  await expect(window.getByText('Global Options')).toBeVisible();
+  await editor.inspector.openTab('Project settings');
+  await expect(editor.window.getByText('Global Options')).toBeVisible();
 });

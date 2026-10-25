@@ -1,61 +1,61 @@
-import { test, expect } from '@playwright/test';
-import type { ElectronApplication, Page, Locator } from '@playwright/test';
+import { test, expect } from '../fixtures';
+import type { Locator } from '@playwright/test';
+import type { Editor } from '../pages/editor';
 
-import { launchApp, closeApp } from '../launch-app';
-import {
-  toggleSceneExpand,
-  clickTreeNode,
-  selectScene,
-  switchExplorerTab,
-  treeNodesWithExactText,
-  MULTI_SELECT_MODIFIER,
-  collectPageErrors,
-} from '../helpers';
-
-let app: ElectronApplication;
-let window: Page;
-
-test.beforeEach(async () => {
-  ({ app, window } = await launchApp());
-});
-
-test.afterEach(async () => {
-  await closeApp({ app, window });
-});
-
-const selectAsset = async (name: string, group = 'Texture'): Promise<void> => {
-  await switchExplorerTab(window, 'Assets');
-  if (!(await treeNodesWithExactText(window, name).isVisible())) {
-    await toggleSceneExpand(window, group);
-  }
-  await clickTreeNode(window, name, { exact: true });
+const selectAsset = async (
+  { explorer }: Editor,
+  name: string,
+  group = 'Texture',
+): Promise<void> => {
+  await explorer.openTab('Assets');
+  await explorer.expand(group);
+  await explorer.select(name);
 };
 
-const openPlayerSprite = async (): Promise<ReturnType<Page['getByTestId']>> => {
-  await toggleSceneExpand(window, 'island-level');
-  await clickTreeNode(window, 'player');
-
-  const panel = window.getByTestId('entity-panel-Sprite');
-  await window.getByTestId('entity-panel-Sprite-header').click();
-  await expect(panel).toHaveClass(/ant-collapse-item-active/);
-
-  return panel;
+const openPlayerSprite = async ({
+  explorer,
+  inspector,
+}: Editor): Promise<Locator> => {
+  await explorer.expand('island-level');
+  await explorer.select('player');
+  return inspector.expand('Sprite');
 };
 
-test('a sprite shows its texture asset and switches to another one', async () => {
-  const panel = await openPlayerSprite();
+const editHumanSrc = async (editor: Editor): Promise<Locator> => {
+  await selectAsset(editor, 'human');
+  const src = editor.window.getByRole('textbox', { name: 'Src' });
+  await expect(src).toHaveValue('assets/units/human.png');
+  await src.fill('assets/terrain/floor.png');
+  await src.press('Enter');
+  await src.blur();
+  return src;
+};
+
+const deleteHumanAndMask = async (editor: Editor): Promise<void> => {
+  const { explorer } = editor;
+  await selectAsset(editor, 'human');
+  await explorer.select('mask', { add: true });
+  await explorer.delete();
+  await expect(explorer.nodes('human')).toHaveCount(0);
+  await expect(explorer.nodes('mask')).toHaveCount(0);
+};
+
+test('a sprite shows its texture asset and switches to another one', async ({
+  editor,
+}) => {
+  const panel = await openPlayerSprite(editor);
   const textureSelect = panel.locator('.ant-select').first();
 
   await expect(textureSelect).toContainText('human');
 
-  await textureSelect.click();
-  await window.getByTitle('floor', { exact: true }).click();
+  await editor.inspector.choose(textureSelect, 'floor');
 
   await expect(textureSelect).toContainText('floor');
 });
 
-test('the sprite texture picker filters assets by name', async () => {
-  const panel = await openPlayerSprite();
+test('the sprite texture picker filters assets by name', async ({ editor }) => {
+  const { window } = editor;
+  const panel = await openPlayerSprite(editor);
 
   await panel.locator('.ant-select').first().click();
   await window.keyboard.type('FLO');
@@ -67,159 +67,145 @@ test('the sprite texture picker filters assets by name', async () => {
   await expect(panel.locator('.ant-select').first()).toContainText('floor');
 });
 
-const editHumanSrc = async (): Promise<Locator> => {
-  await selectAsset('human');
-  const src = window.getByRole('textbox', { name: 'Src' });
-  await expect(src).toHaveValue('assets/units/human.png');
-  await src.fill('assets/terrain/floor.png');
-  await src.press('Enter');
-  await src.blur();
-  return src;
-};
-
-const deleteHumanAndMask = async (): Promise<void> => {
-  await selectAsset('human');
-  await clickTreeNode(window, 'mask', {
-    exact: true,
-    modifiers: [MULTI_SELECT_MODIFIER],
-  });
-  await window.getByTitle('Delete').click();
-  await expect(treeNodesWithExactText(window, 'human')).toHaveCount(0);
-  await expect(treeNodesWithExactText(window, 'mask')).toHaveCount(0);
-};
-
-const undo = (): Promise<void> =>
-  window.evaluate(() => globalThis.window.electron.triggerUndo());
-
-test('undo reverts an edit of a texture asset', async () => {
-  const src = await editHumanSrc();
+test('undo reverts an edit of a texture asset', async ({ editor }) => {
+  const src = await editHumanSrc(editor);
   await expect(src).toHaveValue('assets/terrain/floor.png');
 
-  await undo();
+  await editor.undo();
 
   await expect(src).toHaveValue('assets/units/human.png');
 });
 
-test('deleting texture assets in use keeps the editor working', async () => {
-  const errors = collectPageErrors(window);
-  await selectScene(window, 'island-level');
+test('deleting texture assets in use keeps the editor working', async ({
+  editor,
+}) => {
+  const { explorer, inspector } = editor;
+  const errors = editor.collectErrors();
+  await explorer.open('island-level');
 
-  await deleteHumanAndMask();
-  await switchExplorerTab(window, 'Scenes');
-  await clickTreeNode(window, 'player');
+  await deleteHumanAndMask(editor);
+  await explorer.openTab('Scenes');
+  await explorer.select('player');
 
-  await expect(window.getByTestId('entity-panel-Sprite')).toBeVisible();
+  await expect(inspector.panel('Sprite')).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('a new texture asset is offered in the sprite texture picker', async () => {
-  await switchExplorerTab(window, 'Assets');
-  await window.getByTitle('Add New Asset').click();
-  await window.getByRole('menuitem', { name: 'Texture' }).click();
+test('a new texture asset is offered in the sprite texture picker', async ({
+  editor,
+}) => {
+  const { explorer, window } = editor;
+  await explorer.openTab('Assets');
+  await explorer.addAsset('Texture');
 
-  await switchExplorerTab(window, 'Scenes');
-  const panel = await openPlayerSprite();
+  await explorer.openTab('Scenes');
+  const panel = await openPlayerSprite(editor);
   await panel.locator('.ant-select').first().click();
 
   await expect(window.getByTitle('texture', { exact: true })).toBeVisible();
 });
 
-test('screenshot: scene after a texture asset is edited, and after undo', async () => {
-  await selectScene(window, 'island-level');
-  await editHumanSrc();
+test('screenshot: scene after a texture asset is edited, and after undo', async ({
+  editor,
+}) => {
+  await editor.explorer.open('island-level');
+  await editHumanSrc(editor);
 
-  await expect(window.locator('#canvas-root')).toHaveScreenshot(
+  await expect(editor.canvas.root).toHaveScreenshot(
     'assets-texture-edited.png',
   );
 
-  await undo();
+  await editor.undo();
 
-  await expect(window.locator('#canvas-root')).toHaveScreenshot(
-    'assets-island-level.png',
-  );
+  await expect(editor.canvas.root).toHaveScreenshot('assets-island-level.png');
 });
 
-test('screenshot: scene after texture assets in use are deleted', async () => {
-  await selectScene(window, 'island-level');
-  await deleteHumanAndMask();
+test('screenshot: scene after texture assets in use are deleted', async ({
+  editor,
+}) => {
+  await editor.explorer.open('island-level');
+  await deleteHumanAndMask(editor);
 
-  await expect(window.locator('#canvas-root')).toHaveScreenshot(
-    'assets-deleted.png',
-  );
+  await expect(editor.canvas.root).toHaveScreenshot('assets-deleted.png');
 });
 
-const textureImage = (): Locator => window.getByTestId('texture-preview-image');
+test('a texture asset shows a preview with the image size', async ({
+  editor,
+}) => {
+  await selectAsset(editor, 'human');
 
-const selectTextureFilter = async (filter: string): Promise<void> => {
-  await window.getByTestId('inspector').locator('.ant-select').first().click();
-  await window.getByTitle(filter, { exact: true }).click();
-};
-
-test('a texture asset shows a preview with the image size', async () => {
-  await selectAsset('human');
-
-  await expect(window.getByTestId('texture-preview-size')).toHaveText(
+  await expect(editor.window.getByTestId('texture-preview-size')).toHaveText(
     '26 × 26 px',
   );
 });
 
-test('the texture preview follows the filter field and undo', async () => {
-  await selectAsset('human');
-  await expect(textureImage()).toHaveCSS('image-rendering', 'pixelated');
+test('the texture preview follows the filter field and undo', async ({
+  editor,
+}) => {
+  const { inspector, window } = editor;
+  const image = window.getByTestId('texture-preview-image');
 
-  await selectTextureFilter('linear');
-  await expect(textureImage()).toHaveCSS('image-rendering', 'auto');
+  await selectAsset(editor, 'human');
+  await expect(image).toHaveCSS('image-rendering', 'pixelated');
 
-  await window.getByTestId('inspector').click({ position: { x: 5, y: 5 } });
-  await undo();
-  await expect(textureImage()).toHaveCSS('image-rendering', 'pixelated');
+  await inspector.choose(
+    inspector.root.locator('.ant-select').first(),
+    'linear',
+  );
+  await expect(image).toHaveCSS('image-rendering', 'auto');
+
+  await inspector.root.click({ position: { x: 5, y: 5 } });
+  await editor.undo();
+  await expect(image).toHaveCSS('image-rendering', 'pixelated');
 });
 
-test('a texture asset with a missing file shows the error state', async () => {
-  await selectAsset('human');
-  const src = window.getByRole('textbox', { name: 'Src' });
+test('a texture asset with a missing file shows the error state', async ({
+  editor,
+}) => {
+  await selectAsset(editor, 'human');
+  const src = editor.window.getByRole('textbox', { name: 'Src' });
   await src.fill('assets/missing.png');
   await src.press('Enter');
 
-  await expect(window.getByTestId('asset-preview-error')).toBeVisible();
+  await expect(editor.window.getByTestId('asset-preview-error')).toBeVisible();
 });
 
-test('an audio asset shows a player with the duration', async () => {
-  await selectAsset('bite', 'Audio');
+test('an audio asset shows a player with the duration', async ({ editor }) => {
+  await selectAsset(editor, 'bite', 'Audio');
 
-  await expect(window.getByTestId('audio-player-current-time')).toHaveText(
-    '0:00.0',
-  );
-  await expect(window.getByTestId('audio-player-duration')).toHaveText(
+  await expect(
+    editor.window.getByTestId('audio-player-current-time'),
+  ).toHaveText('0:00.0');
+  await expect(editor.window.getByTestId('audio-player-duration')).toHaveText(
     '0:00.1',
   );
 });
 
-test('a bitmap font asset renders a sample', async () => {
-  await selectAsset('monocraft', 'Bitmap Font');
+test('a bitmap font asset renders a sample', async ({ editor }) => {
+  await selectAsset(editor, 'monocraft', 'Bitmap Font');
 
   await expect(
-    window.getByTestId('bitmap-font-canvas').locator('canvas'),
+    editor.window.getByTestId('bitmap-font-canvas').locator('canvas'),
   ).toBeAttached();
-  await expect(window.getByTestId('asset-preview-error')).toHaveCount(0);
+  await expect(editor.window.getByTestId('asset-preview-error')).toHaveCount(0);
 });
 
-test('screenshot: texture asset preview', async () => {
-  await selectAsset('human');
-  await expect(window.getByTestId('texture-preview-size')).toBeVisible();
+test('screenshot: texture asset preview', async ({ editor }) => {
+  await selectAsset(editor, 'human');
+  await expect(editor.window.getByTestId('texture-preview-size')).toBeVisible();
 
-  await expect(window.getByTestId('inspector')).toHaveScreenshot(
+  await expect(editor.inspector.root).toHaveScreenshot(
     'assets-texture-preview.png',
   );
 });
 
-test('screenshot: bitmap font asset preview', async () => {
-  await selectAsset('monocraft', 'Bitmap Font');
+test('screenshot: bitmap font asset preview', async ({ editor }) => {
+  await selectAsset(editor, 'monocraft', 'Bitmap Font');
   await expect(
-    window.getByTestId('bitmap-font-canvas').locator('canvas'),
+    editor.window.getByTestId('bitmap-font-canvas').locator('canvas'),
   ).toBeAttached();
 
-  await expect(window.getByTestId('inspector')).toHaveScreenshot(
+  await expect(editor.inspector.root).toHaveScreenshot(
     'assets-bitmap-font-preview.png',
   );
 });

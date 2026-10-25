@@ -1,66 +1,69 @@
-import { uuid } from '../../../utils/uuid'
-import type { TemplateConfig, SceneConfig } from 'dacha'
+import type { TemplateConfig, SceneConfig } from 'dacha';
 
-import type { ExplorerEntity } from '../../../types/explorer-entity'
-import type { DispatchFn, GetStateFn } from '../../hooks/use-commander'
-import { getUniqueName } from '../../../utils/get-unique-name'
-import { getIdByPath } from '../../../utils/get-id-by-path'
-import { addValues, setValue, deleteByPaths } from '..'
+import type { ExplorerEntity } from '../../../types/explorer-entity';
+import type { DispatchFn, GetStateFn } from '../../hooks/use-commander';
+import { getUniqueName } from '../../../utils/get-unique-name';
+import { getIdByPath } from '../../../utils/get-id-by-path';
+import { addValues, setValue, deleteByPaths } from '..';
 
-import { getUpdatedScenes, filterScenes } from './utils'
+import { addChildActors, removeChildActors } from './utils';
 
-const updateIds = (template: TemplateConfig): void => {
-  template.id = uuid()
-  template.children?.forEach(updateIds)
-}
+const getParentId = (path: string[]): string | undefined =>
+  path.at(-2) === 'children' ? getIdByPath(path.slice(0, -2)) : undefined;
 
-const getDuplicate = (template: TemplateConfig, parent: TemplateConfig[]): TemplateConfig => {
-  const duplicate = structuredClone(template)
-  duplicate.name = getUniqueName(duplicate.name, parent as ExplorerEntity[])
-  updateIds(duplicate)
+const isInside = (path: string[], ancestor: string[]): boolean =>
+  ancestor.every((part, index) => path[index] === part);
 
-  return duplicate
-}
-
-export const moveByPaths = (
-  sourcePaths: string[][],
-  destinationPath: string[],
-) => (
-  dispatch: DispatchFn,
-  getState: GetStateFn,
-): void => {
-  const destination = getState(destinationPath)
-  if (!Array.isArray(destination)) {
-    return
-  }
-
-  const { values } = sourcePaths.reduce((acc, path) => {
-    const value = getState(path)
-    if (value) {
-      const duplicate = getDuplicate(value as TemplateConfig, acc.parent)
-
-      acc.values.push(duplicate)
-      acc.parent.push(duplicate)
+export const moveByPaths =
+  (sourcePaths: string[][], destinationPath: string[]) =>
+  (dispatch: DispatchFn, getState: GetStateFn): void => {
+    const destination = getState(destinationPath);
+    if (!Array.isArray(destination)) {
+      return;
     }
-    return acc
-  }, { values: [] as TemplateConfig[], parent: destination.slice(0) as TemplateConfig[] })
 
-  if (!values.length) {
-    return
-  }
+    const parentId =
+      destinationPath.at(-1) === 'children'
+        ? getIdByPath(destinationPath.slice(0, -1))
+        : undefined;
 
-  dispatch(addValues(destinationPath, values))
+    const paths = sourcePaths.filter(
+      (path) =>
+        !isInside(destinationPath, path) && getParentId(path) !== parentId,
+    );
 
-  let scenes = getState(['scenes']) as SceneConfig[]
+    const siblings = (destination as TemplateConfig[]).slice(0);
+    const values = paths.reduce((acc, path) => {
+      const value = getState(path) as TemplateConfig | undefined;
+      if (value) {
+        const moved = structuredClone(value);
+        moved.name = getUniqueName(moved.name, siblings as ExplorerEntity[]);
+        acc.push(moved);
+        siblings.push(moved);
+      }
+      return acc;
+    }, [] as TemplateConfig[]);
 
-  if (destinationPath.at(-1) === 'children') {
-    const parentTemplateId = getIdByPath(destinationPath.slice(0, -1))
-    scenes = getUpdatedScenes(scenes, parentTemplateId, values)
-  }
+    if (!values.length) {
+      return;
+    }
 
-  const templateIds = new Set(sourcePaths.map((path) => getIdByPath(path)))
-  scenes = filterScenes(scenes, templateIds)
+    let scenes = getState(['scenes']) as SceneConfig[];
+    paths.forEach((path) => {
+      const oldParentId = getParentId(path);
+      if (oldParentId) {
+        scenes = removeChildActors(
+          scenes,
+          oldParentId,
+          new Set([getIdByPath(path)]),
+        );
+      }
+    });
+    if (parentId) {
+      scenes = addChildActors(scenes, parentId, values);
+    }
 
-  dispatch(setValue(['scenes'], scenes, true))
-  dispatch(deleteByPaths(sourcePaths, true))
-}
+    dispatch(deleteByPaths(paths));
+    dispatch(addValues(destinationPath, values, true));
+    dispatch(setValue(['scenes'], scenes, true));
+  };

@@ -1,55 +1,42 @@
-import { test, expect } from '@playwright/test';
-import type { ElectronApplication, Page } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
-import { launchApp, closeApp } from '../launch-app';
-import { toggleSceneExpand, clickTreeNode, addComponent } from '../helpers';
+test('a project behavior can be added to an actor and shows its options', async ({
+  editor,
+}) => {
+  const { explorer, inspector } = editor;
+  await explorer.expand('space-level');
+  await explorer.select('background_1');
 
-let app: ElectronApplication;
-let window: Page;
-
-test.beforeEach(async () => {
-  ({ app, window } = await launchApp());
-});
-
-test.afterEach(async () => {
-  await closeApp({ app, window });
-});
-
-test('a project behavior can be added to an actor and shows its options', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
-  await addComponent(window, 'Behaviors');
-
-  const panel = window.getByTestId('entity-panel-Behaviors');
-  await panel.getByRole('combobox').fill('Wobble');
-  await panel.getByRole('combobox').press('Enter');
-  await panel.getByTestId('entity-picker-add-button').click();
+  const panel = await inspector.addComponent('Behaviors');
+  await inspector.addScript(panel, 'Wobble');
 
   await expect(panel.getByText('Amplitude', { exact: true })).toBeVisible();
 });
 
-test('a project shader can be chosen on a mesh and shows its options', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
-  await addComponent(window, 'Mesh');
+test('a project shader can be chosen on a mesh and shows its options', async ({
+  editor,
+}) => {
+  const { explorer, inspector } = editor;
+  await explorer.expand('space-level');
+  await explorer.select('background_1');
 
-  const panel = window.getByTestId('entity-panel-Mesh');
+  const panel = await inspector.addComponent('Mesh');
   await panel.getByText('Material', { exact: true }).first().click();
-  await panel.getByRole('combobox').last().click();
-  await window.getByTitle('Ripple').click();
+  await inspector.choose(panel.getByRole('combobox').last(), 'Ripple');
 
   await expect(panel.getByText('Frequency', { exact: true })).toBeVisible();
 });
 
-test('a project filter effect can be added to the renderer and shows its options', async () => {
-  await window.getByRole('tab', { name: 'Systems' }).click();
-  const panel = window.getByTestId('entity-panel-Renderer');
-  await window.getByTestId('entity-panel-Renderer-header').click();
+test('a project filter effect can be added to the renderer and shows its options', async ({
+  editor,
+}) => {
+  const { inspector } = editor;
+  await inspector.openTab('Systems');
+  await inspector.header('Renderer').click();
 
+  const panel = inspector.panel('Renderer');
   await expect(panel.getByText('Filter Effects')).toBeVisible();
-  await panel.getByRole('combobox').last().fill('Tint');
-  await panel.getByRole('combobox').last().press('Enter');
-  await panel.getByTestId('entity-picker-add-button').click();
+  await inspector.addScript(panel, 'Tint');
 
   await expect(panel.getByText('Color', { exact: true })).toBeVisible();
 });

@@ -1,4 +1,4 @@
-import type { SceneConfig, TemplateConfig, ActorConfig } from 'dacha';
+import type { TemplateConfig } from 'dacha';
 import { Box } from '@gravity-ui/icons';
 
 import { ExplorerDataNode } from '../../../../../types/tree-node';
@@ -47,28 +47,3 @@ export const getInspectedKey = (path?: string[]): string | undefined => {
 
 export const getSelectedPaths = (paths: string[][]): string[][] =>
   paths.filter((path) => path[0] === 'templates');
-
-export const filterActors = (
-  actors: ActorConfig[],
-  templateId: string,
-): ActorConfig[] =>
-  actors.reduce((acc, actor) => {
-    if (actor.templateId !== templateId) {
-      acc.push(actor);
-    }
-
-    if (actor.children !== undefined) {
-      actor.children = filterActors(actor.children, templateId);
-    }
-
-    return acc;
-  }, [] as ActorConfig[]);
-
-export const filterScenes = (
-  scenes: SceneConfig[],
-  templateId: string,
-): SceneConfig[] =>
-  scenes.map((scene) => ({
-    ...scene,
-    actors: filterActors(scene.actors, templateId),
-  }));

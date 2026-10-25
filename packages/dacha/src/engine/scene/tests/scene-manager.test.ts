@@ -2,6 +2,7 @@ import { SceneManager } from '../scene-manager';
 import { WorldSystem, SceneSystem, normalizeSystems } from '../../system';
 import { TemplateCollection } from '../../template';
 import { Assets } from '../../asset';
+import { ReferenceWalker } from '../../reference';
 import { Time } from '../../time';
 
 import { getSceneConfigMock } from './mocks/scene-config.mock';
@@ -101,7 +102,7 @@ describe('Engine -> SceneManager', () => {
       components: [],
       globalOptions: {},
       templateCollection: new TemplateCollection(),
-      assets: new Assets(),
+      assets: new Assets({ walker: new ReferenceWalker([]) }),
       time: new Time(),
     });
   });

@@ -1,117 +1,92 @@
-import { test, expect } from '@playwright/test';
-import type { ElectronApplication, Page } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
-import { launchApp, closeApp } from '../launch-app';
-import {
-  toggleSceneExpand,
-  clickTreeNode,
-  treeNodesWithExactText,
-  MULTI_SELECT_MODIFIER,
-} from '../helpers';
-
-let app: ElectronApplication;
-let window: Page;
-
-test.beforeEach(async () => {
-  ({ app, window } = await launchApp());
-  await toggleSceneExpand(window, 'space-level');
+test.beforeEach(async ({ editor }) => {
+  await editor.explorer.expand('space-level');
 });
 
-test.afterEach(async () => {
-  await closeApp({ app, window });
+test('creating a new scene adds it to the tree', async ({ editor }) => {
+  await editor.explorer.addScene();
+
+  await expect(editor.explorer.nodes('Scene')).toHaveCount(1);
 });
 
-test('creating a new scene adds it to the tree', async () => {
-  await window.getByTitle('Add New Scene').click();
+test('deleting an actor removes it from the tree', async ({ editor }) => {
+  const { explorer } = editor;
+  await explorer.addActor('space-level');
 
-  await expect(treeNodesWithExactText(window, 'Scene')).toHaveCount(1);
+  await explorer.select('Actor');
+  await explorer.delete();
+
+  await expect(explorer.nodes('Actor')).toHaveCount(0);
 });
 
-test('deleting an actor removes it from the tree', async () => {
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Add New Actor').click();
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+test('multi-select deletes multiple actors at once', async ({ editor }) => {
+  const { explorer } = editor;
+  await explorer.addActor('space-level');
+  await explorer.addActor('space-level', 'Actor 2');
 
-  await clickTreeNode(window, 'Actor', { exact: true });
-  await window.getByTitle('Delete').click();
+  await explorer.select('Actor');
+  await explorer.select('Actor 2', { add: true });
+  await explorer.delete();
 
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(0);
+  await expect(explorer.nodes('Actor')).toHaveCount(0);
+  await expect(explorer.nodes('Actor 2')).toHaveCount(0);
 });
 
-test('multi-select deletes multiple actors at once', async () => {
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Add New Actor').click();
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Add New Actor').click();
+test('copy and paste duplicates an actor within the same scene', async ({
+  editor,
+}) => {
+  const { explorer } = editor;
+  await explorer.addActor('space-level');
 
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
-  await expect(treeNodesWithExactText(window, 'Actor 2')).toHaveCount(1);
+  await explorer.select('Actor');
+  await explorer.copy();
+  await explorer.select('space-level');
+  await explorer.paste();
 
-  await clickTreeNode(window, 'Actor', { exact: true });
-  await clickTreeNode(window, 'Actor 2', {
-    exact: true,
-    modifiers: [MULTI_SELECT_MODIFIER],
-  });
-  await window.getByTitle('Delete').click();
-
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(0);
-  await expect(treeNodesWithExactText(window, 'Actor 2')).toHaveCount(0);
+  await expect(explorer.nodes('Actor')).toHaveCount(1);
+  await expect(explorer.nodes('Actor 2')).toHaveCount(1);
 });
 
-test('copy and paste duplicates an actor within the same scene', async () => {
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Add New Actor').click();
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+test('cut and paste moves an actor to a different scene', async ({
+  editor,
+}) => {
+  const { explorer } = editor;
+  await explorer.addActor('space-level');
 
-  await clickTreeNode(window, 'Actor', { exact: true });
-  await window.getByTitle('Copy', { exact: true }).click();
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Paste').click();
+  await explorer.select('Actor');
+  await explorer.cut();
+  await explorer.open('island-level');
+  await explorer.paste();
 
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
-  await expect(treeNodesWithExactText(window, 'Actor 2')).toHaveCount(1);
+  await explorer.collapse('space-level');
+  await expect(explorer.nodes('Actor')).toHaveCount(1);
 });
 
-test('cut and paste moves an actor to a different scene', async () => {
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Add New Actor').click();
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+test('undo/redo an actor creation in the explorer', async ({ editor }) => {
+  const { explorer } = editor;
+  await explorer.addActor('space-level');
 
-  await clickTreeNode(window, 'Actor', { exact: true });
-  await window.getByTitle('Cut').click();
-  await toggleSceneExpand(window, 'island-level');
-  await clickTreeNode(window, 'island-level');
-  await window.getByTitle('Paste').click();
+  await editor.undo();
+  await expect(explorer.nodes('Actor')).toHaveCount(0);
 
-  await toggleSceneExpand(window, 'space-level');
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+  await editor.redo();
+  await expect(explorer.nodes('Actor')).toHaveCount(1);
 });
 
-test('undo/redo an actor creation in the explorer', async () => {
-  await clickTreeNode(window, 'space-level');
-  await window.getByTitle('Add New Actor').click();
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
+test('screenshot: shown scene after deleting actors from two scenes at once', async ({
+  editor,
+}) => {
+  const { explorer } = editor;
+  await explorer.expand('island-level');
+  await explorer.select('background_1');
+  await explorer.select('player', { add: true });
 
-  await window.evaluate(() => globalThis.window.electron.triggerUndo());
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(0);
+  await explorer.delete();
+  await expect(explorer.nodes('background_1')).toHaveCount(0);
+  await expect(explorer.nodes('player')).toHaveCount(0);
 
-  await window.evaluate(() => globalThis.window.electron.triggerRedo());
-  await expect(treeNodesWithExactText(window, 'Actor')).toHaveCount(1);
-});
-
-test('screenshot: shown scene after deleting actors from two scenes at once', async () => {
-  await toggleSceneExpand(window, 'island-level');
-  await clickTreeNode(window, 'background_1', { exact: true });
-  await clickTreeNode(window, 'player', {
-    exact: true,
-    modifiers: [MULTI_SELECT_MODIFIER],
-  });
-
-  await window.getByTitle('Delete').click();
-  await expect(treeNodesWithExactText(window, 'background_1')).toHaveCount(0);
-  await expect(treeNodesWithExactText(window, 'player')).toHaveCount(0);
-
-  await expect(window.locator('#canvas-root')).toHaveScreenshot(
+  await expect(editor.canvas.root).toHaveScreenshot(
     'scenes-deleted-from-two-scenes.png',
   );
 });

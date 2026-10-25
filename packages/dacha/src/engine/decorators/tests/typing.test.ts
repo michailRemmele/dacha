@@ -23,6 +23,11 @@ class Valid extends Component {
   sh?: { name: string; options: Record<string, unknown> };
   @DefineField({ type: 'script', kind: 'behavior', multiple: true })
   bs!: { id: string; name: string; options: Record<string, unknown> }[];
+  @DefineField({ type: 'template' }) tpl!: string;
+  @DefineField({ type: 'scene', multiple: true, sortable: true }) levels!: string[];
+  @DefineField({ type: 'actor' }) target!: string;
+  @DefineField({ type: 'asset', kind: 'texture', multiple: true, unique: true })
+  frames!: string[];
 }
 
 class Invalid extends Component {
@@ -49,6 +54,8 @@ class Invalid extends Component {
     initialValue: { name: 'a', options: {} },
   })
   withInitial?: { name: string; options: Record<string, unknown> };
+  // @ts-expect-error a template field takes no kind
+  @DefineField({ type: 'template', kind: 'x' }) tplKind!: string;
 }
 
 // Every field type needs a value type, or @DefineField accepts it on no member.

@@ -61,7 +61,7 @@ export const Select: FC<SelectProps> = ({
       className={cx(styles.select, className)}
       onChange={handleChange}
       options={selectOptions}
-      value={value ?? NONE_VALUE}
+      value={value ?? (allowEmpty ? NONE_VALUE : null)}
       showSearch={searchable ? SEARCH_BY_LABEL : false}
       {...props}
     />

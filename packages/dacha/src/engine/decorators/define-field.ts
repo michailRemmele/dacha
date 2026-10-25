@@ -19,7 +19,10 @@ export interface FieldValueMap {
   textarea: string;
   color: string;
   file: string;
-  asset: string;
+  asset: string | string[];
+  template: string | string[];
+  scene: string | string[];
+  actor: string | string[];
   select: string | number;
   number: number;
   range: number;

@@ -5,6 +5,7 @@ import type { Config } from './types';
 import { SceneManager } from './scene/scene-manager';
 import { TemplateCollection } from './template';
 import { Assets } from './asset';
+import { ReferenceWalker } from './reference';
 import type { AssetConstructor } from './asset';
 import { GameLoop } from './game-loop';
 import type { PerformanceSettings } from './game-loop';
@@ -131,11 +132,21 @@ export class Engine {
       templateCollection.register(template);
     }
 
+    const walker = new ReferenceWalker([
+      ...components,
+      ...normalizedSystems.map(({ system }) => system),
+      ...availableAssets,
+      ...normalizedSystems.flatMap(({ dependencies }) =>
+        typeof dependencies === 'object' && dependencies !== null
+          ? Object.values(dependencies).flat()
+          : [],
+      ),
+    ]);
+
     const assets = new Assets({
       assetClasses: availableAssets,
       configs: assetConfigs,
-      components,
-      systems: normalizedSystems,
+      walker,
     });
 
     const globalOptions = rawGlobalOptions.reduce(

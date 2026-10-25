@@ -71,6 +71,9 @@ export type FieldType =
   | 'textarea'
   | 'vector'
   | 'asset'
+  | 'template'
+  | 'scene'
+  | 'actor'
   | 'script';
 
 /**
@@ -216,18 +219,85 @@ export interface ColorField extends AnyField {
 }
 
 /**
+ * Settings for a list of references.
+ *
+ * @category Editor Schema
+ */
+export interface ReferenceListOptions {
+  /** Holds a list of references instead of one. */
+  multiple?: boolean;
+  /** Each entity can appear in the list once. Lists only. */
+  unique?: boolean;
+  /** The inspector lets you reorder the list by dragging. Lists only. */
+  sortable?: boolean;
+}
+
+/**
  * A dropdown of the project's assets of one kind.
  *
  * @category Editor Schema
  */
-export interface AssetField extends AnyField {
+export interface AssetField extends AnyField, ReferenceListOptions {
   /** The widget type. */
   type: 'asset';
   /** The asset kind the dropdown lists. */
   kind: string;
   /** The value a new instance starts with. */
-  initialValue?: string;
+  initialValue?: string | string[];
 }
+
+/**
+ * A dropdown of the project's root templates.
+ *
+ * @category Editor Schema
+ */
+export interface TemplateField extends AnyField, ReferenceListOptions {
+  /** The widget type. */
+  type: 'template';
+  /** The value a new instance starts with. */
+  initialValue?: string | string[];
+}
+
+/**
+ * A dropdown of the project's scenes.
+ *
+ * @category Editor Schema
+ */
+export interface SceneField extends AnyField, ReferenceListOptions {
+  /** The widget type. */
+  type: 'scene';
+  /** The value a new instance starts with. */
+  initialValue?: string | string[];
+}
+
+/**
+ * A dropdown of the actors of the scene being edited.
+ *
+ * @category Editor Schema
+ */
+export interface ActorField extends AnyField, ReferenceListOptions {
+  /** The widget type. */
+  type: 'actor';
+  /** The value a new instance starts with. */
+  initialValue?: string | string[];
+}
+
+/**
+ * The kinds of entity a reference field can point at.
+ *
+ * @category Editor Schema
+ * @advanced
+ */
+export type ReferenceType = 'asset' | 'template' | 'scene' | 'actor';
+
+/**
+ * Any field that stores the id of a project entity.
+ *
+ * @category Editor Schema
+ * @advanced
+ */
+export type ReferenceField =
+  AssetField | TemplateField | SceneField | ActorField;
 
 /**
  * The kinds of class a {@link ScriptField} can hold.
@@ -318,6 +388,9 @@ export type Field =
   | TextAreaField
   | VectorField
   | AssetField
+  | TemplateField
+  | SceneField
+  | ActorField
   | ScriptField
   | DataField;
 

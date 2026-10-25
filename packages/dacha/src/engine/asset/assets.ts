@@ -1,12 +1,20 @@
-import type { ComponentConstructor } from '../component';
-import type { SystemBinding } from '../system';
 import type { AssetConfig } from '../types';
+import type { ReferenceSources, ReferenceWalker } from '../reference';
 
 import { Asset } from './asset';
 import type { AssetConstructor } from './asset';
 import { MediaAsset } from './media-asset';
-import { AssetCollector } from './asset-collector';
-import type { AssetSources } from './asset-collector';
+
+/**
+ * Configuration that refers to assets: the asset ids found in it are retained
+ * together.
+ *
+ * @internal
+ */
+export interface AssetSources extends ReferenceSources {
+  /** Asset ids to retain as they are. */
+  ids?: Iterable<string>;
+}
 
 /**
  * The {@link Assets} options.
@@ -16,8 +24,8 @@ import type { AssetSources } from './asset-collector';
 export interface AssetsOptions {
   assetClasses?: AssetConstructor[];
   configs?: AssetConfig[];
-  components?: ComponentConstructor[];
-  systems?: SystemBinding[];
+  /** Finds asset references in configuration data. */
+  walker: ReferenceWalker;
 }
 
 interface AssetEntry {
@@ -42,28 +50,19 @@ interface AssetEntry {
 export class Assets {
   private assetClasses: Map<string, AssetConstructor>;
   private storage: Map<string, AssetEntry>;
-  private collector: AssetCollector;
+  private walker: ReferenceWalker;
   private counts: Map<string, number>;
   private owners: Map<object, Set<string>>;
 
   /** @internal */
-  constructor({
-    assetClasses = [],
-    configs = [],
-    components = [],
-    systems = [],
-  }: AssetsOptions = {}) {
+  constructor({ assetClasses = [], configs = [], walker }: AssetsOptions) {
     this.assetClasses = assetClasses.reduce((acc, AssetClass) => {
       acc.set(AssetClass.assetName, AssetClass);
       return acc;
     }, new Map<string, AssetConstructor>());
 
     this.storage = new Map();
-    this.collector = new AssetCollector({
-      components,
-      systems,
-      assets: assetClasses,
-    });
+    this.walker = walker;
     this.counts = new Map();
     this.owners = new Map();
 
@@ -119,7 +118,10 @@ export class Assets {
    * @internal
    */
   async acquire(owner: object, sources: AssetSources): Promise<void> {
-    const ids = this.extendWithRefs(this.collector.collectSources(sources));
+    const ids = this.extendWithRefs([
+      ...(sources.ids ?? []),
+      ...this.walker.collect(sources, 'asset'),
+    ]);
     ids.forEach((id) => this.counts.set(id, (this.counts.get(id) ?? 0) + 1));
 
     const previous = this.owners.get(owner);
@@ -260,6 +262,9 @@ export class Assets {
       data: config.data,
     });
 
-    return { asset, refs: this.collector.collectAssetRefs(config) };
+    const refs = this.walker.collect({ assets: [config] }, 'asset');
+    refs.delete(config.id);
+
+    return { asset, refs };
   }
 }

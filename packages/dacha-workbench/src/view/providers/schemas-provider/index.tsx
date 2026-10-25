@@ -7,6 +7,7 @@ import React, {
   ReactElement,
 } from 'react';
 import i18next from 'i18next';
+import { ReferenceWalker } from 'dacha';
 
 import { useExtension } from '../../hooks';
 import { EngineContext } from '../engine-provider';
@@ -22,6 +23,7 @@ export type SchemasDataEntry = SchemaEntry;
 
 interface SchemasData extends CollectedSchemas {
   isReady: boolean;
+  walker: ReferenceWalker;
 }
 
 interface SchemasProviderProps {
@@ -40,6 +42,7 @@ const INITIAL: CollectedSchemas = {
 export const SchemasContext = React.createContext<SchemasData>({
   ...INITIAL,
   isReady: false,
+  walker: new ReferenceWalker([]),
 });
 
 export const SchemasProvider: FC<SchemasProviderProps> = ({
@@ -95,9 +98,19 @@ export const SchemasProvider: FC<SchemasProviderProps> = ({
     };
   }, [world]);
 
+  const walker = useMemo(
+    () =>
+      new ReferenceWalker(
+        Object.values(schemas).flatMap((entries: SchemaEntry[]) =>
+          entries.map((entry) => entry.class),
+        ),
+      ),
+    [schemas],
+  );
+
   const context = useMemo(
-    () => ({ ...schemas, isReady }),
-    [schemas, isReady],
+    () => ({ ...schemas, isReady, walker }),
+    [schemas, isReady, walker],
   );
 
   return (
