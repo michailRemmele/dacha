@@ -7,7 +7,7 @@ import { getTransformConfig } from '../../../utils/get-transform-config';
 import { addValue, setValue } from '..';
 import type { DispatchFn, GetStateFn } from '../../hooks/use-commander';
 
-import { getUpdatedScenes } from './utils';
+import { addChildActors } from './utils';
 
 export const addTemplate =
   (destinationPath: string[]) =>
@@ -32,7 +32,7 @@ export const addTemplate =
       dispatch(
         setValue(
           ['scenes'],
-          getUpdatedScenes(scenes, parent.id, [template]),
+          addChildActors(scenes, parent.id, [template]),
           true,
         ),
       );

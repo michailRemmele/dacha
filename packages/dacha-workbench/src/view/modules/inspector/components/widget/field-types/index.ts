@@ -12,7 +12,12 @@ import { FileField } from './file';
 import { RangeField } from './range';
 import { TextAreaField } from './text-area';
 import { VectorField } from './vector';
-import { AssetField } from './asset';
+import {
+  AssetField,
+  TemplateField,
+  SceneField,
+  ActorField,
+} from './reference';
 import { ScriptField } from './script';
 
 // comment: TODO: Find the way to avoid using any
@@ -30,5 +35,8 @@ export const fieldTypes: Record<FieldType, FC<any>> = {
   textarea: TextAreaField,
   vector: VectorField,
   asset: AssetField,
+  template: TemplateField,
+  scene: SceneField,
+  actor: ActorField,
   script: ScriptField,
 };

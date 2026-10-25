@@ -3,6 +3,7 @@ import { WorldSystem, SceneSystem, normalizeSystems } from '../../system';
 import type { WorldSystemOptions, SceneSystemOptions } from '../../system';
 import { TemplateCollection } from '../../template';
 import { Assets, MediaAsset } from '../../asset';
+import { ReferenceWalker } from '../../reference';
 import { Component } from '../../component';
 import {
   DefineAsset,
@@ -89,8 +90,7 @@ describe('SceneManager -> assets', () => {
         kind: 'picture',
         data: {},
       })),
-      components: [View],
-      systems: normalizeSystems([Background, Probe]),
+      walker: new ReferenceWalker([View, Background, Probe, Picture]),
     });
 
     sceneManager = new SceneManager({

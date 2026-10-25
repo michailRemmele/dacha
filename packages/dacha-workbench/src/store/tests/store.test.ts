@@ -106,7 +106,7 @@ describe('Store', () => {
     store.deleteByPaths([['assets', 'id:x'], ['assets', 'id:y']])
 
     expect(store.get(['assets'])).toEqual([{ id: 'z' }])
-    expect(listener).toHaveBeenCalledWith(['assets'], [{ id: 'z' }])
+    expect(listener).toHaveBeenCalledWith(['assets'])
   })
 
   it('Notifies the parent array when deleting a single item by paths', () => {
@@ -165,5 +165,62 @@ describe('Store', () => {
     const store = new Store({ a: null } as unknown as Data)
 
     expect(store.get(['a', 'b'])).toBeUndefined()
+  })
+
+  describe('batch', () => {
+    it('notifies listeners after the batch, with every path in order', () => {
+      const store = new Store(example)
+      const seen: unknown[] = []
+      store.subscribe((path) => seen.push([path, store.get(['b', 'f'])]))
+
+      store.batch(() => {
+        store.set(['b', 'f'], 1)
+        store.delete(['b', 'e'])
+        store.set(['b', 'f'], 2)
+        expect(seen).toEqual([])
+      })
+
+      expect(seen).toEqual([
+        [['b', 'f'], 2],
+        [['b', 'e'], 2],
+        [['b', 'f'], 2],
+      ])
+    })
+
+    it('notifies once the outermost batch ends', () => {
+      const store = new Store(example)
+      const listener = jest.fn()
+      store.subscribe(listener)
+
+      store.batch(() => {
+        store.batch(() => store.set(['b', 'f'], 1))
+        expect(listener).not.toHaveBeenCalled()
+      })
+
+      expect(listener).toHaveBeenCalledTimes(1)
+    })
+
+    it('notifies the changes made before an error and rethrows it', () => {
+      const store = new Store(example)
+      const listener = jest.fn()
+      store.subscribe(listener)
+
+      expect(() => store.batch(() => {
+        store.set(['b', 'f'], 1)
+        throw new Error('fail')
+      })).toThrow('fail')
+
+      expect(listener).toHaveBeenCalledWith(['b', 'f'])
+    })
+
+    it('notifies at once outside a batch', () => {
+      const store = new Store(example)
+      const listener = jest.fn()
+      store.subscribe(listener)
+
+      store.set(['b', 'f'], 1)
+
+      expect(listener).toHaveBeenCalledWith(['b', 'f'])
+    })
   })
 })

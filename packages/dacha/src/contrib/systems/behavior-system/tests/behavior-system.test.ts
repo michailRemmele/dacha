@@ -3,6 +3,7 @@ import { Actor, ActorCreator, ActorSpawner } from '../../../../engine/actor';
 import { World } from '../../../../engine/world';
 import { TemplateCollection } from '../../../../engine/template';
 import { Assets } from '../../../../engine/asset';
+import { ReferenceWalker } from '../../../../engine/reference';
 import { Texture } from '../../../assets';
 import { Time } from '../../../../engine/time';
 import { Behaviors } from '../../../components';
@@ -36,6 +37,7 @@ describe('Contrib -> systems -> BehaviorSystem', () => {
           data: { src: 'img/hero.png' },
         },
       ],
+      walker: new ReferenceWalker([Texture]),
     });
 
     const templateCollection = new TemplateCollection();

@@ -34,6 +34,23 @@ describe('resolveFieldInitialValue', () => {
     ).toBe('');
   });
 
+  it('gives reference fields an empty id, or an empty list with multiple', () => {
+    expect(resolveFieldInitialValue({ name: 'x', type: 'template' })).toBe('');
+    expect(resolveFieldInitialValue({ name: 'x', type: 'scene' })).toBe('');
+    expect(resolveFieldInitialValue({ name: 'x', type: 'actor' })).toBe('');
+    expect(
+      resolveFieldInitialValue({ name: 'x', type: 'template', multiple: true }),
+    ).toEqual([]);
+    expect(
+      resolveFieldInitialValue({
+        name: 'x',
+        type: 'asset',
+        kind: 'texture',
+        multiple: true,
+      }),
+    ).toEqual([]);
+  });
+
   it('deep-clones object initial values', () => {
     const initialValue = { nested: [1, 2] };
     const field: Field = { name: 'x', type: 'data', initialValue };

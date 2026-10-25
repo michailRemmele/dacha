@@ -59,36 +59,34 @@ export const EntitySelect: FC<EntitySelectProps> = ({
 
   return (
     <>
-      <div className={cx(styles.entityPicker, className)}>
-        <Select
-          className={styles.select}
-          options={availableOptions}
-          onChange={handleChange}
-          value={value ?? NONE_VALUE}
-          open={open ? false : undefined}
-          showSearch
-          optionRender={(option): ReactElement => (
-            <span className={styles.option}>
-              <EntityIcon
-                name={option.data.label}
-                icon={option.data.icon}
-                background={false}
-              />
-              {option.data.label}
-            </span>
-          )}
-          popupRender={(menu: ReactElement): ReactElement => (
-            <>
-              <div>{menu}</div>
-              <div className={styles.footer}>
-                <Button block onClick={handleOpen}>
-                  {t('inspector.entityPicker.createNew.button.title')}
-                </Button>
-              </div>
-            </>
-          )}
-        />
-      </div>
+      <Select
+        className={cx(styles.select, className)}
+        options={availableOptions}
+        onChange={handleChange}
+        value={value ?? NONE_VALUE}
+        open={open ? false : undefined}
+        showSearch
+        optionRender={(option): ReactElement => (
+          <span className={styles.option}>
+            <EntityIcon
+              name={option.data.label}
+              icon={option.data.icon}
+              background={false}
+            />
+            {option.data.label}
+          </span>
+        )}
+        popupRender={(menu: ReactElement): ReactElement => (
+          <>
+            <div>{menu}</div>
+            <div className={styles.footer}>
+              <Button block onClick={handleOpen}>
+                {t('inspector.entityPicker.createNew.button.title')}
+              </Button>
+            </div>
+          </>
+        )}
+      />
 
       {open && (
         <CreateNewModal

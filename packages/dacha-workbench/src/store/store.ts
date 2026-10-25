@@ -10,10 +10,14 @@ import type { Data, DataValue, ListenerFn } from './types';
 export class Store {
   private data: Data;
   private listeners: ListenerFn[];
+  private batchDepth: number;
+  private batchPaths: string[][];
 
   constructor(data: Data) {
     this.data = data;
     this.listeners = [];
+    this.batchDepth = 0;
+    this.batchPaths = [];
   }
 
   get(path: string[]): unknown {
@@ -30,7 +34,7 @@ export class Store {
       }
     }
 
-    this.listeners.forEach((listener) => listener(path, value));
+    this.notify(path);
   }
 
   delete(path: string[]): void {
@@ -39,7 +43,7 @@ export class Store {
       return;
     }
 
-    this.listeners.forEach((listener) => listener(path));
+    this.notify(path);
   }
 
   deleteByPaths(paths: string[][]): void {
@@ -62,9 +66,24 @@ export class Store {
       deleteByKey(parent, path.at(-1) as string);
     }
 
-    this.listeners.forEach((listener) =>
-      listener(commonPath, subRoot as DataValue),
-    );
+    this.notify(commonPath);
+  }
+
+  /**
+   * Runs `fn` and notifies the listeners after it.
+   */
+  batch(fn: () => void): void {
+    this.batchDepth += 1;
+    try {
+      fn();
+    } finally {
+      this.batchDepth -= 1;
+      if (this.batchDepth === 0) {
+        const paths = this.batchPaths;
+        this.batchPaths = [];
+        paths.forEach((path) => this.notify(path));
+      }
+    }
   }
 
   subscribe(listener: ListenerFn): () => void {
@@ -75,5 +94,13 @@ export class Store {
         (currentListener) => currentListener !== listener,
       );
     };
+  }
+
+  private notify(path: string[]): void {
+    if (this.batchDepth > 0) {
+      this.batchPaths.push(path);
+      return;
+    }
+    this.listeners.forEach((listener) => listener(path));
   }
 }

@@ -62,7 +62,10 @@ volume: number;
 | `color` | A color picker | `disabledAlpha` |
 | `vector` | Paired X and Y inputs | |
 | `file` | A picker over the project's assets folder | `extensions` |
-| `asset` | A dropdown of the project's assets of one kind | `kind` |
+| `asset` | A dropdown of the project's assets of one kind | `kind`, `multiple`, `unique`, `sortable` |
+| `template` | A dropdown of the project's root templates | `multiple`, `unique`, `sortable` |
+| `scene` | A dropdown of the project's scenes | `multiple`, `unique`, `sortable` |
+| `actor` | A dropdown of the actors of the scene you edit | `multiple`, `unique`, `sortable` |
 | `data` | Nothing at all | |
 
 `options`, `extensions` and `kind` are required by the types that take them. Everything else
@@ -86,7 +89,7 @@ Leave it out and the editor writes the empty value for the type:
 
 | Type | Starts at |
 | --- | --- |
-| `string`, `textarea`, `select`, `file`, `asset` | `''` |
+| `string`, `textarea`, `select`, `file`, `asset`, `template`, `scene`, `actor` | `''` |
 | `number`, `range` | `0` |
 | `boolean` | `false` |
 | `multiselect`, `multitext` | `[]` |
@@ -210,6 +213,51 @@ anywhere in it. A second argument carries the field's own `path` and whatever `c
 widget was drawn with. The built-in components use this to offer the sorting layers, the
 audio groups and the collision groups the project actually defines, rather than a list that
 goes stale.
+
+## Referring to scenes, templates and actors
+
+Code often needs one specific template, scene or actor. For example, a behavior spawns a
+projectile, or a lever opens a door. Declare a reference field, and pick the entity
+in the inspector:
+
+```ts
+@DefineBehavior({ name: 'Turret' })
+export default class Turret extends Behavior {
+  @DefineField({ type: 'template' })
+  projectile: string;
+
+  @DefineField({ type: 'actor' })
+  target: string;
+}
+```
+
+The field stores the id of the entity. Your code finds the entity by that id, with the
+`actorSpawner` and the `scene` from the options:
+
+```ts
+const shot = actorSpawner.spawn(this.projectile);
+const target = scene.findChildById(this.target);
+```
+
+### Lists of references
+
+`multiple: true` makes the field a list of ids. You add an entry with the select
+below the list. `unique` lets each entity appear in the list only
+once. `sortable` lets you reorder the rows by dragging.
+
+```ts
+@DefineField({ type: 'scene', multiple: true, sortable: true })
+levels: string[];
+```
+
+### When the entity is gone
+
+When you delete an entity referenced by a field, the field shows **Missing**. The reference
+stays in the configuration, so you can see the problem and select a replacement.
+
+When you copy entities in the editor, references between them point to their copies.
+For example, copying a lever and its door makes the new lever refer to the new door.
+References to entities outside the copy remain unchanged.
 
 ## Declaring fields on the decorator
 

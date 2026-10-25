@@ -1,40 +1,34 @@
-import { test, expect } from '@playwright/test';
-import type { ElectronApplication, Page } from '@playwright/test';
+import { test, expect } from '../fixtures';
+import type { Editor } from '../pages/editor';
 
-import { launchApp, closeApp } from '../launch-app';
-import { switchExplorerTab, clickTreeNode } from '../helpers';
+const openAnimationEditor = async ({
+  explorer,
+  inspector,
+  window,
+}: Editor): Promise<void> => {
+  await explorer.openTab('Templates');
+  await explorer.select('player');
 
-let app: ElectronApplication;
-let window: Page;
-
-test.beforeEach(async () => {
-  ({ app, window } = await launchApp());
-});
-
-test.afterEach(async () => {
-  await closeApp({ app, window });
-});
-
-const openAnimationEditor = async (window: Page): Promise<void> => {
-  await switchExplorerTab(window, 'Templates');
-  await clickTreeNode(window, 'player');
-
-  await window.getByTestId('entity-panel-Animatable-header').click();
+  await inspector.header('Animatable').click();
   await window.getByRole('button', { name: 'Open Animation Editor' }).click();
 };
 
-test('opening the animation editor from the Animatable widget', async () => {
-  await openAnimationEditor(window);
+test('opening the animation editor from the Animatable widget', async ({
+  editor,
+}) => {
+  await openAnimationEditor(editor);
 
   await expect(
-    window.getByRole('dialog', { name: 'Animation Editor' }),
+    editor.window.getByRole('dialog', { name: 'Animation Editor' }),
   ).toBeVisible();
 });
 
-test('screenshot: animation editor open', async () => {
-  await openAnimationEditor(window);
+test('screenshot: animation editor open', async ({ editor }) => {
+  await openAnimationEditor(editor);
 
-  const dialog = window.getByRole('dialog', { name: 'Animation Editor' });
+  const dialog = editor.window.getByRole('dialog', {
+    name: 'Animation Editor',
+  });
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveScreenshot('animation-editor-open.png');
 });

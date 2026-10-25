@@ -1,61 +1,67 @@
-import type { TemplateConfig, ActorConfig, SceneConfig } from 'dacha'
+import type { TemplateConfig, ActorConfig, SceneConfig } from 'dacha';
 
-import { buildActorConfig } from '../../../utils/build-actor-config'
+import { buildActorConfig } from '../../../utils/build-actor-config';
 
-const getUpdatedActors = (
-  actors: ActorConfig[],
-  parentId: string,
-  templates: TemplateConfig[],
-): ActorConfig[] => actors.map((actor) => {
-  if (actor.templateId === parentId) {
-    return {
-      ...actor,
-      children: [
-        ...(actor.children ? getUpdatedActors(actor.children, parentId, templates) : []),
-        ...templates.map((template) => buildActorConfig(template)),
-      ],
-    }
-  }
+const isMadeFrom = (actor: ActorConfig, templateIds: Set<string>): boolean =>
+  !!actor.templateId && templateIds.has(actor.templateId);
 
-  if (actor.children) {
-    return {
-      ...actor,
-      children: getUpdatedActors(actor.children, parentId, templates),
-    }
-  }
-
-  return actor
-})
-
-export const getUpdatedScenes = (
+/**
+ * Adds actors made from `templates` to every actor made from the template `parentId`.
+ */
+export const addChildActors = (
   scenes: SceneConfig[],
   parentId: string,
   templates: TemplateConfig[],
-): SceneConfig[] => scenes.map((scene) => ({
-  ...scene,
-  actors: getUpdatedActors(scene.actors, parentId, templates),
-}))
+): SceneConfig[] => {
+  const update = (actors: ActorConfig[]): ActorConfig[] =>
+    actors.map((actor) => ({
+      ...actor,
+      children:
+        actor.templateId === parentId
+          ? [
+              ...update(actor.children ?? []),
+              ...templates.map(buildActorConfig),
+            ]
+          : actor.children && update(actor.children),
+    }));
 
-const filterActors = (
-  actors: ActorConfig[],
+  return scenes.map((scene) => ({ ...scene, actors: update(scene.actors) }));
+};
+
+/**
+ * Removes the actors made from `templateIds` that are children of actors made from the
+ * template `parentId`.
+ */
+export const removeChildActors = (
+  scenes: SceneConfig[],
+  parentId: string,
   templateIds: Set<string>,
-): ActorConfig[] => actors.reduce((acc, actor) => {
-  if (actor.templateId && templateIds.has(actor.templateId)) {
-    return acc
-  }
+): SceneConfig[] => {
+  const update = (actors: ActorConfig[]): ActorConfig[] =>
+    actors.map((actor) => {
+      const children =
+        actor.templateId === parentId
+          ? actor.children?.filter((child) => !isMadeFrom(child, templateIds))
+          : actor.children;
 
-  acc.push({
-    ...actor,
-    children: actor.children && filterActors(actor.children, templateIds),
-  })
+      return { ...actor, children: children && update(children) };
+    });
 
-  return acc
-}, [] as ActorConfig[])
+  return scenes.map((scene) => ({ ...scene, actors: update(scene.actors) }));
+};
 
-export const filterScenes = (
+/** Removes every actor made from `templateIds`, with its children. */
+export const removeActors = (
   scenes: SceneConfig[],
   templateIds: Set<string>,
-): SceneConfig[] => scenes.map((scene) => ({
-  ...scene,
-  actors: filterActors(scene.actors, templateIds),
-}))
+): SceneConfig[] => {
+  const update = (actors: ActorConfig[]): ActorConfig[] =>
+    actors
+      .filter((actor) => !isMadeFrom(actor, templateIds))
+      .map((actor) => ({
+        ...actor,
+        children: actor.children && update(actor.children),
+      }));
+
+  return scenes.map((scene) => ({ ...scene, actors: update(scene.actors) }));
+};

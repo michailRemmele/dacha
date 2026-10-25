@@ -2,6 +2,13 @@ import type { Field, FieldType } from 'dacha';
 
 import { checkDependency } from './check-dependency';
 
+const REFERENCE_TYPES = new Set<FieldType>([
+  'asset',
+  'template',
+  'scene',
+  'actor',
+]);
+
 const getFieldTypeDefault = (type: FieldType): unknown => {
   switch (type) {
     case 'string':
@@ -23,6 +30,9 @@ const getFieldTypeDefault = (type: FieldType): unknown => {
     case 'range':
       return 0;
     case 'asset':
+    case 'template':
+    case 'scene':
+    case 'actor':
       return '';
     case 'vector':
       return { x: 0, y: 0 };
@@ -40,6 +50,9 @@ export const resolveFieldInitialValue = (field: Field): unknown => {
   }
   if (field.initialValue !== undefined) {
     return structuredClone(field.initialValue);
+  }
+  if (REFERENCE_TYPES.has(field.type) && 'multiple' in field && field.multiple) {
+    return [];
   }
   return getFieldTypeDefault(field.type);
 };

@@ -76,7 +76,7 @@ export const Section: FC<SectionProps> = ({
       styles={{
         header: { alignItems: 'center', padding: '4px 0', borderRadius: 0 },
         icon: { marginInlineStart: 0, marginInlineEnd: 0 },
-        body: { padding: '0 0 8px 24px' },
+        body: { padding: '0 0 5px 24px' },
       }}
       activeKey={open ? [ITEM_KEY] : []}
       onChange={handleChange}

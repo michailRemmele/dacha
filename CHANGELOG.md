@@ -30,6 +30,16 @@ Releases made before this file existed are recorded in the
   the image with its size, drawn as its `filter` samples it; a small player; and a sample
   string drawn with the font, without the characters the font has no glyphs for, as in the game.
 - The asset field in the inspector has a search: type to filter the assets by name.
+- Reference fields `template`, `scene` and `actor`, next to `asset`. Each stores the id of an
+  entity and draws a picker in the inspector: `template` lists the root templates, `scene` all
+  scenes, and `actor` the actors of the scene being edited (outside a scene it offers nothing).
+- `multiple`, `unique` and `sortable` on all four reference fields. With `multiple` the value is
+  a list of ids, drawn as rows with an add select below; `sortable` reorders the rows by
+  dragging. The engine loads every asset of an `asset` list.
+- A reference field whose entity is gone shows **Missing** and keeps the id. The start scene in
+  the project settings works the same way.
+- Copying scenes, actors, templates or assets in the editor points references between the
+  copies at the copies. References to anything outside the copy stay as they are.
 
 ### Changed
 
@@ -50,13 +60,23 @@ Releases made before this file existed are recorded in the
   loads.
 - World systems are created in `loadWorld`, after the assets their options refer to have
   loaded.
+- `Assets` no longer takes `components` and `systems` options. The engine finds references
+  with one `ReferenceWalker` (internal), which replaces the internal `AssetCollector`.
 - The asset field in the inspector updates its list when assets change. The editor's scene view
   follows changes to the project's assets.
+- Adding a component, a system or a script in the inspector takes one step: picking it in the
+  list adds it. The **+** button next to the list is gone.
+- `Select` from `dacha-workbench` takes `size` and `labelRender`. Without `allowEmpty`, it shows
+  its `placeholder` while the value is empty.
 
 ### Fixed
 
 - The editor's scene view now follows a deletion of several items at once: assets, or actors
   from different scenes. Before, it kept showing the deleted items.
+- Moving a template in the editor (cut and paste) keeps its id and the ids of its child
+  templates, so references to them stay valid. Before, the moved templates got new ids, and
+  every instance of them disappeared from the scenes. Now only the instances inside instances
+  of the old parent are removed, and instances of the new parent get the moved template.
 - The editor finds an item whose id contains `:`. A path to a missing array item no longer
   changes or removes another item.
 

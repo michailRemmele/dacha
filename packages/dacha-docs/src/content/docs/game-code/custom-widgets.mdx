@@ -206,3 +206,7 @@ later.
 The `data` field type exists for exactly this pairing: a value your widget maintains and
 saves, which no generated input should draw. See
 [choosing the widget](/game-code/inspector-fields/#choosing-the-widget).
+
+Keep references to other entities in declared fields too. The engine finds references through
+the fields. It does not see an id inside a value that only your widget understands. See
+[referring to scenes, templates and actors](/game-code/inspector-fields/#referring-to-scenes-templates-and-actors).

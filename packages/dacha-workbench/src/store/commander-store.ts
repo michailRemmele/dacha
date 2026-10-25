@@ -66,6 +66,11 @@ export class CommanderStore {
     return this.store.subscribe(listener);
   }
 
+  /** Runs `fn` and notifies the listeners once it ends. See {@link Store.batch}. */
+  batch(fn: () => void): void {
+    this.store.batch(fn);
+  }
+
   dispatch(event: CommandEvent): void {
     const { command, scope, isEffect, options } = event;
 
@@ -105,11 +110,12 @@ export class CommanderStore {
     if (this.undoHistory[scope]?.length > 0) {
       const operation = this.undoHistory[scope].pop() as HistoryOperation;
 
-      for (let j = operation.effects.length - 1; j >= 0; j -= 1) {
-        operation.effects[j].undo();
-      }
-
-      operation.undo();
+      this.store.batch(() => {
+        for (let j = operation.effects.length - 1; j >= 0; j -= 1) {
+          operation.effects[j].undo();
+        }
+        operation.undo();
+      });
 
       this.redoHistory[scope].push(operation);
     }
@@ -121,8 +127,10 @@ export class CommanderStore {
     if (this.redoHistory[scope]?.length > 0) {
       const operation = this.redoHistory[scope].pop() as HistoryOperation;
 
-      operation.redo();
-      operation.effects.forEach((effect) => effect.redo());
+      this.store.batch(() => {
+        operation.redo();
+        operation.effects.forEach((effect) => effect.redo());
+      });
 
       this.undoHistory[scope].push(operation);
     }

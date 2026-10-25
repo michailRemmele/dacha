@@ -6,9 +6,10 @@ jest.mock('../../../../../hooks', () => {
   return { useConfig, useCommander };
 });
 
-jest.mock('../../../../../providers', () =>
-  jest.requireActual('../../../../../providers/command-provider'),
-);
+jest.mock('../../../../../providers', () => ({
+  ...jest.requireActual('../../../../../providers/command-provider'),
+  SchemasContext: jest.requireActual('react').createContext({}),
+}));
 
 import React, { FC } from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';

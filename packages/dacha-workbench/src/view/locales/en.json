@@ -63,6 +63,9 @@
     "projectSettings.globalOptions.title": "Global Options",
 
     "components.select.option.none.title": "[none]",
+    "reference.missing": "Missing",
+    "reference.noValues": "No values available here",
+    "reference.add": "Add {{name}}",
 
     "componentList.addNew.button.title": "Add Component",
     "systemList.addNew.button.title": "Add System",

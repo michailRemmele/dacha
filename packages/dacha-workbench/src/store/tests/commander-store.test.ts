@@ -1,6 +1,6 @@
 import { CommanderStore } from '../commander-store';
 import type { Data } from '../types';
-import { DELETE, DELETE_BY_PATHS } from '../../command-types';
+import { DELETE, DELETE_BY_PATHS, SET } from '../../command-types';
 import { ROOT_SCOPE } from '../../consts/scopes';
 
 describe('CommanderStore', () => {
@@ -77,5 +77,32 @@ describe('CommanderStore', () => {
 
     expect(store.get(['assets'])).toEqual([{ id: 'x' }, { id: 'y' }]);
     expect(store.get(['templates'])).toEqual([{ id: 't' }]);
+  });
+
+  it('undo and redo notify listeners once the whole operation is applied', () => {
+    const store = new CommanderStore({ a: 0, b: 0 } as unknown as Data);
+    store.dispatch({ command: SET, scope: ROOT_SCOPE, options: { path: ['a'], value: 1 } });
+    store.dispatch({
+      command: SET,
+      scope: ROOT_SCOPE,
+      isEffect: true,
+      options: { path: ['b'], value: 1 },
+    });
+
+    const seen: unknown[] = [];
+    store.subscribe((path) => seen.push([path[0], store.get(['a']), store.get(['b'])]));
+
+    store.undo({ scope: ROOT_SCOPE });
+    expect(seen).toEqual([
+      ['b', 0, 0],
+      ['a', 0, 0],
+    ]);
+
+    seen.length = 0;
+    store.redo({ scope: ROOT_SCOPE });
+    expect(seen).toEqual([
+      ['a', 1, 1],
+      ['b', 1, 1],
+    ]);
   });
 });

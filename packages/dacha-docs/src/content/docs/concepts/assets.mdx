@@ -34,7 +34,8 @@ The rule for media assets is short:
 
 The engine looks for `asset` fields in the configuration that the scene uses. It also follows
 `asset` fields inside other assets. It loads every media asset it finds before the scene
-starts.
+starts. An `asset` field with `multiple: true` holds a list of ids. The engine loads
+every asset in the list.
 
 When the engine destroys a scene, it unloads the assets of that scene that nothing else holds.
 An asset you load from code stays loaded. Bitmap fonts also stay loaded until the game ends.
