@@ -27,18 +27,22 @@ The `kind` names the class that describes the asset. There are two families of k
 
 Only media assets load. A data asset is ready when the game starts.
 
-The rule for media assets is short:
+Put an asset id in an `asset` field and the engine
+loads it for you. It loads the files before the scene starts. It unloads them when it destroys
+the scene. The assets in the options of a world system stay loaded until the game ends.
 
-- Put an asset id in an `asset` field, and the engine loads the asset for you.
-- Take an asset id from code, and load the asset yourself.
+An `asset` field is a field that the editor shows as a list of the project's assets. The
+built-in components already have them, such as the texture of a sprite. In your own component,
+behavior or system, declare one with `@DefineField`:
 
-The engine looks for `asset` fields in the configuration that the scene uses. It also follows
-`asset` fields inside other assets. It loads every media asset it finds before the scene
-starts. An `asset` field with `multiple: true` holds a list of ids. The engine loads
-every asset in the list.
+```ts
+@DefineField({ type: 'asset', kind: 'audio' }) hitSound!: string;
+```
 
-When the engine destroys a scene, it unloads the assets of that scene that nothing else holds.
-An asset you load from code stays loaded. Bitmap fonts also stay loaded until the game ends.
+See [inspector fields](/game-code/inspector-fields/#choosing-the-widget) for the other options.
+
+If your code uses an id that no field holds, load the asset yourself. See
+[Loading assets from code](#loading-assets-from-code).
 
 ## Reading an asset in code
 
@@ -52,14 +56,7 @@ texture?.resource; // the loaded texture, or undefined
 ```
 
 A data asset has its fields right away. A media asset gives its file as `resource`. It is
-`undefined` until the file loads. If the engine did not load the asset for you, call `load()`
-and wait for it:
-
-```ts
-import { Audio } from 'dacha';
-
-const buffer = await this.assets.get(Audio, soundId)?.load();
-```
+`undefined` until the file loads.
 
 ## Your own kinds
 
@@ -95,3 +92,45 @@ export default class LevelMap extends MediaAsset<LevelData> {
 
 Pass your kinds to the engine in `assets`, next to the built-in ones. The editor finds them in
 files that end with `.asset.ts`. See [auto-registration](/game-code/auto-registration/).
+
+## Loading assets from code
+
+You need this section only when your code uses an asset id or a template id directly. If the id
+comes from a field, the engine loads it for you.
+
+The engine does not know about such an id. A template that you spawn by it loads its assets only
+when the actor first needs them. The sprite draws nothing for a few frames, and the first sound
+does not play.
+
+To load one asset, call `load()` and wait for it:
+
+```ts
+import { Audio } from 'dacha';
+
+const buffer = await this.assets.get(Audio, soundId)?.load();
+```
+
+The engine does not track an asset you load this way. If a scene also uses it, the asset
+unloads with that scene. To keep an asset loaded, hold it with `acquire`.
+
+To hold a set of assets and templates for some time, call `acquire` with an owner and the ids.
+`acquire` resolves when the files are ready. Call `release` with the same owner when you no
+longer need them. The engine unloads an asset when nothing uses it. This scene system holds
+the assets for its scene:
+
+```ts
+async onSceneLoad() {
+  await this.assets.acquire(this, { assets: [cutsceneId], templates: [bossId] });
+}
+
+onSceneDestroy() {
+  this.assets.release(this);
+}
+```
+
+The owner is an object, such as a system or a behavior, or a string.
+A second `acquire` with the same owner replaces what the owner holds, so pass
+all ids in one call.
+
+A world system lives across scenes. In a world system, use a separate owner key for each
+scene, not `this`.

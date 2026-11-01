@@ -104,21 +104,33 @@ export class ReferenceWalker {
     );
   }
 
+  /** Returns the references of the given types, in the order they are found. */
+  find(sources: ReferenceSources, types: ReferenceType[]): Reference[] {
+    const references: Reference[] = [];
+    this.visit(sources, (reference) => {
+      if (types.includes(reference.type)) {
+        references.push(reference);
+      }
+      return undefined;
+    });
+    return references;
+  }
+
   /** Returns the ids of the references of one type. */
   collect(sources: ReferenceSources, type: ReferenceType): Set<string> {
-    const ids = new Set<string>();
-    this.visit(sources, (reference) => {
-      if (reference.type === type) {
-        ids.add(reference.id);
-      }
-    });
-    return ids;
+    return new Set(this.find(sources, [type]).map(({ id }) => id));
   }
 
   private visitEntity(
     entity: ActorConfig | TemplateConfig,
     visitor: ReferenceVisitor,
   ): void {
+    if ('templateId' in entity && entity.templateId) {
+      const next = visitor({ type: 'template', id: entity.templateId });
+      if (typeof next === 'string') {
+        entity.templateId = next;
+      }
+    }
     entity.components.forEach((component) =>
       this.visitData(
         component.config,

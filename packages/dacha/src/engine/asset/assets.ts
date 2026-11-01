@@ -1,19 +1,28 @@
-import type { AssetConfig } from '../types';
-import type { ReferenceSources, ReferenceWalker } from '../reference';
+import type { ActorConfig, AssetConfig, SystemConfig } from '../types';
+import type { ReferenceType } from '../decorators';
+import type { Reference, ReferenceWalker } from '../reference';
+import type { TemplateCollection } from '../template';
 
 import { Asset } from './asset';
 import type { AssetConstructor } from './asset';
 import { MediaAsset } from './media-asset';
 
 /**
- * Configuration that refers to assets: the asset ids found in it are retained
- * together.
+ * What an owner holds with {@link Assets.acquire}.
  *
- * @internal
+ * @category Assets
  */
-export interface AssetSources extends ReferenceSources {
-  /** Asset ids to retain as they are. */
-  ids?: Iterable<string>;
+export interface AssetSources {
+  /** Asset ids. The assets they reference are held too. */
+  assets?: string[];
+  /**
+   * Template ids. The assets of these templates are held too.
+   */
+  templates?: string[];
+  /** @internal */
+  actors?: ActorConfig[];
+  /** @internal */
+  systems?: SystemConfig[];
 }
 
 /**
@@ -24,14 +33,16 @@ export interface AssetSources extends ReferenceSources {
 export interface AssetsOptions {
   assetClasses?: AssetConstructor[];
   configs?: AssetConfig[];
-  /** Finds asset references in configuration data. */
+  templates: TemplateCollection;
   walker: ReferenceWalker;
 }
 
 interface AssetEntry {
   asset: Asset;
-  refs: Set<string>;
+  config: AssetConfig;
 }
+
+const PRELOAD_TYPES: ReferenceType[] = ['asset', 'template'];
 
 /**
  * The project assets.
@@ -51,11 +62,17 @@ export class Assets {
   private assetClasses: Map<string, AssetConstructor>;
   private storage: Map<string, AssetEntry>;
   private walker: ReferenceWalker;
+  private templates: TemplateCollection;
   private counts: Map<string, number>;
-  private owners: Map<object, Set<string>>;
+  private owners: Map<object | string, Set<string>>;
 
   /** @internal */
-  constructor({ assetClasses = [], configs = [], walker }: AssetsOptions) {
+  constructor({
+    assetClasses = [],
+    configs = [],
+    templates,
+    walker,
+  }: AssetsOptions) {
     this.assetClasses = assetClasses.reduce((acc, AssetClass) => {
       acc.set(AssetClass.assetName, AssetClass);
       return acc;
@@ -63,6 +80,7 @@ export class Assets {
 
     this.storage = new Map();
     this.walker = walker;
+    this.templates = templates;
     this.counts = new Map();
     this.owners = new Map();
 
@@ -70,18 +88,21 @@ export class Assets {
   }
 
   /**
-   * Creates an asset from its configuration. An asset with the same id is
-   * replaced, and its resource is unloaded.
+   * Creates an asset from its configuration.
    *
    * @internal
    */
   register(config: AssetConfig): void {
     const previous = this.storage.get(config.id)?.asset;
+    const asset = this.createAsset(config);
 
-    this.storage.set(config.id, this.createEntry(config));
+    this.storage.set(config.id, { asset, config });
 
     if (previous instanceof MediaAsset) {
       previous.unload();
+    }
+    if (this.counts.has(config.id) && asset instanceof MediaAsset) {
+      void asset.load();
     }
   }
 
@@ -94,7 +115,6 @@ export class Assets {
     const asset = this.storage.get(id)?.asset;
 
     this.storage.delete(id);
-    this.counts.delete(id);
 
     if (asset instanceof MediaAsset) {
       asset.unload();
@@ -111,17 +131,28 @@ export class Assets {
   }
 
   /**
-   * Acquires the assets referenced by `sources` and their dependencies for
-   * `owner`, loading them as needed. The assets are held immediately, while
-   * the returned promise resolves when all assets are loaded.
+   * Holds assets for `owner` and loads the media among them.
    *
-   * @internal
+   * A second call by the same owner replaces what it holds. Pass the full set
+   * in one call. Assets that both sets share stay loaded.
+   *
+   * Call {@link Assets.release} when the owner no longer
+   * needs the assets. Do not pass a scene as the owner: that replaces what the
+   * engine holds for the scene.
+   *
+   * @example
+   * ```ts
+   * async onSceneLoad() {
+   *   await this.assets.acquire(this, { assets: [cutsceneId], templates: [bossId] });
+   * }
+   *
+   * onSceneDestroy() {
+   *   this.assets.release(this);
+   * }
+   * ```
    */
-  async acquire(owner: object, sources: AssetSources): Promise<void> {
-    const ids = this.extendWithRefs([
-      ...(sources.ids ?? []),
-      ...this.walker.collect(sources, 'asset'),
-    ]);
+  async acquire(owner: object | string, sources: AssetSources): Promise<void> {
+    const ids = this.collectAssetIds(sources);
     ids.forEach((id) => this.counts.set(id, (this.counts.get(id) ?? 0) + 1));
 
     const previous = this.owners.get(owner);
@@ -140,11 +171,10 @@ export class Assets {
   }
 
   /**
-   * Drops what `owner` holds and unloads the assets nothing else holds.
-   *
-   * @internal
+   * Drops what `owner` holds with {@link Assets.acquire}. An asset that no
+   * owner holds is unloaded.
    */
-  release(owner: object): void {
+  release(owner: object | string): void {
     const ids = this.owners.get(owner);
 
     if (ids) {
@@ -203,29 +233,59 @@ export class Assets {
     return this.storage.has(id);
   }
 
-  // Extends the given asset ids with all referenced assets, recursively.
-  // Unknown ids are skipped with a warning.
-  private extendWithRefs(ids: Iterable<string>): Set<string> {
-    const result = new Set<string>();
-    const stack = [...ids];
+  private collectAssetIds(sources: AssetSources): Set<string> {
+    const assetIds = new Set<string>();
+    const seen = new Set<string>();
+    const stack: Reference[] = [
+      ...(sources.assets ?? []).map((id) => ({ type: 'asset' as const, id })),
+      ...(sources.templates ?? []).map((id) => ({
+        type: 'template' as const,
+        id,
+      })),
+      ...this.walker.find(
+        { actors: sources.actors, systems: sources.systems },
+        PRELOAD_TYPES,
+      ),
+    ];
 
     while (stack.length) {
-      const id = stack.pop()!;
-      if (result.has(id)) {
+      const { type, id } = stack.pop()!;
+      const key = `${type}:${id}`;
+      if (!id || seen.has(key)) {
         continue;
       }
+      seen.add(key);
 
-      const entry = this.storage.get(id);
-      if (!entry) {
-        console.warn(`Can't find asset with the following id: ${id}`);
-        continue;
+      switch (type) {
+        case 'template': {
+          if (!this.templates.has(id)) {
+            console.warn(`Can't find template with the following id: ${id}`);
+            break;
+          }
+          stack.push(
+            ...this.walker.find(
+              { templates: [this.templates.get(id)] },
+              PRELOAD_TYPES,
+            ),
+          );
+          break;
+        }
+        case 'asset': {
+          const entry = this.storage.get(id);
+          if (!entry) {
+            console.warn(`Can't find asset with the following id: ${id}`);
+            break;
+          }
+          assetIds.add(id);
+          stack.push(
+            ...this.walker.find({ assets: [entry.config] }, PRELOAD_TYPES),
+          );
+          break;
+        }
       }
-
-      result.add(id);
-      stack.push(...entry.refs);
     }
 
-    return result;
+    return assetIds;
   }
 
   private releaseIds(ids: Set<string>): void {
@@ -247,7 +307,7 @@ export class Assets {
     });
   }
 
-  private createEntry(config: AssetConfig): AssetEntry {
+  private createAsset(config: AssetConfig): Asset {
     const AssetClass = this.assetClasses.get(config.kind);
 
     if (!AssetClass) {
@@ -256,15 +316,10 @@ export class Assets {
       );
     }
 
-    const asset = new AssetClass({
+    return new AssetClass({
       id: config.id,
       name: config.name,
       data: config.data,
     });
-
-    const refs = this.walker.collect({ assets: [config] }, 'asset');
-    refs.delete(config.id);
-
-    return { asset, refs };
   }
 }

@@ -102,7 +102,10 @@ describe('Engine -> SceneManager', () => {
       components: [],
       globalOptions: {},
       templateCollection: new TemplateCollection(),
-      assets: new Assets({ walker: new ReferenceWalker([]) }),
+      assets: new Assets({
+        templates: new TemplateCollection(),
+        walker: new ReferenceWalker([]),
+      }),
       time: new Time(),
     });
   });

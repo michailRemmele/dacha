@@ -15,9 +15,17 @@ Releases made before this file existed are recorded in the
 ### Added
 
 - The engine loads assets. Before a scene starts, it loads every media asset that an `asset`
-  field refers to: in the components of the scene's actors and of all templates, in system
-  options, in the options of behaviors, shaders and filter effects, and inside other assets.
-  When it destroys a scene, it unloads what nothing else holds. Bitmap fonts stay loaded.
+  field refers to: in the components of the scene's actors and of the templates the scene
+  reaches, in system options, in the options of behaviors, shaders and filter effects, and
+  inside other assets. A scene reaches the templates of its actors and the templates named in
+  `template` fields, recursively. A template that only code spawns by id is not loaded in
+  advance. When it destroys a scene, it unloads what nothing else holds. The assets in the
+  options of a scene system belong to the scene, the assets in the options of a world system
+  stay loaded until the game ends. Bitmap fonts stay loaded.
+- `assets.acquire(owner, { assets, templates })` holds assets and the assets of templates for an
+  owner, and resolves when their media is loaded. `assets.release(owner)` lets them go. A
+  second `acquire` by the same owner replaces what it holds. The owner is an object or a
+  string; the same string is the same owner in the whole game.
 - `MediaAsset`, the base class of asset kinds backed by a file. `resource` gives the loaded
   file, and `load()` loads it from code. A kind implements `fetchResource` and, if needed,
   `disposeResource`. `Texture`, `Audio` and `BitmapFont` extend it.
@@ -43,6 +51,8 @@ Releases made before this file existed are recorded in the
 
 ### Changed
 
+- A sprite or mesh whose texture is not loaded yet, or whose id has no asset, draws nothing
+  instead of a white rectangle. A sprite or mesh with no texture chosen still draws white.
 - **Breaking:** `EngineOptions.resources` is removed. A system gets its dependencies from game
   code through `with` in the `systems` list, and receives them as the second argument of its
   constructor:

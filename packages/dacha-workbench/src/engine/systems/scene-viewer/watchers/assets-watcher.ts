@@ -57,6 +57,6 @@ export class AssetsWatcher implements Watcher {
 
     this.synced = next;
 
-    void this.assets.acquire(this, { ids: [...next.keys()] });
+    void this.assets.acquire(this, { assets: [...next.keys()] });
   }
 }

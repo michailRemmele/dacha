@@ -98,12 +98,14 @@ describe('AssetsWatcher', () => {
     const assets = createAssets();
     const store = createStore([texture('a', 'a.png'), texture('b', 'b.png')]);
     const watcher = new AssetsWatcher({ store, assets });
-    expect(assets.acquire).toHaveBeenCalledWith(watcher, { ids: ['a', 'b'] });
+    expect(assets.acquire).toHaveBeenCalledWith(watcher, {
+      assets: ['a', 'b'],
+    });
 
     store.put([texture('a', 'c.png')]);
     watcher.handle(['assets']);
 
     expect(assets.acquire).toHaveBeenCalledTimes(2);
-    expect(assets.acquire).toHaveBeenLastCalledWith(watcher, { ids: ['a'] });
+    expect(assets.acquire).toHaveBeenLastCalledWith(watcher, { assets: ['a'] });
   });
 });

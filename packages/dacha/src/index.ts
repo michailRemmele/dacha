@@ -47,7 +47,11 @@ export {
 } from './engine/actor';
 export { TemplateCollection } from './engine/template';
 export { Assets, Asset, MediaAsset } from './engine/asset';
-export type { AssetOptions, AssetConstructor } from './engine/asset';
+export type {
+  AssetOptions,
+  AssetConstructor,
+  AssetSources,
+} from './engine/asset';
 export { ReferenceWalker } from './engine/reference';
 export type {
   Reference,

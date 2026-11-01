@@ -12,7 +12,7 @@ import {
   DefineSystem,
 } from '../../decorators';
 import { Time } from '../../time';
-import type { SceneConfig } from '../../types';
+import type { SceneConfig, TemplateConfig } from '../../types';
 
 const events: string[] = [];
 
@@ -32,6 +32,13 @@ class Picture extends MediaAsset<string> {
 class View extends Component {
   @DefineField({ type: 'asset', kind: 'picture' }) picture!: string;
 }
+
+const template = (id: string, picture: string): TemplateConfig => ({
+  id,
+  name: id,
+  components: [{ name: 'View', config: { picture } }],
+  children: [],
+});
 
 @DefineSystem({
   name: 'Background',
@@ -62,6 +69,12 @@ class Probe extends SceneSystem {
   }
 }
 
+@DefineSystem({
+  name: 'Backdrop',
+  fields: [{ name: 'picture', type: 'asset', kind: 'picture' }],
+})
+class Backdrop extends SceneSystem {}
+
 const scene = (id: string, picture: string): SceneConfig => ({
   id,
   name: id,
@@ -82,30 +95,60 @@ describe('SceneManager -> assets', () => {
   beforeEach(() => {
     events.length = 0;
 
+    const templateCollection = new TemplateCollection();
+    templateCollection.register(template('A', 'pa'));
+    templateCollection.register(template('D', 'pd'));
+
     assets = new Assets({
       assetClasses: [Picture],
-      configs: ['bg', 'hero', 'villain'].map((id) => ({
+      configs: ['bg', 'sky', 'hero', 'villain', 'pa', 'pd'].map((id) => ({
         id,
         name: id,
         kind: 'picture',
         data: {},
       })),
-      walker: new ReferenceWalker([View, Background, Probe, Picture]),
+      templates: templateCollection,
+      walker: new ReferenceWalker([View, Background, Probe, Backdrop, Picture]),
     });
 
     sceneManager = new SceneManager({
-      sceneConfigs: [scene('scene-1', 'hero'), scene('scene-2', 'villain')],
+      sceneConfigs: [
+        scene('scene-1', 'hero'),
+        scene('scene-2', 'villain'),
+        {
+          id: 'scene-3',
+          name: 'scene-3',
+          actors: [
+            {
+              id: 'spawned',
+              name: 'spawned',
+              templateId: 'A',
+              children: [],
+              components: [],
+            },
+          ],
+        },
+      ],
       systemConfigs: [
         { name: 'Background', options: { picture: 'bg' } },
         { name: 'Probe', options: {} },
+        { name: 'Backdrop', options: { picture: 'sky' } },
       ],
-      systems: normalizeSystems([Background, Probe]),
+      systems: normalizeSystems([Background, Probe, Backdrop]),
       components: [View],
       globalOptions: {},
-      templateCollection: new TemplateCollection(),
+      templateCollection,
       assets,
       time: new Time(),
     });
+  });
+
+  it('loads the media of reachable templates only', async () => {
+    await sceneManager.loadWorld();
+    await sceneManager.loadScene('scene-3', false);
+
+    expect(events).toContain('load pa');
+    expect(events).not.toContain('load pd');
   });
 
   it('loads the world set before constructing world systems', async () => {
@@ -141,6 +184,19 @@ describe('SceneManager -> assets', () => {
 
     expect(events).not.toContain('unload hero');
     expect(events).not.toContain('load hero');
+  });
+
+  it('holds scene system options with the scene, not with the world', async () => {
+    await sceneManager.loadWorld();
+    await sceneManager.loadScene('scene-1', true);
+    expect(events).toContain('load sky');
+
+    await sceneManager.loadScene('scene-2', true, true);
+    expect(events).not.toContain('unload sky');
+
+    sceneManager.exitActiveScene();
+    sceneManager.destroyScene('scene-2');
+    expect(events).toContain('unload sky');
   });
 
   it('releases the world set on destroyWorld', async () => {
