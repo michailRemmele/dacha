@@ -244,13 +244,37 @@ describe('ReferenceWalker', () => {
     ]);
   });
 
+  it('finds the references of several types only, with the templateId of actors', () => {
+    const actors = [
+      {
+        ...actor(
+          [
+            { name: 'Picture', config: { texture: 'tex', back: '' } },
+            { name: 'Links', config: { next: 's1', prefab: 'loot' } },
+          ],
+          [{ ...actor([], [], 'child'), templateId: 'turret' }],
+        ),
+        templateId: 'tank',
+      },
+    ];
+
+    expect(walker.find({ actors }, ['asset', 'template'])).toEqual([
+      { type: 'template', id: 'tank' },
+      { type: 'asset', id: 'tex' },
+      { type: 'template', id: 'loot' },
+      { type: 'template', id: 'turret' },
+    ]);
+  });
+
   it('rewrites a value when the visitor returns a new id', () => {
     const config = {
       prefab: 'old',
       prefabs: ['keep', 'old'],
       next: 'other',
     };
-    const actors = [actor([{ name: 'Links', config }])];
+    const actors = [
+      { ...actor([{ name: 'Links', config }]), templateId: 'old' },
+    ];
 
     walker.visit({ actors }, ({ id }) => (id === 'old' ? 'new' : undefined));
 
@@ -259,5 +283,6 @@ describe('ReferenceWalker', () => {
       prefabs: ['keep', 'new'],
       next: 'other',
     });
+    expect(actors[0].templateId).toBe('new');
   });
 });

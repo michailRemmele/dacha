@@ -35,7 +35,10 @@ const createSystems = (): {
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: {},
     templateCollection,
-    assets: new Assets({ walker: new ReferenceWalker([]) }),
+    assets: new Assets({
+      templates: new TemplateCollection(),
+      walker: new ReferenceWalker([]),
+    }),
     time: createTime(),
   };
 

@@ -1,4 +1,4 @@
-import { Texture, Sprite as PixiSprite, TilingSprite } from 'pixi.js';
+import { Sprite as PixiSprite, TilingSprite } from 'pixi.js';
 
 import type { Assets } from '../../../../../engine/asset';
 import { Texture as TextureAsset } from '../../../../assets';
@@ -7,6 +7,7 @@ import { BLEND_MODE_MAPPING } from '../../consts';
 import { Sprite } from '../../../../components/sprite';
 import type { Actor } from '../../../../../engine/actor';
 import { TextureArrayStore } from '../texture-array-store';
+import { getFallbackTexture } from '../utils';
 
 interface SpriteBuilderOptions {
   assets: Assets;
@@ -88,7 +89,7 @@ export class SpriteBuilder implements Builder<Sprite> {
 
     const textureArray = this.textureArrayStore.getTextureArray(sprite);
     const texture = textureArray?.[sprite.currentFrame ?? 0];
-    view.texture = texture ?? Texture.WHITE;
+    view.texture = texture ?? getFallbackTexture(sprite.texture);
 
     const scaleX = sprite.flipX ? -1 : 1;
     const scaleY = sprite.flipY ? -1 : 1;

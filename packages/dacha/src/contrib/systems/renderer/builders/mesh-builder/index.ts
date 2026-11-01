@@ -1,4 +1,4 @@
-import { Texture, Mesh as PixiMesh, MeshGeometry } from 'pixi.js';
+import { Mesh as PixiMesh, MeshGeometry } from 'pixi.js';
 
 import type { MaterialSystem } from '../../material';
 import type { Assets } from '../../../../../engine/asset';
@@ -8,6 +8,7 @@ import { BLEND_MODE_MAPPING } from '../../consts';
 import { Mesh } from '../../../../components/mesh';
 import type { Actor } from '../../../../../engine/actor';
 import { TextureArrayStore } from '../texture-array-store';
+import { getFallbackTexture } from '../utils';
 import { GEOMETRY_POSITIONS, GEOMETRY_INDICES } from './consts';
 
 interface MeshBuilderOptions {
@@ -98,7 +99,7 @@ export class MeshBuilder implements Builder<Mesh> {
 
     const textureArray = this.textureArrayStore.getTextureArray(mesh);
     const texture = textureArray?.[mesh.currentFrame];
-    view.texture = texture ?? Texture.WHITE;
+    view.texture = texture ?? getFallbackTexture(mesh.texture);
 
     const scaleX = mesh.flipX ? -1 : 1;
     const scaleY = mesh.flipY ? -1 : 1;

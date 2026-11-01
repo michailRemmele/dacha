@@ -37,6 +37,7 @@ describe('Contrib -> systems -> BehaviorSystem', () => {
           data: { src: 'img/hero.png' },
         },
       ],
+      templates: new TemplateCollection(),
       walker: new ReferenceWalker([Texture]),
     });
 

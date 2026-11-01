@@ -146,6 +146,7 @@ export class Engine {
     const assets = new Assets({
       assetClasses: availableAssets,
       configs: assetConfigs,
+      templates: templateCollection,
       walker,
     });
 

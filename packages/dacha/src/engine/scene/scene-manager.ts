@@ -118,7 +118,7 @@ export class SceneManager {
 
   async loadWorld(): Promise<void> {
     await this.assets.acquire(this.world, {
-      systems: this.systems.map(({ config }) => config),
+      systems: this.getSystemConfigs(WorldSystem),
     });
 
     this.systems.forEach(({ system: SystemClass, dependencies, config }) => {
@@ -243,7 +243,7 @@ export class SceneManager {
 
     const assetsLoading = this.assets.acquire(scene, {
       actors: this.sceneConfigs[id].actors,
-      templates: this.templateCollection.getAll(true),
+      systems: this.getSystemConfigs(SceneSystem),
     });
 
     if (this.loadedScenes.has(id) && !this.loadedScenes.get(id)?.isLoading) {
@@ -368,5 +368,13 @@ export class SceneManager {
     this.loadedScenes.delete(id);
     this.assets.release(scene);
     this.world.dispatchEvent(SceneDestroyed, { scene });
+  }
+
+  private getSystemConfigs(
+    BaseClass: typeof WorldSystem | typeof SceneSystem,
+  ): SystemConfig[] {
+    return this.systems
+      .filter(({ system }) => isSubclassOf(system, BaseClass))
+      .map(({ config }) => config);
   }
 }

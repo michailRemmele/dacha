@@ -18,7 +18,10 @@ describe('UIBridge', () => {
             new ActorCreator([], templateCollection),
           ),
           templateCollection,
-          assets: new Assets({ walker: new ReferenceWalker([]) }),
+          assets: new Assets({
+            templates: new TemplateCollection(),
+            walker: new ReferenceWalker([]),
+          }),
           globalOptions: {},
           time: new Time(),
         }),
