@@ -48,6 +48,15 @@ Releases made before this file existed are recorded in the
   the project settings works the same way.
 - Copying scenes, actors, templates or assets in the editor points references between the
   copies at the copies. References to anything outside the copy stay as they are.
+- `UIBridge` can have settings. Write a system that extends `UIBridge` and declares fields with
+  `@DefineField`, and use it in place of `UIBridge`. You edit the fields in the Systems tab, the
+  interface reads them from `context.options`, and the engine loads the assets the fields point
+  at before the game starts.
+- The interface gets a `UIContext`: `world`, `assets`, `options`, the active `scene`, `watch` to
+  follow a value of the game (its selector gets the active `scene`, and `find` and `findAll` to look up
+  actors of the active scene by components), and `on` to listen for world events. A value of `watch` has
+  `get` and `subscribe`, which works with any UI framework. The bridge removes the listeners
+  the interface leaves when it is destroyed.
 
 ### Changed
 
@@ -62,6 +71,9 @@ Releases made before this file existed are recorded in the
   same system, and two `with` entries of one system throw. The type of the second constructor
   argument is the type `with` accepts, so any system can declare its dependencies.
   `RendererResources` is now `RendererDependencies`.
+- **Breaking:** `onInit` of the interface module receives a `UIContext` instead of `UIOptions`,
+  which is removed. The interface no longer receives `templateCollection`, `actorSpawner` or
+  `globalOptions`. `onDestroy` of the module is now optional.
 - **Breaking:** `Sprite.src` and `Mesh.src` are now `texture`, and `AudioSource.src` is now
   `audio`. These fields and `BitmapText.font` hold the id of an asset instead of a file path.
 - **Breaking:** `Assets.get(id, Class)` is now `Assets.get(Class, id)`, to match

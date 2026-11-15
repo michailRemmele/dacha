@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useRef, FC, ReactElement } from 'react'
-import type { SceneConfig, UIOptions } from 'dacha'
+import type { SceneConfig, UIContext } from 'dacha'
 
 import { EngineContext } from '../engine-provider'
 import { useStore, useConfig } from '../../hooks'
@@ -36,7 +36,7 @@ export const EntitySelectionContext = React.createContext<EntitySelection>({ pat
 export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
   children,
 }): ReactElement => {
-  const { world } = useContext(EngineContext) as UIOptions | undefined ?? {}
+  const { world } = useContext(EngineContext) as UIContext | undefined ?? {}
   const store = useStore()
 
   const [entityData, setEntityData] = useState<InspectedEntity>(() => ({

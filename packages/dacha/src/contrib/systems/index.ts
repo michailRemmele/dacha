@@ -17,11 +17,13 @@ export type {
 } from './behavior-system';
 export { UIBridge } from './ui-bridge';
 export type {
-  UIOptions,
+  UIBridgeDependencies,
+  UIContext,
   UIInitFn,
   UIDestroyFn,
   LoadUIFn,
-  UIBridgeDependencies,
+  UIValue,
+  UISelectorTools,
 } from './ui-bridge';
 export { AudioSystem, AudioAPI } from './audio-system';
 export {

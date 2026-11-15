@@ -18,7 +18,7 @@ import { SystemAPIRegistry } from './system-api-registry';
 export type { SystemAPIRegistry };
 
 /** @inline */
-type WorldListenerFn<T extends EventType> = (
+export type WorldListenerFn<T extends EventType> = (
   event: T extends keyof WorldEventMap
     ? WorldEventMap[T]
     : T extends keyof SceneEventMap
