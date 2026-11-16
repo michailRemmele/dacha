@@ -12,6 +12,110 @@ Releases made before this file existed are recorded in the
 
 ## Unreleased
 
+### Added
+
+- The engine loads assets. Before a scene starts, it loads every media asset that an `asset`
+  field refers to: in the components of the scene's actors and of the templates the scene
+  reaches, in system options, in the options of behaviors, shaders and filter effects, and
+  inside other assets. A scene reaches the templates of its actors and the templates named in
+  `template` fields, recursively. A template that only code spawns by id is not loaded in
+  advance. When it destroys a scene, it unloads what nothing else holds. The assets in the
+  options of a scene system belong to the scene, the assets in the options of a world system
+  stay loaded until the game ends. Bitmap fonts stay loaded.
+- `assets.acquire(owner, { assets, templates })` holds assets and the assets of templates for an
+  owner, and resolves when their media is loaded. `assets.release(owner)` lets them go. A
+  second `acquire` by the same owner replaces what it holds. The owner is an object or a
+  string; the same string is the same owner in the whole game.
+- `MediaAsset`, the base class of asset kinds backed by a file. `resource` gives the loaded
+  file. A kind implements `fetchResource` and, if needed, `disposeResource`. `Texture`, `Audio`
+  and `BitmapFont` extend it.
+- An asset that no field announced loads when an actor first needs it, and unloads with the
+  scene of that actor. To have it ready in time, hold it with `assets.acquire`.
+- The `SceneLoadProgress` event, for a loading bar. The world dispatches it when a scene starts
+  to load and after every step, with `total`, `completed` and `failed`. A step is one file of
+  the scene, or the `onSceneLoad` of one system. It is dispatched immediately, so the interface
+  gets it while the first scene loads. `assets.acquire` takes `onProgress` for its own files.
+- `assets.ensure(owner, id)` makes sure the owner holds one asset and starts loading it, without
+  waiting. A system of your own calls it with the scene, as the built-in systems do.
+- `assets.acquire` takes `add: true` to add to what the owner holds. Without it, the call
+  replaces what the owner holds.
+- The engine tries a file that failed to load one more time before it gives up. An `audio`
+  asset reports a missing file by its HTTP status.
+- `Shader.textures(textures, options)` writes extra textures for the shader by uniform name.
+- A `texture` asset has a `filter`: `nearest` (the default, sharp pixels) or `linear` (smooth).
+  Before, every texture used `nearest`.
+- A `texture` asset has a `wrap`: `clamp` (the default) or `repeat`. Use `repeat` for a texture
+  that a shader scrolls.
+- Shaders and filter effects read the project assets as `this.assets`.
+- A [page about assets](https://dachajs.org/concepts/assets/) in the documentation.
+- The inspector shows a preview under the fields of texture, audio and bitmap font assets:
+  the image with its size, drawn as its `filter` samples it; a small player; and a sample
+  string drawn with the font, without the characters the font has no glyphs for, as in the game.
+- The asset field in the inspector has a search: type to filter the assets by name.
+- Reference fields `template`, `scene` and `actor`, next to `asset`. Each stores the id of an
+  entity and draws a picker in the inspector: `template` lists the root templates, `scene` all
+  scenes, and `actor` the actors of the scene being edited (outside a scene it offers nothing).
+- `multiple`, `unique` and `sortable` on all four reference fields. With `multiple` the value is
+  a list of ids, drawn as rows with an add select below; `sortable` reorders the rows by
+  dragging. The engine loads every asset of an `asset` list.
+- A reference field whose entity is gone shows **Missing** and keeps the id. The start scene in
+  the project settings works the same way.
+- Copying scenes, actors, templates or assets in the editor points references between the
+  copies at the copies. References to anything outside the copy stay as they are.
+- `UIBridge` can have settings. Write a system that extends `UIBridge` and declares fields with
+  `@DefineField`, and use it in place of `UIBridge`. You edit the fields in the Systems tab, the
+  interface reads them from `context.options`, and the engine loads the assets the fields point
+  at before the game starts.
+- The interface gets a `UIContext`: `world`, `assets`, `options`, the active `scene`, `watch` to
+  follow a value of the game (its selector gets the active `scene`, and `find` and `findAll` to look up
+  actors of the active scene by components), and `on` to listen for world events. A value of `watch` has
+  `get` and `subscribe`, which works with any UI framework. The bridge removes the listeners
+  the interface leaves when it is destroyed.
+
+### Changed
+
+- A sprite or mesh whose texture is not loaded yet, or whose id has no asset, draws nothing
+  instead of a white rectangle. A sprite or mesh with no texture chosen still draws white.
+- **Breaking:** `EngineOptions.resources` is removed. A system gets its dependencies from game
+  code through `with` in the `systems` list, and receives them as the second argument of its
+  constructor:
+  `resources: { [Renderer.systemName]: { shaders } }` becomes `Renderer.with({ shaders })`.
+  `BehaviorSystem` takes `BehaviorSystem.with({ behaviors })` instead of an array, and
+  `UIBridge` takes `UIBridge.with({ loadUI })`. A `with` entry replaces a plain entry of the
+  same system, and two `with` entries of one system throw. The type of the second constructor
+  argument is the type `with` accepts, so any system can declare its dependencies.
+  `RendererResources` is now `RendererDependencies`.
+- **Breaking:** `onInit` of the interface module receives a `UIContext` instead of `UIOptions`,
+  which is removed. The interface no longer receives `templateCollection`, `actorSpawner` or
+  `globalOptions`. `onDestroy` of the module is now optional.
+- **Breaking:** `Sprite.src` and `Mesh.src` are now `texture`, and `AudioSource.src` is now
+  `audio`. These fields and `BitmapText.font` hold the id of an asset instead of a file path.
+- **Breaking:** `Assets.get(id, Class)` is now `Assets.get(Class, id)`, to match
+  `getAll(Class)`. `get` no longer throws: it returns `undefined` for an empty or unknown id
+  and for an asset of another kind. The engine warns about ids without an asset when a scene
+  loads.
+- World systems are created in `loadWorld`, after the assets their options refer to have
+  loaded.
+- `Assets` no longer takes `components` and `systems` options. The engine finds references
+  with one `ReferenceWalker` (internal), which replaces the internal `AssetCollector`.
+- The asset field in the inspector updates its list when assets change. The editor's scene view
+  follows changes to the project's assets.
+- Adding a component, a system or a script in the inspector takes one step: picking it in the
+  list adds it. The **+** button next to the list is gone.
+- `Select` from `dacha-workbench` takes `size` and `labelRender`. Without `allowEmpty`, it shows
+  its `placeholder` while the value is empty.
+
+### Fixed
+
+- The editor's scene view now follows a deletion of several items at once: assets, or actors
+  from different scenes. Before, it kept showing the deleted items.
+- Moving a template in the editor (cut and paste) keeps its id and the ids of its child
+  templates, so references to them stay valid. Before, the moved templates got new ids, and
+  every instance of them disappeared from the scenes. Now only the instances inside instances
+  of the old parent are removed, and instances of the new parent get the moved template.
+- The editor finds an item whose id contains `:`. A path to a missing array item no longer
+  changes or removes another item.
+
 ## v0.19.0 — 2026-10-05
 
 ### Added

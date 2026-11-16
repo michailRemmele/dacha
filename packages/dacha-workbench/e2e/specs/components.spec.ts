@@ -1,46 +1,16 @@
-import { test, expect } from '@playwright/test';
-import type { ElectronApplication, Page } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
-import { launchApp, closeApp } from '../launch-app';
-import {
-  toggleSceneExpand,
-  clickTreeNode,
-  switchExplorerTab,
-} from '../helpers';
-
-let app: ElectronApplication;
-let window: Page;
-
-test.beforeEach(async () => {
-  ({ app, window } = await launchApp());
+test.beforeEach(async ({ editor }) => {
+  await editor.explorer.expand('space-level');
 });
 
-test.afterEach(async () => {
-  await closeApp({ app, window });
-});
+test('a project component opens on add with its fields at their initial values', async ({
+  editor,
+}) => {
+  await editor.explorer.select('background_1');
 
-test('adding an existing component to an actor', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
+  const panel = await editor.inspector.addComponent('Health');
 
-  await window.getByRole('combobox').fill('Sprite');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
-
-  await expect(window.getByTestId('entity-panel-Sprite-header')).toBeVisible();
-});
-
-test('a project component opens on add with its fields at their initial values', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
-
-  await window.getByRole('combobox').fill('Health');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
-
-  await expect(window.getByTestId('entity-panel-Health-header')).toBeVisible();
-
-  const panel = window.getByTestId('entity-panel-Health');
   await expect(panel.getByRole('spinbutton', { name: /^Points/ })).toHaveValue(
     '100',
   );
@@ -49,113 +19,75 @@ test('a project component opens on add with its fields at their initial values',
   ).not.toBeChecked();
 });
 
-test('a section shows only while one of its fields does', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
+test('a section shows only while one of its fields does', async ({
+  editor,
+}) => {
+  await editor.explorer.select('background_1');
 
-  await window.getByRole('combobox').fill('Health');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
+  const panel = await editor.inspector.addComponent('Health');
+  const regenerates = panel.getByRole('checkbox', { name: 'Regenerates' });
+  const section = panel.getByText('Regeneration', { exact: true });
 
-  const panel = window.getByTestId('entity-panel-Health');
-  await expect(
-    panel.getByRole('checkbox', { name: 'Regenerates' }),
-  ).toBeVisible();
-  await expect(panel.getByText('Regeneration', { exact: true })).toBeHidden();
+  await expect(regenerates).toBeVisible();
+  await expect(section).toBeHidden();
 
-  await panel.getByRole('checkbox', { name: 'Regenerates' }).check();
-  await expect(panel.getByText('Regeneration', { exact: true })).toBeVisible();
+  await regenerates.check();
+  await expect(section).toBeVisible();
 
-  await panel.getByText('Regeneration', { exact: true }).click();
+  await section.click();
   await expect(
     panel.getByRole('spinbutton', { name: /^Regeneration Rate/ }),
   ).toHaveValue('5');
 
-  await panel.getByRole('checkbox', { name: 'Regenerates' }).uncheck();
-  await expect(panel.getByText('Regeneration', { exact: true })).toBeHidden();
+  await regenerates.uncheck();
+  await expect(section).toBeHidden();
 });
 
-test('an added component opens and stays open for its type across actors', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
+test('an added component opens and stays open for its type across actors', async ({
+  editor,
+}) => {
+  const { explorer, inspector } = editor;
+  const spriteTexture = inspector
+    .panel('Sprite')
+    .getByRole('button', { name: 'Texture' });
+  const transformField = inspector
+    .panel('Transform')
+    .getByRole('spinbutton')
+    .first();
 
-  await window.getByRole('combobox').fill('Sprite');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
+  await explorer.select('background_1');
+  await inspector.addComponent('Sprite');
 
+  await expect(spriteTexture).toBeVisible();
+  await expect(transformField).toBeHidden();
+
+  await explorer.select('player_1');
+
+  await expect(inspector.header('Keyboard Control')).toBeVisible();
   await expect(
-    window.getByTestId('entity-panel-Sprite').getByText('Texture'),
-  ).toBeVisible();
-  await expect(
-    window
-      .getByTestId('entity-panel-Transform')
-      .getByRole('spinbutton')
-      .first(),
+    editor.window.getByRole('button', { name: 'Add New Bind' }),
   ).toBeHidden();
 
-  await clickTreeNode(window, 'player_1');
+  await explorer.select('background_1');
 
-  await expect(
-    window.getByTestId('entity-panel-Keyboard Control-header'),
-  ).toBeVisible();
-  await expect(
-    window.getByRole('button', { name: 'Add New Bind' }),
-  ).toBeHidden();
-
-  await clickTreeNode(window, 'background_1');
-
-  await expect(
-    window.getByTestId('entity-panel-Sprite').getByText('Texture'),
-  ).toBeVisible();
-  await expect(
-    window
-      .getByTestId('entity-panel-Transform')
-      .getByRole('spinbutton')
-      .first(),
-  ).toBeHidden();
+  await expect(spriteTexture).toBeVisible();
+  await expect(transformField).toBeHidden();
 });
 
-test('adding an existing component to a template', async () => {
-  await switchExplorerTab(window, 'Templates');
-  await clickTreeNode(window, 'terrain');
+test('adding an existing component to a template', async ({ editor }) => {
+  await editor.explorer.openTab('Templates');
+  await editor.explorer.select('terrain');
 
-  await window.getByRole('combobox').fill('Collider');
-  await window.getByRole('combobox').press('Enter');
-  await window.getByTestId('entity-picker-add-button').click();
-
-  await expect(
-    window.getByTestId('entity-panel-Collider-header'),
-  ).toBeVisible();
+  await editor.inspector.addComponent('Collider');
 });
 
-test('screenshot: create new component modal', async () => {
-  await toggleSceneExpand(window, 'space-level');
-  await clickTreeNode(window, 'background_1');
+test('screenshot: schema mismatch', async ({ editor }) => {
+  const { explorer, inspector } = editor;
+  await explorer.expand('component-schema-test');
+  await explorer.select('schema_test_actor');
 
-  await window.getByRole('combobox').click();
-  await window.getByRole('button', { name: 'Create New' }).click();
+  await expect(inspector.header('Transform')).toBeVisible();
+  await expect(inspector.header('Legacy Component')).toBeVisible();
 
-  const dialog = window.getByRole('dialog', { name: 'New Component' });
-  await expect(dialog).toBeVisible();
-
-  await expect(window).toHaveScreenshot('create-new-component-modal.png', {
-    mask: [
-      dialog.getByText(/^File Path:/),
-      dialog.getByRole('textbox', { name: 'Base Directory' }),
-    ],
-  });
-});
-
-test('screenshot: schema mismatch', async () => {
-  await toggleSceneExpand(window, 'component-schema-test');
-  await clickTreeNode(window, 'schema_test_actor');
-
-  await expect(
-    window.getByTestId('entity-panel-Transform-header'),
-  ).toBeVisible();
-
-  await expect(
-    window.getByTestId('entity-panel-Legacy Component-header'),
-  ).toBeVisible();
-  await expect(window).toHaveScreenshot('schema-mismatch.png');
+  await expect(inspector.root).toHaveScreenshot('schema-mismatch.png');
 });

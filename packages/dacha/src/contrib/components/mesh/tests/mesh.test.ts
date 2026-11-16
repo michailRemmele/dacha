@@ -3,7 +3,7 @@ import { Mesh } from '../index';
 describe('Contrib -> components -> Mesh', () => {
   it('Returns correct values ', () => {
     const mesh = new Mesh({
-      src: 'some-path-to-texture',
+      texture: 'some-path-to-texture',
       width: 100,
       height: 200,
       slice: 10,
@@ -21,7 +21,7 @@ describe('Contrib -> components -> Mesh', () => {
       },
     });
 
-    expect(mesh.src).toEqual('some-path-to-texture');
+    expect(mesh.texture).toEqual('some-path-to-texture');
     expect(mesh.width).toEqual(100);
     expect(mesh.height).toEqual(200);
     expect(mesh.slice).toEqual(10);
@@ -41,7 +41,7 @@ describe('Contrib -> components -> Mesh', () => {
 
   it('Correct updates values ', () => {
     const mesh = new Mesh({
-      src: 'some-path-to-texture',
+      texture: 'some-path-to-texture',
       width: 100,
       height: 200,
       slice: 10,
@@ -55,7 +55,7 @@ describe('Contrib -> components -> Mesh', () => {
       opacity: 1,
     });
 
-    mesh.src = 'another-path-to-texture';
+    mesh.texture = 'another-path-to-texture';
     mesh.width = 200;
     mesh.height = 400;
     mesh.slice = 55;
@@ -72,7 +72,7 @@ describe('Contrib -> components -> Mesh', () => {
       options: { value: 2 },
     };
 
-    expect(mesh.src).toEqual('another-path-to-texture');
+    expect(mesh.texture).toEqual('another-path-to-texture');
     expect(mesh.width).toEqual(200);
     expect(mesh.height).toEqual(400);
     expect(mesh.slice).toEqual(55);

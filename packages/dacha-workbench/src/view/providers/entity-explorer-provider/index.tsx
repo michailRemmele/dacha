@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useRef, FC, ReactElement } from 'react'
-import type { SceneConfig, UIOptions } from 'dacha'
+import type { SceneConfig, UIContext } from 'dacha'
 
 import { EngineContext } from '../engine-provider'
 import { useStore, useConfig } from '../../hooks'
@@ -12,7 +12,7 @@ import { persistentStorage } from '../../../persistent-storage'
 import type { InspectEntityEvent, SelectEntitiesEvent } from '../../../events'
 
 import { getEntityType, EntityType } from './get-entity-type'
-import { getSceneId } from './get-scene-id'
+import { getSceneIdByPath } from '../../../utils/get-scene-id-by-path'
 
 export interface InspectedEntity {
   path?: string[]
@@ -36,7 +36,7 @@ export const EntitySelectionContext = React.createContext<EntitySelection>({ pat
 export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
   children,
 }): ReactElement => {
-  const { world } = useContext(EngineContext) as UIOptions | undefined ?? {}
+  const { world } = useContext(EngineContext) as UIContext | undefined ?? {}
   const store = useStore()
 
   const [entityData, setEntityData] = useState<InspectedEntity>(() => ({
@@ -72,7 +72,7 @@ export const EntityExplorerProvider: FC<EntityExplorerProviderProps> = ({
     const handleInspectEntity = (event: InspectEntityEvent): void => {
       const { path } = event
 
-      const sceneId = getSceneId(path)
+      const sceneId = getSceneIdByPath(path)
       if (sceneId !== undefined && sceneId !== selectedSceneRef.current) {
         world.dispatchEvent(EventType.SelectScene, { sceneId })
         selectedSceneRef.current = sceneId

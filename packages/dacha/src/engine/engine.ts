@@ -1,9 +1,11 @@
-import type { SystemConstructor } from './system';
+import { normalizeSystems } from './system';
+import type { SystemBinding, SystemConstructor } from './system';
 import type { ComponentConstructor } from './component';
 import type { Config } from './types';
 import { SceneManager } from './scene/scene-manager';
 import { TemplateCollection } from './template';
 import { Assets } from './asset';
+import { ReferenceWalker } from './reference';
 import type { AssetConstructor } from './asset';
 import { GameLoop } from './game-loop';
 import type { PerformanceSettings } from './game-loop';
@@ -19,9 +21,11 @@ export interface EngineOptions {
   config: Config;
   /**
    * The system classes the game can use. The configuration picks from them by
-   * `systemName`.
+   * `systemName`. List a system as `MySystem.with(dependencies)` to give it
+   * dependencies from the game code, see {@link SystemBinding}. Such an entry
+   * replaces a plain entry of the same system.
    */
-  systems: SystemConstructor[];
+  systems: (SystemConstructor | SystemBinding)[];
   /**
    * The component classes the game can use. The configuration picks from them by
    * `componentName`.
@@ -32,12 +36,6 @@ export interface EngineOptions {
    * `assetName`.
    */
   assets: AssetConstructor[];
-  /**
-   * Extra data for systems, keyed by `systemName`. A system gets its entry in
-   * `options.resources`. For example, {@link BehaviorSystem} gets the behavior
-   * classes this way.
-   */
-  resources?: Record<string, unknown>;
 }
 
 /**
@@ -54,12 +52,11 @@ export class Engine {
   /**
    * Creates a new engine instance.
    *
-   * @param options - Configuration, available systems, components, and asset kinds, and optional shared resources.
+   * @param options - Configuration, available systems, components, and asset kinds.
    * @param options.config - Configuration for the engine. It describes the game world: scenes, actors and their components.
    * @param options.systems - Available systems for the engine.
    * @param options.components - Available components for the engine.
    * @param options.assets - Available asset kinds for the engine.
-   * @param options.resources - Optional shared resources used by the engine's systems.
    */
   constructor(options: EngineOptions) {
     this.options = options;
@@ -94,7 +91,6 @@ export class Engine {
       systems: availableSystems,
       components,
       assets: availableAssets,
-      resources = {},
     } = this.options;
 
     if (!startSceneId) {
@@ -111,13 +107,16 @@ export class Engine {
       }
     }
 
-    for (const availableSystem of availableSystems) {
+    for (const entry of availableSystems) {
+      const availableSystem = typeof entry === 'object' ? entry.system : entry;
       if (availableSystem.systemName === undefined) {
         throw new Error(
           `Missing systemName field for ${availableSystem.name} system.`,
         );
       }
     }
+
+    const normalizedSystems = normalizeSystems(availableSystems);
 
     for (const availableAsset of availableAssets) {
       if (availableAsset.assetName === undefined) {
@@ -133,11 +132,23 @@ export class Engine {
       templateCollection.register(template);
     }
 
-    const assets = new Assets(availableAssets);
+    const walker = new ReferenceWalker([
+      ...components,
+      ...normalizedSystems.map(({ system }) => system),
+      ...availableAssets,
+      ...normalizedSystems.flatMap(({ dependencies }) =>
+        typeof dependencies === 'object' && dependencies !== null
+          ? Object.values(dependencies).flat()
+          : [],
+      ),
+    ]);
 
-    for (const config of assetConfigs) {
-      assets.register(config);
-    }
+    const assets = new Assets({
+      assetClasses: availableAssets,
+      configs: assetConfigs,
+      templates: templateCollection,
+      walker,
+    });
 
     const globalOptions = rawGlobalOptions.reduce(
       (acc: Record<string, unknown>, option) => {
@@ -152,12 +163,11 @@ export class Engine {
     this.sceneManager = new SceneManager({
       sceneConfigs: scenes,
       systemConfigs: systems,
-      availableSystems,
+      systems: normalizedSystems,
       components,
       templateCollection,
       assets,
       globalOptions,
-      resources,
       time,
     });
 

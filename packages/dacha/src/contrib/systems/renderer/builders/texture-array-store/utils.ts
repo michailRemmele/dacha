@@ -1,10 +1,4 @@
-import { Texture, TextureSource, Rectangle } from 'pixi.js';
-
-export const getTextureSource = (image: HTMLImageElement): TextureSource =>
-  TextureSource.from({
-    resource: image,
-    scaleMode: 'nearest',
-  });
+import { Texture, Rectangle, type TextureSource } from 'pixi.js';
 
 export const getTextureArray = (
   textureSource: TextureSource,

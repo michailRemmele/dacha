@@ -45,9 +45,9 @@ export const Field: FC<FieldProps> = ({
     if (type === 'data' || dependency === undefined) {
       return void 0;
     }
-    return path.concat(dependency.name.split('.'));
+    return path.concat(dependency.name);
   }, [path, dependency, type]);
-  const fieldPath = useMemo(() => path.concat(name.split('.')), [path, name]);
+  const fieldPath = useMemo(() => path.concat(name), [path, name]);
 
   if (type === 'data') {
     return null;

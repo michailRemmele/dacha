@@ -53,10 +53,19 @@
 
     "assetForm.field.name.label": "Name",
 
+    "assetPreview.error.title": "Can't load the file",
+    "assetPreview.texture.size.title": "{{width}} × {{height}} px",
+    "assetPreview.audio.play.button.title": "Play",
+    "assetPreview.audio.pause.button.title": "Pause",
+    "assetPreview.bitmapFont.sample.label": "Sample text",
+
     "projectSettings.field.startScene.label": "Start Scene",
     "projectSettings.globalOptions.title": "Global Options",
 
     "components.select.option.none.title": "[none]",
+    "reference.missing": "Missing",
+    "reference.noValues": "No values available here",
+    "reference.add": "Add {{name}}",
 
     "componentList.addNew.button.title": "Add Component",
     "systemList.addNew.button.title": "Add System",

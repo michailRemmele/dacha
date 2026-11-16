@@ -1,7 +1,9 @@
 import { BitmapText as PixiBitmapText } from 'pixi.js';
 
 import type { Builder } from '../builder';
-import type { Assets } from '../../assets';
+import type { Assets } from '../../../../../engine/asset';
+import type { Scene } from '../../../../../engine/scene';
+import { BitmapFont as BitmapFontAsset } from '../../../../assets';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { BitmapText } from '../../../../components/bitmap-text';
 import type { Actor } from '../../../../../engine/actor';
@@ -10,13 +12,16 @@ import { filterUnsupportedChars } from './utils';
 
 interface BitmapTextBuilderOptions {
   assets: Assets;
+  scene: Scene;
 }
 
 export class BitmapTextBuilder implements Builder<BitmapText> {
   private assets: Assets;
+  private scene: Scene;
 
-  constructor({ assets }: BitmapTextBuilderOptions) {
+  constructor({ assets, scene }: BitmapTextBuilderOptions) {
     this.assets = assets;
+    this.scene = scene;
   }
 
   destroy(text: BitmapText): void {
@@ -64,13 +69,17 @@ export class BitmapTextBuilder implements Builder<BitmapText> {
       meta.opacity = text.opacity;
     }
 
-    const font = this.assets.get(text);
+    const fontAsset = this.assets.get(BitmapFontAsset, text.font);
+    if (fontAsset && !fontAsset.resource) {
+      this.assets.ensure(this.scene, text.font);
+    }
+    const font = fontAsset?.resource;
     if (font && font.fontFamily !== meta.fontFamily) {
       view.style.fontFamily = font.fontFamily;
       meta.fontFamily = font.fontFamily;
     }
 
-    if (text.text !== meta.text) {
+    if (text.text !== meta.text || font !== meta.font) {
       const filteredText = font
         ? filterUnsupportedChars(text.text, font)
         : text.text;
@@ -84,6 +93,7 @@ export class BitmapTextBuilder implements Builder<BitmapText> {
       view.text = filteredText;
 
       meta.text = text.text;
+      meta.font = font;
     }
 
     if (text.fontSize !== meta.fontSize) {

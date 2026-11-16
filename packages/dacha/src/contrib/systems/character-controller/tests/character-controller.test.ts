@@ -3,6 +3,7 @@ import { eventQueue } from '../../../../engine/event-target';
 import { TemplateCollection } from '../../../../engine/template';
 import { World } from '../../../../engine/world';
 import { Assets } from '../../../../engine/asset';
+import { ReferenceWalker } from '../../../../engine/reference';
 import { Vector } from '../../../../engine/math-lib';
 import { CharacterHit } from '../../../../events';
 import type { CharacterHitEvent } from '../../../../events';
@@ -34,7 +35,10 @@ const createSystems = (): {
     actorSpawner: new ActorSpawner(actorCreator),
     globalOptions: {},
     templateCollection,
-    assets: new Assets([]),
+    assets: new Assets({
+      templates: new TemplateCollection(),
+      walker: new ReferenceWalker([]),
+    }),
     time: createTime(),
   };
 

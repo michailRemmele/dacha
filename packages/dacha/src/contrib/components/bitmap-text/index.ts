@@ -48,12 +48,12 @@ export class BitmapText extends Component<BitmapTextConfig> {
   /** Text to render */
   @DefineField({ type: 'textarea', initialValue: 'Text', section: 'text' })
   text!: string;
-  /** Path to the font asset */
+  /** The id of the bitmap font asset. Empty means none. */
   @DefineField({
-    type: 'file',
+    type: 'asset',
+    kind: 'bitmapFont',
     initialValue: '',
     section: 'text',
-    extensions: ['fnt', 'xml'],
   })
   font!: string;
   /** Size of the text */

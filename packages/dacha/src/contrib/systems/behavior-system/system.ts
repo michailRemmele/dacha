@@ -11,24 +11,29 @@ import { Behaviors } from '../../components';
 import { AddActor, RemoveActor } from '../../../engine/events';
 import type { AddActorEvent, RemoveActorEvent } from '../../../engine/events';
 
-import type { Behavior, BehaviorOptions, BehaviorConstructor } from './types';
+import type {
+  Behavior,
+  BehaviorOptions,
+  BehaviorConstructor,
+  BehaviorSystemDependencies,
+} from './types';
 
 /**
  * Runs the behaviors listed in the {@link Behaviors} component of each actor.
  *
- * Pass your behavior classes to the engine in `resources`, under
- * `BehaviorSystem.systemName`.
+ * Pass your behavior classes with `BehaviorSystem.with({ behaviors })`, see
+ * {@link BehaviorSystemDependencies}.
  *
  * @example
  * ```ts
  * const engine = new Engine({
  *   config,
- *   systems: [BehaviorSystem, ...gameSystems],
+ *   systems: [
+ *     BehaviorSystem.with({ behaviors: gameBehaviors }),
+ *     ...gameSystems,
+ *   ],
  *   components: [Behaviors, ...gameComponents],
  *   assets: [],
- *   resources: {
- *     [BehaviorSystem.systemName]: [...gameBehaviors],
- *   },
  * });
  * ```
  *
@@ -48,18 +53,13 @@ export class BehaviorSystem extends SceneSystem {
   private time: Time;
   private activeBehaviors: Record<string, Behavior[]>;
 
-  constructor(options: SceneSystemOptions) {
+  constructor(
+    options: SceneSystemOptions,
+    dependencies?: BehaviorSystemDependencies,
+  ) {
     super();
 
-    const {
-      actorSpawner,
-      assets,
-      world,
-      scene,
-      globalOptions,
-      time,
-      resources = [],
-    } = options;
+    const { actorSpawner, assets, world, scene, globalOptions, time } = options;
 
     this.world = world;
     this.scene = scene;
@@ -71,7 +71,7 @@ export class BehaviorSystem extends SceneSystem {
     this.actorSpawner = actorSpawner;
     this.assets = assets;
     this.globalOptions = globalOptions;
-    this.behaviors = (resources as BehaviorConstructor[]).reduce(
+    this.behaviors = (dependencies?.behaviors ?? []).reduce(
       (acc, behavior) => {
         if (behavior.behaviorName === undefined) {
           throw new Error(

@@ -7,14 +7,21 @@ import {
 } from 'pixi.js';
 
 import type { Time } from '../../../../engine/time';
+import type { Assets } from '../../../../engine/asset';
 import type { ViewComponent } from '../types';
 
-import type { Shader, ShaderConstructor, MaterialConfig } from './shader';
+import type {
+  Shader,
+  ShaderConstructor,
+  ShaderTextures,
+  MaterialConfig,
+} from './shader';
 import { DEFAULT_FRAGMENT_SHADER, DEFAULT_VERTEX_SHADER } from './consts';
 
 interface MaterialSystemOptions {
   shaders?: ShaderConstructor[];
   time: Time;
+  assets: Assets;
 }
 
 type MaterialViewComponent = ViewComponent & {
@@ -23,6 +30,7 @@ type MaterialViewComponent = ViewComponent & {
 
 const createShaderBuilders = (
   shaders: ShaderConstructor[],
+  assets: Assets,
 ): Record<string, Shader | undefined> => {
   return shaders.reduce(
     (acc, MaterialClass) => {
@@ -38,7 +46,7 @@ const createShaderBuilders = (
         );
       }
 
-      acc[MaterialClass.shaderName] = new MaterialClass();
+      acc[MaterialClass.shaderName] = new MaterialClass({ assets });
       return acc;
     },
     {} as Record<string, Shader>,
@@ -49,19 +57,26 @@ export class MaterialSystem {
   private time: Time;
 
   private shaderBuilders: Record<string, Shader | undefined>;
+  private assets: Assets;
 
   private currentVersion: number;
 
-  constructor({ time, shaders = [] }: MaterialSystemOptions) {
+  constructor({ time, assets, shaders = [] }: MaterialSystemOptions) {
     this.time = time;
+    this.assets = assets;
 
-    this.shaderBuilders = createShaderBuilders(shaders);
+    this.shaderBuilders = createShaderBuilders(shaders, assets);
 
     this.currentVersion = 0;
   }
 
   private createShader(config?: MaterialConfig): PixiShader {
     const builder = config ? this.shaderBuilders[config.name] : undefined;
+
+    const textures: ShaderTextures = {};
+    if (config) {
+      builder?.textures?.(textures, config.options);
+    }
 
     const shader = PixiShader.from({
       gl: {
@@ -73,6 +88,12 @@ export class MaterialSystem {
       },
       resources: {
         uSampler: Texture.WHITE,
+        ...Object.fromEntries(
+          Object.entries(textures).map(([name, texture]) => [
+            name,
+            (texture ?? Texture.WHITE).source,
+          ]),
+        ),
         uniformsGroup: {
           uTime: { value: 0.0, type: 'f32' },
           uTint: { value: [1.0, 1.0, 1.0], type: 'vec3<f32>' },
@@ -85,7 +106,10 @@ export class MaterialSystem {
       },
     });
 
-    shader.__dacha = { version: this.currentVersion, meta: {} };
+    shader.__dacha = {
+      version: this.currentVersion,
+      meta: { materialTextures: textures },
+    };
 
     return shader;
   }
@@ -154,6 +178,19 @@ export class MaterialSystem {
       return;
     }
 
+    if (builder.textures) {
+      const textures = meta.materialTextures as ShaderTextures;
+      builder.textures(textures, material.options);
+
+      const resources = view.shader.resources;
+      for (const name in textures) {
+        const source = (textures[name] ?? Texture.WHITE).source;
+        if (resources[name] !== source) {
+          resources[name] = source;
+        }
+      }
+    }
+
     builder.updateUniforms?.(
       view.shader.resources.uniformsGroup.uniforms,
       material.options,
@@ -161,7 +198,7 @@ export class MaterialSystem {
   }
 
   reloadShaders(shaders: ShaderConstructor[]): void {
-    this.shaderBuilders = createShaderBuilders(shaders);
+    this.shaderBuilders = createShaderBuilders(shaders, this.assets);
     this.currentVersion += 1;
   }
 }

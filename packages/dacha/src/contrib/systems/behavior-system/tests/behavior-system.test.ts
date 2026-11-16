@@ -3,6 +3,7 @@ import { Actor, ActorCreator, ActorSpawner } from '../../../../engine/actor';
 import { World } from '../../../../engine/world';
 import { TemplateCollection } from '../../../../engine/template';
 import { Assets } from '../../../../engine/asset';
+import { ReferenceWalker } from '../../../../engine/reference';
 import { Texture } from '../../../assets';
 import { Time } from '../../../../engine/time';
 import { Behaviors } from '../../../components';
@@ -26,12 +27,18 @@ describe('Contrib -> systems -> BehaviorSystem', () => {
   });
 
   it('passes the asset registry to behaviors', () => {
-    const assets = new Assets([Texture]);
-    assets.register({
-      id: 'a1',
-      name: 'Hero',
-      kind: 'texture',
-      data: { src: 'img/hero.png' },
+    const assets = new Assets({
+      assetClasses: [Texture],
+      configs: [
+        {
+          id: 'a1',
+          name: 'Hero',
+          kind: 'texture',
+          data: { src: 'img/hero.png' },
+        },
+      ],
+      templates: new TemplateCollection(),
+      walker: new ReferenceWalker([Texture]),
     });
 
     const templateCollection = new TemplateCollection();
@@ -52,21 +59,23 @@ describe('Contrib -> systems -> BehaviorSystem', () => {
     );
     scene.appendChild(actor);
 
-    const system = new BehaviorSystem({
-      scene,
-      world: new World({ id: 'world', name: 'world' }),
-      actorSpawner: new ActorSpawner(actorCreator),
-      templateCollection,
-      assets,
-      globalOptions: {},
-      resources: [CaptureBehavior],
-      time: new Time(),
-    });
+    const system = new BehaviorSystem(
+      {
+        scene,
+        world: new World({ id: 'world', name: 'world' }),
+        actorSpawner: new ActorSpawner(actorCreator),
+        templateCollection,
+        assets,
+        globalOptions: {},
+        time: new Time(),
+      },
+      { behaviors: [CaptureBehavior] },
+    );
 
     system.onSceneEnter();
 
     expect(capturedOptions?.assets).toBe(assets);
-    expect(capturedOptions?.assets.get('a1', Texture).src).toBe(
+    expect(capturedOptions?.assets.get(Texture, 'a1')!.src).toBe(
       'img/hero.png',
     );
   });

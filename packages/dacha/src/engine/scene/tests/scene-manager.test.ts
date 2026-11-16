@@ -1,7 +1,8 @@
 import { SceneManager } from '../scene-manager';
-import { WorldSystem, SceneSystem } from '../../system';
+import { WorldSystem, SceneSystem, normalizeSystems } from '../../system';
 import { TemplateCollection } from '../../template';
 import { Assets } from '../../asset';
+import { ReferenceWalker } from '../../reference';
 import { Time } from '../../time';
 
 import { getSceneConfigMock } from './mocks/scene-config.mock';
@@ -66,56 +67,51 @@ describe('Engine -> SceneManager', () => {
         getSystemConfigMock('world-system-3'),
         getSystemConfigMock('scene-system-4'),
       ],
-      availableSystems: [
-        WorldSystem1,
-        SceneSystem2,
-        WorldSystem3,
-        SceneSystem4,
-      ],
+      systems: normalizeSystems([
+        WorldSystem1.with({
+          loadWorldFn: loadWorldAsyncFn,
+          readyWorldFn,
+          destroyWorldFn,
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+        SceneSystem2.with({
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+        WorldSystem3.with({
+          loadWorldFn: loadWorldAsyncFn,
+          readyWorldFn,
+          destroyWorldFn,
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+        SceneSystem4.with({
+          loadSceneFn: loadSceneAsyncFn,
+          enterSceneFn,
+          exitSceneFn,
+          destroySceneFn,
+        }),
+      ]),
       components: [],
       globalOptions: {},
-      resources: {
-        [WorldSystem1.systemName]: {
-          loadWorldFn: loadWorldAsyncFn,
-          readyWorldFn,
-          destroyWorldFn,
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-        [SceneSystem2.systemName]: {
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-        [WorldSystem3.systemName]: {
-          loadWorldFn: loadWorldAsyncFn,
-          readyWorldFn,
-          destroyWorldFn,
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-        [SceneSystem4.systemName]: {
-          loadSceneFn: loadSceneAsyncFn,
-          enterSceneFn,
-          exitSceneFn,
-          destroySceneFn,
-        },
-      },
       templateCollection: new TemplateCollection(),
-      assets: new Assets([]),
+      assets: new Assets({
+        templates: new TemplateCollection(),
+        walker: new ReferenceWalker([]),
+      }),
       time: new Time(),
     });
   });
 
   it('Should return correct systems after load and entering a scene', async () => {
-    expect(sceneManager.getSystems().length).toBe(2);
-    expect(sceneManager.getSystems()[0]).toBeInstanceOf(WorldSystem);
-    expect(sceneManager.getSystems()[1]).toBeInstanceOf(WorldSystem);
+    expect(sceneManager.getSystems().length).toBe(0);
 
     await sceneManager.loadWorld();
     await sceneManager.loadScene('scene-2', true);

@@ -1,6 +1,7 @@
 import { Filter, type Application } from 'pixi.js';
 
 import type { Time } from '../../../../engine/time';
+import type { Assets } from '../../../../engine/asset';
 
 import type {
   FilterEffect,
@@ -11,6 +12,7 @@ import type {
 export interface FiltersSystemOptions {
   application: Application;
   time: Time;
+  assets: Assets;
   availableFilterEffects?: FilterEffectConstructor[];
   filterEffects?: FilterEffectConfig[];
 }
@@ -25,6 +27,7 @@ export class FilterSystem {
   constructor({
     application,
     time,
+    assets,
     availableFilterEffects = [],
     filterEffects = [],
   }: FiltersSystemOptions) {
@@ -45,7 +48,7 @@ export class FilterSystem {
           );
         }
 
-        acc[FilterEffect.filterEffectName] = new FilterEffect();
+        acc[FilterEffect.filterEffectName] = new FilterEffect({ assets });
         return acc;
       },
       {} as Record<string, FilterEffect>,

@@ -134,12 +134,22 @@ on](/concepts/systems/#selecting-the-actors-to-act-on).
 Bullets, enemies and particles are not placed in the scene ahead of time. You spawn them from
 a [template](/editor/templates/) while the game runs. Systems and behaviors both receive an
 `actorSpawner` in their options. It takes the template's
-[id](/concepts/configuration/#identifiers):
+[id](/concepts/configuration/#identifiers). Keep the id in a
+[`template` field](/game-code/inspector-fields/#referring-to-scenes-templates-and-actors) and
+pick the template in the inspector:
+
+```ts
+@DefineField({ type: 'template' })
+bulletTemplate!: string;
+```
+
+The engine then loads the template's assets before the scene starts. An id written in the code
+is not loaded in advance. See [loading assets from code](/concepts/assets/#loading-assets-from-code).
 
 ```ts
 import { Transform } from 'dacha';
 
-const bullet = this.actorSpawner.spawn(BULLET_TEMPLATE_ID);
+const bullet = this.actorSpawner.spawn(this.bulletTemplate);
 const transform = bullet.getComponent(Transform);
 
 transform.world.position.x = 100;

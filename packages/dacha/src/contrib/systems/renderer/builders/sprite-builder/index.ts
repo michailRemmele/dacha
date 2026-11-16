@@ -1,25 +1,31 @@
-import { Texture, Sprite as PixiSprite, TilingSprite } from 'pixi.js';
+import { Sprite as PixiSprite, TilingSprite } from 'pixi.js';
 
-import type { Assets } from '../../assets';
+import type { Assets } from '../../../../../engine/asset';
+import type { Scene } from '../../../../../engine/scene';
+import { Texture as TextureAsset } from '../../../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Sprite } from '../../../../components/sprite';
 import type { Actor } from '../../../../../engine/actor';
 import { TextureArrayStore } from '../texture-array-store';
+import { getFallbackTexture } from '../utils';
 
 interface SpriteBuilderOptions {
   assets: Assets;
+  scene: Scene;
 }
 
 export class SpriteBuilder implements Builder<Sprite> {
   private assets: Assets;
+  private scene: Scene;
 
   private textureArrayStore: TextureArrayStore;
 
-  constructor({ assets }: SpriteBuilderOptions) {
+  constructor({ assets, scene }: SpriteBuilderOptions) {
     this.assets = assets;
+    this.scene = scene;
 
-    this.textureArrayStore = new TextureArrayStore(assets);
+    this.textureArrayStore = new TextureArrayStore();
   }
 
   destroy(sprite: Sprite): void {
@@ -73,19 +79,21 @@ export class SpriteBuilder implements Builder<Sprite> {
       meta.opacity = sprite.opacity;
     }
 
-    if (
-      this.assets.get(sprite) &&
-      (sprite.src !== meta.src || sprite.slice !== meta.slice)
-    ) {
-      view.label = sprite.src;
-      this.textureArrayStore.updateTextureArray(sprite);
-      meta.src = sprite.src;
+    const textureAsset = this.assets.get(TextureAsset, sprite.texture);
+    if (textureAsset && !textureAsset.resource) {
+      this.assets.ensure(this.scene, sprite.texture);
+    }
+    const resource = textureAsset?.resource;
+    if (resource !== meta.resource || sprite.slice !== meta.slice) {
+      view.label = sprite.texture;
+      this.textureArrayStore.updateTextureArray(sprite, resource);
+      meta.resource = resource;
       meta.slice = sprite.slice;
     }
 
     const textureArray = this.textureArrayStore.getTextureArray(sprite);
     const texture = textureArray?.[sprite.currentFrame ?? 0];
-    view.texture = texture ?? Texture.WHITE;
+    view.texture = texture ?? getFallbackTexture(sprite.texture);
 
     const scaleX = sprite.flipX ? -1 : 1;
     const scaleY = sprite.flipY ? -1 : 1;

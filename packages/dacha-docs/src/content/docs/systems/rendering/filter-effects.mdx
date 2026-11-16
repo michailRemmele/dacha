@@ -68,6 +68,9 @@ export default class ScreenBlur extends FilterEffect {
 Without `update`, the filter keeps the values `create` gave it. Implement `update` if options
 change at runtime, or if the effect animates over time.
 
+A filter effect can read the project's [assets](/concepts/assets/) as `this.assets`. For example,
+`create` can pass a texture to the filter with `this.assets.get(Texture, id)?.resource`.
+
 The fields on `@DefineFilterEffect` become the fields of the effect in the editor. They work as
 described in [declaring fields on the decorator](/game-code/inspector-fields/#declaring-fields-on-the-decorator).
 
@@ -127,7 +130,7 @@ The renderer is a world system, so effects stay active when the game changes sce
 
 ## Registering filter effects
 
-Filter effect classes reach the renderer through the engine's `resources`.
+Filter effect classes reach the renderer through `Renderer.with`.
 Import them and pass the result to the renderer:
 
 ```ts
@@ -135,11 +138,12 @@ const gameFilterEffects = import.meta.glob('./**/*.filter-effect.ts', { eager: t
 
 const engine = new Engine({
   // ...
-  resources: {
-    [Renderer.systemName]: {
+  systems: [
+    Renderer.with({
       filterEffects: Object.values(gameFilterEffects).map((module) => module.default),
-    },
-  },
+    }),
+    // ...
+  ],
 });
 ```
 

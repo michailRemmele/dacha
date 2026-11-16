@@ -51,6 +51,13 @@ export class TemplateCollection {
   }
 
   /**
+   * Checks if there is a template with this id. Child templates count too.
+   */
+  has(id: string): boolean {
+    return this.storage.has(id);
+  }
+
+  /**
    * Returns all templates.
    *
    * @param onlyRoots - Returns only the top-level templates, without their children.

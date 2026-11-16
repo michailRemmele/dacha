@@ -7,7 +7,7 @@ import { createSortByLayer } from '../sort-by-layer';
 
 describe('Contrib -> RenderSystem -> Sort -> sortByLayer()', () => {
   const baseSpriteProps: SpriteConfig = {
-    src: 'some-path',
+    texture: '',
     width: 0,
     height: 0,
     sortOffset: { x: 0, y: 0 },

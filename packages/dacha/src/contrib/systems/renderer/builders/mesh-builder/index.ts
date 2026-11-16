@@ -1,30 +1,36 @@
-import { Texture, Mesh as PixiMesh, MeshGeometry } from 'pixi.js';
+import { Mesh as PixiMesh, MeshGeometry } from 'pixi.js';
 
 import type { MaterialSystem } from '../../material';
-import type { Assets } from '../../assets';
+import type { Assets } from '../../../../../engine/asset';
+import type { Scene } from '../../../../../engine/scene';
+import { Texture as TextureAsset } from '../../../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Mesh } from '../../../../components/mesh';
 import type { Actor } from '../../../../../engine/actor';
 import { TextureArrayStore } from '../texture-array-store';
+import { getFallbackTexture } from '../utils';
 import { GEOMETRY_POSITIONS, GEOMETRY_INDICES } from './consts';
 
 interface MeshBuilderOptions {
   assets: Assets;
+  scene: Scene;
   materialSystem: MaterialSystem;
 }
 
 export class MeshBuilder implements Builder<Mesh> {
   private assets: Assets;
+  private scene: Scene;
   private materialSystem: MaterialSystem;
 
   private textureArrayStore: TextureArrayStore;
 
-  constructor({ assets, materialSystem }: MeshBuilderOptions) {
+  constructor({ assets, scene, materialSystem }: MeshBuilderOptions) {
     this.assets = assets;
+    this.scene = scene;
     this.materialSystem = materialSystem;
 
-    this.textureArrayStore = new TextureArrayStore(assets);
+    this.textureArrayStore = new TextureArrayStore();
   }
 
   destroy(mesh: Mesh): void {
@@ -83,13 +89,21 @@ export class MeshBuilder implements Builder<Mesh> {
       meta.opacity = mesh.opacity;
     }
 
-    if (
-      mesh.src !== meta.src ||
-      mesh.slice !== meta.slice ||
-      mesh.currentFrame !== meta.currentFrame
-    ) {
-      this.updateTexture(mesh);
+    const textureAsset = this.assets.get(TextureAsset, mesh.texture);
+    if (textureAsset && !textureAsset.resource) {
+      this.assets.ensure(this.scene, mesh.texture);
     }
+    const resource = textureAsset?.resource;
+    if (resource !== meta.resource || mesh.slice !== meta.slice) {
+      view.label = mesh.texture;
+      this.textureArrayStore.updateTextureArray(mesh, resource);
+      meta.resource = resource;
+      meta.slice = mesh.slice;
+    }
+
+    const textureArray = this.textureArrayStore.getTextureArray(mesh);
+    const texture = textureArray?.[mesh.currentFrame];
+    view.texture = texture ?? getFallbackTexture(mesh.texture);
 
     const scaleX = mesh.flipX ? -1 : 1;
     const scaleY = mesh.flipY ? -1 : 1;
@@ -108,25 +122,5 @@ export class MeshBuilder implements Builder<Mesh> {
     }
 
     this.materialSystem.updateShader(mesh);
-  }
-
-  private updateTexture(mesh: Mesh): void {
-    const view = mesh.renderData!.view;
-    const meta = view.__dacha.meta;
-
-    if (
-      this.assets.get(mesh) &&
-      (mesh.src !== meta.src || mesh.slice !== meta.slice)
-    ) {
-      view.label = mesh.src;
-      this.textureArrayStore.updateTextureArray(mesh);
-      meta.src = mesh.src;
-      meta.slice = mesh.slice;
-    }
-
-    const textureArray = this.textureArrayStore.getTextureArray(mesh);
-    const texture = textureArray?.[mesh.currentFrame];
-    view.texture = texture ?? Texture.WHITE;
-    meta.currentFrame = mesh.currentFrame;
   }
 }

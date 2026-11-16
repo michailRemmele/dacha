@@ -1,0 +1,37 @@
+.missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ant-color-warning);
+}
+
+.listField {
+  margin: 5px 0;
+}
+
+.sortableList {
+  margin: 10px 0;
+}
+
+.label {
+  display: block;
+  margin: 5px 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.rowSelect {
+  margin: 0 4px 0 2px;
+}
+
+.rowDelete {
+  flex-shrink: 0;
+}
+
+.select {
+  margin-top: 5px;
+}

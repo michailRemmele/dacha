@@ -23,7 +23,7 @@ import type {
   RemoveComponentEvent,
 } from '../../../engine/events';
 
-import type { Assets } from './assets';
+import type { Assets } from '../../../engine/asset';
 import { MaterialSystem } from './material';
 import {
   SpriteBuilder,
@@ -47,7 +47,6 @@ interface ActorRenderTreeOptions {
 export class ActorRenderTree {
   private scene: Scene;
   private worldContainer: Container;
-  private assets: Assets;
   private sortingLayers: Map<string, RenderLayer>;
 
   public viewEntries: Set<ViewContainer>;
@@ -65,7 +64,6 @@ export class ActorRenderTree {
   }: ActorRenderTreeOptions) {
     this.scene = scene;
     this.worldContainer = worldContainer;
-    this.assets = assets;
     this.sortingLayers = sortingLayers;
 
     this.viewEntries = new Set();
@@ -74,16 +72,19 @@ export class ActorRenderTree {
     this.actorParentMap = new Map();
 
     this.builders = new Map();
-    this.builders.set(Sprite.componentName, new SpriteBuilder({ assets }));
+    this.builders.set(
+      Sprite.componentName,
+      new SpriteBuilder({ assets, scene }),
+    );
     this.builders.set(Shape.componentName, new ShapeBuilder());
     this.builders.set(PixiView.componentName, new PixiViewBuilder());
     this.builders.set(
       BitmapText.componentName,
-      new BitmapTextBuilder({ assets }),
+      new BitmapTextBuilder({ assets, scene }),
     );
     this.builders.set(
       Mesh.componentName,
-      new MeshBuilder({ assets, materialSystem }),
+      new MeshBuilder({ assets, scene, materialSystem }),
     );
 
     this.scene.children.forEach((actor) =>
@@ -106,8 +107,6 @@ export class ActorRenderTree {
       return;
     }
 
-    void this.assets.load(component);
-
     const builder = this.builders.get(name)!;
     const container = this.actorContainerMap.get(target)!;
 
@@ -122,8 +121,6 @@ export class ActorRenderTree {
     }
 
     const component = event.component as ViewComponent;
-
-    void this.assets.unload(component);
 
     if (component?.renderData?.view) {
       this.viewEntries.delete(component.renderData.view);
@@ -181,12 +178,9 @@ export class ActorRenderTree {
 
     this.actorContainerMap.set(actor, container);
 
-    void this.assets.load(actor);
-
     this.builders.forEach((builder, componentName) => {
       const viewComponent = actor.getComponent(componentName) as
-        | ViewComponent
-        | undefined;
+        ViewComponent | undefined;
 
       if (viewComponent) {
         const view = builder.buildView(viewComponent, actor);
@@ -206,12 +200,9 @@ export class ActorRenderTree {
     this.actorContainerMap.delete(actor);
     this.actorParentMap.delete(actor);
 
-    this.assets.unload(actor);
-
     this.builders.forEach((builder, componentName) => {
       const viewComponent = actor.getComponent(componentName) as
-        | ViewComponent
-        | undefined;
+        ViewComponent | undefined;
 
       if (viewComponent?.renderData?.view) {
         this.viewEntries.delete(viewComponent.renderData.view);
@@ -256,8 +247,7 @@ export class ActorRenderTree {
   private updatePosition(container: Container, actor: Actor): void {
     const { local } = actor.getComponent(Transform);
     const interpolation = actor.getComponent(Interpolation) as
-      | Interpolation
-      | undefined;
+      Interpolation | undefined;
 
     const useRender =
       interpolation !== undefined &&

@@ -1,4 +1,4 @@
-import type { HTMLProps } from 'react';
+import type { HTMLProps, ReactNode } from 'react';
 import type { Point } from 'dacha';
 
 export interface InputProps
@@ -19,6 +19,9 @@ export interface SelectProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: string | null;
   onChange?: (value: string | null) => void;
   allowEmpty?: boolean;
+  searchable?: boolean;
+  labelRender?: () => ReactNode;
+  size?: 'small' | 'middle' | 'large';
 }
 
 export interface MultiTextInputProps

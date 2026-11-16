@@ -12,11 +12,6 @@ import { EventType } from '../../../../../../../events';
 
 import * as styles from './template-feature.module.css';
 
-interface SelectOption {
-  label: string;
-  value: string;
-}
-
 interface TemplateFeatureProps {
   value: string;
 }
@@ -46,13 +41,6 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
     [world],
   );
 
-  const handleFilter = useCallback(
-    (input: string, option?: SelectOption) =>
-      option !== undefined &&
-      option.label.toLowerCase().includes(input.toLowerCase()),
-    [],
-  );
-
   return (
     <ToolFeature>
       <FeatureLabel title={t('toolbar.template.features.template.title')}>
@@ -63,8 +51,7 @@ export const TemplateFeature: FC<TemplateFeatureProps> = ({ value }) => {
           onChange={handleChange}
           value={value}
           disabled={templates.length === 0}
-          showSearch
-          filterOption={handleFilter}
+          showSearch={{ optionFilterProp: 'label' }}
         />
       </FeatureLabel>
     </ToolFeature>

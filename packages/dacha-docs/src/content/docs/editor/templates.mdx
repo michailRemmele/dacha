@@ -88,12 +88,20 @@ Deleting a template removes every instance of it from every scene.
 ## Spawning at runtime
 
 Bullets and enemies are not placed by hand. A system or a behavior spawns them from a template
-while the game runs, and it addresses the template by id:
+while the game runs, and it addresses the template by id. Keep the id in a
+[`template` field](/game-code/inspector-fields/#referring-to-scenes-templates-and-actors) of
+the system or behavior, and pick the template in the inspector:
 
 ```ts
-const bullet = this.actorSpawner.spawn(BULLET_TEMPLATE_ID);
+@DefineField({ type: 'template' })
+bulletTemplate!: string;
+
+// later, in the game code
+const bullet = this.actorSpawner.spawn(this.bulletTemplate);
 ```
 
-The copy button in the inspector header copies the selected template's id.
+The engine loads the assets of such a template before the scene starts. An id written in the
+code is not loaded in advance. See
+[loading assets from code](/concepts/assets/#loading-assets-from-code).
 [Creating and destroying actors](/concepts/actors/#creating-and-destroying-actors) covers what
 to do with the actor once you have it.

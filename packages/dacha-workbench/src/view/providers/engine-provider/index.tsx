@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useContext, FC, ReactElement } from 'react';
-import type { UIOptions, LoadUIFn } from 'dacha';
+import type { UIContext, LoadUIFn } from 'dacha';
 import {
   Engine,
   MouseInputSystem,
@@ -49,14 +49,14 @@ interface EngineProviderProps {
   children: ReactElement | ReactElement[];
 }
 
-export const EngineContext = React.createContext<UIOptions>({} as UIOptions);
+export const EngineContext = React.createContext<UIContext>({} as UIContext);
 
 export const EngineProvider: FC<EngineProviderProps> = ({
   children,
 }): ReactElement => {
   const { store } = useContext(CommandContext);
 
-  const [context, setContext] = useState<UIOptions>();
+  const [context, setContext] = useState<UIContext>();
 
   const sorting = useMemo<Sorting>(() => {
     const projectConfig = window.electron.getProjectConfig();
@@ -77,9 +77,15 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           MouseInputSystem,
           MouseControlSystem,
           CameraSystem,
-          UIBridge,
+          UIBridge.with({
+            loadUI: (): ReturnType<LoadUIFn> =>
+              Promise.resolve({
+                onInit: (uiContext: UIContext): void => setContext(uiContext),
+                onDestroy: (): void => setContext(void 0),
+              }),
+          }),
           Renderer,
-          ProjectLoader,
+          ProjectLoader.with({ store }),
           SceneViewer,
           ToolManager,
           ZoomToolSystem,
@@ -106,18 +112,6 @@ export const EngineProvider: FC<EngineProviderProps> = ({
           Technical,
         ],
         assets: [Texture, Audio, BitmapFont],
-        resources: {
-          [ProjectLoader.systemName]: {
-            store,
-          },
-          [UIBridge.systemName]: {
-            loadUI: (): ReturnType<LoadUIFn> =>
-              Promise.resolve({
-                onInit: (options: UIOptions): void => setContext(options),
-                onDestroy: (): void => setContext(void 0),
-              }),
-          },
-        },
       }),
     [sorting],
   );
@@ -127,7 +121,7 @@ export const EngineProvider: FC<EngineProviderProps> = ({
   }, [editorEngine]);
 
   return (
-    <EngineContext.Provider value={context as UIOptions}>
+    <EngineContext.Provider value={context as UIContext}>
       {children}
     </EngineContext.Provider>
   );

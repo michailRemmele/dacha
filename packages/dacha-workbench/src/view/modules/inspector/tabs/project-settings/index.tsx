@@ -3,7 +3,8 @@ import { useTranslation, I18nextProvider } from 'react-i18next';
 import type { SceneConfig } from 'dacha';
 
 import { useConfig } from '../../../../hooks';
-import { InputField, LabelledSelect, Form } from '../../components';
+import { InputField, Form } from '../../components';
+import { ReferenceSelect } from '../../components/widget/field-types/reference';
 import { Widget } from '../../components/widget';
 import { CustomWidget } from '../../components/custom-widget';
 import { CollapsePanel } from '../../components/collapse-panel';
@@ -37,10 +38,9 @@ export const ProjectSettings: FC = () => {
     <Form>
       <InputField
         path={['startSceneId']}
-        component={LabelledSelect}
+        component={ReferenceSelect}
         label={t('inspector.projectSettings.field.startScene.label')}
         options={sceneOptions}
-        allowEmpty
       />
       <div>{t('inspector.projectSettings.globalOptions.title')}</div>
 

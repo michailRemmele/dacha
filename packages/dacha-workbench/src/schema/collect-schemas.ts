@@ -53,21 +53,15 @@ export const SCHEMA_GROUPS: Record<SchemaKind, keyof CollectedSchemas> = {
   filterEffect: 'filterEffects',
 };
 
-const resolveView = (name: string): FC<WidgetProps> | undefined =>
-  builtinViews[name] ?? widgetRegistry.getWidget(name);
+const resolveView = ({ kind, name }: Schema): FC<WidgetProps> | undefined =>
+  builtinViews[kind]?.[name] ?? widgetRegistry.getWidget(name);
 
-const toWidget = ({
-  name,
-  title,
-  icon,
-  sections,
-  fields,
-}: Schema): WidgetSchema => ({
-  title,
-  icon: icon as IconName | undefined,
-  sections,
-  fields,
-  view: resolveView(name),
+const toWidget = (schema: Schema): WidgetSchema => ({
+  title: schema.title,
+  icon: schema.icon as IconName | undefined,
+  sections: schema.sections,
+  fields: schema.fields,
+  view: resolveView(schema),
 });
 
 const exportsOf = (module: unknown): unknown[] =>

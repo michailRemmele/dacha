@@ -4,7 +4,7 @@ import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { Shape } from '../../../../components/shape';
 import type { Actor } from '../../../../../engine/actor';
-import { CacheStore } from '../../../../../engine/data-lib';
+import { CacheStore } from '../../cache-store';
 
 import { getGraphicsContext, getGraphicsContextKey } from './utils';
 
@@ -19,7 +19,7 @@ export class ShapeBuilder implements Builder<Shape> {
     const graphicsContextKey = shape.renderData?.graphicsContextKey;
 
     if (graphicsContextKey) {
-      this.graphicsContextMap.release(graphicsContextKey, true);
+      this.graphicsContextMap.release(graphicsContextKey);
     }
 
     shape.renderData?.view.destroy();
@@ -153,7 +153,7 @@ export class ShapeBuilder implements Builder<Shape> {
     const oldGraphicsContextKey = shape.renderData!.graphicsContextKey;
 
     if (oldGraphicsContextKey) {
-      this.graphicsContextMap.release(oldGraphicsContextKey, true);
+      this.graphicsContextMap.release(oldGraphicsContextKey);
     }
 
     const graphicsContextKey = getGraphicsContextKey(shape);

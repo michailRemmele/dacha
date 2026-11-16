@@ -2,6 +2,13 @@ import type { Field, FieldType } from 'dacha';
 
 import { checkDependency } from './check-dependency';
 
+const REFERENCE_TYPES = new Set<FieldType>([
+  'asset',
+  'template',
+  'scene',
+  'actor',
+]);
+
 const getFieldTypeDefault = (type: FieldType): unknown => {
   switch (type) {
     case 'string':
@@ -23,6 +30,9 @@ const getFieldTypeDefault = (type: FieldType): unknown => {
     case 'range':
       return 0;
     case 'asset':
+    case 'template':
+    case 'scene':
+    case 'actor':
       return '';
     case 'vector':
       return { x: 0, y: 0 };
@@ -41,19 +51,11 @@ export const resolveFieldInitialValue = (field: Field): unknown => {
   if (field.initialValue !== undefined) {
     return structuredClone(field.initialValue);
   }
+  if (REFERENCE_TYPES.has(field.type) && 'multiple' in field && field.multiple) {
+    return [];
+  }
   return getFieldTypeDefault(field.type);
 };
-
-const getFieldValue = (state: Record<string, unknown>, path: string): unknown =>
-  path
-    .split('.')
-    .reduce<unknown>(
-      (acc, key) =>
-        typeof acc === 'object' && acc !== null
-          ? (acc as Record<string, unknown>)[key]
-          : undefined,
-      state,
-    );
 
 export const fillMissingFields = (
   state: Record<string, unknown>,
@@ -65,11 +67,11 @@ export const fillMissingFields = (
     if (field.type === 'script' && !field.multiple) {
       return;
     }
-    if (getFieldValue(result, field.name) !== undefined) {
+    if (result[field.name] !== undefined) {
       return;
     }
     if (field.type !== 'data' && field.dependency !== undefined) {
-      const dependencyValue = getFieldValue(result, field.dependency.name);
+      const dependencyValue = result[field.dependency.name];
       if (!checkDependency(dependencyValue, field.dependency.value)) {
         return;
       }

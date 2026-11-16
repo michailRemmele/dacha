@@ -1,4 +1,7 @@
+import type { Texture } from 'pixi.js';
+
 import type { Constructor } from '../../../../types/utils';
+import type { Assets } from '../../../../engine/asset';
 
 export interface MaterialConfig {
   name: string;
@@ -68,12 +71,31 @@ export type ShaderUniformDefinitions = Record<string, ShaderUniform>;
  * @category Rendering
  */
 export type ShaderUniforms = Record<string, ShaderUniformValue>;
+/**
+ * The textures of a shader, by the name of their `sampler2D` uniform.
+ * {@link Shader.textures} writes them. An `undefined` entry binds a white
+ * texture.
+ *
+ * @category Rendering
+ */
+export type ShaderTextures = Record<string, Texture | undefined>;
+
+/**
+ * Shader constructor options.
+ *
+ * @category Rendering
+ */
+export interface ShaderOptions {
+  /** The project assets. Read textures for {@link Shader.textures} from it. */
+  assets: Assets;
+}
 
 /**
  * Base class for the shaders of the {@link Mesh} component.
  *
  * Extend it and name the class with {@link DefineShader}. Every method gets the material options of the
- * mesh as `options`.
+ * mesh as `options`. A texture referenced by an `asset` field of the shader is loaded before the
+ * scene starts.
  *
  * @see [Shaders](https://dachajs.org/systems/rendering/shaders/)
  *
@@ -85,6 +107,14 @@ export abstract class Shader {
    * so a game usually does not assign it.
    */
   static shaderName: string;
+
+  /** The project assets. */
+  protected assets: Assets;
+
+  /** The renderer creates shaders; a game does not call it. */
+  constructor(options: ShaderOptions) {
+    this.assets = options.assets;
+  }
 
   /**
    * Runs every frame. When the returned string changes, the renderer creates
@@ -104,6 +134,20 @@ export abstract class Shader {
    * Runs every frame. Write the new uniform values into `uniforms`. Optional.
    */
   updateUniforms?(uniforms: ShaderUniforms, options: unknown): void;
+  /**
+   * Runs when the renderer creates the shader and every frame. Write your
+   * textures into `textures`, by the name of their `sampler2D` uniform. The
+   * keys written on the first call declare the textures of the shader, so
+   * write every key on every call. Optional.
+   *
+   * @example
+   * ```ts
+   * textures(textures: ShaderTextures, { mask }: MaskOptions) {
+   *   textures.uMask = this.assets.get(Texture, mask)?.resource;
+   * }
+   * ```
+   */
+  textures?(textures: ShaderTextures, options: unknown): void;
 }
 
 /**

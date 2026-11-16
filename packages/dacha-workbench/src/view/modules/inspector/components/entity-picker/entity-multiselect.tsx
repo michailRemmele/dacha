@@ -2,8 +2,6 @@ import { useCallback, useState } from 'react';
 import type { ReactElement, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select } from 'antd';
-import { Plus } from '@gravity-ui/icons';
-import { Icon, IconButton } from '../../../../components';
 import { EntityIcon } from '../entity-icon';
 
 import { CreateNewModal } from './create-new-modal';
@@ -36,67 +34,43 @@ export const EntityMultiselect: FC<EntityMultiselectProps> = ({
 }): ReactElement => {
   const { t } = useTranslation();
 
-  const [value, setValue] = useState<string>();
   const [open, setOpen] = useState(false);
-
-  const handleChange = useCallback((selectedValue: string) => {
-    setValue(selectedValue);
-  }, []);
-
-  const handleAdd = useCallback(() => {
-    if (!value) {
-      return;
-    }
-
-    onAdd(value);
-
-    setValue(undefined);
-  }, [value, onAdd]);
 
   const handleCancel = useCallback(() => setOpen(false), []);
   const handleOpen = useCallback(() => setOpen(true), []);
 
   return (
     <>
-      <div className={cx(styles.entityPicker, className)}>
-        <Select
-          className={styles.select}
-          size={size}
-          options={options}
-          onChange={handleChange}
-          value={value}
-          placeholder={placeholder}
-          open={open ? false : undefined}
-          showSearch
-          optionRender={(option): ReactElement => (
-            <span className={styles.option}>
-              <EntityIcon
-                name={option.data.label}
-                icon={option.data.icon}
-                background={false}
-              />
-              {option.data.label}
-            </span>
-          )}
-          popupRender={(menu: ReactElement): ReactElement => (
-            <>
-              <div>{menu}</div>
-              <div className={styles.footer}>
-                <Button block onClick={handleOpen}>
-                  {t('inspector.entityPicker.createNew.button.title')}
-                </Button>
-              </div>
-            </>
-          )}
-        />
-        <IconButton
-          className={styles.button}
-          size={size}
-          icon={<Icon icon={<Plus />} />}
-          onClick={handleAdd}
-          data-testid="entity-picker-add-button"
-        />
-      </div>
+      <Select
+        className={cx(styles.select, className)}
+        size={size}
+        options={options}
+        onChange={onAdd}
+        value={null}
+        placeholder={placeholder}
+        open={open ? false : undefined}
+        showSearch
+        optionRender={(option): ReactElement => (
+          <span className={styles.option}>
+            <EntityIcon
+              name={option.data.label}
+              icon={option.data.icon}
+              background={false}
+            />
+            {option.data.label}
+          </span>
+        )}
+        popupRender={(menu: ReactElement): ReactElement => (
+          <>
+            <div>{menu}</div>
+            <div className={styles.footer}>
+              <Button block onClick={handleOpen}>
+                {t('inspector.entityPicker.createNew.button.title')}
+              </Button>
+            </div>
+          </>
+        )}
+      />
 
       {open && (
         <CreateNewModal

@@ -1,7 +1,3 @@
-.entityPicker {
-  display: flex;
-}
-
 .footer {
   border-top: 1px solid var(--ant-color-border);
   padding: 8px 6px 6px 6px;

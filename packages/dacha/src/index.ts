@@ -46,9 +46,25 @@ export {
   ActorQuery,
 } from './engine/actor';
 export { TemplateCollection } from './engine/template';
-export { Assets, Asset } from './engine/asset';
-export type { AssetOptions, AssetConstructor } from './engine/asset';
-export type { SystemConstructor } from './engine/system';
+export { Assets, Asset, MediaAsset } from './engine/asset';
+export type {
+  AssetOptions,
+  AssetConstructor,
+  AssetSources,
+  AssetLoadProgress,
+  AssetAcquireOptions,
+} from './engine/asset';
+export { ReferenceWalker } from './engine/reference';
+export type {
+  Reference,
+  ReferenceSources,
+  ReferenceVisitor,
+} from './engine/reference';
+export type {
+  SystemConstructor,
+  SystemDependencies,
+  SystemBinding,
+} from './engine/system';
 export type { ComponentConstructor } from './engine/component';
 
 export * from './types/events';

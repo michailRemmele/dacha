@@ -24,8 +24,8 @@ import {
   sortByXAxis,
 } from './sort';
 import { parseSortingLayers } from './sort/utils';
-import type { Sorting, RendererResources } from './types';
-import { Assets } from './assets';
+import type { Sorting, RendererDependencies } from './types';
+import type { Assets } from '../../../engine/asset';
 import { ActorRenderTree } from './actor-render-tree';
 import { FilterSystem } from './filters';
 import { MaterialSystem } from './material';
@@ -51,8 +51,8 @@ interface RendererOptions extends WorldSystemOptions {
  * - `filterEffects`: post-processing effects for the whole screen.
  *
  * The global option `sorting` sets the sorting layers and the draw order, see
- * {@link Sorting}. Pass your shaders and filter effects in `resources` under
- * `Renderer.systemName`, see {@link RendererResources}.
+ * {@link Sorting}. Pass your shaders and filter effects with
+ * `Renderer.with({ shaders, filterEffects })`, see {@link RendererDependencies}.
  *
  * The renderer needs {@link CameraSystem} before it in the systems list. Put it after
  * every system that moves actors or changes their view components.
@@ -96,32 +96,28 @@ export class Renderer extends WorldSystem {
   private actorRenderTree?: ActorRenderTree;
   private filterSystem: FilterSystem;
   private materialSystem: MaterialSystem;
-  private resources?: RendererResources;
   private time: Time;
   private rendererApi: RendererAPI;
   private resizeObserver?: ResizeObserver;
 
-  constructor(options: WorldSystemOptions) {
+  constructor(options: RendererOptions, dependencies?: RendererDependencies) {
     super();
 
     const {
       globalOptions,
       windowNodeId,
       backgroundColor,
-      templateCollection,
+      assets,
       world,
-      resources,
       filterEffects,
       time,
-    } = options as RendererOptions;
+    } = options;
 
     this.time = time;
 
     this.backgroundColor = new Color(backgroundColor);
 
     this.window = getWindowNode(windowNodeId);
-
-    this.resources = resources as RendererResources | undefined;
 
     const sorting = globalOptions.sorting as Sorting | undefined;
     const sortingOrder = SORTING_ORDER_MAPPING[sorting?.order ?? 'bottomRight'];
@@ -148,17 +144,19 @@ export class Renderer extends WorldSystem {
     this.application = new Application();
     this.worldContainer = new Container();
 
-    this.assets = new Assets({ templateCollection });
+    this.assets = assets;
 
     this.materialSystem = new MaterialSystem({
-      shaders: this.resources?.shaders,
+      shaders: dependencies?.shaders,
       time: this.time,
+      assets: this.assets,
     });
     this.filterSystem = new FilterSystem({
       application: this.application,
       time: this.time,
+      assets: this.assets,
       filterEffects,
-      availableFilterEffects: this.resources?.filterEffects,
+      availableFilterEffects: dependencies?.filterEffects,
     });
 
     this.cameraApi = world.systemApi.get(CameraAPI);
@@ -226,10 +224,6 @@ export class Renderer extends WorldSystem {
     window.__PIXI_DEVTOOLS__ = undefined;
   }
 
-  async onSceneLoad(scene: Scene): Promise<void> {
-    await this.assets.load(scene);
-  }
-
   onSceneEnter(scene: Scene): void {
     this.actorRenderTree = new ActorRenderTree({
       scene,
@@ -245,10 +239,6 @@ export class Renderer extends WorldSystem {
     this.actorRenderTree = undefined;
 
     this.application.renderer.clear();
-  }
-
-  onSceneDestroy(scene: Scene): void {
-    this.assets.unload(scene);
   }
 
   private updateCamera(): void {

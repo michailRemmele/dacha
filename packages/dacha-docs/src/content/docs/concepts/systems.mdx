@@ -87,12 +87,15 @@ The engine constructs both kinds with an options object. These fields are shared
 | `assets` | The registry of the project's assets |
 | `globalOptions` | The global settings for the game |
 | `time` | Shared timing state |
-| `resources` | Whatever was passed for this system in the engine's `resources` |
 
 A scene system also receives `scene` and `world`. A world system receives `world`.
 
 The engine merges the system's own `options` from the configuration into the same object. So a
 system reads its settings from there, next to these fields.
+
+A system can take a second constructor argument. It holds the classes and functions that the
+game passes with `MySystem.with(...)`. See
+[dependencies from game code](/game-code/systems/#dependencies-from-game-code).
 
 ## Selecting the actors to act on
 

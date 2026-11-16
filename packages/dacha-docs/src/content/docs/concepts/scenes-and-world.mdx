@@ -89,12 +89,13 @@ it:
 
 | Event | Fires when |
 | --- | --- |
+| `SceneLoadProgress` | A step of the load has finished |
 | `SceneLoaded` | The scene and its systems are ready |
 | `SceneEntered` | It has become the active scene |
 | `SceneExited` | It has stopped being the active scene |
 | `SceneDestroyed` | It has been torn down |
 
-Each one carries the scene as `{ scene }`. The world dispatches all four, so listen there.
+Each one carries the scene as `{ scene }`. The world dispatches all of them, so listen there.
 
 ## `systemApi`
 

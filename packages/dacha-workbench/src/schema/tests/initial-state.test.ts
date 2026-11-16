@@ -29,6 +29,26 @@ describe('resolveFieldInitialValue', () => {
       x: 0,
       y: 0,
     });
+    expect(
+      resolveFieldInitialValue({ name: 'x', type: 'asset', kind: 'texture' }),
+    ).toBe('');
+  });
+
+  it('gives reference fields an empty id, or an empty list with multiple', () => {
+    expect(resolveFieldInitialValue({ name: 'x', type: 'template' })).toBe('');
+    expect(resolveFieldInitialValue({ name: 'x', type: 'scene' })).toBe('');
+    expect(resolveFieldInitialValue({ name: 'x', type: 'actor' })).toBe('');
+    expect(
+      resolveFieldInitialValue({ name: 'x', type: 'template', multiple: true }),
+    ).toEqual([]);
+    expect(
+      resolveFieldInitialValue({
+        name: 'x',
+        type: 'asset',
+        kind: 'texture',
+        multiple: true,
+      }),
+    ).toEqual([]);
   });
 
   it('deep-clones object initial values', () => {
@@ -109,44 +129,6 @@ describe('fillMissingFields', () => {
   it('returns the same reference when nothing is missing', () => {
     const state = { zoom: 3, current: true };
     expect(fillMissingFields(state, fields)).toBe(state);
-  });
-
-  it('supports dot-path dependency names', () => {
-    const depFields: Field[] = [
-      {
-        name: 'flag',
-        type: 'string',
-        initialValue: 'on',
-        dependency: { name: 'nested.mode', value: 'on' },
-      },
-    ];
-    expect(fillMissingFields({ nested: { mode: 'on' } }, depFields)).toEqual({
-      nested: { mode: 'on' },
-      flag: 'on',
-    });
-    const off = { nested: { mode: 'off' } };
-    expect(fillMissingFields(off, depFields)).toBe(off);
-  });
-});
-
-describe('initial-state asset field', () => {
-  it('defaults an asset field to an empty id string', () => {
-    const field: Field = { name: 'texture', type: 'asset', kind: 'texture' };
-    expect(resolveFieldInitialValue(field)).toBe('');
-  });
-
-  it('respects an explicit initialValue', () => {
-    const field: Field = {
-      name: 'texture', type: 'asset', kind: 'texture', initialValue: 'a1',
-    };
-    expect(resolveFieldInitialValue(field)).toBe('a1');
-  });
-
-  it('includes asset fields in built initial state', () => {
-    const fields: Field[] = [
-      { name: 'texture', type: 'asset', kind: 'texture' },
-    ];
-    expect(buildInitialState(fields)).toEqual({ texture: '' });
   });
 });
 
