@@ -100,7 +100,7 @@
   "dependencies": {
     "@electron/packager": "20.3.0",
     "commander": "15.0.0",
-    "electron": "44.1.1",
+    "electron": "44.9.1",
     "express": "5.2.1"
   },
   "peerDependencies": {
