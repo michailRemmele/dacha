@@ -12,6 +12,8 @@ Releases made before this file existed are recorded in the
 
 ## Unreleased
 
+## v0.20.0 — 2026-11-16
+
 ### Added
 
 - The engine loads assets. Before a scene starts, it loads every media asset that an `asset`
