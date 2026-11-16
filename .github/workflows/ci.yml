@@ -4,6 +4,9 @@ on:
   push:
     branches: [master]
   pull_request:
+    # labeled/unlabeled so that adding `s3-unavailable` or `visual-change-approved`
+    # re-runs the pipeline without a new push.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   workflow_dispatch:
 
 concurrency:
@@ -83,8 +86,14 @@ jobs:
       S3_BUCKET: ${{ secrets.S3_BUCKET }}
       AWS_REQUEST_CHECKSUM_CALCULATION: when_required
       AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      # Escape hatch for a PR when the baseline storage is unreachable
+      S3_UNAVAILABLE: ${{ contains(github.event.pull_request.labels.*.name, 's3-unavailable') }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Warn that S3-dependent steps are skipped
+        if: env.S3_UNAVAILABLE == 'true'
+        run: echo "::warning title=S3 unavailable::Screenshot baseline pull and screenshot e2e tests are skipped; only functional e2e tests run."
 
       - uses: actions/setup-node@v4
         with:
@@ -96,7 +105,7 @@ jobs:
       - run: npm run build
 
       - name: Pull screenshot baselines
-        if: github.ref != 'refs/heads/master'
+        if: github.ref != 'refs/heads/master' && env.S3_UNAVAILABLE != 'true'
         run: npm run test:e2e:pull-baselines -w dacha-workbench
 
       - name: Run functional e2e tests
@@ -104,7 +113,7 @@ jobs:
         run: npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"
 
       - name: Run screenshot e2e tests (compare against baseline)
-        if: github.ref != 'refs/heads/master'
+        if: github.ref != 'refs/heads/master' && env.S3_UNAVAILABLE != 'true'
         working-directory: packages/dacha-workbench
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change-approved') }}
         run: npx playwright test --config e2e/playwright.config.ts --grep "screenshot:"
