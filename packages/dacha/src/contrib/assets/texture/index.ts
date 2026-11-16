@@ -23,6 +23,17 @@ const loadImage = (src: string): Promise<HTMLImageElement> =>
 export type TextureFilter = 'nearest' | 'linear';
 
 /**
+ * What a texture gives outside its image, for example to a shader that
+ * scrolls its coordinates.
+ *
+ * - `clamp`: the color of the nearest edge.
+ * - `repeat`: the image again, as tiles.
+ *
+ * @category Assets
+ */
+export type TextureWrap = 'clamp' | 'repeat';
+
+/**
  * The `data` of a texture asset in the configuration.
  *
  * @category Assets
@@ -32,6 +43,8 @@ export interface TextureData {
   src?: string;
   /** How the texture is sampled. The default is `nearest`. */
   filter?: TextureFilter;
+  /** What the texture gives outside its image. The default is `clamp`. */
+  wrap?: TextureWrap;
 }
 
 /**
@@ -58,11 +71,20 @@ export class Texture extends MediaAsset<PixiTexture> {
   })
   filter!: TextureFilter;
 
+  /** What the texture gives outside its image */
+  @DefineField({
+    type: 'select',
+    initialValue: 'clamp',
+    options: ['clamp', 'repeat'],
+  })
+  wrap!: TextureWrap;
+
   protected async fetchResource(): Promise<PixiTexture> {
     const image = await loadImage(this.src);
     const source = TextureSource.from({
       resource: image,
       scaleMode: this.filter,
+      addressMode: this.wrap === 'repeat' ? 'repeat' : 'clamp-to-edge',
     });
     return new PixiTexture({ source });
   }

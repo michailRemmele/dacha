@@ -107,14 +107,15 @@ almost empty.
 
 ## Split the game into scenes
 
-The renderer loads the images a scene needs when the scene loads, and releases them when the
-scene is destroyed. Smaller scenes therefore hold less in memory. A single scene that holds
-every level holds every image at once.
+The engine loads the files a scene needs when the scene loads, and unloads them when the scene
+is destroyed. Smaller scenes therefore hold less in memory. A single scene that holds every
+level holds every image at once.
 
-Two details are worth knowing. Images used by [templates](/editor/templates/) load with every
-scene, because any scene can spawn any template. And `autoDestroy: false` keeps the scene you
-left in memory, with its images. That is the price of returning to it without rebuilding it.
-See [scenes and the world](/concepts/scenes-and-world/).
+Two details are worth knowing. A scene also loads the files of the
+[templates](/editor/templates/) it reaches: the templates of its actors and the templates in
+`template` fields. See [Assets](/concepts/assets/#loading). And `autoDestroy: false` keeps the
+scene you left in memory, with its files. That is the price of returning to it without
+rebuilding it. See [scenes and the world](/concepts/scenes-and-world/).
 
 ## Do not create objects every frame
 

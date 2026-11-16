@@ -11,6 +11,7 @@ import type {
   WorldSystemOptions,
 } from '../system';
 import type { System } from '../system/system';
+import { LoadProgress } from './load-progress';
 import { SceneSystem, WorldSystem } from '../system';
 import { World } from '../world';
 import type { Time } from '../time';
@@ -19,6 +20,7 @@ import {
   EnterScene,
   ExitScene,
   DestroyScene,
+  SceneLoadProgress,
   SceneLoaded,
   SceneEntered,
   SceneExited,
@@ -241,10 +243,21 @@ export class SceneManager {
       templateCollection: this.templateCollection,
     });
 
-    const assetsLoading = this.assets.acquire(scene, {
-      actors: this.sceneConfigs[id].actors,
-      systems: this.getSystemConfigs(SceneSystem),
-    });
+    const progress = new LoadProgress((counts) =>
+      this.world.dispatchEventImmediately(SceneLoadProgress, {
+        scene,
+        ...counts,
+      }),
+    );
+
+    const assetsLoading = this.assets.acquire(
+      scene,
+      {
+        actors: this.sceneConfigs[id].actors,
+        systems: this.getSystemConfigs(SceneSystem),
+      },
+      { onProgress: progress.onAssetsProgress },
+    );
 
     if (this.loadedScenes.has(id) && !this.loadedScenes.get(id)?.isLoading) {
       if (id === this.activeSceneId) {
@@ -286,10 +299,18 @@ export class SceneManager {
     };
     this.loadedScenes.set(scene.id, loadEntry);
 
+    const loadableSystems = this.getSystems(scene).filter(
+      (system) => system.onSceneLoad,
+    );
+    progress.setSystemsTotal(loadableSystems.length);
+
     await assetsLoading;
 
     await Promise.all(
-      this.getSystems(scene).map((system) => system.onSceneLoad?.(scene)),
+      loadableSystems.map(async (system) => {
+        await system.onSceneLoad?.(scene);
+        progress.onSystemLoaded();
+      }),
     );
 
     loadEntry.isLoading = false;

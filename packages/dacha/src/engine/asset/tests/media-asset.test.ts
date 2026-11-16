@@ -26,14 +26,21 @@ class Picture extends MediaAsset<string> {
   }
 }
 
+const settled = async <T>(loading: Promise<T>): Promise<T> => {
+  await jest.advanceTimersByTimeAsync(500);
+  return loading;
+};
+
 const picture = (): Picture => new Picture({ id: 'p1', name: 'P', data: {} });
 
 describe('MediaAsset', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.spyOn(console, 'error').mockImplementation(() => void 0);
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -49,14 +56,29 @@ describe('MediaAsset', () => {
     expect(asset.loadCalls).toBe(1);
   });
 
-  it('gives undefined, logs once and does not retry after a failed load', async () => {
+  it('tries a failed load one more time', async () => {
+    const asset = picture();
+    asset.load_ = (): Promise<string> =>
+      asset.loadCalls === 1
+        ? Promise.reject(new Error('offline'))
+        : Promise.resolve('second');
+
+    const loading = asset.load();
+    await jest.advanceTimersByTimeAsync(500);
+
+    await expect(loading).resolves.toBe('second');
+    expect(asset.resource).toBe('second');
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it('gives undefined and logs once after the second failure, then stops', async () => {
     const asset = picture();
     asset.load_ = (): Promise<string> => Promise.reject(new Error('404'));
 
-    await expect(asset.load()).resolves.toBeUndefined();
+    await expect(settled(asset.load())).resolves.toBeUndefined();
     await expect(asset.load()).resolves.toBeUndefined();
 
-    expect(asset.loadCalls).toBe(1);
+    expect(asset.loadCalls).toBe(2);
     expect(console.error).toHaveBeenCalledTimes(1);
   });
 
@@ -66,7 +88,7 @@ describe('MediaAsset', () => {
       throw new Error('bad url');
     };
 
-    await expect(asset.load()).resolves.toBeUndefined();
+    await expect(settled(asset.load())).resolves.toBeUndefined();
   });
 
   it('unloads its resource through disposeResource', async () => {
@@ -82,7 +104,7 @@ describe('MediaAsset', () => {
   it('loads again after unload, also after a failed load', async () => {
     const asset = picture();
     asset.load_ = (): Promise<string> => Promise.reject(new Error('404'));
-    await asset.load();
+    await settled(asset.load());
 
     asset.unload();
     asset.load_ = (): Promise<string> => Promise.resolve('fixed');

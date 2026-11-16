@@ -1,6 +1,7 @@
 import { Sprite as PixiSprite, TilingSprite } from 'pixi.js';
 
 import type { Assets } from '../../../../../engine/asset';
+import type { Scene } from '../../../../../engine/scene';
 import { Texture as TextureAsset } from '../../../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
@@ -11,15 +12,18 @@ import { getFallbackTexture } from '../utils';
 
 interface SpriteBuilderOptions {
   assets: Assets;
+  scene: Scene;
 }
 
 export class SpriteBuilder implements Builder<Sprite> {
   private assets: Assets;
+  private scene: Scene;
 
   private textureArrayStore: TextureArrayStore;
 
-  constructor({ assets }: SpriteBuilderOptions) {
+  constructor({ assets, scene }: SpriteBuilderOptions) {
     this.assets = assets;
+    this.scene = scene;
 
     this.textureArrayStore = new TextureArrayStore();
   }
@@ -77,7 +81,7 @@ export class SpriteBuilder implements Builder<Sprite> {
 
     const textureAsset = this.assets.get(TextureAsset, sprite.texture);
     if (textureAsset && !textureAsset.resource) {
-      void textureAsset.load();
+      this.assets.ensure(this.scene, sprite.texture);
     }
     const resource = textureAsset?.resource;
     if (resource !== meta.resource || sprite.slice !== meta.slice) {

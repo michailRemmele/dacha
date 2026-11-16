@@ -31,6 +31,9 @@ export class Audio extends MediaAsset<AudioBuffer> {
 
   protected async fetchResource(): Promise<AudioBuffer> {
     const response = await fetch(this.src);
+    if (!response.ok) {
+      throw new Error(`Can't load the sound: ${this.src} (${response.status})`);
+    }
     return decodeAudio(await response.arrayBuffer());
   }
 }

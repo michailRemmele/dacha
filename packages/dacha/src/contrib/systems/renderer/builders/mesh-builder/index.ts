@@ -2,6 +2,7 @@ import { Mesh as PixiMesh, MeshGeometry } from 'pixi.js';
 
 import type { MaterialSystem } from '../../material';
 import type { Assets } from '../../../../../engine/asset';
+import type { Scene } from '../../../../../engine/scene';
 import { Texture as TextureAsset } from '../../../../assets';
 import type { Builder } from '../builder';
 import { BLEND_MODE_MAPPING } from '../../consts';
@@ -13,17 +14,20 @@ import { GEOMETRY_POSITIONS, GEOMETRY_INDICES } from './consts';
 
 interface MeshBuilderOptions {
   assets: Assets;
+  scene: Scene;
   materialSystem: MaterialSystem;
 }
 
 export class MeshBuilder implements Builder<Mesh> {
   private assets: Assets;
+  private scene: Scene;
   private materialSystem: MaterialSystem;
 
   private textureArrayStore: TextureArrayStore;
 
-  constructor({ assets, materialSystem }: MeshBuilderOptions) {
+  constructor({ assets, scene, materialSystem }: MeshBuilderOptions) {
     this.assets = assets;
+    this.scene = scene;
     this.materialSystem = materialSystem;
 
     this.textureArrayStore = new TextureArrayStore();
@@ -87,7 +91,7 @@ export class MeshBuilder implements Builder<Mesh> {
 
     const textureAsset = this.assets.get(TextureAsset, mesh.texture);
     if (textureAsset && !textureAsset.resource) {
-      void textureAsset.load();
+      this.assets.ensure(this.scene, mesh.texture);
     }
     const resource = textureAsset?.resource;
     if (resource !== meta.resource || mesh.slice !== meta.slice) {

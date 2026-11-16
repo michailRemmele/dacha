@@ -121,24 +121,17 @@ For example, a tree 64 pixels tall stands on the ground at its bottom edge, so g
 
 ## Loading images and fonts
 
-The renderer loads images and fonts by path. It does not use the engine's asset registry.
+`Sprite`, `Mesh` and `BitmapText` hold the id of an [asset](/concepts/assets/). The engine loads
+the images and fonts of a scene before the scene starts. See [Loading](/concepts/assets/#loading).
 
-When a scene loads, the renderer collects every path from two places:
+A sprite or a mesh draws nothing while its texture is not loaded.
 
-- the `Sprite`, `Mesh` and `BitmapText` components of the actors in that scene,
-- the same components in all templates of the project.
+A `texture` asset has two settings for how the renderer reads the image:
 
-The scene becomes active only after these files have loaded. So an actor you spawn from a template
-is drawn with its image from the first frame.
-
-A path that appears in neither place is not loaded in advance:
-
-- An actor you create in code with a new path loads its image in the background. Until the image
-  arrives, the sprite is drawn as a white rectangle.
-- If you change `src` of an existing sprite to a path that was never loaded, nothing changes. The
-  sprite keeps its previous image.
-
-The renderer samples all textures with the nearest pixel, with no smoothing.
+| Setting | Values | What it does |
+| --- | --- | --- |
+| `filter` | `nearest` (default), `linear` | `nearest` keeps sharp pixels, for pixel art. `linear` blends between pixels |
+| `wrap` | `clamp` (default), `repeat` | What a shader gets outside the image: the color of the nearest edge, or the image again as tiles |
 
 ## RendererAPI
 

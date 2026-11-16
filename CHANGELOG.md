@@ -27,11 +27,25 @@ Releases made before this file existed are recorded in the
   second `acquire` by the same owner replaces what it holds. The owner is an object or a
   string; the same string is the same owner in the whole game.
 - `MediaAsset`, the base class of asset kinds backed by a file. `resource` gives the loaded
-  file, and `load()` loads it from code. A kind implements `fetchResource` and, if needed,
-  `disposeResource`. `Texture`, `Audio` and `BitmapFont` extend it.
+  file. A kind implements `fetchResource` and, if needed, `disposeResource`. `Texture`, `Audio`
+  and `BitmapFont` extend it.
+- An asset that no field announced loads when an actor first needs it, and unloads with the
+  scene of that actor. To have it ready in time, hold it with `assets.acquire`.
+- The `SceneLoadProgress` event, for a loading bar. The world dispatches it when a scene starts
+  to load and after every step, with `total`, `completed` and `failed`. A step is one file of
+  the scene, or the `onSceneLoad` of one system. It is dispatched immediately, so the interface
+  gets it while the first scene loads. `assets.acquire` takes `onProgress` for its own files.
+- `assets.ensure(owner, id)` makes sure the owner holds one asset and starts loading it, without
+  waiting. A system of your own calls it with the scene, as the built-in systems do.
+- `assets.acquire` takes `add: true` to add to what the owner holds. Without it, the call
+  replaces what the owner holds.
+- The engine tries a file that failed to load one more time before it gives up. An `audio`
+  asset reports a missing file by its HTTP status.
 - `Shader.textures(textures, options)` writes extra textures for the shader by uniform name.
 - A `texture` asset has a `filter`: `nearest` (the default, sharp pixels) or `linear` (smooth).
   Before, every texture used `nearest`.
+- A `texture` asset has a `wrap`: `clamp` (the default) or `repeat`. Use `repeat` for a texture
+  that a shader scrolls.
 - Shaders and filter effects read the project assets as `this.assets`.
 - A [page about assets](https://dachajs.org/concepts/assets/) in the documentation.
 - The inspector shows a preview under the fields of texture, audio and bitmap font assets:

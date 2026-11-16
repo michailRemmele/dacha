@@ -72,16 +72,19 @@ export class ActorRenderTree {
     this.actorParentMap = new Map();
 
     this.builders = new Map();
-    this.builders.set(Sprite.componentName, new SpriteBuilder({ assets }));
+    this.builders.set(
+      Sprite.componentName,
+      new SpriteBuilder({ assets, scene }),
+    );
     this.builders.set(Shape.componentName, new ShapeBuilder());
     this.builders.set(PixiView.componentName, new PixiViewBuilder());
     this.builders.set(
       BitmapText.componentName,
-      new BitmapTextBuilder({ assets }),
+      new BitmapTextBuilder({ assets, scene }),
     );
     this.builders.set(
       Mesh.componentName,
-      new MeshBuilder({ assets, materialSystem }),
+      new MeshBuilder({ assets, scene, materialSystem }),
     );
 
     this.scene.children.forEach((actor) =>

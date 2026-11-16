@@ -39,6 +39,7 @@ export class AudioSystem extends WorldSystem {
   private audioGroups: Record<string, GainNode | undefined>;
   private audioState: Map<string, AudioStateNode>;
   private actorQuery?: ActorQuery;
+  private scene?: Scene;
 
   constructor(options: WorldSystemOptions) {
     super();
@@ -95,6 +96,7 @@ export class AudioSystem extends WorldSystem {
   }
 
   onSceneEnter(scene: Scene): void {
+    this.scene = scene;
     this.actorQuery = new ActorQuery({
       scene,
       filter: [AudioSource],
@@ -115,6 +117,7 @@ export class AudioSystem extends WorldSystem {
     this.actorQuery?.removeEventListener(RemoveActor, this.handleActorRemove);
 
     this.actorQuery = undefined;
+    this.scene = undefined;
   }
 
   onWorldDestroy(): void {
@@ -182,8 +185,8 @@ export class AudioSystem extends WorldSystem {
     const { audio, group, volume, looped, _playing: playing } = audioSource;
     const audioGroupNode = this.audioGroups[group];
     const audioAsset = this.assets.get(Audio, audio);
-    if (audioAsset && !audioAsset.resource) {
-      void audioAsset.load();
+    if (audioAsset && !audioAsset.resource && this.scene) {
+      this.assets.ensure(this.scene, audio);
     }
     const buffer = audioAsset?.resource;
 

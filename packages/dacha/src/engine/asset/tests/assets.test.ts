@@ -197,6 +197,110 @@ describe('Assets -> refs and lifecycle', () => {
     expect(resourceOf('s2')).toBe('buffer-s2');
   });
 
+  it('reports progress at the start and after every media asset', async () => {
+    assets.register(item('i1', ['s1', 's2']));
+    assets.register(sound('s1'));
+    assets.register(sound('s2'));
+    const onProgress = jest.fn();
+
+    await assets.acquire({}, { assets: ['i1'] }, { onProgress });
+
+    expect(onProgress.mock.calls.map(([progress]) => progress)).toEqual([
+      { total: 2, completed: 0, failed: 0 },
+      { total: 2, completed: 1, failed: 0 },
+      { total: 2, completed: 2, failed: 0 },
+    ]);
+  });
+
+  it('reports once when there is no media to load', async () => {
+    assets.register(item('i1', []));
+    const onProgress = jest.fn();
+
+    await assets.acquire({}, { assets: ['i1'] }, { onProgress });
+
+    expect(onProgress).toHaveBeenCalledTimes(1);
+    expect(onProgress).toHaveBeenCalledWith({
+      total: 0,
+      completed: 0,
+      failed: 0,
+    });
+  });
+
+  it('ensure adds an asset and its refs to the owner and loads them', async () => {
+    assets.register(item('i1', ['s2']));
+    assets.register(sound('s1'));
+    assets.register(sound('s2'));
+    const owner = {};
+    await assets.acquire(owner, { assets: ['s1'] });
+
+    assets.ensure(owner, 'i1');
+    await flush();
+
+    expect(resourceOf('s1')).toBe('buffer-s1');
+    expect(resourceOf('s2')).toBe('buffer-s2');
+
+    assets.release(owner);
+
+    expect(resourceOf('s1')).toBeUndefined();
+    expect(resourceOf('s2')).toBeUndefined();
+  });
+
+  it('ensure counts an asset once per owner', async () => {
+    assets.register(sound('s1'));
+    const first = {};
+    const second = {};
+    assets.ensure(first, 's1');
+    assets.ensure(first, 's1');
+    assets.ensure(second, 's1');
+    await flush();
+
+    assets.release(first);
+    expect(resourceOf('s1')).toBe('buffer-s1');
+
+    assets.release(second);
+    expect(resourceOf('s1')).toBeUndefined();
+  });
+
+  it('ensure ignores an unknown id without a warning', () => {
+    assets.ensure({}, 'nope');
+
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it('adds to the set of an owner with add, and release drops all of it', async () => {
+    assets.register(sound('s1'));
+    assets.register(sound('s2'));
+    const owner = {};
+    const other = {};
+    await assets.acquire(owner, { assets: ['s1'] });
+    await assets.acquire(other, { assets: ['s2'] });
+
+    await assets.acquire(owner, { assets: ['s1', 's2'] }, { add: true });
+    await assets.acquire(owner, { assets: ['s2'] }, { add: true });
+
+    expect(resourceOf('s1')).toBe('buffer-s1');
+    expect(resourceOf('s2')).toBe('buffer-s2');
+
+    assets.release(owner);
+
+    expect(resourceOf('s1')).toBeUndefined();
+    expect(resourceOf('s2')).toBe('buffer-s2');
+
+    assets.release(other);
+
+    expect(resourceOf('s2')).toBeUndefined();
+  });
+
+  it('acquires as usual with add when the owner holds nothing', async () => {
+    assets.register(sound('s1'));
+    const owner = {};
+
+    await assets.acquire(owner, { assets: ['s1'] }, { add: true });
+    assets.release(owner);
+
+    expect(assets.get(SoundKind, 's1')!.unloaded).toEqual(['buffer-s1']);
+  });
+
   it('ignores release of an owner that holds nothing', () => {
     expect(() => assets.release({})).not.toThrow();
   });

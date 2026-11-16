@@ -51,6 +51,8 @@ export type {
   AssetOptions,
   AssetConstructor,
   AssetSources,
+  AssetLoadProgress,
+  AssetAcquireOptions,
 } from './engine/asset';
 export { ReferenceWalker } from './engine/reference';
 export type {

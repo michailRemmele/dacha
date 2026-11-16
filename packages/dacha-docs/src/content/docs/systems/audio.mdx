@@ -75,8 +75,9 @@ Removing an actor stops its sound.
 ## When sounds load
 
 The engine loads sounds before a scene starts. It loads every audio asset that the scene's actors
-and all templates refer to. So an actor you spawn from a template at runtime has its sound ready.
-See [Assets](/concepts/assets/#loading).
+refer to. It also loads the sounds of the templates the scene reaches.
+So an actor you spawn from such a template has its sound
+ready. See [Assets](/concepts/assets/#loading).
 
 ## Scene changes
 

@@ -26,6 +26,39 @@ export interface AssetSources {
 }
 
 /**
+ * How far a call of {@link Assets.acquire} is. Only media assets count: a data
+ * asset has nothing to load.
+ *
+ * @category Assets
+ */
+export interface AssetLoadProgress {
+  /** How many media assets the call waits for. */
+  total: number;
+  /** How many of them have finished, loaded or failed. */
+  completed: number;
+  /** How many of the finished ones failed to load. */
+  failed: number;
+}
+
+/**
+ * Options of {@link Assets.acquire}.
+ *
+ * @category Assets
+ */
+export interface AssetAcquireOptions {
+  /**
+   * Adds to what the owner already holds. Without it, the call replaces what
+   * the owner holds.
+   */
+  add?: boolean;
+  /**
+   * Called once when loading starts and then after every media asset
+   * finishes.
+   */
+  onProgress?: (progress: AssetLoadProgress) => void;
+}
+
+/**
  * The {@link Assets} options.
  *
  * @internal
@@ -133,12 +166,13 @@ export class Assets {
   /**
    * Holds assets for `owner` and loads the media among them.
    *
-   * A second call by the same owner replaces what it holds. Pass the full set
-   * in one call. Assets that both sets share stay loaded.
+   * A second call by the same owner replaces what it holds, and assets that
+   * both sets share stay loaded. Pass `add: true` to keep what the owner holds
+   * and add to it.
    *
    * Call {@link Assets.release} when the owner no longer
-   * needs the assets. Do not pass a scene as the owner: that replaces what the
-   * engine holds for the scene.
+   * needs the assets. Do not pass a scene as the owner without `add: true`: that
+   * replaces what the engine holds for the scene.
    *
    * @example
    * ```ts
@@ -151,23 +185,85 @@ export class Assets {
    * }
    * ```
    */
-  async acquire(owner: object | string, sources: AssetSources): Promise<void> {
+  async acquire(
+    owner: object | string,
+    sources: AssetSources,
+    options?: AssetAcquireOptions,
+  ): Promise<void> {
     const ids = this.collectAssetIds(sources);
-    ids.forEach((id) => this.counts.set(id, (this.counts.get(id) ?? 0) + 1));
+    const held = this.owners.get(owner);
 
-    const previous = this.owners.get(owner);
-    this.owners.set(owner, ids);
+    if (options?.add && held) {
+      ids.forEach((id) => this.hold(held, id));
+    } else {
+      ids.forEach((id) => this.counts.set(id, (this.counts.get(id) ?? 0) + 1));
+      this.owners.set(owner, ids);
 
-    if (previous) {
-      this.releaseIds(previous);
+      if (held) {
+        this.releaseIds(held);
+      }
     }
 
+    const media = Array.from(ids, (id) => this.storage.get(id)?.asset).filter(
+      (asset) => asset instanceof MediaAsset,
+    );
+    const progress: AssetLoadProgress = {
+      total: media.length,
+      completed: 0,
+      failed: 0,
+    };
+    const report = (): void => options?.onProgress?.({ ...progress });
+
+    report();
+
     await Promise.all(
-      Array.from(ids, (id) => {
-        const asset = this.storage.get(id)?.asset;
-        return asset instanceof MediaAsset ? asset.load() : undefined;
+      media.map(async (asset) => {
+        const resource = await asset.load();
+        progress.completed += 1;
+        if (resource === undefined) {
+          progress.failed += 1;
+        }
+        report();
       }),
     );
+  }
+
+  /**
+   * Makes sure that `owner` holds one asset, with the assets it references,
+   * and starts loading it if it is not loaded. It does not wait for the file.
+   * Does nothing when the owner already holds the asset, so you can call it
+   * every frame.
+   *
+   * Use it in a system that draws or plays an asset by an id that can change
+   * while the game runs. Pass the scene as the owner, and the asset unloads
+   * with the scene. To wait for the files, use {@link Assets.acquire}.
+   *
+   * @example
+   * ```ts
+   * const map = this.assets.get(LevelMap, minimap.map);
+   * if (map && !map.resource) {
+   *   this.assets.ensure(this.scene, minimap.map);
+   * }
+   * ```
+   */
+  ensure(owner: object | string, id: string): void {
+    const held = this.owners.get(owner);
+    if (held?.has(id) || !this.storage.has(id)) {
+      return;
+    }
+
+    const ids = held ?? new Set<string>();
+    this.owners.set(owner, ids);
+
+    this.collectAssetIds({ assets: [id] }).forEach((assetId) => {
+      if (!this.hold(ids, assetId)) {
+        return;
+      }
+      const asset = this.storage.get(assetId)?.asset;
+      if (asset instanceof MediaAsset) {
+        void asset.load();
+      }
+    });
   }
 
   /**
@@ -286,6 +382,15 @@ export class Assets {
     }
 
     return assetIds;
+  }
+
+  private hold(ids: Set<string>, id: string): boolean {
+    if (ids.has(id)) {
+      return false;
+    }
+    ids.add(id);
+    this.counts.set(id, (this.counts.get(id) ?? 0) + 1);
+    return true;
   }
 
   private releaseIds(ids: Set<string>): void {

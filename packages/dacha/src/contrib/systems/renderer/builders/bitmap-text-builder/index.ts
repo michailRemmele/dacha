@@ -2,6 +2,7 @@ import { BitmapText as PixiBitmapText } from 'pixi.js';
 
 import type { Builder } from '../builder';
 import type { Assets } from '../../../../../engine/asset';
+import type { Scene } from '../../../../../engine/scene';
 import { BitmapFont as BitmapFontAsset } from '../../../../assets';
 import { BLEND_MODE_MAPPING } from '../../consts';
 import { BitmapText } from '../../../../components/bitmap-text';
@@ -11,13 +12,16 @@ import { filterUnsupportedChars } from './utils';
 
 interface BitmapTextBuilderOptions {
   assets: Assets;
+  scene: Scene;
 }
 
 export class BitmapTextBuilder implements Builder<BitmapText> {
   private assets: Assets;
+  private scene: Scene;
 
-  constructor({ assets }: BitmapTextBuilderOptions) {
+  constructor({ assets, scene }: BitmapTextBuilderOptions) {
     this.assets = assets;
+    this.scene = scene;
   }
 
   destroy(text: BitmapText): void {
@@ -67,7 +71,7 @@ export class BitmapTextBuilder implements Builder<BitmapText> {
 
     const fontAsset = this.assets.get(BitmapFontAsset, text.font);
     if (fontAsset && !fontAsset.resource) {
-      void fontAsset.load();
+      this.assets.ensure(this.scene, text.font);
     }
     const font = fontAsset?.resource;
     if (font && font.fontFamily !== meta.fontFamily) {

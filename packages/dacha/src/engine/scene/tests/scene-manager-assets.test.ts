@@ -12,6 +12,7 @@ import {
   DefineSystem,
 } from '../../decorators';
 import { Time } from '../../time';
+import { SceneLoadProgress } from '../../events';
 import type { SceneConfig, TemplateConfig } from '../../types';
 
 const events: string[] = [];
@@ -149,6 +150,23 @@ describe('SceneManager -> assets', () => {
 
     expect(events).toContain('load pa');
     expect(events).not.toContain('load pd');
+  });
+
+  it('dispatches the load progress of a scene: its media and onSceneLoad of systems', async () => {
+    const progress: string[] = [];
+    await sceneManager.loadWorld();
+    sceneManager['world'].addEventListener(SceneLoadProgress, (event) => {
+      progress.push(`${event.scene.id} ${event.completed}/${event.total}`);
+    });
+
+    await sceneManager.loadScene('scene-1', false);
+
+    expect(progress).toEqual([
+      'scene-1 0/3',
+      'scene-1 1/3',
+      'scene-1 2/3',
+      'scene-1 3/3',
+    ]);
   });
 
   it('loads the world set before constructing world systems', async () => {

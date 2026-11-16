@@ -1,4 +1,13 @@
 import { Asset } from './asset';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used by {@link}
+import type { Assets } from './assets';
+
+const RETRY_DELAY = 500;
+
+const wait = (ms: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 /**
  * Base class for asset kinds backed by a file, such as a texture or a sound.
@@ -6,7 +15,9 @@ import { Asset } from './asset';
  * A kind implements {@link MediaAsset.fetchResource} and, if the resource needs
  * cleanup, {@link MediaAsset.disposeResource}. The engine loads every media asset
  * that the configuration references in an `asset` field before the scene starts.
- * Code that takes an asset by id on its own calls {@link MediaAsset.load}.
+ * Code that takes an asset by id on its own loads it through {@link Assets}:
+ * {@link Assets.acquire} to wait until it is ready, or {@link Assets.ensure} to
+ * start loading it when it is needed.
  *
  * @example
  * ```ts
@@ -28,8 +39,13 @@ export abstract class MediaAsset<R = unknown> extends Asset {
   }
 
   /**
-   * Loads the resource once and returns it. Resolves to `undefined` if loading
-   * fails.
+   * Loads the resource once and returns it. A failed fetch is tried one more
+   * time. Resolves to `undefined` if loading fails.
+   *
+   * Nothing holds a resource loaded this way, so game code uses
+   * {@link Assets.acquire}.
+   *
+   * @internal
    */
   load(): Promise<R | undefined> {
     if (this.loaded !== undefined) {
@@ -47,6 +63,13 @@ export abstract class MediaAsset<R = unknown> extends Asset {
 
     this.loading = Promise.resolve()
       .then(() => this.fetchResource())
+      .catch(async (error: unknown) => {
+        await wait(RETRY_DELAY);
+        if (!isCurrent()) {
+          throw error;
+        }
+        return this.fetchResource();
+      })
       .then(
         (resource) => {
           if (!isCurrent()) {

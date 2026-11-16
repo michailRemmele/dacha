@@ -53,6 +53,12 @@ export const ExitScene = 'ExitScene';
 export const DestroyScene = 'DestroyScene';
 
 /**
+ * A scene is loading its assets. See {@link SceneLoadProgressEvent}.
+ *
+ * @hidden
+ */
+export const SceneLoadProgress = 'SceneLoadProgress';
+/**
  * A scene and its systems are ready. See {@link SceneLoadedEvent}.
  *
  * @hidden
@@ -235,6 +241,26 @@ export interface DestroySceneEvent extends Event<World> {
 }
 
 /**
+ * The world dispatches it while a scene loads: once when loading starts, and
+ * then after every step. A step is one media asset of the scene, or the
+ * `onSceneLoad` of one system.
+ *
+ * Event name: `SceneLoadProgress` from `dacha/events`.
+ *
+ * @category Events
+ */
+export interface SceneLoadProgressEvent extends Event<World> {
+  /** The scene that is loading. */
+  scene: Scene;
+  /** How many steps the load has. */
+  total: number;
+  /** How many steps have finished. A media asset that failed counts too. */
+  completed: number;
+  /** How many media assets failed to load. */
+  failed: number;
+}
+
+/**
  * The world dispatches it when a scene and its systems are ready.
  *
  * Event name: `SceneLoaded` from `dacha/events`.
@@ -306,6 +332,7 @@ declare module '../../types/events' {
     [EnterScene]: EnterSceneEvent;
     [ExitScene]: ExitSceneEvent;
     [DestroyScene]: DestroySceneEvent;
+    [SceneLoadProgress]: SceneLoadProgressEvent;
     [SceneLoaded]: SceneLoadedEvent;
     [SceneEntered]: SceneEnteredEvent;
     [SceneExited]: SceneExitedEvent;

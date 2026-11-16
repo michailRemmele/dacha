@@ -1036,6 +1036,12 @@
           "type": "select",
           "initialValue": "nearest",
           "options": ["nearest", "linear"]
+        },
+        {
+          "name": "wrap",
+          "type": "select",
+          "initialValue": "clamp",
+          "options": ["clamp", "repeat"]
         }
       ]
     },
