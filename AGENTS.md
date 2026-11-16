@@ -46,7 +46,8 @@ committed but synced from S3-compatible storage by
 `scripts/e2e-baselines.js` (pull/push). **Locally you must load the profile first —
 `source .env.local`** (repo root, gitignored): it exports `AWS_PROFILE`, `S3_ENDPOINT`,
 `S3_BUCKET` and the two `AWS_*_CHECKSUM_*` compatibility vars the baseline sync needs, plus
-`S3_DOCS_PROFILE`/`S3_DOCS_BUCKET` for the documentation media (see below). CI
+`S3_DOCS_PROFILE`/`S3_DOCS_BUCKET` and `VPS_HOST`/`VPS_USER` for the documentation
+media (see below). CI
 sets the baseline variables from repo secrets. The functional group alone needs no S3 access:
 `npx playwright test --config e2e/playwright.config.ts --grep-invert "screenshot:"` from
 inside `packages/dacha-workbench/`.
@@ -61,18 +62,26 @@ renames the section to the version being published.
 never in the working tree — otherwise npm treats a reinstall of the same version as a
 no-op and the test project keeps the old code. Pass `--to <project>` to install into a project directly.
 
-**Documentation media.** The docs site's video lives in a second, **public** S3 bucket
-rather than in git — the clips are megabytes each and are replaced wholesale. The site
-links to them by absolute URL built from `MEDIA_BASE_URL` in
-`packages/dacha-docs/src/consts.ts`, so neither the build nor CI needs credentials, and
-pull requests from forks build normally. `packages/dacha-docs/media/` is the gitignored
-local working copy, synced by `npm run docs:media:push` / `docs:media:pull`
-(`packages/dacha-docs/scripts/media.mjs`, an `aws s3 sync` wrapper — it needs
-`S3_DOCS_BUCKET`, `S3_ENDPOINT` and optionally `S3_DOCS_PROFILE` from `.env.local`). **Images are the opposite** — screenshots and posters belong in
+**Documentation media.** The docs site's video is not in git — the clips are megabytes
+each and are replaced wholesale. Pages link to it through `MEDIA_BASE_URL` in
+`packages/dacha-docs/src/consts.ts`, which defaults to `/media` on the site itself: the
+deploy symlinks `media` inside each release to `/srv/sites/dachajs/shared/media` on the
+VPS. Setting the `MEDIA_BASE_URL` environment variable at build time (in CI, the
+`MEDIA_BASE_URL` repository variable) points the same paths at another host, such as a
+public S3 bucket, so neither the build nor CI needs credentials. `packages/dacha-docs/media/`
+is the gitignored local working copy and the only source of the clips, so keep a backup of
+it. `astro dev` serves it at `/media`. `npm run docs:media:vps` (`scripts/media-vps.mjs`,
+an `rsync` wrapper; `-- --dry-run` lists changes) uploads it to the VPS and needs
+`VPS_HOST`/`VPS_USER` from `.env.local`; a sync takes effect without a deploy.
+`npm run docs:media:push` / `docs:media:pull` (`scripts/media.mjs`, an `aws s3 sync`
+wrapper) sync it with the bucket and need `S3_DOCS_BUCKET`, `S3_ENDPOINT` and optionally
+`S3_DOCS_PROFILE`. **Images are the opposite** — screenshots and posters belong in
 `packages/dacha-docs/src/assets/`, committed, so they diff alongside the prose they
 illustrate and go through the `astro:assets` optimizer. `npm run check:media -w dacha-docs`
 runs in the docs workflow and fails the build on an unreachable media URL, which
-starlight's link validator does not cover.
+starlight's link validator does not cover. Site-relative `/media/` links are checked by the
+deploy on the VPS instead, which refuses to activate a release that links to a missing
+file, so upload new video before pushing the page that uses it.
 
 **Documentation prose has a style guide — [packages/dacha-docs/STYLE.md](packages/dacha-docs/STYLE.md).**
 Read it before writing or editing anything under `packages/dacha-docs/src/content/docs/`. The

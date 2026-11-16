@@ -56,8 +56,13 @@ jobs:
       # fails the pull request rather than reaching the published site.
       - name: Build the documentation site
         run: npm run build -w dacha-docs
+        env:
+          # Unset means video is served from this site, out of the media
+          # directory the deploy links into each release.
+          MEDIA_BASE_URL: ${{ vars.MEDIA_BASE_URL }}
 
-      # The site links to video in a public bucket
+      # Only links to another host are checked here. Video served from the
+      # site itself is checked on the server by the deploy, before activation.
       - name: Check externally hosted media is reachable
         run: npm run check:media -w dacha-docs
 
@@ -127,8 +132,26 @@ jobs:
             test -f "$release/api/index.html"
 
             # Caddy runs as its own user, so the upload must be world-readable
-            # regardless of the deploy user's umask.
+            # regardless of the deploy user's umask. Done before the media link
+            # exists so the recursion cannot walk into the shared directory.
             chmod -R a+rX "$release"
+
+            # Video is not part of the build: it lives once beside the releases
+            # and every release points at it. Relative so the link keeps working
+            # if the site directory is ever moved.
+            ln -sfn ../../shared/media "$release/media"
+
+            # Refuse to publish pages that link to video nobody uploaded. The
+            # clips travel separately (npm run docs:media:vps), so check them.
+            missing=0
+            for path in $(grep -rhoE '(src|poster)="/media/[^"]+"' "$release" --include='*.html' \
+                | sed -E 's|^[a-z]+="/media/||; s|"$||' | sort -u || true); do
+              if [ ! -f "$site/shared/media/$path" ]; then
+                echo "Missing media: /media/$path"
+                missing=1
+              fi
+            done
+            test "$missing" -eq 0
 
             # ln -sfn onto an existing symlink is not atomic; swapping via mv is.
             ln -sfn "$release" "$site/current.tmp"

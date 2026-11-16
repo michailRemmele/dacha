@@ -20,6 +20,7 @@
     "docs:preview": "npm run preview -w dacha-docs",
     "docs:media:pull": "npm run media:pull -w dacha-docs",
     "docs:media:push": "npm run media:push -w dacha-docs",
+    "docs:media:vps": "npm run media:vps -w dacha-docs --",
     "prepare": "husky",
     "pack:local": "node scripts/pack-local.js",
     "release": "node scripts/release.js"

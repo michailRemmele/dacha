@@ -3,11 +3,16 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLinksValidator from 'starlight-links-validator';
 
+import { serveLocalMedia } from './scripts/serve-local-media.mjs';
+
 const site = process.env.SITE_URL ?? 'https://dachajs.org';
 
 export default defineConfig({
   site,
   base: '/',
+  vite: {
+    plugins: [serveLocalMedia()],
+  },
   integrations: [
     starlight({
       title: 'dacha',
